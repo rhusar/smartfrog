@@ -893,13 +893,18 @@ svn delete  https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/somethi
       >
     <property name="announcements.dir" location="doc/announcements" />
     <property name="target.announcement" location="${announcements.dir}/release_${smartfrog.version}.txt" />
+    <property name="target.announcement.html" location="${announcements.dir}/release_${smartfrog.version}.html" />
 
     <expandingcopy tofile="${target.announcement}" >
       <fileset file="${announcements.dir}/release-template.txt"/>
     </expandingcopy>
+    <expandingcopy tofile="${target.announcement.html}" >
+      <fileset file="${announcements.dir}/release-template.html"/>
+    </expandingcopy>
     <echo>
-      created announcement file: 
+      created announcement files:
       ${target.announcement}
+      ${target.announcement.html}
     </echo>
   </target>
 
