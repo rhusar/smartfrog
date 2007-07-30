@@ -1,23 +1,14 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.net.URLClassLoader;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Enumeration;
-import java.util.Collections;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Loads classes and creates components from remote code repositories.
