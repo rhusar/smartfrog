@@ -2,6 +2,7 @@
 <project name="Smartfrog-OSGi" default="all">
 
     <property file="build.properties" />
+    <property name="sf.home" value="../../smartfrog"/>
 
     <target name="init">
         <filelist id="child.projects" dir="." >
@@ -59,8 +60,9 @@
 
     <target name="clean" depends="init">
         <subant target="clean" >
-            <filelist refid="child.projects" />
-        </subant>        
+            <filelist refid="child.projects" />            
+            <fileset file="${sf.home}/build.xml" />            
+        </subant>
     </target>
 
     <target name="smartfrog-dist" depends="init">

@@ -1,7 +1,6 @@
 package org.smartfrog.sfcore.deployer;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,7 +17,6 @@ import java.util.List;
 public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
     private ClassLoader urlClassLoader;
-    private AnnotatedClassLoader loader;
     public static final String ATTR_CODEBASE = "codebase";
     private URL[] urlArray;
 
@@ -44,8 +42,6 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
         // The parent class loader is the one that loaded SmartFrog core classes,
         // so user components will be linked properly with the core classes/interfaces they use.
         urlClassLoader = new URLClassLoader(urlArray, getClass().getClassLoader());
-
-        loader = new AnnotatedClassLoader(urlClassLoader, sfCompleteNameSafe().toString());
     }
 
     private void check(URL url) throws SmartFrogException {
@@ -58,8 +54,8 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
         }
     }
 
-    public AnnotatedClassLoader getClassLoader() {
-        return loader;
+    public ClassLoader getClassLoader() {
+        return urlClassLoader;
     }
 
     public String toString() {

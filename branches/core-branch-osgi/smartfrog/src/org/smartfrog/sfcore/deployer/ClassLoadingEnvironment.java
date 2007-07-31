@@ -1,9 +1,7 @@
 package org.smartfrog.sfcore.deployer;
 
-import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
-
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public interface ClassLoadingEnvironment {
     /**
@@ -22,5 +20,5 @@ public interface ClassLoadingEnvironment {
      *
      * @return A classloader for this environment.
      */
-    AnnotatedClassLoader getClassLoader();
+    ClassLoader getClassLoader();
 }

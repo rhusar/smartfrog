@@ -12,7 +12,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.io.InputStream;
 
@@ -95,7 +94,7 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
         return SFClassLoader.getResourceAsStream(pathname);
     }
 
-    public AnnotatedClassLoader getClassLoader() {
+    public ClassLoader getClassLoader() {
         throw new UnsupportedOperationException();
     }
 }
