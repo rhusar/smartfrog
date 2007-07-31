@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.rmi.server.RMIClassLoader;
 import java.rmi.server.RMIClassLoaderSpi;
 import java.security.ProtectionDomain;
+import java.lang.reflect.Proxy;
 
 
 /**
@@ -37,12 +38,12 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     private static SFDebug debug = SFDebug.getInstance("SFRMIClassLoaderSpi");
 
     /** Default RMI class loader implementation. */
-    private RMIClassLoaderSpi defaultProviderInstance = null;
+//    private RMIClassLoaderSpi defaultProviderInstance = null;
     /** A flag that states whether SF security checks are active. */
     private static boolean securityOn = false;
 
     public SFRMIClassLoaderSpi() {
-        defaultProviderInstance = RMIClassLoader.getDefaultProviderInstance();
+//        defaultProviderInstance = RMIClassLoader.getDefaultProviderInstance();
 
         if (debug != null) {
             debug.println("Constructor called");
@@ -83,9 +84,12 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public Class loadClass(String codebase, String name,
         ClassLoader defaultLoader)
         throws MalformedURLException, ClassNotFoundException {
-        Class result = defaultProviderInstance.loadClass(codebase, name,
-                defaultLoader);
+//        Class result = defaultProviderInstance.loadClass(codebase, name,
+//                defaultLoader);
 
+        ClassLoader annotationCL = ClassLoaderRegistry.getClassLoaderForAnnotation(codebase);
+        Class result = Class.forName(name, false, annotationCL);
+        
         if (debug != null) {
             debug.println("loadclass:#1 codebase=" + codebase + " name=" +
                 name + " cl=" + defaultLoader);
@@ -137,8 +141,15 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public Class loadProxyClass(String codebase, String[] interfaces,
         ClassLoader defaultLoader)
         throws MalformedURLException, ClassNotFoundException {
-        Class result = defaultProviderInstance.loadProxyClass(codebase,
-                interfaces, defaultLoader);
+        
+        ClassLoader annotationCL = ClassLoaderRegistry.getClassLoaderForAnnotation(codebase);        
+        Class[] interfaceClasses = new Class[interfaces.length];
+        for (int i=0; i<interfaces.length; i++)
+            interfaceClasses[i] = Class.forName(interfaces[i], false, annotationCL);
+        Class result = Proxy.getProxyClass(annotationCL, interfaceClasses);
+        
+//        Class result = defaultProviderInstance.loadProxyClass(codebase,
+//                interfaces, defaultLoader);
 
         if (debug != null) {
             debug.println("loadProxyClass:#1 codebase=" + codebase +
@@ -158,7 +169,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /**
      * Provides the implementation for {@link
      * RMIClassLoader#getClassLoader(String)}. Returns a class loader that
-     * loads classes from the given codebase URL path.
+     * loads classes from the given annotation URL path.
      * 
      * <p>
      * If there is a security manger, its <code>checkPermission</code> method
@@ -166,35 +177,36 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      * permission; this could result in a <code>SecurityException</code>. The
      * implementation of this method may also perform further security checks
      * to verify that the calling context has permission to connect to all of
-     * the URLs in the codebase URL path.
+     * the URLs in the annotation URL path.
      * </p>
      *
-     * @param codebase the list of URLs (space-separated) from which the
+     * @param annotation the list of URLs (space-separated) from which the
      *        returned class loader will load classes from, or
      *        <code>null</code>
      *
-     * @return a class loader that loads classes from the given codebase URL
+     * @return a class loader that loads classes from the given annotation URL
      *         path
      *
-     * @throws MalformedURLException if <code>codebase</code> is
+     * @throws MalformedURLException if <code>annotation</code> is
      *         non-<code>null</code> and contains an invalid URL, or if
-     *         <code>codebase</code> is <code>null</code> and the system
-     *         property <code>java.rmi.server.codebase</code> contains an
+     *         <code>annotation</code> is <code>null</code> and the system
+     *         property <code>java.rmi.server.annotation</code> contains an
      *         invalid URL
      */
-    public ClassLoader getClassLoader(String codebase)
+    public ClassLoader getClassLoader(String annotation)
         throws MalformedURLException { // SecurityException
 
-        ClassLoader result = defaultProviderInstance.getClassLoader(codebase);
+//        ClassLoader result = defaultProviderInstance.getClassLoader(annotation);
+        ClassLoader result = ClassLoaderRegistry.getClassLoaderForAnnotation(annotation);
 
         if (debug != null) {
-            debug.println("getClassLoader:#1 codebase=" + codebase);
+            debug.println("getClassLoader:#1 annotation=" + annotation);
         }
 
         quickRejectObject(result);
 
         if (debug != null) {
-            debug.println("getClassLoader:#2 codebase=" + codebase);
+            debug.println("getClassLoader:#2 annotation=" + annotation);
         }
 
         return result;
@@ -213,7 +225,8 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      *         marshalled, or <code>null</code>
      */
     public String getClassAnnotation(Class cl) {
-        return defaultProviderInstance.getClassAnnotation(cl);        
+//        return defaultProviderInstance.getClassAnnotation(cl);
+        return ClassLoaderRegistry.getAnnotationForClass(cl);
     }
 
     /**

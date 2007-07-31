@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.net.URL;
 
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
+import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
 
 
 /**
@@ -236,5 +237,6 @@ public class SFSecurity {
         securityEnv = null;
         realRMIRegistry = null;
         SecureRemoteObject.cleanShutdown();
+        ClassLoaderRegistry.cleanShutdown();
     }
 }
