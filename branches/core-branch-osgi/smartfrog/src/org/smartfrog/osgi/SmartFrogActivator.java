@@ -95,8 +95,8 @@ public class SmartFrogActivator {
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
         
         String policyURL = bundle.getResource("sf.no.security.policy").toString();
-        // TODO
-        //System.out.println(policyURL);
+        System.out.println(policyURL);
+        // TODO: This fails doing an infinite recursion. I suppose you can only set that property on the command line. Too bad.
         //System.setProperty("java.security.policy", policyURL);
     }
 
