@@ -11,7 +11,7 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   <property name="ibiblio-maven2-root"
-      value="http://www.ibiblio.org/maven2/" override="false"/>
+      value="http://mirrors.sunsite.dk/maven2/" override="false"/>
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]"/>
   <property name="maven2.pattern.ext"
@@ -26,8 +26,8 @@
       <ivy pattern="${ivy.conf.dir}/repository/${maven2.pattern}.xml"/>
     </filesystem>
       <filesystem name="team2">
-          <artifact pattern="${ivy.conf.dir}/../antbuild/repository/${maven2.pattern.ext}"/>
-          <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
+          <artifact pattern="antbuild/repository/${maven2.pattern.ext}"/>
+          <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.pom"/>
       </filesystem>
     <ibiblio name="maven2"
         root="${ibiblio-maven2-root}"
