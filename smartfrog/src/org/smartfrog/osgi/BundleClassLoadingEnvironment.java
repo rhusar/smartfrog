@@ -6,7 +6,6 @@ import org.osgi.framework.BundleException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -16,8 +15,7 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
     private ClassLoader bundleClassLoaderProxy = null;
-    private AnnotatedClassLoader loader = null;
-
+    
     public BundleClassLoadingEnvironment() throws RemoteException {}
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -42,8 +40,6 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
                 return hostBundle.getResource(name);
             }
         };
-
-        loader = new AnnotatedClassLoader(bundleClassLoaderProxy, sfCompleteNameSafe().toString());
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -72,7 +68,7 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
      * Returns a wrapper class loader that delagates to this bundle.
      * @return
      */
-    public AnnotatedClassLoader getClassLoader() {
-        return loader;
+    public ClassLoader getClassLoader() {
+        return bundleClassLoaderProxy;
     }
 }

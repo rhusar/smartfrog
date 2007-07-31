@@ -7,7 +7,7 @@ sfConfig extends Compound {
         sfProcessComponentName "envTarget";
 
         clEnvTest extends OSGiBundle {
-            location "http://dhcp-168-86/~olivier/sf-test-bundle-3.11.003dev.jar";
+            location "http://dhcp-168-86/~olivier/sf-test-bundle-3.11.006dev.jar";
         }
 
         deployerTest extends PrimProcessDeployer;
