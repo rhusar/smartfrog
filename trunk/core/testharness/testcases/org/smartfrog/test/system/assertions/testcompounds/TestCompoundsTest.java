@@ -43,7 +43,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
     public void testFailure() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testFailure");
+        TerminationRecord record = deployToNormalTermination("testFailure");
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
@@ -76,6 +76,6 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     public void testSmartFrogException() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testSmartFrogException");
-        assertTerminationRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
+        assertTerminationRecordContains(record, null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
     }
 }

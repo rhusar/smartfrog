@@ -23,9 +23,7 @@ For more information: www.smartfrog.org
 /**
  * This is a big test run
  */
-sfConfig extends ExpectTerminate {
+sfConfig extends testRun {
     sfShouldTerminate false;
-
-    action extends Sequence {
-    }
 }
+ 

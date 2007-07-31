@@ -20,12 +20,6 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeployFailure {
-    sfShouldTerminate false;
-
-    description "the inner test looks for the wrong message";
-    action extends FailAbnormal {
-        message "failure message";
-    }
-    exitText "wrong message";
+sfConfig extends testFailureWrongMessage{
+  sfShouldTerminate false;
 }

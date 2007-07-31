@@ -20,8 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeploy {
-    sfShouldTerminate false;
-    action extends Compound {
-    }
+
+sfConfig extends testEmptyCompound {
+        sfShouldTerminate false;
 }

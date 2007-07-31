@@ -20,14 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectDeployFailure {
 
-  description "This test is expected to fail with an exception";
+sfConfig extends testSmartFrogException {
   sfShouldTerminate false;
-  
-  action extends SmartFrogException {
-      message "SFE";
-  }
-    //the exception that we expect to catch 
-  exceptions [["SmartFrogException","SFE"]];
 }
