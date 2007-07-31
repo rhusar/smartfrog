@@ -61,7 +61,7 @@ For more information: www.smartfrog.org
 <center>
     <div align="center" style="width: 95%;">
         <script language="JavaScript" type="text/javascript">
-            oneVoiceWritePageMenu("Host", "header",
+            oneVoiceWritePageMenu("HostList", "header",
                     "Add a host",
                     "javascript:window.location.href='host_setup_bs.jsp'"
                     );

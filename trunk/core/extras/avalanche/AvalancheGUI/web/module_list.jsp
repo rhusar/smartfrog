@@ -134,7 +134,7 @@ For more information: www.smartfrog.org
 
             <div align="center" style="width: 95%;">
                 <script>
-                    oneVoiceWritePageMenu("ListModules", "header");
+                    oneVoiceWritePageMenu("ModulesList", "header");
                 </script>
             </div>
 
@@ -202,7 +202,7 @@ For more information: www.smartfrog.org
 
             <div align="center" style="width: 95%;">
                 <script>
-                    oneVoiceWritePageMenu("ListModules", "footer",
+                    oneVoiceWritePageMenu("ModulesList", "footer",
                             "Delete selected modules",
                             "javascript:deleteModule()",
                             "Add a module",
