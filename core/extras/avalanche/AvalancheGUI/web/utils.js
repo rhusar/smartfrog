@@ -189,17 +189,17 @@ function doHelp(pageId) {
             dontHelp();
             return;
         }
+        getHelp(pageId);
        obj.style.display = "";
         obj.innerHTML = " \
-<div align='left'> \
-<center><b>Help for Page \"" + pageId + "\"</b></center> \
-This page allows you to... \
+<div id=\"helptext\" align=\"left\"> \
+</div> \
 <br/> \
 <center> \
-<input type='button' value='Close Help' onClick='javascript:dontHelp()' \
-	style='font-size: 9pt;'> \
+<input type=\"button\" value=\"Close Help\" onClick=\"javascript:dontHelp()\" \
+	style=\"font-size: 9pt;\"> \
 </center> \
-    ";
+";
     }        
 }
 

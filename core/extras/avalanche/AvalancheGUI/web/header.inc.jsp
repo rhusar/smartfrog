@@ -37,7 +37,9 @@ For more information: www.smartfrog.org
     <link rel="stylesheet" type="text/css" href="onevoice/css/blue_theme.css" />
 
     <script language="JavaScript" type="text/javascript" src="navigation.js"></script>
+    <script language="JavaScript" type="text/javascript" src="ajax.js"></script>
     <script language="JavaScript" type="text/javascript" src="utils.js"></script>
+
     <script language="JavaScript" type="text/javascript" src="onevoice/js/tableManager.js"></script>
     <script language="JavaScript" type="text/javascript" src="onevoice/js/buttonManager.js"></script>
     <script language="JavaScript" type="text/javascript" src="onevoice/js/dropdownMenuManager.js"></script>
