@@ -12,9 +12,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.security.rmispi.AnnotatedClassLoader;
 
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * Implements the sfCodebase-aware component creation, as currently documented.
@@ -95,7 +95,7 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
         return SFClassLoader.getResourceAsStream(pathname);
     }
 
-    public ClassLoader getRealClassLoader() {
+    public AnnotatedClassLoader getClassLoader() {
         throw new UnsupportedOperationException();
     }
 }
