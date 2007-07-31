@@ -41,7 +41,7 @@ import java.rmi.RemoteException;
 /**
  * Runner of test children.
  *
- * This compound sends lifeecycle events to any listener, and it sends a TestCompletedEvent for every child that completes
+ * This compound sends lifecycle events to any listener, and it sends a TestCompletedEvent for every child that completes
  *
  * created 22-Sep-2006 16:43:35
  */
@@ -50,7 +50,7 @@ public class TestCompoundImpl extends ConditionCompound
         implements TestCompound {
     private ComponentDescription waitForCD;
     private ComponentDescription tests;
-    private Prim waitFor,testsPrim;
+    private Prim testsPrim;
 
     protected static final String ACTION_RUNNING = ATTR_ACTION;
     protected static final String TESTS_RUNNING = ATTR_TESTS;
@@ -121,11 +121,16 @@ public class TestCompoundImpl extends ConditionCompound
         //then decide whether to run or not.
 
         if (getCondition() !=null && !evaluate()) {
-            skipped=true;
+            sendEvent(new TestStartedEvent(this, null));
+            skipped = true;
+            updateFlags(false);
             sfLog().info("Skipping test run " + name);
+            //send a test started event
+            //followed by a the closing results
+            endTestRun(null);
             //initiate cleanup
             finish();
-            //end do not deploy anything else
+            //end: do not deploy anything else
             return;
         }
 
@@ -171,20 +176,30 @@ public class TestCompoundImpl extends ConditionCompound
         //did we catch something during deployment?
         if (exception!=null) {
             //get the message and check it against expections
+            TerminationRecord record;
             String message= exception.getMessage();
             if(message==null) {
                 message="";
             }
             if (message.indexOf(exitText) < 0) {
+                //an exit code of an unknown type?
+                record = TerminationRecord.abnormal(UNEXPECTED_STARTUP_EXCEPTION,getName(), exception);
+                setStatus(record);
+                actionTerminationRecord = record;
+                updateFlags(false);
+                endTestRun(record);
+                //then throw an exception
                 throw new SmartFrogException(UNEXPECTED_STARTUP_EXCEPTION
                         +"expected: '"+exitText+"'\n"
                         +"found   : '"+message+"'\n",
                         exception);
             }
-            //valid exit. trigger undeploy
-            TerminationRecord record= TerminationRecord.normal(EXIT_EXPECTED_STARTUP_EXCEPTION,
+            //valid exit. Save the results, then
+            record = TerminationRecord.normal(EXIT_EXPECTED_STARTUP_EXCEPTION,
                     getName(),exception);
-            finished(true);
+            setStatus(record);
+            actionTerminationRecord=record;
+            updateFlags(true);
             endTestRun(record);
             //and optionally end the component
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
@@ -199,7 +214,6 @@ public class TestCompoundImpl extends ConditionCompound
 
 
             //now deploy the tests.
-            //any failure in tests is something to report, as is any failure of the tests to finish.
             startTests();
         }
 
@@ -213,8 +227,8 @@ public class TestCompoundImpl extends ConditionCompound
     private void startTests() throws RemoteException, SmartFrogDeploymentException {
         if(tests !=null) {
             testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
-            //the test terminator reports a termination as a failure
             sendEvent(new TestStartedEvent(this, testsPrim));
+            //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
                     FORCED_TERMINATION,
                     false);
@@ -385,7 +399,7 @@ public class TestCompoundImpl extends ConditionCompound
                 //whereas a child status implies success
                 setStatus(childStatus);
             }
-            finished(exitRecord==null);
+            updateFlags(exitRecord==null);
         }
         try {
             endTestRun(getStatus());
@@ -492,7 +506,7 @@ public class TestCompoundImpl extends ConditionCompound
      * update finished and succeeded/failed flags when we finish
      * @param success flag to indicated whether we considered the run a success
      */
-    protected void finished(boolean success) {
+    protected synchronized void updateFlags(boolean success) {
         succeeded=success;
         failed=!success;
         finished=true;
