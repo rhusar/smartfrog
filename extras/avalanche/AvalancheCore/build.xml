@@ -73,11 +73,6 @@
     <mkdir dir="${build.classes.dir}"/>
   </target>
 
-  <target name="clean" depends="init">
-    <delete dir="${build.classes.dir}"/>
-    <delete dir="${dist.dir}"/>
-  </target>
-
 
   <target name="declare-xmlbean" depends="ivy-resolve,init">
     <ivy:cachepath pathid="xbean.class.path" conf="xbean"
@@ -187,7 +182,7 @@
 
   <target name="sfXMPPClient" depends="ready-to-jar">
     <jar jarfile="${dist.dir}/lib/client/sfXmppClient.jar" basedir="${build.classes.dir}"
-        includes="**/client/monitor/xmpp/**"/>
+        includes="**/client/monitor/xmpp/**,**/shared/xmpp/**"/>
   </target>
 
   <target name="shared" depends="ready-to-jar">

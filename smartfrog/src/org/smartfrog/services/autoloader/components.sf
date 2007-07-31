@@ -4,9 +4,10 @@ Autoloader extends Prim {
     sfClass "org.smartfrog.services.autoloader.Autoloader";
 
     // here are the default parameters
-    //language "sf";
-    //matches  "\\w+";
-    //URLPrefix "";
-    //URLPostfix "";
-    //validLoads;
+    language "sf";
+    matches  "\\w+";
+    URLPrefix "";
+    URLPostfix "";
+    //vector of allowed parts
+    //validLoads [];
 }

@@ -50,7 +50,7 @@ For more information: www.smartfrog.org
  * it can be linked to something else that is changing
  */
 
-Value extends Conditional {
+Value extends ConditionPrim {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.BooleanValue";
   value TBD;
 }
@@ -69,7 +69,7 @@ False extends Value {
  * the specified amount of time. It is useful in an And statement in which a test
  * should be delayed until a certain period of time has expired.
  */
-RunningFor extends Conditional {
+RunningFor extends ConditionPrim {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.RunningForImpl";
   days 0;
   hours 0;
@@ -79,45 +79,9 @@ RunningFor extends Conditional {
 }
 
 /**
- * templates that are targeted at another component
+ * template for any two-argument condition
  */
-/*TargetedCondition extends Prim {
-  targetedConditionSchema extends Schema {
-    target CD;
-  }
-
-}*/
-
-/*
-Resolves extends TargetedCondition {
-  target TBD;
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.Resolves"
-}
-*/
-/*
-
-InState extends TargetedCondition {
-  states [];
-  state_running "running";
-  state_undeployed "undeployed";
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.InState"
-}
-*/
-/*
-
-IsRunning extends InState {
-  states [state_running];
-}
-*/
-
-/**
- * Pings a component; returns true if it is alive
- */
-/*IsAlive extends TargetedCondition {
-  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsAlive";
-}*/
-
-TwoArgumentCondition extends Conditional {
+TwoArgumentCondition extends ConditionPrim {
   left TBD;
   right TBD;
 }
@@ -142,21 +106,14 @@ StringEquals extends TwoArgumentCondition {
 }
 
 
-/*
-LessThan extends TwoArgumentCondition {
-  sfClass "";
+IsPropertySet extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsPropertySet";
+  schema extends Schema {
+    //a string that has the name of the property
+    property extends String;
+  }
 }
-*/
 
-/**
- * Test that the string on the left contains the string on the right.
- * Both arguments have toString() called first
- */
-/*
-Contains extends TwoArgumentCondition {
-  sfClass "";
-}
-*/
 
 /**
  * Not evaluates true if its nested condition evaluates to false

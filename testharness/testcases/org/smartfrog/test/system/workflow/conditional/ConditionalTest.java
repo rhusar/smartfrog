@@ -20,14 +20,15 @@
 package org.smartfrog.test.system.workflow.conditional;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.test.system.workflow.delay.DelayTest;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * test delays
  */
 public class ConditionalTest extends DeployingTestBase {
+
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
     private static final String WAITFOR_FAILED = "waitfor failed";
 
@@ -35,33 +36,27 @@ public class ConditionalTest extends DeployingTestBase {
         super(s);
     }
 
+    public void testParseConditionFile() throws Throwable {
+        runTestsToCompletion(FILES,"testParseConditionFile");
+    }
+
     public void testPassingIf() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testPassingIf.sf", "testPassingIf");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testPassingIf");
     }
 
     public void testPassingWaitFor() throws Throwable {
-        application=deployExpectingSuccess(FILES +"testPassingWaitFor.sf","testPassingWaitFor");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testPassingWaitFor");
     }
 
     public void testOneWaitFor() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testOneWaitFor.sf", "testOneWaitFor");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testOneWaitFor");
     }
 
     public void testOneIf() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testOneIf.sf", "testOneIf");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testOneIf");
     }
 
     public void testFailingWaitFor() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingWaitFor.sf", "testFailingWaitFor");
-       // expectSuccessfulTermination((TestBlock) application);
-        TerminationRecord tr = expectAbnormalTermination((TestBlock) application);
-        assertNotNull("no description in "+tr,tr);
-        String description = tr.description;
-        assertTrue("No "+WAITFOR_FAILED+" in "+tr,
-                description.indexOf(WAITFOR_FAILED)>=0);
+        expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
     }
 }

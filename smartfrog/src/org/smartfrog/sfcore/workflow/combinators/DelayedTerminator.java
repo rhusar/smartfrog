@@ -46,6 +46,7 @@ public class DelayedTerminator implements Runnable {
     private volatile boolean normalTermination;
     private volatile boolean forcedShutdown;
     private String name;
+    public static final String TERMINATION_BY_DELAYED_TERMINATOR = "termination by delayed terminator";
 
 
     /**
@@ -187,7 +188,7 @@ public class DelayedTerminator implements Runnable {
         Reference ref = new ComponentHelper(target).completeNameSafe();
         TerminationRecord record = new TerminationRecord(
                 normalTermination ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                "termination by delayed terminator",
+                TERMINATION_BY_DELAYED_TERMINATOR,
                 ref);
         return record;
     }

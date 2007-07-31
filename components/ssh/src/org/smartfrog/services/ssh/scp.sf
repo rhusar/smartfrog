@@ -26,35 +26,34 @@ For more information: www.smartfrog.org
  * files over SSH..
  */
 
- ScpSchema extends Schema {
- 	host extends String;
- 	username extends String;
-   	localFiles extends Vector;
-        remoteFiles extends Vector;
- 	transferType extends String;
 
+ ScpSchema extends SshSchema {
+   	localFiles extends Vector;
+    remoteFiles extends Vector;
+ 	transferType extends String;
  }
 
  ScpSchemaAuthPubKey extends ScpSchema {
 	  keyfile extends String;  	
   }
 
-ScpSessionAuthPass extends Compound {
+BaseScpSessionAuthPass extends SshCompound {
 
     /*---------------------------Optional Parameters -----------------------*/
-    port 22;
-    shouldTerminate true;
+
     /*---------------------Component's Definition --------------------------*/ 
  
-    PasswordProvider extends Password {
-        //passwordFile PARENT:ATTRIB passwordFile;
-    }
+    PasswordProvider TBD;
+
     SCP extends Prim {
-        sfClass "org.smartfrog.services.ssh.ScpAuthPassImpl";
+      sfClass "org.smartfrog.services.ssh.ScpAuthPassImpl";
       scpSchema extends ScpSchema;
 
+      timeout PARENT:ATTRIB timeout;
+      port PARENT:ATTRIB port;
+      shouldTerminate PARENT:ATTRIB shouldTerminate;
         // reference to password provider
-        passwordProvider LAZY PARENT:PasswordProvider;
+      passwordProvider LAZY PARENT:PasswordProvider;
         /* ========================================================
          * Optional attributes 
          *=========================================================
@@ -62,27 +61,50 @@ ScpSessionAuthPass extends Compound {
          // two possible values are "get" and "put" 
        // transferType PARENT:ATTRIB transferType;
 
-        shouldTerminate PARENT:ATTRIB shouldTerminate;
+
+    }
+}
+
+/**
+ * this scp session uses a file password relative to the
+ * current directory of the process
+ */
+
+ScpSessionAuthPass extends BaseScpSessionAuthPass {
+
+    PasswordProvider extends FilePassword {
+    }
+}
+
+/**
+ * This SCP session uses an inline password
+ */
+ScpSessionInlinePassword extends BaseScpSessionAuthPass {
+    password TBD;
+    PasswordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
     }
 }
 
 
-ScpSessionAuthPubKey extends Compound {
+ScpSessionAuthPubKey extends SshCompound {
 
     /*---------------------------Optional Parameters -----------------------*/
-    port 22;
-    shouldTerminate true;
+
     /*---------------------Component's Definition --------------------------*/ 
  
-    PasswordProvider extends Password {
+    PasswordProvider extends FilePassword {
         //passwordFile PARENT:ATTRIB passwordFile;
     }
-    SCP extends Prim {
-        sfClass "org.smartfrog.services.ssh.ScpAuthPubKeyImpl";
-      scpSchema extends ScpSchemaAuthPubKey;
 
+    SCP extends Prim {
+      sfClass "org.smartfrog.services.ssh.ScpAuthPubKeyImpl";
+      scpSchema extends ScpSchemaAuthPubKey;
+      timeout PARENT:ATTRIB timeout;
+      port PARENT:ATTRIB port;
+      shouldTerminate PARENT:ATTRIB shouldTerminate;
         // reference to password provider
-        passwordProvider LAZY PARENT:PasswordProvider;
+      passwordProvider LAZY PARENT:PasswordProvider;
         /* ========================================================
          * Optional attributes 
          *=========================================================
@@ -90,6 +112,6 @@ ScpSessionAuthPubKey extends Compound {
          // two possible values are "get" and "put" 
        // transferType PARENT:ATTRIB transferType;
 
-        shouldTerminate PARENT:ATTRIB shouldTerminate;
+      shouldTerminate PARENT:ATTRIB shouldTerminate;
     }
 }

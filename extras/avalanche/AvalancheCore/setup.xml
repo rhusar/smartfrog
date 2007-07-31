@@ -36,8 +36,10 @@
 
 
   <!-- override point -->
-  <property environment="env"/>
+
+  <property file="build.properties"/>
   <property file="setup.properties"/>
+  <property environment="env"/>
   <property name="tomcat.home" value="${env.TOMCAT_HOME}" />
   <property name="xmpp.home" value="${env.XMPP_HOME}" />
   <property name="avalanche.root" location=".."/>
@@ -144,13 +146,13 @@
 		
 		<!--Copy Avalanche server jars to Avalanche SmartFrog dist dir-->
 		<copy todir="${avalanche.home}/smartfrog/dist/lib">
-			<fileset dir="dist/lib" includes="*.jar"/>
+			<fileset dir="dist/lib" includes="**/*.jar"/>
 		</copy>
 		
 		<!--Copy Dependent jars to Avalanche SmartFrog dist dir-->
-		<copy todir="${avalanche.home}/smartfrog/dist/lib">
+<!--		<copy todir="${avalanche.home}/smartfrog/dist/lib">
 			<fileset dir="lib" includes="*.jar"/>
-		</copy>
+		</copy>-->
 
     <copy todir="${avalanche.home}/smartfrog/dist/lib">
       <fileset dir="${dist.dependencies.dir}" includes="*.jar"/>
@@ -199,6 +201,30 @@
     <copy file="boot/smartfrog/dist/lib/log4j.properties" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
     <copy file="boot/smartfrog/dist/lib/log4j.xml" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
     <copy file="lib/smackx.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+
+    <copy todir="${avalanche.home}/temp/smartfrog/dist/lib" >
+      <fileset dir="${dist.dependencies.dir}" >
+        <include name="commons-logging*.jar" />
+        <include name="smack*.jar" />
+        <include name="smackx*.jar" />
+        <include name="xercesImpl*.jar" />
+        <include name="xml-apis*.jar" />
+        <include name="sf-quartz*.jar" />
+        <include name="ant*.jar" />
+        <include name="ant-launcher*.jar" />
+      </fileset>
+    </copy>
+
+    <copy file="dist/lib/client/sfXmppClient.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="dist/lib/shared.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+<!--		<copy file="${dist.dependencies.dir}/commons-logging*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/smack*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/smackx*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/xercesImpl*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/xml-apis*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/sf-quartz*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/ant*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+		<copy file="${dist.dependencies.dir}/ant-launcher*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>-->
 
     <copy file="boot/smartfrog/dist/bin/sfDaemon" todir="${avalanche.home}/temp/smartfrog/dist/bin"
         overwrite="true"/>

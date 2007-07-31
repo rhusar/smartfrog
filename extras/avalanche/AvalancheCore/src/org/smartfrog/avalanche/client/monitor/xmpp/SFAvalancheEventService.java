@@ -15,11 +15,11 @@ import org.jivesoftware.smack.XMPPException;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -37,11 +37,10 @@ import java.util.Calendar;
 public class SFAvalancheEventService extends PrimImpl implements Prim {
 	
 	private String xmppServer ;
-	private int xmppServerPort = 5223;
-	private String xmppPassword ; 
+	private int xmppServerPort = XMPPAdapter.default_xmpp_port;
 	private boolean useSSL = true;
 	private String xmppListenerUserId ;
-	private XMPPAdapter adapter ; 
+	private XMPPAdapter adapter ;
 	
 	public SFAvalancheEventService() throws RemoteException {
 		super();
@@ -53,15 +52,15 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 	 */
 	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 		super.sfDeploy();
-		
-		adapter = new XMPPAdapter(useSSL);
-		// check system properties
+
+        // check system properties
 		xmppServer = System.getProperty("AVALANCHE_EVENT_SERVER");
 		String p = System.getProperty("AVALANCHE_EVENT_SERVER_PORT");
-		if( null == xmppServer ){
+
+        if( null == xmppServer ){
 			throw new SmartFrogException("Avalanche server name not specified"); 
 		}
-		adapter.setXmppServer(xmppServer);
+        adapter = new XMPPAdapter(xmppServer, useSSL);
 		
 		if( null != p ){
 			xmppServerPort = Integer.parseInt(p);
@@ -73,12 +72,11 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 
 		// xmpp username is ip address of host 
 		try{
-			String userName = InetAddress.getLocalHost().getHostName();
-			adapter.setXmppUserName(userName);
+			String userName = InetAddress.getLocalHost().getHostName().toLowerCase();
 			//TODO: currently uname and pwd are same for sending events
 			// change it 
-			xmppPassword = userName; 
-			adapter.setXmppPassword(xmppPassword);
+			adapter.setXmppUserName(userName);
+			adapter.setXmppPassword(userName);
 		}catch(UnknownHostException e){
 			// should never happen. 
 			throw new SmartFrogException(e);
@@ -87,10 +85,11 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 		try{
 			sfLog().info("Starting XMPP Client Adapter, server = " + xmppServer 
 					+ " this host = " + adapter.getXmppUserName());
-			adapter.init();
-			
-			
-			// send an event to server allowing to subscribe for Roter notification. 
+
+            adapter.init();
+            adapter.login();
+
+            // send an event to server allowing to subscribe for Roter notification.
 			MonitoringEvent event = new MonitoringEventDefaultImpl();
 			event.setHost(InetAddress.getLocalHost().getHostName());
 			event.setInstanceName("None");

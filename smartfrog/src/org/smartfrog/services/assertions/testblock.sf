@@ -32,10 +32,12 @@ TestBlock extends ActionCompound {
 
   sfClass "org.smartfrog.services.assertions.TestBlockImpl";
   //timeout in milliseconds
-  timeout 0;
+  timeout 60000;
   //should timeout be expected?
   expectTimeout false;
 
+  action extends Compound;
+  
   //finished: boolean
   //status -> exit status
   //failed: boolean

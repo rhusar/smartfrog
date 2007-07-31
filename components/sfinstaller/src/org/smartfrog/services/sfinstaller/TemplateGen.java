@@ -222,6 +222,8 @@ public class TemplateGen {
             tempEmailServer = getWord(st);
             allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
         }
+
+        r.close();
     }
 
 
@@ -264,12 +266,17 @@ public class TemplateGen {
         }
         template = Velocity.getTemplate(temp);
         //  template = Velocity.getTemplate(templateFileName.toString());
-        BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(out));
-        if (template != null)
-            template.merge(context, writer);
-        writer.flush();
-        writer.close();
+        BufferedWriter writer=null;
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(out));
+            if (template != null)
+                template.merge(context, writer);
+            writer.flush();
+        } finally {
+            if(writer!=null) {
+                writer.close();
+            }
+        }
     }
 
 

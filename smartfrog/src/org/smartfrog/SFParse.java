@@ -152,7 +152,7 @@ public class SFParse implements MessageKeys {
 
             parseTime=System.currentTimeMillis()-parseTime;
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
-            report .add(", parsed in "+ (parseTime) + " millisecs.");
+            report.add(", parsed in "+ (parseTime) + " millisecs.");
 
         } catch (Exception e) {
             //report.add("Error: "+ e.getMessage());

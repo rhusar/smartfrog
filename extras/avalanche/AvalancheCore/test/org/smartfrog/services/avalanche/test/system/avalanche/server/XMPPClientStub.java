@@ -11,14 +11,14 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server;
 
-import org.smartfrog.avalanche.client.monitor.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 
-
+// TODO: Test Settings _OBSOLETE_!
 public class XMPPClientStub {
-	XMPPAdapter adapter = new XMPPAdapter(true);
+	XMPPAdapter adapter = new XMPPAdapter(null, true);
 	String hostId = "192.168.1.102" ;
 	
 	public void run() throws Exception{

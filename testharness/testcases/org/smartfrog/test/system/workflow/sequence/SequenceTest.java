@@ -22,8 +22,7 @@
 package org.smartfrog.test.system.workflow.sequence;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
@@ -37,39 +36,21 @@ public class SequenceTest extends DeployingTestBase {
         super(s);
     }
     public void testSequence() throws Throwable {
-        application=deployExpectingSuccess(FILES+"testSequence.sf","testSequence");
-        TestBlock block=(TestBlock)application;
-        expectSuccessfulTermination(block);
+        expectSuccessfulTestRun(FILES, "testSequence");
         assertAttributeEquals(application, "value", true);
     }
 
     public void testEmptySequence() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testEmptySequence.sf", "testEmptySequence");
-        TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        expectSuccessfulTestRun(FILES, "testEmptySequence");
     }
 
     public void testFailingSequence() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingSequence.sf", "testFailingSequence");
-        TestBlock block = (TestBlock) application;
-        TerminationRecord record = expectAbnormalTermination(block);
-        assertContains(record.description, "mid-sequence");
+        expectAbnormalTestRun(FILES, "testFailingSequence2", true, "mid-sequence");
     }
 
     public void testFailingSequence2() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingSequence2.sf",
-                "testFailingSequence2");
-        TestBlock block = (TestBlock) application;
-        TerminationRecord record = expectAbnormalTermination(block);
-        assertContains(record.description, "mid-sequence");
+        expectAbnormalTestRun(FILES, "testFailingSequence2", true, "mid-sequence");
         assertAttributeEquals(application, "value", true);
     }
-
-    public void testHistorySequence() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testHistorySequence.sf", "testHistorySequence");
-        TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
-    }
-
 
 }

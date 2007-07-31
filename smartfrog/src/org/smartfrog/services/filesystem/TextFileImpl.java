@@ -21,11 +21,6 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.io.File;
 import java.rmi.RemoteException;
 
@@ -58,22 +53,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
         String encoding = null;
         if (text != null) {
             encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
-            Writer wout=null;
-            File file = getFile();
-            assert file!=null;
-            try {
-                OutputStream fout;
-                fout = new FileOutputStream(file);
-                wout = new OutputStreamWriter(fout, encoding);
-                wout.write(text);
-                wout.flush();
-                wout.close();
-            } catch (IOException ioe) {
-                FileSystem.close(wout);
-                throw SmartFrogException.forward("When trying to write to " +
-                        file,
-                        ioe);
-            }
+            FileSystem.writeTextFile(getFile(), text, encoding);
         }
         //call the superclass. this may trigger deletion.
         super.sfStart();

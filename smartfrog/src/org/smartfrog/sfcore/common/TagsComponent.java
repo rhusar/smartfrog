@@ -13,57 +13,57 @@ public interface TagsComponent {
     * with each attribute.
     *
     * @param tags a set of tags
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    *
+    * @throws SmartFrogException the attribute does not exist;
     */
-   public void sfSetTags( Set tags) throws SmartFrogRuntimeException;
+   public void sfSetTags( Set tags) throws SmartFrogContextException;
 
    /**
     * Get the TAGS for this component. TAGS are simply uninterpreted strings associated
     * with each attribute.
     *
     * @return the set of tags
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    *
+    * @throws SmartFrogException the attribute does not exist;
     */
-   public Set sfGetTags() throws SmartFrogRuntimeException;
+   public Set sfGetTags() throws SmartFrogContextException;
 
    /**
     * add a tag to the tag set of this component
     *
     * @param tag a tag to add to the set
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    *
+    * @throws SmartFrogContextException the attribute does not exist;
     */
-   public void sfAddTag( String tag) throws SmartFrogRuntimeException;
+   public void sfAddTag( String tag) throws SmartFrogContextException;
 
    /**
     * remove a tag from the tag set of this component if it exists
     *
     * @param tag a tag to remove from the set
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    *
+    * @throws SmartFrogException the attribute does not exist;
     *
     */
-   public void sfRemoveTag( String tag) throws SmartFrogRuntimeException;
+   public void sfRemoveTag( String tag) throws SmartFrogContextException;
 
    /**
     * add a tag to the tag set of this component
     *
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    * @throws SmartFrogException
+    *          the attribute does not exist;
     */
-   public void sfAddTags( Set tags) throws SmartFrogRuntimeException;
+   public void sfAddTags( Set tags) throws SmartFrogContextException;
 
    /**
     * remove a tag from the tag set of this component if it exists
     *
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    * @throws SmartFrogException
+    *          the attribute does not exist;
     */
-   public void sfRemoveTags( Set tags)  throws SmartFrogRuntimeException;
+   public void sfRemoveTags( Set tags)  throws SmartFrogContextException;
 
    /**
     * Return whether or not a tag is in the list of tags for this component
@@ -71,8 +71,7 @@ public interface TagsComponent {
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
+    * @throws SmartFrogException the attribute does not exist
     */
-   public boolean sfContainsTag( String tag) throws SmartFrogRuntimeException;
+   public boolean sfContainsTag( String tag) throws SmartFrogContextException;
 }

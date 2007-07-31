@@ -26,20 +26,15 @@ export DISPLAY
 ProgName="SmartFrog Daemon"
 ProgDir="$$SFHOME/bin"
 ProgBin="sfDaemon"
-Filename="hpsmartfrog"
+Filename="smartfrogd"
 LockFile="/var/lock/subsys/$$ProgBin"
 RunFile=/var/run/$$ProgBin.pid
-ProgStop="sfStopDaemon localhost"
+ProgStop="smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit"
 ProgLog="${rpm.log.dir}/$$Filename.log"
 
 test -x $$ProgDir/$$ProgBin || exit 0
 
-#if [ ! -d $$SFHOME/log ]
-#then
-#mkdir $$SFHOME/log
-#fi
 
-      
 # Change the major init functions into our functions.
 start() {     
 
@@ -91,8 +86,8 @@ case "$$1" in
 	stop
 	;;
   status)
-	#$$ProgDir/$$ProgBin -status
-	status $$ProgDir/$$ProgBin
+	$$ProgDir/sfPing localhost
+#	status $$ProgDir/$$ProgBin
 	;;
   restart)
 	stop
