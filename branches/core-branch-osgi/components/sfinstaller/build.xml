@@ -31,6 +31,7 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="is.component" value="true"  />
+  <property name="ivy.enabled" value="true"  />
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>

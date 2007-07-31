@@ -22,12 +22,13 @@ import org.smartfrog.avalanche.core.host.HostType;
 public interface HostUpdateHandler {
 	/**
 	 * Invoked when a new Host is added. 
-	 * @param h
+	 * @param h is thte HostType object of the newly created host
 	 */
 	public void hostAdded(HostType h);
-	/**
+
+    /**
 	 * Invoked when a host is deleted from avalanche server. 
-	 * @param hostId
+	 * @param h is the HostType object of the host to be deleted
 	 */
-	public void hostDeleted(String hostId);
+	public void hostDeleted(HostType h);
 }

@@ -287,7 +287,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         try {
             submitTemplate(descriptionFile, attributes, host);
         } catch (Exception exp) {
-            status = "Deployment Failed with Exception" + exp.toString();
+            status = "Deployment Failed with Exception " + exp.toString();
         }
         resultSet.put("STATUS", status);
         return resultSet;
@@ -401,7 +401,9 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
             sfLog().info("Attribute Replacement Started\n");
             for (Iterator e = attributes.keySet().iterator(); e.hasNext();) {
                 Object key = e.next();
+                sfLog().info("key = " + key);
                 Object value = attributes.get(key);
+                sfLog().info("value = " + value);
                 //NOTE: I don't like to do the Reference conversion here. Ideally the conversion should be done in the Map objects.
                 Reference keyRef = Reference.fromString(key.toString());
                 sfLog().info("Attribute : KeyRef:" + keyRef.toString() + "  ; value:" + value.toString());

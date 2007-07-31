@@ -22,6 +22,7 @@ package org.smartfrog.test.system.workflow.parallel;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 
 /**
  * @author Ashish Awasthi
@@ -35,71 +36,36 @@ public class ParallelTest extends DeployingTestBase {
         super(s);
     }
 
-    public void setBlock(Prim prim) {
-        setBlock((TestBlock) prim);
-    }
 
-    public void setBlock(TestBlock block) {
-        this.block = block;
-    }
-
-    //FIXFIX: RACE CONDITION?
     public void testEmptyParallel() throws Throwable {
-        application=deployExpectingSuccess(FILES +"testEmptyParallel.sf","testEmptyParallel");
-        setBlock(application);
-        expectSuccessfulTermination(block);
+        expectTestTimeout(FILES, "testEmptyParallel");
         assertAttributeEquals(application, TestBlock.ATTR_FORCEDTIMEOUT, true);
     }
 
     public void testSimpleParallel() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testSimpleParallel.sf", "testSimpleParallel");
-        setBlock(application);
-        expectSuccesfulTermAndToggle();
+        expectSuccessfulTestRun(FILES, "testSimpleParallel");
+        assertAttributeEquals(application, "value", true);
     }
 
     public void testEmptyParallelTerminating() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testEmptyParallelTerminating.sf",
-                "testEmptyParallelTerminating");
-        block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        expectSuccessfulTestRun(FILES, "testEmptyParallelTerminating");
     }
 
     public void testStartFailingParallel() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallel.sf",
-                "testStartFailingParallel");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testStartFailingParallel",true,null);
     }
 
 
     public void testStartFailingParallelNoTerminate() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testStartFailingParallelNoTerminate.sf",
-                "testStartFailingParallelNoTerminate");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testStartFailingParallelNoTerminate", true, null);
     }
-
-
-    private void expectSuccesfulTermAndToggle() throws Throwable {
-        expectSuccessfulTermination(block);
-        assertAttributeEquals(application, "value", true);
-    }
-
-
-
-
 
     public void testFailingParallel() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallel.sf",
-                "testFailingParallel");
-        block = (TestBlock) application;
-        expectAbnormalTermination(block);
+        expectAbnormalTestRun(FILES, "testFailingParallel", true, null);
     }
 
     public void testFailingParallelNoChild() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailingParallelNoChild.sf",
-                "testFailingParallelNoChild");
-        setBlock(application);
-        expectSuccesfulTermAndToggle();
+        expectSuccessfulTestRun(FILES, "testFailingParallelNoChild");
+        assertAttributeEquals(application, "value", true);
     }
 }

@@ -146,7 +146,7 @@ public abstract class LifecycleEvent implements Serializable {
         buf.append(" alive: ");
         buf.append(Boolean.valueOf(isAlive()));
         if(getStatus()!=null) {
-            buf.append('\n');
+            buf.append("\nstatus: \n");
             buf.append(getStatus());
         }
         return buf.toString();

@@ -53,7 +53,7 @@ public class SmartFrogThread extends Thread {
 
     /**
      * Internal initialization
-     * @param target
+     * @param target what we want to run
      */
     private void init(Runnable target) {
         runnable = target;

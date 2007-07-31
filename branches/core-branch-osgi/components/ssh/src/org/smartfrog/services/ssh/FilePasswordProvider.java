@@ -42,7 +42,11 @@ public class FilePasswordProvider extends PrimImpl implements Prim,
     private String passwordFile = "";
     private String password = "";
     // attribute name for password file
-    private final String PASSWORD_FILE="passwordFile";
+
+    /**
+     * The attribute of the password file: "{@value}"
+     */
+    public final static String PASSWORD_FILE="passwordFile";
     
     /**
      * Constructs FilePasswordProvider object.

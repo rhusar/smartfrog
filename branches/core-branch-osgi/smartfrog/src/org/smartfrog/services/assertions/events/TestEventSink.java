@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.services.assertions.TestFailureException;
@@ -49,6 +50,9 @@ import java.util.Iterator;
  *
  * Currently this tool uses simple RMI to register itself. At some point it will need to switch to smartfrog
  * registration when running under a daemon, so that all the security kicks in.
+ *
+ * Important: be very careful with synchronisation here, because RMI calls come in on different threads.
+ * It is easy to deadlock, especially during teardown operations.
  */
 
 public class TestEventSink implements EventSink {
@@ -64,10 +68,11 @@ public class TestEventSink implements EventSink {
     /**
      * The source of events
      */
-    private EventRegistration source;
+    private volatile EventRegistration source;
+    private volatile RemoteStub remoteStub;
+
     public static final String ERROR_STARTUP_TIMEOUT = "Timeout waiting for the application to start";
     public static final String ERROR_TEST_RUN_TIMEOUT = "Timeout waiting for a test run to complete";
-    private RemoteStub remoteStub;
     private static final String ERROR_PREMATURE_TERMINATION = "Test component terminated before starting up";
 
 
@@ -79,7 +84,7 @@ public class TestEventSink implements EventSink {
 
     /**
      * Create and subscribe
-     * @param source
+     * @param source source of events
      * @throws RemoteException for network problems
      */
     public TestEventSink(EventRegistration source) throws RemoteException {
@@ -101,13 +106,16 @@ public class TestEventSink implements EventSink {
      * Unsubscribe from the current event source
      * @throws RemoteException for network problems
      * @return true if we unsubscribe
+     * This is not synchronised, to avoid cross-machine deadlocks.
      */
-    public synchronized boolean unsubscribe() throws RemoteException {
+    public boolean unsubscribe() throws RemoteException {
         boolean shouldUnexport=false;
         if(source!=null) {
-            source.deregister(this);
-            source=null;
+            EventRegistration registration;
+            registration = source;
+            source = null;
             remoteStub = null;
+            registration.deregister(this);
             shouldUnexport=true;
         }
         if(shouldUnexport) {
@@ -116,6 +124,7 @@ public class TestEventSink implements EventSink {
             return true;
         }
     }
+
 
     /**
      * Unsubscribe from the current event source
@@ -130,12 +139,27 @@ public class TestEventSink implements EventSink {
     }
 
     /**
+     * unsubscribe in a different thread
+     * @return the thread or null if we were already unsubscribed
+     */
+    public SmartFrogThread asyncUnsubscribe() {
+        if(!isListening()) {
+            return null;
+        }
+        SmartFrogThread thread = new SmartFrogThread(new AsyncUnsubscribe(this));
+        thread.start();
+        return thread;
+    }
+
+    /**
      * Subscribe to an event source
      * @param target what to subscribe to
      * @throws RemoteException for network problems
      */
-    public synchronized void subscribe(EventRegistration target) throws RemoteException {
-        unsubscribe();
+    private synchronized void subscribe(EventRegistration target) throws RemoteException {
+        if(source!=null) {
+            throw new IllegalStateException("Cannot subscribe more than once");
+        }
         remoteStub = UnicastRemoteObject.exportObject(this);
         setSource(target);
         if(target!=null) {
@@ -147,6 +171,10 @@ public class TestEventSink implements EventSink {
         return source;
     }
 
+
+    public boolean isListening() {
+        return source!=null;
+    }
     /**
      * Get the application/event source we are bonded to.
      * @return
@@ -314,5 +342,28 @@ public class TestEventSink implements EventSink {
             buffer.append('\n');
         }
         return buffer.toString();
+    }
+
+
+    /**
+     * A little source of asynchronous unsubscriptions...this is done to remove re-entrancy on
+     * unsub operations.
+     */
+    private static class AsyncUnsubscribe implements Runnable {
+
+        private TestEventSink owner;
+        RemoteException result;
+
+        public AsyncUnsubscribe(TestEventSink owner) {
+            this.owner = owner;
+        }
+
+        public void run() {
+            try {
+                owner.unsubscribe();
+            } catch (RemoteException e) {
+                result=e;
+            }
+        }
     }
 }

@@ -67,15 +67,14 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @return true if we are no longer listening -that is we werent listening, or we unsubscribed quietly
      */
     private synchronized boolean stopListening() {
-        boolean result;
         if (eventSink != null) {
-            result = eventSink.unsubscribeQuietly();
+            Thread t = eventSink.asyncUnsubscribe();
             eventSink = null;
+            return t != null;
         } else {
             //we are implicitly no longer listening
-            result = true;
+            return true;
         }
-        return result;
     }
 
     /**
@@ -276,6 +275,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                 getTestTimeout());
     }
 
+    /**
+     * Get the timeout for test startup -either the default or an overridden property
+     * @return time in MS for tests to start up
+     */
     protected int getTestStartupTimeout() {
         return TestHelper.getTestPropertyInt(TEST_TIMEOUT_STARTUP, STARTUP_TIMEOUT);
     }
@@ -305,32 +308,71 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     /**
      * Assert that a test failed for a specific reason
      * @param event event to analyse
+     * @param abnormalStatus is an abnormal status expected
      * @param errorText optional error text
      */
     protected void assertTestRunFailed(LifecycleEvent event,boolean abnormalStatus,String errorText) {
         assertTrue("not a TestCompletedEvent: "+event,event instanceof TestCompletedEvent);
-        TestCompletedEvent testBlock=(TestCompletedEvent) event;
-        assertTrue("test did not fail",testBlock.isFailed());
-        assertFalse("test succeeded",testBlock.isSucceeded());
-        TerminationRecord status = testBlock.getStatus();
-        assertNotNull("No termination record",status);
-        if(abnormalStatus) {
-            assertFalse("Status is normal when it should be abnormal:"+status,status.isNormal());
+        TestCompletedEvent result=(TestCompletedEvent) event;
+        assertTrue("test did not fail:\n"+event,result.isFailed());
+        assertFalse("test succeeded:\n"+event,result.isSucceeded());
+        TerminationRecord status = result.getStatus();
+        assertNotNull("No termination record in " + result,status);
+        if (abnormalStatus) {
+            assertFalse("Status is normal when it should be abnormal:" + status, status.isNormal());
         } else {
             assertTrue("Status is abnormal when it should be normal:" + status, status.isNormal());
         }
         if(errorText!=null) {
-            assertEquals(errorText, status.description);
+            assertContains(status.description, errorText);
         }
     }
 
+    /**
+     * Do a test run, assert that it failed. The application and eventSink are
+     * both saved in member variables, ready for cleanup in teardown
+     * @param packageName package containing the deployment
+     * @param filename filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
         return runTestsToCompletion(packageName,filename);
     }
 
-    protected TestCompletedEvent expectAbnormalTestRun(String packageName, String filename) throws Throwable {
+    /**
+     * Do a test run, assert that it failed. The application and eventSink are both saved in member variables, ready for
+     * cleanup in teardown
+     *
+     * @param packageName package containing the deployment
+     * @param filename    filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
+    protected TestCompletedEvent expectTestTimeout(String packageName, String filename) throws Throwable {
         LifecycleEvent event = runTestDeployment(packageName, filename);
-        assertTestRunFailed(event,false, null);
+        conditionalFail(event instanceof TerminatedEvent,
+                "Test run terminated without completing the tests", event);
+        //if not a terminated event, its test results
+        TestCompletedEvent results = (TestCompletedEvent) event;
+        conditionalFail(!results.isForcedTimeout(),
+                "Tests failed to time out", event);
+        return results;
+    }
+
+    /**
+     * Do a test run, assert that it failed. The application and eventSink are
+     * both saved in member variables, ready for cleanup in teardown
+     * @param packageName package containing the deployment
+     * @param filename filename (with no .sf extension)
+     * @param abnormal flag to indicate an abnormal failure record is expected
+     * @param errorText optional error text to look for
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
+    protected TestCompletedEvent expectAbnormalTestRun(String packageName, String filename, boolean abnormal, String errorText) throws Throwable {
+        LifecycleEvent event = runTestDeployment(packageName, filename);
+        assertTestRunFailed(event,abnormal, errorText);
         return (TestCompletedEvent)event;
     }
 

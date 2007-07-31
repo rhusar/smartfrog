@@ -114,6 +114,9 @@ with env.SFHOME set to the directory into which SmartFrog is distributed
   <target name="release"  depends="clean, dist, jdocs" description="Creates clean new release">
   </target>
 
+  <target name="init" >
+    
+  </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->

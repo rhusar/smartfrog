@@ -88,4 +88,6 @@
 
   <target name="published-distribution" depends="dist,published"/>
 
+  <!-- a noop state by default-->
+  <target name="pdf-doc-folder" />
 </project>

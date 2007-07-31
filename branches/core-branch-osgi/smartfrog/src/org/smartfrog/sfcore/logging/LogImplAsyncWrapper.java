@@ -38,7 +38,11 @@ public class LogImplAsyncWrapper implements LogSF {
     private static LogAsyncThread worker;
 
     static {
-
+        logQueue = new LogAsyncQueue();
+        worker   = new LogAsyncThread(logQueue);
+        worker.setName("Async Logging");
+        worker.setDaemon(true);
+        worker.start();
     }
 
     /**
@@ -47,11 +51,6 @@ public class LogImplAsyncWrapper implements LogSF {
      */
     public LogImplAsyncWrapper(Log logImpl) {
         this.logImpl = logImpl;
-        logQueue = new LogAsyncQueue();
-        worker   = new LogAsyncThread(logQueue);
-        worker.setName("Async Logging");
-        worker.setDaemon(true);
-        worker.start();
     }
 
     /**

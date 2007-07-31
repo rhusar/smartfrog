@@ -43,6 +43,7 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.ListIterator;
 import java.util.List;
@@ -908,4 +909,27 @@ public class FileSystem {
         return file;
     }
 
+    /**
+     * Write to a text file
+     * @param file file to write to
+     * @param text text to write
+     * @param encoding encoding file encoding
+     * @throws SmartFrogException on any failure to write the file
+     */
+    public static void writeTextFile(File file, String text, String encoding) throws SmartFrogException {
+        Writer wout=null;
+        try {
+            OutputStream fout;
+            fout = new FileOutputStream(file);
+            wout = new OutputStreamWriter(fout, encoding);
+            wout.write(text);
+            wout.flush();
+            wout.close();
+        } catch (IOException ioe) {
+            close(wout);
+            throw SmartFrogException.forward("When trying to write to " +
+                    file,
+                    ioe);
+        }
+    }
 }

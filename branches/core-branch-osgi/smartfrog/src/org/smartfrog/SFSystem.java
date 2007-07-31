@@ -82,9 +82,14 @@ public class SFSystem implements MessageKeys {
     private static InputStream stdIn;
     private static PrintStream stdOut;
 
+    /**
+     * Flag to set to say "always exit with exit code 0" -this lets
+     * scripts run without passing their status back upstream
+     */
+    private static boolean noExitCode = false;
+
     /** Core Log  */
     private static LogSF sflog = null;
-
 
     /**
      * root process. Will be null after termination.
@@ -259,17 +264,20 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Exit with an error code that depends on the status of the execution
-     * If somethingFailed==false, we exit with {@link ExitCodes#EXIT_CODE_SUCCESS}.
-     * Otherwise, the exit code is passed down.
+     * <ol>
+     * <li>If somethingFailed==false, we exit with {@link ExitCodes#EXIT_CODE_SUCCESS}.
+     * <li>If the static variable {@link #noExitCode} is true, we exit with {@link ExitCodes#EXIT_CODE_SUCCESS}.
+     * <li> Otherwise, the exit code is passed down.
+     * </li>
      * @param somethingFailed flag to indicate trouble
      * @param exitCode exit code to exit with.
      */
     public static void exitWithStatus(boolean somethingFailed, int exitCode) {
-        if(somethingFailed) {
-            ExitCodes.exitWithError(exitCode);
-        } else {
-            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+        int status = exitCode;
+        if (!somethingFailed || noExitCode) {
+            status = ExitCodes.EXIT_CODE_SUCCESS;
         }
+        ExitCodes.exitWithError(status);
     }
 
 
@@ -348,7 +356,7 @@ public class SFSystem implements MessageKeys {
      * @param args command line arguments. Please see the usage to get more
      * details
      */
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         new SFSystem().execute(args);
     }
 
@@ -473,6 +481,14 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+    private void maybeGoNoExitCodeOptionSet(OptionSet opts)
+
+    {
+        if (opts.headless) {
+            sfLog().info(HEADLESS_MODE_MESSAGE);
+            System.setProperty("java.awt.headless", "true");
+        }
+    }
 
     /**
      * Prints StackTrace

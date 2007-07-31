@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 public class MessageListenerTest extends TestCase {
 
 	/*
-	 * Test method for 'org.smartfrog.avalanche.server.monitor.jms.MessageListener.receive()'
+	 * Test method for 'org.smartfrog.avalanche.shared.jms.MessageListener.receive()'
 	 */
 	public void testReceive()  throws Exception{
 		

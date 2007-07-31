@@ -287,8 +287,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @param tags a set of tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized void sfSetTags(Object name, Set tags) throws SmartFrogRuntimeException {
+   public synchronized void sfSetTags(Object name, Set tags) throws SmartFrogContextException {
       if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for setting tags");
 
@@ -303,8 +305,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @return the set of tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized Set sfGetTags(Object name) throws SmartFrogRuntimeException {
+   public synchronized Set sfGetTags(Object name) throws SmartFrogContextException {
       if ( name==null || !containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for getting tags");
       if (attributeTags.containsKey(name)) { // return a copy
@@ -321,8 +325,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @param tag  a tag to add to the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized void sfAddTag(Object name, String tag) throws SmartFrogRuntimeException {
+   public synchronized void sfAddTag(Object name, String tag) throws SmartFrogContextException {
       if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
       if (attributeTags.containsKey(name)) { // add it
@@ -340,8 +346,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @param tag  a tag to remove from the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized void sfRemoveTag(Object name, String tag)  throws SmartFrogRuntimeException {
+   public synchronized void sfRemoveTag(Object name, String tag)  throws SmartFrogContextException {
       if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
       if (attributeTags.containsKey(name)) { // remove it
@@ -357,8 +365,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to add to the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized void sfAddTags(Object name, Set tags) throws SmartFrogRuntimeException {
+   public synchronized void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
       if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
       if (attributeTags.containsKey(name)) { // add it
@@ -376,8 +386,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to remove from the set
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public synchronized void sfRemoveTags(Object name, Set tags)  throws SmartFrogRuntimeException {
+   public synchronized void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException {
       if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
       if (attributeTags.containsKey(name)) { // remove it
@@ -392,8 +404,10 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     *
     * @param name the name of the attribute
     * @return an iterator over the tags
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
-   public Iterator sfTags(Object name) throws SmartFrogRuntimeException {
+   public Iterator sfTags(Object name) throws SmartFrogContextException {
      Iterator iter;
      if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for iterating over tags");
@@ -414,8 +428,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
+    * @throws SmartFrogContextException the attribute does not exist
     */
-   public boolean sfContainsTag(Object name, String tag) throws SmartFrogRuntimeException {
+   public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException {
      if (!containsKey(name))
          throw new SmartFrogContextException("Attribute " + name + " does not exists for validating tag's existance");
       return sfGetTags(name).contains(tag);
@@ -531,7 +546,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
                 }
                 ps.write("] ");
              }
-          } catch (SmartFrogRuntimeException e) {
+          } catch (SmartFrogContextException e) {
              // shouldn't happen...
           }
        }

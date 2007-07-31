@@ -40,29 +40,41 @@ sfConfig extends BaseTestCompound {
 
     action extends Sequence {
 
-        IfTrue extends PassingIf {
+      IfTrue extends PassingIf {
+        condition extends True;
+      }
 
-          condition extends True;
+      IfNotFalse extends PassingIf {
+        condition extends NotFalse;
+      }
 
+      IfStringEquals extends PassingIf {
+        condition extends StringsEqual;
+      }
+
+      /**
+       * if this fails in turkey, we have our locale conversion wrong
+       */
+      IfStringEqualsCI extends PassingIf {
+        condition extends StringsEqualCI ;
+      }
+
+      IfStringNotEqualsCase extends PassingIf {
+        condition extends NotStringsUnequal;
+      }
+
+      IfPropertySet extends PassingIf {
+        condition extends IsPropertySet { property "java.home"; }
+      }
+
+      IfPropertyNotSet extends PassingIf {
+       condition extends Not {
+         condition extends UnsetProperty;
         }
+      }
 
-       IfNotFalse extends PassingIf {
-          condition extends NotFalse;
-        }
-
-       IfStringEquals extends PassingIf {
-          condition extends StringsEqual;
-        }
-
-        /**
-         * if this fails in turkey, we have our locale conversion wrong
-         */
-       IfStringEqualsCI extends PassingIf {
-          condition extends StringsEqualCI ;
-        }
-
-       IfStringNotEqualsCase extends PassingIf {
-         condition extends NotStringsUnequal;
-        }
+      IfPropertySet2 extends PassingIf {
+        condition extends setProperty;
+      }
     }
 }

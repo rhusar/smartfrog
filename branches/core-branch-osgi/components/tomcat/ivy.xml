@@ -56,11 +56,6 @@
         changing="true"
         rev="latest.integration"
         conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>
-
-<!--    <dependency org="commons-logging"
-        name="commons-logging"
-        rev="${commons-logging.version}"
-        conf="compile,redist->master"/>-->
     <dependency org="commons-httpclient"
         name="commons-httpclient"
         rev="${commons-httpclient.version}"

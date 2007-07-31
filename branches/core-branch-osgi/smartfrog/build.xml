@@ -139,8 +139,9 @@
   <!-- all protected files -->
   <property name="private" value="private"/>
   <property name="docs" value="docs"/>
-  <property name="jdocs" value="${docs}/jdocs"/>
-  <property name="SFjdocs" value="${docs}/SFjdocs"/>
+  <property name="doc.dir" location="${docs}"/>
+  <property name="jdocs" value="${doc.dir}/jdocs"/>
+  <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
   <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
   <property name="dist.src.dir" location="${dist.dir}/${src}"/>
@@ -237,7 +238,6 @@
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
-    <!--property name="Version" value="${sfversion}"/-->
   </target>
 
   <!-- =================================================================== -->
@@ -301,7 +301,9 @@
   <!-- =================================================================== -->
   <target name="compile-source" depends="initbuild,createParser,declare-classpaths" description="Compiles the source code">
     <!-- Compile the java code -->
-    <echo level="verbose">${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
+    <echo level="verbose">${javac.java.version}
+      build.compiler=${build.compiler}
+      javac.compiler=${javac.compiler}</echo>
     <javac compiler="${javac.compiler}"
       srcdir="${src.dir}"
       includes="**/*.java"
@@ -584,6 +586,10 @@
         <pathelement location="${javacc.dir}/javacc.jar"/>
       </classpath>
     </java>
+  </target>
+
+  <target name="documentation" depends="copydocs,target-names">
+
   </target>
 
   <!-- =================================================================== -->
@@ -1164,7 +1170,45 @@ ${ivy.reports.dir}
     <include name="lib/**/*.jar"/>
   </patternset>
 
+  <!-- ======================================================  -->
+  <!-- Here's some conversion of SXW into .PDF by OOo itself   -->
+  <!-- see http://www.oooforum.org/forum/viewtopic.phtml?t=3772 -->
+  <!-- ======================================================  -->
 
+  <target name="init-ooo">
+    <property name="ooffice.exe" value="ooffice" />
+
+    <presetdef name="ooo">
+      <exec executable="${ooffice.exe}" failonerror="true">
+      </exec>
+    </presetdef>
+
+    <macrodef name="pdf">
+      <attribute name="file" />
+      <sequential>
+        <ooo>
+          <arg value="macro:///SmartFrog.Utils.ConvertWordToPDF(@{file})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="bulkpdf">
+      <attribute name="dir" />
+      <sequential>
+        <echo>Bulk PDF conversion of @{dir}</echo>
+        <ooo>
+          <!--<arg value="-invisible" />-->
+          <arg value="macro:///SmartFrog.Utils.BulkConvert(@{dir})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="pdf-doc-folder" depends="init, init-ooo"
+      description="Generate PDFs from all .SXW files in the documentation folder">
+    <bulkpdf dir="${doc.dir}" />
+    <bulkpdf dir="${doc.dir}/components" />
+  </target>
 </project>
 
 <!-- End of file -->

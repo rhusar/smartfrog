@@ -111,7 +111,8 @@ public class HostManagerImpl implements HostManager{
 	 * @return
 	 * @throws DatabaseAccessException
 	 */
-	public HostType getHost(String hostId) throws DatabaseAccessException{
+
+    public HostType getHost(String hostId) throws DatabaseAccessException{
 		HostType h = null;
 		try{
 			if( null != hostId){
@@ -131,11 +132,12 @@ public class HostManagerImpl implements HostManager{
 		return h;
 		
 	}
-	public void removeHost(String hostId) throws DatabaseAccessException{
+
+    public void removeHost (HostType h) throws DatabaseAccessException{
 		try{ 
-			if( null != hostId){
-				this.collection.remove(hostId);
-				log.debug("Removed Host :" + hostId);
+			if( null != h.getId()){
+				this.collection.remove(h.getId());
+				log.debug("Removed Host :" + h.getId());
 				this.collection.flushSymbolTable();
 			}
 		}catch(DBException e){

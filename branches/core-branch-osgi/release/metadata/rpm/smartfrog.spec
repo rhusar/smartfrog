@@ -44,13 +44,16 @@
 %define libdir          %{basedir}/lib
 %define docs            %{basedir}/docs
 %define srcdir          %{basedir}/src
+%define linkdir         %{basedir}/links
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
-%define initsmartfrog   %{rcd}/init.d/${rpm.daemon.name}
+%define smartfrogd   %{rcd}/init.d/${rpm.daemon.name}
 %define logdir          ${rpm.log.dir}
-#this is some other log directory that gets picked up by logtofileimpl
-#see http://jira.smartfrog.org/jira/browse/SFOS-235
-#%define logdir2         /tmp/sflogs
+
+#some shortcuts
+%define smartfrog.jar smartfrog-${smartfrog.version}.jar
+%define sfExamples.jar sfExamples-${smartfrog.version}.jar
+%define sfServices.jar sfServices-${smartfrog.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -92,23 +95,7 @@ and /etc/sysconfig so that SmartFrog is available on the command line.
 #In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
 #using LogToFileImpl. The GUI is turned off.
 
-# -----------------------------------------------------------------------------
 
-#%package manual
-#Group:          Documentation
-#Summary:        Manual for %{name}
-#
-#%description manual
-#Documentation for %{name}.
-
-# -----------------------------------------------------------------------------
-
-#%package javadoc
-#Group:          Documentation
-#Summary:        Javadoc for %{name}
-#
-#%description javadoc
-#Javadoc for %{name}.
 
 # -----------------------------------------------------------------------------
 
@@ -134,6 +121,31 @@ Running the SmartFrog as a daemon is a security risk unless the daemon
 is set up with security, especially if port 3800 is openened in the firewall.
 At that point anyone can get a process running as root to run any program they wish.
 
+# -----------------------------------------------------------------------------
+
+%package anubis
+Group:         ${rpm.framework}
+Summary:        Anubis partition-aware tuple space
+Requires:       %{name} = %{version}-%{release}
+#
+%description anubis
+This package provides Anubis, a partition-aware tuple space.
+
+The Anubis SmartFrog components can be used to build fault-tolerant distributed
+systems across a set of machines hosted on a single site. Multicast IP is used
+as a heartbeat mechanism.
+
+# -----------------------------------------------------------------------------
+
+%package logging
+Group:         ${rpm.framework}
+Summary:        SmartFrog logging services
+Requires:       %{name} = %{version}-%{release}
+#
+%description logging
+This package integrates SmartFrog with Apache Log4j. It includes the
+commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
+
 
 # -----------------------------------------------------------------------------
 
@@ -145,13 +157,13 @@ GROUPNAME="${rpm.groupname}"
 # Mabye create a new group
 getent group $${GROUPNAME} > /dev/null
 if [ $$? -ne 0 ]; then
-        groupadd $${GROUPNAME}> /dev/null 2>&1
-        if [ $$? -ne 0 ]; then
-                logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
-                exit 1
-        fi
+  groupadd $${GROUPNAME}> /dev/null 2>&1
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${GROUPNAME} group could not be created
+    exit 1
+  fi
 else
-                logger -p auth.info -t %{name} $${GROUPNAME} group already exists
+  logger -p auth.info -t %{name} $${GROUPNAME} group already exists
 fi
 
 # Maybe create a new user
@@ -161,13 +173,13 @@ fi
 # User deletion is left to the System Administartor
 getent passwd $${USERNAME} > /dev/null 2>&1
 if [ $$? -ne 0 ]; then
-        useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
-        if [ $$? -ne 0 ]; then
-                logger -p auth.err -t %{name} $${USERNAME} user could not be created
-            exit 2
-        fi
+  useradd -g ${GROUPNAME} -s /bin/bash -p "*********" -m $${USERNAME} >> /dev/null
+  if [ $$? -ne 0 ]; then
+    logger -p auth.err -t %{name} $${USERNAME} user could not be created
+    exit 2
+  fi
 else
-                logger -p auth.info -t %{name} $${USERNAME} user already exists
+  logger -p auth.info -t %{name} $${USERNAME} user already exists
 fi
 
 #Now run the big setup
@@ -213,15 +225,31 @@ mkdir -p %{logdir}
 chmod a+wx %{logdir}
 chgrp ${rpm.groupname} %{logdir}
 chown ${rpm.username} %{logdir}
-#mkdir -p %{logdir2}
-#chmod a+wx %{logdir2}
-#chgrp ${rpm.groupname} %{logdir2}
-#chown ${rpm.username} %{logdir2}
+
+mkdir -p %{linkdir}
+chmod a+rx %{linkdir}
+chgrp ${rpm.groupname} %{linkdir}
+chown ${rpm.username} %{linkdir}
+#just in case the files are there
+rm -f %{linkdir}/smartfrog.jar
+rm -f %{linkdir}/sfExamples.jar
+rm -f %{linkdir}/sfServices.jar
+#set up the new symlinks
+ln -s %{libdir}/smartfrog-${smartfrog.version}.jar %{linkdir}/smartfrog.jar
+ln -s %{libdir}/sfExamples-${smartfrog.version}.jar %{linkdir}/sfExamples.jar
+ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
+
+
+
+%preun
+#about to uninstall, but all the files are already present
+%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
 
 %postun
 #at uninstall time, we delete all logs
 rm -rf %{logdir}
-#rm -rf %{logdir2}
+#and the links
+rm -rf %{linkdir}
 
 # -----------------------------------------------------------------------------
 
@@ -291,7 +319,9 @@ rm -rf $RPM_BUILD_ROOT
 %{binsecurity}/*.bat
 
 #now the files in the lib directory...use ant library versions to include version numbers
-%{libdir}
+%{libdir}/smartfrog-${smartfrog.version}.jar
+%{libdir}/sfExamples-${smartfrog.version}.jar
+%{libdir}/sfServices-${smartfrog.version}.jar
 
 #other directories
 %{basedir}/testCA
@@ -339,13 +369,18 @@ rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
 rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
 rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
-ln -s %{initsmartfrog} %{rcd}/rc0.d/K60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc1.d/K60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc2.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc3.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc4.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc5.d/S60${rpm.daemon.name}
-ln -s %{initsmartfrog} %{rcd}/rc6.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc0.d/K60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc1.d/K60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc2.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc3.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc4.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc5.d/S60${rpm.daemon.name}
+ln -s %{smartfrogd} %{rcd}/rc6.d/S60${rpm.daemon.name}
+
+
+%preun daemon
+# shut down the daemon before the uninstallation
+%{smartfrogd} stop
 
 # -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
@@ -363,17 +398,54 @@ rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
 
+
+%files anubis
+
+%{libdir}/sf-anubis-${smartfrog.version}.jar
+
+%post anubis
+rm -f %{linkdir}/sf-anubis.jar
+ln -s %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
+
+%postun anubis
+rm -f %{linkdir}/sf-anubis.jar
+
+%files logging
+
+%{libdir}/sf-loggingservices-${smartfrog.version}.jar
+%{libdir}/commons-logging-${commons-logging.version}.jar
+%{libdir}/log4j-${log4j.version}.jar
+
+%post logging
+rm -f %{linkdir}/sf-loggingservices.jar
+ln -s %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
+ln -s %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
+ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
+
+%postun logging
+rm -f %{linkdir}/sf-loggingservices.jar
+rm -f %{linkdir}/commons-logging.jar
+rm -f %{linkdir}/log4j.version.jar
+
 # -----------------------------------------------------------------------------
 
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
-* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0001-1
+* Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-1
+- daemon RPM now runs "smartfrogd stop" before uninstalling
+- smartfrog RPM tries to terminate any running smartfrog process before uninstalling
+- anubis RPM provides the anubis JAR
+- logging RPM provides logging services and dependent JARs
+- links without version information added to the dir /opt/smartfrog/links subdirectory for each JAR.
+* Fri Jul 20 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.003-5
+- daemon RPM now runs "smartfrogd shutdown" before uninstalling 
+* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.001-4
 - moved scripts to smartfrog.rpm
 - moved directories
-* Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-3
+* Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.001-3
 - fixing permissions of the log directory; creating a new user on demand
-* Tue May 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0000-1
-- Built from CERN contributions and the JPackage template
+* Tue May 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.000-1
+- Built from contributions and the JPackage template
 
 
 # CERN install statements

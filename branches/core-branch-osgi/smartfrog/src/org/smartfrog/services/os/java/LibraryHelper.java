@@ -20,7 +20,7 @@ public final class LibraryHelper {
      * There would seem to be a more efficient implementation of this involving
      * a 256 byte memory buffer.
      *
-     * @param digest
+     * @param digest checksum
      *
      * @return hex equivalent
      */
@@ -43,7 +43,7 @@ public final class LibraryHelper {
      * depth to their classes. NB: only public for testing. This is not a public
      * API.
      *
-     * @param projectName
+     * @param projectName the project name
      *
      * @return a string whch may or may not match the old string.
      */
@@ -66,4 +66,19 @@ public final class LibraryHelper {
     }
 
 
+    /**
+     * Create an ivy filename from an artifact
+     * @param artifact the artifact to convert
+     * @return a filename of the form name-version.extension
+     */
+    public static String createIvyArtifactFilename(SerializedArtifact artifact) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(artifact.artifact);
+        buffer.append(AbstractPolicy.ARTIFACT_SEPARATOR);
+        buffer.append(artifact.version);
+        buffer.append('.');
+        buffer.append(artifact.extension);
+        String filename = buffer.toString();
+        return filename;
+    }
 }

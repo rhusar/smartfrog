@@ -37,18 +37,22 @@ import org.smartfrog.SFSystem;
 public class OptionSet {
 
     /** Character indicating the start of each option. */
-    protected char optionFlagIndicator = '-';
+    private static final char optionFlagIndicator = '-';
 
-    /** Length of each option. */
-    protected byte optionLength = 1;
+
+    /** The name of the option string for headless operation: "{@value}" */
+    public static final String OPTION_HEADLESS = "-headless";
+
+    /** The name of the option string for quiet exits: "{@value}" */
+    public static final String OPTION_QUIETEXIT = "-quietexit";
 
     /** Usage string for SFSystem. */
-    public String usage = "\n" +
+    private static final String USAGE = "\n" +
         " Usage: SFSystem [-a SFACT] [-f SFREF] [-e] [-d] [-headless]\n" +
         "    or: SFSystem -?\n";
 
     /** Help string for SFSystem. */
-    public String help = "\n" + Version.copyright() + " - v." +
+    private static final String HELP = "\n" + Version.copyright() + " - v." +
         Version.versionString()+" - build: "+ Version.buildDate()+ "\n" + " Parameters: " + "\n" +
         "    -a SFACT: SmartFrog Action Descriptor (SFACT),\n"+
         "              which is used to indicate to SmartFrog an action to take.\n" +
@@ -93,10 +97,10 @@ public class OptionSet {
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +
         "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
-        "    -d (diagnostics): print information that might be helpful to diagnose or report problems." + "\n" +
-        "    -headless : The daemon will run in headless mode\n" +
-        "";
-
+        "    -d or -diagnostics: print information that might be helpful to diagnose or report problems." + "\n" +
+        "   " + OPTION_HEADLESS + ": the process will run in headless mode\n" +
+        "   " + OPTION_QUIETEXIT + ":  do not set any exit code when the program exits with an error\n"+
+        "   -? or -help:  print this help information\n";
 
     /** Error string for SFSystem. */
     public String errorString = null;
@@ -127,74 +131,66 @@ public class OptionSet {
     public boolean headless = false;
 
     /**
+     * was -quietexit requested
+     */
+    public boolean noExitCode = false;
+
+    /**
      * Creates an OptionSet from an array of arguments.
      *
      * @param args arguments to create from
      */
     public OptionSet(String[] args) {
         int i = 0;
-        String name;
-        String url;
-        String deployRef;
 
         while ((i < args.length) && (errorString == null)) {
             try {
                 String currentArg = args[i];
-                if (currentArg.charAt(0) == optionFlagIndicator) {
-                    switch (currentArg.charAt(1)) {
-                    case '?':
-                        errorString = "SFSystem help" + help;
-                        exitCode = ExitCodes.EXIT_CODE_SUCCESS;
-                        break;
-
-                    case 'a':
-                        try {
-                            this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
-                        } catch (SmartFrogInitException ex){
-                           exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
-                          //Logger.log(ex);
-                          if (SFSystem.sfLog().isErrorEnabled()) {
-                              SFSystem.sfLog().error(ex.getMessage(),ex);
-                          }
-                        }
-                        break;
-
-                    case 'f':
-                        try {
-                            cfgDescriptors = readCfgDescriptorsFile(args[++i]);
-                        } catch (SmartFrogInitException ex){
-                          exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
-                          //Logger.log(ex);
-                          if (SFSystem.sfLog().isErrorEnabled()) {
-                              SFSystem.sfLog().error(ex.getMessage(),ex);
-                          }
-                        }
-                         break;
-
-                    case 'e':
-                        exit = true;
-                        break;
-
-                    case 'd':
-                        diagnostics = true;
-                        break;
-
-                    case 'h':
-                        //check for the full string
-                        if ("-headless".equals(currentArg)) {
-                            headless = true;
-                            break;
-                        }
-
-                    default:
-                        errorString = "unknown option " + currentArg.charAt(1);
+                if("-a".equals(currentArg)) {
+                    //deploy an application
+                    try {
+                        this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
+                    } catch (SmartFrogInitException ex) {
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+                        //Logger.log(ex);
+                        if (SFSystem.sfLog().isErrorEnabled()) {
+                            SFSystem.sfLog().error(ex.getMessage(), ex);
+                        }
                     }
+                } else if ("-f".equals(currentArg)) {
+                    try {
+                        cfgDescriptors = readCfgDescriptorsFile(args[++i]);
+                    } catch (SmartFrogInitException ex) {
+                        exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+                        //Logger.log(ex);
+                        if (SFSystem.sfLog().isErrorEnabled()) {
+                            SFSystem.sfLog().error(ex.getMessage(), ex);
+                        }
+                    }
+                } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
+                    //diagnostics
+                    diagnostics = true;
+                } else if ("-e".equals(currentArg)) {
+                    //exit after the operation(s)
+                    exit = true;
+                } else if (OPTION_HEADLESS.equals(currentArg)) {
+                    //headless mode
+                    headless = true;
+                } else if (OPTION_QUIETEXIT.equals(currentArg)) {
+                    //quiet exit requested
+                    noExitCode = true;
+                } else if ("-?".equals(currentArg) || "-help".equals(currentArg)
+                || "--help".equals(currentArg)) {
+                    //help string
+                    errorString = "SFSystem help" + HELP;
+                    exitCode = ExitCodes.EXIT_CODE_SUCCESS;
+                } else if (currentArg.charAt(0) == '-') {
+                    errorString = "unknown option " + currentArg.charAt(1);
+                    exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 } else {
                     errorString = "illegal option format for option " + currentArg;
                     exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 }
-
                 i++;
             } catch (Exception e) {
                 exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
@@ -204,13 +200,12 @@ public class OptionSet {
             	   errorString += e.getMessage() + "\n";
                 }
               SFSystem.sfLog().ignore(e);
-
             }
         }
 
 
         if (errorString != null) {
-            errorString += usage;
+            errorString += USAGE;
         }
     }
 
@@ -219,6 +214,7 @@ public class OptionSet {
      * It ignores empty lines or lines starting with # or double "//"
      * @param fileURL file to be read
      * @throws SmartFrogException if failed to read
+     * @return the parsed file
      */
     public static Vector readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
         String line;

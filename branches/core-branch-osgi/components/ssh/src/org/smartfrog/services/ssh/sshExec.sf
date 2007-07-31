@@ -25,10 +25,8 @@ For more information: www.smartfrog.org
  * ssHExample.sf for sample usage.
  */
 
- SSHSchema extends Schema {
-  	host extends String;
-  	username extends String;
-        commands extends Vector;
+ SSHSchema extends SshSchema {
+    commands extends Vector;
 	logFile extends OptionalString;
   }
 
@@ -36,7 +34,7 @@ For more information: www.smartfrog.org
 	  keyfile extends String;  	
   }
 
- SSHSessionAuthPass extends Compound {
+ BaseSshSessionAuthPass extends SshCompound {
     /*----------------------------Mandatory Parameters --------------------*/
   //  host "localhost";
   //  userId "someuser";
@@ -44,16 +42,10 @@ For more information: www.smartfrog.org
   //  commands ["cmd1", "cmd2"];
 
     /*---------------------------Optional Parameters -----------------------*/
-    // Recommendation: Please keep the default values
-    port 22;
-    timeout 0;
-    shouldTerminate true;
-    failOnError true;
 
     /*---------------------Component's Definition --------------------------*/  
-    PasswordProvider extends Password {
-        //passwordFile PARENT:ATTRIB passwordFile;
-    }
+    PasswordProvider TBD;
+	
     SSHCmdExec extends Prim{
         sfClass "org.smartfrog.services.ssh.SSHExecAuthPassImpl";
         sshSchema extends SSHSchema;
@@ -81,8 +73,23 @@ For more information: www.smartfrog.org
    }
 }
 
+ SSHSessionAuthPass extends BaseSshSessionAuthPass {
 
-SSHSessionAuthPubKey extends Compound {
+    PasswordProvider extends FilePassword {
+        //passwordFile PARENT:ATTRIB passwordFile;
+    }
+}
+
+SSHSessionInlinePass extends BaseSshSessionAuthPass {
+	password TBD;
+
+	PasswordProvider extends InlinePassword {
+		password LAZY PARENT:ATTRIB password;
+	}
+}
+
+
+SSHSessionAuthPubKey extends SshCompound {
     /*----------------------------Mandatory Parameters --------------------*/
   //  host "localhost";
   //  userId "someuser";
@@ -90,14 +97,10 @@ SSHSessionAuthPubKey extends Compound {
   //  commands ["cmd1", "cmd2"];
 
     /*---------------------------Optional Parameters -----------------------*/
-    // Recommendation: Please keep the default values
-    port 22;
-    timeout 0;
-    shouldTerminate true;
-    failOnError true;
+
 
     /*---------------------Component's Definition --------------------------*/  
-    PasswordProvider extends Password {
+    PasswordProvider extends FilePassword {
         //passwordFile PARENT:ATTRIB passwordFile;
     }
     SSHCmdExec extends Prim{

@@ -149,7 +149,9 @@ For more information: www.smartfrog.org
     <!--A list of all tests that fail-->
     <!-- if you add a test here, file a bugrep against it in jira
       and refer to it in this list. That way we can track which tests
-       fail and why
+       fail and why. Link the bug to the meta-issue SFOS-296:
+       http://jira.smartfrog.org/jira/browse/SFOS-296
+
     -->
     <echo level="verbose">
       system.tests.enabled=${system.tests.enabled}
@@ -159,8 +161,8 @@ For more information: www.smartfrog.org
     <patternset id="teststhatfail">
       <exclude unless="run.failing.tests" name="${systemtests}/java/LibraryTest.*"/>
       <!--http://jira.smartfrog.org/jira/browse/SFOS-25-->
-      <exclude name="${systemtests}/workflow/sequence/SequenceTest.*"
-          unless="run.failing.tests" />
+     <!-- <exclude name="${systemtests}/workflow/sequence/SequenceTest.*"
+          unless="run.failing.tests" />-->
       <!-- 2006-10-18: steve_l commented out while still finishing off the component,
         so Cruise Control doesn't fail-->
       <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsTest.*"
@@ -171,6 +173,14 @@ For more information: www.smartfrog.org
       <!--SFOS-202 test case tcn1 is being skipped (failing) -->
       <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
           unless="run.failing.tests" />
+
+      <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsEventsTest.*"
+          unless="run.failing.tests" />
+      <!--SFOS-297 : callbacks make the daemon lock up under the testharness -->
+  <!--
+      <exclude name="${systemtests}/workflow/sequence/HistorySequenceTest.*"
+          unless="run.failing.tests" />
+          -->
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
@@ -197,11 +207,19 @@ For more information: www.smartfrog.org
     <property name="test.remoteHost" value="localhost" />
     <property name="test.smartfrog.dist.dir" location="${smartfrog.dist.dir}" />
   </target>
-  
+
+
+
+  <!--test all the parsing-->
+  <target name="parse-tests" depends="init-tests"  unless="testcase">
+    <sf-parse parserTargetsFile="parsertargets.txt"
+      classpathref="tests.run.classpath"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- run the unit tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init-tests"  unless="testcase"
+  <target name="unit-tests" depends="parse-tests,init-tests"  unless="testcase"
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"

@@ -62,6 +62,7 @@ public class HostManagerImpl implements HostManager{
     public void addHandler(HostUpdateHandler handler){
     		handlers.add(handler);
     }
+
     public String []listHosts() throws DatabaseAccessException{
     		String []hosts = new String[0];
     		try{
@@ -84,45 +85,28 @@ public class HostManagerImpl implements HostManager{
     		return hosts;
     }
 
-/*    
-    public void addHost(HostType host) throws DatabaseAccessException{
-	    	try{
-	    		String hostId = host.getId();
-	    		
-	    		DatabaseEntry key = new DatabaseEntry(hostId.getBytes());
-	    		HostDocument hdoc = HostDocument.Factory.newInstance();
-	    		hdoc.setHost(host);
-	    		DatabaseEntry value = new DatabaseEntry();
-	    		hostBinding.objectToEntry(hdoc, value);
-	    		
-	       		//TODO: Validate use of transaction and add it in all other places
-	    		Transaction t = database.getEnvironment().beginTransaction(null, null);
-	 	 	if( OperationStatus.KEYEXIST == database.putNoOverwrite(null, key, value)){
-	 	    		t.abort();
-	    			throw new DatabaseException("Host Already exists : " + hostId);
-	    		}
-	    		t.commit();
-	    		Iterator itor = handlers.iterator();
-	    		while(itor.hasNext()){
-	    			((HostUpdateHandler)itor.next()).hostAdded(host);
-	    		}
-	    	}catch(DatabaseException e){
-	    		throw new DatabaseAccessException(e);
-	    	}
-    }
-*/    
-    public void removeHost(String hostId) throws DatabaseAccessException{
+    /**
+     * Removes a specfic host by its HostType object
+     * @param host is the HostType object of the host to be deleted
+     * @throws DatabaseAccessException
+     */
+    public void removeHost(HostType host) throws DatabaseAccessException{
     		try{
-    			database.delete(null, new DatabaseEntry(hostId.getBytes()));
+    			database.delete(null, new DatabaseEntry(host.getId().getBytes()));
 	    		Iterator itor = handlers.iterator();
 	    		while(itor.hasNext()){
-	    			((HostUpdateHandler)itor.next()).hostDeleted(hostId);
+	    			((HostUpdateHandler)itor.next()).hostDeleted(host);
 	    		}
     		}catch(DatabaseException e){
     			throw new DatabaseAccessException(e);
     		}
     }
-    
+
+    /**
+     * It will update store the updated HostType object in the database
+     * @param host is the updated HostType object
+     * @throws DatabaseAccessException
+     */
     public void setHost(HostType host) throws DatabaseAccessException{
     		try{
 	    		DatabaseEntry key = new DatabaseEntry(host.getId().getBytes());
@@ -135,7 +119,15 @@ public class HostManagerImpl implements HostManager{
     			throw new DatabaseAccessException(e);
     		}
     }
-    
+
+    /**
+     * It will create a new HostType entry in the database
+     * and will also create XMPP user accounts
+     * @param hostId specifies the name of the host to be created
+     * @return the HostType object of the newly created host
+     * @throws DatabaseAccessException
+     * @throws DuplicateEntryException
+     */
     public HostType newHost(String hostId) throws DatabaseAccessException, DuplicateEntryException{
     		HostType host = null ; 
     		try{

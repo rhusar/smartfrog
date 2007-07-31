@@ -450,10 +450,9 @@ public abstract class SmartFrogTestBase extends TestCase {
         final boolean contained = source.indexOf(substring)>=0;
 
         if(!contained) {
-            String message = "- Did not find \n["+substring+"] \nin \n["+source+"]"+
+            String message = "- Did not find \n["+substring+"]\nin \n["+source+"]"+
                 (cfgDescMsg!=null?("\n, Result:\n"+cfgDescMsg):"");
             log.error(message+ extraText != null?("\n"+extraText):"");
-            //fail(message+ (extraText!=null?("\n"+extraText):""));
             fail(message);
         }
     }

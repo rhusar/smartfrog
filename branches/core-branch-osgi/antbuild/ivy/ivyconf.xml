@@ -59,5 +59,18 @@
     <module organisation="org.ggf" name=".*" resolver="internal"/>
     <!-- here so that Steve can build the antbook at the same time-->
     <module organisation="org.antbook" name=".*" resolver="internal"/>
+
+    <!--artifacts that we have locally only-->
+    <module organisation="berkeleydb" name=".*" resolver="internal"/>
+    <module organisation="mom4j" name=".*" resolver="internal"/>
+    <module organisation="xindice" name=".*" resolver="internal"/>
+    <module organisation="xmldb" name=".*" resolver="internal"/>
+    <module organisation="javax.jms" name=".*" resolver="internal"/>
+<!--    <module organisation="" name=".*" resolver="internal"/>
+    <module organisation="" name=".*" resolver="internal"/>
+    <module organisation="" name=".*" resolver="internal"/>
+    <module organisation="" name=".*" resolver="internal"/>
+    <module organisation="" name=".*" resolver="internal"/>
+    <module organisation="" name=".*" resolver="internal"/>-->
   </modules>
 </ivyconf>

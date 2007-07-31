@@ -71,6 +71,7 @@ public class TestCompoundImpl extends ConditionCompound
     private volatile TerminationRecord actionTerminationRecord;
     private volatile TerminationRecord testsTerminationRecord;
 
+    private boolean shouldTerminate;
     /**
      * The message of a forced shutdown. This is important, as we look for
      * it when the component is terminated, and can use its presence to infer
@@ -78,7 +79,8 @@ public class TestCompoundImpl extends ConditionCompound
      */
     public static final String FORCED_TERMINATION = "timed shutdown of test components";
     public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
-    private boolean shouldTerminate;
+    public static final String EXIT_EXPECTED_STARTUP_EXCEPTION = "Exiting with expected exception thrown during startup";
+    public static final String UNEXPECTED_STARTUP_EXCEPTION = "Unexpected message in an exception raised at startup time\n";
 
     public TestCompoundImpl() throws RemoteException {
     }
@@ -174,26 +176,32 @@ public class TestCompoundImpl extends ConditionCompound
                 message="";
             }
             if (message.indexOf(exitText) < 0) {
-                throw new SmartFrogException("Wrong exitText in the fault raised at creation time\n"
+                throw new SmartFrogException(UNEXPECTED_STARTUP_EXCEPTION
                         +"expected: '"+exitText+"'\n"
                         +"found   : '"+message+"'\n",
                         exception);
             }
             //valid exit. trigger undeploy
-            new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL,
-                    null,null,exception);
+            TerminationRecord record= TerminationRecord.normal(EXIT_EXPECTED_STARTUP_EXCEPTION,
+                    getName(),exception);
+            finished(true);
+            endTestRun(record);
+            //and optionally end the component
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
+
+        } else {
+            //the action is deployed
+            //start the terminator
+            actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
+                    FORCED_TERMINATION,
+                    !expectTerminate);
+            actionTerminator.start();
+
+
+            //now deploy the tests.
+            //any failure in tests is something to report, as is any failure of the tests to finish.
+            startTests();
         }
-
-        //start the terminator
-        actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
-                FORCED_TERMINATION,
-                !expectTerminate);
-        actionTerminator.start();
-
-
-        //now deploy the tests.
-        //any failure in tests is something to report, as is any failure of the tests to finish.
-        startTests();
 
     }
 
@@ -287,50 +295,73 @@ public class TestCompoundImpl extends ConditionCompound
             } else {
                 //not a forced shutdown, so why did it die?
                 boolean expected = false;
-                //act on whether or not a fault was expected.
-                if (childStatus.errorType.indexOf(exitType) >= 0) {
-                    //we have a match
-                    sfLog().debug("Exit type is as expected");
-                    expected = true;
-                    if (exitText != null && exitText.length()>0) {
-                        String description = childStatus.description;
-                        if (description == null) {
-                            description = "";
+                if (expectTerminate) {
+
+                    //act on whether or not a fault was expected.
+                    if (childStatus.errorType.indexOf(exitType) >= 0) {
+                        //we have a match
+                        sfLog().debug("Exit type is as expected");
+                        expected = true;
+                        if (exitText != null && exitText.length() > 0) {
+                            String description = childStatus.description;
+                            if (description == null) {
+                                description = "";
+                            }
+
+                            if (description.indexOf(exitText) < 0) {
+                                sfLog().info("Action text mismatch: expected \""
+                                        + exitText
+                                        + "\" but got \""
+                                        + description
+                                        + "\"");
+                                expected = false;
+                            }
                         }
 
-                        if (description.indexOf(exitText) < 0) {
-                            sfLog().info("Action text mismatch: expected \""
-                                    +exitText
-                                    +"\" but got \""
-                                    +description
-                                    +"\"");
-                            expected=false;
+                    } else {
+                        //wrong exit type
+                        sfLog().info("Action Exit type mismatch");
+                        expected=false;
+                    }
+                    if (!expected) {
+                        //the action prim terminated in a way that was not expected
+                        //
+                        String errorText = TEST_FAILED_WRONG_STATUS + exitType +
+                                '\n'
+                                + "and error text '" + exitText + "'\n"
+                                + "but got " + childStatus;
+                        sfLog().error(errorText);
+                        exitRecord = TerminationRecord.abnormal(errorText,
+                                childStatus.id,
+                                childStatus.getCause());
+                    } else {
+                        //expected action termination.
+                        //now look at the record, and if it is abnormal, convert it
+                        //to a normal status, preserving the message
+                        sfLog().info("Action terminated abnormally, as expected");
+                        if (!childStatus.isNormal()) {
+                            exitRecord = TerminationRecord.normal(
+                                    childStatus.description,
+                                    childStatus.id,
+                                    childStatus.getCause());
                         }
-                    }
 
-                } else {
-                    //wrong exit type
-                    sfLog().info("Action Exit type mismatch");
-                }
-                if (!expected) {
-                    //the action prim terminated in a way that was not expected
-                    //
-                    String errorText = TEST_FAILED_WRONG_STATUS + exitType + "\n"
-                            + "and error text " + exitText + "\n"
-                            + "but got " + childStatus;
-                    sfLog().error(errorText);
-                    exitRecord = TerminationRecord.abnormal(errorText, childStatus.id);
-                    //propagate any exception
-                    exitRecord.setCause(childStatus.getCause());
-                } else {
-                    //expected action termination.
-                    //now look at the record, and if it is abnormal, do not propagate it
-                    if(!childStatus.isNormal()) {
-                        exitRecord = TerminationRecord.normal("action terminated with (expected) abnormal exit",
-                                getName());
                     }
-                    
+                } else {
+                    //child terminated and it was not expected. This is an error.
+                    sfLog().error("Unexpected termination of action");
+                    exitRecord = childStatus;
+                    if (childStatus.isNormal()) {
+                        //flip this to abnormal
+                        exitRecord = TerminationRecord.abnormal(
+                                childStatus.description,
+                                childStatus.id,
+                                childStatus.getCause());
+                    } else {
+                        exitRecord = childStatus;
+                    }
                 }
+
             }
         } else if(child == testsPrim) {
             //tests are terminating.
@@ -347,17 +378,14 @@ public class TestCompoundImpl extends ConditionCompound
 
         synchronized (this) {
             //update internal data structures
-            finished = true;
             if (exitRecord != null) {
                 //an exit record implies failure
                 setStatus(exitRecord);
-                succeeded = false;
             } else {
                 //whereas a child status implies success
                 setStatus(childStatus);
-                succeeded = true;
             }
-            failed=!succeeded;
+            finished(exitRecord==null);
         }
         try {
             endTestRun(getStatus());
@@ -461,11 +489,21 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * Use results + insternal state to decide if the test passed or not
-     * @param record termination record
-     * @throws SmartFrogRuntimeException SmartFrog errors
-     * @throws RemoteException           network errors
+     * update finished and succeeded/failed flags when we finish
+     * @param success flag to indicated whether we considered the run a success
      */
+    protected void finished(boolean success) {
+        succeeded=success;
+        failed=!success;
+        finished=true;
+    }
+
+    /**
+    * Use results + insternal state to decide if the test passed or not
+    * @param record termination record
+    * @throws SmartFrogRuntimeException SmartFrog errors
+    * @throws RemoteException           network errors
+    */
     protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
         //send out a completion event
         sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record));
