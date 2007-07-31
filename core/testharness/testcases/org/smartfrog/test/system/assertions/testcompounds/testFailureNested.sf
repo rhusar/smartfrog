@@ -21,7 +21,4 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
 
-  
-sfConfig extends testUnexpectedFailure {
-    sfShouldTerminate false;
-  }
+sfConfig extends testFailureNested;
