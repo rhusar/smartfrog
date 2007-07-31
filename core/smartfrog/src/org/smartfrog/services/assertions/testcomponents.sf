@@ -217,8 +217,10 @@ ExpectDeployFailure extends FailingTestCompound {
  * The component will run through a set of sfPings() to force this earlier than normal,
  * if forcePing==true
  */
+/*
 ExpectLivenessFailure extends FailingTestCompound {
 
   forcePing true;
   pingInterval 0;
 }
+*/
