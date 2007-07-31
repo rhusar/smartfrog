@@ -39,6 +39,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
+import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -565,6 +566,10 @@ public class SFSystem implements MessageKeys {
         if (!alreadySystemInit) {
             // Initialize SmartFrog Security
             SFSecurity.initSecurity();
+
+            // Init remote class loading
+            ClassLoaderRegistry.init(SFSystem.class.getClassLoader());
+            
             // Read init properties
             readPropertiesFromIniFile();
             sfLog();
