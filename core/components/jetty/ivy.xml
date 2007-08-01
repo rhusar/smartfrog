@@ -20,7 +20,7 @@
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default,compile,redist"
+    <conf name="test" extends="default,compile,redist,jsp"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
@@ -28,6 +28,10 @@
         extends="redist"/>
     <conf name="documentation"
           description="all documentation artifacts"/>
+    <conf name="testwar"
+        description="the test WAR File" visibility="private"/>
+    <conf name="jsp"
+        description="JSP support" />
   </configurations>
   <publications>
     <!--get the artifact from our module name-->
@@ -40,17 +44,23 @@
         name="smartfrog"
         changing="true"
         rev="latest.integration"
-        conf="daemon->services;compile->default;runtime->default"/>
+        conf="daemon->services;compile,runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile->default;runtime->default"/>
+        conf="compile,runtime->default;test->default;testwar->testwar"/>
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
+    <!--testharness for test time-->
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
@@ -59,11 +69,25 @@
         name="jetty"
         rev="${jetty.version}"
         conf="compile->default;redist->default"/>
-    <!--testharness for test time-->
-    <dependency org="org.smartfrog"
-        name="sf-testharness"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+    <dependency org="org.mortbay.jetty"
+        name="jetty"
+        rev="${jetty.version}"
+        conf="compile->default;redist->default"/>
+    <dependency org="tomcat"
+        name="jasper-runtime"
+        rev="${jetty.jasper.version}"
+        conf="jsp->default"/>
+    <dependency org="tomcat"
+        name="jasper-compiler"
+        rev="${jetty.jasper.version}"
+        conf="jsp->master"/>
+    <dependency org="javax.servlet"
+        name="jsp-api"
+        rev="${jsp-api.version}"
+        conf="jsp->master"/>
+    <dependency org="commons-logging"
+        name="commons-logging"
+        rev="${commons-logging.version}"
+        conf="jsp->master"/>
   </dependencies>
 </ivy-module>
