@@ -42,4 +42,21 @@ public class DeployTCN1Test extends SmartFrogTestBase {
     }
 
 
+    public void testCaseTCN1b() throws Exception {
+        deployExpectingException(FILES + "tcn1b.sf",
+                "tcn1b",
+                "SmartFrogLifecycleException",
+                "sfDeploy",
+                "SmartFrogResolutionException",
+                "Reference not found");
+    }
+
+    public void testCaseTCN1c() throws Exception {
+        deployExpectingException(FILES + "tcn1b.sf",
+                "tcn1b",
+                "SmartFrogLifecycleException",
+                "sfDeploy",
+                "SmartFrogResolutionException",
+                "Reference not found");
+    }
 }

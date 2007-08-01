@@ -18,29 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/test/system/deploy/netComponents.sf"
+#include "/org/smartfrog/test/system/deploy/tcn1.sf"
 
-/*
-Error Tested:
-OUT >Warning: SmartFrog security is NOT active
-ERR >Error during deployment of URL:org/smartfrog/test/system/deploy//test1.sf, for component:ex1.
-SmartFrogLifecycleException:: sfDeploy:
-     cause: SmartFrogResolutionException:: notFound, Unresolved Reference: outpu
-ts1
-*/
-
-Example1 extends Compound {
-     // there are two components, generator and printer, both defined in netComponents.sf
-     // the output (value) of the generator is linked to the input (printVal) of the printer
-     generator extends Generator {
-       outputs:value:to LAZY ATTRIB printer:inputs:printVal;
-       interval 1; // speed it up a bit,a number every second
-       min 1;
-       max 10;
-     }
-     printer extends Printer;         // Printer is defined in netComponents.sf
-}
 
 /*
  * sfConfig is the special attribute that is deployed by SFSystem
@@ -48,9 +27,9 @@ Example1 extends Compound {
  */
 
 sfConfig extends Compound {
+    sfExport true;
     sfProcessComponentName "test_case_tcn1"; // this will normally be set as part of the sfStart, it is
                                         // the name by which it will be known to the SF system (if not
                                         // provided a new unique name is generated
-
     test extends Example1;            // add the example itself as a component
 }
