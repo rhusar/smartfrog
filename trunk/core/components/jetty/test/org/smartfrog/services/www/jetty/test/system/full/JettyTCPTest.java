@@ -23,7 +23,8 @@ package org.smartfrog.services.www.jetty.test.system.full;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.test.TestHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,13 +43,16 @@ import java.net.URLConnection;
  * runtime.jetty.home</li> </ol>
  */
 public class JettyTCPTest
-        extends SmartFrogTestBase {
+        extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/services/www/jetty/test/system/full/";
     private static final String JETTY_HOME = "jetty.home";
-    private static final String RUNTIME_JETTY_HOME = "runtime." + JETTY_HOME;
+    private static final String TEST_JETTY_HOME = "test." + JETTY_HOME;
+    private static final String TEST_JASPER_FOUND = "test.jasper.found";
 
     private static final String ROOT_DOC = "/";//""/jetty/index.html";
+
+    private boolean hasJasper;
 
     public JettyTCPTest(String s) {
         super(s);
@@ -60,14 +64,10 @@ public class JettyTCPTest
      */
     protected void setUp() throws Exception {
         super.setUp();
-        String runtimeJettyHome = System.getProperty(RUNTIME_JETTY_HOME);
-        String jettyHome = System.getProperty(JETTY_HOME);
-        if (jettyHome == null && runtimeJettyHome != null) {
-            System.setProperty(JETTY_HOME, runtimeJettyHome);
-        }
-        if (System.getProperty(JETTY_HOME) == null) {
-            fail("Undefined property " + JETTY_HOME + " or " + RUNTIME_JETTY_HOME);
-        }
+        String runtimeJettyHome = TestHelper.getRequiredTestProperty(TEST_JETTY_HOME);
+        System.setProperty(JETTY_HOME, runtimeJettyHome);
+        hasJasper= TestHelper.getTestProperty(TEST_JASPER_FOUND,null)!=null;
+
     }
 
 
@@ -136,8 +136,7 @@ public class JettyTCPTest
     }
 
     public void testCaseTCP19() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp19.sf", "tcp19");
-        assertNotNull(application);
+        application = deployExpectingSuccess(FILES + "tcp19.sf", "tcp19");
         int port = 0;
         String hostname = application.sfResolve("serverHost",
                 (String) null,
@@ -159,8 +158,7 @@ public class JettyTCPTest
     }
 
     public void testCaseTCP20() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp20.sf", "tcp20");
-        assertNotNull(application);
+        application = deployExpectingSuccess(FILES + "tcp20.sf", "tcp20");
         Prim server1 = (Prim) application.sfResolveHere("server1");
         Prim server2 = (Prim) application.sfResolveHere("server2");
         String hostname1 = server1.sfResolve("serverHost", (String) null, true);
@@ -198,7 +196,7 @@ public class JettyTCPTest
     }
 
     public void testCaseTCP21() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp21.sf", "tcp21");
+        application = deployExpectingSuccess(FILES + "tcp21.sf", "tcp21");
         assertNotNull(application);
         Prim server = (Prim) application.sfResolve("server");
         String jettyhome = server.sfResolve("jettyhome", (String) null, true);
@@ -218,7 +216,7 @@ public class JettyTCPTest
     }
 
     public void testCaseTCP22() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "tcp22.sf", "tcp22");
+        application = deployExpectingSuccess(FILES + "tcp22.sf", "tcp22");
         assertNotNull(application);
         Prim server = (Prim) application.sfResolve("adminServer");
         String hostname = server.sfResolve("httpserverHost",

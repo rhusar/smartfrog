@@ -40,32 +40,15 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-  <property name="Name.System" value="jetty"/>
   <!-- System tests turned off to make CC build over them-->
-  <property name="system.tests" value="false" />
+  <property name="system.tests" value="true" />
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
   
-   
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
+  <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
+  <property name="deploy.sf" value="${example.path}/example1.sf"/>
 
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-
-    <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
-    <property name="deploy.sf" value="${example.path}/example1.sf"/>
-    <property name="manifestName"
-       value="${smartfrog.home}/private/sealManifest.mf"/>
-    <tstamp/>
-
-
-    <echo level="verbose">jetty home=${runtime.jetty.home}</echo>
-
-  </target>
-
-  <target name="all" depends="dist,test"
-      description="Create a distribution and run tests"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -75,26 +58,22 @@ For more information: www.smartfrog.org
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
-    <available property="verified.ok"
-               classname="org.mortbay.http.HttpServer"
-               classpathref="compile.classpath"
-               ignoresystemclasses="false"/>
-    <property name="verify.fail.message"
-              value="No Jetty found"/>
-    <available property="jasper.found"
+  <target name="verify-prerequisites" depends="common.verify-prerequisites">
+    <available property="test.jasper.found"
         classname="org.apache.jasper.servlet.JspServlet"
         classpathref="tests.run.classpath"
         ignoresystemclasses="true"/>
     <echo level="verbose">
-      jasper.found=${jasper.found}
+      jasper.found=${test.jasper.found}
     </echo>
+    <property name="test.jetty.home"
+        location="${test.src.dir}/files/jettyhome"/>
   </target>
   
     <!-- ========================================================== -->
     <!-- parse the file -->
     <!-- ========================================================== -->
-    <target name="parse" depends="init,package"
+    <target name="parse" depends="ready-to-test"
         description="parse the deployment descriptor">
 
       <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
@@ -112,39 +91,12 @@ For more information: www.smartfrog.org
     </target>
 
 
-  <!-- ========================================================== -->
-  <!-- this is an override, as we add a manifest -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs,parse" description="create a full distribution">
-     <copy todir="${dist.lib.dir}">
-       <fileset dir="${lib.dir}"/>
-     </copy>
-
-     <copy todir="${dist.doc.dir}">
-       <fileset dir="${doc.dir}"/>
-     </copy>
-
-     <copy todir="${dist.src.dir}">
-       <fileset dir="${src.dir}">
-         <include name="**/examples/**"/>
-       </fileset>
-     </copy>
-   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
-   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties" failonerror="false"/>
-  </target>
-
-  <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
-  <!-- =================================================================== -->
-  <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
-
 
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
 
-
+<!--
   <target name="system-tests" depends="ready-to-test"
       if="run.system.tests" description="run system tests">
     <sf-system-test>
@@ -152,7 +104,7 @@ For more information: www.smartfrog.org
         <sf-system-test-junit>
           <sysproperty key="test.files.dir"
               value="${test.src.dir}/files"/>
-          <!--Root directory for jetty-->
+          --><!--Root directory for jetty--><!--
           <sysproperty key="jetty.home"
               value="${test.src.dir}/files/jettyhome"/>
           <batchtest todir="${test.data.dir}">
@@ -169,7 +121,22 @@ ${test.reports.dir}
       </test>
     </sf-system-test>
 
+  </target>-->
+
+  <target name="ready-to-test" depends="common.ready-to-test,testwar">
+
   </target>
 
+  <!--pick up the test war from Ivy-->
+  <target name="testwar" depends="ivy-retrieve">
+    <property name="test.testwar.war"
+        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war" />
+    <fail>
+      <condition >
+        <not><available file="${test.testwar.war}"/></not>
+      </condition>
+      Not found: ${test.testwar.war}
+    </fail>
+  </target>
 
 </project>

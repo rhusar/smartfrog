@@ -22,5 +22,6 @@
 
 sfConfig extends JettyHttpServer {
       jettyhome ROOT:jetty_home; // mandatory
+      port 8083;
 }
 
