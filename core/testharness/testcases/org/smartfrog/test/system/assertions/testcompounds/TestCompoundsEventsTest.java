@@ -81,9 +81,6 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
         assertSFERecord(tc.getStatus(),event,"application.getStatus()");
     }
 
-    public void testCompleteSuite() throws Throwable {
-        expectSuccessfulTestRun(FILES,"testcompounds_sfunit");
-    }
 
     private void assertSFERecord(TerminationRecord actionTR, TestCompletedEvent event,String recordType) {
         if(actionTR==null) {
