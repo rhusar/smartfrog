@@ -197,6 +197,7 @@ For more information: www.smartfrog.org
   </target>
 
 
+  <target name="ready-to-publish-all" depends="common.ready-to-publish-all,package-tests" />
 
   <!--test all the parsing-->
   <target name="parse-tests" depends="init-tests"  unless="testcase">
