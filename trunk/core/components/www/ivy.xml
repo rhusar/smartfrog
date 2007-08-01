@@ -26,7 +26,9 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="war" description="compile path for the test war"/>
+    <conf name="war" description="compile path for the test war" visibility="private"/>
+    <conf name="testwar"
+        description="The war file used for testing WWW support"/>
     <conf name="documentation"
           description="all documentation artifacts"/>
   </configurations>
@@ -36,7 +38,7 @@
     <artifact name="sf-www-javadocs" conf="documentation" ext="zip"/>
     <artifact name="sf-www-documentation" conf="documentation" ext="zip"/>
     <!--the war conf publishes a new artifact-->
-    <artifact name="sf-testwar" conf="war" type="war"/>
+    <artifact name="sf-www-testwar" conf="testwar" type="war"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
