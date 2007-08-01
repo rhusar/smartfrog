@@ -159,13 +159,8 @@ For more information: www.smartfrog.org
       testcase=${testcase}
     </echo>
     <patternset id="teststhatfail">
-      <exclude unless="run.failing.tests" name="${systemtests}/java/LibraryTest.*"/>
-      <!--http://jira.smartfrog.org/jira/browse/SFOS-25-->
-     <!-- <exclude name="${systemtests}/workflow/sequence/SequenceTest.*"
-          unless="run.failing.tests" />-->
-      <!-- 2006-10-18: steve_l commented out while still finishing off the component,
-        so Cruise Control doesn't fail-->
-      <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsTest.*"
+
+      <exclude name="${systemtests}/assertions/testcompounds/FailingTestCompoundsTest.*"
           unless="run.failing.tests" />
       <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
       <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
@@ -174,13 +169,6 @@ For more information: www.smartfrog.org
       <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
           unless="run.failing.tests" />
 
-      <exclude name="${systemtests}/assertions/testcompounds/TestCompoundsEventsTest.*"
-          unless="run.failing.tests" />
-      <!--SFOS-297 : callbacks make the daemon lock up under the testharness -->
-  <!--
-      <exclude name="${systemtests}/workflow/sequence/HistorySequenceTest.*"
-          unless="run.failing.tests" />
-          -->
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
