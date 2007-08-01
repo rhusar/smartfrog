@@ -91,7 +91,7 @@ function oneVoiceUtWriteMenuItem(itemText, itemURL) {
     </div> \
   </div> \
 </div> \
-  \n";
+";
     d.writeln(x);
 }
 
@@ -101,7 +101,7 @@ function oneVoiceUtWriteMenuItem(itemText, itemURL) {
 // This function writes the menu bar for a page, including a Help menu
 // item. The menu bar is followed by a standard page help space. 
 //======================================================================
-function writePageMenu(pageId) {
+/*function writePageMenu(pageId) {
     var d = document;
     d.writeln(" \
 <table> \
@@ -125,7 +125,7 @@ function writePageMenu(pageId) {
     ");
 
     writeHelpSpace();
-}
+}*/
 
 //======================================================================
 // Function: oneVoiceWritePageMenu()
@@ -151,7 +151,9 @@ function oneVoiceWritePageMenu(pageId, loc)
 
     d.writeln("</div><div class=\"clearFloats\"></div>");
 
-    writeHelpSpace();
+    if (loc == "header") {
+        writeHelpSpace();
+    }
 }
 
 //======================================================================
@@ -161,15 +163,15 @@ function oneVoiceWritePageMenu(pageId, loc)
 //======================================================================
 function writeHelpSpace()  {
     var d = document;
-    d.writeln(" \
-<div align=\"center\"> \
-  <div id=\"helpspace\" style=\"width: 90%; padding: 4px; margin-top: 10px; \
+    
+    var x = "<div align=\"center\">";
+    x = x + "<div id=\"helpspace\" style=\"width: 90%; padding: 4px; margin-top: 10px; \
 	margin-bottom: 10px; font-size: 9pt; \
 	background-color: #CCE6FF; \
-	display: none; border: 1px solid blue;\"> \
-  </div> \
-</div> \
-");
+	display: none; border: 1px solid blue;\">";
+    x = x + "</div></div>";
+
+    d.writeln(x);
 }
 
 //======================================================================
@@ -189,18 +191,18 @@ function doHelp(pageId) {
             dontHelp();
             return;
         }
-        getHelp(pageId);
+        
        obj.style.display = "";
-        obj.innerHTML = " \
-<div id=\"helptext\" align=\"left\"> \
-</div> \
-<br/> \
-<center> \
-<input type=\"button\" value=\"Close Help\" onClick=\"javascript:dontHelp()\" \
-	style=\"font-size: 9pt;\"> \
-</center> \
-";
-    }        
+       obj.innerHTML = " \
+                        <div id=\"helptext\" align=\"left\"></div> \
+                        <br/> \
+                        <center> \
+                        <input type=\"button\" value=\"Close Help\" onClick=\"javascript:dontHelp()\" style=\"font-size: 9pt;\" /> \
+                        </center> \
+                        ";
+
+        getHelp(pageId);
+    }
 }
 
 //======================================================================
@@ -216,7 +218,7 @@ function dontHelp() {
 //======================================================================
 // Function: setLocation()
 //
-// Invokies a new page
+// Invokes a new page
 //======================================================================
 function setLocation(loc) {
     window.location = loc;

@@ -38,6 +38,7 @@ For more information: www.smartfrog.org
 
     <script language="JavaScript" type="text/javascript" src="navigation.js"></script>
     <script language="JavaScript" type="text/javascript" src="ajax.js"></script>
+    <script language="JavaScript" type="text/javascript" src="help_get_ajax.js"></script>
     <script language="JavaScript" type="text/javascript" src="utils.js"></script>
 
     <script language="JavaScript" type="text/javascript" src="onevoice/js/tableManager.js"></script>

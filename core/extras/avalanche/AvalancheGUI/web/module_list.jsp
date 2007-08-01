@@ -1,4 +1,4 @@
-<% /**
+<%-- /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/ %>
+*/ --%>
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
@@ -154,6 +154,7 @@ For more information: www.smartfrog.org
     <tbody>
 <%
     String rowClass = "";
+    if (modules.length == 0) {
     for( int i=0;i<modules.length;i++ ){
       ModuleType m = null;
       String description = null;
@@ -194,7 +195,12 @@ For more information: www.smartfrog.org
 	</tr>
 <%
 	    }
-    }
+    }} else { %>
+        <tr><td colspan="5">Currently there are no modules ready. Click "Add a module" to add a module.</td></tr>
+        <%
+
+
+        }
 %>
     </tbody>
 </table>
