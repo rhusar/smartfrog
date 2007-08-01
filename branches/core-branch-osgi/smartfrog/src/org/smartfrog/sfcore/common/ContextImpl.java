@@ -800,10 +800,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 
 
         // Compares Tags
-        if (!((o instanceof ContextImpl) && (((ContextImpl)o).equalsTags(attributeTags)))){
-            return false;
-        }
-        return true;
+        return o instanceof ContextImpl && ((ContextImpl) o).equalsTags(attributeTags);
     }
 
     /**
@@ -818,4 +815,18 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         return result;
     }
 
+    protected Object writeReplace() throws SmartFrogContextException {
+        Context copy = (Context) clone();
+        Enumeration keys = copy.keys();        
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Set tags = (Set) attributeTags.get(key);
+            if (tags != null && tags.contains(SmartFrogCoreKeys.SF_TRANSIENT)) {
+                copy.sfRemoveTags(key, tags);
+                copy.remove(key);
+            }
+        }
+
+        return copy;
+    }
 }

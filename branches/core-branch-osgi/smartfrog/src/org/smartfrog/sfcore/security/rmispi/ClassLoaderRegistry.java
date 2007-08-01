@@ -21,6 +21,7 @@ public class ClassLoaderRegistry {
         loaders.clear();
     }
 
+    // This would be easier to use if it took a Reference directly, but we can't have dependencies outside this package
     public static void registerClassLoader(ClassLoader loader, String annotation) {
         annotations.put(loader, annotation);
         loaders.put(annotation, loader);

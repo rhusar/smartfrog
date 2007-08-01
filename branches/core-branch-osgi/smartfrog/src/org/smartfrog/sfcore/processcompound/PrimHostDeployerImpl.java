@@ -23,11 +23,19 @@ package org.smartfrog.sfcore.processcompound;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.DumperCDImpl;
+import org.smartfrog.sfcore.common.Dumper;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 /**
  * Implements a specialized description deployer. This deployer uses the
@@ -93,16 +101,10 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      *
      * @throws SmartFrogDeploymentException if failed to deploy target
      */
-    protected Prim deploy(Prim parent)
-        throws SmartFrogDeploymentException {
-        try {
-            ProcessCompound pc;
+    protected Prim deploy(Prim parent) throws SmartFrogDeploymentException {
 
-            try {
-                pc = getProcessCompound();
-            } catch (Exception e) {
-                throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-            }
+        try {
+            ProcessCompound pc = getProcessCompound();
 
             ProcessCompound local = SFProcess.getProcessCompound();
 
@@ -115,12 +117,64 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                     return super.deploy(parent);
                 }
             } else {
-                // Name = null : The name of the component on the remote process is generated automatically, even though the component has a name in the local process. Not pretty.
-                return pc.sfDeployComponentDescription(null, parent, target, null);
+                Context modifiedAttributes = deployEnvironmentIfNeeded(pc);
+
+                // Name = null : The name of the component on the remote process is generated automatically,
+                // even though the component has a name in the local process. Not pretty.
+                return pc.sfDeployComponentDescription(null, parent, target, modifiedAttributes);
             }
         } catch (Exception ex) {            
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward
                     ("Failed to deploy the component description: " + target, ex);
         }
+    }
+
+    private Context deployEnvironmentIfNeeded(ProcessCompound pc) throws SmartFrogException, RemoteException {
+        Prim appEnvironment = resolveEnvironment();
+        ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
+
+        // 0: Host, 1: Process name
+        HereReferencePart nameRef = (HereReferencePart) appEnvironment.sfCompleteName().elementAt(2);
+        Object name = nameRef.getValue();
+
+        if (pc.sfResolveHere(name, false) == null) {
+            pc.sfDeployComponentDescription(name, null, appEnvDescr, null);
+        }
+
+        Context modifiedAttributes = new ContextImpl();
+        Prim deployedAppEnv = (Prim) pc.sfResolveHere(name);
+        modifiedAttributes.put(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, deployedAppEnv);
+        return modifiedAttributes;
+    }
+
+    private Prim resolveEnvironment() throws SmartFrogResolutionException {
+        try {
+            return (Prim) target.sfResolve(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT);
+        } catch (ClassCastException cce) {
+            throw environmentError(cce);
+        } catch (SmartFrogResolutionException re) {
+            throw environmentError(re);
+        }
+    }
+
+    private ComponentDescription dumpEnvironment(Prim appEnvironment) throws SmartFrogException {
+        try {
+            DumperCDImpl dumper = new DumperCDImpl(appEnvironment);
+            appEnvironment.sfDumpState(dumper.getDumpVisitor());
+            return dumper.getComponentDescription(1000);
+        } catch (RemoteException
+                e) {
+            throw new SmartFrogDeploymentException
+                    ("The application environment has remote parts, which is not recommended. Access to one of the remote parts failed.", e);
+        } catch (SmartFrogException
+                e) {
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward
+                    ("Could not dump the application environment for deployment to remote process", e);
+        }
+    }
+
+    private static SmartFrogResolutionException environmentError(Exception e) {
+        return (SmartFrogResolutionException) SmartFrogResolutionException.forward
+                ("The sfApplicationEnvironment attribute does not point to a correct environment or is missing", e);
     }
 }

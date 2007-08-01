@@ -56,7 +56,8 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
     /** The factory used to get the component instance. */
     private PrimFactory primFactory;
 
-    private ClassLoadingEnvironment environment;
+    private ClassLoadingEnvironment clEnv;
+    private Reference appEnv;
 
 
     public void setComponentFactory(PrimFactory primFactory) {
@@ -67,9 +68,6 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
         this.target = target;
     }
 
-    public void setClassLoadingEnvironment(ClassLoadingEnvironment env) {
-        this.environment = env;
-    }
     /**
      * Does the basic deployment. The instance created and the deployment
      * forwarded to the primitive. Subclasses can override this to provide
@@ -101,10 +99,6 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
                     ((ComponentDescription) value).setParent(null);
                 }
             }
-
-            // Adding the sfCodeRepository attribute.
-            // Used by each Prim to know where it comes from and hence where to look for resources if needed.
-            cxt.put(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, new ClassLoadingEnvironmentWrapper(environment));
 
             dComponent.sfDeployWith(parent, cxt);
 

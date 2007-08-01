@@ -41,8 +41,10 @@ public class SmartFrogActivator {
             /** @noinspection FeatureEnvy*/
             public void run() {
                 try {
-                    processCompound = SFSystem.runSmartFrog();
-                    configureProcessCompound(bundleContext);
+                    synchronized(lock){
+                        processCompound = SFSystem.runSmartFrog();
+                        configureProcessCompound(bundleContext);
+                    }                    
 
                     getLog().info("SmartFrog daemon running...");
                 } catch (Exception e) {
@@ -80,7 +82,8 @@ public class SmartFrogActivator {
     }
 
     private void addBundleContextAttribute(BundleContext bundleContext) throws SmartFrogRuntimeException, RemoteException {
-        processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, new BundleContextWrapper(bundleContext));
+        processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
+        processCompound.sfAddTag(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, SmartFrogCoreKeys.SF_TRANSIENT);
     }
 
     private void loadProperties(Bundle bundle) throws IOException {

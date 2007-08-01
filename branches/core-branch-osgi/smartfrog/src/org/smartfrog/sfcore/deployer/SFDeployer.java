@@ -32,6 +32,9 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+
+import java.rmi.RemoteException;
 
 
 /**
@@ -41,9 +44,14 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class SFDeployer implements MessageKeys {
 
-    private static ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static PrimFactory defaultPrimFactory = new DefaultComponentFactory();
-    private static ClassLoadingEnvironment defaultClassLoadingEnvironment = new CoreClassesClassLoadingEnvironment();
+    private static final ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
+    private static final PrimFactory defaultPrimFactory = new DefaultComponentFactory();
+    private static final ClassLoadingEnvironment defaultClassLoadingEnvironment = new CoreClassesClassLoadingEnvironment();
+    private static final Reference parentAppEnvRef;
+    static {
+        parentAppEnvRef = new Reference(ReferencePart.parent());
+        parentAppEnvRef.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT));
+    }
 
     /**
      * Deploy description. Constructs the real deployer using getDeployer
@@ -76,7 +84,7 @@ public class SFDeployer implements MessageKeys {
 
             return getDeployer(component).deploy(name, parent, params);
 
-        } catch (SmartFrogException sfex){
+        } catch (SmartFrogRuntimeException sfex){
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfex);
         }
     }
@@ -90,11 +98,11 @@ public class SFDeployer implements MessageKeys {
      * @param component the component description to mine for the deployer information
      * @return deployer for target
      *
-     * @throws SmartFrogException failed to construct target deployer
-     * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
+     * @throws SmartFrogRuntimeException failed to construct target deployer
+     * @see PrimProcessDeployerImpl
      */
     private static ComponentDeployer getDeployer(ComponentDescription component)
-            throws SmartFrogException
+            throws SmartFrogRuntimeException
     {
         String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS, false);
         if (className != null)
@@ -104,7 +112,7 @@ public class SFDeployer implements MessageKeys {
     }
 
     private static ComponentDeployer newDeployerSyntax(ComponentDescription component)
-            throws SmartFrogResolutionException
+            throws SmartFrogRuntimeException
     {
         ComponentDeployer deployer;
         Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER, false);
@@ -131,13 +139,28 @@ public class SFDeployer implements MessageKeys {
             deployer = defaultComponentDeployer;
         }
 
+        propagateApplicationEnvironment(component);
+
         deployer.setTargetComponentDescription(component);
         deployer.setComponentFactory(getComponentFactory(component));
         return deployer;
     }
 
+    private static void propagateApplicationEnvironment(ComponentDescription component) throws SmartFrogRuntimeException {
+        // Propagate the application environment reference down the component tree, if present.
+        // If not there, the application does not have an environment, meaning it only uses things from the core.
+        // This is especially the case for sfDefault, but could also be a simple app with no user provided code.
+        Prim appEnv = (Prim) component.sfResolve(parentAppEnvRef, false);
+        if (appEnv != null) try {
+            component.sfReplaceAttribute(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, appEnv.sfCompleteName());
+        } catch (RemoteException e) {
+            throw new SmartFrogRuntimeException
+                    ("The application environment should not be remote. It is, and a network problem occurred.", e);
+        }
+    }
+
     private static ComponentDeployer oldDeployerSyntax(String className, ComponentDescription component)
-            throws SmartFrogException
+            throws SmartFrogRuntimeException
     {        
         try {
             
@@ -168,7 +191,7 @@ public class SFDeployer implements MessageKeys {
      * @throws SmartFrogResolutionException If the required attributes are missing in the description.
      */
     private static PrimFactory getComponentFactory(ComponentDescription component)
-            throws SmartFrogResolutionException
+            throws SmartFrogRuntimeException
     {
         ComponentDescription metadata;
         try {
@@ -188,15 +211,16 @@ public class SFDeployer implements MessageKeys {
     }
 
     private static PrimFactory resolveFactory(ComponentDescription cd) throws SmartFrogResolutionException {
-        Reference factoryRef = (Reference) cd.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY, false);
+        final Reference factoryRef = (Reference)
+                cd.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY, false);
         if (factoryRef == null) return defaultPrimFactory;
         else return (PrimFactory) cd.sfResolve(factoryRef);
     }
 
     private static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
-        Reference classLoadingEnvRef = (Reference)
+        final Reference classLoadingEnvRef = (Reference)
                 cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
-        if (classLoadingEnvRef == null) return defaultClassLoadingEnvironment;
+        if (classLoadingEnvRef == null) return defaultClassLoadingEnvironment;        
         else return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
     }
 
