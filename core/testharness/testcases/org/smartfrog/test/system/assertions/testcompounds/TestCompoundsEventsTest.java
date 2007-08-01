@@ -31,7 +31,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public class TestCompoundsEventsTest extends DeployingTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
+    public static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
 
     public TestCompoundsEventsTest(String name) {
         super(name);
@@ -64,10 +64,7 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testFailureNested");
         TerminationRecord status = event.getStatus();
     }
-    public void testFailureWrongMessageNested() throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testFailureWrongMessageNested");
-        TerminationRecord status = event.getStatus();
-    }
+
 
     public void testSmartFrogExceptionActionRecord() throws Throwable {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testSmartFrogException");
