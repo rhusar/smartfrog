@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/workflow/sequence/components.sf"
 
 /**
- * test a sequence, assert both toggle to true
+ * test a sequence
  */
 
 HistorySequence extends TestCompound {
