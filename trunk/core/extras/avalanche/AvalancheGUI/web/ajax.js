@@ -7,7 +7,6 @@
 
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
 
  You should have received a copy of the GNU Lesser General Public
@@ -16,53 +15,60 @@
 
  For more information: www.smartfrog.org */
 
+// Returns object or false
+function getXMLHttpRequestObject() {
+    try {
+        // If Mozilla, Firefox, Safari
+        if (window.XMLHttpRequest && !window.ActiveXObject) {
+            XMLHttpRequestObject = new XMLHttpRequest();
 
-var helptext = false;
-var XMLHttpRequestObject = false;
-
-// If Mozilla, Firefox, Safari
-if (window.XMLHttpRequest) {
-    XMLHttpRequestObject = new XMLHttpRequest();
-    XMLHttpRequestObject.overrideMimeType("text/xml");
-    // Else if Microsoft Browser
-} else if (window.ActiveXObject) {
-    XMLHttpRequestObject = new
-            ActiveXObject("Microsoft.XMLHTTP");
-}
-
-function getHelp(pageId) {
-
-    if (XMLHttpRequestObject) {
-        XMLHttpRequestObject.open("GET", "help_get.jsp?id=" + pageId + "&now=" + (new Date).getMilliseconds());
-
-        XMLHttpRequestObject.onreadystatechange = function()
-        {
-            // If everything went alright
-            if (XMLHttpRequestObject.readyState == 4 && XMLHttpRequestObject.status == 200) {
-                var xmlDocument = XMLHttpRequestObject.responseXML;
-                helptext = xmlDocument.getElementsByTagName("message")[0].firstChild.data;
+            return XMLHttpRequestObject;
+            // Else if Microsoft Browser
+        } else if (window.ActiveXObject) {
+            try {
+                return (new ActiveXObject("MSXML2.XMLHTTP.3.0"));
+            } catch (e) {
+                try {
+                    return (new ActiveXObject("Msxml2.XMLHTTP"));
+                } catch (e) {
+                    try {
+                        return (new ActiveXObject("Microsoft.XMLHTTP"));
+                    } catch (e) {
+                        return false;
+                    }
+                }
             }
-            printHelp();
         }
-
-        XMLHttpRequestObject.send(null);
+    } catch (e) {
+        return false;
     }
 }
 
-function printHelp() {
-    var targetDiv = false;
-    targetDiv = document.getElementById("helptext");
-
-    // If targetDiv is found
-    if (targetDiv) {
-        // Print intro
-        targetDiv.innerHTML = "<center><b>Help<b></center><p>";
-        // ... and text
-        if (helptext) {
-            targetDiv.innerHTML = targetDiv.innerHTML + helptext;
-        } else {
-            targetDiv.innerHTML = targetDiv.innerHTML + "There is no help for this topic. Sorry!";
+// Sends given XMLHttpRequest, returns true on success.
+function sendRequest(XMLHttpRequest) {
+    try {
+        // If Mozilla, Firefox, Safari
+        if (window.XMLHttpRequest) {
+            XMLHttpRequest.send(null);
+            // Else if Microsoft Browser
+        } else if (window.ActiveXObject) {
+            XMLHttpRequest.send("");
         }
-        targetDiv.innerHTML = targetDiv.innerHTML + "</p>";
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+// Fills a given DIV box with a given text
+function fillDivBox(idOfTargetDiv, text) {
+    var targetDiv = false;
+    targetDiv = document.getElementById(idOfTargetDiv);
+
+    if (targetDiv) {
+        // Update only if neccessary
+        if (targetDiv.innerHTML != text) {
+            targetDiv.innerHTML = text;
+        }
     }
 }

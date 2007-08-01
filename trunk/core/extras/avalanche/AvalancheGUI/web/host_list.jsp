@@ -1,4 +1,4 @@
-<% /*
+<%-- /*
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,13 +16,12 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 For more information: www.smartfrog.org
-*/ %>
+*/ --%>
 
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
-<%@ page import="org.smartfrog.avalanche.server.engines.sf.*" %>
 
 <%
     String errMsg = null;
@@ -37,18 +36,31 @@ For more information: www.smartfrog.org
     try {
         boolListActiveHosts = Boolean.parseBoolean(request.getParameter("active").trim());
     } catch (Exception e) {
-
+        // TODO: Add something useful here or forget about it
     }
 
     String[] hosts = manager.listHosts();
-
     String rowClass = "";
-    SFAdapter adapter = new SFAdapter(factory);
+
+    if (boolListActiveHosts) {
 %>
+<script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
+<script language="JavaScript" type="text/javascript">
+    function pullUpdate() {
+        // Get update
+        getStatus();
+        // Call me again in 5 seconds
+        setTimeout("pullUpdate()", 5000);
+    }
+
+    // Call once
+    pullUpdate();
+</script>
+<% } %>
 
 <script language="JavaScript" type="text/javascript">
     <!--
-    setNextSubtitle("List Active Hosts Page");
+    setNextSubtitle("List <% if (boolListActiveHosts) { %>Active <% } %>Hosts Page");
     -->
 </script>
 
@@ -93,7 +105,6 @@ For more information: www.smartfrog.org
                     String os = "";
                     String arch = "";
                     boolean sfError = false;
-                    boolean state = false;
 
                     String URLhostid = "hostId=" + hosts[i];
 
@@ -101,17 +112,9 @@ For more information: www.smartfrog.org
                         h = manager.getHost(hosts[i]);
                         os = h.getPlatformSelector().getOs();
                         arch = h.getPlatformSelector().getArch();
-
-                        try {
-                            state = adapter.isActive(hosts[i]);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                            sfError = true;
-                        }
-
                     } catch (NullPointerException e) {
-                        // ugly patc
-                        // h for xindice bug
+                        // ugly patch for xindice bug
+                        // TODO: Sort out.
                         os = "Error !!";
                     } catch (Exception e) {
                         // do nothing
@@ -143,7 +146,7 @@ For more information: www.smartfrog.org
                 </td>
                 <% if (boolListActiveHosts) { %>
                 <td>
-                    <%=state ? "Available" : "Not Available"%>
+                    <div id="<%=hosts[i]%>_status" style="width:100px"></div>
                 </td>
                 <% } %>
             </tr>
@@ -151,10 +154,7 @@ For more information: www.smartfrog.org
                 }
                 } else {
             %>
-                <td></td><td></td><td></td>
-                <% if (boolListActiveHosts) { %>
-                    <td></td>
-                <% } %>
+                <td colspan="<% if (boolListActiveHosts) { %>5<% } else {%>4<% } %>">There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
             <%
                 }
             %>

@@ -69,14 +69,10 @@ For more information: www.smartfrog.org
     }
 
     setNextSubtitle("Log Reader Page");
-
-    writePageMenu("LogReader",
-            "Refresh",
-            "<%= myURI%>",
-  "Whole File (<%=fileSize %> bytes)",
-  	"LogReader.jsp?filePath=<%=filePath%>&&readAll",
-  "Max 200 lines",
-  	"LogReader.jsp?filePath=<%=filePath%>&&maxLines=200"
+    oneVoiceWritePageMenu("LogReader", "footer",
+            "Refresh", "<%= myURI%>",
+            "Whole File (<%=fileSize %> bytes)", "log_reader.jsp?filePath=<%=filePath%>&readAll",
+            "Max 200 lines", "log_reader.jsp?filePath=<%=filePath%>&maxLines=200"
      );
 </script>
 

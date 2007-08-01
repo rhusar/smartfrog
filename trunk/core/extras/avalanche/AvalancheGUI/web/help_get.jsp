@@ -16,9 +16,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org */ --%>
 
-<%@ page contentType="text\xml" language="java" %>
+<%@ page language="java" contentType="text/xml" %>
 <%@ page import="org.apache.xerces.parsers.DOMParser" %>
+<%@ page import="javax.xml.parsers.*" %>
+<%@ page import="javax.xml.transform.*" %>
+<%@ page import="javax.xml.transform.stream.*" %>
+<%@ page import="javax.xml.transform.dom.*" %>
+<%@ page import="java.io.*" %>
 <%@ page import="org.w3c.dom.*" %>
+
 <%
     String pageId = request.getParameter("id");
     String text = null;
@@ -59,12 +65,34 @@ For more information: www.smartfrog.org */ --%>
         }
     }
 
-    out.clear();
-    out.write("<?xml version=\"1.0\" ?>\n");
-    out.write("<response>\n");
-    out.write("<type>" + ((text != null) ? "success" : "error") + "</type>\n");
-    out.write("<message>" + ((text != null) ? text : "Help is currently not available.") + "</message>\n");
-    out.write("</response>");
-    out.close();
+    // Create output document
+    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    Document xdoc = db.newDocument();
 
+    // Create root object
+    Element root = xdoc.createElement("response");
+    xdoc.appendChild(root);
+
+    // Create type-Node
+    Element entry = xdoc.createElement("type");
+    entry.appendChild(xdoc.createTextNode(((text!=null)?"success":"error")));
+    root.appendChild(entry);
+
+    // Create message-Node
+    entry = xdoc.createElement("message");
+    entry.appendChild(xdoc.createTextNode(((text!=null)?text:"Sorry, but there is no help on this topic.")));
+    root.appendChild(entry);
+
+    // Convert DOM to XML string
+    StringWriter sw = new StringWriter();
+    StreamResult result = new StreamResult(sw);
+    Transformer trans = TransformerFactory.newInstance().newTransformer();
+    trans.setOutputProperty(OutputKeys.INDENT, "yes");
+    trans.transform(new DOMSource(xdoc), result);
+    String xmlString = sw.toString();
+
+    // Print output
+    out.clear();
+    out.write(xmlString);
+    out.close();
 %>
