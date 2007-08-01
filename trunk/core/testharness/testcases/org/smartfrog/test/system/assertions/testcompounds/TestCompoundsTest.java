@@ -23,7 +23,6 @@ import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestCompoundImpl;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * Date: 30-Apr-2004
@@ -60,14 +59,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
 
-    public void testUnexpectedFailure() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testUnexpectedFailure");
-    }
-
-    public void testFailureWrongMessage() throws Throwable {
-        TerminationRecord record = deployToNormalTermination("testFailureWrongMessage");
-        assertTerminationRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
-    }
+ 
 
     public void testFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
