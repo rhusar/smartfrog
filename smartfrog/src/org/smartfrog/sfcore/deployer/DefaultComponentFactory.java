@@ -51,7 +51,8 @@ public class DefaultComponentFactory extends PrimImpl implements PrimFactory, Pa
     protected Object newInstance(String className) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException
     {
-        Class clazz = environment.getClassLoader().loadClass(className);
+        ClassLoader loader = environment.getClassLoader();
+        Class clazz = loader.loadClass(className);
         SFSecurity.checkSecurity(clazz);
         return clazz.newInstance();
     }

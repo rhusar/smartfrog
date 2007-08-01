@@ -14,6 +14,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
 
 /**
  * Implements the sfCodebase-aware component creation, as currently documented.
@@ -51,11 +52,10 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
      * @throws Exception failed to load class
      */
     private Class getPrimClass(ComponentDescription target) throws SmartFrogResolutionException, SmartFrogDeploymentException {
-        String targetClassName;
         Object obj = null;
         try {
 
-            targetClassName = (String) target.sfResolve(refClass);
+            String targetClassName = (String) target.sfResolve(refClass);
 
             // 3rd parameter = true: We look in the default code base if everything else fails.
             return SFClassLoader.forName(targetClassName, null, true);
@@ -72,7 +72,7 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
             }
             throw new SmartFrogDeploymentException(refClass, null, name, target,
                     null, "Wrong class when resolving '" + refClass + "': '"
-                    + obj + "' (" + obj.getClass().getName() + ")", ccex, null);
+                    + obj + "' (" + obj.getClass().getName() + ')', ccex, null);
         } catch (ClassNotFoundException cnfex) {
             Object name = null;
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
@@ -97,4 +97,6 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
     public ClassLoader getClassLoader() {
         throw new UnsupportedOperationException();
     }
+
+    protected void doSfDeploy() throws SmartFrogException, RemoteException {}
 }

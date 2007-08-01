@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -117,39 +116,52 @@ public class SFDeployer implements MessageKeys {
         ComponentDeployer deployer;
         Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER, false);
         if (deployerRef != null) {
+
             try {
                 deployer = (ComponentDeployer) component.sfResolve(deployerRef);
             } catch (ClassCastException e) {
                 throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
                                 + " attribute must be a ComponentDeployer.", e, component);
             }
-            try {
-                /*
-               TODO: Remove hack by separating the process compound location feature from the ComponentDeployer interface.
-               This is necessary because the newly created process compound gets passed down the ComponentDescription again,
-               and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
-               through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
-               it even doesn't make any sense.
-                */
-                component.sfRemoveAttribute(SmartFrogCoreKeys.SF_DEPLOYER);
-            } catch (SmartFrogRuntimeException e) {
-                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
-            }
+
+            removeSfDeployerAttribute(component);
+            
         } else {
             deployer = defaultComponentDeployer;
         }
 
-        propagateApplicationEnvironment(component);
+        propagateApplicationEnvironmentAttribute(component);
 
-        deployer.setTargetComponentDescription(component);
-        deployer.setComponentFactory(getComponentFactory(component));
+        prepareDeployer(deployer, component);
+
         return deployer;
     }
 
-    private static void propagateApplicationEnvironment(ComponentDescription component) throws SmartFrogRuntimeException {
-        // Propagate the application environment reference down the component tree, if present.
-        // If not there, the application does not have an environment, meaning it only uses things from the core.
-        // This is especially the case for sfDefault, but could also be a simple app with no user provided code.
+    private static void removeSfDeployerAttribute(ComponentDescription component) throws SmartFrogResolutionException {
+        try {
+            /*
+           TODO: Remove hack by separating the process compound location feature from the ComponentDeployer interface.
+           This is necessary because the newly created process compound gets passed down the ComponentDescription again,
+           and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
+           through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
+           it even doesn't make any sense.
+            */
+            component.sfRemoveAttribute(SmartFrogCoreKeys.SF_DEPLOYER);
+        } catch (SmartFrogRuntimeException e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
+        }
+    }
+
+    /**
+     * Propagate the application environment reference down the component tree, if present.
+     * If not there, the application does not have an environment, meaning it only uses things from the core.
+     * This is especially the case for sfDefault, but could also be a simple app with no user provided code.
+     * @param component
+     * @throws SmartFrogRuntimeException
+     */
+    private static void propagateApplicationEnvironmentAttribute(ComponentDescription component)
+            throws SmartFrogRuntimeException
+    {
         Prim appEnv = (Prim) component.sfResolve(parentAppEnvRef, false);
         if (appEnv != null) try {
             component.sfReplaceAttribute(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, appEnv.sfCompleteName());
@@ -166,8 +178,7 @@ public class SFDeployer implements MessageKeys {
             
             ComponentDeployer deployer = (ComponentDeployer)
                     Class.forName(className).newInstance();
-            deployer.setComponentFactory(getComponentFactory(component));
-            deployer.setTargetComponentDescription(component);
+            prepareDeployer(deployer, component);
             return deployer;
 
         } catch (ClassNotFoundException cnfexcp) {
@@ -181,6 +192,11 @@ public class SFDeployer implements MessageKeys {
                     MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
                     null, component.sfContext());
         }
+    }
+
+    private static void prepareDeployer(ComponentDeployer deployer, ComponentDescription component) throws SmartFrogRuntimeException {
+        deployer.setComponentFactory(getComponentFactory(component));
+        deployer.setTargetComponentDescription(component);
     }
 
     /**

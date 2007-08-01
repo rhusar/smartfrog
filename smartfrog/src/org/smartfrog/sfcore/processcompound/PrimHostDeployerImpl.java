@@ -20,21 +20,21 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.DumperCDImpl;
-import org.smartfrog.sfcore.common.Dumper;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.DumperCDImpl;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 /**
@@ -79,11 +79,14 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                 hostAddress = (InetAddress) hostname;
             } else {
                 Object name = getProcessComponentName();
-                throw new SmartFrogDeploymentException(refProcessHost, null, name, target, null, "illegal sfProcessHost class: found " + hostname + ", of class " + hostname.getClass(), null, hostname);
+                throw new SmartFrogDeploymentException(
+                        refProcessHost, null, name, target, null,
+                        "illegal sfProcessHost class: found " + hostname + ", of class " + hostname.getClass(),
+                        null, hostname);
             }
         } catch (SmartFrogResolutionException resex) {
             return SFProcess.getProcessCompound();
-        } catch (java.net.UnknownHostException unhex) {
+        } catch (UnknownHostException unhex) {
             Object name = getProcessComponentName();
             throw new SmartFrogDeploymentException(refProcessHost, null, name, target, null, "Unknown host: " + hostname, unhex, hostname);
         }
@@ -129,7 +132,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         }
     }
 
-    private Context deployEnvironmentIfNeeded(ProcessCompound pc) throws SmartFrogException, RemoteException {
+    private Context deployEnvironmentIfNeeded(ProcessCompound pc) throws Exception {
         Prim appEnvironment = resolveEnvironment();
         ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
 
@@ -143,6 +146,8 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
         Context modifiedAttributes = new ContextImpl();
         Prim deployedAppEnv = (Prim) pc.sfResolveHere(name);
+        if (!deployedAppEnv.sfIsDeployed()) deployedAppEnv.sfDeploy();
+        if (!deployedAppEnv.sfIsStarted()) deployedAppEnv.sfStart();
         modifiedAttributes.put(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, deployedAppEnv);
         return modifiedAttributes;
     }

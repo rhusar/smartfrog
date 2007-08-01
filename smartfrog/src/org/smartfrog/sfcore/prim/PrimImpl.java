@@ -1146,9 +1146,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             //Second register child with ProcessCompound if needed
             //(ProcessCompound will have a temporal parentage with application
             // root components and then it will detach!). Keep this order!)
-            if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
+            if (!SFProcess.getProcessCompound().sfContainsChild(this)) {
                 //Registers with local process compound!
-               SFProcess.getProcessCompound().sfRegister(this.sfResolveHere(
+               SFProcess.getProcessCompound().sfRegister(sfResolveHere(
                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
             sfParent = null;
