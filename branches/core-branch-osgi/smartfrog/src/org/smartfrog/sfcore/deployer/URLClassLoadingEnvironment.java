@@ -16,13 +16,11 @@ import java.util.List;
  */
 public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
-    private ClassLoader urlClassLoader;
+    private ClassLoader urlClassLoader = null;
     public static final String ATTR_CODEBASE = "codebase";
-    private URL[] urlArray;
+    private URL[] urlArray = null;
 
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-
+    protected void doSfDeploy() throws SmartFrogException, RemoteException {        
         final Object codebase = sfResolve(ATTR_CODEBASE);
         List urls;
         if (codebase instanceof String) urls = Arrays.asList(new Object[] {codebase});
@@ -36,7 +34,7 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
             }
         } catch (MalformedURLException e) {
             throw SmartFrogException.forward
-                    ("Malformed URL in attribute \"" + ATTR_CODEBASE + "\"", e);
+                    ("Malformed URL in attribute \"" + ATTR_CODEBASE + '\"', e);
         }
 
         // The parent class loader is the one that loaded SmartFrog core classes,
@@ -55,6 +53,8 @@ public class URLClassLoadingEnvironment extends AbstractClassLoadingEnvironment 
     }
 
     public ClassLoader getClassLoader() {
+        if (urlClassLoader == null)
+            throw new IllegalStateException("The class loader is not available, this environment has not been deployed yet");
         return urlClassLoader;
     }
 

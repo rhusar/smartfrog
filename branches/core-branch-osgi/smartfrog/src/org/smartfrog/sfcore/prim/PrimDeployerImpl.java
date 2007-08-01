@@ -56,9 +56,6 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
     /** The factory used to get the component instance. */
     private PrimFactory primFactory;
 
-    private ClassLoadingEnvironment clEnv;
-    private Reference appEnv;
-
 
     public void setComponentFactory(PrimFactory primFactory) {
         this.primFactory = primFactory;
@@ -92,7 +89,8 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
             // lose the parent baggage
             cxt = target.sfContext();
 
-            for (Enumeration e = cxt.keys(); e.hasMoreElements();) {
+            Enumeration e = cxt.keys();
+            while (e.hasMoreElements()) {
                 Object value = cxt.get(e.nextElement());
 
                 if (value instanceof ComponentDescription) {
@@ -104,7 +102,7 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
 
             return dComponent;
         } catch (SmartFrogException sfdex){
-            throw ((SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfdex));
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfdex);
         } catch (Throwable t) {
             throw new SmartFrogDeploymentException("Error when trying to deploy component", t, null, cxt);
         }

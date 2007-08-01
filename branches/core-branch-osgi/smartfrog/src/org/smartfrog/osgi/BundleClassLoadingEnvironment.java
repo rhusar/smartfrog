@@ -15,11 +15,8 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
     public static final String LOCATION_ATTRIBUTE = "location";
     private Bundle hostBundle = null;
     private ClassLoader bundleClassLoaderProxy = null;
-    
-    public BundleClassLoadingEnvironment() throws RemoteException {}
 
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
+    protected synchronized void doSfDeploy() throws SmartFrogException, RemoteException {
 
         BundleContext daemonBundleContext = OSGiUtilities.getDaemonBundleContext(this);
         String location = (String) sfResolve(LOCATION_ATTRIBUTE);
@@ -54,21 +51,23 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
         }
     }
 
-    protected void sfTerminateWith(TerminationRecord status) {
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
         try {
             hostBundle.uninstall();
         } catch (BundleException e) {
             sfLog().error("Error when uninstalling bundle", e);
         }
 
-        super.sfTerminate(status);
+        super.sfTerminateWith(status);
     }
 
     /**
      * Returns a wrapper class loader that delagates to this bundle.
      * @return
      */
-    public ClassLoader getClassLoader() {
+    public synchronized ClassLoader getClassLoader() {
+        if (bundleClassLoaderProxy == null)
+            throw new IllegalStateException("The class loader is not available, this environment has not been deployed yet");
         return bundleClassLoaderProxy;
     }
 }

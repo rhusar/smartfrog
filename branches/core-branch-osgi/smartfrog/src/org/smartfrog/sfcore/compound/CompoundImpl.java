@@ -98,9 +98,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
             ComponentDescription cmp, Context parms) throws SmartFrogDeploymentException {
         // check for attribute already named like given name
         try {
-            Object res = ((parent == null) || (name == null)) ? null: sfResolveHere(name,false);
+            Object res = parent == null || name == null ? null : sfResolveHere(name, false);
 
-            if ((res != null) && !(res instanceof ComponentDescription)) {
+            if (res != null && !(res instanceof ComponentDescription)) {
                 throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,
                             name, cmp, parms,MessageUtil.
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
@@ -109,7 +109,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             if (sfLog().isTraceEnabled()){
               StringBuffer message = new StringBuffer();
               try {
-                message.append(this.sfCompleteNameSafe());
+                message.append(sfCompleteNameSafe());
                 message.append(" is deploying: ");
                 if (name != null) {
                   message.append(name);
@@ -167,7 +167,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     ignoreThrowable("could not get complete name", ex);
                 }
             }
-            if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME))!=null) {
+            if (dex.get(SmartFrogDeploymentException.OBJECT_NAME) != null) {
                 newRef.addElement (ReferencePart.here(name));
             } else {
                 dex.add(SmartFrogDeploymentException.OBJECT_NAME, name);

@@ -8,7 +8,7 @@
 TestWithFactory extends Test {
        // The new Prim syntax
         sfMeta extends DATA {
-            sfClassLoadingEnvironment LAZY envTarget:clEnvTest;
+            sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
             // the factory will look upwards too so no need to repeat sfClass if already provided. Can be used to override it though
             // sfClass "org.smartfrog.osgi.test.TestImpl";
         }
@@ -20,17 +20,17 @@ sfConfig extends Compound {
 
     subprocess extends Compound {
         // The new deployer syntax
-        sfDeployer LAZY envTarget:deployerTest;
+        sfDeployer LAZY PROCESS:envTarget:deployerTest;
         sfProcessName "testProcess";
         
         counter10 extends Counter {
             limit 10;
         }
-/* Context pushdown to subprocesses not yet implemented
+
         testHelloProcess extends TestWithFactory {
             message "Hello from subprocess";
         }
-*/        
+        
     }
 
     testHello extends TestWithFactory {
