@@ -94,7 +94,7 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     private String originalSFACT = null;
 
-    private String lineSeparator="\n    ";
+    private String lineSeparator=System.getProperty("line.separator")+"    ";
     /**
      Action type; one of the Action enumerations. Initially set to
      #Action.UNDEFINED

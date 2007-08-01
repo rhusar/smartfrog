@@ -208,8 +208,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException notFound(Reference ref,
                                                         Reference source) {
-        return (new SmartFrogResolutionException(ref ,source,
-                 MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE)));
+        return new SmartFrogResolutionException
+                (ref, source, MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE));
     }
 
 
@@ -224,8 +224,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException notFound(Reference ref,
                                                         Reference source, Throwable cause) {
-        return (new SmartFrogResolutionException(ref ,source,
-                 MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE),null,cause,null));
+        return new SmartFrogResolutionException
+                (ref, source, MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE), null, cause, null);
     }
 
 

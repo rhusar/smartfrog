@@ -329,7 +329,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
 
     /**
-     * Attribute inside SF_METADATA used to select the PrimFactory
+     * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the PrimFactory
      * component used to create a component instance.
      */
     public static final String SF_FACTORY = "sfFactory";
@@ -346,8 +346,7 @@ public interface SmartFrogCoreKeys {
      * Tag to mark an attribute as final, after which placement fails
      * Value {@value}
      */
-    public static final String SF_FINAL= "sfFinal";
-
+    public static final String SF_FINAL = "sfFinal";
 
     /**
      * Time attribute set in ActionDeploy deployment
@@ -381,5 +380,21 @@ public interface SmartFrogCoreKeys {
      * {@value}
      */
     public static final String KEY_LANGUAGE = "#language";
-    String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
+
+    /**
+     * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the ClassLoadingEnvironment a component will be loaded from.
+     */
+    public static final String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
+
+    /**
+     * Tag used to exclude an attribute in a Context from being serialized. This implies code running in other processes
+     * won't see it.
+     */
+    public static final String SF_TRANSIENT = "sfTransient";
+
+    /**
+     * Reference to the application environment for a component. Will be the same for all components in an application.
+     * Nevertheless copied in each component context to simplify resolution in the case of parentage change.
+     */
+    public static final String SF_APPLICATION_ENVIRONMENT = "sfApplicationEnvironment";
 }

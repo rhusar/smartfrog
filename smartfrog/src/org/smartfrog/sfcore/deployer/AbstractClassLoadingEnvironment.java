@@ -14,11 +14,12 @@ import java.rmi.RemoteException;
 public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         implements ClassLoadingEnvironment
 {
-    public void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
         Reference referenceNoHost = sfCompleteName();
-        referenceNoHost.removeElement(referenceNoHost.firstElement());
+        referenceNoHost.removeElement(referenceNoHost.firstElement()); // host
+        referenceNoHost.removeElement(referenceNoHost.firstElement()); // process name
         ClassLoaderRegistry.registerClassLoader(getClassLoader(), referenceNoHost.toString());
     }
 

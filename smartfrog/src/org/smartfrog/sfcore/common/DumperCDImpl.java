@@ -32,8 +32,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
 import java.rmi.RemoteException;
-import java.rmi.MarshalledObject;
-import java.rmi.server.RemoteObject;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Enumeration;
 import java.io.File;
@@ -50,11 +49,11 @@ public class DumperCDImpl implements Dumper, Serializable {
 
     private Reference rootRef = null;
 
-    private  boolean completed = false;
+    private boolean completed = false;
 
     private ComponentDescription cd = null;
 
-    private Object visitingLock = new Object(); //Lock
+    private final Object visitingLock = new Object(); //Lock
     private Long visiting = new Long(1); //Counter of Visits
 
 
@@ -66,12 +65,12 @@ public class DumperCDImpl implements Dumper, Serializable {
 
     /** Default timeout (@value msecs), in large distributed deployments
      * it could need more time to reach the final result*/
-    long timeout = (1*30*1000L); //(2*60*1000L);
+    private long timeout = (1*30*1000L); //(2*60*1000L);
 
 
     public DumperCDImpl(Prim from){
         try {
-            java.rmi.server.UnicastRemoteObject.exportObject(this);
+            UnicastRemoteObject.exportObject(this);
             rootRef = from.sfCompleteName();
         } catch (RemoteException e) {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
@@ -79,8 +78,7 @@ public class DumperCDImpl implements Dumper, Serializable {
     }
 
     public Dump getDumpVisitor(){
-        Dump dumpVisitor = new DumpVisitorImpl(this);
-        return dumpVisitor;
+        return new DumpVisitorImpl(this);
     }
 
     public Reference getRootRef(){
@@ -156,16 +154,16 @@ public class DumperCDImpl implements Dumper, Serializable {
      *
       */
      public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
-         long endTime = (new Date()).getTime()+timeout;
+         long endTime = new Date().getTime()+timeout;
          synchronized (visitingLock) {
              while (visiting.longValue()!=0L) {
                      // try to return the String if not visiting logs.
                      // if name in locks => process not ready, pretend not found...
-                     if (visiting.longValue()==0L){
+                     if (visiting.longValue() == 0L) {
                          return cd;
                      } else {
                          // not found, wait for leftover timeout
-                        long now = (new Date()).getTime();
+                        long now = new Date().getTime();
                         if (now>=endTime) {
                           if (sfLog().isInfoEnabled()) sfLog().info("Timeout ("+completed+")");
                           if (completed) {

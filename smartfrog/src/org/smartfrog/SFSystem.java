@@ -561,7 +561,7 @@ public class SFSystem implements MessageKeys {
      * @throws SmartFrogException
      * @throws SFGeneralSecurityException
      */
-    synchronized public static void initSystem() throws SmartFrogException,
+    public static synchronized void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
         if (!alreadySystemInit) {
             // Initialize SmartFrog Security
@@ -595,7 +595,7 @@ public class SFSystem implements MessageKeys {
     public static void notifySecurityStatus() throws SFGeneralSecurityException {
         // Notify status of Security
         if (!SFSecurity.isSecurityOn()){
-            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
+            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired, "false");
             Boolean secured=Boolean.valueOf(securityRequired);
             if(secured.booleanValue()) {
                 //we need security, but it is not enabled
