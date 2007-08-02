@@ -46,7 +46,7 @@ import java.io.Writer;
  * @since 3.11.001
  */
 
-public class DumperCDImpl implements Dumper, Serializable {
+public class DumperCDImpl implements Dumper {
 
     private Reference rootRef = null;
 
