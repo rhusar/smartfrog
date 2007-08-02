@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.io.IOException;
 
 /**
  * Implements the most basic of reference parts. This reference part knows how
@@ -280,7 +281,14 @@ public class HereReferencePart extends ReferencePart {
                 if (value instanceof Reference) {
                     value = rr.sfResolve((Reference)value, 0);
                     if (value instanceof SFMarshalledObject) {
-                        value = ((SFMarshalledObject)value).get();
+                        try {
+                            value = ((SFMarshalledObject)value).get();
+                        } catch (IOException ex) {
+                            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex.getMessage(),ex);
+                        } catch (ClassNotFoundException ex) {
+                            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex.getMessage(),ex);
+                        }
+
                     }
                 }
                 if (value instanceof Vector) {

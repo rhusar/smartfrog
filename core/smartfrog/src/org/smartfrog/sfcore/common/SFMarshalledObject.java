@@ -58,18 +58,12 @@ final public class SFMarshalledObject implements Serializable{
      * @return An unwrapped version of the original object, or exactly
      * the original object if we have not been serialized.
      */
-    public synchronized Object get() {
+    public synchronized Object get() throws IOException, ClassNotFoundException {
         if ((!alreadySet) || (value == null)) {
             return value;
         }
         if (value instanceof MarshalledObject && !wasMarshalled) {
-            try {
-                return ((MarshalledObject)value).get();
-            } catch (ClassNotFoundException ex) {
-                return null;
-            } catch (IOException ex) {
-                return null;
-            }
+            return ((MarshalledObject)value).get();
         } else {
             return value;
         }
@@ -94,7 +88,7 @@ final public class SFMarshalledObject implements Serializable{
      * "packing" multiple times in case we serialize multiple times.
      *
      */
-    private synchronized void pack(){
+    private synchronized void pack() throws IOException {
         if (alreadySet) {
             return;
         }
@@ -102,11 +96,7 @@ final public class SFMarshalledObject implements Serializable{
             if (value instanceof MarshalledObject) {
                 wasMarshalled = true;
             } else {
-                try {
-                    value = new MarshalledObject(value);
-                } catch (IOException ex) {
-                    // need to log this...
-                }
+               value = new MarshalledObject(value);                
             }
         } finally {
             alreadySet = true;

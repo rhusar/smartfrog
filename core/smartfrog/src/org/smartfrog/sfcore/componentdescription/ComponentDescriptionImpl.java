@@ -582,13 +582,20 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         Object obj = sfResolve(r, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
-            obj = ((SFMarshalledObject)obj).get();
+            try {
+                obj = ((SFMarshalledObject)obj).get();
+            } catch (IOException e) {
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(e.getMessage(),e);
+            } catch (ClassNotFoundException e) {
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(e.getMessage(),e);
+            }
         }
         try {
             if ((sfLog()!= null) && sfLog().isTraceEnabled()) {
                 sfLog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
             }
         } catch (Exception ex) {ex.printStackTrace();}//ignore}
+        
         return obj;
     }
 
