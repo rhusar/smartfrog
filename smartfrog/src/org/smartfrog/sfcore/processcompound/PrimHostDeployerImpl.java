@@ -143,7 +143,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         if (pc.sfResolveHere(name, false) == null) {
             pc.sfDeployComponentDescription(name, null, appEnvDescr, null);
         }
-
+// TODO Complain if app with same name exists but is not the same
         Context modifiedAttributes = new ContextImpl();
         Prim deployedAppEnv = (Prim) pc.sfResolveHere(name);
         if (!deployedAppEnv.sfIsDeployed()) deployedAppEnv.sfDeploy();
@@ -167,12 +167,10 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             DumperCDImpl dumper = new DumperCDImpl(appEnvironment);
             appEnvironment.sfDumpState(dumper.getDumpVisitor());
             return dumper.getComponentDescription(1000);
-        } catch (RemoteException
-                e) {
+        } catch (RemoteException e) {
             throw new SmartFrogDeploymentException
                     ("The application environment has remote parts, which is not recommended. Access to one of the remote parts failed.", e);
-        } catch (SmartFrogException
-                e) {
+        } catch (SmartFrogException e) {
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward
                     ("Could not dump the application environment for deployment to remote process", e);
         }
