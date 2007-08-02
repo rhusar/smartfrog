@@ -31,6 +31,7 @@ import java.util.Vector;
 import java.util.Set;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.io.IOException;
 
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.common.Diagnostics;
@@ -275,7 +276,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         Object obj = sfResolve(rn, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
-            obj = ((SFMarshalledObject)obj).get();
+            try {
+                obj = ((SFMarshalledObject)obj).get();
+            } catch (IOException e) {
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(e.getMessage(),e);
+            } catch (ClassNotFoundException e) {
+                throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(e.getMessage(),e);
+            }
         }
         try {
             if (sfLog().isTraceEnabled()) {

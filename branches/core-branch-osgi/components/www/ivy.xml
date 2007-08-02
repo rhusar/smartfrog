@@ -55,5 +55,10 @@
         name="servlet-api"
         rev="${servletapi.version}"
         conf="compile,war->master"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>    
   </dependencies>
 </ivy-module>
