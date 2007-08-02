@@ -39,6 +39,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * It is file to pull in the testwar from a local m2 repository. It allows
  * test deployments to be written which do not contain any hard-coded path dependencies with
  * the www application.
+ *
+ * with the move to an Ivy based build, this component is of limited use, but we cannot switch to an Ivy
+ * policy as we are currently building with both Ivy1 and Ivy2, each of which caches files to a different directrion
  */
 
 testwarLoader extends Compound {
@@ -56,7 +59,7 @@ testwarLoader extends Compound {
     testwar extends JarArtifact {
         library LAZY PARENT:library;
         project "org.smartfrog";
-        artifact "testwar";
+        artifact "sf-www-testwar";
         extension "war";
         version "0.1-SNAPSHOT";
         //expected to be installed locally; no retrieval

@@ -34,17 +34,12 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true" />
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
   
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-  </target>
-
 
   <!-- make the WAR file -->
   <target name="war.init" depends="init-standard-output-dirs">
@@ -52,6 +47,8 @@
               value="sf-www-testwar-${smartfrog.version}.war"/>
     <property name="testwar.war"
               location="${dist.dir}/lib/${target.war.name}"/>
+    <property name="test.testwar.war"
+        value="${testwar.war}" />    
     <property name="testwar.dir"
               location="testwar"/>
     <property name="testwar.lib.dir"
@@ -92,4 +89,8 @@
   <target name="ready-to-publish-all"
     depends="common.ready-to-publish-all,war" />
 
+  <target name="ready-to-test"
+      depends="common.ready-to-test,war" >
+    <property name="test.jdk.home" location="${env.JAVA_HOME}" />   
+  </target>
 </project>

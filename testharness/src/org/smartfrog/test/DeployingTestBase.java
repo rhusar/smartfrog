@@ -244,7 +244,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
                 "Forced timeout", event);
-        conditionalFail(results.isFailed(),
+        conditionalFail(results.isFailed() && !results.isSkipped(),
                 "Test failed", event);
         return results;
     }

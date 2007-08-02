@@ -50,17 +50,17 @@ For more information: www.smartfrog.org
  * it can be linked to something else that is changing
  */
 
-Value extends ConditionPrim {
+BooleanValue extends ConditionPrim {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.BooleanValue";
   value TBD;
 }
 
-True extends Value {
+True extends BooleanValue {
   value true;
 }
 
 
-False extends Value {
+False extends BooleanValue {
   value false;
 }
 
