@@ -30,7 +30,12 @@
 /**
  * Specify the jetty home path here
  */
-jetty_home PROPERTY jetty.home;
+jetty_home PROPERTY test.jetty.home;
+
+//hard coded hostname,
+hostname "127.0.0.1";
+
+resourcebase LAZY PROPERTY java.io.tmpdir;
 
 
 /*

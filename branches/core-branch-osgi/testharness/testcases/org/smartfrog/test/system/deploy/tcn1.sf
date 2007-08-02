@@ -47,8 +47,8 @@ Example1 extends Compound {
  * here it is defined to contain Example1
  */
 
-sfConfig extends Compound { 
-    sfProcessComponentName "default"; // this will normally be set as part of the sfStart, it is
+sfConfig extends Compound {
+    sfProcessComponentName "test_case_tcn1"; // this will normally be set as part of the sfStart, it is
                                         // the name by which it will be known to the SF system (if not
                                         // provided a new unique name is generated
 

@@ -20,20 +20,5 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-/**
- * here we deploy a testblock that stays deployed after the run.
- * 
- */
-
-testFailure extends TestBlock {
-  action extends ExpectDeployFailure {
-    sfShouldTerminate false;
-
-    action extends FailAbnormal {
-      message "failure message";
-    }
-    exitText action:message;
-  }
-}
 
 sfConfig extends testFailure;

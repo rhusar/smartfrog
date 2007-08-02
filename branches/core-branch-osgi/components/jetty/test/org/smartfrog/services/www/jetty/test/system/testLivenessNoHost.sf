@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/www/webapplication.sf"
 #include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/www/testwar-m2.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
 
 sfConfig extends Compound {

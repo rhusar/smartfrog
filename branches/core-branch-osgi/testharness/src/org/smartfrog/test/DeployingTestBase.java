@@ -140,7 +140,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * that point is reached. There is no timeout.
      * @param testBlock component to spin on 
      * @return the termination record of the component
-     * @throws Throwable
+     * @throws Throwable anything that got thrown
      */
     protected TerminationRecord spinUntilFinished(TestBlock testBlock) throws Throwable {
         return spinUntilFinished(testBlock, getTestTimeout());

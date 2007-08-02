@@ -18,16 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/jetty/components.sf";
-
-//get the jetty home at the destination, not locally, as we are doing a remote deploy
-jetty_home LAZY PROPERTY jetty.home;
-
-//hard coded hostname,
-hostname 127.0.0.1;
-
-resourcebase LAZY PROPERTY java.io.tmpdir;
+#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
 
 
@@ -40,16 +31,15 @@ sfConfig extends Compound {
    server extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost ROOT:hostname; //mandatory
-
+    }
+  root extends RootWAR {
+      server LAZY PARENT:server;
   }
-        root extends RootWAR {
-            server LAZY PARENT:server;
-          }
 
-        context extends JettyServletContext {
-           contextPath "/test";
-           resourceBase (ROOT:resourcebase);
-           server LAZY PARENT;
-       }
+  context extends JettyServletContext {
+     contextPath "/test";
+     resourceBase (ROOT:resourcebase);
+     server LAZY PARENT;
+  }
 
 }

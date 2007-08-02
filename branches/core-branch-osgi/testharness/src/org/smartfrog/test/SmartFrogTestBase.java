@@ -201,6 +201,23 @@ public abstract class SmartFrogTestBase extends TestCase {
         return log;
     }
 
+
+    /**
+     * Get the current application or null
+     * @return the current application
+     */
+    public Prim getApplication() {
+        return application;
+    }
+
+    /**
+     * set the application
+     * @param application
+     */
+    public void setApplication(Prim application) {
+        this.application = application;
+    }
+
     /**
      * get a file name relative to the classes dir directory
      * @param filename short name of the file
@@ -1000,6 +1017,7 @@ public abstract class SmartFrogTestBase extends TestCase {
                                         String descriptionText,
                                         String throwableClass,
                                         String throwableText) {
+        assertNotNull("Null termination record",record);
         if(descriptionText!=null) {
             assertContains(record.description,descriptionText);
         }

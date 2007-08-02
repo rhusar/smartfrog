@@ -20,10 +20,9 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
 
-sfConfig extends ExpectTerminate {
-    sfShouldTerminate false;
 
-    action extends Sequence {
-      noop extends Noop;
-    }
+
+
+sfConfig extends testEmptySequence {
+ sfShouldTerminate false;
 }

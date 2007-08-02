@@ -130,8 +130,7 @@ public class LibraryTest extends SmartFrogTestBase {
         } catch(Throwable thrown) {
             //connection refused exceptions are a sign of being offline
             assertFaultCauseAndTextContains(thrown,null, "onnection refused",null);
-            System.out.println("No connection to the remote server; ignoring result");
-            System.out.println(thrown);
+            getLog().info("No connection to the remote server; ignoring result",thrown);
         }
     }
 

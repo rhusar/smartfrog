@@ -228,14 +228,14 @@
       value="org/smartfrog/smartfrog-version.properties"
       />
 
+   <!-- load in our version -->
+   <property resource="${smartfrog.version.property.resource}"/>
+   <property resource="${smartfrog.version.property.resource}"
+       classpathref="smartfrog.classpath"/>
+
     <!-- check for its presence; break the build if missing -->
-    <fail >
-      <condition>
-      <not>
-        <available resource="${smartfrog.version.property.resource}"
-          classpathref="smartfrog.classpath"/>
-      </not>
-      </condition>
+    <fail unless="sf.build.version">
+
 SmartFrog distribution not found. Please create the SmartFrog distribution first.
 Alternatively, make sure that this project is configured to locate the distribution
 correctly.
@@ -249,10 +249,6 @@ java.class.path=
   ${java.class.path}
     </fail>
 
-    <!-- load in our version -->
-    <loadproperties resource="${smartfrog.version.property.resource}"
-      classpathref="smartfrog.classpath"/>
-    <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
 

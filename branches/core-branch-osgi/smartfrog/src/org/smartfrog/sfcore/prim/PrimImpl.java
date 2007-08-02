@@ -457,7 +457,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 ((ComponentDescription)value).setPrimParent(this);
             }
             Object oldValue = sfContext.sfReplaceAttribute(name, value);
-            if ((oldValue!=null) && (oldValue instanceof ComponentDescription)) {
+            if ((oldValue!=null) && (oldValue instanceof ComponentDescription) && (oldValue != value)) {
                ((ComponentDescription)oldValue).setPrimParent(null);
             }
 
