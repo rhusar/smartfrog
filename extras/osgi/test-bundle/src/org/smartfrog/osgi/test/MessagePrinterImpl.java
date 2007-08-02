@@ -14,9 +14,7 @@ public class MessagePrinterImpl extends PrimImpl {
 
         Compound subprocess = (Compound) sfResolve(Reference.fromString("ATTRIB subprocess"));
         System.out.println("subprocess: " + subprocess);
-        try {
-            Object messageSource = sfResolve("messageSource");
-        }
+        Object messageSource = sfResolve("messageSource");
         // Remote call        
         System.out.println(messageSource);
     }
