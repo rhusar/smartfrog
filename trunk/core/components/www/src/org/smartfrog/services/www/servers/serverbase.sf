@@ -116,9 +116,7 @@ ServerBase extends Compound {
           LAZY endorsed
         ];
 
-        sysProperties [
-            PARENT:PARENT:sysProperties
-        ];
+        sysProperties PARENT:ATTRIB sysProperties;
 
         jvmArgs [
             "-server"

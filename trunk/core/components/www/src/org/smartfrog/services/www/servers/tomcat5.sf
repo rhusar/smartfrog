@@ -98,7 +98,7 @@ Tomcat5Server extends ServerBase {
 
     server extends ServerBase:server {
         arguments [
-            "run",
+            "run"
             ];
 
         processName "catalina";
@@ -112,9 +112,10 @@ Tomcat5Server extends ServerBase {
 
 
         sysProperties [
-            ["catalina.home",PARENT:server.home.dir:absolutePath],
-            ["catalina.base",PARENT:catalina.base.dir:absolutePath],
-            PARENT:PARENT:sysProperties
+            ["catalina.home",LAZY PARENT:server.home.dir:absolutePath],
+            ["catalina.base",LAZY PARENT:catalina.base.dir:absolutePath]
+            //,
+            //PARENT:ATTRIB sysProperties
         ];
 
         maxMemory 64;
@@ -129,7 +130,7 @@ Tomcat5Server extends ServerBase {
  * simply by removing the server entry.
  * For deployments where the server is started already, somehow.
  */
-Tomcat5Server extends Tomcat5Server {
+RunningTomcat5Server extends Tomcat5Server {
     server extends Compound {
     }
 
