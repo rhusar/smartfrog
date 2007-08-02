@@ -6,6 +6,8 @@ import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.HostReferencePart;
+import org.smartfrog.sfcore.reference.ProcessReferencePart;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,10 +22,17 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
 
         doSfDeploy();
 
+        Reference noHostNoProcess = getRelativeRefence();
+        ClassLoaderRegistry.registerClassLoader(getClassLoader(), noHostNoProcess.toString());
+    }
+
+    private Reference getRelativeRefence() throws RemoteException {
         Reference referenceNoHost = sfCompleteName();
-        referenceNoHost.removeElement(referenceNoHost.firstElement()); // host
-        referenceNoHost.removeElement(referenceNoHost.firstElement()); // process name
-        ClassLoaderRegistry.registerClassLoader(getClassLoader(), referenceNoHost.toString());
+        if (referenceNoHost.firstElement() instanceof HostReferencePart)
+            referenceNoHost.removeElement(referenceNoHost.firstElement());
+        if (referenceNoHost.firstElement() instanceof ProcessReferencePart)
+            referenceNoHost.removeElement(referenceNoHost.firstElement());
+        return referenceNoHost;
     }
 
     protected abstract void doSfDeploy() throws SmartFrogException, RemoteException;
