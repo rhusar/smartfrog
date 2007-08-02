@@ -1,39 +1,25 @@
 #include "org/smartfrog/components.sf"
-
-// The new include syntax.
 #from envParser:clEnvTest #include "org/smartfrog/osgi/test/components.sf"
-
 #include "org/smartfrog/examples/counter/components.sf"
 
-TestWithFactory extends Test {
-       // The new Prim syntax
-        sfMeta extends DATA {
-            sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
-            // the factory will look upwards too so no need to repeat sfClass if already provided. Can be used to override it though
-            // sfClass "org.smartfrog.osgi.test.TestImpl";
-        }
-}
+meta extends DATA { sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest; }
 
 sfConfig extends Compound {
     sfProcessComponentName "TestApp";
-    sfApplicationEnvironment LAZY envTarget;
+    sfApplicationEnvironment LAZY PROCESS:envTarget;
 
     subprocess extends Compound {
-        // The new deployer syntax
         sfDeployer LAZY PROCESS:envTarget:deployerTest;
         sfProcessName "testProcess";
-        
-        counter10 extends Counter {
-            limit 10;
-        }
 
-        testHelloProcess extends TestWithFactory {
-            message "Hello from subprocess";
+        testProvider extends MessageProvider {
+            sfMeta extends DATA meta;
         }
-        
+        //testProvider extends Counter { limit 5; }
     }
 
-    testHello extends TestWithFactory {
-        message "Servez a ce monsieur, le vieux petit juge blond assis au fond, une biere hollandaise et des kiwis, parce qu'il y tient.";
+    testPrinter extends MessagePrinter {
+        sfMeta extends DATA meta;
+        messageSource LAZY ATTRIB subprocess:testProvider;
     }
 }
