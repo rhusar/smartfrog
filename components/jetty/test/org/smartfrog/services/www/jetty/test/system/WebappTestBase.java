@@ -30,19 +30,6 @@ public abstract class WebappTestBase extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * Get the deployed application, or null
-     *
-     * @return application, if deployed
-     */
-    public Prim getApplication() {
-        return application;
-    }
-
-    public void setApplication(Prim application) {
-        this.application = application;
-    }
-
     public void deployWebApp(String resource, String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));

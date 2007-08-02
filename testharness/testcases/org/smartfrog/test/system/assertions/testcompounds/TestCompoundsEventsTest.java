@@ -21,9 +21,9 @@ package org.smartfrog.test.system.assertions.testcompounds;
 
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestCompoundImpl;
+import org.smartfrog.services.assertions.TestCompound;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * Date: 30-Apr-2004
@@ -31,7 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  */
 public class TestCompoundsEventsTest extends DeployingTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
+    public static final String FILES = "org/smartfrog/test/system/assertions/testcompounds/";
 
     public TestCompoundsEventsTest(String name) {
         super(name);
@@ -46,19 +46,11 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
-    private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectAbnormalTestRun(FILES, test, true, null);
-        return event.getStatus();
-    }
-
-    private TerminationRecord deployToNormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(FILES, test);
-        return event.getStatus();
-    }
-
-
     public void testUnexpectedFailure() throws Throwable {
-        deployToAbnormalTermination("testUnexpectedFailure");
+        TestCompletedEvent event = expectAbnormalTestRun(FILES, "testUnexpectedFailure",
+                true, 
+                "FailAbnormal Error Message");
+        event.getStatus();
     }
 
     public void testFailureWrongMessage() throws Throwable {
@@ -68,13 +60,32 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
                 TestCompoundImpl.TEST_FAILED_WRONG_STATUS);
     }
 
-    public void NotestFailureWrongMessageNested() throws Throwable {
-        application =deployExpectingSuccess("testFailureWrongMessageNested",
-                "testFailureWrongMessageNested");
+    public void testFailureNested() throws Throwable {
+        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testFailureNested");
+        TerminationRecord status = event.getStatus();
     }
 
-    public void testSmartFrogException() throws Throwable {
-        TerminationRecord record = deployToNormalTermination("testSmartFrogException");
-        assertTerminationRecordContains(record, null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
+
+    public void testSmartFrogExceptionActionRecord() throws Throwable {
+        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testSmartFrogException");
+        TestCompound tc=(TestCompound) getApplication();
+        assertSFERecord(tc.getActionTerminationRecord(),event,"TestCompound.getActionTerminationRecord()");
+    }
+
+
+    public void testSmartFrogExceptionStatusAttribute() throws Throwable {
+        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testSmartFrogException");
+        TerminationRecord record = event.getStatus();
+        assertSFERecord(record,event,"event status");
+        TestCompound tc = (TestCompound) getApplication();
+        assertSFERecord(tc.getStatus(),event,"application.getStatus()");
+    }
+
+
+    private void assertSFERecord(TerminationRecord actionTR, TestCompletedEvent event,String recordType) {
+        if(actionTR==null) {
+            fail("No "+recordType+" record after \n"+event);
+        }
+        assertTerminationRecordContains(actionTR,null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
     }
 }

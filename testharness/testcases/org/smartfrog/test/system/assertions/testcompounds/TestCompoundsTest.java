@@ -23,7 +23,6 @@ import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestCompoundImpl;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * Date: 30-Apr-2004
@@ -43,7 +42,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
     public void testFailure() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testFailure");
+        TerminationRecord record = deployToNormalTermination("testFailure");
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
@@ -60,14 +59,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     }
 
 
-    public void testUnexpectedFailure() throws Throwable {
-        TerminationRecord record = deployToAbnormalTermination("testUnexpectedFailure");
-    }
-
-    public void testFailureWrongMessage() throws Throwable {
-        TerminationRecord record = deployToNormalTermination("testFailureWrongMessage");
-        assertTerminationRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
-    }
+ 
 
     public void testFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
@@ -76,6 +68,6 @@ public class TestCompoundsTest extends DeployingTestBase {
 
     public void testSmartFrogException() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testSmartFrogException");
-        assertTerminationRecordContains(record, null, SmartFrogException.class.toString(), "SFE");
+        assertTerminationRecordContains(record, null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
     }
 }

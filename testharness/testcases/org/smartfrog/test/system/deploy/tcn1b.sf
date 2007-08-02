@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,14 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/assertions/testcompounds/components.sf";
+#include "/org/smartfrog/test/system/deploy/tcn1.sf"
 
 
-  
-sfConfig extends testUnexpectedFailure {
-    sfShouldTerminate false;
-  }
+/*
+ * sfConfig is the special attribute that is deployed by SFSystem
+ * here it is defined to contain Example1
+ */
+
+sfConfig extends Compound { 
+    test extends Example1;            // add the example itself as a component
+}
