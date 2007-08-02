@@ -21,10 +21,12 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFLoader;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 
 /**
  * This is something that can hand off resource loading to whatever does
@@ -51,11 +53,16 @@ public class ResourceLoader {
         this(clazz.getClassLoader());
     }
 
+    public ResourceLoader(Prim component) throws SmartFrogResolutionException, RemoteException {
+        try {
+            repository = (ClassLoadingEnvironment) component.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("The value of sfClassLoadingEnvironment is not of the correct class", e);
+        }
+    }
 
     /**
-     * get the sfcodebase from a component. This is used to trigger sfcodebase
-     * operation.
-     *
+     * 
      * @param source The {@link ClassLoadingEnvironment} to load resources from.
      */
     public ResourceLoader(ClassLoadingEnvironment source) {
