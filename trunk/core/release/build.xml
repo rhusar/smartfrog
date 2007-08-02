@@ -374,9 +374,7 @@
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
     </tar>
-    <gzip destfile="${rpms.tar.gz}" >
-      <fileset file="${rpms.tar}" />
-    </gzip>
+    <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}" />
   </target>
 
 
