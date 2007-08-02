@@ -198,13 +198,6 @@ public interface SmartFrogCoreKeys {
     public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
 
     /**
-     * Attibute that references the {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment}
-     * a component comes from. Initialized by the {@link org.smartfrog.sfcore.deployer.PrimFactory}
-     * that creates the component. 
-     */
-    public static final String SF_CODE_REPOSITORY = "sfCodeRepository";
-
-    /**
      * Attribute that defines how often to send liveness in seconds.
      *
      * Value {@value}
@@ -382,7 +375,9 @@ public interface SmartFrogCoreKeys {
     public static final String KEY_LANGUAGE = "#language";
 
     /**
-     * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the ClassLoadingEnvironment a component will be loaded from.
+     * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the
+     * {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} a component will be loaded from.
+     * If missing, will be added before the component is deployed, and point to the default environment.
      */
     public static final String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
 

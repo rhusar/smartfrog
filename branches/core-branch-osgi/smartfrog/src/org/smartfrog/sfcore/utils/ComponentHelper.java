@@ -414,7 +414,7 @@ public class ComponentHelper {
     public ClassLoadingEnvironment getCodeRepository() throws SmartFrogResolutionException,
             RemoteException
     {
-        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_REPOSITORY);
+        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
     }
 
     /**
