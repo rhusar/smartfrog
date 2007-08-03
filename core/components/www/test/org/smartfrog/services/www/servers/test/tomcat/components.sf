@@ -27,15 +27,42 @@ For more information: www.smartfrog.org
 // tomcat.home to the property or to ""
 tomcat.home OPTIONAL("") PROPERTY test.tomcat.home;
 
+//this is the port to which we expect tomcat to be running
+tomcat.port OPTIONAL(8080) PROPERTY test.tomcat.port;
+
 // a boolean property that is true if tomcat.home is non-empty
 tomcat.present IF (tomcat.home != "") THEN true ELSE false FI;
 
 
 jdk.home PROPERTY test.jdk.home ;
 
+
+
+/**
+ * A local page for liveness; assumes port 8080
+ */
+TomcatLivenessPage extends LivenessPage {
+    port tomcat.port;
+}
+
+WaitForTomcat extends WaitForPage {
+    port tomcat.port;
+    timeout 30000;
+}
+
 // now switch this to a condition
 IsTomcatPresent extends BooleanValue {
   value tomcat.present;
+}
+
+
+NoRunningServer extends Not {
+     condition extends TomcatLivenessPage;
+    }
+
+IsTomcatPresentButNotRunning extends And {
+  -- extends IsTomcatPresent;
+  -- extends NoRunningServer;
 }
 
 /**
@@ -51,18 +78,66 @@ BoundTomcatServer extends Tomcat5Server {
  * we use this to make things conditional
  */
 DeployTomcat extends ExpectDeploy {
-  condition extends IsTomcatPresent;
+  condition extends IsTomcatPresentButNotRunning;
+  description "test tomcat deployment -requires test.tomcat.home to be set";
 
   action extends Compound {
     tomcat extends BoundTomcatServer;
   }
 
-  undeployAfter 15000;
+
+
+  undeployAfter 60000;
 
 }
 
 /*
  * one test with a 10s shutdown
  */
-testTomcatRuns extends DeployTomcat {
+DeployTomcatTests extends DeployTomcat {
+  description "test that tomcat runs";
+  expectTerminate false;
+  tests extends WaitForTomcat ;
+}
+
+
+
+/**
+ * simple test to fail if there is a web site running
+ * but skip if tomcat is absent
+ */
+
+testTomcatIsNotRunning extends ExpectTerminate {
+  condition extends IsTomcatPresent;
+  description "fail if there is a web site already running";
+
+  action extends EvaluateCondition {
+    condition extends NoRunningServer;
+    message "There is a web server running on the target port";
+  }
+
+  undeployAfter 15000;
+
+}
+
+
+/*
+ * one test with a 10s shutdown
+ */
+testTomcatRuns extends DeployTomcatTests {
+  description "test that tomcat runs";
+  tests extends WaitForTomcat ;
+}
+
+/*
+ * one test with a 10s shutdown
+ */
+testWaitForTimesOut extends DeployTomcatTests {
+  condition extends NoRunningServer;
+  description "Wait for a few seconds for tomcat, then give up";
+  tests extends WaitForTomcat {
+    timeout 5000;
+  }
+  expectTerminate true;
+  exitType FailingTestCompound:exitType;
 }

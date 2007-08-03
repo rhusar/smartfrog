@@ -25,9 +25,11 @@
   -->
 
   <description>
-     Build file for the www project.
-     These files are the app server independent files, and cannot
-     be deployed as is. so testing at this point is pretty minimal
+    Build file for the www project.
+
+    To test against tomcat, the property test.tomcat.home must be set to the location of
+    tomcat5.5.x
+
   </description>
 
   <!-- override point -->
