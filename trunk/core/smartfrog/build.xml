@@ -103,6 +103,7 @@
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
+    <pathelement path="./lib/ProActive.jar"/>
   </path>
 
   <!-- =================================================================== -->
@@ -149,9 +150,8 @@
   <property name="dist.private.dir" location="${dist.dir}/${private}"/>
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
-  <property name="dist.jdocs.dir" location="${dist.dir}/${jdocs}"/>
-  <property name="dist.SFjdocs.dir" location="${dist.dir}/${SFjdocs}"/>
-  <property name="java.class.path" location="${dist.dir}/${SFjdocs}"/>
+  <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
+  <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
   <!--property name="redist" value="redist"/ -->
   <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
 
