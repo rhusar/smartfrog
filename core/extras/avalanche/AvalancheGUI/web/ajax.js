@@ -20,8 +20,8 @@ function getXMLHttpRequestObject() {
     try {
         // If Mozilla, Firefox, Safari
         if (window.XMLHttpRequest && !window.ActiveXObject) {
+            var XMLHttpRequestObject = false;
             XMLHttpRequestObject = new XMLHttpRequest();
-
             return XMLHttpRequestObject;
             // Else if Microsoft Browser
         } else if (window.ActiveXObject) {

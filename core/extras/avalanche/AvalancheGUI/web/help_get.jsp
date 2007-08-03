@@ -94,5 +94,4 @@ For more information: www.smartfrog.org */ --%>
     // Print output
     out.clear();
     out.write(xmlString);
-    out.close();
 %>

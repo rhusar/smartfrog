@@ -34,9 +34,9 @@ For more information: www.smartfrog.org
                         var statusMsgs = xmlDocument.getElementsByTagName("status");
                         for (var i = 0; i < statusMsgs.length; i++) {
                             if (statusMsgs[i].firstChild.data == "true") {
-                                status_response = "<img src=\"images/status_online.gif\" alt=\"online\" style=\"height:10px;width:10px\" /> Available";
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
                             } else {
-                                status_response = "<img src=\"images/status_offline.gif\" alt=\"offline\" style=\"height:10px;width:10px\" /> Not Available";
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
                             }
                             fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
                         }
