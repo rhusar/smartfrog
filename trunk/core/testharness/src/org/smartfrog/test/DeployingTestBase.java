@@ -329,7 +329,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     }
 
     /**
-     * Do a test run, assert that it failed. The application and eventSink are
+     * Do a test run, assert that it passed and did not skip.
+     * The application and eventSink are
      * both saved in member variables, ready for cleanup in teardown
      * @param packageName package containing the deployment
      * @param filename filename (with no .sf extension)
@@ -337,7 +338,9 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @throws Throwable if things go wrong
      */
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
-        return runTestsToCompletion(packageName,filename);
+        TestCompletedEvent results = runTestsToCompletion(packageName, filename);
+        conditionalFail(results.isFailed(),"Test failed", results);
+        return results;
     }
 
     /**
