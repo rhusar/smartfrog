@@ -153,6 +153,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** helper */
     private String fullShellCommand;
     public static final String STATUS_RUNNING = "running";
+    public static final String ERROR_NO_COMMAND = "No command to execute";
 
     /**
      *  Constructor.
@@ -172,8 +173,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             RemoteException {
         super.sfDeploy();
         log = sfLog();
-        readSFAttributes();
+        readStartEarlyAttribute();
         if (startEarly) {
+            readSFAttributes();
             try {
                 execute();
             } catch (Throwable t) {
@@ -186,8 +188,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     /**
      * This is the method that does the excution
-     * @throws IOException
-     * @throws SmartFrogRuntimeException
+     * @throws IOException for IO problems
+     * @throws SmartFrogRuntimeException for other problems
      */
     private void execute() throws IOException, SmartFrogRuntimeException {
         //Create subProcess
@@ -201,6 +203,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             buffer.append('\n');
             buffer.append(fullShellCommand);
             log.debug(buffer);
+        }
+        if(commands.length==0) {
+            throw new SmartFrogRuntimeException(ERROR_NO_COMMAND,this);
         }
         fullShellCommand = arrayToString(commands, " '", "' ");
         subProcess = runtime.exec(
@@ -347,7 +352,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         //Optional attributes
         delayBetweenCmds = sfResolve(varDelayBetweenCmds,delayBetweenCmds,true);
-        //4 methods for intf...
 
         waitSignalGoAhead = sfResolve(varWaitSignalGoAhead,waitSignalGoAhead,true);
         shouldTerminate = sfResolve(varShouldTerminate,shouldTerminate,true);
@@ -369,13 +373,17 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         }
 
         processName = sfResolve(varSFProcessName,processName,true);
-        startEarly =sfResolve(varStartEarly, startEarly,true);
         outputStreamObj = (OutputStreamIntf) sfResolve(varOutputStreamTo, outputStreamObj , false);
         errorStreamObj  = (StreamIntf) sfResolve(varErrorStreamTo, errorStreamObj , false);
 
         printMsgImp  =   (PrintMsgInt) sfResolve(varOutputMsgTo, printMsgImp , false);
         printErrMsgImp = (PrintErrMsgInt) sfResolve(varErrorMsgTo, printErrMsgImp , false);
         printCommandOnFailure = sfResolve(varPrintCommandOnFailure,false,true);
+    }
+
+    private boolean readStartEarlyAttribute() throws SmartFrogResolutionException, RemoteException {
+        startEarly =sfResolve(varStartEarly, startEarly,true);
+        return startEarly;
     }
 
 
@@ -389,6 +397,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             throws SmartFrogException,RemoteException {
         super.sfStart();
         if (!startEarly) {
+            readSFAttributes();
             try {
                 execute();
             } catch (Throwable t) {
@@ -612,7 +621,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         Vector attributes) {
         String[] cmd = null;
 
-        try {
             if (attributes == null) {
                 attributes = new Vector();
                 attributes.add("");
@@ -656,10 +664,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             System.arraycopy(cmd, 0, result, 0, i);
 
             cmd = result;
-            if (sfLog().isDebugEnabled()) sfLog().debug("CreatedCmd:" + arrayToString(cmd, "'", "'"));
-        } catch (Exception e) {
-            if (sfLog().isErrorEnabled()) sfLog().trace("SFRunCommand.createCmd:Error creating Cmd.(" + e.getMessage() +")",e);
-        }
 
         return cmd;
     }
