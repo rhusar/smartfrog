@@ -17,7 +17,7 @@ public class PlainJVMSubprocessStarterImpl extends AbstractSubprocessStarter {
     private final LogSF sfLog = LogFactory.sfGetProcessLog();
 
 
-    protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
+    protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, int subprocessId, ComponentDescription cd) throws Exception {
         addProcessDefines(runCmd, name);
 
         addProcessClassPath(parentProcess, runCmd, name, cd);

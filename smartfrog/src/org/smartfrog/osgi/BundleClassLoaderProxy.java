@@ -3,11 +3,13 @@ package org.smartfrog.osgi;
 import org.osgi.framework.Bundle;
 
 import java.net.URL;
+import java.util.Enumeration;
+import java.io.IOException;
 
 /**
- * Equals changes during lifecycle. No hasCode() provided because it would change during lifecycle too.
+ * Equals changes during lifecycle. No hashCode() provided because it would change during lifecycle too.
  * DO NOT USE IN HASHTABLES
- * @noinspection EqualsAndHashcode
+ * @noinspection EqualsAndHashcode,RefusedBequest
  */
 class BundleClassLoaderProxy extends ClassLoader {
     private ClassLoader realCL = null;
@@ -26,10 +28,15 @@ class BundleClassLoaderProxy extends ClassLoader {
         return aClass;
     }
 
+    public Enumeration getResources(String path) throws IOException {
+        return hostBundle.getResources(path);
+    }
+
     public URL getResource(String name) {
         return hostBundle.getResource(name);
     }
 
+    /** @noinspection NonFinalFieldReferenceInEquals*/
     public boolean equals(Object other) {
         if (realCL == null) return super.equals(other);
         else return realCL.equals(other);
@@ -40,6 +47,7 @@ class BundleClassLoaderProxy extends ClassLoader {
         else return super.toString() + " delegating to " + realCL.toString();
     }
 
+    /** @noinspection MethodWithMoreThanThreeNegations*/
     private boolean isRealCL(ClassLoader loader) {
         return loader != null // bootstrap
                 && !loader.equals(ClassLoader.getSystemClassLoader().getParent()) // extension

@@ -41,10 +41,10 @@ public class SmartFrogActivator {
             /** @noinspection FeatureEnvy*/
             public void run() {
                 try {
-                    synchronized(lock){
+                    synchronized (lock) {
                         processCompound = SFSystem.runSmartFrog();
                         configureProcessCompound(bundleContext);
-                    }                    
+                    }
 
                     getLog().info("SmartFrog daemon running...");
                 } catch (Exception e) {
@@ -122,8 +122,6 @@ public class SmartFrogActivator {
 
                 processCompound = null; // Triggers garbage collection, hopefully
             }
-            // TODO: Do it in a nice way, e.g. by passing subprocess number to subprocess starter
-            EquinoxSubprocessStarterImpl.cleanShutdown();
         }
     }
 

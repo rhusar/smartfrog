@@ -32,6 +32,8 @@ import java.util.ListResourceBundle;
 public class ErrorMessageBundle extends ListResourceBundle
     implements MessageKeys {
 
+    private static final String LINE_END = System.getProperty("line.separator");
+
     /**
      * Array containing message keys and message.
      */
@@ -61,8 +63,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_NULL_URL, "Url is null" },
         { MSG_LOADING_URL, "Trying to load {0}" },
         { MSG_LANG_NOT_FOUND, "Unable to locate language in URL: {0}" },
-        { MSG_URL_NOT_FOUND, "Unable to locate File or URL: {0} for component: {1}"+
-            " \n    Reason: The path to URL may be incorrect or file may be missing"},
+        { MSG_URL_NOT_FOUND, "Unable to locate File or URL: {0} for component: {1} "+
+            LINE_END + "    Reason: The path to URL may be incorrect or file may be missing"},
         { MSG_ERR_DEPLOY_FROM_URL,
           "Error during deployment of URL: {0}, for component: {1}"},
         { MSG_STACKTRACE_FOLLOWS, "Stack trace follows:"},
@@ -82,9 +84,9 @@ public class ErrorMessageBundle extends ListResourceBundle
                              "Warning: stack trace logging disabled"},
         { MSG_UNKNOWN_HOST, "Unable to locate IP address of the host: {0}"},
         { MSG_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be running on {0}"},
+        "Unable to connect to sfDaemon on: {0}." + LINE_END + "Reason: sfDaemon may not be running on {0}"},
         { MSG_REMOTE_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be authenticated properly"},
+        "Unable to connect to sfDaemon on: {0}." + LINE_END + "Reason: sfDaemon may not be authenticated properly"},
         { MSG_PARENT_LOCATION_FAILED,
          "Failed to locate parent"},
         // Resolution Exception messages start
@@ -109,7 +111,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
-        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\n    Reason: URL may be incorrect or resource is missing"},
+        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\""+ LINE_END +"    Reason: URL may be incorrect or resource is missing"},
 
         { ILLEGAL_NUMERIC_PARAMETER , "Illegal numeric parameter"},
         { ILLEGAL_STRING_PARAMETER  , "Illegal string parameter"},
@@ -127,7 +129,10 @@ public class ErrorMessageBundle extends ListResourceBundle
         { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
         { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, fouund a {0}"},
         { CANNOT_LINK_TO_PREDICATE, "Attribute {1} is a link to a predicate. Predicates should be extended and not linked to: in component {0}"},
-        { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"}
+        { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"},
+        { EXISTING_APP_ENV_IS_DIFFERENT, "The process: {0} already has an application environment of name: {1}, but it is different than the designed environment for the application."
+                + LINE_END
+                + "Check whether the application environment has been changed, but not undeployed on this process."}
     };
 
     /**

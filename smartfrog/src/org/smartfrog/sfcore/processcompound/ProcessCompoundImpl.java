@@ -136,6 +136,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     };
 
+    private int nextSubprocessId = 0;
     private SubprocessStarter subprocessStarter = new PlainJVMSubprocessStarterImpl();
 
     /**
@@ -973,7 +974,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
         // Start process
-        Process process = subprocessStarter.startProcess(this, name.toString(), cd);
+        Process process = subprocessStarter.startProcess(this, name.toString(), nextSubprocessId, cd);
+        nextSubprocessId++;
 
         try {
             // Wait for new compound to appear and try to return it

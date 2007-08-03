@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
@@ -124,6 +125,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
                 // Name = null : The name of the component on the remote process is generated automatically,
                 // even though the component has a name in the local process. Not pretty.
+                // This could be changed easily by adding the component name as sfProcessComponentName, but might break backward compatibility.
                 return pc.sfDeployComponentDescription(null, parent, target, modifiedAttributes);
             }
         } catch (Exception ex) {            
@@ -133,28 +135,40 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     }
 
     private Context deployEnvironmentIfNeeded(ProcessCompound pc) throws Exception {
-        Prim appEnvironment = resolveEnvironment();
-        ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
-
-        // 0: Host, 1: Process name
-        HereReferencePart nameRef = (HereReferencePart) appEnvironment.sfCompleteName().elementAt(2);
-        Object name = nameRef.getValue();
-
-        if (pc.sfResolveHere(name, false) == null) {
-            pc.sfDeployComponentDescription(name, null, appEnvDescr, null);
-        }
-// TODO Complain if app with same name exists but is not the same
         Context modifiedAttributes = new ContextImpl();
-        Prim deployedAppEnv = (Prim) pc.sfResolveHere(name);
-        if (!deployedAppEnv.sfIsDeployed()) deployedAppEnv.sfDeploy();
-        if (!deployedAppEnv.sfIsStarted()) deployedAppEnv.sfStart();
-        modifiedAttributes.put(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, deployedAppEnv);
+        Prim appEnvironment = resolveEnvironment();
+        if (appEnvironment != null) {
+            ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
+
+            // 0: Host, 1: Process name
+            HereReferencePart nameRef = (HereReferencePart) appEnvironment.sfCompleteName().elementAt(2);
+            Object name = nameRef.getValue();
+
+            Prim deployedAppEnv = (Prim) pc.sfResolveHere(name, false);
+            if (deployedAppEnv == null) {
+                deployedAppEnv = pc.sfDeployComponentDescription(name, null, appEnvDescr, null);
+            } else {
+                checkIsSame(deployedAppEnv, appEnvDescr, pc, name);
+            }
+
+            if (!deployedAppEnv.sfIsDeployed()) deployedAppEnv.sfDeploy();
+            if (!deployedAppEnv.sfIsStarted()) deployedAppEnv.sfStart();
+            modifiedAttributes.put(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, deployedAppEnv);            
+        }
         return modifiedAttributes;
+    }
+
+    private void checkIsSame(Prim deployedAppEnv, ComponentDescription appEnvironment, ProcessCompound targetPC, Object appEnvName) throws SmartFrogException {
+        ComponentDescription existingEnvDescription = dumpEnvironment(deployedAppEnv);
+        if (! existingEnvDescription.equals(appEnvironment))
+            throw new SmartFrogDeploymentException
+                    (MessageUtil.formatMessage(EXISTING_APP_ENV_IS_DIFFERENT, targetPC, appEnvName));
+        
     }
 
     private Prim resolveEnvironment() throws SmartFrogResolutionException {
         try {
-            return (Prim) target.sfResolve(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT);
+            return (Prim) target.sfResolve(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, false);
         } catch (ClassCastException cce) {
             throw environmentError(cce);
         } catch (SmartFrogResolutionException re) {

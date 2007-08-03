@@ -385,4 +385,6 @@ public interface MessageKeys {
     * Message key: Cannot override an attribute marked sfFinal
     */
    public static String CANNOT_OVERRIDE_FINAL = "CANNOT_OVERRIDE_FINAL";
+
+   public static final String EXISTING_APP_ENV_IS_DIFFERENT = "EXISTING_APP_ENV_IS_DIFFERENT";
 }

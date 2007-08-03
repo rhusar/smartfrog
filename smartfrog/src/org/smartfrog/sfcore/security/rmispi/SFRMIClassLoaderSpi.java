@@ -209,11 +209,6 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      *         marshalled, or <code>null</code>
      */
     public String getClassAnnotation(Class cl) {
-        if (cl.getName().startsWith("org.smartfrog.osgi.test")) {
-            System.out.println("Class loader for " + cl + " : " + cl.getClassLoader());
-            System.out.println("Giving annotation for " + cl + " : " + ClassLoaderRegistry.getAnnotationForClass(cl));
-            ClassLoaderRegistry.printState();
-        }
         return ClassLoaderRegistry.getAnnotationForClass(cl);
     }
 
