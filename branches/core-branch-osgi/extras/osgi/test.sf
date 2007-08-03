@@ -19,6 +19,7 @@ sfConfig extends Compound {
     }
 
     testPrinter extends MessagePrinter {
+        sfProcessHost "pernet-o-2";
         sfMeta extends DATA meta;
         messageSource LAZY ATTRIB subprocess:testProvider;
     }
