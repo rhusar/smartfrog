@@ -12,10 +12,8 @@ public class MessagePrinterImpl extends PrimImpl {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        Compound subprocess = (Compound) sfResolve(Reference.fromString("ATTRIB subprocess"));
-        System.out.println("subprocess: " + subprocess);
-        Object messageSource = sfResolve("messageSource");
+        MessageProvider messageSource = (MessageProvider) sfResolve("messageSource");
         // Remote call        
-        System.out.println(messageSource);
+        System.out.println(messageSource.getMessage());
     }
 }

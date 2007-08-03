@@ -1,6 +1,8 @@
 package org.smartfrog.osgi.test;
 
-public class TriggersRemoteClassLoading {
+import java.io.Serializable;
+
+public class TriggersRemoteClassLoading implements Serializable {
     static {
         System.out.println("Loaded class TriggersRemoteClassLoading");
     }

@@ -37,18 +37,8 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /** A debugging utility to print messages. */
     private static SFDebug debug = SFDebug.getInstance("SFRMIClassLoaderSpi");
 
-    /** Default RMI class loader implementation. */
-//    private RMIClassLoaderSpi defaultProviderInstance = null;
     /** A flag that states whether SF security checks are active. */
     private static boolean securityOn = false;
-
-    public SFRMIClassLoaderSpi() {
-//        defaultProviderInstance = RMIClassLoader.getDefaultProviderInstance();
-
-        if (debug != null) {
-            debug.println("Constructor called");
-        }
-    }
 
     /**
      * Provides the implementation for {@link
@@ -84,8 +74,6 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public Class loadClass(String codebase, String name,
         ClassLoader defaultLoader)
         throws MalformedURLException, ClassNotFoundException {
-//        Class result = defaultProviderInstance.loadClass(codebase, name,
-//                defaultLoader);
 
         ClassLoader annotationCL = ClassLoaderRegistry.getClassLoaderForAnnotation(codebase);
         Class result = Class.forName(name, false, annotationCL);
@@ -147,9 +135,6 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
         for (int i=0; i<interfaces.length; i++)
             interfaceClasses[i] = Class.forName(interfaces[i], false, annotationCL);
         Class result = Proxy.getProxyClass(annotationCL, interfaceClasses);
-        
-//        Class result = defaultProviderInstance.loadProxyClass(codebase,
-//                interfaces, defaultLoader);
 
         if (debug != null) {
             debug.println("loadProxyClass:#1 codebase=" + codebase +
@@ -196,7 +181,6 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public ClassLoader getClassLoader(String annotation)
         throws MalformedURLException { // SecurityException
 
-//        ClassLoader result = defaultProviderInstance.getClassLoader(annotation);
         ClassLoader result = ClassLoaderRegistry.getClassLoaderForAnnotation(annotation);
 
         if (debug != null) {
@@ -225,7 +209,11 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
      *         marshalled, or <code>null</code>
      */
     public String getClassAnnotation(Class cl) {
-//        return defaultProviderInstance.getClassAnnotation(cl);
+        if (cl.getName().startsWith("org.smartfrog.osgi.test")) {
+            System.out.println("Class loader for " + cl + " : " + cl.getClassLoader());
+            System.out.println("Giving annotation for " + cl + " : " + ClassLoaderRegistry.getAnnotationForClass(cl));
+            ClassLoaderRegistry.printState();
+        }
         return ClassLoaderRegistry.getAnnotationForClass(cl);
     }
 

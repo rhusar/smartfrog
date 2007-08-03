@@ -508,4 +508,14 @@ public class Reference implements Copying, Cloneable, Serializable {
         }
         return res.toString();
     }
+
+    public Reference makeRelative(Reference base) {
+        Reference copy = (Reference) copy();
+        Reference baseCopy = (Reference) base.copy();
+        while (baseCopy.size() > 0 && copy.size() > 0 && copy.firstElement().equals(baseCopy.firstElement())) {
+            copy.removeElement(copy.firstElement());
+            baseCopy.removeElement(baseCopy.firstElement());
+        }
+        return copy.size() == 0 ? this : copy;
+    }
 }
