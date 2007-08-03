@@ -215,6 +215,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                 getTestTimeout());
     }
 
+
+
     /**
      * Run tests until they are completed, then analyse the results.
      * The application is saved to the application field;
@@ -340,6 +342,22 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
         TestCompletedEvent results = runTestsToCompletion(packageName, filename);
         conditionalFail(results.isFailed(),"Test failed", results);
+        return results;
+    }
+
+    /**
+     * Do a test run, assert that it passed or that it skipped.
+     * Skipped tests are warned about; there's no way to do anything else with them in JUnit3
+     * @param packageName package containing the deployment
+     * @param filename    filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
+    protected TestCompletedEvent expectSuccessfulTestRunOrSkip(String packageName, String filename) throws Throwable {
+        TestCompletedEvent results = runTestsToCompletion(packageName, filename);
+        if (results.isSkipped()) {
+            getLog().warn("skipped " + results);
+        }
         return results;
     }
 
