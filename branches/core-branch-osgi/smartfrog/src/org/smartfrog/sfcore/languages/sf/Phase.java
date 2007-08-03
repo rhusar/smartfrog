@@ -29,6 +29,8 @@ import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 
 
 /**
@@ -52,30 +54,26 @@ public class Phase implements CDVisitor {
     /**
      * Create a PhaseAction for a specific node for which the phase is relevant.
      *
-     * @param action the object describing the phase - should be a string
-     *        representing a class implementing the PhaseAction interface
      * @param cd the component description on which it is to act
      *
      * @return PhaseAction for a specific node
      *
      * @throws SmartFrogResolutionException failed to create PhaseAction
      */
-    protected PhaseAction phaseAction(Object action,
+    protected PhaseAction phaseAction(String action,
                                       SFComponentDescription cd,
                                       Stack path)
             throws SmartFrogResolutionException
     {
         try {
-
-            // TODO: Obtain .sf files, PhaseActions and Functions through a ParseTimeComponentFactory
-            PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
+            ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(cd);
+            PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
 
         } catch (Exception ex) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
-                    phaseName + " (" + action + ", internal cause: " + ex.getMessage() + ")",
-                    ex
+                    "Could not create phase: " + phaseName + " (" + action + ')', ex
             );
         }
     }
@@ -97,7 +95,7 @@ public class Phase implements CDVisitor {
                 String sname = (String) name;
 
                 if (sname.startsWith(phaseName)) {
-                    Object value = c.get(sname);
+                    String value = (String) c.get(sname);
                     //this classcast shouldn't cause problems - but if it does, its an error anyway
                     // maybe should be prepared to provide better error message!
                     phaseAction(value, (SFComponentDescription)cd, path).doit();

@@ -21,4 +21,6 @@ public interface ClassLoadingEnvironment {
      * @return A classloader for this environment.
      */
     ClassLoader getClassLoader();
+
+    Class loadClass(String className) throws ClassNotFoundException;
 }

@@ -44,7 +44,7 @@ import java.rmi.RemoteException;
 public class SFDeployer implements MessageKeys {
 
     private static final ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static final PrimFactory defaultPrimFactory = new DefaultComponentFactory();
+    private static final PrimFactory defaultPrimFactory = new DefaultPrimFactory();
     private static final ClassLoadingEnvironment defaultClassLoadingEnvironment = new CoreClassesClassLoadingEnvironment();
     private static final Reference parentAppEnvRef;
     static {
@@ -233,11 +233,15 @@ public class SFDeployer implements MessageKeys {
         else return (PrimFactory) cd.sfResolve(factoryRef);
     }
 
-    private static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
-        final Reference classLoadingEnvRef = (Reference)
-                cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
-        if (classLoadingEnvRef == null) return defaultClassLoadingEnvironment;        
-        else return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
+    public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
+        final Object classLoadingEnvAttr = cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
+        if (classLoadingEnvAttr instanceof Reference) { // in a DATA block
+            final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;            
+            return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
+        } else { // in a normal component description, or not provided
+            if (classLoadingEnvAttr == null) return defaultClassLoadingEnvironment;
+            else return (ClassLoadingEnvironment) classLoadingEnvAttr;
+        }
     }
 
     private static SmartFrogResolutionException wrongType

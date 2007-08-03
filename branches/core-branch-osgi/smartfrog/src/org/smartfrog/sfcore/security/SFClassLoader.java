@@ -23,20 +23,13 @@ package org.smartfrog.sfcore.security;
 import org.smartfrog.sfcore.security.rmispi.SFDebug;
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.SFLoader;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.server.RMIClassLoader;
-import java.security.CodeSource;
-import java.security.PermissionCollection;
-import java.security.Policy;
-import java.security.ProtectionDomain;
-import java.security.cert.Certificate;
 
 
 /**
@@ -76,7 +69,7 @@ public class SFClassLoader {
      *
      * @return a string containing the space separated URLs.
      */
-    private synchronized static String getTargetClassBase() {
+    private static synchronized String getTargetClassBase() {
         if (targetClassBase == null) {
             targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
         }
@@ -166,7 +159,7 @@ public class SFClassLoader {
 
         try {
             // Let's use a relative file path...
-            resourceURL = stringToURL(resource);
+            resourceURL = SFLoader.stringToURL(resource);
 
             return getURLAsStream(resourceURL);
         } catch (Throwable e) {
@@ -179,40 +172,13 @@ public class SFClassLoader {
         }
 
         // The preceeding / does not work when looking inside jar files.
-        String resourceInJar = (resource.startsWith("/")
-            ? resource.substring(1) : resource);
+        String resourceInJar = resource.startsWith("/") ? resource.substring(1) : resource;
 
         // Try the class loaders
         Object result = classLoaderHelper(resourceInJar, codebase,
                 useDefaultCodebase, false);
 
-        return ((result instanceof InputStream) ? (InputStream) result : null);
-    }
-
-    /**
-     * Takes a string and converts to a URL. If the string is not in URL format
-     * an attempt is made to create a file based URL relative to where this
-     * process started. If it is pointing to a jar file we use a jar-type URL.
-     *
-     * @param s string to convert
-     *
-     * @return URL form of the input string
-     *
-     * @throws Exception if failed to convert string to URL
-     */
-    public static URL stringToURL(String s) throws Exception {
-        try {
-            if (s.endsWith(".jar") && !s.startsWith("jar:")) return new URL("jar:" + s + "!/");
-            else return new URL(s);
-        } catch (Exception ex) {
-            // ignore, try another one
-        }
-
-        String fUrl = (new File(s)).getAbsolutePath();
-        fUrl = "file:" + (fUrl.startsWith("/") ? fUrl : ("/" + fUrl));
-
-        return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
-        ? new URL("jar:" + fUrl + "!/") : new URL(fUrl));
+        return result instanceof InputStream ? (InputStream) result : null;
     }
 
     /**
@@ -230,7 +196,7 @@ public class SFClassLoader {
     private static InputStream getURLAsStream(URL resourceURL)
             throws ClassNotFoundException, IOException {
         URLConnection con = resourceURL.openConnection();
-        InputStream in = getSecureInputStream(con);
+        InputStream in = SFSecurity.getSecureInputStream(con);
 
         if (in != null) {
             return in;
@@ -239,55 +205,6 @@ public class SFClassLoader {
             throw new ClassNotFoundException("SFClassLoader::getURLAsStream cannot find " +
                 resourceURL);
         }
-    }
-
-    /**
-     * Checks that the resource pointed by a URLConnection comes from a trusted
-     * source, this is, it has been granted the SFCommunityPermission. If this
-     * is not the case it throws a security exception. Then, it uses that URL
-     * to obtain an input stream to a locally cached object.
-     *
-     * @param con URLConnection to the resource to be checked.
-     *
-     * @return Stream that point to the resource. If the resource is in a
-     *         signed jar we return a ByteArrayInputStream to a local copy for
-     *         security reasons.
-     *
-     * @throws IOException in case of any error
-     */
-    public static InputStream getSecureInputStream(URLConnection con) throws IOException {
-        InputStream in = con.getInputStream();
-        Certificate[] certs = null;
-
-        if (con instanceof JarURLConnection) {
-            // Loaded from a jar file, let's add the certicates.
-            JarURLConnection conJar = (JarURLConnection) con;
-
-            // Need to read the full entry so that I can get the certificates.
-            int numBytes = in.available();
-            byte[] resourceBytes = new byte[numBytes];
-            int readBytes = 0;
-
-            while (readBytes != numBytes) {
-                // Sometimes the read returns early...
-                readBytes += in.read(resourceBytes, readBytes,
-                    numBytes - readBytes);
-            }
-
-            certs = conJar.getCertificates();
-
-            // Need to return an InputStream to a local copy to avoid that
-            // the entry changes after being checked.
-            in = new ByteArrayInputStream(resourceBytes);
-        }
-
-        CodeSource cs = new CodeSource(con.getURL(), certs);
-        Policy pc = Policy.getPolicy();
-        PermissionCollection perms = ((pc == null) ? null : pc.getPermissions(cs));
-        SFRMIClassLoaderSpi.quickReject(new ProtectionDomain(cs, perms));
-
-        // No security exception, continues...
-        return in;
     }
 
     /**
@@ -379,20 +296,19 @@ public class SFClassLoader {
                 " * classLoaderHelper: name "+name+", codebase "+codebase
                         +", usedefaultcodebase "+useDefaultCodebase
                         +", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
-        String msg = (isForName ? "forName" : "getResourceAsStream");
+        String msg = isForName ? "forName" : "getResourceAsStream";
 
-        Object result;
         // "default" equivalent to "not set".
         if ("default".equals(codebase)) {
             codebase = null;
         }
 
         //First, try the thread context class loader
-        result = opHelperWithReporting(name, null, isForName, msg);
-         if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");}
+        Object result = opHelperWithReporting(name, null, isForName, msg);
+        if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");}
 
         // Second try the default codebase (if enabled)
-        if (result==null && (useDefaultCodebase) && (getTargetClassBase() != null)) {
+        if (result == null && useDefaultCodebase && getTargetClassBase() != null) {
             result = opHelperWithReporting(name, getTargetClassBase(), isForName, msg);
              if (debug != null) debug.println("   - Using defaultCodeBase: "+getTargetClassBase());
         }

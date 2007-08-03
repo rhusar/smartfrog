@@ -1,8 +1,15 @@
 package org.smartfrog.sfcore.reference;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Copying;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.parser.ParseTimeComponentFactory;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.Serializable;
@@ -142,22 +149,18 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             throws SmartFrogResolutionException
     {        
         Function function;
+        ComponentDescription metadata;
         try {
             // First try to use the new syntax
-            ComponentDescription metadata = (ComponentDescription)
-                    comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-            function = createFunction(metadata);
-
+            metadata = (ComponentDescription)
+                    comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA, false);
         } catch (ClassCastException cce) {
             throw new SmartFrogResolutionException("The sfMeta attribute is not a DATA block", cce);
-
-        } catch (SmartFrogResolutionException e) {
-
-            // Using the old syntax
-            String functionClass = getFunctionClass(comp);
-            function = createFunctionOldSyntax(functionClass);
         }
 
+        if (metadata == null) metadata = comp;
+        function = createFunction(metadata);
+        
         return evaluateFunction(remote, function, forFunction, rr);
     }
 
@@ -188,24 +191,14 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         return functionClass;
     }
 
-    public static Function createFunctionOldSyntax(String functionClass) throws SmartFrogResolutionException {
-        try {
-            return (Function) Class.forName(functionClass).newInstance();
-        } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
-        }
-    }
-
     private static Function createFunction(ComponentDescription metadata) throws SmartFrogResolutionException {
-        if (metadata == null)
-            throw new SmartFrogResolutionException("sfMeta attribute is null");
-
+        String functionClass = getFunctionClass(metadata);
         try {
-            Reference factoryRef = (Reference) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY);
-            ParseTimeComponentFactory factory = (ParseTimeComponentFactory) metadata.sfResolve(factoryRef);
-            return factory.getFunction(metadata);
+            ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(metadata);            
+            return (Function) env.loadClass(functionClass).newInstance();
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("Failed to create function. sfMeta block: " + metadata, e);
+            throw new SmartFrogResolutionException
+                    ("Failed to create function class " + functionClass + " from description: " + metadata, e);
         }
     }
 

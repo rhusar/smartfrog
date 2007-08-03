@@ -377,11 +377,11 @@ public class ComponentHelper {
             throws SmartFrogException, RemoteException
     {
         final InputStream in;
-        final ClassLoadingEnvironment classLoadingEnvironment = getCodeRepository();
+        final ClassLoadingEnvironment classLoadingEnvironment = getClassLoadingEnvironment();
         try {
             in = SFLoader.getInputStream(resourcename, classLoadingEnvironment);
-        } catch(IOException e) {
-            throw new SmartFrogException("Not found: " + resourcename+" in " + classLoadingEnvironment);
+        } catch (IOException e) {
+            throw new SmartFrogException("Not found: " + resourcename + " in environment: " + classLoadingEnvironment, e);
         }
         return in;
     }
@@ -405,16 +405,16 @@ public class ComponentHelper {
     }
 
     /**
-     * get the code repository of a component
+     * get the class loading environment of a component
      *
-     * @return code repository of a component
-     * @throws SmartFrogResolutionException if failed to resolve
+     * @return code repository of a component, or null if the attribute is missing
+     * @throws SmartFrogResolutionException If attribute resolution failed.
      * @throws RemoteException              in case of Remote/network error
      */
-    public ClassLoadingEnvironment getCodeRepository() throws SmartFrogResolutionException,
+    public ClassLoadingEnvironment getClassLoadingEnvironment() throws SmartFrogResolutionException,
             RemoteException
     {
-        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
+        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
     }
 
     /**

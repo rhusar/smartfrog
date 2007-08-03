@@ -22,12 +22,20 @@ package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.JarURLConnection;
+import java.security.cert.Certificate;
+import java.security.CodeSource;
+import java.security.Policy;
+import java.security.PermissionCollection;
+import java.security.ProtectionDomain;
 
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
@@ -135,7 +143,7 @@ public class SFSecurity {
      *
      * @return The security environment shared by all the local SF components.
      */
-    synchronized static SFSecurityEnvironment getSecurityEnvironment() {
+    static synchronized SFSecurityEnvironment getSecurityEnvironment() {
         checkSFCommunity();
         return securityEnv;
     }
@@ -149,9 +157,56 @@ public class SFSecurity {
     }
 
     public static InputStream getSecureInputStream(URL url) throws IOException {
-        return SFClassLoader.getSecureInputStream(url.openConnection());
+        return getSecureInputStream(url.openConnection());
     }
 
+    /**
+     * Checks that the resource pointed by a URLConnection comes from a trusted
+     * source, this is, it has been granted the SFCommunityPermission. If this
+     * is not the case it throws a security exception. Then, it uses that URL
+     * to obtain an input stream to a locally cached object.
+     *
+     * @param con URLConnection to the resource to be checked.
+     * @return Stream that point to the resource. If the resource is in a
+     *         signed jar we return a ByteArrayInputStream to a local copy for
+     *         security reasons.
+     * @throws java.io.IOException in case of any error
+     */
+    public static InputStream getSecureInputStream(URLConnection con) throws IOException {
+        InputStream in = con.getInputStream();
+        Certificate[] certs = null;
+
+        if (con instanceof JarURLConnection) {
+            // Loaded from a jar file, let's add the certicates.
+            JarURLConnection conJar = (JarURLConnection) con;
+
+            // Need to read the full entry so that I can get the certificates.
+            int numBytes = in.available();
+            byte[] resourceBytes = new byte[numBytes];
+            int readBytes = 0;
+
+            while (readBytes != numBytes) {
+                // Sometimes the read returns early...
+                readBytes += in.read(resourceBytes, readBytes,
+                        numBytes - readBytes);
+            }
+
+            certs = conJar.getCertificates();
+
+            // Need to return an InputStream to a local copy to avoid that
+            // the entry changes after being checked.
+            in = new ByteArrayInputStream(resourceBytes);
+        }
+
+        CodeSource cs = new CodeSource(con.getURL(), certs);
+        Policy pc = Policy.getPolicy();
+        PermissionCollection perms = pc == null ? null : pc.getPermissions(cs);
+        SFRMIClassLoaderSpi.quickReject(new ProtectionDomain(cs, perms));
+
+        // No security exception, continues...
+        return in;
+    }
+    
     public static void checkSecurity(Class clazz) {
         SFRMIClassLoaderSpi.quickReject(clazz.getProtectionDomain());
     }
@@ -162,7 +217,7 @@ public class SFSecurity {
      *
      * @return whether the SF security is active.
      */
-    synchronized public static boolean isSecurityOn() {
+    public static synchronized boolean isSecurityOn() {
         return SFRMIClassLoaderSpi.isSecurityOn();
     }
 
@@ -228,11 +283,10 @@ public class SFSecurity {
     public static String getPeerAuthenticatedSubjects() {
         SFSocket inSocket = (SFSocket) SFInputStream.currentSocket.get();
 
-        return ((inSocket != null) ? inSocket.getPeerAuthenticatedSubjects()
-                                   : null);
+        return inSocket != null ? inSocket.getPeerAuthenticatedSubjects() : null;
     }
 
-    public synchronized static void cleanShutdown() {
+    public static synchronized void cleanShutdown() {
         alreadyInit = false;
         securityEnv = null;
         realRMIRegistry = null;
