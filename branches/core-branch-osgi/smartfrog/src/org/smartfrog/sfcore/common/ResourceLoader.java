@@ -66,7 +66,7 @@ public class ResourceLoader {
      * @param source The {@link ClassLoadingEnvironment} to load resources from.
      */
     public ResourceLoader(ClassLoadingEnvironment source) {
-        this.repository = source;
+        repository = source;
     }
 
     /**

@@ -7,7 +7,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.deployer.AbstractClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.net.URL;
 import java.rmi.RemoteException;
 
 
@@ -28,15 +27,7 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
                 "Error when installing bundle from location: " + location, e);
         }
 
-        bundleClassLoaderProxy = new ClassLoader() {
-            public Class loadClass(String name) throws ClassNotFoundException {
-                return hostBundle.loadClass(name);
-            }
-
-            public URL getResource(String name) {
-                return hostBundle.getResource(name);
-            }
-        };
+        bundleClassLoaderProxy = new BundleClassLoaderProxy(hostBundle);
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -70,4 +61,5 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
             throw new IllegalStateException("The class loader is not available, this environment has not been deployed yet");
         return bundleClassLoaderProxy;
     }
+
 }
