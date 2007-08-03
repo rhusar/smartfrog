@@ -56,7 +56,7 @@ public class WaitForPageImpl extends LivenessPageComponent
      * @return true if the workflow attributes should be checked during startup
      */
     protected boolean terminateAfterStartup() {
-        return true;
+        return false;
     }
 
 

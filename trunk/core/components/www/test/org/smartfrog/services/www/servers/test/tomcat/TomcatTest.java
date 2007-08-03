@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.www.servers.test.tomcat;
 
 import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /**
  *
@@ -35,7 +36,15 @@ public class TomcatTest extends DeployingTestBase {
         super(name);
     }
 
+    public void testTomcatIsNotRunning() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testTomcatIsNotRunning");
+    }
+
     public void testTomcatRuns() throws Throwable {
-        expectSuccessfulTestRun(FILES,"testTomcatRuns.sf");
+        expectSuccessfulTestRunOrSkip(FILES, "testTomcatRuns");
+    }
+
+    public void testWaitForTimesOut() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testWaitForTimesOut");
     }
 }
