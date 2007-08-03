@@ -41,7 +41,7 @@ import java.rmi.server.RMIClassLoader;
  *
  * @deprecated Everybody should just use Class.forName or Class.getResource instead, so that they keep to their own classloader.
  * If a piece of code does need to load foreign classes or resources, it needs to do so through a
- * {@link org.smartfrog.sfcore.deployer.PrimFactory}-style component.
+ * {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} component.
  */
 public class SFClassLoader {
     /**

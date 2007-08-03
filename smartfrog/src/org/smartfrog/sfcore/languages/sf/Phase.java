@@ -67,11 +67,13 @@ public class Phase implements CDVisitor {
     {
         try {
             ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(cd);
+            if (env == null) throw new Exception("cd: " + cd);
             PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
                     "Could not create phase: " + phaseName + " (" + action + ')', ex
             );

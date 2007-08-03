@@ -45,7 +45,6 @@ public class SFDeployer implements MessageKeys {
 
     private static final ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
     private static final PrimFactory defaultPrimFactory = new DefaultPrimFactory();
-    private static final ClassLoadingEnvironment defaultClassLoadingEnvironment = new CoreClassesClassLoadingEnvironment();
     private static final Reference parentAppEnvRef;
     static {
         parentAppEnvRef = new Reference(ReferencePart.parent());
@@ -235,11 +234,14 @@ public class SFDeployer implements MessageKeys {
 
     public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
         final Object classLoadingEnvAttr = cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
-        if (classLoadingEnvAttr instanceof Reference) { // in a DATA block
+        if (classLoadingEnvAttr instanceof Reference) {
+            // in a DATA block
             final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;            
             return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
-        } else { // in a normal component description, or not provided
-            if (classLoadingEnvAttr == null) return defaultClassLoadingEnvironment;
+        } else {
+            // in a normal component description, or not provided
+            // Apparently, cannot be made a static final field, as some thread gets to execute this at startup before our static fields are initialized. Weird.
+            if (classLoadingEnvAttr == null) return new CoreClassesClassLoadingEnvironment();
             else return (ClassLoadingEnvironment) classLoadingEnvAttr;
         }
     }
