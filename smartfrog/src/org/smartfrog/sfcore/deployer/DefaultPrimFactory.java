@@ -14,7 +14,7 @@ import org.smartfrog.sfcore.reference.Function;
 import org.smartfrog.sfcore.parser.ParseTimeComponentFactory;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 
-public class DefaultComponentFactory extends PrimImpl implements PrimFactory, ParseTimeComponentFactory {
+public class DefaultPrimFactory extends PrimImpl implements PrimFactory {
     private ClassLoadingEnvironment environment = null;
     private static final Reference sfClassReference = new Reference(
             ReferencePart.attrib(SmartFrogCoreKeys.SF_CLASS)
@@ -55,15 +55,6 @@ public class DefaultComponentFactory extends PrimImpl implements PrimFactory, Pa
         Class clazz = loader.loadClass(className);
         SFSecurity.checkSecurity(clazz);
         return clazz.newInstance();
-    }
-
-    public final Function getFunction(ComponentDescription metadata) throws Exception {
-        String className = (String) metadata.sfResolveHere(SmartFrogCoreKeys.SF_FUNCTION_CLASS);
-        return (Function) newInstance(className);
-    }
-
-    public final PhaseAction getPhaseAction(String className) throws Exception {
-        return (PhaseAction) newInstance(className);
     }
 
     public void setClassLoadingEnvironment(ClassLoadingEnvironment environment) {

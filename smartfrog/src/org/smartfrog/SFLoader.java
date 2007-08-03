@@ -3,7 +3,6 @@ package org.smartfrog;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.security.SFSecurity;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -13,6 +12,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.net.URL;
 
 public class SFLoader {
@@ -47,7 +47,7 @@ public class SFLoader {
 
         try {
             // Let's use a relative file path...
-            resourceURL = SFClassLoader.stringToURL(resource);
+            resourceURL = stringToURL(resource);
 
             return SFSecurity.getSecureInputStream(resourceURL);
         } catch (Throwable e) {
@@ -56,8 +56,7 @@ public class SFLoader {
         }
 
         // The forward / does not work when using ClassLoader.getResourceAsStream
-        String resourceInJar = (resource.startsWith("/")
-                ? resource.substring(1) : resource);
+        String resourceInJar = resource.startsWith("/") ? resource.substring(1) : resource;
 
         // Try the class loaders
         if (repository != null) return repository.getResourceAsStream(resourceInJar);
@@ -74,21 +73,19 @@ public class SFLoader {
      * @param resourceSFURL Name of the resource. SF url valid.
      * @return ByteArray (byte []) with the resource data
      * @throws org.smartfrog.sfcore.common.SmartFrogException if input stream could not be created for the
-     * resource
-     * @see org.smartfrog.sfcore.security.SFClassLoader
+     * resource     
      */
     public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
         ByteArrayOutputStream bStrm = null;
         DataInputStream iStrm = null;
         try {
             iStrm = new DataInputStream(SFSystem.getInputStreamForResource(resourceSFURL));
-            byte resourceData[];
             bStrm = new ByteArrayOutputStream();
             int ch;
             while ((ch = iStrm.read()) != -1) {
                 bStrm.write(ch);
             }
-            resourceData = bStrm.toByteArray();
+            byte[] resourceData = bStrm.toByteArray();
             bStrm.close();
             return resourceData;
         } catch (IOException ex) {
@@ -110,5 +107,32 @@ public class SFLoader {
             throw new SmartFrogParseException(msg, e);
         }
         return is;
+    }
+
+    /**
+     * Takes a string and converts to a URL. If the string is not in URL format
+     * an attempt is made to create a file based URL relative to where this
+     * process started. If it is pointing to a jar file we use a jar-type URL.
+     *
+     * @param s string to convert
+     *
+     * @return URL form of the input string
+     *
+     * @throws Exception if failed to convert string to URL
+     */
+    public static URL stringToURL(String s) throws Exception {
+        try {
+            if (s.endsWith(".jar") && !s.startsWith("jar:")) return new URL("jar:" + s + "!/");
+            else return new URL(s);
+        } catch (Exception ex) {
+            // ignore, try another one
+        }
+
+        String fUrl = new File(s).getAbsolutePath();
+        fUrl = "file:" + (fUrl.startsWith("/") ? fUrl : '/' + fUrl);
+
+        return s.endsWith(".jar") && !s.startsWith("jar:")
+                ? new URL("jar:" + fUrl + "!/")
+                : new URL(fUrl);
     }
 }
