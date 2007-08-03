@@ -34,18 +34,17 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
 
     private int consolePort = 0;
 
-    // Used to increment base port so that several subprocesses can be started.
-    // Getting a subprocess ID from caller would be nicer
-    private static int subprocessNumber = 0;
-
     private BundleDescription[] toInstall;
     private ProcessCompound parentProcess;
     private ServiceReference platformSR;
 
-    protected void addParameters(ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd) throws Exception {
+    protected void addParameters(ProcessCompound parentProcess,
+                                 List runCmd, String name, int subprocessId, ComponentDescription cd)
+            throws Exception
+    {
         this.parentProcess = parentProcess;
 
-        consolePort = Integer.parseInt(getSystemProperty(EQUINOX_CONSOLE_PORT_START)) + subprocessNumber;
+        consolePort = Integer.parseInt(getSystemProperty(EQUINOX_CONSOLE_PORT_START)) + subprocessId;
         initRequiredBundlesLocations();
 
         addProcessAttributes(runCmd, name, cd);
@@ -63,9 +62,7 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         runCmd.add("-console");
         runCmd.add(String.valueOf(consolePort));
         runCmd.add("-configuration");
-        runCmd.add(getConfigurationArea(name));
-        
-        subprocessNumber++;
+        runCmd.add(getConfigurationArea(name));        
     }
 
     protected void doPostStartupSteps() throws IOException, InterruptedException {
@@ -186,9 +183,5 @@ public class EquinoxSubprocessStarterImpl extends AbstractSubprocessStarter {
         if (!tempFile.delete()) throw new IOException("Could not delete temporary file");
         if (!tempFile.mkdir()) throw new IOException("Could not create temporary directory");
         return tempFile.getAbsolutePath();
-    }
-
-    public static void cleanShutdown() {
-        subprocessNumber = 0;
     }
 }

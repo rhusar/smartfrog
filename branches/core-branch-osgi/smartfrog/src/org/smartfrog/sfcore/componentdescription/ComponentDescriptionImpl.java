@@ -1588,12 +1588,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
              return false;
          }
 
-         if (!((sfContext).equals((((ComponentDescription)o).sfContext())))){
-             return false;
-         }
+        return sfContext.equals(((ComponentDescription) o).sfContext());
 
-         return true;
-     }
+    }
 
      /**
       * Checks component description for same parentage
@@ -1602,11 +1599,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
       */
      public boolean hasSameParent(ComponentDescription o) {
          if (primParent==null) {
-           if (!(parent == (((ComponentDescription)o).sfParent()))){
+           if (!(parent == o.sfParent())){
                return true;
            }
          } else {
-           if (!(primParent == (((ComponentDescription)o).sfPrimParent()))){
+           if (!(primParent == o.sfPrimParent())){
                return true;
            }
          }

@@ -58,21 +58,19 @@ public abstract class AbstractSubprocessStarter implements SubprocessStarter {
      * @return new process
      * @throws Exception failed to locate all attributes, or start process
      */
-    public final Process startProcess(ProcessCompound parentProcess, String name, ComponentDescription cd) throws Exception {
+    public final Process startProcess(ProcessCompound parentProcess, String name, int id, ComponentDescription cd) throws Exception {
         Vector runCmd = new Vector();
 
         addProcessJava(parentProcess, runCmd, cd);
-        addParameters(parentProcess, runCmd, name, cd);
+        addParameters(parentProcess, runCmd, name, id, cd);
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog.isDebugEnabled())
             sfLog.trace("startProcess[" + name + "].runCmd: " + runCmd.toString());
 
-        Process subprocess;
-
         //noinspection CallToRuntimeExec
-        subprocess = Runtime.getRuntime().exec(runCmdArray);
+        Process subprocess = Runtime.getRuntime().exec(runCmdArray);
 
         if (subprocess != null)
             startStreamGobblerThreads(subprocess, name);
@@ -85,7 +83,7 @@ public abstract class AbstractSubprocessStarter implements SubprocessStarter {
 
     
     protected abstract void addParameters
-            (ProcessCompound parentProcess, List runCmd, String name, ComponentDescription cd)
+            (ProcessCompound parentProcess, List runCmd, String name, int subprocessId, ComponentDescription cd)
             throws Exception;
 
 

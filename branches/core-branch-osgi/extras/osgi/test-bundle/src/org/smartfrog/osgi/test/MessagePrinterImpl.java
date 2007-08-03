@@ -1,9 +1,7 @@
 package org.smartfrog.osgi.test;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 

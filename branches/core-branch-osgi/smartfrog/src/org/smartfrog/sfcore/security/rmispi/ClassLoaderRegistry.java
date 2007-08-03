@@ -6,12 +6,13 @@ import java.util.Iterator;
 
 public class ClassLoaderRegistry {
     // String -> ClassLoader
+    // Should not cause memory leaks if cleanShutdown() is properly called at shutdown.
     private static final Map loaders = new HashMap();
     private static ClassLoader defaultCL;
 
-    public static void init(ClassLoader defaultClassLoader) {
-        System.out.println("Registering default class loader: " + defaultClassLoader);
+    private ClassLoaderRegistry() {}
 
+    public static void init(ClassLoader defaultClassLoader) {
         defaultCL = defaultClassLoader;
     }
     
@@ -31,7 +32,6 @@ public class ClassLoaderRegistry {
         if (loader == null) throw new IllegalArgumentException("The class loader must not be null");
         // The null annotation is reserved for the default class loader.
         if (annotation == null) throw new IllegalArgumentException("The annotation must not be null");
-        System.out.println("Registering class loader:" + loader + " with annotation: \"" + annotation + '\"');
         loaders.put(annotation, loader);
     }
 
@@ -43,12 +43,12 @@ public class ClassLoaderRegistry {
         if (loader == null)
             throw new IllegalStateException("Trying to get class loader for unknown annotation: " + annotation);
 
-        if (annotation != null) System.out.println("Giving class loader: "+loader+" for annotation: " + annotation);
         return loader;
     }
 
     public static String getAnnotationForClass(Class clazz) {
-        // Do NOT use a reverse map, as it is expected that hashCode/equals on some ClassLoaders can have changed since they were put in the loaders map.
+        // Do NOT use a reverse map, as it is expected that hashCode/equals
+        // on some ClassLoaders can have changed since they were put in the loaders map.
         // This surfaced when using class loader proxies for OSGi.
         ClassLoader loader = clazz.getClassLoader();
         Iterator it = loaders.entrySet().iterator();
@@ -60,12 +60,6 @@ public class ClassLoaderRegistry {
                 break;
             }
         }
-        if (annotation != null) System.out.println("Giving annotation: " + annotation + " for class: " + clazz + " loaded by: " + clazz.getClassLoader());
         return annotation;
-    }
-
-    static void printState() {
-        System.out.println("Current state of the class loader registry:");
-        System.out.println(loaders);
     }
 }
