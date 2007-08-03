@@ -146,7 +146,7 @@ For more information: www.smartfrog.org
                 </td>
                 <% if (boolListActiveHosts) { %>
                 <td>
-                    <div id="<%=hosts[i]%>_status" style="width:100px"></div>
+                    <div id="<%=hosts[i]%>_status" style="width:110px;"></div>
                 </td>
                 <% } %>
             </tr>
