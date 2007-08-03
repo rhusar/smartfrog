@@ -20,17 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
-import java.util.Enumeration;
-import java.util.Stack;
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+
+import java.util.Enumeration;
+import java.util.Stack;
 
 
 /**
@@ -40,7 +39,7 @@ import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
  */
 public class Phase implements CDVisitor {
     /** The name of the phase. */
-    protected String phaseName;
+    private String phaseName;
 
     /**
      * Construct a phase object for a specific named phase.
@@ -67,13 +66,11 @@ public class Phase implements CDVisitor {
     {
         try {
             ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(cd);
-            if (env == null) throw new Exception("cd: " + cd);
             PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
 
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
                     "Could not create phase: " + phaseName + " (" + action + ')', ex
             );
