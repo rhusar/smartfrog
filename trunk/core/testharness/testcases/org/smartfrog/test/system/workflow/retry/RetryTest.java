@@ -24,6 +24,7 @@ import org.smartfrog.test.system.workflow.repeat.RepeatTest;
 import org.smartfrog.sfcore.workflow.combinators.Retry;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /**
  * test delays
@@ -44,11 +45,7 @@ public class RetryTest extends DeployingTestBase {
     }
 
     public void testNormalFailedRetry() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testNormalFailedRetry.sf",
-                "testNormalFailedRetry");
-        TestBlock block = (TestBlock) application;
-        TerminationRecord record = expectAbnormalTermination(block);
-        assertContains(record.description, "failure inside retry");
+        expectAbnormalTestRun(FILES, "testNormalFailedRetry", true, "failure inside retry");
     }
 
     public void testWorkingRetry() throws Throwable {
