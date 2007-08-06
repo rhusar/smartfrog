@@ -120,14 +120,7 @@ public class SFSecurity {
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
                     SFRMIClassLoaderSpi.setSecurityOn(true);
                 } else {
-                    //System.setSecurityManager(new DummySecurityManager());
-                    // if a java.security.policy is set then we initialize standard java security
-                    // This is necessary for dynamic classloading to work.
-                    String secPro = System.getProperty("java.security.policy");
-                    if  (secPro!=null ) {
-                        System.setSecurityManager(new SecurityManager());
-                    }
-
+                    
                     SFRMIClassLoaderSpi.setSecurityOn(false);
                     //Notification moved to SFSyten after the ini file is read.
                 }

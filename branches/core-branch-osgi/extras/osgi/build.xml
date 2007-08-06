@@ -2,7 +2,7 @@
 <project name="Smartfrog-OSGi" default="all">
 
     <property file="build.properties" />
-    <property name="sf.home" value="../../smartfrog"/>
+    <property name="sf.dir" value="../../smartfrog"/>
 
     <target name="init">
         <filelist id="child.projects" dir="." >
@@ -56,13 +56,13 @@
     <target name="clean" depends="init">
         <subant target="clean" >
             <filelist refid="child.projects" />            
-            <fileset file="${sf.home}/build.xml" />            
+            <fileset file="${sf.dir}/build.xml" />
         </subant>
     </target>
 
     <target name="smartfrog-dist" depends="init">
         <subant target="published" >
-            <fileset file="${sf.home}/build.xml" />
+            <fileset file="${sf.dir}/build.xml" />
             <property name="javadocs.disabled" value="${javadoc.disabled}"/>
         </subant>
     </target>

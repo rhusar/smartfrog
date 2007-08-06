@@ -37,7 +37,7 @@ public abstract class AbstractActivator {
         final BundleContext bundleContext = componentContext.getBundleContext();
         final Bundle bundle = bundleContext.getBundle();
 
-        loadProperties(bundle);
+        loadProperties();
 
         Thread startDaemon = new Thread(new Runnable() {
             /** @noinspection FeatureEnvy*/
@@ -90,7 +90,7 @@ public abstract class AbstractActivator {
         processCompound.sfAddTag(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, SmartFrogCoreKeys.SF_TRANSIENT);
     }
 
-    private void loadProperties(Bundle bundle) throws IOException {
+    private void loadProperties() throws IOException {
         // We need to keep the sfProcessName if it was passed by a -D flag
         // (which means we're being started as a subprocess)
         String sfProcessName = System.getProperty(SmartFrogCoreProperty.sfProcessName);
@@ -100,10 +100,6 @@ public abstract class AbstractActivator {
         );
         if (sfProcessName != null)
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
-
-        //String policyURL = bundle.getResource("sf.no.security.policy").toString();
-        // TODO: This fails doing an infinite recursion. I suppose you can only set that property on the command line. Too bad.
-        //System.setProperty("java.security.policy", policyURL);
     }
 
     protected void setLog(LogService log) {
