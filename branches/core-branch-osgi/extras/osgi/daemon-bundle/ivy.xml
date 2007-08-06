@@ -22,6 +22,7 @@
       <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
       <conf name="runtime" description="runtime but not the artifact"
             extends="redist"/>
+      <conf name="repackage" visibility="private" description="Jars repackaged inside bundles"/>
       <conf name="documentation"
             description="all documentation artifacts"/>
   </configurations>  
@@ -36,7 +37,7 @@
                     name="smartfrog"
                     changing="true"
                     rev="latest.integration"
-                    conf="compile->core"/>
+                    conf="compile->core; repackage->examples"/>
 
         <dependency org="org.smartfrog"
                     name="sf-tasks" changing="true"
