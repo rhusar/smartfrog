@@ -28,32 +28,62 @@
     <!-- Import common stuff -->
     <import file="../../../common.xml"/>
 
-    <target name="createjar" depends="generate-versioned-jar">
-        <sf-jar destfile="${target.jar}"
-                manifest="./META-INF/MANIFEST.MF">
-            <zipfileset dir="${build.classes.dir}"/>
-            <zipfileset dir="${basedir}" includes="OSGI-INF/*"/>
-            <zipfileset dir="${user.home}/.ivy2/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/">
+    <property name="artifact.name" value="sf-daemon-equinox"/>
+
+    <macrodef name="prepare-xml-file">
+        <attribute name="classname"/>
+        <sequential>
+            <copy overwrite="true" todir="${build.dir}">
+                <fileset dir="." includes="OSGI-INF/**"/>
+                <filterset>
+                    <filter token="ACTIVATOR" value="@{classname}"/>
+                </filterset>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <target name="pre-compile"
+            depends="common.pre-compile,local-declarations"/>
+
+    <target name="local-declarations">
+        <property name="ivy.core.jars" value="${user.home}/.ivy2/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/"/>
+        <union id="core.jars">
+            <fileset dir="${build.dir}" includes="OSGI-INF/**"/>
+            <fileset dir="${ivy.core.jars}">
                 <include name="smartfrog.jar"/>
                 <include name="sfServices.jar"/>
                 <include name="sfExamples.jar"/>
                 <include name="sfOSGi.jar"/>
-            </zipfileset>
-            <zipfileset file="../../../smartfrog/private/*.policy"/>
+            </fileset>
+            <file file="../../../smartfrog/private/*.policy"/>
+        </union>
+        <property name="felix.artifact.name" value="sf-daemon-felix"/>
+        <property name="felix.jar.name" value="${felix.artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
+        <property name="felix.jar" location="${dist.lib.dir}/${felix.jar.name}"/>
+    </target>
+
+    <target name="createjar" depends="generate-versioned-jar">
+        <prepare-xml-file classname="org.smartfrog.osgi.equinox.SmartFrogActivator"/>
+        <sf-jar destfile="${target.jar}"
+                manifest="./META-INF/MANIFEST.MF">
+            <fileset dir="${build.classes.dir}" includes="**/equinox/**"/>
+            <resources refid="core.jars"/>
         </sf-jar>
         <echo level="verbose">created bundle ${target.jar}</echo>
     </target>
 
-    <!-- this is done so that the jarfile generated is bound to our project name with
-  no -components suffix-->
-    <property name="jarfile.suffix" value=""/>
-
-    <target name="ivy-retrieve" depends="ivy-resolve"
-            xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
-      <property name="ivy.retrieve.path"
-          value="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" />
-      <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
+    <target name="create-felix-jar" depends="generate-versioned-jar">
+        <prepare-xml-file classname="org.smartfrog.osgi.felix.SmartFrogActivator"/> <!-- does not exist yet -->
+        <sf-jar destfile="${felix.jar}"
+                manifest="./META-INF/MANIFEST.MF">
+            <fileset dir="${build.classes.dir}" includes="**/felix/**"/>
+            <resources refid="core.jars"/>
+        </sf-jar>
+        <echo level="verbose">created bundle ${felix.jar}</echo>
     </target>
+
+    <target name="package"
+            depends="common.package,create-felix-jar"/>
 
 </project>
 
