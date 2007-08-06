@@ -1,23 +1,22 @@
 package org.smartfrog.osgi;
 
-import org.smartfrog.sfcore.processcompound.ShutdownHandler;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SubprocessStarter;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.SFSystem;
-import org.smartfrog.osgi.logging.LogServiceProxy;
-import org.smartfrog.osgi.equinox.EquinoxSubprocessStarterImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.log.LogService;
+import org.smartfrog.SFSystem;
+import org.smartfrog.osgi.logging.LogServiceProxy;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.ShutdownHandler;
+import org.smartfrog.sfcore.processcompound.SubprocessStarter;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Starts the SmartFrog daemon with options appropriate to running inside OSGi.
@@ -97,7 +96,7 @@ public abstract class AbstractActivator {
         String sfProcessName = System.getProperty(SmartFrogCoreProperty.sfProcessName);
 
         System.getProperties().load(
-                getClass().getResourceAsStream("/org/smartfrog/osgi/system.properties")
+                getClass().getResourceAsStream("system.properties")
         );
         if (sfProcessName != null)
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
