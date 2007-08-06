@@ -46,8 +46,9 @@ sfConfig extends Compound {
         server LAZY PARENT:server;
     }
 
+    //normally you'd use the broken up attributes, but here we test the full URL
     ping extends LivenessPage {
-        url (("http://localhost:"++port)++"/");
+        url "http://localhost:5050/";
         minimumResponseCode 404;
         maximumResponseCode 404;
     }
