@@ -88,7 +88,7 @@ public class HereReferencePart extends ReferencePart {
             return "";
         }
 
-        return HERE + " " + getValue().toString();
+        return HERE + ' ' + getValue().toString();
     }
 
     /**
@@ -127,8 +127,8 @@ public class HereReferencePart extends ReferencePart {
      * @return true if equal, false if not
      */
     public boolean equals(Object refPart) {
-        return refPart.getClass().equals(this.getClass()) &&
-        ((HereReferencePart) refPart).getValue().equals(getValue());
+        return getClass().equals(refPart.getClass()) &&
+                getValue().equals(((HereReferencePart) refPart).getValue());
     }
 
     /**
