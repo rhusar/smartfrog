@@ -248,7 +248,7 @@ public class XMPPAdapter {
      */
     public void registerListeners() throws XMPPException {
         log.info("Adding PacketListener and PacketFilter to connection." + this.getCurrentConnectionInfo());
-        connection.addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
+        this.getConnection().addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
 
         log.info("Adding RosterListener.");
         // configure handler chain for host state change events

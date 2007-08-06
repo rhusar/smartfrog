@@ -120,24 +120,22 @@ public class ActiveProfileUpdateHandler implements MessageHandler {
                     // No use in adding a Roster entry again?!
                     //setup.getListenerAdapter().addUserToRoster(hostName);
 
-                    try {
-                        ActiveProfileType profile = profileManager.getProfile(hostName);
-                        if (null == profile) {
-                            // create a new profile for host
-                            profile = profileManager.newProfile(hostName);
-                        }
-
-                        // As we received message from host - it is most likely that it is indeed "Available"
-                        profile.setHostState("Available");
-
-                        // TODO: Display message to the webinterface - sadly there is no such field in the ActiveProfileType
-
-                    } catch (DatabaseAccessException ex) {
-                        log.error(ex);
-                    } catch (DuplicateEntryException en) {
-                        // can never happen, we already checked for dups
-                        log.error(en);
-                    }
+//                    try {
+//                        ActiveProfileType profile = profileManager.getProfile(hostName);
+//                        if (null == profile) {
+//                            // create a new profile for host
+//                            profile = profileManager.newProfile(hostName);
+//                        }
+//                        profile.setHostState("Undefined");
+//
+//                        // TODO: Display message to the webinterface - sadly there is no such field in the ActiveProfileType
+//
+//                    } catch (DatabaseAccessException ex) {
+//                        log.error(ex);
+//                    } catch (DuplicateEntryException en) {
+//                        // can never happen, we already checked for dups
+//                        log.error(en);
+//                    }
                     break;
                 default:
                     break;
