@@ -187,6 +187,7 @@ public class TerminatorThread extends SmartFrogThread {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error("TerminatorThread.sfDetachAndTerminate failed [" + record.toString() + "]", thr);
                 }
+                setThrown(thr);
             }
             return;
         }
@@ -197,6 +198,7 @@ public class TerminatorThread extends SmartFrogThread {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error("TerminatorThread.sfDetach failed [" + record.toString() + "]", thr);
                 }
+                setThrown(thr);
             }
         }
         if (shouldTerminate) {
@@ -207,6 +209,7 @@ public class TerminatorThread extends SmartFrogThread {
                     if (sfLog().isErrorEnabled()) {
                         sfLog().error("TerminatorThread.sfTerminate failed [" + record.toString() + "]", thr);
                     }
+                    setThrown(thr);
                 }
 
             } else {
@@ -216,6 +219,7 @@ public class TerminatorThread extends SmartFrogThread {
                     if (sfLog().isErrorEnabled()) {
                         sfLog().error("TerminatorThread.sfTerminateQuietlyWith failed [" + record.toString() + "]", thr);
                     }
+                    setThrown(thr);
                 }
             }
         }
