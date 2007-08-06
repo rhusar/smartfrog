@@ -28,7 +28,7 @@
 
   <publications>
     <artifact name="sf-daemon-equinox" conf="compile"/>
-    <!--<artifact name="sf-daemon-felix" conf="compile"/>-->
+    <artifact name="sf-daemon-felix" conf="compile"/>
   </publications>
     <dependencies>
 

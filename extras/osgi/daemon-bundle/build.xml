@@ -53,7 +53,6 @@
                 <include name="smartfrog.jar"/>
                 <include name="sfServices.jar"/>
                 <include name="sfExamples.jar"/>
-                <include name="sfOSGi.jar"/>
             </fileset>
             <file file="../../../smartfrog/private/*.policy"/>
         </union>
@@ -66,7 +65,7 @@
         <prepare-xml-file classname="org.smartfrog.osgi.equinox.SmartFrogActivator"/>
         <sf-jar destfile="${target.jar}"
                 manifest="./META-INF/MANIFEST.MF">
-            <fileset dir="${build.classes.dir}" includes="**/equinox/**"/>
+            <fileset dir="${build.classes.dir}" excludes="**/felix/**"/>
             <resources refid="core.jars"/>
         </sf-jar>
         <echo level="verbose">created bundle ${target.jar}</echo>
@@ -76,7 +75,7 @@
         <prepare-xml-file classname="org.smartfrog.osgi.felix.SmartFrogActivator"/> <!-- does not exist yet -->
         <sf-jar destfile="${felix.jar}"
                 manifest="./META-INF/MANIFEST.MF">
-            <fileset dir="${build.classes.dir}" includes="**/felix/**"/>
+            <fileset dir="${build.classes.dir}" excludes="**/equinox/**"/>
             <resources refid="core.jars"/>
         </sf-jar>
         <echo level="verbose">created bundle ${felix.jar}</echo>
