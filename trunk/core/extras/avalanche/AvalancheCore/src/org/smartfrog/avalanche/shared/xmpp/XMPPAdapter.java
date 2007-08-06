@@ -199,15 +199,16 @@ public class XMPPAdapter {
 	 */
 	public void sendEvent(MonitoringEvent event) throws XMPPException{
 		try {
-            this.close();
-            this.init();
-            this.login();
-
+            if (this.getConnection() == null) {
+                this.close();
+                this.init();
+                this.login();
+            }
             // Setup and send the event as message
             Message msg = new Message(xmppListenerName + "@"+ xmppServer, Message.Type.HEADLINE);
             msg.setBody("AE");
 			msg.addExtension(new XMPPEventExtension(event));
-            log.error("Sending message: " + msg + ". " + this.getCurrentConnectionInfo());
+            log.info("Sending message: " + msg + ". " + this.getCurrentConnectionInfo());
             connection.sendPacket(msg);
         } catch(XMPPException e ){
 			// Failed sending message. Log this message and move on.
@@ -225,14 +226,15 @@ public class XMPPAdapter {
 		return connection.getRoster();
 	}
 
-	public void registerListeners() throws XMPPException{
-		connection.addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
+	public void registerListeners() throws XMPPException {
+        log.info("Adding PacketListener and PacketFilter to connection." + this.getCurrentConnectionInfo());
+        connection.addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
 
-		// configure handler chain for host state change events
-		LivenessListener llistener = new LivenessListener(connection.getRoster()) ;
+        log.info("Adding RosterListener.");
+        // configure handler chain for host state change events
+		LivenessListener llistener = new LivenessListener(this.getRoster());
 		llistener.addLivenessHandler(new DefaultHostStateChangeHandler());
-
-		connection.getRoster().addRosterListener(llistener);
+		this.getRoster().addRosterListener(llistener);
 	}
 
     public void createUser(String newUsername, String newPassword, String newFullname) {
@@ -243,7 +245,7 @@ public class XMPPAdapter {
             if (am.supportsAccountCreation()){
                     // Set a few attributes - required by most servers
                     Map attrs = new HashMap();
-                    attrs.put("email", newUsername + "@" + xmppServer);
+                    attrs.put("email", newUsername + "@" + this.getXmppServer());
                     attrs.put("name", newFullname);
                     attrs.put("registered", "false");
                     // Create the account with the given data
@@ -273,6 +275,40 @@ public class XMPPAdapter {
             log.info("Successfully deleted account \"" + existingUserName + "\". " + this.getCurrentConnectionInfo());
         } catch (XMPPException xe) {
             log.error("Account \"" + existingUserName + "\" could not be deleted. " + this.getCurrentConnectionInfo() + "\nException: " + xe);
+        }
+    }
+
+    /**
+    * Removes a given user from the roster of the current user
+    * The context is the current connection (XMPP server, logged-in user)
+    *
+    * @param existingUsername is the username to be removed from the roster
+    */
+    public void removeUserFromRoster(String existingUsername) {
+        try {
+            Roster roster = this.getRoster();
+            // Remove roster entry
+            RosterEntry re = roster.getEntry(existingUsername);
+            roster.removeEntry(re);
+            log.info("Successfully removed roster for host \"" + existingUsername + "\".");
+        } catch (XMPPException xe) {
+            log.error("Error while removing roster for user \"" + existingUsername + "\". Exception:" + xe);
+        }
+    }
+
+    /**
+     * Adds a given username to the roster (buddy list) of the currently
+     * logged-in user on the current connection.
+     * @param existingUsername is the username to be added to the roster
+     */
+    public void addUserToRoster(String existingUsername) {
+        // Try to add new user to the Avalanche user's buddy list
+        try {
+            // Add roster entry
+            this.getRoster().createEntry(existingUsername + "@" + this.getXmppServer(), existingUsername, null);
+            log.info("Successfully added roster for host \"" + existingUsername + "\".");
+        } catch (XMPPException xe) {
+            log.error("Could not add roster for host \"" + existingUsername + "\". Exception: " + xe);
         }
     }
 }

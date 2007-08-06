@@ -155,6 +155,8 @@ public class ServerSetup {
         //factory.init(avalancheHome, avalancheServerOS);
         factory.init(avalancheHome);
 
+        boolean useXMPPoverSSL = Boolean.parseBoolean(useSSLForXMPP);
+
         // set up Avalanche XMPP adapters, this assumes XMPP server is already up
         // running
         try {
@@ -166,8 +168,7 @@ public class ServerSetup {
                 adminAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            if (null != useSSLForXMPP)
-                adminAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
+            adminAdapter.setUseSSL(useXMPPoverSSL);
 
             // Setting username and password
             adminAdapter.setXmppUserName(xmppServerAdminUser);
@@ -179,7 +180,7 @@ public class ServerSetup {
                 // Log in to the XMPP Server
                 adminAdapter.login();
                 // Create the listening user
-                adminAdapter.createUser(eventListenerUser, eventListenerPwd, "admin");
+                adminAdapter.createUser(eventListenerUser, eventListenerPwd, "AvalancheWebUser");
             } catch (XMPPException e) {
                 log.error("Error while creating listening user. Exception: " + e);
             }
@@ -192,8 +193,7 @@ public class ServerSetup {
                 listenerAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            if (null != useSSLForXMPP)
-                listenerAdapter.setUseSSL((new Boolean(useSSLForXMPP)).booleanValue());
+            listenerAdapter.setUseSSL(useXMPPoverSSL);
 
             // Setting username and password
             listenerAdapter.setXmppUserName(eventListenerUser);
@@ -214,13 +214,8 @@ public class ServerSetup {
             // register inbuilt event listeners
             listenerAdapter.registerListeners();
 
-            // register Roster Handlers with the HostManager
-            // this causes Avalanche to register/un register for events
-            // of the hosts.
-            HostUpdateHandler hostHandler = new HostUpdateRosterHandler(adminAdapter, listenerAdapter);
-
-            HostManager hostManager = factory.getHostManager();
-            hostManager.addHandler(hostHandler);
+            // On adding/deleting hosts, perform the same on the XMPP Server and its users rosters.
+            factory.getHostManager().addHandler(new HostUpdateRosterHandler(adminAdapter, listenerAdapter));            
 
             // TODO : Start Smartfrog on server if its not already running using avalancheHome
 
