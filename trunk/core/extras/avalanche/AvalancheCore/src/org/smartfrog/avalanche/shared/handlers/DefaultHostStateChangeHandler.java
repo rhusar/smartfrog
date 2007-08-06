@@ -54,8 +54,9 @@ public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
         String hostPresence = e.isAvailable() ? "Available" : "Not Available";
 
         try {
-            log.info("Getting profile for user: " + hostPath);
             ActiveProfileType type = profileManager.getProfile(hostPath);
+
+            // No ActiveProfile found - create one
             if (type == null) {
                 log.info("Creating new ActiveProfile for host " + hostPath);
                 try {
@@ -64,10 +65,13 @@ public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
 
                 }
             }
-            if (type == null)
+
+            // Profile could not be created - log error
+            if (type != null)
                     type.setHostState(hostPresence);
             else
                 log.error("Could not retrieve ActiveProfileType for host " + hostPath);
+
             profileManager.setProfile(type);
         } catch (DatabaseAccessException ex) {
             log.error(ex);
