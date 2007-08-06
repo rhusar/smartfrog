@@ -53,7 +53,8 @@ public interface LivenessPage extends Remote {
      * Check the page, regardless of whether the component is enabled or not.
      * This is the programmatic option.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException for an http error
+     * @throws RemoteException for network problems
      *
      */
     void checkPage() throws SmartFrogLivenessException, RemoteException;

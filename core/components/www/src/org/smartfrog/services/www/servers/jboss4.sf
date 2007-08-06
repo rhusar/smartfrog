@@ -52,15 +52,19 @@ JBoss4Server extends ServerBase {
       filename  ("/server/" ++ config);
     }
 
+    libDir extends DirMustExist {
+      dir LAZY server.home;
+      filename  ("/server/" ++ config ++ "/lib");
+    }
 
-    libDir:dir LAZY configDir;
-    libDir:filename  "lib";
+    deployDir extends DirMustExist {
+      dir LAZY server.home;
+      filename  ("/server/" ++ config ++ "/deploy");
+    }
 
-    deployDir:dir LAZY configDir;
-    deployDir:filename  "deploy";
 
     //endorsed dir is not per-config, it is server.home relative
-    endorsed:filename "/lib/endorsed";
+    endorsed:filename "lib/endorsed";
 
     //add in tools.jar
     tools.jar extends FileMustExist {
@@ -97,7 +101,7 @@ JBoss4Server extends ServerBase {
         sysProperties [
             ["sun.rmi.dgc.client.gcInterval",gcInterval ],
             ["sun.rmi.dgc.server.gcInterval",gcInterval ],
-            PARENT:sysProperties
+            PARENT:PARENT:sysProperties
         ];
     
         maxMemory 512;
