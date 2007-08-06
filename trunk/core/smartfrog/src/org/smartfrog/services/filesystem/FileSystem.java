@@ -305,13 +305,18 @@ public class FileSystem {
         }
         if (pathAttr instanceof FileIntf) {
             //file interface: get the info direct from the component
-            //FileIntf fileComponent = (FileIntf) pathAttr;
-            //String path = fileComponent.getAbsolutePath();
+            FileIntf fileComponent = (FileIntf) pathAttr;
             Prim fileAsPrim = (Prim) pathAttr;
             String path =
-                    fileAsPrim.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                    null;
+            try {
+                path = fileAsPrim.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
                             (String) null,
-                            true);
+                        true);
+            } catch (SmartFrogResolutionException e) {
+                //no attribute? ask for it by name
+                path = fileComponent.getAbsolutePath();
+            }
             return path;
         }
         if (pathAttr instanceof String) {
