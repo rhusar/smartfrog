@@ -132,6 +132,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 } catch (RemoteException ex) {
                     if ((sfLog()!= null) && sfLog().isErrorEnabled()) sfLog().err(ex.getMessage(),ex);
                     else ex.printStackTrace();
+                    //If problem when resolving remote parent, report it in the name
+                    if (r==null){
+                        r = new Reference();
+                        r.addElement(new HereReferencePart("*CDPrimParentError*"));
+                    }
                 }
             } else {
                 return new Reference();
