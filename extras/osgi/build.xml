@@ -45,16 +45,11 @@
 
     <target name="copyJarsAround">
         <copy todir="${user.home}/Dev/equinox/plugins" overwrite="true">
-            <fileset file="daemon-bundle/dist/lib/sf-daemon-bundle*.jar"/>
-            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-bundle*.jar"/>
-            <fileset file="test-bundle/dist/lib/sf-test-bundle*.jar"/>
-
+            <fileset dir="daemon-bundle/dist/lib/" includes="sf-*.jar"/>
         </copy>
 
         <copy todir="${user.home}/public_html" overwrite="true">
-            <fileset file="daemon-bundle/dist/lib/sf-daemon-bundle*.jar"/>
-            <fileset file="rmiclassloading-extension-bundle/dist/lib/sf-rmi-spi-bundle*.jar"/>
-            <fileset file="test-bundle/dist/lib/sf-test-bundle*.jar"/>
+            <fileset file="daemon-bundle/dist/lib/sf-*.jar"/>
         </copy>
     </target>
 

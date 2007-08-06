@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <component name="org.smartfrog.daemon">
-    <implementation class="org.smartfrog.osgi.equinox.SmartFrogActivator"/>
+    <implementation class="@ACTIVATOR@"/>
     <reference name="log"
                interface="org.osgi.service.log.LogService"
                cardinality="0..1"
