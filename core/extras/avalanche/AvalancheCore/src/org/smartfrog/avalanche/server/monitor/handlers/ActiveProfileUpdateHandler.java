@@ -56,6 +56,7 @@ public class ActiveProfileUpdateHandler implements MessageHandler {
      * Callback method, this is invoked by event listener on the server when a
      * new Monitoring Event is received. This method updates the Active Profile on
      * a host with the host/module state received in the event.
+     * @param e the to-be-handled event
      */
     public void handleEvent(MonitoringEvent e) {
         log.info("Event Received: " + e);
@@ -125,7 +126,12 @@ public class ActiveProfileUpdateHandler implements MessageHandler {
                             // create a new profile for host
                             profile = profileManager.newProfile(hostName);
                         }
-                        profile.setHostState("Undefined.");
+
+                        // As we received message from host - it is most likely that it is indeed "Available"
+                        profile.setHostState("Available");
+
+                        // TODO: Display message to the webinterface - sadly there is no such field in the ActiveProfileType
+
                     } catch (DatabaseAccessException ex) {
                         log.error(ex);
                     } catch (DuplicateEntryException en) {

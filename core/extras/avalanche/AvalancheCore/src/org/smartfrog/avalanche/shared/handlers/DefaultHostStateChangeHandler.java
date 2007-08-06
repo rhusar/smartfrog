@@ -59,13 +59,15 @@ public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
             if (type == null) {
                 log.info("Creating new ActiveProfile for host " + hostPath);
                 try {
-                    //type = profileManager.newProfile(hostPath);
+                    type = profileManager.newProfile(hostPath);
                 } catch (Exception x) {
 
                 }
             }
-            log.info("Setting state to: " + hostPresence);
-            type.setHostState(hostPresence);
+            if (type == null)
+                    type.setHostState(hostPresence);
+            else
+                log.error("Could not retrieve ActiveProfileType for host " + hostPath);
             profileManager.setProfile(type);
         } catch (DatabaseAccessException ex) {
             log.error(ex);

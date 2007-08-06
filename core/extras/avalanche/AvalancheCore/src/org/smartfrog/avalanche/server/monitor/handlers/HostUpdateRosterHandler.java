@@ -56,8 +56,9 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
     }
 
     /**
-	 * Creates a user for the host, in case of failure it logs the error.
-	 */
+     * Creates a XMPP user for the new host.
+     * @param h HostType object of the new host
+     */
 	public void hostAdded(HostType h) {
 		String hostAddress = resolve(h.getId());
 
@@ -69,9 +70,10 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
         }
     }
 
-	/**
-	 * Deletes the username used by the host, in case of failure it logs the error.
-	 */
+    /**
+     * Deletes the XMPP username used by the host
+     * @param h HostType object of the old host
+     */
 	public void hostDeleted(HostType h) {
         String hostAddress = resolve(h.getId());
 
