@@ -31,24 +31,20 @@ import java.net.InetAddress;
  *
  */
 public class HostUpdateRosterHandler implements HostUpdateHandler {
-	private XMPPAdapter adminAdapter ; 
-	private XMPPAdapter listenerAdapter ; 
-	private static Log log = LogFactory.getLog(HostUpdateRosterHandler.class);
-	private Roster roster;
+	private XMPPAdapter adminAdapter;
+	private XMPPAdapter listenerAdapter;
 
     public HostUpdateRosterHandler(XMPPAdapter adminAdapter, XMPPAdapter listenerAdapter){
 		// Save XMPP adapters
         this.adminAdapter = adminAdapter;
 		this.listenerAdapter = listenerAdapter;
-        // Save roster
-        roster = this.listenerAdapter.getRoster();
 	}
 
     /**
-     *
+     * Returns the complete hostname of a given host
+     * Uses this machine's DNS to look up the hostname
      * @param strHostOrIp is the IP or host name of a system
      * @return the host name of IP or host given
-     * @throws UnknownHostException
      */
     private String resolve(String strHostOrIp) {
         try {
@@ -69,15 +65,7 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
         if (hostAddress != null) {
             // Create user on the XMPP server
             adminAdapter.createUser(hostAddress, hostAddress, hostAddress);
-
-            // Try to add new user to the Avalanche user's buddy list
-            try {
-                // Add roster entry
-                roster.createEntry(hostAddress + "@" + adminAdapter.getXmppServer(), hostAddress, null);
-                log.info("Successfully added roster for host \"" + hostAddress + "\".");
-            } catch (XMPPException xe) {
-                log.error("Could not add roster for host \"" + hostAddress + "\". Exception: " + xe);
-            }
+            listenerAdapter.addUserToRoster(hostAddress);
         }
     }
 
@@ -90,16 +78,8 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
         // if client is a valid machine on the network
         if (hostAddress != null) {
             // Delete user
+            listenerAdapter.removeUserFromRoster(hostAddress);
             adminAdapter.deleteUser(hostAddress, hostAddress);
-
-            try {
-                // Remove roster entry
-                RosterEntry re = roster.getEntry(hostAddress);
-                roster.removeEntry(re);
-                log.info("Successfully removed roster for host \"" + hostAddress + "\".");
-            } catch (Exception e) {
-                log.error("Error while removing roster for user \"" + hostAddress + "\". Exception:" + e);
-            }
         }
     }
 }
