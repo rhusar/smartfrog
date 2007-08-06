@@ -55,7 +55,6 @@ public class SmartFrogException extends Exception implements Serializable {
      * Constructs a SmartFrogException with no message.
      */
     public SmartFrogException() {
-        super();
     }
 
     /**

@@ -27,7 +27,8 @@
   </configurations>  
 
   <publications>
-    <artifact name="sf-daemon-bundle" conf="compile"/>
+    <artifact name="sf-daemon-equinox" conf="compile"/>
+    <!--<artifact name="sf-daemon-felix" conf="compile"/>-->
   </publications>
     <dependencies>
 
@@ -50,6 +51,11 @@
         <dependency org="org.osgi"
                     name="osgi_R4_compendium"
                     rev="1.0"
+                    conf="compile->default"/>
+
+        <dependency org="org.eclipse"
+                    name="equinox"
+                    rev="3.2.2"
                     conf="compile->default"/>
 
   </dependencies>
