@@ -19,85 +19,95 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/www/servers/tomcat5.sf"
+#include "/org/smartfrog/services/www/servers/jboss4.sf"
 //#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
 
 
 // this is a non-lazy binding to whatever is passed in to the deployment process; it sets
 // tomcat.home to the property or to ""
-tomcat.home OPTIONAL("") PROPERTY test.tomcat.home;
+jboss.home OPTIONAL("") PROPERTY test.jboss.home;
 
-//this is the port to which we expect tomcat to be running
-tomcat.port OPTIONAL(8080) PROPERTY test.tomcat.port;
+//this is the port to which we expect the server to be running on
+jboss.port OPTIONAL(8080) PROPERTY test.jboss.port;
 
-// a boolean property that is true if tomcat.home is non-empty
-tomcat.present IF (tomcat.home != "") THEN true ELSE false FI;
+// a boolean property that is true if the server home dir is defined
+jboss.present IF (jboss.home != "") THEN true ELSE false FI;
 
 
 jdk.home PROPERTY test.jdk.home ;
 
 
 
+  //no delay by default
+jboss_testTimeout 120000;
+  //default to one minute
+jboss_startupTimeout 60000;
+  //default to one minute
+jboss_teardownTimeout 60000;
+
+
 /**
  * A local page for liveness; assumes port 8080
  */
-TomcatLivenessPage extends LivenessPage {
-    port tomcat.port;
+JBossLivenessPage extends LivenessPage {
+    port jboss.port;
 }
 
-WaitForTomcat extends WaitForPage {
-    port tomcat.port;
-    timeout 30000;
+WaitForJBoss extends WaitForPage {
+    port jboss.port;
+    timeout jboss_startupTimeout;
 }
 
 // now switch this to a condition
-IsTomcatPresent extends BooleanValue {
-  value tomcat.present;
+IsServerPresent extends BooleanValue {
+  value jboss.present;
 }
 
 
 NoRunningServer extends Not {
-     condition extends TomcatLivenessPage;
-    }
+  condition extends JBossLivenessPage;
+}
 
-IsTomcatPresentButNotRunning extends And {
-  -- extends IsTomcatPresent;
+IsServerPresentButNotRunning extends And {
+  -- extends IsServerPresent;
   -- extends NoRunningServer;
 }
 
 /**
- * Tomcat bound to the local properties
+ * JBoss bound to the local properties
  */
-BoundTomcatServer extends Tomcat5Server {
-  server.home tomcat.home;
+BoundJBossServer extends JBoss4Server {
+  server.home jboss.home;
   jdk.home PARENT:ATTRIB jdk.home;
 }
 
 /**
- * a template that only deploys if test.tomcat.home is set
+ * a template that only deploys if test.jboss.home is set
  * we use this to make things conditional
  */
-DeployTomcat extends ExpectDeploy {
-  condition extends IsTomcatPresentButNotRunning;
-  description "test tomcat deployment -requires test.tomcat.home to be set";
+DeployJBoss extends ExpectDeploy {
+  condition extends IsServerPresentButNotRunning;
+  description "test tomcat deployment -requires test.jboss.home to be set";
 
   action extends Compound {
-    tomcat extends BoundTomcatServer;
+    server extends BoundJBossServer;
   }
+  undeployAfter jboss_testTimeout;
 
-
-
-  undeployAfter 60000;
-
+  testTimeout jboss_testTimeout;
+    //default to one minute
+  startupTimeout jboss_startupTimeout;
+    //default to one minute
+  teardownTimeout jboss_teardownTimeout;
 }
 
 /*
- * one test with a 10s shutdown
+ *
  */
-DeployTomcatTests extends DeployTomcat {
-  description "test that tomcat runs";
+DeployJBossTests extends DeployJBoss {
+  description "test that the app server runs";
   expectTerminate false;
-  tests extends WaitForTomcat ;
+  tests extends WaitForJBoss ;
 }
 
 
@@ -107,8 +117,8 @@ DeployTomcatTests extends DeployTomcat {
  * but skip if tomcat is absent
  */
 
-testTomcatIsNotRunning extends ExpectTerminate {
-  condition extends IsTomcatPresent;
+testServerIsNotRunning extends ExpectTerminate {
+  condition extends IsServerPresent;
   description "fail if there is a web site already running";
 
   action extends EvaluateCondition {
@@ -124,19 +134,6 @@ testTomcatIsNotRunning extends ExpectTerminate {
 /*
  * one test with a 10s shutdown
  */
-testTomcatRuns extends DeployTomcatTests {
-  description "test that tomcat runs";
-}
-
-/*
- * one test with a 10s shutdown
- */
-testWaitForTimesOut extends DeployTomcatTests {
-  condition extends NoRunningServer;
-  description "Wait for a few seconds for tomcat, then give up";
-  tests extends WaitForTomcat {
-    timeout 5000;
-  }
-  expectTerminate true;
-  exitType FailingTestCompound:exitType;
+testServerRuns extends DeployJBossTests {
+  description "test that the app runs";
 }

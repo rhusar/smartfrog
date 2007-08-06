@@ -28,7 +28,11 @@
     Build file for the www project.
 
     To test against tomcat, the property test.tomcat.home must be set to the location of
-    tomcat5.5.x
+    tomcat5.5.x, and test.jboss.home to the location of a jboss4 runtime. e.g. build.properties
+    should be something like:
+
+    test.tomcat.home=${user.home}/Java/Apps/apache-tomcat-5.5.20
+    test.jboss.home=${user.home}/Java/Apps/jboss-4.0.5.GA
 
   </description>
 
