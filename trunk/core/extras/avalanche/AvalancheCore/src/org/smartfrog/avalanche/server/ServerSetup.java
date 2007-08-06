@@ -209,9 +209,9 @@ public class ServerSetup {
                 log.error("Error while logging onto XMPP server. Exception: " + e);
             }
 
-            // handler chain for events coming from client nodes.
+            // Adding MessageHandlers to the handler chain for events coming from client nodes
             listenerAdapter.addHandler(new ActiveProfileUpdateHandler(this));
-            // register inbuilt event listeners
+            // Register the added Handlers as well as the built-in handlers
             listenerAdapter.registerListeners();
 
             // On adding/deleting hosts, perform the same on the XMPP Server and its users rosters.
