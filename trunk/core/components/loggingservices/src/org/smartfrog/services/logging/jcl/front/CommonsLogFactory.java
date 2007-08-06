@@ -22,12 +22,38 @@ package org.smartfrog.services.logging.jcl.front;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.impl.LogFactoryImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 
 /**
  * created 09-May-2006 17:17:53
  */
 
 public class CommonsLogFactory extends LogFactoryImpl {
+
+    /**
+     * To get the sfCore logger
+     *
+     * @return Logger implementing LogSF and Log
+     */
+    private LogSF sfLog() {
+        return LogFactory.sfGetProcessLog();
+    }
+
+
+    /**
+     * To get the sfCore logger
+     *
+     * @return Logger implementing LogSF and Log
+     */
+    private LogSF sfLog(String name) {
+        try {
+            return LogFactory.getLog(name,true);
+        } catch (SmartFrogLogException e) {
+            return LogFactory.getLog(name);
+        }
+    }
 
 
     /**
@@ -48,7 +74,8 @@ public class CommonsLogFactory extends LogFactoryImpl {
      *          instance cannot be returned
      */
     public Log getInstance(String name) throws LogConfigurationException {
-        return super.getInstance(name);
+
+        return new CommonsLogFrontEnd(sfLog(name));
     }
 
 
