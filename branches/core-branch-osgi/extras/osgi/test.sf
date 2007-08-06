@@ -2,8 +2,6 @@
 #from envParser:clEnvTest #include "org/smartfrog/osgi/test/components.sf"
 #include "org/smartfrog/examples/counter/components.sf"
 
-meta extends DATA { sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest; }
-
 sfConfig extends Compound {
     sfProcessComponentName "TestApp";
     sfApplicationEnvironment LAZY PROCESS:envTarget;
@@ -13,14 +11,14 @@ sfConfig extends Compound {
         sfProcessName "testProcess";
 
         testProvider extends MessageProvider {
-            sfMeta extends DATA meta;
+            sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
         }
         //testProvider extends Counter { limit 5; }
     }
 
     testPrinter extends MessagePrinter {
         //sfProcessHost "pernet-o-2";
-        sfMeta extends DATA meta;
+        sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
         messageSource LAZY subprocess:testProvider;
     }
 }

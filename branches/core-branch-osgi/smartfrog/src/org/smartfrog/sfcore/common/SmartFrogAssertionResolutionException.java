@@ -84,9 +84,17 @@ public class SmartFrogAssertionResolutionException extends
      */
     public static SmartFrogException forward (Throwable thr){
         if (thr instanceof SmartFrogAssertionResolutionException) {
-            return (SmartFrogAssertionResolutionException)thr;
+            return (SmartFrogException) thr;
         } else {
             return new SmartFrogAssertionResolutionException (thr);
+        }
+    }
+
+    public static SmartFrogException forward (String msg, Throwable t) {
+        if (t instanceof SmartFrogAssertionResolutionException) {
+            return (SmartFrogException) t;
+        } else {
+            return new SmartFrogAssertionResolutionException(msg, t);
         }
     }
 }

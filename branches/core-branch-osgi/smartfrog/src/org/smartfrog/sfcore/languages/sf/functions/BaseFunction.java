@@ -57,6 +57,7 @@ public abstract class BaseFunction implements Function  {
     public Object doit(Context context, Reference name, ReferenceResolver rr) throws SmartFrogFunctionResolutionException {
         this.context = context;
         this.rr = rr;
+        this.name = name;
 
         Object result = doFunction();
         if (result instanceof ComponentDescription) {
@@ -78,6 +79,7 @@ public abstract class BaseFunction implements Function  {
     public Object doit(Context context, Reference name, RemoteReferenceResolver rr) throws SmartFrogFunctionResolutionException {
         this.context = context;
         this.rrr = rr;
+        this.name = name;
 
         Object result = doFunction();
         if (result instanceof ComponentDescription) {
