@@ -34,7 +34,7 @@
         <attribute name="classname"/>
         <sequential>
             <copy overwrite="true" todir="${build.dir}">
-                <fileset dir="." includes="OSGI-INF/**"/>
+                <fileset dir="${basedir}" includes="OSGI-INF/**"/>
                 <filterset>
                     <filter token="ACTIVATOR" value="@{classname}"/>
                 </filterset>
@@ -46,13 +46,15 @@
             depends="common.pre-compile,local-declarations"/>
 
     <target name="local-declarations">
-        <property name="ivy.core.jars" value="${user.home}/.ivy2/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/"/>
-        <union id="core.jars">
+        <property name="sfcore.jars.ivycache"
+                  value="${ivy2.local.dir}/org.smartfrog/smartfrog/${smartfrog.version}/jars/"/>
+        <union id="common.bundle.contents">
             <fileset dir="${build.dir}" includes="OSGI-INF/**"/>
-            <fileset dir="${ivy.core.jars}">
+            <fileset dir="${sfcore.jars.ivycache}">
                 <include name="smartfrog.jar"/>
                 <include name="sfServices.jar"/>
                 <include name="sfExamples.jar"/>
+                <include name="sfOSGi.jar"/>
             </fileset>
             <file file="../../../smartfrog/private/*.policy"/>
         </union>
@@ -66,7 +68,7 @@
         <sf-jar destfile="${target.jar}"
                 manifest="./META-INF/MANIFEST.MF">
             <fileset dir="${build.classes.dir}" excludes="**/felix/**"/>
-            <resources refid="core.jars"/>
+            <resources refid="common.bundle.contents"/>
         </sf-jar>
         <echo level="verbose">created bundle ${target.jar}</echo>
     </target>
@@ -76,7 +78,7 @@
         <sf-jar destfile="${felix.jar}"
                 manifest="./META-INF/MANIFEST.MF">
             <fileset dir="${build.classes.dir}" excludes="**/equinox/**"/>
-            <resources refid="core.jars"/>
+            <resources refid="common.bundle.contents"/>
         </sf-jar>
         <echo level="verbose">created bundle ${felix.jar}</echo>
     </target>

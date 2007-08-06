@@ -96,7 +96,7 @@ public abstract class AbstractActivator {
         String sfProcessName = System.getProperty(SmartFrogCoreProperty.sfProcessName);
 
         System.getProperties().load(
-                getClass().getResourceAsStream("system.properties")
+                getClass().getResourceAsStream("/org/smartfrog/osgi/system.properties")
         );
         if (sfProcessName != null)
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
