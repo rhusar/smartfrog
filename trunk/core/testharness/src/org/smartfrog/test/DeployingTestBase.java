@@ -301,10 +301,18 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
 
     /**
     * return the max time in milliseconds for tests
-    * @return the value set by a system property {@link #TEST_TIMEOUT_EXECUTE} or the default {@link #EXECUTE_TIMEOUT}
+    * @return the value set by a system property {@link #TEST_TIMEOUT_EXECUTE} or the default {@link #getDefaultTestExecutionTimeout()}
     */
     protected int getTestTimeout() {
-        return TestHelper.getTestPropertyInt(TEST_TIMEOUT_EXECUTE,EXECUTE_TIMEOUT);
+        return TestHelper.getTestPropertyInt(TEST_TIMEOUT_EXECUTE, getDefaultTestExecutionTimeout());
+    }
+
+    /**
+     * An override point for those tests that take a long time to run
+     * @return the time to execute tests
+     */
+    protected int getDefaultTestExecutionTimeout() {
+        return EXECUTE_TIMEOUT;
     }
 
     /**
