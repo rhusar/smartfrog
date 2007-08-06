@@ -424,6 +424,8 @@ if it is unassigned, it takes.-->
     <sec:signsfjar name="smartfrog-${Version}.jar"/>
     <sec:signsfjar name="sfExamples-${Version}.jar"/>
     <sec:signsfjar name="sfServices-${Version}.jar"/>
+    <sec:signsfjar name="sfRmiSpi-${Version}.jar"/>
+    <sec:signsfjar name="sfOSGi-${Version}.jar"/>
   </target>
 
 </project>

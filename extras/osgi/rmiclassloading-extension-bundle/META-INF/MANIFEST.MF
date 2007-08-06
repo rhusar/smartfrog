@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Sealed: true
 Bundle-ManifestVersion: 2
 Bundle-Name: SmartFrog-RMI-SPI-Extension
 Bundle-SymbolicName: org.smartfrog.extension.security

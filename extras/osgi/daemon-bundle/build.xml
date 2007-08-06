@@ -49,6 +49,7 @@
         <property name="sfcore.jars.ivycache"
                   value="${ivy2.local.dir}/org.smartfrog/smartfrog/${smartfrog.version}/jars/"/>
         <union id="common.bundle.contents">
+            <fileset dir="${smartfrog.dist.dir}/private/" includes="sf.policy"/>
             <fileset dir="${build.dir}" includes="OSGI-INF/**"/>
             <fileset dir="${sfcore.jars.ivycache}">
                 <include name="smartfrog.jar"/>
