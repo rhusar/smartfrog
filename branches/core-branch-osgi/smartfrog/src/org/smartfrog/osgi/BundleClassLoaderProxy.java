@@ -7,9 +7,10 @@ import java.util.Enumeration;
 import java.io.IOException;
 
 /**
- * Equals changes during lifecycle. No hashCode() provided because it would change during lifecycle too.
+ * Equals changes during lifecycle.
+ * hashCode() throws NotSupportedOperationException because it would change during lifecycle too.
  * DO NOT USE IN HASHTABLES
- * @noinspection EqualsAndHashcode,RefusedBequest
+ * @noinspection RefusedBequest
  */
 class BundleClassLoaderProxy extends ClassLoader {
     private ClassLoader realCL = null;
@@ -40,6 +41,10 @@ class BundleClassLoaderProxy extends ClassLoader {
     public boolean equals(Object other) {
         if (realCL == null) return super.equals(other);
         else return realCL.equals(other);
+    }
+
+    public int hashCode() {
+        throw new UnsupportedOperationException("No correct implementation possible for hashCode(). Do no use in hash tables");
     }
 
     public String toString() {
