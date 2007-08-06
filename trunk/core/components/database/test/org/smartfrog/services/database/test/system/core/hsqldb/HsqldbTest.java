@@ -26,6 +26,7 @@ import org.smartfrog.services.assertions.TestBlock;
 /**
  */
 public class HsqldbTest extends DeployingTestBase {
+    private static final String BASE = "/org/smartfrog/services/database/test/system/core/hsqldb/";
 
     public HsqldbTest(String name) {
         super(name);
@@ -34,19 +35,11 @@ public class HsqldbTest extends DeployingTestBase {
 
 
     public void testTableManipulationTest() throws Throwable {
-        application = deployExpectingSuccess(
-                "/org/smartfrog/services/database/test/system/core/hsqldb/TableManipulationTest.sf",
-                "TableManipulationTest");
-        TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        runTestsToCompletion(BASE, "TableManipulationTest");
     }
 
 
     public void testConnectionOpenTest() throws Throwable {
-        application = deployExpectingSuccess(
-                "/org/smartfrog/services/database/test/system/core/hsqldb/ConnectionOpenTest.sf",
-                "ConnectionOpenTest");
-        TestBlock block = (TestBlock) application;
-        expectSuccessfulTermination(block);
+        runTestsToCompletion(BASE, "ConnectionOpenTest");
     }
 }

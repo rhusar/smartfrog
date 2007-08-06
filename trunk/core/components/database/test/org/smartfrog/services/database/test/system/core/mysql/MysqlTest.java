@@ -2,6 +2,7 @@ package org.smartfrog.services.database.test.system.core.mysql;
 
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /** Mysql tests */
 public class MysqlTest extends DeployingTestBase {
@@ -56,8 +57,7 @@ public class MysqlTest extends DeployingTestBase {
      */
     public void testMissingDatabase() throws Throwable {
         if(mysqlPresent) {
-            TestBlock block = deploy("MissingDatabaseTest");
-            expectAbnormalTermination(block);
+            expectAbnormalTestRun(BASE, "MissingDatabaseTest",true,null);
         }
     }
 
@@ -68,26 +68,16 @@ public class MysqlTest extends DeployingTestBase {
         deployAndTerminateMysql("UserManipulationTest");
     }
 
-    private void deployAndTerminate(String template) throws Throwable {
-        TestBlock block = deploy(template);
-        expectSuccessfulTermination(block);
+    private TestCompletedEvent deployAndTerminate(String template) throws Throwable {
+        return runTestsToCompletion(BASE, template);
     }
 
     private void deployAndTerminateMysql(String template) throws Throwable {
         if (mysqlPresent) {
-            deployAndTerminate(template);
+            runTestsToCompletion(BASE,template);
         } else {
-            getLog().info("Skipping test "+template+" as mysql is not found");
+            getLog().info("Skipping test "+template+" as mysqld is not found on the path");
         }
     }
-
-    private TestBlock deploy(String template) throws Throwable {
-        application = deployExpectingSuccess(
-                BASE + template + ".sf",
-                template);
-        TestBlock block = (TestBlock) application;
-        return block;
-    }
-
 
 }

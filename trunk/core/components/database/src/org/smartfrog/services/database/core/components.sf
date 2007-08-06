@@ -38,7 +38,7 @@ DatabaseBinding extends Prim {
   sfClass "org.smartfrog.services.database.core.JdbcBindingImpl";
   //this is not exported across processes, as it does VM-specific setup, and
   //will in future export non-Remoteable methods for pooling
-  sfExport false;
+  //sfExport false;
   jdbcBindingSchema extends Schema {
       //driver classname. No extra loading stuff here other than SF codebase.
       driver extends OptionalString {
