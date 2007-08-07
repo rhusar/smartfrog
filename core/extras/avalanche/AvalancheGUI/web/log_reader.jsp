@@ -32,9 +32,9 @@ For more information: www.smartfrog.org
 
 	File file = new File(filePath);
 	if( !file.exists() ){
-		errMsg = "Error! log file doesn't exist : " + filePath;
+		errMsg = "Error! log file doesn't exist: " + filePath;
 	}else if( !file.canRead() ){
-		errMsg = "Error! No read permission for log file : " + filePath ;
+		errMsg = "Error! No read permission for log file: " + filePath ;
 	}
 	
 	long fileSize = file.length();

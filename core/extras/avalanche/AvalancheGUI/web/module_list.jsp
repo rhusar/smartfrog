@@ -197,17 +197,13 @@ For more information: www.smartfrog.org
 	    }
     }} else { %>
         <tr><td colspan="5">Currently there are no modules ready. Click "Add a module" to add a module.</td></tr>
-        <%
-
-
-        }
-%>
+        <% } %>
     </tbody>
 </table>
             <br/>
 
             <div align="center" style="width: 95%;">
-                <script>
+                <script type="text/javascript" language="JavaScript">
                     oneVoiceWritePageMenu("ModulesList", "footer",
                             "Delete selected modules",
                             "javascript:deleteModule()",
@@ -233,13 +229,13 @@ For more information: www.smartfrog.org
                     <tr>
                         <td class="medium" align="right">Module ID:</td>
                         <td class="editableFieldCell">
-                            <input type="text" name="moduleId" size="30" id="moduleId"></input>
+                            <input type="text" name="moduleId" size="30" id="moduleId"/>
                         </td>
                     </tr>
                     <tr>
                         <td class="medium" align="right">Vendor:</td>
                         <td class="editableFieldCell">
-                            <input type="text" name="vendor" size="30"></input>
+                            <input type="text" name="vendor" size="30"/>
                         </td>
                     </tr>
                     <tr>
@@ -257,7 +253,7 @@ For more information: www.smartfrog.org
                     <div class="bWrapperUp">
                         <div>
                             <div>
-                                <input type="submit" name="save" value="Save Module" class="hpButton"></input>
+                                <input type="submit" name="save" value="Save Module" class="hpButton"/>
                             </div>
                         </div>
                     </div>
