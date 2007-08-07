@@ -5,6 +5,6 @@
   <groupId>mom4j</groupId>
   <artifactId>mom4j-client</artifactId>
   <packaging>jar</packaging>
-  <version>${mom4j.version}</version>
+  <version>1.1</version>
   <description>MOM 4J</description>
 </project>
