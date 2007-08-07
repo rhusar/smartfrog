@@ -66,6 +66,8 @@
     <module organisation="xindice" name=".*" resolver="internal"/>
     <module organisation="xmldb" name=".*" resolver="internal"/>
     <module organisation="javax.jms" name=".*" resolver="internal"/>
+    <module organisation="com.kizoom" name=".*" resolver="internal"/>
+    <module organisation="kizoom" name=".*" resolver="internal"/>
 <!--    <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>
