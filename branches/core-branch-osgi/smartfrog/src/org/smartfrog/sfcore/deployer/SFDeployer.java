@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 
@@ -239,11 +240,19 @@ public class SFDeployer implements MessageKeys {
         final Object classLoadingEnvAttr = cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
         if (classLoadingEnvAttr instanceof Reference) {
             // in a DATA block
-            final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;            
+            final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;
             env = (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
         } else if (classLoadingEnvAttr instanceof ClassLoadingEnvironment) {
-            // in a normal component description            
+            // in a normal component description
             env = (ClassLoadingEnvironment) classLoadingEnvAttr;
+        } else if (classLoadingEnvAttr instanceof ComponentDescription) {
+            ComponentDescription block = (ComponentDescription) classLoadingEnvAttr;
+            Reference ref = (Reference) block.sfResolveHere("ref");
+            try {
+                env = (ClassLoadingEnvironment) SFProcess.getProcessCompound().sfResolve(ref);
+            } catch (RemoteException e) {
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
+            }
         } else {
             env = new CoreClassesClassLoadingEnvironment(); // funny business
         }
