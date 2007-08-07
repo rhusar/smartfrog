@@ -32,6 +32,9 @@ PrimSchema extends Schema {
     sfAssertionPhase "static";
     
     sfClass extends String {binding "eager"; description "class that implements component"; } //It is mandatory but check is done at runtime
+    sfCodeBase extends String {binding "eager"; description "codebase used during dynamic classloading (deprecated, use sfClassLoadingEnvironment)"; }
+    //sfClassLoadingEnvironment extends Reference {binding "lazy";}
+    //sfApplicationEnvironment extends OptionalReference {binding "lazy";}
     sfDeployerClass extends OptionalString {description "deployer class";}
     sfExport extends OptionalBoolean {description "decides if a component is remotely exported";}
     sfExportPort extends OptionalIntegerVector {description "port used to export the component. O means use anonymous port. A vector means set of valid ports";}
@@ -48,11 +51,15 @@ PrimSchema extends Schema {
  * Unless liveness values are set here (or in the
  * the descriptions) the values from the processcompound.sf
  * are used */
+sfCodeBase "default";
+sfClassLoadingEnvironment "default";
 
 //Prim with any schema
 Prim extends NULL {
     sfPrimSchema extends PrimSchema;
-    
+
+    sfCodeBase PARENT:sfCodeBase;
+  sfClassLoadingEnvironment PARENT:sfClassLoadingEnvironment; // will default to the one deployed in processcompound.sf
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
 //  sfExportPort 0; //Use anonymous port for export.

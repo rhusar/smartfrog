@@ -198,6 +198,15 @@ public interface SmartFrogCoreKeys {
     public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
 
     /**
+     * Attribute that defines the codebase for a component.
+     * @deprecated The use of codebase URLs is deprecated.
+     * Use the {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} interface instead,
+     * along with the attribute {@link this.SF_CLASS_LOADING_ENVIRONMENT}.
+     * Value {@value}
+     */
+    public final static String SF_CODE_BASE = "sfCodeBase";
+
+    /**
      * Attribute that defines how often to send liveness in seconds.
      *
      * Value {@value}

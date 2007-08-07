@@ -30,6 +30,13 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
     private static final Reference refClass = new Reference(
             SmartFrogCoreKeys.SF_CLASS);
 
+    /**
+     * Efficiency holder of sfCodeBase reference.
+     */
+    private static final Reference refCodeBase = new Reference(
+            SmartFrogCoreKeys.SF_CODE_BASE);
+
+
     protected Prim getComponentImpl(ComponentDescription askedFor)
             throws ClassNotFoundException, InstantiationException,
                    IllegalAccessException, SmartFrogResolutionException,
@@ -52,13 +59,16 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
      * @throws Exception failed to load class
      */
     private Class getPrimClass(ComponentDescription target) throws SmartFrogResolutionException, SmartFrogDeploymentException {
+        String targetCodeBase = null;
+        String targetClassName;
         Object obj = null;
         try {
 
-            String targetClassName = (String) target.sfResolve(refClass);
+            targetCodeBase = getSfCodeBase(target);
+            targetClassName = (String) target.sfResolve(refClass);
 
             // 3rd parameter = true: We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName, null, true);
+            return SFClassLoader.forName(targetClassName, targetCodeBase, true);
 
         } catch (SmartFrogResolutionException resex) {
             resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
@@ -72,7 +82,7 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
             }
             throw new SmartFrogDeploymentException(refClass, null, name, target,
                     null, "Wrong class when resolving '" + refClass + "': '"
-                    + obj + "' (" + obj.getClass().getName() + ')', ccex, null);
+                    + obj + "' (" + obj.getClass().getName() + ")", ccex, targetCodeBase);
         } catch (ClassNotFoundException cnfex) {
             Object name = null;
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
@@ -80,6 +90,8 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
             }
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null, new ContextImpl(), false);
             try {
+                if (targetCodeBase != null) cdInfo.sfAddAttribute(SmartFrogCoreKeys.SF_CODE_BASE,
+                        targetCodeBase);
                 cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
                 cdInfo.sfAddAttribute(SmartFrogCoreProperty.sfProcessName,
                         System.getProperty(SmartFrogCoreProperty.sfProcessName));
@@ -89,6 +101,22 @@ public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnv
             throw new SmartFrogDeploymentException(refClass, null, name, target, null, "Class not found", cnfex, cdInfo);
         }
     }
+
+    /**
+     * Gets the class code base by resolving the sfCodeBase attribute in the
+     * given description.
+     *
+     * @param desc Description in which we resolve the code base.
+     * @return class code base for that description.
+     */
+    private String getSfCodeBase(ComponentDescription desc) {
+        try {
+            return (String) desc.sfResolve(refCodeBase);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public InputStream getResourceAsStream(String pathname) {
         return SFClassLoader.getResourceAsStream(pathname);

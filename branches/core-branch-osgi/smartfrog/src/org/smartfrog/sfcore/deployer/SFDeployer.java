@@ -43,12 +43,14 @@ import java.rmi.RemoteException;
  */
 public class SFDeployer implements MessageKeys {
 
-    private static final ComponentDeployer defaultComponentDeployer = new PrimProcessDeployerImpl();
-    private static final PrimFactory defaultPrimFactory = new DefaultPrimFactory();
-    private static final Reference parentAppEnvRef;
+    private static final ComponentDeployer DEFAULT_DEPLOYER = new PrimProcessDeployerImpl();
+    private static final PrimFactory DEFAULT_PRIM_FACTORY = new DefaultPrimFactory();
+    private static final Reference PARENT_APP_ENV_REF;
+    private static final CoreClassesClassLoadingEnvironment DEFAULT_CL_ENVIRONMENT = new CoreClassesClassLoadingEnvironment();
+
     static {
-        parentAppEnvRef = new Reference(ReferencePart.parent());
-        parentAppEnvRef.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT));
+        PARENT_APP_ENV_REF = new Reference(ReferencePart.parent());
+        PARENT_APP_ENV_REF.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT));
     }
 
     /**
@@ -126,7 +128,7 @@ public class SFDeployer implements MessageKeys {
             removeSfDeployerAttribute(component);
             
         } else {
-            deployer = defaultComponentDeployer;
+            deployer = DEFAULT_DEPLOYER;
         }
 
         propagateApplicationEnvironmentAttribute(component);
@@ -161,7 +163,7 @@ public class SFDeployer implements MessageKeys {
     private static void propagateApplicationEnvironmentAttribute(ComponentDescription component)
             throws SmartFrogRuntimeException
     {
-        Prim appEnv = (Prim) component.sfResolve(parentAppEnvRef, false);
+        Prim appEnv = (Prim) component.sfResolve(PARENT_APP_ENV_REF, false);
         if (appEnv != null) try {
             component.sfReplaceAttribute(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, appEnv.sfCompleteName());
         } catch (RemoteException e) {
@@ -228,22 +230,25 @@ public class SFDeployer implements MessageKeys {
     private static PrimFactory resolveFactory(ComponentDescription cd) throws SmartFrogResolutionException {
         final Reference factoryRef = (Reference)
                 cd.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY, false);
-        if (factoryRef == null) return defaultPrimFactory;
+        if (factoryRef == null) return DEFAULT_PRIM_FACTORY;
         else return (PrimFactory) cd.sfResolve(factoryRef);
     }
 
     public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
+        final ClassLoadingEnvironment env;
         final Object classLoadingEnvAttr = cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
         if (classLoadingEnvAttr instanceof Reference) {
             // in a DATA block
             final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;            
-            return (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
+            env = (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
+        } else if (classLoadingEnvAttr instanceof ClassLoadingEnvironment) {
+            // in a normal component description            
+            env = (ClassLoadingEnvironment) classLoadingEnvAttr;
         } else {
-            // in a normal component description, or not provided
-            // Apparently, cannot be made a static final field, as some thread gets to execute this at startup before our static fields are initialized. Weird.
-            if (classLoadingEnvAttr == null) return new CoreClassesClassLoadingEnvironment();
-            else return (ClassLoadingEnvironment) classLoadingEnvAttr;
+            env = new CoreClassesClassLoadingEnvironment(); // funny business
         }
+        assert env != null;
+        return env;
     }
 
     private static SmartFrogResolutionException wrongType
