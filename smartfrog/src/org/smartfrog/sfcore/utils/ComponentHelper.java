@@ -408,15 +408,28 @@ public class ComponentHelper {
      * get the class loading environment of a component
      *
      * @return code repository of a component, or null if the attribute is missing
-     * @throws SmartFrogResolutionException If attribute resolution failed.
+     * @throws SmartFrogResolutionException If attribute resolution failed. Normally all components have the attribute.
      * @throws RemoteException              in case of Remote/network error
      */
     public ClassLoadingEnvironment getClassLoadingEnvironment() throws SmartFrogResolutionException,
             RemoteException
     {
-        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
+        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
     }
 
+    /**
+     * get the codebase of a component
+     *
+     * @return String codebase of a component
+     * @throws SmartFrogResolutionException if failed to resolve
+     * @throws RemoteException              in case of Remote/network error
+     * @deprecated Use {@link this.getClassLoadingEnvironment()} instead.
+     */
+    public String getCodebase() throws SmartFrogResolutionException,
+            RemoteException
+    {
+        return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
+    }
     /**
      * Load a class in the owner's class loading space. Equivalent to calling
      * Class.forName() in the owner. 
