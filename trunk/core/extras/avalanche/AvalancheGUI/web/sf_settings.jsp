@@ -1,4 +1,4 @@
-<% /**
+<%-- /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,11 +16,10 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/ %>
+*/ --%>
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 
 <%
@@ -41,7 +40,7 @@ For more information: www.smartfrog.org
   	
 %>
 
-<script>
+<script language="JavaScript" type="text/javascript">
     setNextSubtitle("Deployment Engines Page");
 </script>
 
@@ -52,11 +51,8 @@ For more information: www.smartfrog.org
         <center>
             <!-- This is the page menu -->
             <div align="center" style="width: 95%;">
-                <script>
-                    oneVoiceWritePageMenu("sfSettings", "header"
-                    //  "Basic Settings",
-                    //  	"#"
-                            );
+                <script language="JavaScript" type="text/javascript">
+                    oneVoiceWritePageMenu("sfSettings", "header");
                 </script>
             </div>
 
@@ -106,8 +102,8 @@ For more information: www.smartfrog.org
 <br/>
 <div align="center" style="width: 95%;">
 <div class="buttonSet">
-  <div class="bWrapperUp"><div><div>
-    <input align="center" type="submit" class="hpButton" name="Save" value="Save Changes">
+  <div class="bWrapperUp" align="center"><div><div>
+    <input type="submit" class="hpButton" name="Save" value="Save Changes">
   </div></div></div>
 </div>
 <div class="clearFloats"></div>

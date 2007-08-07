@@ -1,4 +1,4 @@
-<!-- /**
+<%-- /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,17 +16,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-<%-- $Id: SFActionLibs.jsp 81 2006-05-30 06:09:38Z uppada $ --%>
+*/ --%>
 <%@ page language="java" %>
-
-<%@ page import="org.smartfrog.avalanche.server.engines.sf.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-<%@	page import="java.util.*"%>
-
-<%@ include file="InitBeans.jsp" %>
+<%@ include file="header.inc.jsp" %>
 
 <%
     String errMsg = null; 
@@ -63,13 +57,7 @@ For more information: www.smartfrog.org
 	
 %>
 
-<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-<%@ include file="common.jsp" %>
-</head>
-
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 function toggle(divId) {
     var state = document.getElementById(divId).style.display ;
     if ( state == "none" ) {
@@ -120,11 +108,9 @@ function deleteRow(rowIdx){
     var table = document.getElementById('jarTable');
     table.deleteRow(rowIdx);
 }
-</script>
 
-<body>
-<script>
 setNextSubtitle("Library Dependencies Page");
+
 </script>
 
 <br>
@@ -132,12 +118,10 @@ setNextSubtitle("Library Dependencies Page");
 <center>
 <!-- This is the page menu -->
 <div align="center" style="width: 95%;">
-  <script>
+  <script language="javascript" type="text/javascript">
     oneVoiceWritePageMenu("SFActionLibs","header",
-      //"Library Dependencies",
-  	//"nowhere",
-      "Configure Attributes",
-  	"javascript:setLocation('SFActionArgs.jsp?title=<%=title%>')"
+                            "Configure Attributes",
+  	                        "javascript:setLocation('SFActionArgs.jsp?title=<%=title%>')"
     );
   </script>
 </div>
@@ -190,9 +174,4 @@ setNextSubtitle("Library Dependencies Page");
 </center>
 </div>
 
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
-</body>
-
-</html>
+<%@ include file="footer.inc.jsp"%>

@@ -1,4 +1,4 @@
-<!-- /**
+<%-- /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -16,8 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
+*/ --%>
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
@@ -137,45 +136,44 @@ setNextSubtitle("System Settings Page");
 -->
 </script>
 
+<br>
+<div align="center">
 <center>
-<big>Configure system settings</big>
-<br><br>
-<%
-	if(errMsg != null){
-%>
 
-<font color="red">
-	<%=errMsg%>
-</font><br>
-<%
-}
-%>
+<div align="center" style="width: 95%;">
+  <script language="javascript" type="text/javascript">
+    oneVoiceWritePageMenu("SystemSettings", "header");
+  </script>
+</div>
+
+
+<%@ include file="Message.jsp" %>
 
 <form method="post" action="system_settings_save.jsp">
-<table id='osTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-    <tbody>
+
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="osTable">
+        <caption>Supported Operating Systems</caption>
+        <thead>
+            <tr class="captionRow">
+                <th class="checkboxCell"><input type="checkbox" tableid="hostListTable"></th>
+                <th>Name</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% String [] oses = defSettings.getOsArray();
+            for( int i = 0; i < oses.length; i++){ %>
         <tr>
             <td>
-                Supported Operating Systems
+                <input type="text" name="os" value="<%=oses[i]%>"></input>
             </td>
         </tr>
-        <%
-	String [] oses = defSettings.getOsArray();
-	for( int i=0;i<oses.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="os" value="<%=oses[i]%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+        <% } %>
+        </tbody>
 </table>
-<a href="#" onclick="javascript:addRow1(getElementById('osTable'), 'os')">Add OS </a>
-<br>
-<br>
+<input type="button" name="os_add" value="Add Operating System" onclick="javascript:addRow1(getElementById('osTable'), 'os')"/>
+
+<br/><br/>
 
 <table id='platformTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
 <tbody>
@@ -362,7 +360,8 @@ Add Deployment Engine </a>
 
 <input type="submit" name="Save" value="Save Changes"></input>
 </form>
-</center>
 
+</center>
+</div>
 
 <%@ include file="footer.inc.jsp" %>
