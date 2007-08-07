@@ -510,6 +510,7 @@ public class Reference implements Copying, Cloneable, Serializable {
     }
 
     public Reference makeRelative(Reference base) {
+        if (base == null) return this;
         Reference copy = (Reference) copy();
         Reference baseCopy = (Reference) base.copy();
         while (baseCopy.size() > 0 && copy.size() > 0 && copy.firstElement().equals(baseCopy.firstElement())) {

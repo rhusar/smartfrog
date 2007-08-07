@@ -115,7 +115,7 @@ public class HereReferencePart extends ReferencePart {
      * @return hash code for part
      */
     public int hashCode() {
-        return getValue().hashCode();
+        return getValue() == null ? 0 : getValue().hashCode();
     }
 
     /**
@@ -127,8 +127,11 @@ public class HereReferencePart extends ReferencePart {
      * @return true if equal, false if not
      */
     public boolean equals(Object refPart) {
-        return getClass().equals(refPart.getClass()) &&
-                getValue().equals(((HereReferencePart) refPart).getValue());
+        if (!(refPart instanceof HereReferencePart)) return false;
+        HereReferencePart part = (HereReferencePart) refPart;
+        return value == null
+                ? part.getValue() == null
+                : value.equals(part.getValue());
     }
 
     /**

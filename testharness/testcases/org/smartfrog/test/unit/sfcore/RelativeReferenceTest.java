@@ -51,4 +51,8 @@ public class RelativeReferenceTest extends TestCase {
         assertEquals(Reference.fromString("HERE quux:bar"), relative.makeRelative(notAbsoluteBase));
     }
 
+    public void testNullBase() throws SmartFrogResolutionException {
+        Reference reference = Reference.fromString("HERE quux:bar");
+        assertEquals(reference, reference.makeRelative(null));
+    }
 }

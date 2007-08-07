@@ -4,22 +4,19 @@
 
 sfConfig extends Compound {
     sfProcessComponentName "TestApp";
-    sfApplicationEnvironment LAZY PROCESS:envTarget;
-    //sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
+    sfApplicationEnvironment LAZY envTarget;
+    sfClassLoadingEnvironment extends DATA {ref LAZY envTarget:clEnvTest;}
 
     subprocess extends Compound {
-        sfDeployer LAZY PROCESS:envTarget:deployerTest;
+        sfDeployer LAZY sfApplicationEnvironment:deployerTest;
         sfProcessName "testProcess";
 
-        testProvider extends MessageProvider {
-            sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
-        }
+        testProvider extends MessageProvider;
         //testProvider extends Counter { limit 5; }
     }
 
     testPrinter extends MessagePrinter {
-        //sfProcessHost "pernet-o-2";
-        sfClassLoadingEnvironment LAZY PROCESS:envTarget:clEnvTest;
+        //sfProcessHost "pernet-o-2";        
         messageSource LAZY subprocess:testProvider;
     }
 }
