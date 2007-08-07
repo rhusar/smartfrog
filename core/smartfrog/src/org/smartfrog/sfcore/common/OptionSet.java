@@ -48,7 +48,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     private static final String USAGE = "\n" +
-        " Usage: SFSystem [-a SFACT] [-f SFREF] [-e] [-d] [-headless]\n" +
+        " Usage: SFSystem [-a SFACT] [-f SFREF] [-t] [-e] [-d] [-headless]\n" +
         "    or: SFSystem -?\n";
 
     /** Help string for SFSystem. */
@@ -94,8 +94,8 @@ public class OptionSet {
         "              ex4: Get diagnostics report for \"sfDefault\" component running in remote daemon\n" +
         "                   'rootProcess:sfDefault':DIAGNOSTICS:::remoteHostName:\n" +
         "\n" +
-        "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +
-        "\n" +
+        "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +"\n" +
+        "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d or -diagnostics: print information that might be helpful to diagnose or report problems." + "\n" +
         "   " + OPTION_HEADLESS + ": the process will run in headless mode\n" +
@@ -118,6 +118,9 @@ public class OptionSet {
 
     /** Vector for configurationDescriptors to be deployed. */
     public Vector cfgDescriptors = new Vector();
+
+   /** Terminate sucessful deployments in case of a deployment failure. */
+    public boolean terminateOnDeploymentFailure = false;
 
     /** Flag indicating the exit status of the application. */
     public boolean exit = false;
@@ -170,6 +173,8 @@ public class OptionSet {
                 } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
                     //diagnostics
                     diagnostics = true;
+                } else if ("-t".equals(currentArg)) {
+                    this.terminateOnDeploymentFailure = true;
                 } else if ("-e".equals(currentArg)) {
                     //exit after the operation(s)
                     exit = true;

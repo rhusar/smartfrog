@@ -25,6 +25,8 @@ import org.smartfrog.SFSystem;
 
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
 import java.util.Hashtable;
 import java.rmi.RemoteException;
 import java.io.IOException;
@@ -159,6 +161,20 @@ public class ConfigurationDescriptor implements MessageKeys {
       * Result Object return by EXEC action
       */
      public Object resultObject = null;
+
+     /**
+      *  A result can be terminated if during a set of deployments one of them
+      * fails, this is related to -t (terminate) option and it can only be applied
+      * to DEPLOY actions.
+      */
+     public boolean isResultTerminated = false;
+    /**
+     * Indicates if the termination of a result object was succesful.
+    */
+     public boolean isResultTerminatedSuccessfully=true;
+
+    /** possible result termination error message */
+    public String resultTerminationMessage=null;
 
      /**
       * Result message for action
@@ -405,7 +421,7 @@ public class ConfigurationDescriptor implements MessageKeys {
               result= messageError.toString();
           }
           if ((Logger.logStackTrace)||
-              (((resultMessage != null) || (resultException != null)) && (resultType != Result.SUCCESSFUL))) {
+              (((resultMessage != null) || (resultException != null)) && ((resultType != Result.SUCCESSFUL)|| isResultTerminated))) {
                   messageError = new StringBuffer();
                   messageError.append(lineSeparator);
                   messageError.append("Result:");
@@ -427,6 +443,13 @@ public class ConfigurationDescriptor implements MessageKeys {
                          messageError.append(parseExceptionStackTrace(resultException, lineSeparator + "    "));
                          messageError.append("'");
                        }
+                  }
+                  if (isResultTerminated) {
+                     messageError.append(lineSeparator);
+                     messageError.append("* Result termination  ");
+                     if (isResultTerminatedSuccessfully) messageError.append(" succeeded");
+                     else messageError.append(" failed");
+                     if (resultTerminationMessage!=null) messageError.append("; Message: "+resultTerminationMessage);  
                   }
                   if (originalSFACT!=null && Logger.logStackTrace) {
                       messageError.append(lineSeparator);
@@ -936,6 +959,27 @@ public class ConfigurationDescriptor implements MessageKeys {
              throw rex;
         }
         return resultObject;
+    }
+
+    /** Terminates result object ONLY a result exists and it was deployed by this configuration descriptor using
+     * a DEPLOY action. The success of the termination intent will be stored in {@link #isResultTerminatedSuccessfully}
+     * @return  true if it tried to terminate result, false it it did not try
+     */
+    public boolean terminateDeployedResult (){
+       if ((resultObject!=null)&& (resultObject instanceof Prim) &&
+               (getActionType() == Action.DEPLOY) && !isResultTerminated){
+            try {
+             this.isResultTerminated=true;
+             ((Prim)resultObject).sfTerminate(new TerminationRecord(TerminationRecord.
+                    NORMAL,
+                    "Multiple deployment failed", null));
+            } catch (RemoteException ex) {
+              this.resultTerminationMessage = ex.toString();
+            }
+            return true;
+       }
+
+       return false;
     }
 
     /**
