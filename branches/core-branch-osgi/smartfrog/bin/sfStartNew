@@ -10,7 +10,7 @@ usage() {
     echo "$1"
     cat<<END
 Usage:  $0 -h|--help
-        $0 target.host [-e|--environment env_description_URL.sf [-e¦--environment env_description_URL.sf...]]
+        $0 target.host [-e|--environment env_description_URL.sf [-e|--environment env_description_URL.sf...]]
                        [AppName description_URL.sf [AppName description_URL.sf...]]
 END
     if [ ! -z $2 ]; then
@@ -54,7 +54,7 @@ APPSCRIPTS=
 ENVSCRIPTS=
 
 ## Target hostname needs to come first, or else the -h switch.
-if [ "$1" = -h ] ¦¦ [ "$1" = --help ]; then
+if [ "$1" = -h ] && [ "$1" = --help ]; then
 	# usage exits script
 	usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of parser setup descriptions, followed by an arbitrary number of descriptions for the application itself." 0	
 else
@@ -73,14 +73,14 @@ while [ ! -z "$1" ]; do
                 usage "Missing environment description after --environment option."
             fi
             
-            ENVSCRIPTS="$ENVSCRIPTS -a \"$2\":DEPLOY::::"            
+            ENVSCRIPTS="$ENVSCRIPTS -a :DEPLOY:\"$2\":::"            
             shift            
             ;;        
 		-*)
             usage "Unrecognized argument: $1"
             ;;
 		*)
-			if invalid "$1" ¦¦ invalid "$2"; then
+			if invalid "$1" && invalid "$2"; then
                 usage "Both the application name and description file need to be provided."
             fi
             

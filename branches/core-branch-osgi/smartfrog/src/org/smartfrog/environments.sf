@@ -1,9 +1,18 @@
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/sfcore/deployer/deployers.sf"
 #include "org/smartfrog/sfcore/deployer/environments.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/detachingcompound.sf"
 
-ApplicationEnvironment extends Compound;
+ApplicationEnvironment extends DetachingCompound {
+    detachDownwards true;
+    detachUpwards false;
+    autoDestruct false; // important because default is true
+}
 
-TargetEnvironment extends Compound;
+TargetEnvironment extends Compound {
+    sfProcessHost ENVPROPERTY SFTARGETHOST;
+}
 
-ParserEnvironment extends Compound;
+ParserEnvironment extends Compound {
+    // todo schema check for sfProcessComponentName presence
+}

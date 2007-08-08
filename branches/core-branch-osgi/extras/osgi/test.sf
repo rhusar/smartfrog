@@ -3,12 +3,13 @@
 #include "org/smartfrog/examples/counter/components.sf"
 
 sfConfig extends Compound {
-    sfProcessComponentName "TestApp";
-    sfApplicationEnvironment LAZY envTarget;
-    sfMeta extends DATA {sfClassLoadingEnvironment LAZY envTarget:clEnvTest;}
+    sfMeta extends DATA {
+        sfApplicationEnvironment LAZY envTarget;                    
+        sfClassLoadingEnvironment LAZY envTarget:clEnvTest;
+        sfDeployer LAZY envTarget:deployerTest;
+    }
 
-    subprocess extends Compound {
-        sfDeployer LAZY sfApplicationEnvironment:deployerTest;
+    subprocess extends Compound {        
         sfProcessName "testProcess";
 
         testProvider extends MessageProvider;

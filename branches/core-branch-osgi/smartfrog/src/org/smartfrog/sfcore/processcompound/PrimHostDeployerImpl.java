@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.deployer.SFDeployer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -121,12 +122,12 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                     return super.deploy(parent);
                 }
             } else {
-                Context modifiedAttributes = deployEnvironmentIfNeeded(pc);
+                deployEnvironmentIfNeeded(pc);
 
                 // Name = null : The name of the component on the remote process is generated automatically,
                 // even though the component has a name in the local process. Not pretty.
                 // This could be changed easily by adding the component name as sfProcessComponentName, but might break backward compatibility.
-                return pc.sfDeployComponentDescription(null, parent, target, modifiedAttributes);
+                return pc.sfDeployComponentDescription(null, parent, target, null);
             }
         } catch (Exception ex) {            
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward
@@ -134,28 +135,25 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         }
     }
 
-    private Context deployEnvironmentIfNeeded(ProcessCompound pc) throws Exception {
-        Context modifiedAttributes = new ContextImpl();
+    private void deployEnvironmentIfNeeded(ProcessCompound pc) throws Exception {
         Prim appEnvironment = resolveEnvironment();
         if (appEnvironment != null) {
             ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
-
-            // 0: Host, 1: Process name
-            HereReferencePart nameRef = (HereReferencePart) appEnvironment.sfCompleteName().elementAt(2);
-            Object name = nameRef.getValue();
+            // sfProcessComponentName iss
+            //  only used for initial deployment of the application environment, on the target root process.
+            // When deploying to a subprocess it needs to be removed because otherwise the environment will be registered with the rootProcess directly
+            //String name = (String) appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            String name = (String) appEnvDescr.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            // Same problem for the sfProcessHost attribute
+            appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_HOST);
 
             Prim deployedAppEnv = (Prim) pc.sfResolveHere(name, false);
             if (deployedAppEnv == null) {
-                deployedAppEnv = pc.sfDeployComponentDescription(name, null, appEnvDescr, null);
+                pc.sfCreateNewChild(null, null, appEnvDescr, null);
             } else {
                 checkIsSame(deployedAppEnv, appEnvDescr, pc, name);
             }
-
-            if (!deployedAppEnv.sfIsDeployed()) deployedAppEnv.sfDeploy();
-            if (!deployedAppEnv.sfIsStarted()) deployedAppEnv.sfStart();
-            modifiedAttributes.put(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, deployedAppEnv);            
         }
-        return modifiedAttributes;
     }
 
     private void checkIsSame(Prim deployedAppEnv, ComponentDescription appEnvironment, ProcessCompound targetPC, Object appEnvName) throws SmartFrogException {
@@ -168,7 +166,8 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
     private Prim resolveEnvironment() throws SmartFrogResolutionException {
         try {
-            return (Prim) target.sfResolve(SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, false);
+            ComponentDescription sfMeta = (ComponentDescription) target.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+            return (Prim) SFDeployer.resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, null);
         } catch (ClassCastException cce) {
             throw environmentError(cce);
         } catch (SmartFrogResolutionException re) {
