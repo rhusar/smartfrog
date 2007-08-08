@@ -1,13 +1,10 @@
 package org.smartfrog.sfcore.deployer;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.HostReferencePart;
-import org.smartfrog.sfcore.reference.ProcessReferencePart;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,9 +18,12 @@ public abstract class AbstractClassLoadingEnvironment extends PrimImpl
         super.sfDeploy();
 
         doSfDeploy();
-
-        Reference relative = sfCompleteName().makeRelative(SFProcess.getProcessCompound().sfCompleteName());
-        ClassLoaderRegistry.registerClassLoader(getClassLoader(), relative.toString());
+        sfParentageChanged();
+        //Reference hacked = sfCompleteName().makeRelative(SFProcess.getProcessCompound().sfCompleteName());
+       
+        ClassLoaderRegistry.registerClassLoader(getClassLoader(), "envTarget" + sfCompleteName().lastElement());
+        //if (sfLog().isDebugEnabled())
+//            sfLog().debug("Registering class loader: " + getClassLoader() + " with annotation: " + hacked);
     }
 
     protected abstract void doSfDeploy() throws SmartFrogException, RemoteException;

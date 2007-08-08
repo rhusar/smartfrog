@@ -145,6 +145,8 @@ public class SFDeployer implements MessageKeys {
      * This is especially the case for sfDefault, but could also be a simple app with no user provided code.
      * @param component
      * @throws SmartFrogRuntimeException
+     *
+     * TODO Remove
      */
     private static void propagateApplicationEnvironmentAttribute(ComponentDescription component)
             throws SmartFrogRuntimeException
@@ -225,6 +227,7 @@ public class SFDeployer implements MessageKeys {
         }
         return env;
     }
+    
         private static SmartFrogResolutionException wrongType
             (String msg, ClassCastException e, ComponentDescription component)
     {
