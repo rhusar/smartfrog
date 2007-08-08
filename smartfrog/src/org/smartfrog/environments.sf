@@ -11,8 +11,12 @@ ApplicationEnvironment extends DetachingCompound {
 
 TargetEnvironment extends Compound {
     sfProcessHost ENVPROPERTY SFTARGETHOST;
+    name TBD;
+    sfProcessComponentName name;
 }
 
 ParserEnvironment extends Compound {
     // todo schema check for sfProcessComponentName presence
+    name TBD;
+    sfProcessComponentName name;
 }
