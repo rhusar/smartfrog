@@ -103,6 +103,7 @@ For more information: www.smartfrog.org
     trans.setOutputProperty(OutputKeys.INDENT, "yes");
     trans.transform(new DOMSource(xdoc), result);
     String xmlString = sw.toString();
+    sw.close();
 
     // Print output
     out.clear();

@@ -20,23 +20,13 @@ function getXMLHttpRequestObject() {
     try {
         // If Mozilla, Firefox, Safari
         if (window.XMLHttpRequest && !window.ActiveXObject) {
-            var XMLHttpRequestObject = false;
-            XMLHttpRequestObject = new XMLHttpRequest();
-            return XMLHttpRequestObject;
+            return new XMLHttpRequest();
             // Else if Microsoft Browser
         } else if (window.ActiveXObject) {
             try {
-                return (new ActiveXObject("MSXML2.XMLHTTP.3.0"));
+                return (new ActiveXObject("Microsoft.XMLHTTP"));
             } catch (e) {
-                try {
-                    return (new ActiveXObject("Msxml2.XMLHTTP"));
-                } catch (e) {
-                    try {
-                        return (new ActiveXObject("Microsoft.XMLHTTP"));
-                    } catch (e) {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
     } catch (e) {
@@ -44,31 +34,12 @@ function getXMLHttpRequestObject() {
     }
 }
 
-// Sends given XMLHttpRequest, returns true on success.
-function sendRequest(XMLHttpRequest) {
-    try {
-        // If Mozilla, Firefox, Safari
-        if (window.XMLHttpRequest) {
-            XMLHttpRequest.send(null);
-            // Else if Microsoft Browser
-        } else if (window.ActiveXObject) {
-            XMLHttpRequest.send("");
-        }
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
 // Fills a given DIV box with a given text
 function fillDivBox(idOfTargetDiv, text) {
-    var targetDiv = false;
+    var targetDiv = null;
     targetDiv = document.getElementById(idOfTargetDiv);
 
     if (targetDiv) {
-        // Update only if neccessary
-        if (targetDiv.innerHTML != text) {
             targetDiv.innerHTML = text;
-        }
     }
 }
