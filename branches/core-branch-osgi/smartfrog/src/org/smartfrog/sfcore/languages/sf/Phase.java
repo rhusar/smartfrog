@@ -25,8 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
-import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.reference.ApplyReference;
 
 import java.util.Enumeration;
 import java.util.Stack;
@@ -65,7 +65,7 @@ public class Phase implements CDVisitor {
             throws SmartFrogResolutionException
     {
         try {
-            ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(cd);
+            ClassLoadingEnvironment env = ApplyReference.resolveEnvironmentHere(cd);
             PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
