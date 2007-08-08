@@ -28,15 +28,15 @@
 %>
 <!-- Check for SmartFrog 'frog'-link -->
 <tr>
-	<td>clickAndWait</td>
+	<td>assertElementPresent</td>
 	<td>//img[@alt='SmartFrog']</td>
 	<td></td>
 </tr>
 <!-- Check for SmartFrog textlink -->
 <tr>
-    <td>click</td>
+	<td>assertText</td>
 	<td>link=Avalanche Deployment System</td>
-	<td></td>
+	<td>Avalanche Deployment System</td>
 </tr>
 <!-- Check for correct subtitle -->
 <tr>
@@ -44,24 +44,99 @@
 	<td>exact:Avalanche: <%=subtitle%></td>
 	<td></td>
 </tr>
-<!-- Check for menu -->
 <tr>
-	<td>waitForTextPresent</td>
+	<td>assertText</td>
+	<td>subtitle</td>
+	<td>(<%=subtitle%>)</td>
+</tr>
+<!-- Is menu reachable? -->
+<tr>
+	<td>assertElementPresent</td>
+	<td>menu1_trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>menu2_trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>menu3_trigger</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertElementPresent</td>
+	<td>menu4_trigger</td>
+	<td></td>
+</tr>
+<!-- Check menu for correctness -->
+<!-- Menu: Modules -->
+<tr>
+	<td>assertText</td>
+	<td>menu1_trigger</td>
 	<td>Software Resources List Modules Module Groups</td>
-	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
+	<td>verifyText</td>
+	<td>link=List Modules</td>
+	<td>List Modules</td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>link=Module Groups</td>
+	<td>Module Groups</td>
+</tr>
+<!-- Menu: Host -->
+<tr>
+	<td>assertText</td>
+	<td>menu2_trigger</td>
 	<td>Hosts List Hosts List Active Hosts Host Groups</td>
-	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
+	<td>assertText</td>
+	<td>link=List Hosts</td>
+	<td>List Hosts</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=List Active Hosts</td>
+	<td>List Active Hosts</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=Host Groups</td>
+	<td>Host Groups</td>
+</tr>
+<!-- Menu: Settings -->
+<tr>
+	<td>assertText</td>
+	<td>menu3_trigger</td>
 	<td>Configuration Supported Actions Deployment Engines System Settings</td>
-	<td></td>
 </tr>
 <tr>
-	<td>waitForTextPresent</td>
+	<td>assertText</td>
+	<td>link=Supported Actions</td>
+	<td>Supported Actions</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=Deployment Engines</td>
+	<td>Deployment Engines</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=System Settings</td>
+	<td>System Settings</td>
+</tr>
+<!-- Menu: Logs -->
+<tr>
+	<td>assertText</td>
+	<td>menu4_trigger</td>
 	<td>Reports View Logs</td>
-	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=View Logs</td>
+	<td>View Logs</td>
 </tr>

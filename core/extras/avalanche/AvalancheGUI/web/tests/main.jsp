@@ -25,16 +25,6 @@
 <thead>
 <tr><td rowspan="1" colspan="3">main</td></tr>
 </thead><tbody>
-<tr>
-	<td>open</td>
-	<td>/AvalancheGUI/</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Login</td>
-	<td></td>
-</tr>
 <jsp:include page="header.inc.jsp?subtitle=Home Page"></jsp:include>
 </tbody></table>
 </body>
