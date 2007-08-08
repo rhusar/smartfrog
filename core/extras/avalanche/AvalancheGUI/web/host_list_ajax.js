@@ -18,56 +18,49 @@
  For more information: www.smartfrog.org
  */
 
-/* Retrieving the host status */
-var status_response = false;
-var status_xml = getXMLHttpRequestObject();
+var status_response = "";
+var status_xml;
 
-function getStatus() {
-    if (status_xml) {
-        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date).getMilliseconds(), true);
-        status_xml.onreadystatechange = function()
-        {
-            try {
-                // If everything went alright
-                if (status_xml.status == 200) {
-                    if (status_xml.readyState == 4) {
-                        var xmlDocument = status_xml.responseXML;
-                        var statusMsgs = xmlDocument.getElementsByTagName("status");
-                        for (var i = 0; i < statusMsgs.length; i++) {
-                            if (statusMsgs[i].firstChild.data == "true") {
-                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
-                            } else {
-                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
-                            }
-                            fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
-                        }
+function readyStateChanged()
+{
+    try {
+        // If everything went alright
+        if (status_xml.readyState == 4) {
+            if (status_xml.status == 200) {
+                var xmlDocument = status_xml.responseXML;
+                var statusMsgs = xmlDocument.getElementsByTagName("status");
+                for (var i = 0; i < statusMsgs.length; i++) {
+                    if (statusMsgs[i].firstChild.data == "true") {
+                        status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
                     } else {
-                        for (var i = 0; i < statusMsgs.length; i++) {
-                            status_response = "Retrieving status...";
-                            fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
-                        }
+                        status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
                     }
-                } else {
-                    for (var i = 0; i < statusMsgs.length; i++) {
-                        status_response = "Status could not be retrieved.";
-                        fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
-                    }
+                    fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
                 }
-            } catch (e) {
-                // TODO: everything went wrong
             }
         }
-        sendRequest(status_xml);
+    } catch (e) {
+        // TODO: everything went wrong
+    }
+}
+
+function getStatus() {
+    status_xml = getXMLHttpRequestObject();
+    if (status_xml) {
+        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date).getMilliseconds(), true);
+        status_xml.onreadystatechange = readyStateChanged;
+        status_xml.send(null);
     }
 }
 
 /* Host actions */
-var action_xml = getXMLHttpRequestObject();
+var action_xml;
 
 function ajaxHostAction(target) {
+	action_xml = getXMLHttpRequestObject();
     if (action_xml) {
         action_xml.open("GET", target, true);
-        sendRequest(action_xml);
+        action_xml.send(null);
     }
 }
 

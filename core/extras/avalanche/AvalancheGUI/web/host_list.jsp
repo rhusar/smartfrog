@@ -46,15 +46,17 @@ For more information: www.smartfrog.org
 %>
 <script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
 <script language="JavaScript" type="text/javascript">
-    function pullUpdate() {
-        // Get update
-        getStatus();
-        // Call me again in 5 seconds
-        setTimeout("pullUpdate()", 5000);
-    }
-
-    // Call once
-    pullUpdate();
+//    function pullUpdate() {
+//        // Get update
+//        getStatus();
+//        // Call me again in 5 seconds
+//        setTimeout("pullUpdate()", 5000);
+//    }
+//
+//    // Call once
+//    pullUpdate();
+    getStatus();
+    window.setInterval("getStatus()", 5000);
 </script>
 <% } %>
 
