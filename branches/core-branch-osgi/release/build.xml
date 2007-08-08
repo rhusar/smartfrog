@@ -344,13 +344,17 @@
     <property name="init.d" location="${rpm.root.dir}/etc/init.d" />
   </target>
 
-  <target name="rpm-components" depends="expand-core">
+  <target name="rpm-components"
+      if="has.rpm.tools"
+      depends="expand-core">
     <rpmpackage package="anubis" />
     <rpmpackage package="logging" />
   </target>
 
 
-  <target name="prepare-binary-rpm" depends="copy-scripts,expand-core,rpm-components" >
+  <target name="prepare-binary-rpm"
+      if="has.rpm.tools"
+      depends="copy-scripts,expand-core,rpm-components" >
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
@@ -362,6 +366,7 @@
 
   <!--copy rpms, but do not create them-->
   <target name="copy-rpms"
+      if="has.rpm.tools"
       depends="init-rpm">
     <copy todir="${upload.dir}" flatten="true">
       <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
@@ -370,6 +375,7 @@
 
   <target name="gzip-rpm"
       depends="build-rpm"
+      if="has.rpm.tools"
       description="create a gzip containing all the rpms">
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}" includes="*.rpm" />

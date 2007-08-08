@@ -41,11 +41,13 @@ public class LivenessListener implements RosterListener {
 	 * chage event is received. 
 	 * @param r
 	 */
-	public LivenessListener(Roster r){
-		roster = r ;
+	public LivenessListener(Roster r) {
+        log.info ("Initializing LivenessListener...");
+        roster = r ;
 	}
 	public void addLivenessHandler(HostStateChangeHandler handler){
-		handlers.add(handler) ;
+        log.info("Adding handler for presence update.");
+        handlers.add(handler) ;
 	}
 	
 	/**
@@ -71,26 +73,34 @@ public class LivenessListener implements RosterListener {
 	}
 
 	public void presenceChanged(String address) {
-		log.debug("Presence changed event : " + address);
-		
-		HostStateEvent event = new HostStateEventDefaultImpl();
-		// extract host name (before @ in address)
-		event.setHostName(address.substring(0, address.indexOf('@')));
+		log.info("Presence changed detected. User: " + address);
 
-		Presence p = roster.getPresence(address);
-		if( null == p ){
-			event.setAvailable(false);
+        // Create a HostStateEvent and save the address to the hostname
+        HostStateEvent event = new HostStateEventDefaultImpl();
+        String hostName = address.substring(0, address.indexOf('@'));
+        log.info("Hostname: " + hostName);
+        event.setHostName(hostName);
+
+        // Get the current presence of that particular user
+        String label = " (Hostname: " + hostName + ")";
+        Presence p = roster.getPresence(address);
+		if(p == null){
+            log.error("Current presence could not be retrieved." + label);
+            event.setAvailable(false);
 		}else{
 			if( p.getType().equals(Presence.Type.AVAILABLE)){
-				event.setAvailable(true);
-			}else{
-				event.setAvailable(false);
+                log.info("Current presence is: AVAILABLE." + label);
+                event.setAvailable(true);
+			} else {
+                log.info("Current presence is: NOT AVAILABLE." + label);
+                event.setAvailable(false);
 			}
 		}
-		
-		Iterator it = handlers.iterator();
-		while(it.hasNext()){
-			((HostStateChangeHandler)it.next()).handleEvent(event);
-		}
-	}
+
+        log.info("Dispatching event to all other handlers.");
+        for (Iterator it1 = handlers.iterator(); it1.hasNext();) {
+            Object handler = (Object) it1.next();
+            ((HostStateChangeHandler) handler).handleEvent(event);
+        }
+    }
 }

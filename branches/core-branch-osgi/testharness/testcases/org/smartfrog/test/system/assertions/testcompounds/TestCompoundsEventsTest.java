@@ -61,11 +61,19 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
     }
 
     public void testFailureNested() throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testFailureNested");
+        TestCompletedEvent event = runTestsToCompletion(FILES, "testFailureNested");
         TerminationRecord status = event.getStatus();
     }
 
+    public void testSkipped() throws Throwable {
+        TestCompletedEvent event = runTestsToCompletion(FILES, "testSkipped");
+        assertTrue("event is not skipped :"+event,event.isSkipped());
+    }
 
+    public void testNotSkipped() throws Throwable {
+        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testNotSkipped");
+        assertFalse("event was skipped :" + event, event.isSkipped());
+    }
     public void testSmartFrogExceptionActionRecord() throws Throwable {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testSmartFrogException");
         TestCompound tc=(TestCompound) getApplication();

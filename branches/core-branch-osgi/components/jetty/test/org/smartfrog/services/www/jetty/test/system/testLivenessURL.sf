@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/services/www/webapplication.sf"
+#include "/org/smartfrog/services/www/servers/testwar.sf"
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/jetty/test/system/testwar.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
@@ -46,8 +47,9 @@ sfConfig extends Compound {
         server LAZY PARENT:server;
     }
 
+    //normally you'd use the broken up attributes, but here we test the full URL
     ping extends LivenessPage {
-        url (("http://localhost:"++port)++"/");
+        url "http://localhost:5050/";
         minimumResponseCode 404;
         maximumResponseCode 404;
     }

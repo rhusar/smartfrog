@@ -50,20 +50,21 @@ public class EventListener implements PacketListener {
 	}
 
 	public void processPacket(Packet p) {
-		PacketExtension pe = p.getExtension(XMPPEventExtension.rootElement,
-				XMPPEventExtension.namespace);
+        log.info("Processing packet from " + p.getFrom() + " to " + p.getTo());
+        PacketExtension pe = p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
 		log.info(pe);
 		// convert XML to AvalancheEvent and call handler chain on the event. 
 		// see if a new thread is need to call event handlers. 
 		try{
 			Document doc = XMLUtils.loadFromString(pe.toXML(), false);
 			MonitoringEvent event = fromXML(doc);
-			Iterator itor = handlers.iterator();
-			while(itor.hasNext()){
-				MessageHandler h = (MessageHandler)itor.next();
-				h.handleEvent(event) ;
-			}
-		}catch(SAXException e){
+            log.info("Dispatching to all registered handlers.");
+            for (Iterator it = handlers.iterator(); it.hasNext();) {
+                Object handler = (Object) it.next();
+                MessageHandler h = (MessageHandler) handler;
+                h.handleEvent(event);
+            }
+        }catch(SAXException e){
 			// discard event
 			log.error("XMPP listener, malformed message " , e);
 		}catch(IOException e){
@@ -84,16 +85,15 @@ public class EventListener implements PacketListener {
 	
 	public void setup(){
 		// register extension provider first 
-		ProviderManager.addExtensionProvider(XMPPEventExtension.rootElement,
-				XMPPEventExtension.namespace, new XMPPEventExtension());
+		ProviderManager.addExtensionProvider(XMPPEventExtension.rootElement, XMPPEventExtension.namespace, new XMPPEventExtension());
 	}
 	
 	public static class XMPPPacketFilter implements PacketFilter{
 		public boolean accept(Packet p) {
-			log.info("Filtering pkt : " + p.toXML());
-			if ( p.getExtension(XMPPEventExtension.rootElement, 
-					XMPPEventExtension.namespace) != null){
-				return true ;
+			log.info("Received Packet: " + p.toXML());
+			if ( p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace) != null){
+                log.info("Accepting packet.");
+                return true;
 			}
 			Iterator itor = p.getExtensions();
 			while(itor.hasNext()){
@@ -101,7 +101,8 @@ public class EventListener implements PacketListener {
 				log.info("Received Packet Extension : " + ext.getElementName());
 				log.info("Received Packet Extension NS : " + ext.getNamespace());
 			}
-			return false;
+            log.info("Discarding packet.");
+            return false;
 		}
 	}
 	/**

@@ -229,7 +229,7 @@
       />
 
    <!-- load in our version -->
-   <property resource="${smartfrog.version.property.resource}"/>
+   <!--<property resource="${smartfrog.version.property.resource}"/>-->
    <property resource="${smartfrog.version.property.resource}"
        classpathref="smartfrog.classpath"/>
 

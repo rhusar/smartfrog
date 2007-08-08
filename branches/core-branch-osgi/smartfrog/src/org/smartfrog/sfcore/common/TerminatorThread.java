@@ -28,6 +28,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
+import java.rmi.RemoteException;
+
 
 /**
  * TerminatorThread is used by components for asynchronous termination. Caller
@@ -77,7 +79,8 @@ public class TerminatorThread extends SmartFrogThread {
      * true implies a call to {@link Prim#sfTerminate(TerminationRecord)} ,
      * false={@link Prim#sfTerminateQuietlyWith(TerminationRecord)}. 
      */
-    private boolean notifyParent    = true; 
+    private boolean notifyParent    = true;
+    private static final String NOTE_POSSIBLY_HARMLESS = "This may be harmless -and caused by the far end closing down";
 
     /**
      * Constructs the TerminatorThread object using the component reference and
@@ -183,42 +186,47 @@ public class TerminatorThread extends SmartFrogThread {
         if (shouldDetach && shouldTerminate && notifyParent) {
             try {
                 target.sfDetachAndTerminate(record);
-            } catch (Throwable thr) {
-                if (sfLog().isErrorEnabled()) {
-                    sfLog().error("TerminatorThread.sfDetachAndTerminate failed [" + record.toString() + "]", thr);
-                }
+            } catch (RemoteException thr) {
+                logThrownException("sfDetachAndTerminate", thr);
             }
             return;
         }
         if (shouldDetach) {
             try {
                 target.sfDetach();
-            } catch (Throwable thr) {
-                if (sfLog().isErrorEnabled()) {
-                    sfLog().error("TerminatorThread.sfDetach failed [" + record.toString() + "]", thr);
-                }
+            } catch (RemoteException thr) {
+                logThrownException("sfDetach", thr);
             }
         }
         if (shouldTerminate) {
             if (notifyParent) {
                 try {
                     target.sfTerminate(record);
-                } catch (Throwable thr) {
-                    if (sfLog().isErrorEnabled()) {
-                        sfLog().error("TerminatorThread.sfTerminate failed [" + record.toString() + "]", thr);
-                    }
+                } catch (RemoteException thr) {
+                    logThrownException("sfTerminate", thr);
                 }
 
             } else {
                 try {
                     target.sfTerminateQuietlyWith(record);
-                } catch (Throwable thr) {
-                    if (sfLog().isErrorEnabled()) {
-                        sfLog().error("TerminatorThread.sfTerminateQuietlyWith failed [" + record.toString() + "]", thr);
-                    }
+                } catch (RemoteException thr) {
+                    logThrownException("sfTerminateQuietlyWith", thr);
                 }
             }
         }
+    }
+
+    /**
+     * Handle a network exception by logging it and adding that it is (possibly) harmless
+     * @param operation what was happening
+     * @param thr what was caught
+     */
+    private void logThrownException(String operation, RemoteException thr) {
+        if (sfLog().isErrorEnabled()) {
+            sfLog().error("TerminatorThread."+ operation +" failed [" + record.toString() + "]", thr);
+            sfLog().error(NOTE_POSSIBLY_HARMLESS);
+        }
+        setThrown(thr);
     }
 
     /**

@@ -34,23 +34,14 @@ public class DelayTest extends DeployingTestBase {
         super(s);
     }
     public void testDelayNormal() throws Throwable {
-        application=deployExpectingSuccess(FILES +"testDelayNormal.sf","testDelayNormal");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES , "testDelayNormal");
     }
 
-    /**
-     * We have a problem here with testing delayed operations, because
-     * we need to lock and wait for completion. 
-     * this may be time to rethink how we run tests.
-     * @throws Throwable
-     */
     public void testDelayAbnormalFailure() throws Throwable {
-        application = deployExpectingSuccess(FILES+"testDelayAbnormalFailure.sf","testDelayAbnormalFailure");
-        expectAbnormalTermination((TestBlock) application);
+        expectAbnormalTestRun(FILES, "testDelayAbnormalFailure",true,null);
     }
 
     public void testDelayNoAction() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testDelayNoAction.sf", "testDelayNoAction");
-        expectSuccessfulTermination((TestBlock) application);
+        expectSuccessfulTestRun(FILES, "testDelayNoAction");
     }
 }

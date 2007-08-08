@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class TestCompletedEvent extends LifecycleEvent {
 
+    private String description=null;
     private boolean succeeded = false;
     private boolean forcedTimeout = false;
     private boolean skipped = false;
@@ -36,12 +37,14 @@ public class TestCompletedEvent extends LifecycleEvent {
     }
 
 
-    public TestCompletedEvent(Prim component, boolean succeeded, boolean forcedTimeout, boolean skipped, TerminationRecord status) {
+    public TestCompletedEvent(Prim component, boolean succeeded, boolean forcedTimeout, boolean skipped, TerminationRecord status, String description) {
         super(component,status);
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
         this.skipped = skipped;
     }
+
+
 
     public boolean isSucceeded() {
         return succeeded;
@@ -71,6 +74,9 @@ public class TestCompletedEvent extends LifecycleEvent {
      */
     public String toString() {
         StringBuffer buffer=new StringBuffer(super.toString());
+        if(description!=null && description.length()>0) {
+            buffer.append("\n").append(description);
+        }
         buffer.append("\nsucceeded:"+succeeded);
         buffer.append("\nforcedTimeout:" + forcedTimeout);
         buffer.append("\nskipped:" + skipped);

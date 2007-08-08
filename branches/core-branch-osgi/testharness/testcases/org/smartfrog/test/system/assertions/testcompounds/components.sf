@@ -114,5 +114,18 @@ For more information: www.smartfrog.org
       action extends FailAbnormal {
           message "FailAbnormal Error Message";
       }
-    }
+  }
 
+  testSkipped extends ExpectDeploy {
+      description "skip a test";
+      condition extends False;
+      action extends FailAbnormal {
+          message "We should have skipped";
+      }
+  }
+
+
+  testNotSkipped extends testEmptySequence {
+      description "have a condition but don't skip the test";
+      condition extends True;
+  }

@@ -106,6 +106,10 @@ For more information: www.smartfrog.org
      enabled true;
      checkOnStartup false;
      checkOnLiveness true;
+     host "127.0.0.1";
+     protocol "http";
+     port 80;
+     page "/";
  }
 
 
