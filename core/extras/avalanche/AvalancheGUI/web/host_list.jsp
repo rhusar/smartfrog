@@ -86,7 +86,7 @@ For more information: www.smartfrog.org
         <caption><% if (boolListActiveHosts) { %>Active<% } %> Hosts</caption>
         <thead>
             <tr class="captionRow">
-                <th class="checkboxCell"><input type="checkbox" tableid="hostListTable"></th>
+                <th class="checkboxCell"><input id="allhosts" type="checkbox" tableid="hostListTable"></th>
                 <th>Host ID</th>
                 <th>Manage</th>
                 <th>Platform</th>
@@ -96,11 +96,10 @@ For more information: www.smartfrog.org
             </tr>
         </thead>
         <tbody>
-            <tr <%=rowClass %>>
             <%
                 if (hosts.length != 0) {
                 for (int i = 0; i < hosts.length; i++) {
-                    rowClass = rowClass.length() == 0 ? "class='altRowColor'" : "";
+                    rowClass = ((i%2)==0)?"class=\"altRowColor\"":"";
                     HostType h = null;
                     String os = "";
                     String arch = "";
@@ -120,6 +119,7 @@ For more information: www.smartfrog.org
                         // do nothing
                     }
             %>
+            <tr <%=rowClass%>>
                 <td class="checkboxCell">
                     <input type="checkbox" rowselector="yes"
                            name="selectedHost" value="<%=hosts[i]%>"></input>
@@ -163,7 +163,21 @@ For more information: www.smartfrog.org
 
     <br/>
 
-    <%@ include file="host_actions.inc.jsp" %>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "ListHosts", "footer",
+                                "Delete selected hosts",
+                                "javascript:deleteHosts()",
+                                "Stop SmartFrog on selected hosts",
+                                "javascript:stopHosts()",
+                                "Start SmartFrog Console",
+                                "javascript:openConsole()",
+                                "Ignite selected hosts",
+                                "javascript:igniteHosts()");
+        -->
+    </script>
+</div>
 
 </center>
 </div>

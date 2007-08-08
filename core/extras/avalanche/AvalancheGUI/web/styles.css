@@ -80,20 +80,20 @@ a {
 }
 
 input.default {
-    font-family: Arial; 
+    font-family: arial, sans-serif; 
     font-size: 12px; 
     border-style: outset; 
-    border-width: 1;
+    border-width: 1px;
     background: #E6E6E6; 
 }
 
 .btn {
-    font-family: Arial; 
+    font-family: arial, sans-serif;
     font-size: 10pt; 
 }
 
 .label {
-    font-family: arial,sans-serif; 
+    font-family: arial, sans-serif;
     font-size: 12px; 
     cursor: default;
     padding: 0.2em 0.6em; 

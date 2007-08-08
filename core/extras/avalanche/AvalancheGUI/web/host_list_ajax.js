@@ -18,12 +18,13 @@
  For more information: www.smartfrog.org
  */
 
+/* Retrieving the host status */
 var status_response = false;
 var status_xml = getXMLHttpRequestObject();
 
 function getStatus() {
     if (status_xml) {
-        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date).getMilliseconds());
+        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date).getMilliseconds(), true);
         status_xml.onreadystatechange = function()
         {
             try {
@@ -58,4 +59,81 @@ function getStatus() {
         }
         sendRequest(status_xml);
     }
+}
+
+/* Host actions */
+var action_xml = getXMLHttpRequestObject();
+
+function ajaxHostAction(target) {
+    if (action_xml) {
+        action_xml.open("GET", target, true);
+        sendRequest(action_xml);
+    }
+}
+
+/* Actually the following code is not AJAX-related in anyway.
+It is used by the host_list.jsp only and so it kind of fitted in here. */
+function delectAll() {
+    var selectors = document.getElementsByName("selectedHost");
+    for (var i = 0; i < selectors.length; i++)
+    {
+        selectors[i].checked = false;
+        selectors[i].parentNode.parentNode.className = ((i%2)==0)?"altRowColor":null;
+    }
+}
+
+function getSelected() {
+    var selectors = document.getElementsByName("selectedHost");
+    var selectedHosts = new Array();
+
+    for (var i = 0; i < selectors.length; i++)
+    {
+        if (selectors[i].checked) {
+            selectedHosts.push(selectors[i].value);
+        }
+    }
+    return selectedHosts;
+}
+
+function perform(target, message) {
+    var selectedHosts = getSelected();
+
+    var count = selectedHosts.length;
+    if (count == 0)
+    {
+        alert("You must select one or more hosts for this action.");
+        return;
+    }
+
+    var alertMsg = "This action will " + message + " ";
+    if (count == 1)
+        alertMsg += "one host."
+    else
+        alertMsg += count + " hosts."
+
+    alertMsg += " Are you sure you want to continue?";
+
+    if (confirm(alertMsg)) {
+        for (var i = 0; i < selectedHosts.length; i++) {
+            target = target + "&selectedHost=" + selectedHosts[i];
+        }
+        ajaxHostAction(target);
+        delectAll();
+    }
+}
+
+function openConsole() {
+    perform("host_console.jsp", "open the console for")
+}
+
+function deleteHosts() {
+    perform("host_delete.jsp", "permanently delete");
+}
+
+function stopHosts() {
+    perform("ignite.jsp?pageAction=stop", "stop");
+}
+
+function igniteHosts() {
+    perform("ignite.jsp?pageAction=ignite", "ignite");
 }

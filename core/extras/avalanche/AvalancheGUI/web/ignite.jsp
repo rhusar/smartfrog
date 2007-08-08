@@ -53,6 +53,6 @@ For more information: www.smartfrog.org
             }
     }
 
-    // Redirect
-    response.sendRedirect("host_list.jsp?active=true");
+    out.clear();
+    out.write("<?xml version=\"1.0\" ?>\n<response />");
 %>
