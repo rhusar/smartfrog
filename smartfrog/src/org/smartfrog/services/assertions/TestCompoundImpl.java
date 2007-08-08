@@ -62,6 +62,7 @@ public class TestCompoundImpl extends ConditionCompound
     private Prim actionPrim;
     private String exitType;
     private String exitText;
+    private String description;
     private volatile boolean finished = false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
@@ -109,6 +110,7 @@ public class TestCompoundImpl extends ConditionCompound
         exitType = sfResolve(ATTR_EXIT_TYPE, exitType, true);
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
         shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE,true,true);
+        description = sfResolve(ATTR_DESCRIPTION, description, false);
         sendEvent(new DeployedEvent(this));
     }
 
@@ -124,10 +126,11 @@ public class TestCompoundImpl extends ConditionCompound
             sendEvent(new TestStartedEvent(this, null));
             skipped = true;
             updateFlags(false);
-            sfLog().info("Skipping test run " + name);
+            String message = "Skipping test run " + name;
+            sfLog().info(message);
             //send a test started event
             //followed by a the closing results
-            endTestRun(null);
+            endTestRun(TerminationRecord.normal(message,getName()));
             //initiate cleanup
             finish();
             //end: do not deploy anything else
@@ -520,7 +523,7 @@ public class TestCompoundImpl extends ConditionCompound
     */
     protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
         //send out a completion event
-        sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record));
+        sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
         setTestBlockAttributes(record, forcedTimeout);
     }
 

@@ -66,15 +66,15 @@ Tomcat5Server extends ServerBase {
     catalina.base server.home;
 
     catalina.base.dir extends DirMustExist {
-      dir LAZY catalina.base;
+      filename LAZY catalina.base;
     }
 
 
-    libDir:dir LAZY configDir;
-    libDir:filename  "lib";
+    libDir:dir LAZY catalina.base;
+    libDir:filename  "server/lib";
 
-    deployDir:dir LAZY configDir;
-    deployDir:filename  "deploy";
+    deployDir:dir LAZY catalina.base;
+    deployDir:filename  "webapps";
 
     //endorsed dir is not per-config, it is server.home relative
     endorsed:filename "/common/endorsed";
@@ -98,7 +98,7 @@ Tomcat5Server extends ServerBase {
 
     server extends ServerBase:server {
         arguments [
-            "run"
+            "start"
             ];
 
         processName "catalina";
@@ -112,10 +112,8 @@ Tomcat5Server extends ServerBase {
 
 
         sysProperties [
-            ["catalina.home",LAZY PARENT:server.home.dir:absolutePath],
-            ["catalina.base",LAZY PARENT:catalina.base.dir:absolutePath]
-            //,
-            //PARENT:ATTRIB sysProperties
+            ["catalina.home",server.home],
+            ["catalina.base",catalina.base]
         ];
 
         maxMemory 64;

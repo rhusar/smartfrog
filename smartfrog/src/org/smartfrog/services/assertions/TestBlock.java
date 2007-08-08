@@ -54,20 +54,28 @@ public interface TestBlock extends Remote {
 
 
     /**
+     * Timeout time in millis.
      * {@value}
      */
     String ATTR_TIMEOUT = "timeout";
 
     /**
-     * Is timeout expected
+     * Is timeout expected?
      * {@value}
      */
     String ATTR_EXPECTTIMEOUT = "expectTimeout";
 
     /**
+     * Flag to set if timeout was forced.
      * {@value}
      */
     String ATTR_FORCEDTIMEOUT = "forcedTimeout";
+
+    /**
+     * Optional description attribute.
+     * {@value}
+     */
+    String ATTR_DESCRIPTION = "description";
     /**
      * Name that a deployed action goes by
      * {@value}

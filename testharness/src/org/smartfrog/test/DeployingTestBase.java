@@ -215,6 +215,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                 getTestTimeout());
     }
 
+
+
     /**
      * Run tests until they are completed, then analyse the results.
      * The application is saved to the application field;
@@ -299,10 +301,18 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
 
     /**
     * return the max time in milliseconds for tests
-    * @return the value set by a system property {@link #TEST_TIMEOUT_EXECUTE} or the default {@link #EXECUTE_TIMEOUT}
+    * @return the value set by a system property {@link #TEST_TIMEOUT_EXECUTE} or the default {@link #getDefaultTestExecutionTimeout()}
     */
     protected int getTestTimeout() {
-        return TestHelper.getTestPropertyInt(TEST_TIMEOUT_EXECUTE,EXECUTE_TIMEOUT);
+        return TestHelper.getTestPropertyInt(TEST_TIMEOUT_EXECUTE, getDefaultTestExecutionTimeout());
+    }
+
+    /**
+     * An override point for those tests that take a long time to run
+     * @return the time to execute tests
+     */
+    protected int getDefaultTestExecutionTimeout() {
+        return EXECUTE_TIMEOUT;
     }
 
     /**
@@ -329,7 +339,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     }
 
     /**
-     * Do a test run, assert that it failed. The application and eventSink are
+     * Do a test run, assert that it passed and did not skip.
+     * The application and eventSink are
      * both saved in member variables, ready for cleanup in teardown
      * @param packageName package containing the deployment
      * @param filename filename (with no .sf extension)
@@ -337,7 +348,25 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @throws Throwable if things go wrong
      */
     protected TestCompletedEvent expectSuccessfulTestRun(String packageName, String filename) throws Throwable {
-        return runTestsToCompletion(packageName,filename);
+        TestCompletedEvent results = runTestsToCompletion(packageName, filename);
+        conditionalFail(results.isFailed(),"Test failed", results);
+        return results;
+    }
+
+    /**
+     * Do a test run, assert that it passed or that it skipped.
+     * Skipped tests are warned about; there's no way to do anything else with them in JUnit3
+     * @param packageName package containing the deployment
+     * @param filename    filename (with no .sf extension)
+     * @return the test completion event
+     * @throws Throwable if things go wrong
+     */
+    protected TestCompletedEvent expectSuccessfulTestRunOrSkip(String packageName, String filename) throws Throwable {
+        TestCompletedEvent results = runTestsToCompletion(packageName, filename);
+        if (results.isSkipped()) {
+            getLog().warn("skipped " + results);
+        }
+        return results;
     }
 
     /**

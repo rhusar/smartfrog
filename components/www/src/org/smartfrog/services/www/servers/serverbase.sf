@@ -74,7 +74,7 @@ ServerBase extends Compound {
     jdk.home TBD;
 
     server.home.dir extends DirMustExist {
-      dir LAZY server.home ;
+      filename LAZY server.home ;
     }
 
     //the deployment directory is defined differently
@@ -86,7 +86,7 @@ ServerBase extends Compound {
     }
 
     deployTo extends DeployByCopyServer {
-        destDir LAZY deployDir;
+      destDir LAZY deployDir;
     }
 
 
@@ -99,7 +99,11 @@ ServerBase extends Compound {
       filename TBD;
     }
 
-    endorsed extends DirMustExist {
+    /**
+     * not all servers have an endorsed dir; this component
+     * will create one on demand
+     */
+    endorsed extends Mkdir{
       dir LAZY server.home ;
       filename TBD;
     }
@@ -111,6 +115,9 @@ ServerBase extends Compound {
      */
     server extends Java {
 
+        //do not start on deployment, but in the start phase, after all
+        //the directories are set up
+        startEarly false;
 
         endorsedDirs [
           LAZY endorsed
@@ -122,7 +129,10 @@ ServerBase extends Compound {
             "-server"
         ];
 
+        //dont detach the process
         shouldDetach false;
+
+        //failures to execute -> errors
         terminateOnFailure true;
     }
 

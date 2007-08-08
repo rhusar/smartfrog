@@ -52,15 +52,19 @@ JBoss4Server extends ServerBase {
       filename  ("/server/" ++ config);
     }
 
+    libDir extends DirMustExist {
+      dir LAZY server.home;
+      filename  ("/server/" ++ config ++ "/lib");
+    }
 
-    libDir:dir LAZY configDir;
-    libDir:filename  "lib";
+    deployDir extends DirMustExist {
+      dir LAZY server.home;
+      filename  ("/server/" ++ config ++ "/deploy");
+    }
 
-    deployDir:dir LAZY configDir;
-    deployDir:filename  "deploy";
 
     //endorsed dir is not per-config, it is server.home relative
-    endorsed:filename "/lib/endorsed";
+    endorsed:filename "lib/endorsed";
 
     //add in tools.jar
     tools.jar extends FileMustExist {

@@ -54,6 +54,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     private volatile TerminationRecord status;
     private DelayedTerminator actionTerminator;
     private volatile Prim actionPrim;
+    private String description;
     public static final String ERROR_STARTUP_FAILURE = "Failed to start up action";
 
     public TestBlockImpl() throws RemoteException {
@@ -120,6 +121,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        description = sfResolve(ATTR_DESCRIPTION, description, false);
         checkActionDefined();
         sendEvent(new DeployedEvent(this));
     }
@@ -205,7 +207,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         }
         setTestBlockAttributes(record, forcedTimeout);
         //send out a completion event
-        sendEvent(new TestCompletedEvent(this,succeeded,forcedTimeout, false, record));
+        sendEvent(new TestCompletedEvent(this,succeeded,forcedTimeout, false, record, description));
         //this can trigger a shutdown if we want it
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(record);
     }

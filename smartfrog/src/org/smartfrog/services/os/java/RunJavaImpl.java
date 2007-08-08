@@ -212,8 +212,13 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         Iterator it=source.listIterator();
         while (it.hasNext()) {
             Vector subvector= (Vector) it.next();
-            if(subvector.size()!=2) {
-                throw new SmartFrogInitException("Wrong number of list elements");
+            int subsize = subvector.size();
+            if(subsize==0) {
+                //empty sublist; skip
+                continue;
+            }
+            if(subsize !=2) {
+                throw new SmartFrogInitException("Wrong number of list elements in sublist "+subvector);
             }
             Iterator subit=subvector.iterator();
             String key = (String) subit.next();
