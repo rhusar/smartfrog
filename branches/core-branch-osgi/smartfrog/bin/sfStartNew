@@ -10,8 +10,8 @@ usage() {
     echo "$1"
     cat<<END
 Usage:  $0 -h|--help
-        $0 -t|--target targethost [-p|--parser parser_env_description_URL.sf [parser_env_description_URL.sf...]]
-        -a|--application [AppName] description_URL.sf [-a|--application [AppName] description_URL.sf...]
+        $0 target.host [-e|--environment env_description_URL.sf [-e¦--environment env_description_URL.sf...]]
+                       [AppName description_URL.sf [AppName description_URL.sf...]]
 END
     if [ ! -z $2 ]; then
         exit $2
@@ -51,68 +51,58 @@ fi
 
 ## Process command line arguments.
 APPSCRIPTS=
+ENVSCRIPTS=
 
-while [ ! -z $1 ]; do
-    case "$1" in
-        -h | --help)
-            usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of parser setup descriptions, followed by an arbitrary number of descriptions for the application itself." 0
-            ;;
+## Target hostname needs to come first, or else the -h switch.
+if [ "$1" = -h ] ¦¦ [ "$1" = --help ]; then
+	# usage exits script
+	usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of parser setup descriptions, followed by an arbitrary number of descriptions for the application itself." 0	
+else
+	export SFTARGETHOST="$1"; shift
+fi
 
-        -t | --target)
+if [ -z "$SFTARGETHOST" ]; then 
+	usage "Missing deployment target host name"; 
+fi
+
+## Environment
+while [ ! -z "$1" ]; do
+    case "$1" in                    
+        -e | --environment)
             if invalid "$2"; then
-                usage "Missing target hostname after --target option."
-            fi
-            TARGETHOST="$2"
-            shift
-            ;;
-
-        -a | --application)
-            if invalid "$2"; then
-                usage "Missing application description after --application option."
+                usage "Missing environment description after --environment option."
             fi
             
-            if invalid "$3"; then
-                # No name given for this description
-                APPSCRIPTS="$APPSCRIPTS -a :DEPLOY:\"$2\"::\"__TARGETHOST__\":"
-                shift
-            else
-                # Using a name
-                APPSCRIPTS="$APPSCRIPTS -a \"$2\":DEPLOY:\"$3\"::\"__TARGETHOST__\":"            
-                shift 2
-            fi
-            ;;
-
-        -p | --parser)
-            ENVSCRIPTS=
-            i=1
-            while valid "$2"; do
-                ENVSCRIPTS="$ENVSCRIPTS "" -Dorg.smartfrog.sfcore.processcompound.sfDefault.parserEnv""$i"=`add_backslashes "$2"`
-                i=`expr $i + 1`
-                shift
-            done
-            if [ -z "$ENVSCRIPTS" ]; then
-                usage "At least one parser environment description is needed if the --parser option is used."
-            fi
-            ;;
-
-        *)
+            ENVSCRIPTS="$ENVSCRIPTS -a \"$2\":DEPLOY::::"            
+            shift            
+            ;;        
+		-*)
             usage "Unrecognized argument: $1"
+            ;;
+		*)
+			if invalid "$1" ¦¦ invalid "$2"; then
+                usage "Both the application name and description file need to be provided."
+            fi
+            
+            APPSCRIPTS="$APPSCRIPTS -a \"$1\":DEPLOY:\"$2\"::\"__SFTARGETHOST__\":"            
+            shift
             ;;
     esac
 
     shift
 done
 
-## Post-parse checks
-if [ -z "$TARGETHOST" ]; then usage "Missing deployment target host name"; fi
-if [ -z "$APPSCRIPTS" ]; then usage "At least one application description is needed"; fi
-
 ## Replace placeholder values
-APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__TARGETHOST__/"$TARGETHOST"/g`
+APPSCRIPTS=`echo "$APPSCRIPTS" | sed s/__SFTARGETHOST__/"$SFTARGETHOST"/g`
+
+## Post-parse checks
+if [ -z "$APPSCRIPTS" ] && [ -z "$ENVSCRIPTS" ]; then
+	usage "Either environment descriptions, application descriptions, or both, need to be provided."
+fi
 
 ## Finally, run SmartFrog with the parsed arguments.
 if test "$SFSECURITY"; then
-        java $ENVSCRIPTS $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem $APPSCRIPTS -e
+        java $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 else
-        java $ENVSCRIPTS "$SFDEFAULTINI" org.smartfrog.SFSystem $APPSCRIPTS -e
+        java "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 fi
