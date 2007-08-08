@@ -115,22 +115,11 @@ public class SFDeployer implements MessageKeys {
     private static ComponentDeployer newDeployerSyntax(ComponentDescription component)
             throws SmartFrogRuntimeException
     {
-        ComponentDeployer deployer;
-        Reference deployerRef = (Reference) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER, false);
-        if (deployerRef != null) {
+        ComponentDescription sfMeta = (ComponentDescription)
+                component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
 
-            try {
-                deployer = (ComponentDeployer) component.sfResolve(deployerRef);
-            } catch (ClassCastException e) {
-                throw wrongType("The " + SmartFrogCoreKeys.SF_DEPLOYER 
-                                + " attribute must be a ComponentDeployer.", e, component);
-            }
-
-            removeSfDeployerAttribute(component);
-            
-        } else {
-            deployer = DEFAULT_DEPLOYER;
-        }
+        ComponentDeployer deployer = (ComponentDeployer) resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_DEPLOYER, DEFAULT_DEPLOYER);
+        removeDeployerAttributeIfExists(component);
 
         propagateApplicationEnvironmentAttribute(component);
 
@@ -139,19 +128,15 @@ public class SFDeployer implements MessageKeys {
         return deployer;
     }
 
-    private static void removeSfDeployerAttribute(ComponentDescription component) throws SmartFrogResolutionException {
-        try {
-            /*
-           TODO: Remove hack by separating the process compound location feature from the ComponentDeployer interface.
-           This is necessary because the newly created process compound gets passed down the ComponentDescription again,
-           and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
-           through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
-           it even doesn't make any sense.
-            */
-            component.sfRemoveAttribute(SmartFrogCoreKeys.SF_DEPLOYER);
-        } catch (SmartFrogRuntimeException e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
-        }
+    private static void removeDeployerAttributeIfExists(ComponentDescription sfMeta) {
+        /*
+       TODO: Remove hack by separating the process compound location feature from the ComponentDeployer interface.
+       This is necessary because the newly created process compound gets passed down the ComponentDescription again,
+       and ends up calling this a second time. So this time the deployer resolves to the one in the parent process,
+       through RMI - which is not what we want. If the deployer is only used to find a ProcessCompound,
+       it even doesn't make any sense.
+        */
+        sfMeta.sfContext().remove(SmartFrogCoreKeys.SF_DEPLOYER);
     }
 
     /**
@@ -197,44 +182,43 @@ public class SFDeployer implements MessageKeys {
     }
 
     private static void prepareDeployer(ComponentDeployer deployer, ComponentDescription component) throws SmartFrogRuntimeException {
-        deployer.setComponentFactory(getComponentFactory(component));
+        ComponentDescription sfMeta = (ComponentDescription)
+                component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+        deployer.setComponentFactory(getComponentFactory(sfMeta));
         deployer.setTargetComponentDescription(component);
     }
 
     /**
      * Retrieves the PrimFactory to be used from the ComponentDescription.
      * The PrimFactory is configured with the relevant ClassLoadingEnvironment before being returned.
-     * @param component The description to be read.
+     * @param sfMeta The description to be read.
      * @return A ready-to-use PrimFactory.
      * @throws SmartFrogResolutionException If the required attributes are missing in the description.
      */
-    private static PrimFactory getComponentFactory(ComponentDescription component)
+    private static PrimFactory getComponentFactory(ComponentDescription sfMeta)
             throws SmartFrogRuntimeException
     {
-        ComponentDescription metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
-
-        PrimFactory factory = resolveFactory(metadata);
-        factory.setClassLoadingEnvironment(resolveEnvironment(metadata));
+        PrimFactory factory = (PrimFactory)
+                resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_FACTORY, DEFAULT_PRIM_FACTORY);
+        ClassLoadingEnvironment classLoadingEnvironment = (ClassLoadingEnvironment)
+                resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, DEFAULT_CL_ENVIRONMENT);
+        factory.setClassLoadingEnvironment(classLoadingEnvironment);
 
         return factory;
     }
 
-    private static PrimFactory resolveFactory(ComponentDescription cd) throws SmartFrogResolutionException {
-        final Reference factoryRef = (Reference)
-                cd.sfResolveHere(SmartFrogCoreKeys.SF_FACTORY, false);
-        if (factoryRef == null) return DEFAULT_PRIM_FACTORY;
-        else return (PrimFactory) cd.sfResolve(factoryRef);
-    }
-
-    public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription sfMeta) throws SmartFrogResolutionException {
+    public static Object resolveMetadataAttribute
+            (ComponentDescription sfMeta, final String attribute, final Object defaultValue)
+            throws SmartFrogResolutionException
+    {
         // sfResolveHere and not sfResolve because we want to resolve relative to the process, so need to do it by hand
-        final Reference envRef = (Reference) sfMeta.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
-        final ClassLoadingEnvironment env;
+        final Reference envRef = (Reference) sfMeta.sfResolveHere(attribute, false);
+        final Object env;
         if (envRef == null) {
-            env = DEFAULT_CL_ENVIRONMENT;
+            env = defaultValue;
         } else {
             try {
-                env = (ClassLoadingEnvironment) SFProcess.getProcessCompound().sfResolve(envRef);
+                env = SFProcess.getProcessCompound().sfResolve(envRef);
             } catch (RemoteException e) {
                 throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
             }
