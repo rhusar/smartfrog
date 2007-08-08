@@ -14,34 +14,25 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  For more information: www.smartfrog.org */ --%>
-<%@ page contentType="text/html" language="java" %>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>host_list_empty</title>
-</head>
-<body>
-<table cellpadding="1" cellspacing="1" border="1">
-<thead>
-<tr><td rowspan="1" colspan="3">host_list_empty</td></tr>
-</thead><tbody>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!--Testing for all buttons-->
 <tr>
-	<td>open</td>
-	<td>/AvalancheGUI/main.jsp</td>
+	<td>assertElementPresent</td>
+	<td>//input[@value='Ignite selected hosts']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=List Hosts</td>
+	<td>assertElementPresent</td>
+	<td>//input[@value='Start SmartFrog Console']</td>
 	<td></td>
 </tr>
-<jsp:include page="header.inc.jsp?subtitle=List Hosts Page"></jsp:include>
 <tr>
-	<td>verifyText</td>
-	<td>//center/table/tbody/tr/td</td>
-	<td>There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
+	<td>assertElementPresent</td>
+	<td>//input[@value='Stop SmartFrog on selected hosts']</td>
+	<td></td>
 </tr>
-<jsp:include page="host_actions.inc.jsp"></jsp:include>
-</tbody></table>
-</body>
-</html>
+<tr>
+	<td>assertElementPresent</td>
+	<td>//input[@value='Delete selected hosts']</td>
+	<td></td>
+</tr>
