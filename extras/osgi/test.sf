@@ -5,7 +5,7 @@
 sfConfig extends Compound {
     sfProcessComponentName "TestApp";
     sfApplicationEnvironment LAZY envTarget;
-    sfClassLoadingEnvironment extends DATA {ref LAZY envTarget:clEnvTest;}
+    sfMeta extends DATA {sfClassLoadingEnvironment LAZY envTarget:clEnvTest;}
 
     subprocess extends Compound {
         sfDeployer LAZY sfApplicationEnvironment:deployerTest;

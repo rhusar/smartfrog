@@ -227,7 +227,8 @@ public class SFDeployer implements MessageKeys {
     }
 
     public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription sfMeta) throws SmartFrogResolutionException {
-        final Reference envRef = (Reference) sfMeta.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
+        // sfResolveHere and not sfResolve because we want to resolve relative to the process, so need to do it by hand
+        final Reference envRef = (Reference) sfMeta.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
         final ClassLoadingEnvironment env;
         if (envRef == null) {
             env = DEFAULT_CL_ENVIRONMENT;
