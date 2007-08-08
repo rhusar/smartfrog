@@ -211,17 +211,8 @@ public class SFDeployer implements MessageKeys {
     private static PrimFactory getComponentFactory(ComponentDescription component)
             throws SmartFrogRuntimeException
     {
-        ComponentDescription metadata;
-        try {
-            metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA, false);
-        } catch (ClassCastException e) {
-            throw wrongType("The " + SmartFrogCoreKeys.SF_METADATA
-                    + " attribute must be a component description.", e, component);
-        }
+        ComponentDescription metadata = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
 
-        // Component not using the new sfMeta syntax. We'll resolve directly in component
-        if (metadata == null) metadata = component;
-            
         PrimFactory factory = resolveFactory(metadata);
         factory.setClassLoadingEnvironment(resolveEnvironment(metadata));
 
@@ -235,32 +226,21 @@ public class SFDeployer implements MessageKeys {
         else return (PrimFactory) cd.sfResolve(factoryRef);
     }
 
-    public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription cd) throws SmartFrogResolutionException {
+    public static ClassLoadingEnvironment resolveEnvironment(ComponentDescription sfMeta) throws SmartFrogResolutionException {
+        final Reference envRef = (Reference) sfMeta.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
         final ClassLoadingEnvironment env;
-        final Object classLoadingEnvAttr = cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
-        if (classLoadingEnvAttr instanceof Reference) {
-            // in a DATA block
-            final Reference classLoadingEnvRef = (Reference) classLoadingEnvAttr;
-            env = (ClassLoadingEnvironment) cd.sfResolve(classLoadingEnvRef);
-        } else if (classLoadingEnvAttr instanceof ClassLoadingEnvironment) {
-            // in a normal component description
-            env = (ClassLoadingEnvironment) classLoadingEnvAttr;
-        } else if (classLoadingEnvAttr instanceof ComponentDescription) {
-            ComponentDescription block = (ComponentDescription) classLoadingEnvAttr;
-            Reference ref = (Reference) block.sfResolveHere("ref");
+        if (envRef == null) {
+            env = DEFAULT_CL_ENVIRONMENT;
+        } else {
             try {
-                env = (ClassLoadingEnvironment) SFProcess.getProcessCompound().sfResolve(ref);
+                env = (ClassLoadingEnvironment) SFProcess.getProcessCompound().sfResolve(envRef);
             } catch (RemoteException e) {
                 throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
             }
-        } else {
-            env = new CoreClassesClassLoadingEnvironment(); // funny business
         }
-        assert env != null;
         return env;
     }
-
-    private static SmartFrogResolutionException wrongType
+        private static SmartFrogResolutionException wrongType
             (String msg, ClassCastException e, ComponentDescription component)
     {
         return new SmartFrogResolutionException(

@@ -10,7 +10,9 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -147,20 +149,9 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      */
     public static Object createAndApplyFunction(Object rr, boolean remote, final ComponentDescription comp, final Context forFunction)
             throws SmartFrogResolutionException
-    {        
-        Function function;
-        ComponentDescription metadata;
-        try {
-            // First try to use the new syntax
-            metadata = (ComponentDescription)
-                    comp.sfResolveHere(SmartFrogCoreKeys.SF_METADATA, false);
-        } catch (ClassCastException cce) {
-            throw new SmartFrogResolutionException("The sfMeta attribute is not a DATA block", cce);
-        }
+    {
+        Function function = createFunction(comp);
 
-        if (metadata == null) metadata = comp;
-        function = createFunction(metadata);
-        
         return evaluateFunction(remote, function, forFunction, rr);
     }
 
@@ -191,14 +182,14 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         return functionClass;
     }
 
-    private static Function createFunction(ComponentDescription metadata) throws SmartFrogResolutionException {
-        String functionClass = getFunctionClass(metadata);
+    private static Function createFunction(ComponentDescription description) throws SmartFrogResolutionException {
+        String functionClass = getFunctionClass(description);
         try {
-            ClassLoadingEnvironment env = SFDeployer.resolveEnvironment(metadata);            
+            ClassLoadingEnvironment env = resolveEnvironmentHere(description);            
             return (Function) env.loadClass(functionClass).newInstance();
         } catch (Exception e) {
             throw new SmartFrogResolutionException
-                    ("Failed to create function class " + functionClass + " from description: " + metadata, e);
+                    ("Failed to create function class " + functionClass + " from description: " + description, e);
         }
     }
 
@@ -247,5 +238,11 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         res += "}";
 
         return res;
+    }
+
+    public static ClassLoadingEnvironment resolveEnvironmentHere(ComponentDescription cd) throws SmartFrogResolutionException {
+        ClassLoadingEnvironment env = (ClassLoadingEnvironment) cd.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, false);
+        if (env == null) env = new CoreClassesClassLoadingEnvironment();
+        return env;
     }
 }
