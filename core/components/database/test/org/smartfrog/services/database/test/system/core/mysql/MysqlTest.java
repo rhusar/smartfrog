@@ -26,6 +26,10 @@ public class MysqlTest extends DeployingTestBase {
         deployAndTerminate("CheckNoMysqlTest");
     }
 
+    public void testInstallMysqlTest() throws Throwable {
+        deployAndTerminateMysql("InstallMysqlTest");
+    }
+    
     public void testConnectionOpenTest() throws Throwable {
         deployAndTerminateMysql("ConnectionOpenTest");
     }
@@ -57,7 +61,12 @@ public class MysqlTest extends DeployingTestBase {
      */
     public void testMissingDatabase() throws Throwable {
         if(mysqlPresent) {
-            expectAbnormalTestRun(BASE, "MissingDatabaseTest",true,null);
+            TestCompletedEvent event = expectAbnormalTestRun(BASE, "MissingDatabaseTest", true, null);
+            Throwable cause = event.getCause();
+            //see SFOS-383
+            if(cause!=null && cause.getMessage().indexOf("Table 'mysql.proc' doesn't exist")>=0) {
+                throw cause;
+            }
         }
     }
 
