@@ -35,7 +35,9 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * SLP common message header, not including language tag
+ * <pre>
  *+--------------+-----------------+----------------------------------+
  *|  Version     |   Function-ID   |            Length                |
  *+--------------+-+-+-+-----------+---------------+------------------+
@@ -43,6 +45,7 @@ public class slpMsgParser {
  *+--------------+-+-+-+-----------+---------------+------------------+
  *|     Next Ext. Offset  Cont.    |              XID                 |
  *+--------------------------------+----------------------------------+
+ * </pre>
  */
     public void Header(byte[] buf) {  // parse header
 	int[] ia = { 0 };
@@ -127,7 +130,9 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * parse URL entry, to get the lifetime and URL string
+ * <pre>
  *+---------------+---------------------------------+----------------+
  *|    Reserved   |          Lifetime               |   URL length   |
  *+---------------+---------------------------------+----------------+
@@ -135,6 +140,7 @@ public class slpMsgParser {
  *+---------------+--------------------------------------------------+
  *| # of URL auths|          Auth. blocks (if any)                   \
  *+------------------------------------------------------------------+
+ * </pre>
  */
     public String parseURL(byte[] buf, int[] ia) {
 	ia[0] += 1; 				// skip one byte for reserved
@@ -147,18 +153,21 @@ public class slpMsgParser {
     }
 
 /**
- * service request <#1>
+ * Parse a specific SLP header.
+ * service request #1
+ * <pre>
  *+----------------------------+---------------------------+
- *| length of <PRList>         |   <PRList> string         \
+ *| length of (PRList)         |   (PRList) string         \
  *+----------------------------+---------------------------+
- *| length of <service-type>   | <service-type> string     \
+ *| length of (service-type)   | (service-type) string     \
  *+----------------------------+---------------------------+
- *| length of <scope-list>     | <scope-list> string       \
+ *| length of (scope-list)     | (scope-list) string       \
  *+----------------------------+---------------------------+
  *| length of predicate string | service request predicate \
  *+----------------------------+---------------------------+
- *| length of <SLP SPI> string |   <SLP SPI> string        \
+ *| length of (SLP SPI) string |   (SLP SPI) string        \
  *+----------------------------+---------------------------+
+ * </pre>
  */
     public byte[] SrvRqst(byte[] buf, int[] ia) {
 	prlist = Util.parseString(buf, ia);		// PRList
@@ -173,12 +182,15 @@ public class slpMsgParser {
     }
 
 /**
- * service reply (reply for service request) <#2>
+ * Parse a specific SLP header.
+ * service reply (reply for service request) #2
+ * <pre>
  *+----------------------------+---------------------------+
  *|       Error Code           |    URL entry count        |
  *+----------------------------+---------------------------+
- *|   <URl entry 1>           ...     <URL entry N>        \
+ *|   URl entry 1             ...      URL entry N         \
  *+----------------------------+---------------------------+
+ * </pre>
  */
     public void SrvReply(byte[] buf, int[] ia) {
 	ecode = Util.parseInt(buf, ia, 2);
@@ -192,7 +204,9 @@ public class slpMsgParser {
     }
 
 /**
- * service registration <#3>
+ * Parse a specific SLP header.
+ * service registration #3
+ * <pre>
  *+----------------------------------------------------------------+
  *|                          <URL-Entry>                           \
  *+---------------------------------+------------------------------+
@@ -204,6 +218,7 @@ public class slpMsgParser {
  *+----------------+----------------+------------------------------+
  *| # of AttrAuths | (if present) Attribute Authentication Blocks  \
  *+----------------+-----------------------------------------------+
+ * </pre>
  * Need to set error code (ecode)
  * Extensions have been parsed, so versionTS/acceptDA/acceptTS are known
  */
@@ -228,14 +243,17 @@ public class slpMsgParser {
     }
 
 /**
- * service De-registration <#4>
+ * Parse a specific SLP header.
+ * service De-registration #4
+ * <pre>
  *+-----------------------------+---------------------------+
- *|  Length of <scope-list>     |        <scope-list>       \
+ *|  Length of (scope-list)     |        (scope-list)       \
  *+-----------------------------+---------------------------+
- *|                         <URL-entry>                     \
+ *|                         (URL-entry)                     \
  *+-----------------------------+---------------------------+
- *|  Length of <tag-list>       |        <tag-list>         \
+ *|  Length of (tag-list)       |        (tag-list)         \
  *+-----------------------------+---------------------------+
+ * </pre>
  * Need to set error code, 0 is for OK
  */
     public void SrvDeReg(byte[] buf, int[] ia) {
@@ -251,10 +269,13 @@ public class slpMsgParser {
     }
 
 /**
- * service ack (reply for SrvReg & SrvDeReg) <#5>
+ * Parse a specific SLP header.
+ * service ack (reply for SrvReg & SrvDeReg) #5
+ * <pre>
  *+-----------------------------+
  *|        Error Code           |
  *+-----------------------------+
+ * </pre>
  * return the error code
  */
     public void SrvAck(byte[] buf, int[] ia) {
@@ -262,18 +283,21 @@ public class slpMsgParser {
     }
 
 /**
- * attribute request <#6>
+ * Parse a specific SLP header.
+ * attribute request #6
+ * <pre>
  *+-------------------------------+----------------------------+
- *|  length of PRList             |   <PRList> string          \
+ *|  length of PRList             |   (PRList) string          \
  *+-------------------------------+----------------------------+
  *|  length of URL                |         URL                \
  *+-------------------------------+----------------------------+
- *|  length of <scope-list>       |   <scope-list> string      \
+ *|  length of (scope-list)       |   (scope-list) string      \
  *+-------------------------------+----------------------------+
- *|  length of <tag-list> string  |   <tag-list> string        \
+ *|  length of (tag-list) string  |   (tag-list) string        \
  *+-------------------------------+----------------------------+
- *|  length of <SLP SPI> string   |   <SLP SPI> string         \
+ *|  length of (SLP SPI) string   |   (SLP SPI) string         \
  *+-------------------------------+----------------------------+
+ * </pre>
  */
     public void AttrRqst(byte[] buf, int[] ia) {
 	prlist = Util.parseString(buf, ia);		// PRList
@@ -291,14 +315,17 @@ public class slpMsgParser {
     }
 
 /**
- * attribute reply (reply for attribute request) <#7>
+ * Parse a specific SLP header.
+ * attribute reply (reply for attribute request) #7
+ * <pre>
  *+-----------------------------+---------------------------------+
- *|         Error Code          |   length of <attr-list>         |
+ *|         Error Code          |   length of (attr-list)         |
  *+-----------------------------+---------------------------------+
- *|                          <attr-list>                          \
+ *|                          (attr-list)                          \
  *+----------------+----------------------------------------------+
  *| # of AttrAuths |  Attribute authentication block (if present) \
  *+----------------+----------------------------------------------+
+ * <pre>
  */
     public void AttrReply(byte[] buf, int[] ia) {
 	ecode = Util.parseInt(buf, ia, 2);
@@ -306,8 +333,9 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * directory agent advertisement #8.
- *
+ *<pre>
  *+-------------------------------+--------------------------------+
  *|     Error Code                |   DA Stateless Boot Timestamp  |
  *+-------------------------------+--------------------------------+
@@ -315,14 +343,15 @@ public class slpMsgParser {
  *+-------------------------------+--------------------------------+
  *|                              URL                               \
  *+-------------------------------+--------------------------------+
- *|   length of <scope-list>      |      <scope-list>              \
+ *|   length of (scope-list)      |      (scope-list)              \
  *+-------------------------------+--------------------------------+
- *|   length of <attr-list>       |      <attr-list>               \
+ *|   length of (attr-list)       |      (attr-list)               \
  *+-------------------------------+--------------------------------+
- *|   length of SLP <SPI>         |      SLP <SPI> string          \
+ *|   length of SLP (SPI)         |      SLP (SPI) string          \
  *+---------------+---------------+--------------------------------+
  *| # Auth Blocks |       Authentication blocl (if any)            \
  *+---------------+---------------+--------------------------------+
+ * </pre>
  */
     public void DAAdvert(byte[] buf, int[] ia) {
 	ecode = Util.parseInt(buf, ia, 2);
@@ -333,14 +362,17 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * service type request #9.
+ * <pre>
  *+-------------------------------+-----------------------------+
- *|     length of PRList          |     <PRList> string         |
+ *|     length of PRList          |     (PRList) string         |
  *+-------------------------------+-----------------------------+
- *| length of Naming Authority    |  <Naming Authority String>  |
+ *| length of Naming Authority    |  (Naming Authority String)  |
  *+-------------------------------+-----------------------------+
- *| length of <scope-list>        |    <scope-list> string      |
+ *| length of (scope-list)        |    (scope-list) string      |
  *+-------------------------------+-----------------------------+
+ * </pre>
  */
     public void SrvTypeRqst(byte[] buf, int[] ia) {
 	prlist = Util.parseString(buf, ia);		// PRList
@@ -356,13 +388,15 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * service type reply (reply for service type request) #10.
- *
+ *<pre>
  *+-------------------------------+-------------------------------+
- *|      Error Code               |    length of <srvType-list>   |
+ *|      Error Code               |    length of (srvType-list)   |
  *+-------------------------------+-------------------------------+
- *|                       <srvType-list>                          |
+ *|                       (srvType-list)                          |
  *+---------------------------------------------------------------+
+ * </pre>
  */
     public void SrvTypeReply(byte[] buf, int[] ia) {
 	ecode = Util.parseInt(buf, ia, 2);
@@ -370,11 +404,13 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * DataRqst message #12.
- *
+ *<pre>
  *+---------------------------------------------------------------+
  *|                          Accept ID                            \
  *+---------------------------------------------------------------+
+ * </pre>
  */
     public void DataRqst(byte[] buf, int[] ia) {
 	acceptTS = Util.parseLong(buf, ia);
@@ -382,6 +418,7 @@ public class slpMsgParser {
     }
 
 /**
+ * Parse a specific SLP header.
  * SLP extension parser: MeshFwdExt.
  * 
  *    (1) initialize (turn off previous value)
@@ -389,6 +426,7 @@ public class slpMsgParser {
  *           get Fwd-ID & versionTS
  *           if Fwd-ID == Const.RqstFwd, change it to Const.Fwded
  *           if Fwd-ID == Const.Fwded, get acceptDA & acceptTS
+ * <pre>
  *+--------------------------------+----------------------------------+
  *|  MeshFwd Extension ID = 0x0006 |  Next Extension Offset (NEO)     |
  *+--------------+-----------------+----------------------------------+
@@ -398,6 +436,7 @@ public class slpMsgParser {
  *+--------------------------------+----------------------------------+
  *|    Version Timestamp, contd.   |           Accept ID              \
  *+--------------------------------+----------------------------------+
+ * </pre>
  */
     public void Extension(byte[] buf, String fromPeer) { // buf: whole message
         meshFwdID = -1;   		  // no MeshFwdExt
