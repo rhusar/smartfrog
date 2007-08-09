@@ -792,6 +792,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     public synchronized Object sfRegister(Object name, Prim comp)
         throws SmartFrogException, RemoteException {
+        System.out.println("Registering name: " + name + " for component: " + comp);
 
         if ((name != null) && (sfContext.containsKey(name))) {
             throw SmartFrogResolutionException.generic(sfCompleteNameSafe(),

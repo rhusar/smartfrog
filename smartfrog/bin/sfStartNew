@@ -58,7 +58,7 @@ if [ "$1" = -h ] && [ "$1" = --help ]; then
 	# usage exits script
 	usage "This script is used to start a new SmartFrog application on a running daemon. It allows the use of an arbitrary number of parser setup descriptions, followed by an arbitrary number of descriptions for the application itself." 0	
 else
-	export SFTARGETHOST="$1"; shift
+	SFTARGETHOST="$1"; shift
 fi
 
 if [ -z "$SFTARGETHOST" ]; then 
@@ -100,9 +100,12 @@ if [ -z "$APPSCRIPTS" ] && [ -z "$ENVSCRIPTS" ]; then
 	usage "Either environment descriptions, application descriptions, or both, need to be provided."
 fi
 
+TARGETPROP="-Dorg.smartfrog.environment.targethost=$SFTARGETHOST"
+
 ## Finally, run SmartFrog with the parsed arguments.
 if test "$SFSECURITY"; then
-        java $SFSECURITY "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
+        java $SFSECURITY "$TARGETPROP" "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
+        echo java "$SFDEFAULTINI" "$TARGETPROP" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
+        java "$SFDEFAULTINI" "$TARGETPROP" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 fi
