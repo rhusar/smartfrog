@@ -7,4 +7,8 @@ public class SmartFrogActivator extends AbstractActivator {
     protected SubprocessStarter getSubprocessStarter() {
         return new EquinoxSubprocessStarterImpl();
     }
+
+    protected String getAdditionalPropertiesFileName() {
+        return "/org/smartfrog/osgi/equinox/equinox.properties";
+    }
 }
