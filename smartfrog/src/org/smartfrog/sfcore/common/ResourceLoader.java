@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.SFLoader;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,7 @@ import java.rmi.RemoteException;
 public class ResourceLoader {
 
     private ClassLoader loader = null;
-    private ClassLoadingEnvironment repository = null;
+    private ClassLoadingEnvironment loadingEnv = null;
 
     public ResourceLoader() {
         loader = getClass().getClassLoader();
@@ -55,7 +56,7 @@ public class ResourceLoader {
 
     public ResourceLoader(Prim component) throws SmartFrogResolutionException, RemoteException {
         try {
-            repository = (ClassLoadingEnvironment) component.sfResolveHere(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
+            loadingEnv = new ComponentHelper(component).getClassLoadingEnvironment();
         } catch (ClassCastException e) {
             throw new SmartFrogResolutionException("The value of sfClassLoadingEnvironment is not of the correct class", e);
         }
@@ -66,7 +67,7 @@ public class ResourceLoader {
      * @param source The {@link ClassLoadingEnvironment} to load resources from.
      */
     public ResourceLoader(ClassLoadingEnvironment source) {
-        repository = source;
+        loadingEnv = source;
     }
 
     /**
@@ -77,7 +78,7 @@ public class ResourceLoader {
      * @throws RuntimeException if the resource is not on the classpath
      */
     private InputStream loadResourceThroughSmartFrog(String resourcename) throws IOException {
-        return SFLoader.getInputStream(resourcename, repository);
+        return SFLoader.getInputStream(resourcename, loadingEnv);
     }
 
     private InputStream loadResourceThroughClassloader(String resourceName) throws IOException {
