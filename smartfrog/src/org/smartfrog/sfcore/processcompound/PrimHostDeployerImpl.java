@@ -136,11 +136,10 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         Prim appEnvironment = resolveEnvironment();
         if (appEnvironment != null) {
             ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
-            // sfProcessComponentName iss
+            // sfProcessComponentName is
             //  only used for initial deployment of the application environment, on the target root process.
             // When deploying to a subprocess it needs to be removed because otherwise the environment will be registered with the rootProcess directly
             String name = (String) appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
-            //String name = (String) appEnvDescr.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             // Same problem for the sfProcessHost attribute
             appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_HOST);
 
