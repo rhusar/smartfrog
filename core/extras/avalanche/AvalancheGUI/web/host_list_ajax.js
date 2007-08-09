@@ -47,7 +47,7 @@ function readyStateChanged()
 function getStatus() {
     status_xml = getXMLHttpRequestObject();
     if (status_xml) {
-        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date).getMilliseconds(), true);
+        status_xml.open("GET", "host_status_get.jsp?now=" + (new Date()).getTime(), true);
         status_xml.onreadystatechange = readyStateChanged;
         status_xml.send(null);
     }

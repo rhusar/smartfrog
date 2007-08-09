@@ -55,7 +55,6 @@ For more information: www.smartfrog.org
 //
 //    // Call once
 //    pullUpdate();
-    getStatus();
     window.setInterval("getStatus()", 5000);
 </script>
 <% } %>
@@ -177,6 +176,8 @@ For more information: www.smartfrog.org
                                 "javascript:openConsole()",
                                 "Ignite selected hosts",
                                 "javascript:igniteHosts()");
+
+        getStatus();
         -->
     </script>
 </div>
