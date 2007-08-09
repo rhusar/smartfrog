@@ -18,48 +18,66 @@
  For more information: www.smartfrog.org
  */
 
+/* Status update */
 var status_response = "";
-var status_xml;
-
-function readyStateChanged()
-{
-    try {
-        // If everything went alright
-        if (status_xml.readyState == 4) {
-            if (status_xml.status == 200) {
-                var xmlDocument = status_xml.responseXML;
-                var statusMsgs = xmlDocument.getElementsByTagName("status");
-                for (var i = 0; i < statusMsgs.length; i++) {
-                    if (statusMsgs[i].firstChild.data == "true") {
-                        status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
-                    } else {
-                        status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
-                    }
-                    fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
-                }
-            }
-        }
-    } catch (e) {
-        // TODO: everything went wrong
-    }
-}
+var status_xml = false;
 
 function getStatus() {
     status_xml = getXMLHttpRequestObject();
     if (status_xml) {
         status_xml.open("GET", "host_status_get.jsp?now=" + (new Date()).getTime(), true);
-        status_xml.onreadystatechange = readyStateChanged;
+        status_xml.onreadystatechange = function ()
+        {
+            try {
+                // If everything went alright
+                if (status_xml.readyState == 4) {
+                    if (status_xml.status == 200) {
+                        var xmlDocument = status_xml.responseXML;
+                        var statusMsgs = xmlDocument.getElementsByTagName("status");
+                        for (var i = 0; i < statusMsgs.length; i++) {
+                            if (statusMsgs[i].firstChild.data == "true") {
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
+                            } else {
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
+                            }
+                            fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
+                        }
+                    }
+                }
+            } catch (e) {
+                // TODO: everything went wrong
+            }
+        }
         status_xml.send(null);
     }
 }
 
 /* Host actions */
-var action_xml;
+var action_xml = false;
+var action_response = null;
 
 function ajaxHostAction(target) {
-	action_xml = getXMLHttpRequestObject();
+    action_xml = getXMLHttpRequestObject();
     if (action_xml) {
         action_xml.open("GET", target, true);
+        action_xml.onreadystatechange = function()
+        {
+            try {
+                // If everything went alright
+                if (action_xml.readyState == 4) {
+                    if (action_xml.status == 200) {
+                        var xmlDocument = action_xml.responseXML;
+                        alert(xmlDocument.getElementsByTagName("message")[0].firstChild.data);
+                    }
+                }
+            } catch (e) {
+                // TODO: Maybe something other?
+                action_response = "An error occured during your request." +e ;
+            }
+            if (action_response != null) {
+                 alert(action_response);
+            }
+        }
         action_xml.send(null);
     }
 }
@@ -72,7 +90,7 @@ function delectAll() {
     for (var i = 0; i < selectors.length; i++)
     {
         selectors[i].checked = false;
-        selectors[i].parentNode.parentNode.className = ((i%2)==0)?"altRowColor":null;
+        selectors[i].parentNode.parentNode.className = ((i % 2) == 0) ? "altRowColor" : null;
     }
 }
 
@@ -89,7 +107,7 @@ function getSelected() {
     return selectedHosts;
 }
 
-function perform(target, message) {
+function perform(action, message) {
     var selectedHosts = getSelected();
 
     var count = selectedHosts.length;
@@ -108,26 +126,31 @@ function perform(target, message) {
     alertMsg += " Are you sure you want to continue?";
 
     if (confirm(alertMsg)) {
+        var target = "host_actions.jsp?pageAction=" + action;
         for (var i = 0; i < selectedHosts.length; i++) {
             target = target + "&selectedHost=" + selectedHosts[i];
         }
-        ajaxHostAction(target);
-        delectAll();
+        if (action == "delete") {
+            window.location = target;
+        } else {
+            ajaxHostAction(target);
+            delectAll();
+        }
     }
 }
 
 function openConsole() {
-    perform("host_console.jsp", "open the console for")
+    perform("console", "open the console for")
 }
 
 function deleteHosts() {
-    perform("host_delete.jsp", "permanently delete");
+    perform("delete", "permanently delete");
 }
 
 function stopHosts() {
-    perform("ignite.jsp?pageAction=stop", "stop");
+    perform("stop", "stop");
 }
 
 function igniteHosts() {
-    perform("ignite.jsp?pageAction=ignite", "ignite");
+    perform("ignite", "ignite");
 }

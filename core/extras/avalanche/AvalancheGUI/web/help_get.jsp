@@ -47,17 +47,11 @@ For more information: www.smartfrog.org */ --%>
             // File is ok - but help might be not available.
             text = "There is no help for this topic. Sorry!";
 
-            // TODO: Two nested for-loops might be too expensive for that.
             for (int i = 0; i < nodes.getLength(); i++) {
                 // Check each node if it is the right entry
                 entry = nodes.item(i);
-                NamedNodeMap map = entry.getAttributes();
-                Node attribute = null;
-                for (int j = 0; j < map.getLength(); j++) {
-                    attribute = map.item(j);
-                    if (attribute.getNodeName().equals("id") && attribute.getNodeValue().equals(pageId)) {
-                        text = entry.getFirstChild().getNodeValue();
-                    }
+                if (entry.getAttributes().getNamedItem("id").getNodeValue().equals(pageId)) {
+                    text = entry.getFirstChild().getNodeValue();
                 }
             }
         } catch (Exception e) {
@@ -90,6 +84,7 @@ For more information: www.smartfrog.org */ --%>
     trans.setOutputProperty(OutputKeys.INDENT, "yes");
     trans.transform(new DOMSource(xdoc), result);
     String xmlString = sw.toString();
+    sw.close();
 
     // Print output
     out.clear();
