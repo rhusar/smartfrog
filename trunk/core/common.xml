@@ -104,8 +104,8 @@
       location="${core.dir}/extras"/>
     <property name="maven.lib.dir"
       location="${core.dir}/lib"/>
-    <property name="maven.url"
-      value="http://ibiblio.org/maven2/"/>
+<!--     <property name="maven.url"
+      value="http://ibiblio.org/maven2/"/> -->
       
       
       <!-- common directories are relative to the build file loaded-->
@@ -553,12 +553,14 @@ java.class.path=
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
+    <property name="javadoc.packages" value="org.smartfrog.*"/>
+    <property name="javadoc.package.name" value="SmartFrog Packages"/>
     <sf-javadoc
         sourcepath="${src.dir}"
         destdir="${dist.jdocs.dir}"
         classpathref="compile.classpath"
         >
-      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+      <group title="${javadoc.package.name}" packages="${javadoc.packages}"/>
     </sf-javadoc>
   </target>
 
@@ -1751,8 +1753,8 @@ java.class.path=
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="ivy.jar"
         location="${core.dir}/antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
-    <property name="ivy.ibiblio.root"
-        value="http://www.ibiblio.org/maven2/"/>
+ <!--    <property name="ivy.ibiblio.root"
+        value="http://www.ibiblio.org/maven2/"/> -->
     <available property="ivy.jar.found" file="${ivy.jar}" />
     <available property="ivy.resource.found" resource="${ivy.resource}" />
     <condition property="ivy.found" >
