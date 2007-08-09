@@ -20,20 +20,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.DumperCDImpl;
+import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
-import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.deployer.SFDeployer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -142,14 +139,16 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             // sfProcessComponentName iss
             //  only used for initial deployment of the application environment, on the target root process.
             // When deploying to a subprocess it needs to be removed because otherwise the environment will be registered with the rootProcess directly
-            //String name = (String) appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
-            String name = (String) appEnvDescr.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            String name = (String) appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            //String name = (String) appEnvDescr.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             // Same problem for the sfProcessHost attribute
             appEnvDescr.sfRemoveAttribute(SmartFrogCoreKeys.SF_PROCESS_HOST);
 
             Prim deployedAppEnv = (Prim) pc.sfResolveHere(name, false);
             if (deployedAppEnv == null) {
-                pc.sfCreateNewChild(null, null, appEnvDescr, null);
+                Prim deployedEnv = pc.sfCreateNewApp(name, appEnvDescr, null);
+                if (sfLog().isDebugEnabled())
+                    sfLog().debug("Propagated application environment. Deployed environment name: " + deployedEnv.sfCompleteName());
             } else {
                 checkIsSame(deployedAppEnv, appEnvDescr, pc, name);
             }
