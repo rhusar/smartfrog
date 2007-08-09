@@ -28,17 +28,29 @@
 #include "/org/smartfrog/functions.sf"
 
   /**
-   * the various names of the mysql programs.
+   Base template for mysql applications
    */
-  MysqlApplication extends ExecuteProgram {
-    mysqladmin    "mysqladmin";
-    mysqldaemon   "mysqld";
-    mysql         "mysql";
-    mysqlcheck    "mysqlcheck";
+  BaseMysqlApplication extends ExecuteProgram {
     shellCmd TBD;
     processName shellCmd;
     printCommandOnFailure true;
     shellArguments arguments;
+    arguments TBD;
+
+    basedir_default "/usr";
+  }
+
+  /**
+   * this template is for any mysql program that adds a socket path afterwards
+   * the various names of the mysql programs.
+   */
+
+  MysqlApplication extends BaseMysqlApplication  {
+    mysqladmin    "mysqladmin";
+    mysqldaemon   "mysqld";
+    mysql         "mysql";
+    mysqlcheck    "mysqlcheck";
+
     //default socket path on unix systems
     socketpath_unix "/tmp/mysql.sock";
     //default named pipe name on NT systems
@@ -49,7 +61,9 @@
     //with it passed down to the app after the arguments vector
     shellCmdAttributeSocketPath socketpath_argument ;
 
-    arguments TBD;
+
+
+
   }
 
 
@@ -61,7 +75,7 @@
     shellCmd mysqldaemon;
     //three mandatory directories
     //debian default
-    basedir "/usr";
+    basedir basedir_default;
     //data dir
     datadir TBD;
     //temp dir is bound to temp dir of host
@@ -281,3 +295,33 @@ FinallyTerminateMysql extends Finally {
     ];
   }
 
+ /**
+  * create a database belonging to the current user
+  * http://dev.mysql.com/doc/refman/5.0/en/mysql-install-db.html
+  * http://forums.digitaltrends.com/archive/index.php/t-5518.html
+  */
+  mysql_install_db extends BaseMysqlApplication {
+    shellCmd mysqldaemon;
+    //three mandatory directories
+    //debian default
+    basedir basedir_default;
+    //data dir
+    datadir TBD;
+
+    shellCmd "mysql_install_db";
+    //set this to true to force DNS lookup of all ip addresses in grant tables and such like
+    requireDNS false;
+
+    //verbose output
+    verbose false;
+
+    arguments [
+      ("--basedir=" ++ basedir),
+      ("--datadir=" ++ datadir),
+      IF requireDNS THEN "" ELSE "--force" FI,
+      IF requireDNS THEN "" ELSE "--skip-name-resolve" FI,
+      IF verbose THEN "--verbose" ELSE "" FI
+    ];
+
+
+  }
