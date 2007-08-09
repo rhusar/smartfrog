@@ -3,6 +3,7 @@
   see http://www.jayasoft.org/ivy/doc/configuration
   -->
   <!-- you can override this property to use mirrors
+          http://repo1.maven.org/maven2/
           http://mirrors.dotsrc.org/maven2
           http://ftp.ggi-project.org/pub/packages/maven2
           http://mirrors.sunsite.dk/maven2
@@ -11,7 +12,7 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   <property name="ivy.ibiblio.root"
-      value="http://www.ibiblio.org/maven2/" override="false"/>
+      value="http://mirrors.sunsite.dk/maven2" override="false"/>
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]" />
   <property name="maven2.pattern.ext"
@@ -35,9 +36,9 @@
     </filesystem>
     <filesystem name="team2">
       artifacts="true"
+      usepom="true"
       m2compatible="true" >
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
-      <!--<ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>-->
     </filesystem>
     <ibiblio name="maven2"
         root="${ivy.ibiblio.root}"
@@ -66,8 +67,8 @@
     <module organisation="xindice" name=".*" resolver="internal"/>
     <module organisation="xmldb" name=".*" resolver="internal"/>
     <module organisation="javax.jms" name=".*" resolver="internal"/>
-    <module organisation="com.kizoom" name=".*" resolver="internal"/>
     <module organisation="kizoom" name=".*" resolver="internal"/>
+    <module organisation="solid" name=".*" resolver="internal"/>
 <!--    <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>
