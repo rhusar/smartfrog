@@ -68,6 +68,7 @@ function ajaxHostAction(target) {
 It is used by the host_list.jsp only and so it kind of fitted in here. */
 function delectAll() {
     var selectors = document.getElementsByName("selectedHost");
+    document.getElementById("allhosts").checked = false;
     for (var i = 0; i < selectors.length; i++)
     {
         selectors[i].checked = false;

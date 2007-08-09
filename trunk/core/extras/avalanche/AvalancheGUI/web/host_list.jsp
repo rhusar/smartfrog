@@ -88,7 +88,7 @@ For more information: www.smartfrog.org
         <caption><% if (boolListActiveHosts) { %>Active<% } %> Hosts</caption>
         <thead>
             <tr class="captionRow">
-                <th class="checkboxCell"><input id="allhosts" type="checkbox" tableid="hostListTable"></th>
+                <th class="checkboxCell"><input id="allhosts" type="checkbox" tableid="hostListTable" /></th>
                 <th>Host ID</th>
                 <th>Manage</th>
                 <th>Platform</th>
@@ -121,7 +121,7 @@ For more information: www.smartfrog.org
                         // do nothing
                     }
             %>
-            <tr <%=rowClass%>>
+            <tr <%=rowClass %>>
                 <td class="checkboxCell">
                     <input type="checkbox" rowselector="yes"
                            name="selectedHost" value="<%=hosts[i]%>"></input>
