@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.SFLoader;
 
@@ -414,7 +416,8 @@ public class ComponentHelper {
     public ClassLoadingEnvironment getClassLoadingEnvironment() throws SmartFrogResolutionException,
             RemoteException
     {
-        return (ClassLoadingEnvironment) owner.sfResolve(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
+        ComponentDescription sfMeta = (ComponentDescription) owner.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+        return SFDeployer.resolveClassLoadingEnvironment(sfMeta);
     }
 
     /**

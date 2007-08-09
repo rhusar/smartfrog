@@ -133,7 +133,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     }
 
     private void deployEnvironmentIfNeeded(ProcessCompound pc) throws Exception {
-        Prim appEnvironment = resolveEnvironment();
+        Prim appEnvironment = resolveAppEnvironment();
         if (appEnvironment != null) {
             ComponentDescription appEnvDescr = dumpEnvironment(appEnvironment);
             // sfProcessComponentName is
@@ -162,7 +162,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         
     }
 
-    private Prim resolveEnvironment() throws SmartFrogResolutionException {
+    private Prim resolveAppEnvironment() throws SmartFrogResolutionException {
         try {
             ComponentDescription sfMeta = (ComponentDescription) target.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
             return (Prim) SFDeployer.resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_APPLICATION_ENVIRONMENT, null);

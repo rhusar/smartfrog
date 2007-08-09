@@ -121,6 +121,7 @@ public class SFDeployer implements MessageKeys {
         ComponentDeployer deployer = (ComponentDeployer) resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_DEPLOYER, DEFAULT_DEPLOYER);
         removeDeployerAttributeIfExists(component);
 
+        // TODO Should not be needed but removing it breaks deployment
         propagateApplicationEnvironmentAttribute(component);
 
         prepareDeployer(deployer, component);
@@ -146,7 +147,7 @@ public class SFDeployer implements MessageKeys {
      * @param component
      * @throws SmartFrogRuntimeException
      *
-     * TODO Remove
+     * TODO This should not be of any use anymore but somehow removing it breaks deployment on remote processes (?!)
      */
     private static void propagateApplicationEnvironmentAttribute(ComponentDescription component)
             throws SmartFrogRuntimeException
@@ -202,11 +203,15 @@ public class SFDeployer implements MessageKeys {
     {
         PrimFactory factory = (PrimFactory)
                 resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_FACTORY, DEFAULT_PRIM_FACTORY);
-        ClassLoadingEnvironment classLoadingEnvironment = (ClassLoadingEnvironment)
-                resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, DEFAULT_CL_ENVIRONMENT);
+        ClassLoadingEnvironment classLoadingEnvironment = resolveClassLoadingEnvironment(sfMeta);
         factory.setClassLoadingEnvironment(classLoadingEnvironment);
 
         return factory;
+    }
+
+    public static ClassLoadingEnvironment resolveClassLoadingEnvironment(ComponentDescription sfMeta) throws SmartFrogResolutionException {
+        return (ClassLoadingEnvironment)
+                resolveMetadataAttribute(sfMeta, SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT, DEFAULT_CL_ENVIRONMENT);
     }
 
     public static Object resolveMetadataAttribute
