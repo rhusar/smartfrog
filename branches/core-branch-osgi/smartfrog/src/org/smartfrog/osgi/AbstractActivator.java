@@ -17,6 +17,7 @@ import org.smartfrog.sfcore.processcompound.SubprocessStarter;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.net.URL;
 
 /**
  * Starts the SmartFrog daemon with options appropriate to running inside OSGi.
@@ -85,6 +86,8 @@ public abstract class AbstractActivator {
 
     protected abstract SubprocessStarter getSubprocessStarter();
 
+    protected abstract String getAdditionalPropertiesFileName();
+
     private void addBundleContextAttribute(BundleContext bundleContext) throws SmartFrogRuntimeException, RemoteException {
         processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, bundleContext);
         processCompound.sfAddTag(SmartFrogCoreKeys.SF_CORE_BUNDLE_CONTEXT, SmartFrogCoreKeys.SF_TRANSIENT);
@@ -98,6 +101,11 @@ public abstract class AbstractActivator {
         System.getProperties().load(
                 getClass().getResourceAsStream("/org/smartfrog/osgi/system.properties")
         );
+
+        System.getProperties().load(
+                getClass().getResourceAsStream(getAdditionalPropertiesFileName())
+        );
+        
         if (sfProcessName != null)
             System.setProperty(SmartFrogCoreProperty.sfProcessName, sfProcessName);
     }
