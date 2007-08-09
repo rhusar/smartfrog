@@ -123,7 +123,7 @@ public class TestCompoundImpl extends ConditionCompound
         //then decide whether to run or not.
 
         if (getCondition() !=null && !evaluate()) {
-            sendEvent(new TestStartedEvent(this, null));
+            sendEvent(new TestStartedEvent(this));
             skipped = true;
             updateFlags(false);
             String message = "Skipping test run " + name;
@@ -150,7 +150,7 @@ public class TestCompoundImpl extends ConditionCompound
             //we expected failure, so cache it for-post mortem analsysis
             exception = e;
         } finally {
-            sendEvent(new TestStartedEvent(this, actionPrim));
+            sendEvent(new TestStartedEvent(this));
         }
 
         if(exception==null) {
@@ -230,7 +230,6 @@ public class TestCompoundImpl extends ConditionCompound
     private void startTests() throws RemoteException, SmartFrogDeploymentException {
         if(tests !=null) {
             testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
-            sendEvent(new TestStartedEvent(this, testsPrim));
             //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
                     FORCED_TERMINATION,

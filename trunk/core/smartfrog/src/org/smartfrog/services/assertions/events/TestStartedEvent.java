@@ -31,35 +31,12 @@ import org.smartfrog.sfcore.prim.Prim;
 public class TestStartedEvent extends LifecycleEvent {
 
 
-    /**
-     * child component, may be null
-     */
-    private Prim child;
 
     public TestStartedEvent() {
     }
 
     public TestStartedEvent(Prim component) {
         super(component);
-    }
-
-    /**
-     * Construct with both component and child
-     * @param component component starting the tests
-     * @param child any child component that is the test action
-     */
-    public TestStartedEvent(Prim component,Prim child) {
-        this(component);
-        this.child=child;
-    }
-
-
-    /**
-     * Get the child
-     * @return
-     */
-    public Prim getChild() {
-        return child;
     }
 
     /** {@inheritDoc} */
