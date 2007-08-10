@@ -74,6 +74,11 @@ public class TestCompoundsEventsTest extends DeployingTestBase {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testNotSkipped");
         assertFalse("event was skipped :" + event, event.isSkipped());
     }
+
+    public void testExportNotRequired() throws Throwable {
+        TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testExportNotRequired");
+    }
+    
     public void testSmartFrogExceptionActionRecord() throws Throwable {
         TestCompletedEvent event = expectSuccessfulTestRun(FILES, "testSmartFrogException");
         TestCompound tc=(TestCompound) getApplication();

@@ -126,6 +126,75 @@
         />
   </presetdef>
 
+  <presetdef name="tar" uri="${macros-mixin.uri}">
+    <tar
+        longfile="gnu"
+        >
+    </tar>
+  </presetdef>
 
+  <!--preset to copy with ant property expansion (and always overwrite)-->
+  <presetdef name="expandingcopy" uri="${macros-mixin.uri}">
+    <copy overwrite="true">
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+  </presetdef>
+
+  <!-- a macro to define a property to a new directory, and create the directory-->
+  <macrodef name="newdir" uri="${macros-mixin.uri}">
+    <attribute name="name"/>
+    <attribute name="location"/>
+    <sequential>
+      <property name="@{name}" location="@{location}"/>
+      <mkdir dir="@{location}"/>
+    </sequential>
+  </macrodef>
+
+
+  <!-- a new version of the java task that always forks, does not include
+the ant runtime by default, and fails on any error -->
+  <presetdef name="java" uri="${macros-mixin.uri}">
+    <java
+        includeantruntime="false"
+        fork="true"
+        failonerror="true"
+        >
+    </java>
+  </presetdef>
+
+  <!-- define a new javac task with new default options -->
+  <presetdef name="sf-javac">
+    <m:javac/>
+  </presetdef>
+
+  <!-- an extension of the previous javac, this with ant classpath included -->
+  <presetdef name="sf-javac-with-ant">
+    <m:javac
+        includeAntRuntime="true" />
+  </presetdef>
+
+
+  <!-- a new version of the java task that always forks, does not include
+the ant runtime by default, and fails on any error -->
+  <presetdef name="sf-java">
+    <m:java/>
+  </presetdef>
+
+  <!--
+  JAR files are uncompressed, with duplicate classes preserved, meaning
+  whatever was there first wins.
+  -->
+  <presetdef name="sf-jar">
+    <m:jar/>
+  </presetdef>
+
+  <!--
+  Tar files are gnu formatted for long files
+  -->
+  <presetdef name="sf-tar">
+    <m:tar/>
+  </presetdef>
 
 </project>

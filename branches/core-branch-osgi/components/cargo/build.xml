@@ -31,6 +31,7 @@
   <property file="build.properties"/>
   <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"/>
+  <property name="system.tests" value="true" />
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>

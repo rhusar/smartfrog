@@ -47,7 +47,7 @@
 %define linkdir         %{basedir}/links
 %define examples        %{srcdir}/org/smartfrog/examples
 %define rcd             /etc/rc.d
-%define smartfrogd   %{rcd}/init.d/${rpm.daemon.name}
+%define smartfrogd      %{rcd}/init.d/${rpm.daemon.name}
 %define logdir          ${rpm.log.dir}
 
 #some shortcuts
@@ -418,6 +418,9 @@ rm -f %{linkdir}/sf-anubis.jar
 
 %post logging
 rm -f %{linkdir}/sf-loggingservices.jar
+rm -f %{linkdir}/commons-logging.jar
+rm -f %{linkdir}/log4j.jar
+
 ln -s %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
 ln -s %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
 ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
@@ -425,7 +428,7 @@ ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
 %postun logging
 rm -f %{linkdir}/sf-loggingservices.jar
 rm -f %{linkdir}/commons-logging.jar
-rm -f %{linkdir}/log4j.version.jar
+rm -f %{linkdir}/log4j.jar
 
 # -----------------------------------------------------------------------------
 
