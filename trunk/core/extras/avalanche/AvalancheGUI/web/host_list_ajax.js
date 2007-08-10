@@ -20,10 +20,11 @@
 
 /* Status update */
 var status_response = "";
+
 var status_xml = false;
+status_xml = getXMLHttpRequestObject();
 
 function getStatus() {
-    status_xml = getXMLHttpRequestObject();
     if (status_xml) {
         status_xml.open("GET", "host_status_get.jsp?now=" + (new Date()).getTime(), true);
         status_xml.onreadystatechange = function ()
@@ -54,10 +55,11 @@ function getStatus() {
 
 /* Host actions */
 var action_xml = false;
+action_xml = getXMLHttpRequestObject();
+
 var action_response = null;
 
 function ajaxHostAction(target) {
-    action_xml = getXMLHttpRequestObject();
     if (action_xml) {
         action_xml.open("GET", target, true);
         action_xml.onreadystatechange = function()
@@ -73,9 +75,6 @@ function ajaxHostAction(target) {
                 }
             } catch (e) {
                 // TODO: Maybe something other?
-            }
-            if (action_response != null) {
-                 alert(action_response);
             }
         }
         action_xml.send(null);
