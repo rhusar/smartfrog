@@ -106,6 +106,5 @@ TARGETPROP="-Dorg.smartfrog.environment.targethost=$SFTARGETHOST"
 if test "$SFSECURITY"; then
         java $SFSECURITY "$TARGETPROP" "$SFDEFAULTINI" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 else
-        echo java "$SFDEFAULTINI" "$TARGETPROP" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
         java "$SFDEFAULTINI" "$TARGETPROP" org.smartfrog.SFSystem $ENVSCRIPTS $APPSCRIPTS -e -t
 fi

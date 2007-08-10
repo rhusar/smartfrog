@@ -3,17 +3,19 @@
 #include "org/smartfrog/sfcore/deployer/environments.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/detachingcompound.sf"
 
-ApplicationEnvironment extends Compound {
+ApplicationEnvironment extends Prim {
     sfClass "org.smartfrog.sfcore.deployer.ApplicationEnvironmentImpl";
+    target TBD;
+    parser TBD;
 }
 
-TargetEnvironment extends LAZY Compound {
+TargetEnvironment extends Compound {
     sfProcessHost PROPERTY org.smartfrog.environment.targethost;
     name TBD;
     sfProcessComponentName name;
 }
 
-ParserEnvironment extends LAZY Compound {
+ParserEnvironment extends Compound {
     name TBD;
     sfProcessComponentName name;
 }
