@@ -1,4 +1,4 @@
-SmartFrog ${smartfrog.version}
+SmartFrog 3.11.007beta
 ======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed
@@ -10,9 +10,9 @@ as a whole. The project's home page is http://smartfrog.org/
 
 The release artifacts are available at
 
-http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
+https://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308&release_id=531293
 
-This release is ${smartfrog.version}; built from revision ${svn.revision}
+This release is 3.11.007beta; built from revision 4969
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -41,6 +41,12 @@ For Java 1.5 systems, there are some extra components:
 * XML: XML support with XOM.
 * XMPP: Presence and messaging over Jabber.
 
+This release is the last ever release that will support Java1.4. We have
+long built and tested on both Java 5 and Java 6; Java 5 has a better
+concurrency model while Java 6 has fixed some long-standing RMI
+problems. After this release, the team will make use of Java 5 language
+features and classes in the Java 1.5 runtime, which will prevent it from
+building or running on Java 1.4 systems.
 
 
 Packaging
@@ -95,9 +101,9 @@ entire system. Please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 and check out smartfrog/trunk/core from our repository.
 
-This release was built with revision ${svn.revision} of the repository, which
+This release was built with revision 4969 of the repository, which
 is available under the SVN branch
-${svn.branch.url}
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.11.007beta
 
 We strongly encourage anyone interested in building or extending
 smartfrog to get involved in the smartfrog developer mailing list, which
@@ -140,10 +146,41 @@ it does not resolve:
 
 Consult the reference documentation for more details on this.
 
+** Bug
+    * [SFOS-146] - jetty tests failing (disabled)
+    * [SFOS-195] - tcn18 is failing (skipped)
+    * [SFOS-269] - email setting are not passed to the bootstrap templates
+    * [SFOS-282] - TestCompound doesnt report all failing children as an error
+    * [SFOS-339] - TestCompound doesnt handle failures in startup properly
+    * [SFOS-348] - avalanche clean fails in a bulk ivy-clean
+    * [SFOS-349] - NPE thown in SmartFrogException when using StringAll 
+                   and Cause is null.
+    * [SFOS-352] - TestCompound doesnt set the status or application status
+                   when something fails during startup
+    * [SFOS-363] - NPE in test Compound -maybe when tests are skipped?
+    * [SFOS-365] - Error on line 377 of release/build.xml on Windows
+    * [SFOS-366] - test runner interpets skipped as a junit failure
+    * [SFOS-369] - if RunShell/RunJava is set to start late (startEarly=false),
+                   then reading all other attributes should be delayed 
+                   until this time.
+    * [SFOS-380] - marshalling problem in mysql tests
+    * [SFOS-381] - Async test reporting needs to handle unexported components
+                   raising lifecycle events
 
+** Improvement
+    * [SFOS-345] - stop uploading individual RPM files to sourceforge
+    * [SFOS-362] - rename Value condition to BooleanValue
+    * [SFOS-367] - add description attribute to testblock/testcompound 
+                   and pass it back through test results
+    * [SFOS-379] - support empty [] lists when flattening runjava property lists
 
+** New Feature
+    * [SFOS-329] - add templates for JBoss and Tomcat
 
-
-
-
+** Sub-task
+    * [SFOS-229] - document OPTIONAL
+    * [SFOS-322] - migrate org.smartfrog.test.system.workflow.delay.DelayTest
+                   to async tests
+    * [SFOS-323] - migrate org.smartfrog.test.system.workflow.retry.RetryTest
+                   to async tests
 
