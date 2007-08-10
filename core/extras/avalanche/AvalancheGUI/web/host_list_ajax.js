@@ -54,14 +54,14 @@ function getStatus() {
 }
 
 /* Host actions */
+var action_response = "";
+
 var action_xml = false;
 action_xml = getXMLHttpRequestObject();
 
-var action_response = null;
-
 function ajaxHostAction(target) {
     if (action_xml) {
-        action_xml.open("GET", target, true);
+        action_xml.open("GET", target + "&now=" + (new Date()).getTime(), true);
         action_xml.onreadystatechange = function()
         {
             try {
@@ -75,6 +75,7 @@ function ajaxHostAction(target) {
                 }
             } catch (e) {
                 // TODO: Maybe something other?
+                alert(e);
             }
         }
         action_xml.send(null);

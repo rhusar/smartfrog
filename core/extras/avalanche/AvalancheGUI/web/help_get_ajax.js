@@ -24,7 +24,7 @@ var help_xml;
 function getHelp(pageId) {
     help_xml = getXMLHttpRequestObject();
     if (help_xml) {
-        help_xml.open("GET", "help_get.jsp?id=" + pageId + "&now=" + (new Date).getMilliseconds());
+        help_xml.open("GET", "help_get.jsp?id=" + pageId + "&now=" + (new Date()).getTime(), true);
         help_xml.onreadystatechange = function()
         {
             try {

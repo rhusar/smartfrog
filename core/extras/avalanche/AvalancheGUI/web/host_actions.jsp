@@ -66,7 +66,7 @@ For more information: www.smartfrog.org
                     }
                 // START THE MANAGEMENT CONSOLE FOR THE SELECTED HOSTS
                 } else if (pageAction.equals("console")) {
-                    if (request.getRemoteHost().equals("localhost")) {
+                    if (request.getRemoteHost().equals("127.0.0.1")) {
                         SFAdapter adapter = new SFAdapter(factory, scheduler);
                         for (int i = 0; i < hosts.length; i++) {
                             adapter.startMngConsole(hosts[i]);
