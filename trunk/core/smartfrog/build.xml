@@ -21,9 +21,9 @@
     ============
     The build script for the kernel SmartFrog framework.
     It requires
-      -Java1.4 or later. Java 1.5 is recommended
+      -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 1.4.1 (from jayasoft.fr, or soon, apache.org)
+      -Ivy 1.4.1 or later from apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -160,7 +160,7 @@
   <property name="javac.debug.mode" value="on"/>
   <!-- turn on compile -g -->
   <property name="javac.debug.level" value="lines,vars,source"/>
-  <property name="javac.java.version" value="1.4"/>
+  <property name="javac.java.version" value="1.5"/>
   <property name="build.compiler" value="modern"/>
   <property name="javac.compiler" value="${build.compiler}"/>
   <property name="javac.max.memory" value="192m" />

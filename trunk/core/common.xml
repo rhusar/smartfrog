@@ -88,7 +88,7 @@
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
     <property name="javac.debug.level" value="lines,vars,source" />
-    <property name="javac.java.version" value="1.4" />
+    <property name="javac.java.version" value="1.5" />
     <property name="javac.include.ant" value="false" />
     <property name="javac.max.memory" value="192m" />
 
