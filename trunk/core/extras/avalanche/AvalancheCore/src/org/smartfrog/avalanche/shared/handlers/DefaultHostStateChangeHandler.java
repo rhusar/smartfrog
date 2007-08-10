@@ -13,13 +13,10 @@ package org.smartfrog.avalanche.shared.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.shared.handlers.HostStateChangeHandler;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
-import org.smartfrog.avalanche.shared.HostStateEvent;
+import org.smartfrog.avalanche.shared.*;
 
 /**
  * Updates state of the host in Active Profile. This is invoked when a host goes down or a
@@ -43,39 +40,11 @@ public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
     }
 
     /**
-     * updates the host availability status in database.
-     * TODO: Host state is set as "Available" or "Not Available" change to something
-     * better. .
+     * Updates the state of a given host in the database
+     * @param e is the event that contains the information about the host.
      */
     public void handleEvent(HostStateEvent e) {
         log.info("Hosts State Changed: " + e.getHostName() + " : " + e.isAvailable());
-
-        String hostPath = e.getHostName();
-        String hostPresence = e.isAvailable() ? "Available" : "Not Available";
-
-        try {
-            ActiveProfileType type = profileManager.getProfile(hostPath);
-
-            // No ActiveProfile found - create one
-            if (type == null) {
-                log.info("Creating new ActiveProfile for host " + hostPath);
-                try {
-                    type = profileManager.newProfile(hostPath);
-                } catch (Exception x) {
-
-                }
-            }
-
-            // Profile could not be created - log error
-            if (type != null)
-                    type.setHostState(hostPresence);
-            else
-                log.error("Could not retrieve ActiveProfileType for host " + hostPath);
-
-            profileManager.setProfile(type);
-        } catch (DatabaseAccessException ex) {
-            log.error(ex);
-		}
+        ActiveProfileUpdater.setMachineAvailability(profileManager, e.getHostName(), e.isAvailable());
 	}
-
 }

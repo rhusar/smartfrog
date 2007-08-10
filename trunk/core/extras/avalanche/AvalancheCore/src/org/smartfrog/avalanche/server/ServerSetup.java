@@ -12,10 +12,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.avalanche.server;
 
 import org.jivesoftware.smack.XMPPException;
-import org.smartfrog.avalanche.server.monitor.handlers.ActiveProfileUpdateHandler;
-import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateHandler;
-import org.smartfrog.avalanche.server.monitor.handlers.HostUpdateRosterHandler;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.packet.Presence;
+import org.smartfrog.avalanche.server.monitor.handlers.*;
 import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 
@@ -217,34 +218,63 @@ public class ServerSetup {
             // On adding/deleting hosts, perform the same on the XMPP Server and its users rosters.
             factory.getHostManager().addHandler(new HostUpdateRosterHandler(adminAdapter, listenerAdapter));            
 
+            // Getting the most recent presence of host
+            Roster roster = this.getListenerAdapter().getRoster();
+            String[] hostNames = this.getFactory().getHostManager().listHosts();
+            boolean hostAvailable = false;
+            Presence p = null;
+            for (int i = 0; i < hostNames.length; i++) {
+                p = roster.getPresence(hostNames[i] + "@" + this.getXmppServer());
+                if (p != null) {
+                    hostAvailable = p.getType().equals(Presence.Type.AVAILABLE);
+                } else {
+                    hostAvailable = false;
+                }
+                ActiveProfileUpdater.setMachineAvailability(factory.getActiveProfileManager(), hostNames[i], hostAvailable);
+            }
+
             // TODO : Start Smartfrog on server if its not already running using avalancheHome
 
         } catch (XMPPException e) {
             log.fatal("Avalanche InitializAtion failed : ", e);
         }
     }
-	
-	public XMPPAdapter getAdminAdapter(){
+
+    /**
+     * Gets the XMPPAdapter which is logged in to the XMPP Server as admin
+     * in order to create new users.
+     * @return XMPPAdapter logged in as 'admin'
+     */
+    public XMPPAdapter getAdminAdapter(){
 		return adminAdapter ; 
 	}
-	
-	public XMPPAdapter getListenerAdapter(){
+
+    /**
+     * Gets the XMPPAdapter which is logged in as the Avalanche WebUser
+     * Hosts report to the AVL user (messages, presence updates, etc.)
+     * @return XMPPAdapter logged in as 'avl'
+     */
+    public XMPPAdapter getListenerAdapter(){
 		return listenerAdapter ; 
 	}
 	
 	/**
 	 * Shuts down Avalanche server. 
-	 * @throws Exception
+	 * @throws Exception is thrown if anything went wrong
 	 */
-	public void shutdown() throws Exception{
-		System.out.println("Shutting down Avalanche ...");
-		log.info("Shutting down Avalanche ...");
+	public void shutdown() throws Exception {
+        // Close the XMPP connections
+        log.info("Closing the XMPP connections...");
+        this.getAdminAdapter().close();
+        this.getListenerAdapter().close();
+
+        // Shutdown the rest of the machine
+        log.info("Shutting down Avalanche...");
 		if( null != factory){
 			factory.close();
 			factory = null ;
-		}else{
+		} else {
 			log.error("AvalancheContextListener:contextDestroyed() - Shutting down, Avalanche was not initialized completely");
-			System.out.println("AvalancheContextListener:contextDestroyed() - Shutting down, Avalanche was not initialized completely");
 		}
 		
 /*		try{
