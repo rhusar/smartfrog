@@ -95,7 +95,7 @@ For more information: www.smartfrog.org
 
     // Create type-Node
     Element entry = xdoc.createElement("type");
-    entry.appendChild(xdoc.createTextNode("success"));
+    entry.appendChild(xdoc.createTextNode((message==null)?"success":"error"));
     root.appendChild(entry);
 
     // Create message-Node
