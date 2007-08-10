@@ -1,12 +1,12 @@
 SmartFrog ${smartfrog.version}
 ======================
 
-This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
-deployment framework developed by HP Laboratories. SmartFrog enables
-applications to be deployed across multiple machines, configuring different
-aspects of the system so that they are all consistently configured, and managing
-the life-cycle of the application as a whole. The project's home page is
-http://smartfrog.org/
+This is a new release of SmartFrog, the Java-based, LPGL-licensed
+distributed deployment framework developed by HP Laboratories. SmartFrog
+enables applications to be deployed across multiple machines,
+configuring different aspects of the system so that they are all
+consistently configured, and managing the life-cycle of the application
+as a whole. The project's home page is http://smartfrog.org/
 
 The release artifacts are available at
 
@@ -61,7 +61,8 @@ smartfrog-demo:   example code and documentation.
 
 All the JAR files are also published to a repository that is compatible with
 Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
-to your repository list to pull SmartFrog artifacts into your Ivy- or Maven- based build.
+to your repository list to pull SmartFrog artifacts into your Ivy- or 
+Maven- based build.
 
 There are also SmartFrog components to retrieve artifacts from such a repository
 (the Library components under /org/smartfrog/services/os/java/library.sf ),
@@ -71,13 +72,14 @@ which can be used for dynamic download of SmartFrog and other artifacts.
 Security warning
 ================
 
-Unless SmartFrog is configured with security, a running daemon
-will listen on its configured port for incoming deployment requests, and deploy
-the applications with the rights of the user running the daemon. When the
-smartfrog-daemon RPM is installed, that means that a process running as root
-will be listening on an open port for incoming deployment requests. Do not
-deploy SmartFrog this way on any untrusted network, not without turning security
-on and, ideally, recreating the RPMs with signed JAR files. 
+Unless SmartFrog is configured with security, a running daemon will
+listen on its configured port for incoming deployment requests, and
+deploy the applications with the rights of the user running the daemon.
+When the smartfrog-daemon RPM is installed, that means that a process
+running as root will be listening on an open port for incoming
+deployment requests. Do not deploy SmartFrog this way on any untrusted
+network, not without turning security on and, ideally, recreating the
+RPMs with signed JAR files.
 
 Building SmartFrog
 ==================
@@ -86,8 +88,8 @@ SmartFrog requires Java 1.4 and Ant 1.7 to build. For a complete release,
 Java1.5 or later is required.
 
 
-The distribution does not include a source tree adequate to build the entire
-system. Please follow the instructions at 
+The distribution does not include a source tree adequate to build the
+entire system. Please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 and check out smartfrog/trunk/core from our repository.
 
@@ -95,9 +97,10 @@ This release was built with revision ${svn.revision} of the repository, which
 is available under the SVN branch
 ${svn.branch.url}
 
-We strongly encourage anyone interested in building or extending smartfrog to
-get involved in the smartfrog developer mailing list, which can be found from
-the sourceforge project page http://sourceforge.net/projects/smartfrog/
+We strongly encourage anyone interested in building or extending
+smartfrog to get involved in the smartfrog developer mailing list, which
+can be found from the sourceforge project page
+http://sourceforge.net/projects/smartfrog/
 
 Reporting Bugs
 ==============
@@ -110,6 +113,33 @@ The SmartFrog Team        http://smartfrog.org/
 
 Changes since last release
 ==========================
+
+Since the 3.11.005beta, there have been changes to some of the
+components. In particular, the www component now has a tomcat deployment
+descriptor that can deploy Apache Tomcat5.5,
+
+  /org/smartfrog/services/www/servers/tomcat5.sf
+  
+This is accompanied by one for JBoss 4.0:
+
+  /org/smartfrog/services/www/servers/jboss4.sf
+  
+These deployment descriptors are passing our tests of deploy-by-copy
+deployment of a test WAR.
+
+The language has been enhanced with the OPTIONAL keyword, which allows
+one to define a value to use if the remote reference does not resolve.
+To use an example from the jboss tests, here is a binding of jboss.port
+either to the property test.jboss.port (in the process parsing the .sf
+file, not the destination daemon), and falling back to the value 8080 if
+it does not resolve:
+
+  jboss.port OPTIONAL(8080) PROPERTY test.jboss.port;
+
+Consult the reference documentation for more details on this.
+
+
+
 
 
 
