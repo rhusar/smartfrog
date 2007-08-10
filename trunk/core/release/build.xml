@@ -770,7 +770,8 @@
   <target name="rpm-ready-to-remote-install" depends="rpm-remote-uninstall"/>
 
 
-  <target name="rpm-remote-install" depends="rpm-remote-install-all" >
+  <target name="rpm-remote-install" depends="rpm-remote-install-all"
+      description="install the RPMs to the remote server">
   </target>
 
   <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init" >
@@ -784,7 +785,8 @@
   </target>
 
   <target name="rpm-remote-test" depends="rpm-remote-version,
-    rpm-remote-uninstall-strict" />
+    rpm-remote-uninstall-strict"
+      description="install, verify and uninstall the RPMs to a remote target"/>
 
   <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install" >
     <rpmssh command="sfVersion"
