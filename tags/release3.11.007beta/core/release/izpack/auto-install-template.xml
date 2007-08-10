@@ -1,0 +1,29 @@
+<AutomatedInstallation langpack="eng">
+  <com.izforge.izpack.panels.HTMLInfoPanel/>
+  <com.izforge.izpack.panels.HTMLLicencePanel/>
+  <com.izforge.izpack.panels.PacksPanel>
+    <pack name="SmartFrog Core" index="0" selected="true"/>
+    <pack name="minimal-source-tree" index="1" selected="true"/>
+    <pack name="full-source-tree" index="2" selected="${full.selected}"/>
+    <pack name="Ant" index="3" selected="${ant.selected}"/>
+    <pack name="Anubis" index="4" selected="${anubis.selected}"/>
+    <pack name="Database" index="5" selected="${database.selected}"/>
+    <pack name="JMX" index="6" selected="${jmx.selected}"/>
+    <pack name="Logging" index="7" selected="${logging.selected}"/>
+    <pack name="Networking" index="8" selected="${networking.selected}"/>
+    <pack name="Quartz" index="9" selected="${quartz.selected}"/>
+    <pack name="Scripting" index="10" selected="${scripting.selected}"/>
+    <pack name="xunit" index="11" selected="${xunit.selected}"/>
+    <pack name="JUnit" index="12" selected="${junit.selected}"/>
+    <pack name="WWW" index="13" selected="${www.selected}"/>
+    <pack name="XML" index="14" selected="${xml.selected}"/>
+    <pack name="XMPP" index="15" selected="${xmpp.selected}"/>
+  </com.izforge.izpack.panels.PacksPanel>
+  <com.izforge.izpack.panels.TargetPanel>
+    <installpath>${build.install.dir}</installpath>
+  </com.izforge.izpack.panels.TargetPanel>
+  <com.izforge.izpack.panels.DataCheckPanel/>
+  <com.izforge.izpack.panels.SummaryPanel/>
+  <com.izforge.izpack.panels.InstallPanel/>
+  <com.izforge.izpack.panels.FinishPanel/>
+</AutomatedInstallation>

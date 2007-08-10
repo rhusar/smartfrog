@@ -1,0 +1,59 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/*
+ * A service  for deploying SF descriptions using a DNS-SD convention.
+ *
+ */
+DNSDeployer extends LAZY {
+
+
+    // A suffix domain name for the DNS zone
+    suffixDomainName TBD; //string, e.g., hpl.hp.com
+    
+
+    // A default name for the service exported by a SF deployment engine
+    serviceTypeName ("_sfrmi._tcp." ++ suffixDomainName);
+
+    // Whether to query the user to select the target
+    interactive false;
+
+
+    // Whether to ignore exceptions and keep on trying with other targets
+    tryAll false;
+
+    /* A set of attribute/value pairs that must match contents in the
+       TXT record.*/
+    mustHave extends LAZY {
+
+
+    }
+
+    // optional, use the system default otherwise
+    // dnsResolverAddress "15.0.0.0";  
+
+    // optional, use the system default otherwise (53)
+    // dnsResolverPort 53;
+    
+    // use tcp for dns queries (recommended...)
+    dnsResolverTCP true;    
+
+}

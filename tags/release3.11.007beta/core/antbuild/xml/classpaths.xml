@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="classpaths"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:sf="antlib:org.smartfrog.tools.ant"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+    >
+
+  <description>
+    Targets to set up the various classpaths. Using Ivy, obviously.
+  </description>
+
+  <import file="ivy-mixin.xml"/>
+
+
+  <!-- ========================================================== -->
+  <!-- classpath setup assumes Ivy is used to prepare things -->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-declare-classpaths" depends="ivy-retrieve"/>
+
+  <target name="declare-compile.classpath" depends="ready-to-declare-classpaths">
+    <ivy:cachepath pathid="compile.classpath" conf="compile"/>
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
+  </target>
+
+
+  <target name="declare-exec.classpath" depends="ready-to-declare-classpaths">
+    <ivy:cachepath pathid="runtime.classpath" conf="runtime"/>
+    <path id="exec.classpath">
+      <pathelement location="${target.jar}"/>
+      <path refid="runtime.classpath"/>
+    </path>
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>
+
+  <target name="declare-tests.compile.classpath"
+      depends="declare-exec.classpath,ivy-resolve">
+    <ivy:cachepath pathid="tests.compile.ivy.classpath" conf="test"/>
+    <path id="tests.compile.classpath">
+      <pathelement location="${target.jar}"/>
+      <path refid="tests.compile.ivy.classpath"/>
+    </path>
+    <property name="tests.compile.classpath.value"
+        refid="tests.compile.classpath"/>
+    <echo level="verbose">
+      tests.compile.classpath=${tests.compile.classpath.value}
+    </echo>
+  </target>
+
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath">
+    <path id="tests.run.classpath">
+      <pathelement location="${test.jar}"/>
+      <path refid="tests.compile.classpath"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>
+
+  <target name="declare-run.classpath" depends="declare-tests.run.classpath">
+    <path id="run.classpath">
+      <path refid="tests.run.classpath"/>
+    </path>
+  </target>
+
+
+  <!-- This target explicitly lists all dependencies so that if anyone starts overriding
+    declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
+    are defined-->
+  <target name="declare-classpaths"
+      depends=
+          "declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath"/>
+
+
+</project>

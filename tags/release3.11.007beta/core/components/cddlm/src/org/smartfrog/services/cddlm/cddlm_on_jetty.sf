@@ -1,0 +1,99 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+/**
+ * schema stuff
+ */
+#include "/org/smartfrog/predicates.sf"
+
+/**
+ * Include the core smartfrog components.
+ */
+#include "/org/smartfrog/components.sf"
+
+/**
+ * Include the CDDLM components.
+ */
+
+#include "/org/smartfrog/services/cddlm/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+
+//jetty
+#include "org/smartfrog/services/jetty/components.sf";
+
+sfConfig extends Compound {
+
+
+    axishome LAZY PROPERTY axis.home;
+
+    host "localhost";
+
+    port 5050;
+
+    //so they terminate one after the other
+    sfSyncTerminate true;
+
+    /*
+     deploy axis on jetty
+     */
+    jettyServer extends CoreJettyServer {
+        sfSyncTerminate true;
+
+        server "axis";
+
+        serverHost host;
+
+        jettyhome axishome;
+
+        listeners extends Compound {
+            jetty extends JettyListener {
+                listenerPort port;
+                serverHost host;
+                server LAZY jettyServer;
+            }
+        }
+
+        warFile extends File {
+            dir axishome;
+            filename "axis.war";
+            mustExist true;
+        }
+
+
+
+        AxisWebApp extends JettyWebApplication {
+            webApp LAZY warFile:absolutePath;
+            contextPath "/axis";
+        }
+
+    }
+
+    cddlmService extends CddlmService {
+        port PARENT:port;
+    }
+
+
+    //fetch the WSDL every so often, just to see that we are happy
+/*
+    wsdlFetch extends FetchCddlmWSDL {
+        port PARENT:port;
+    }
+    */
+}
+

@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<project name="unittest" 
+  xmlns:core="http://smartfrog.org/build/core"
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  >
+  
+  <description>
+  All the targets for unit tests
+  </description>
+  
+  <!-- import the distribution and all predecessors -->
+  <import file="dist.xml"/>
+
+ 
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- generate test reports and break on failure-->
+  <!-- ========================================================== -->
+
+  <target name="reports" depends="init,core.core-tasks"
+    description="generate the test reports" >
+    <core:test-report data="${test.data.dir}"
+      reports="${test.reports.dir}"
+      failed="test.failed"/>
+    <echo>reports in ${test.reports.dir}</echo>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- generate test reports; ignore failur results-->
+  <!-- ========================================================== -->
+
+  <target name="reports-no-failure" depends="init"
+    description="generate the test reports" >
+    <core:test-report data="${test.data.dir}"
+      reports="${test.reports.dir}" />
+    <echo>reports in ${test.reports.dir}</echo>
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- system tests : anything that is tested on a live daemon 
+       not to be run on public machines for
+       security reasons, unless security is active-->
+  <!-- ========================================================== -->
+  <target name="system-tests" if="system.tests.enabled" depends="ready-to-test"
+    description="run the system tests">
+    <echo message="No system tests"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-test" depends="init,published,dist,package-tests"/>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+
+
+  <target name="unit-tests" depends="ready-to-test" if="unit.tests.enabled"
+    description="run the unit tests if unit.tests.enabled is set">
+    <core:junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      includeAntRuntime="true"
+      >
+      <sysproperty key="test.classes.dir"
+        value="${test.classes.dir}"/>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/**/unit/**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </core:junit>
+  </target> 
+  
+  <!-- ========================================================== -->
+  <!-- run tests, both unit and system  -->
+  <!-- ========================================================== -->
+  <target name="run-tests"
+    depends="system-tests" />
+    
+    
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <target name="test"
+    depends="run-tests,reports"
+    description="compile and run all the tests"
+    />
+</project>    

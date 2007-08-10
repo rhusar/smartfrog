@@ -1,0 +1,22 @@
+<!--
+R1000   When an ENVELOPE is a Fault, the soap:Fault element MUST NOT have element children
+other than faultcode, faultstring, faultactor and detail.
+ -->
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <soap:Fault>
+      <faultcode>soap:Client</faultcode>
+      <faultstring>Invalid message format</faultstring>
+      <faultactor>http://example.org/someactor</faultactor>
+      <detail>There were
+        <b>lots</b> of elements in the message 
+      that I did not understand
+      </detail>
+      <m:Exception xmlns:m='http://example.org/faults/exceptions'>
+        <m:ExceptionType>Severe</m:ExceptionType>
+      </m:Exception>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>
