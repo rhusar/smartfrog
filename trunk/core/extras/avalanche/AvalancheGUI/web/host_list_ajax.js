@@ -67,12 +67,12 @@ function ajaxHostAction(target) {
                 if (action_xml.readyState == 4) {
                     if (action_xml.status == 200) {
                         var xmlDocument = action_xml.responseXML;
-                        alert(xmlDocument.getElementsByTagName("message")[0].firstChild.data);
+                        if (xmlDocument.getElementsByTagName("type")[0].firstChild.data == "error")
+                            alert(xmlDocument.getElementsByTagName("message")[0].firstChild.data);
                     }
                 }
             } catch (e) {
                 // TODO: Maybe something other?
-                action_response = "An error occured during your request." +e ;
             }
             if (action_response != null) {
                  alert(action_response);
