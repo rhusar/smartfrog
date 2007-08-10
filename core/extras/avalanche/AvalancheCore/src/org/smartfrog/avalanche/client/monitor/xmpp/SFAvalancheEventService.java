@@ -11,7 +11,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
-import org.jivesoftware.smack.XMPPException;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
@@ -112,20 +111,16 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 		}
 		
 	}
-	
-	public void sendEvent(MonitoringEvent e) throws SmartFrogException{
-		try{
-			adapter.sendEvent(e);
-		}catch(XMPPException ex){
-			throw new SmartFrogException(ex);
-		}
-	}
 
 	public synchronized void sfStart() throws SmartFrogException, RemoteException {
 		super.sfStart();
 	}
 
-	public void sfTerminate(TerminationRecord arg0) {
+    /**
+     * Called upon the daemon's termination?!
+     * @param arg0
+     */
+    public void sfTerminate(TerminationRecord arg0) {
 		sfLog().info("Closing XMPP Client Adapter");
 		adapter.close();
 		super.sfTerminate(arg0);

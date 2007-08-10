@@ -88,13 +88,8 @@ public class LivenessListener implements RosterListener {
             log.error("Current presence could not be retrieved." + label);
             event.setAvailable(false);
 		}else{
-			if( p.getType().equals(Presence.Type.AVAILABLE)){
-                log.info("Current presence is: AVAILABLE." + label);
-                event.setAvailable(true);
-			} else {
-                log.info("Current presence is: NOT AVAILABLE." + label);
-                event.setAvailable(false);
-			}
+            log.info("Current presence is available:" + p.getType().equals(Presence.Type.AVAILABLE) + label);
+            event.setAvailable(p.getType().equals(Presence.Type.AVAILABLE));
 		}
 
         log.info("Dispatching event to all other handlers.");
