@@ -129,3 +129,10 @@ For more information: www.smartfrog.org
       description "have a condition but don't skip the test";
       condition extends True;
   }
+
+
+  testExportNotRequired extends ExpectTerminate {
+    action extends Sequence {
+      sfExport false;
+    }
+  }

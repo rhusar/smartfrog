@@ -1,4 +1,5 @@
-<project name="rpm" default="rpm">
+<project name="rpm" default="rpm"
+    xmlns:m="http://smartfrog.org/macro">
 
   <description>
     This is a build file that can be used to create RPMs.
@@ -52,7 +53,9 @@
   <property name="ivy.artifact.retrieve.pattern"
       value="[conf]/[artifact]-[revision].[ext]"/>
 
-  <import file="${root.dir}/common.xml" />
+  <import file="state.xml" />
+  <import file="ivy-mixin.xml" />
+  <import file="macros-mixin.xml" />
 
 
 
@@ -83,7 +86,20 @@
   </target>
 
 
-  <target name="init-rpm" depends="check-rpm,ivy-properties">
+  <!--the entry point: build the rpm-->
+  <target name="rpm" depends="build-rpm"
+      description="Create the RPMs"/>
+  <target name="dist" depends="rpm"
+      description="Default action is to create the RPMs"/>
+  <target name="default" depends="dist"
+      description="Default action is to create the RPMs"/>
+
+  <!--before we publish, we build the rpm-->
+  <target name="ready-to-publish" depends="ivy.ready-to-publish,rpm"/>
+  <target name="published" depends="ivy-published" />
+
+
+  <target name="init-rpm" depends="check-rpm,ivy-init">
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
     <property name="release.dir" location="${root.dir}/release" />
@@ -102,25 +118,25 @@
     </fail>
 
 
-    <newdir name="build.rpm.dir" location="${build.dir}/rpm"/>
+    <m:newdir name="build.rpm.dir" location="${build.dir}/rpm"/>
 
-    <newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
+    <m:newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
 
-    <newdir name="build.rpm.metadata.dir"
+    <m:newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata"/>
-    <newdir name="rpm.image.dir"
+    <m:newdir name="rpm.image.dir"
         location="${build.rpm.dir}/rpm"/>
-    <newdir name="rpm.SOURCES"
+    <m:newdir name="rpm.SOURCES"
         location="${rpm.image.dir}/SOURCES"/>
-    <newdir name="rpm.SRPMS"
+    <m:newdir name="rpm.SRPMS"
         location="${rpm.image.dir}/SRPMS"/>
-    <newdir name="rpm.SPECS"
+    <m:newdir name="rpm.SPECS"
         location="${rpm.image.dir}/SPECS"/>
-    <newdir name="rpm.BUILD"
+    <m:newdir name="rpm.BUILD"
         location="${rpm.image.dir}/BUILD"/>
-    <newdir name="rpm.RPMS"
+    <m:newdir name="rpm.RPMS"
         location="${rpm.image.dir}/RPMS"/>
-    <newdir name="rpm.noarch"
+    <m:newdir name="rpm.noarch"
         location="${rpm.RPMS}/noarch"/>
     <property name="rpmfiles.tar"
         location="${rpm.SOURCES}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar"/>
@@ -130,8 +146,14 @@
         value="${smartfrog.version}-${rpm.release.version}.noarch.rpm"/>
     <property name="target.rpm.shortname"
         value="smartfrog-${rpm.module.name}-${rpm.suffix}"/>
+    <property name="built.rpm"
+        location="${rpm.noarch}/${target.rpm.shortname}"/>
     <property name="target.rpm"
-        location="${dist.rpm.dir}/${target.rpm.shortname}"/>
+        location="${dist.lib.dir}/${target.rpm.shortname}"/>
+    <property name="target.rpm.tar"
+        location="${build.rpm.dir}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar"/>
+    <property name="target.rpm.tar.gz"
+        location="${dist.lib.dir}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar.gz"/>
 
     <macrodef name="rpmpackage">
       <attribute name="package"/>
@@ -144,9 +166,9 @@
   </target>
 
   <target name="copy-rpm-specs" depends="init-rpm">
-    <expandingcopy todir="${rpm.SPECS}">
+    <m:expandingcopy todir="${rpm.SPECS}">
       <fileset dir="${rpm.metadata.dir}" includes="**/*.spec"/>
-    </expandingcopy>
+    </m:expandingcopy>
   </target>
 
   <!--
@@ -169,56 +191,60 @@
 
 
   <target name="create-file-layout" depends="init-rpm">
-    <newdir name="core.install.dir"
+    <m:newdir name="core.install.dir"
         location="${rpm.root.dir}/${rpm.install.dir}"/>
-    <newdir name="rpm.bin.dir"
+    <m:newdir name="rpm.bin.dir"
         location="${core.install.dir}/bin"/>
-    <newdir name="rpm.lib.dir"
+    <m:newdir name="rpm.lib.dir"
         location="${core.install.dir}/lib"/>
-    <newdir name="rpm.links.dir"
+    <m:newdir name="rpm.links.dir"
         location="${core.install.dir}/links"/>
   </target>
 
 
   <!--target to create all components-->
-  <target name="rpm-components" depends="create-file-layout">
+  <target name="rpm-components" depends="create-file-layout,ivy-retrieve">
     <rpmpackage package="${rpm.module.name}"/>
   </target>
 
 
+  <!--
+  The tar is passed to rpm to create the artifacts
+  -->
   <target name="prepare-rpm" depends="copy-rpm-specs,rpm-components">
-    <sf-tar destfile="${rpmfiles.tar}">
+    <m:tar destfile="${rpmfiles.tar}">
       <fileset dir="${build.rpm.dir}/root/" includes="**/*"/>
-    </sf-tar>
+    </m:tar>
     <gzip src="${rpmfiles.tar}" destfile="${rpmfiles.tar.gz}"/>
   </target>
 
   <!-- everything to be done to RPM-->
-  <target name="ready-to-rpm" depends="prepare-rpm"/>
+  <target name="ready-to-rpm" depends="prepare-rpm,rpmmacros"/>
 
 
 
   <target name="build-rpm" depends="ready-to-rpm"
       description="create an RPM file of the target library">
+    <!--
+    cleanBuildDir="true"
+    -->
     <rpm
         specFile="rpm.spec"
         topDir="${rpm.image.dir}"
-        cleanBuildDir="true"
         failOnError="true"/>
-    <copy todir="${dist.rpm.dir}">
-      <fileset dir="${rpm.noarch}" includes="*.rpm"/>
-    </copy>
+    <copy todir="${dist.lib.dir}" file="${built.rpm}"/>
+    <!--tar up the release-->
+    <m:tar destfile="${target.rpm.tar}">
+      <fileset file="${built.rpm}"/>
+    </m:tar>
+    <!--and gzip it. This is what gets published-->
+    <gzip src="${target.rpm.tar}" destfile="${target.rpm.tar.gz}"/>
+
   </target>
-
-  <!--the entry point: build the rpm-->
-  <target name="rpm" depends="build-rpm"
-      description="Create the RPMs"/>
-
-
 
   <target name="expand-rpm-debian" depends="rpm"
       description="expand the rpm on a debian system, but do not install it">
-    <newdir name="rpm.expanded.dir" location="${build.rpm.dir}/expanded"/>
+    <m:newdir name="rpm.expanded.dir" location="${build.rpm.dir}/expanded"/>
     <exec executable="/usr/bin/alien" failonerror="true"
         dir="${rpm.expanded.dir}">
       <arg value="--generate"/>

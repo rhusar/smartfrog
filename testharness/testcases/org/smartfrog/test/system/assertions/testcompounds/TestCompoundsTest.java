@@ -58,9 +58,6 @@ public class TestCompoundsTest extends DeployingTestBase {
         return record;
     }
 
-
- 
-
     public void testFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
                 "testFailureWrongMessageNested");

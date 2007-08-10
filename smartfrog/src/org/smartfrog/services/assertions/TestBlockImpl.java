@@ -152,7 +152,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
         } catch (SmartFrogDeploymentException e) {
             startupException(e);
         } finally {
-            sendEvent(new TestStartedEvent(this,actionPrim));
+            sendEvent(new TestStartedEvent(this));
         }
     }
 
