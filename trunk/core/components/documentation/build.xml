@@ -127,11 +127,6 @@
     <mkdir dir="${xdocs.dir}"/>
   </target>
 
-  <target name="copy-properties" depends="mkdirs">
-    <copy todir="." file="${skin.dir}/forrest.properties"/>
-  </target>
-
-
   <target name="seedforrest" depends="seed" description="Creates forrest project template">
     <echo>Created forrest project template</echo>
   </target>
