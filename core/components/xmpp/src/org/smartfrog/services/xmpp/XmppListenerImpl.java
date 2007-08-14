@@ -23,6 +23,7 @@ package org.smartfrog.services.xmpp;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -30,12 +31,14 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * The listener listens for messages.
  */
 public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
-        ConnectionListener, PacketListener {
+        ConnectionListener, PacketListener, LocalXmppPacketHandler {
     //the connection
     private XMPPConnection connection;
 
@@ -48,8 +51,13 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
     private long reconnectStarted=0;
 
+    private List<LocalXmppPacketHandler> handlers=new ArrayList<LocalXmppPacketHandler>(1);
+
     public XmppListenerImpl() throws RemoteException {
     }
+
+
+
 
 
     /**
@@ -63,12 +71,22 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        handlers.add(this);
+        String filter = sfResolve(ATTR_FILTER, "", true);
+        reconnect = sfResolve(ATTR_RECONNECT, reconnect, true);
+        timeout = sfResolve(ATTR_TIMEOUT, 0, true) * 60000L;
+        connectAndRegister();
+
+    }
+
+    /**
+     * Connect to the server, register anything that needs to listen
+     * @throws SmartFrogException if needed
+     */
+    protected void connectAndRegister() throws SmartFrogException {
         connection = login();
         connection.addConnectionListener(this);
-        String filter=sfResolve(ATTR_FILTER,"",true);
-        reconnect=sfResolve(ATTR_RECONNECT,reconnect, true);
-        timeout =sfResolve(ATTR_TIMEOUT, 0,true)*60000L;
-        connection.addPacketListener(this, new MessageFilter());
+        registerAllHandlers();
     }
 
 
@@ -98,7 +116,27 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(connection==null) {
+        innerPing();
+    }
+
+    /**
+     * Override point.
+     * @throws SmartFrogLivenessException
+     */
+    protected void innerPing() throws SmartFrogLivenessException {
+        checkConnection();
+    }
+
+    /**
+     * Check the connection.
+     * <ol>
+     * <li>If disconnected, try to reconnect.</li>
+     * <li>If the connection was closed, raise an exception with the cause</li>
+     * <li>If the connection is null, raise that as an exception</li>
+     * @throws SmartFrogLivenessException
+     */
+    protected void checkConnection() throws SmartFrogLivenessException {
+        if(connection==null && reconnect) {
             reconnect();
         } else {
             if (closedConnection != null) {
@@ -119,7 +157,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if (connection != null) {
+        if (isConnected()) {
             try {
                 connection.close();
             } catch (Exception e) {
@@ -128,6 +166,14 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         }
     }
 
+
+    /**
+     * Our filter is always a message filter
+     * @return
+     */
+    public PacketFilter getFilter() {
+        return new MessageFilter();
+    }
 
     /**
      * Process the next packet sent to this packet listener.<p>
@@ -169,7 +215,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     }
 
     private synchronized boolean reconnect() throws SmartFrogLivenessException {
-        if(connection!=null) {
+        if(isConnected()) {
             throw new IllegalStateException("Cannot reconnect -we are already connected");
         }
         if(reconnect) {
@@ -177,7 +223,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
                 reconnectStarted= System.currentTimeMillis();
             }
             try {
-                connection = login();
+                connectAndRegister();
                 reconnectStarted=0;
                 return true;
             } catch (SmartFrogException e) {
@@ -191,6 +237,56 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         } else {
             return false;
         }
+    }
 
+    /**
+     * Register or reregister all packet handlers
+     */
+    protected synchronized void registerAllHandlers() {
+        for(LocalXmppPacketHandler handler:handlers) {
+            addHandler(handler);
+        }
+    }
+
+    private void addHandler(LocalXmppPacketHandler handler) {
+        connection.addPacketListener(handler,handler.getFilter());
+    }
+
+    /**
+     * Add a new handler to be registered now or when we are next connected.
+     * You do not need to be online to register a handler.
+    * this is not remotable; you need to call it locally.
+    * @param handler the handler to register
+    */
+    public synchronized void registerPacketHandler(LocalXmppPacketHandler handler) {
+        handlers.add(handler);
+        if(isConnected()) {
+            addHandler(handler);
+        }
+    }
+
+    /**
+     * Unregister a packet handler.
+     * This removes it from the handler list, and unregisters it from any active connection.
+     * @param handler handler to unregister
+     * @return true if we unregistered.
+     */
+    public synchronized boolean unregisterPacketHandler(LocalXmppPacketHandler handler) {
+        if(!handlers.remove(handler)) {
+            return false;
+        }
+        if (isConnected()) {
+            connection.removePacketListener(handler);
+        }
+        return true;
+    }
+
+
+    /**
+     * Is this connection made?
+     * @return true if we are connected
+     */
+    public boolean isConnected() {
+        return connection!=null;
     }
 }

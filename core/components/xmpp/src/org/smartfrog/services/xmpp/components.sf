@@ -192,7 +192,45 @@ XmppDebuggingWorkflow extends XmppDebugging {
  * route messages to users on it.
  */
 HpJabberChatClient extends XmppClient {
-    server "jabber.google.com";
+    server "jabber.hp.com";
     serviceName "hp.com";
     port 5223;
 }
+
+/**
+ * component for handling incoming events.
+ * This must be deployed in the same process as the listener,
+ * as the incoming packets are not serializable. 
+ */
+
+XmppPacketHandler extends Prim {
+  //you must provide a listener
+  sfClass "org.smartfrog.services.xmpp.XmppPacketHandlerImpl";
+  listener TBD;
+}
+
+/**
+ * this component receives messages only (and logs them)
+ */
+XmppMessageHandler extends XmppPacketHandler {
+  sfClass "org.smartfrog.services.xmpp.XmppMessageHandlerImpl";
+
+}
+
+/**
+ * executes the action once for every incoming message that matches the filter
+ */
+/*
+XmppWorkflowHandler extends ActionCompound {
+  listener TBD;
+}*/
+
+
+/**
+ * a component that adds messages to the history
+ */
+HistoryPacketHandler extends XmppPacketHandler {
+  sfClass "org.smartfrog.services.xmpp.HistoryPacketHandlerImpl";
+  //a limit of -1 means "no limit"; anything else limits the size
+  limit 100;
+} 
