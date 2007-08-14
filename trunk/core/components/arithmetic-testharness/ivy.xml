@@ -62,6 +62,10 @@
     <dependency org="velocity"
         name="velocity"
         rev="${velocity.version}"
-        conf="compile,runtime,daemon->default"/>
+        conf="compile,daemon,test,redist->default"/>
+    <dependency org="org.beanshell"
+        name="bsh"
+        rev="${bsh.version}"
+        conf="daemon,test,redist->default"/>
   </dependencies>
 </ivy-module>
