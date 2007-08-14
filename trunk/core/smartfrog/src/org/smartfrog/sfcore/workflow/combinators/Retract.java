@@ -39,9 +39,8 @@ public class Retract extends EventCompoundImpl implements Compound {
      *
      * @throws RemoteException In case of RMI or network error.
      */
-    public Retract() throws RemoteException , SmartFrogException {
+    public Retract() throws RemoteException {
         super();
-
     }
 
     /**

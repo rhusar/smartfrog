@@ -305,7 +305,7 @@ public class TestCompoundImpl extends ConditionCompound
         if (actionPrim == child) {
             actionTerminationRecord=childStatus;
             //child termination
-            if (actionTerminator.isForcedShutdown() && !expectTerminate) {
+            if (actionTerminator!=null && actionTerminator.isForcedShutdown() && !expectTerminate) {
                 //this is a forced shutdown, all is well
                 sfLog().info("Forced shutdown of test components (expected)");
             } else {
