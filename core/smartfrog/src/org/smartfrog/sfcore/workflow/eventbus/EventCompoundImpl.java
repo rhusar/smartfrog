@@ -375,11 +375,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
     /**
-     * A synchronized check for termination
+     * A synchronized check for termination; the termLock is used for the lock.
      * @return true iff the workflow component is terminating or is already terminated
      */
-    protected synchronized boolean isWorkflowTerminating() {
-        return sfIsTerminated() || sfIsTerminating();
+    protected boolean isWorkflowTerminating() {
+        synchronized (termLock) {
+            if (sfIsTerminating || sfIsTerminated) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
