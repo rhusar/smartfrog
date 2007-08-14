@@ -47,6 +47,7 @@
         conf="build->default"/>
     <dependency org="org.smartfrog"
         name="sf-testharness"
+        changing="true"
         rev="latest.integration"
         conf="test->default"/>
     <dependency org="org.smartfrog"
