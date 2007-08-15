@@ -169,7 +169,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
     /**
      * Our filter is always a message filter
-     * @return
+     * @return a new message filter
      */
     public PacketFilter getFilter() {
         return new MessageFilter();
