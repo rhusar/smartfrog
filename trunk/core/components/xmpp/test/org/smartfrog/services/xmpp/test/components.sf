@@ -27,7 +27,7 @@
  * members know
  */
 
-xmpp.password OPTIONAL("parmaHam") PROPERTY test.xmpp.password;
+xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
 
 IsXmppPresent extends BooleanValue {
   value (xmpp.password != "");
