@@ -36,40 +36,8 @@ For more information: www.smartfrog.org
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
-  
 
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
- <property name="Name.System" value="Emailer"/>
-  <!-- ========================================================== -->
-  <!-- pre-dist  -->
-  <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-  <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="SmartFrog Debugger"/>
-    <property name="year" value="2004"/>
-  
-    <echo message=""/>
-<echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}, ${Name.Company} (${ant.version})"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- clean -->
-  <!-- ========================================================== -->
-
- <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="test"  /> 
- </target>  
-
-
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
-     <copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
-  </target>
 </project>
