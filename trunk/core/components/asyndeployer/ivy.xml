@@ -34,8 +34,8 @@
   <publications>
     <!--get the artifact from our module name-->
     <artifact conf="master"/>
-    <artifact name="sf-dado-javadocs" conf="documentation" ext="zip"/>
-    <artifact name="sf-dado-documentation" conf="documentation" ext="zip"/>
+    <artifact name="sf-asyndeployer-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-asyndeployer-documentation" conf="documentation" ext="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
