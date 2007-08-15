@@ -53,7 +53,7 @@ public class ConsoleListenerImpl extends PrimImpl
     /**
      * set a new output stream
      *
-     * @param out
+     * @param out the output stream
      */
     public void setOutputStream(PrintStream out) {
         outputstream = out;
@@ -62,7 +62,7 @@ public class ConsoleListenerImpl extends PrimImpl
     /**
      * get the current output stream
      *
-     * @return
+     * @return the output stream
      */
     public PrintStream getOutputstream() {
         return outputstream;
@@ -82,7 +82,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
     /**
      * Print a line
-     * @param line
+     * @param line line to print
      */
     public void println(String line) {
         outputstream.println(line);
