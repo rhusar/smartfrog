@@ -203,7 +203,7 @@
   </target>
 
 
-  <target name="prepare-docs" depends="seedforrest,copy-properties,copy-components,copy-master-docs">
+  <target name="prepare-docs" depends="seedforrest,copy-components,copy-master-docs">
     <echo level="verbose">${comp.home}</echo>
   </target>
 
