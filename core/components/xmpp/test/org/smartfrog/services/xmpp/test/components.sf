@@ -27,18 +27,16 @@
  * members know
  */
 
-xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
-//xmpp.password.present IF (xmpp.password != "") THEN true ELSE false FI;
-xmpp.password.present (xmpp.password != "");
+xmpp.password OPTIONAL("parmaHam") PROPERTY test.xmpp.password;
 
 IsXmppPresent extends BooleanValue {
-  value xmpp.password.present;
+  value (xmpp.password != "");
 }
 
 
-  postMessageFrom1 extends GoogleChatClientWorkflow {
+  PostMessage extends GoogleChatClientWorkflow {
       to "smartfrog.two@gmail.com";
-      login "smartfrog.one";
+      login "smartfrog.two";
       password xmpp.password;
       message "hello, world";
   }
@@ -54,17 +52,17 @@ testGmailXmpp extends ExpectDeploy {
   description "test xmpp deployment -requires test.xmpp.password to be set to the appropriate password";
 
   action extends Compound {
-    listener extends listener2;
+    Listener extends listener2;
     historyPacketHandler extends HistoryPacketHandler {
-      listener LAZY listener;
+      listener LAZY Listener;
     }
   }
 
   undeployAfter 60000;
 
   tests extends Sequence {
-    post1 extends postMessageFrom1;
-    post2 extends postMessageFrom1 {
+    post1 extends PostMessage;
+    post2 extends PostMessage {
       message "second message";
     }
   }

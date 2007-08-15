@@ -40,14 +40,10 @@
 
 
   <property name="root.dir" location="../.."/>
-
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
 
 
   <!-- ========================================================== -->
@@ -60,56 +56,15 @@
       <classpath refid="tests.run.classpath"/>
       <sysproperty key="org.smartfrog.codebase"
           value="${codebase}"/>
-      <sysproperty key="xmpp.password" value=""/>
+      <sysproperty key="test.xmpp.password" value=""/>
       <!-- test files -->
       <source dir="${test.src.dir}">
         <include name="files/*.sf"/>
-        <exclude name="files/components.sf"/>
+        <exclude name="**/components.sf"/>
+        <include name="org/smartfrog/services/xmpp/test/test*.sf"/>
       </source>
     </sf-parse>
   </target>
-
-
-  <!-- ========================================================== -->
-  <!-- set up any properties for deployment -->
-  <!-- ========================================================== -->
-  <target name="init-deploy-properties" depends="init">
-    <property name="deploy.host" value="localhost"/>
-    <property name="application.name" value="${project.name}"/>
-  </target>
-
-
-
-  <!-- ========================================================== -->
-  <!-- deploy; requires a host -->
-  <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
-      description="deploy">
-
-    <sf-deploy classpathref="run.classpath"
-        logStackTraces="true"
-        host="${deploy.host}"
-        timeout="30000"
-        >
-      <codebase url="${codebase}"/>
-
-      <application name="${application.name}">
-        #include "/${deploy.sf}"
-        sfCodeBase PROPERTY org.smartfrog.codebase;
-      </application>
-    </sf-deploy>
-  </target>
-
-  <target name="undeploy" depends="init-deploy-properties"
-      description="deploy">
-
-    <sf-undeploy classpathref="run.classpath"
-        logStackTraces="true"
-        host="${deploy.host}"
-        timeout="30000"
-        application="${application.name}"/>
-  </target>
-
 
 
   <!-- ========================================================== -->

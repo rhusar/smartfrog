@@ -30,17 +30,16 @@ xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
 
 sfConfig extends Parallel {
 
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
-        login "smartfrog.one";
-        password xmpp.password;
-        message "hello, world";
-    }
 
     listener extends GoogleChatListener {
         login "smartfrog.two";
         password xmpp.password;
     }
 
-
+    post extends GoogleChatClientWorkflow {
+        to "smartfrog.two@gmail.com";
+        login "smartfrog.two";
+        password xmpp.password;
+        message "hello, world";
+    }
 }

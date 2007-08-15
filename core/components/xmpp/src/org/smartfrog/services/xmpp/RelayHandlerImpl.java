@@ -19,28 +19,25 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.xmpp;
 
-import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Message;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.Vector;
 
 /**
  *
- * Created 14-Aug-2007 14:19:36
+ * Created 14-Aug-2007 16:35:25
  *
  */
 
-public class HistoryPacketHandlerImpl extends XmppPacketHandlerImpl implements Remote {
+public class RelayHandlerImpl extends XmppMessageHandlerImpl {
 
-    private List<Packet> messages;
-    private int limit;
-    public static final String ATTR_LIMIT = "limit";
+    private Vector<String> recipients;
+    public static final String ATTR_TO = "to";
 
-    public HistoryPacketHandlerImpl() throws RemoteException {
+    public RelayHandlerImpl() throws RemoteException {
     }
 
 
@@ -53,34 +50,29 @@ public class HistoryPacketHandlerImpl extends XmppPacketHandlerImpl implements R
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        limit=sfResolve(ATTR_LIMIT,limit,true);
-        clear();
-    }
-
-    public void clear() {
-        messages=new LinkedList();
-    }
-
-    public synchronized int getSize() {
-        return messages.size();
-    }
-
-    public synchronized void add(Packet message) {
-        messages.add(message);
-        if(limit >= 0 && messages.size()>limit) {
-            messages.remove(0);
+        Object to = sfResolve(ATTR_TO,true);
+        if(to instanceof Vector) {
+            recipients=(Vector<String>) to;
+        } else {
+            recipients=new Vector<String>(1);
+            recipients.add(to.toString());
         }
     }
 
-
     /**
-     * Process the next packet by adding the message
+     * Process the next packet sent to this packet listener.<p>
+     *
+     * A single thread is responsible for invoking all listeners, so it's very important that implementations of this
+     * method not block for any extended period of time.
      *
      * @param packet the packet to process.
      */
     public void processPacket(Packet packet) {
-        add(packet);
+        super.processPacket(packet);
+        Message m=(Message) packet;
+        for(String to:recipients) {
+            getListener().sendMessage(to, m.getSubject(), m.getBody());
+        }
+
     }
-
-
 }
