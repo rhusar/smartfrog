@@ -21,6 +21,7 @@ package org.smartfrog.services.xmpp;
 
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.XMPPConnection;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -36,6 +37,7 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
         XmppMessageHandler, LocalXmppPacketHandler, PacketFilter,Remote {
 
     private XmppListenerImpl listener;
+
     public static final String ERROR_WRONG_TYPE_OR_PROCESS = "The listener must be an instance of XmppListenerImpl in the same process";
 
     public XmppPacketHandlerImpl() throws RemoteException {
@@ -51,12 +53,28 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this
-     * call, but spawn off any main loops!
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * Get the current listener
+     * @return the listener
      */
+    protected XmppListenerImpl getListener() {
+        return listener;
+    }
+
+    /**
+     * Get the active connection (may be null)
+     * @return the active connection (may be null)
+     */
+    protected XMPPConnection getConnection() {
+        return listener.getConnection();
+    }
+
+    /**
+    * Can be called to start components. Subclasses should override to provide functionality Do not block in this
+    * call, but spawn off any main loops!
+    *
+    * @throws SmartFrogException failure while starting
+    * @throws RemoteException    In case of network/rmi error
+    */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Prim owner=null;
@@ -68,21 +86,6 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
         listener.registerPacketHandler(this);
     }
 
-
-    /**
-     * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
-     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
-     * Attributees that require injection are handled during sfDeploy().
-     *
-     * @throws SmartFrogException error while deploying
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-
-    }
-
-
     /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
@@ -93,6 +96,7 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
         super.sfTerminateWith(status);
         if(listener!=null) {
             listener.unregisterPacketHandler(this);
+            listener=null;
         }
     }
 

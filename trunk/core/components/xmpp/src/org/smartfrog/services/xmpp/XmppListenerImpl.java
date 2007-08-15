@@ -72,7 +72,6 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
             throws SmartFrogException, RemoteException {
         super.sfStart();
         handlers.add(this);
-        String filter = sfResolve(ATTR_FILTER, "", true);
         reconnect = sfResolve(ATTR_RECONNECT, reconnect, true);
         timeout = sfResolve(ATTR_TIMEOUT, 0, true) * 60000L;
         connectAndRegister();
@@ -85,7 +84,6 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      */
     protected void connectAndRegister() throws SmartFrogException {
         connection = login();
-        connection.addConnectionListener(this);
         registerAllHandlers();
     }
 
@@ -162,6 +160,8 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
                 connection.close();
             } catch (Exception e) {
                 //ignore this
+            } finally {
+                connection = null;
             }
         }
     }
@@ -283,10 +283,37 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
 
     /**
+     * Get the active connection
+     * @return the connection; this will be null when disconnected
+     */
+    public XMPPConnection getConnection() {
+        return connection;
+    }
+
+    /**
      * Is this connection made?
      * @return true if we are connected
      */
     public boolean isConnected() {
         return connection!=null;
+    }
+
+    /**
+     * Send a text message if connected
+     * @param recipient who gets the message
+     * @param subject subject of the message
+     * @param text the text
+     * @return true if the message was sent
+     */
+    public boolean sendMessage(String recipient,String subject,String text) {
+        if(isConnected()) {
+            Message m = new Message(recipient);
+            m.setSubject(subject);
+            m.setBody(text);
+            m.setType(Message.Type.NORMAL);
+            connection.sendPacket(m);
+            return true;
+        }
+        return false;
     }
 }

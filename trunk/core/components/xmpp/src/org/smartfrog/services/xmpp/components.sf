@@ -83,8 +83,8 @@ XmppComponent extends Prim {
 XmppListener extends XmppComponent {
 
     xmppListenerSchema extends Schema {
-        filter extends String {
-            description "classname for a filter to process incoming packets";
+        presence extends Boolean {
+            description "should the component register itself as present";
         }
         reconnect extends Boolean;
         offlineMinutesTimeout extends Integer {
@@ -97,8 +97,6 @@ XmppListener extends XmppComponent {
     reconnect true;
     //a lot of servers go down. To be robust you have to retry a lot.
     offlineMinutesTimeout 60;
-    //default filter strips out all but messages
-    filter "org.smartfrog.services.xmpp.MessageFilter";
 }
 
 /**
@@ -214,7 +212,6 @@ XmppPacketHandler extends Prim {
  */
 XmppMessageHandler extends XmppPacketHandler {
   sfClass "org.smartfrog.services.xmpp.XmppMessageHandlerImpl";
-
 }
 
 /**
@@ -233,4 +230,14 @@ HistoryPacketHandler extends XmppPacketHandler {
   sfClass "org.smartfrog.services.xmpp.HistoryPacketHandlerImpl";
   //a limit of -1 means "no limit"; anything else limits the size
   limit 100;
-} 
+}
+
+
+/**
+ * this component relays the message to someone else
+ */
+RelayHandler extends XmppMessageHandler {
+  sfClass "org.smartfrog.services.xmpp.RelayHandlerImpl";
+  //give the name of the recipient, or a list of recipients
+  to TBD;
+}
