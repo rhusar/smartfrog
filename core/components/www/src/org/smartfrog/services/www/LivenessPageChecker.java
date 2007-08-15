@@ -109,7 +109,7 @@ public class LivenessPageChecker implements LivenessPage {
      * Mime types
      */
     protected HashMap mimeTypeMap;
-
+    private String errorMessage;
 
 
     /**
@@ -277,7 +277,7 @@ public class LivenessPageChecker implements LivenessPage {
             int responseCode = connection.getResponseCode();
 
             if (responseCode <= 0) {
-                throw new SmartFrogLivenessException("endpoint " + toString()
+                logAndRaise("Endpoint " + toString()
                         + " is not returning HTTP responses");
             }
 
@@ -292,8 +292,7 @@ public class LivenessPageChecker implements LivenessPage {
                 String message = "endpoint " + toString()
                         + " returned error " + response
                         + text;
-                log.error(message);
-                throw new SmartFrogLivenessException(message);
+                logAndRaise(message);
             }
 
             //now fetch the file
@@ -302,9 +301,7 @@ public class LivenessPageChecker implements LivenessPage {
             if (mimeTypeMap != null) {
                 String mimeType = connection.getContentType();
                 if (null == mimeTypeMap.get(mimeType)) {
-                    String message = "Unexpected mimetype: " + mimeType;
-                    log.error(message);
-                    throw new SmartFrogLivenessException(message);
+                    logAndRaise("Unexpected mimetype: " + mimeType);
                 }
 
             }
@@ -312,11 +309,23 @@ public class LivenessPageChecker implements LivenessPage {
             postProcess(responseCode, response, body);
 
         } catch (IOException exception) {
-            String text = maybeGetErrorText(connection);
+            //String text = maybeGetErrorText(connection);
             String message = "Failed to read " + targetURL.toString() + "\n"
-                    + text + "\n" + exception.getMessage();
-            throw new SmartFrogLivenessException(message, exception);
+                    + "\n" + exception.getMessage();
+            logAndRaise(message);
         }
+    }
+
+    /**
+     * Log the error message and raise an exception.
+     * The error text is also saved to {@link #errorMessage}
+     * @param message message to report
+     * @throws SmartFrogLivenessException
+     */
+    private void logAndRaise(String message) throws SmartFrogLivenessException {
+        errorMessage = message;
+        log.error(message);
+        throw new SmartFrogLivenessException(message);
     }
 
     /**
@@ -569,6 +578,15 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public void setFetchErrorText(boolean fetchErrorText) {
         this.fetchErrorText = fetchErrorText;
+    }
+
+
+    /**
+     * Get any error message raised by the last poll
+     * @return
+     */
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     /**

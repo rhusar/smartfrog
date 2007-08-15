@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
 
@@ -33,19 +34,20 @@ import java.rmi.RemoteException;
 public class WaitForPageImpl extends LivenessPageComponent
     implements WaitForPage, Runnable {
 
-    int timeout = 0;
+    private int timeout = 0;
 
     /** thread to do the work */
-    private Thread worker = null;
+    private SmartFrogThread worker;
+    public static final String ERROR_WAIT_FOR_TIMEOUT = "Timeout waiting for a page to go live: \n";
 
     public WaitForPageImpl() throws RemoteException {
     }
 
-    public Thread getWorker() {
+    public SmartFrogThread getWorker() {
         return worker;
     }
 
-    public void setWorker(Thread worker) {
+    public void setWorker(SmartFrogThread worker) {
         this.worker = worker;
     }
 
@@ -72,8 +74,8 @@ public class WaitForPageImpl extends LivenessPageComponent
         throws SmartFrogException, RemoteException {
         super.sfStart();
         timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
-        worker=new Thread(this);
-        worker.setName(this.sfCompleteName().toString());
+        worker=new SmartFrogThread(this);
+        worker.setName(sfCompleteName().toString());
         worker.start();
     }
 
@@ -85,7 +87,7 @@ public class WaitForPageImpl extends LivenessPageComponent
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        Thread thread = getWorker();
+        SmartFrogThread thread = getWorker();
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
@@ -114,8 +116,8 @@ public class WaitForPageImpl extends LivenessPageComponent
      */
     public void run() {
         long now = System.currentTimeMillis();
-        long endTime = now+timeout*1000;
-        long sleepTime = getCheckFrequency()*1000;
+        long endTime = now+timeout;
+        long sleepTime = getCheckFrequency();
         boolean timedOut;
         boolean success=false;
         boolean interrupted=false;
@@ -148,7 +150,9 @@ public class WaitForPageImpl extends LivenessPageComponent
         if(!success) {
             //on a failure, grab the full text
             getLivenessPage().setFetchErrorText(true);
+            //poll the site
             lastException=poll();
+            //and check that the success flag didnt change
             success=lastException==null;
         }
         TerminationRecord record;
@@ -157,15 +161,21 @@ public class WaitForPageImpl extends LivenessPageComponent
         if(success) {
             //successful exit
             record = TerminationRecord.normal(name);
+            //now do a terminate with the relevant message
+            getHelper().sfSelfDetachAndOrTerminate(record);
         } else {
             //failure. Abnormal termination
+            String errorText = ERROR_WAIT_FOR_TIMEOUT + getLivenessPage().getTargetURL();
+            if (getLivenessPage().getErrorMessage() != null) {
+                errorText = errorText + "\n" + getLivenessPage().getErrorMessage();
+            }
             record = TerminationRecord.abnormal(
-                "Timeout waiting for a page to go live"+getLivenessPage().getTargetURL(),
-                name,
-                lastException);
+                    errorText,
+                    name,
+                    lastException);
+            //always terminate with an error if something went wrong
+            sfTerminate(record);
         }
-        //now do a terminate with the relevant exception
-        getHelper().sfSelfDetachAndOrTerminate(record);
     }
 
     /**

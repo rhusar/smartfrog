@@ -33,8 +33,8 @@ tomcat.port OPTIONAL(8080) PROPERTY test.tomcat.port;
 // a boolean property that is true if tomcat.home is non-empty
 tomcat.present IF (tomcat.home != "") THEN true ELSE false FI;
 
-
-jdk.home PROPERTY test.jdk.home ;
+//tomcat fails big time if this is not set
+jdk.home OPTIONAL("") PROPERTY test.jdk.home ;
 
 
 
@@ -131,12 +131,13 @@ testTomcatRuns extends DeployTomcatTests {
 /*
  * one test with a 10s shutdown
  */
-testWaitForTimesOut extends DeployTomcatTests {
+testWaitForTimesOut extends ExpectDeployFailure {
   condition extends NoRunningServer;
   description "Wait for a few seconds for tomcat, then give up";
-  tests extends WaitForTomcat {
-    timeout 5000;
+
+  action extends WaitForTomcat {
+    timeout 1000;
   }
-  expectTerminate true;
   exitType FailingTestCompound:exitType;
+  exitText "Timeout waiting for a page to go live";
 }

@@ -76,8 +76,10 @@ For more information: www.smartfrog.org
      maximumResponseCode extends OptionalInteger;
      //flag to follow redirects
      followRedirects extends OptionalBoolean;
+
      //check frequency. This is the number of pings between checks
-     //and so lets us probe less often than normal. default=1
+     //and so lets us probe less often than normal.
+     //this is in milliseconds
      checkFrequency extends OptionalInteger;
 
      //flag to say that the check is on/off; useful during development
@@ -102,7 +104,7 @@ For more information: www.smartfrog.org
      maximumResponseCode 299;
      minimumResponseCode 200;
      followRedirects true;
-     checkFrequency 1;
+     checkFrequency 1000;
      enabled true;
      checkOnStartup false;
      checkOnLiveness true;
@@ -123,9 +125,11 @@ For more information: www.smartfrog.org
   
   WaitForPage extends LivenessPage {
     WaitForPageSchema extends Schema {
+      //timeout in milliseconds
       timeout extends Integer;
     }
     sfClass "org.smartfrog.services.www.WaitForPageImpl";
+    checkFrequency 500;
     fetchErrorText false;
     checkOnLiveness false;
     sfShouldTerminate true;
