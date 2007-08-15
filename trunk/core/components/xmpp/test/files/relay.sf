@@ -35,8 +35,12 @@ sfConfig extends Compound {
         password xmpp.password;
     }
 
+    gmail "@gmail.com";
+
     relay extends RelayHandler {
-      to ["steve.loughran@gmail.com"];
+      to ["smartfrog.one"];
+      //use concatenation to reduce spam
+      //to ["steve.loughran" ++ gmail,"julgui"++ gmail];
       listener LAZY PARENT:Listener;
     }
 
