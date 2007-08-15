@@ -221,7 +221,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * {@inheritDoc}
+     * create a listener for a single host.
      */
     protected abstract OneHostXMLListener createNewSingleHostListener(String hostname,
                                                                       File destFile,
