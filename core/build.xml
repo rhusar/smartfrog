@@ -469,7 +469,9 @@ For more information: www.smartfrog.org
           <exclude name="xml/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
           <!-- no docs unless forrest is installed-->
-          <exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>
+          <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
+          <!--this is always excluded for now-->
+          <exclude name="documentation/build.xml" />
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
