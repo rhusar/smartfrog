@@ -34,6 +34,9 @@ public class WireMessage implements Serializable {
     private String subject;
     private String thread;
     private String body;
+    private String packetID;
+    private String to;
+    private String type;
 
 
     public WireMessage() {
@@ -44,5 +47,9 @@ public class WireMessage implements Serializable {
         subject=m.getSubject();
 
         body=m.getBody();
+        packetID=m.getPacketID();
+        thread=m.getThread();
+        to = m.getTo();
+        type = m.getType().toString();
     }
 }
