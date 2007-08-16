@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 */ --%>
 
-<%@ page language="java" %>
+<%@ page contentType="text/html" language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
@@ -42,22 +42,7 @@ For more information: www.smartfrog.org
     String[] hosts = manager.listHosts();
     String rowClass = "";
 
-    if (boolListActiveHosts) {
 %>
-<script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
-<script language="JavaScript" type="text/javascript">
-//    function pullUpdate() {
-//        // Get update
-//        getStatus();
-//        // Call me again in 5 seconds
-//        setTimeout("pullUpdate()", 5000);
-//    }
-//
-//    // Call once
-//    pullUpdate();
-    window.setInterval("getStatus()", 5000);
-</script>
-<% } %>
 
 <script language="JavaScript" type="text/javascript">
     <!--
@@ -93,23 +78,22 @@ For more information: www.smartfrog.org
                 <th>Platform</th>
                 <% if (boolListActiveHosts) { %>
                 <th>Status</th>
+                <th>Recent Message</th>
                 <% } %>
             </tr>
         </thead>
         <tbody>
             <%
                 if (hosts.length != 0) {
-                for (int i = 0; i < hosts.length; i++) {
-                    rowClass = ((i%2)==0)?"class=\"altRowColor\"":"";
+                int count = 0;
+                for (String host : hosts) {
+                    rowClass = ((count++%2)==0)?"class=\"altRowColor\"":"";
                     HostType h = null;
                     String os = "";
                     String arch = "";
-                    boolean sfError = false;
-
-                    String URLhostid = "hostId=" + hosts[i];
 
                     try {
-                        h = manager.getHost(hosts[i]);
+                        h = manager.getHost(host);
                         os = h.getPlatformSelector().getOs();
                         arch = h.getPlatformSelector().getArch();
                     } catch (NullPointerException e) {
@@ -123,20 +107,20 @@ For more information: www.smartfrog.org
             <tr <%=rowClass %>>
                 <td class="checkboxCell">
                     <input type="checkbox" rowselector="yes"
-                           name="selectedHost" value="<%=hosts[i]%>"></input>
+                           name="selectedHost" value="<%= host %>"></input>
                 </td>
-                <td><%=hosts[i]%>
+                <td><%= host %>
                 </td>
                 <td>
                     <table cellspacing="0" cellpadding="0">
                         <tr>
                             <td>
-                                <a href="log_view.jsp?pageAction=viewSelected&<%=URLhostid%>">
+                                <a href="log_view.jsp?pageAction=viewSelected&hostId=<%= host %>">
                                     [Logs]
                                 </a>
                             </td>
                             <td class="data">
-                                <a href="host_setup_bs.jsp?<%=URLhostid%>">
+                                <a href="host_setup_bs.jsp?hostId=<%= host %>">
                                     [Settings]
                                 </a>
                             </td>
@@ -147,7 +131,10 @@ For more information: www.smartfrog.org
                 </td>
                 <% if (boolListActiveHosts) { %>
                 <td>
-                    <div id="<%=hosts[i]%>_status" style="width:110px;"></div>
+                    <div id="<%= host %>_status" style=""></div>
+                </td>
+                <td>
+                    <div id="<%= host %>_msg" style=""></div>
                 </td>
                 <% } %>
             </tr>
@@ -155,7 +142,7 @@ For more information: www.smartfrog.org
                 }
                 } else {
             %>
-                <td colspan="<% if (boolListActiveHosts) { %>5<% } else {%>4<% } %>">There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
+                <td colspan="<% if (boolListActiveHosts) { %>6<% } else {%>4<% } %>">There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
             <%
                 }
             %>
@@ -175,9 +162,7 @@ For more information: www.smartfrog.org
                                 "Start SmartFrog Console",
                                 "javascript:openConsole()",
                                 "Ignite selected hosts",
-                                "javascript:igniteHosts()");
-
-        getStatus();
+                                "javascript:igniteHosts()"); 
         -->
     </script>
 </div>
@@ -185,5 +170,16 @@ For more information: www.smartfrog.org
 </center>
 </div>
 </form>
+
+<% if (boolListActiveHosts) { %>
+<script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
+<script language="JavaScript" type="text/javascript">
+    <!--
+    window.setInterval("getStatus()", 5000);
+
+    getStatus();
+    -->
+</script>
+<% } %>
 
 <%@ include file="footer.inc.jsp" %>
