@@ -1,4 +1,4 @@
-SmartFrog ${smartfrog.version}
+SmartFrog 3.12.000
 ======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed
@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is ${smartfrog.version}; built from revision ${svn.revision}
+This release is 3.12.000; built from revision 5018
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -49,13 +49,20 @@ This release is available as:
 * the original core smartfrog distribution as .zip and .tar.gz (deprecated)
 
 
-The RPM installation is for RPM-based Linux systems. It comprises three RPM
-files, smartfrog, smartfrog-daemon and smartfrog-demo:
+The RPM installation is for RPM-based Linux systems. It comprises the RPM files:
 
 smartfrog:        the core SmartFrog distribution.
 smartfrog-daemon: the shell scripts to add the smartfrog distribution to the
                   path, and to run the daemon on start-up.
 smartfrog-demo:   example code and documentation.
+
+smartfrog-anubis: "Anubis" partition-aware tuple space.
+smartfrog-logging: Enhanced logging
+
+
+We recommend the RPM files for installation on deployment hosts, and the izpack
+installation for developers.
+
 
 All the JAR files are also published to a repository that is compatible with
 Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
@@ -88,9 +95,9 @@ entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 to check out smartfrog/trunk/core from our repository.
 
-This release was built with revision ${svn.revision} of the repository, which
+This release was built with revision 5018 of the repository, which
 is available under the SVN branch
-${svn.branch.url}
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.000
 
 We strongly encourage anyone interested in building or extending
 SmartFrog to get involved in the SmartFrog developer mailing list, which
@@ -108,5 +115,38 @@ The SmartFrog Team        http://smartfrog.org/
 
 Changes since last release
 ==========================
+
+The 3.12.000 release is a stable release, intended for use in
+production systems. All major defects that have been reported have been fixed,
+and the RPM and izpack distribution packages are working well as distribution
+formats.
+
+This release is Java1.5+ only; it has been tested on Java1.5 and Java1.6, on
+Linux, Windows XP, Windows Vista and OS/X systems; the tested Linux distributions
+are RHEL4, RHEL5 and Ubuntu 7.04; one of the RedHat servers is a 4-way 64-bit
+machine.  
+
+Very few changes have been made since the last beta, 3.11.007; apart from the switch
+to Java 1.5, the only changes were to the TestCompound (and tests that use it), and
+the components in the sf-www package that test for a remote page being available.
+ 
+** Bug
+    * [SFOS-390] - TestCompound NPEs
+    * [SFOS-393] - www waitforpage component doesnt fail abnormally when there is a timeout
+    * [SFOS-394] - www liveness and waitfor pages uses seconds and not milliseconds for sleeps
+                   -inconsistent with rest of the system
+    * [SFOS-395] - www liveness page tries to read the error text from the far end after an
+                   - IO exception
+    * [SFOS-396] - TestCompoundImpl thinks an expected abnormal termination is still a failure
+
+** Improvement
+    * [SFOS-133] - stop Cruise Control javadocs from complaining about various things in some components
+    * [SFOS-317] - Move test cases to the asynchronous event model
+    * [SFOS-388] - Move to Java1.5 across the entire project
+    * [SFOS-400] - include buildable source trees in the distributions
+
+** Sub-task
+    * [SFOS-372] - migrate org.smartfrog.services.database.test.system.core.mysql.MysqlTest to async tests
+
 
 
