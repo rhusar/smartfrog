@@ -26,6 +26,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+/**
+ * @deprecated Unused.
+ */
 public class AvalancheEventProvider implements IQProvider {
 
 	public IQ parseIQ(XmlPullParser parser) throws Exception {
