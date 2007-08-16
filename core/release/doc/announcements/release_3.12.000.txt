@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is 3.12.000; built from revision 5018
+This release is 3.12.000; built from revision 5030
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -95,7 +95,7 @@ entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 to check out smartfrog/trunk/core from our repository.
 
-This release was built with revision 5018 of the repository, which
+This release was built with revision 5030 of the repository, which
 is available under the SVN branch
 https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.000
 
