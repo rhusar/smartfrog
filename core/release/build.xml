@@ -199,7 +199,7 @@
   <target name="package-source" depends="ivy-resolve">
     <property name="source.zip" location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip" />
 
-    <copy tofile="source.zip"
+    <copy tofile="${source.zip}"
         file="${ivy.lib.dir}/package-antbuild-source/sf-antbuild-src-${smartfrog.version}.zip" />
   </target>
 
