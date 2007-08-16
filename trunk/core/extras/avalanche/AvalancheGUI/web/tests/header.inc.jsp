@@ -133,10 +133,15 @@
 <tr>
 	<td>assertText</td>
 	<td>menu4_trigger</td>
-	<td>Reports View Logs</td>
+	<td>Reports View Logs View XMPP Messages</td>
 </tr>
 <tr>
 	<td>assertText</td>
 	<td>link=View Logs</td>
 	<td>View Logs</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=View XMPP Messages</td>
+	<td>View XMPP Messages</td>
 </tr>

@@ -88,6 +88,7 @@
 </tr>
 <!--Setting up basic data-->
 <jsp:include page="header.inc.jsp?subtitle=Host Basic Settings Page"></jsp:include>
+<jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
     <td>type</td>
     <td>hostId</td>
@@ -119,6 +120,7 @@
 </tr>
 <!--Editing access modes-->
 <jsp:include page="header.inc.jsp?subtitle=Host Access Modes Page"></jsp:include>
+<jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
     <td>click</td>
     <td>//input[@value='Add an Access Mode']</td>
@@ -143,6 +145,7 @@
 </tr>
 <!--Editing transfer modes-->
 <jsp:include page="header.inc.jsp?subtitle=Host Transfer Modes Page"></jsp:include>
+<jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
     <td>click</td>
     <td>//input[@value='Add a Transfer Mode']</td>
@@ -167,6 +170,7 @@
 </tr>
 <!--Editing enviroment variables-->
 <jsp:include page="header.inc.jsp?subtitle=Host Properties Page"></jsp:include>
+<jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
     <td>select</td>
     <td>argument.name.2</td>
@@ -201,6 +205,7 @@
 </tr>
 <!--Basic Settings page again-->
 <jsp:include page="header.inc.jsp?subtitle=Host Basic Settings Page"></jsp:include>
+<jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
     <td>verifyText</td>
     <td>//div[2]/table/tbody/tr[1]/td[2]</td>
