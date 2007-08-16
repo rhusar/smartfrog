@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public class ActiveProfileUpdater {
     private static Log log = LogFactory.getLog(ActiveProfileUpdater.class);
     private ActiveProfileManager profileManager = null;
+    private static final int XMPP_HISTORY_LIMIT = 25;
 
     public ActiveProfileUpdater() {
         try {
@@ -99,8 +100,10 @@ public class ActiveProfileUpdater {
      */
     public void setMachineAvailability(String hostId, boolean availability) {
         ActiveProfileType type = getActiveProfile(hostId);
-        type.setHostState(availability ? "Available" : "Not Available");
-        storeActiveProfile(type);
+        if (type != null) {
+            type.setHostState(availability ? "Available" : "Not Available");
+            storeActiveProfile(type);
+        }
     }
 
 
@@ -111,13 +114,15 @@ public class ActiveProfileUpdater {
      */
     public void addNewMessage(MonitoringEvent e) {
         ActiveProfileType type = getActiveProfile(e.getHost());
-        if (type.getMessagesHistoryArray().length > 25) {
-            type.removeMessagesHistory(0);
+        if (type != null) {
+            while (type.getMessagesHistoryArray().length > XMPP_HISTORY_LIMIT) {
+                type.removeMessagesHistory(0);
+            }
+            MessageType newMsg = type.addNewMessagesHistory();
+            newMsg.setTime(e.getTimestamp());
+            newMsg.setMsg(e.getMsg());
+            storeActiveProfile(type);
         }
-        MessageType newMsg = type.addNewMessagesHistory();
-        newMsg.setTime(e.getTimestamp());
-        newMsg.setMsg(e.getMsg());
-        storeActiveProfile(type);
     }
 
     /**
