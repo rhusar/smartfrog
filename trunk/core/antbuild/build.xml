@@ -14,7 +14,7 @@
   to release their own custom branch of SmartFrog.
 
   To use this module safely, create a source tree in a clean checkout of SmartFrog; one
-  in which you do no coding.
+  in which you do no coding, and build in there.
 
 
 </description>
@@ -23,30 +23,72 @@
   <import file="xml/ivy-mixin.xml" />
   <import file="xml/state.xml" />
 
+  <!--this can be set to place the artifacts in a subdirectory in the tar/zip files-->
+  <property name="prefix" value="" />
+  <property name="pcomp" value="${prefix}components" />
+  <property name="pex" value="${prefix}extras" />
+  <property name="comp" location="../components" />
+  <property name="ex" location="../extras" />
+
   <target name="filesets" depends="init">
+
+    <!--this is the patternset for all named projects
+      any project with extra dependencies, had better name them
+    -->
+    <patternset id="project.source">
+      <!--exclude stuff that should never be included-->
+      <!--as excludes take priority over includes, this stops accidental inclusion-->
+      <exclude name="build.properties" />
+      <exclude name="*.iml" />
+      <exclude name="*.jpx" />
+      <exclude name="*.ipr" />
+      <exclude name="*.iws" />
+      <!--add the things we want-->
+      <include name="bin/**"/>
+      <include name="doc/**"/>
+      <include name="lib/**"/>
+      <include name="src/**"/>
+      <include name="test/**"/>
+      <include name="build.xml"/>
+      <include name="ivy.xml"/>
+      <include name="ivyconf.xml"/>
+      <include name="build.example.properties"/>
+      <include name="project-template.pom"/>
+      <include name="rmitargets"/>
+      <include name="parsertargets.txt"/>
+      <!--strongly deprecated, but retained for consistency-->
+      <include name="buildRelease.xml"/>
+      <include name="releaseBuild.xml"/>
+
+    </patternset>
 
     <!---->
     <fileset id="root.fileset" dir="..">
       <include name="build.xml" />
       <include name="common.xml" />
+      <include name="cruisecontrol.xml" />
+      <include name="build.properties.example" />
       <include name="components/libraries.properties" />
     </fileset>
 
-    <fileset id="forrest.fileset" dir="..">
-      <include name="forrestsite/documentation.xml" />
-      <include name="components/forrest_skin/*" />
-    </fileset>
-
     <fileset id="release.fileset" dir="../release">
-      <include name="build.xml" />
-      <include name="ivy.xml" />
-      <include name="izpack/*.xml" />
-      <include name="src/*" />
+      <patternset refid="project.source" />
+      <include name="izpack/*" />
+      <include name="scripts/**" />
+      <include name="metadata/**" />
     </fileset>
 
+    <!--components/libraries.properties is in the root fileset-->
     <fileset id="components.fileset" dir="../components">
-      <include name="*.xml" />
-      <include name="build.example.properties" />
+      <include name="build.example.properties"/>
+      <!--strongly deprecated, but retained for consistency-->
+      <include name="build.xml"/>
+      <include name="buildRelease.xml"/>
+      <include name="buildRelease-template.xml"/>
+      <include name="createRelease.xml"/>
+      <include name="releaseBuild.xml"/>
+      <include name="documentation.xml"/>
+      <include name="version.properties"/>
     </fileset>
 
     <fileset id="antbuild.fileset" dir=".">
@@ -60,19 +102,14 @@
       <include name="ivy/*.xsd" />
       <include name="doc/*.sxw" />
       <include name="doc/*.ppt" />
+      <include name="repository/**" />
     </fileset>
 
   </target>
-<!--
-  <target name="init">
-    <property name="build.dir" location="build" />
-    <property name="dist.dir" location="dist" />
-    <property name="dist.lib.dir" location="${dist.dir}/lib" />
-  </target>-->
+
 
   <target name="package-names" depends="load-version-info">
-    <!--this can be set to place the artifacts in a subdirectory in the tar/zip files-->
-    <property name="prefix" value="" />
+
     <property name="minimal.zip"
         location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.zip"/>
     <property name="full.zip"
@@ -81,6 +118,10 @@
         location="${dist.lib.dir}/sf-antbuild-minimal-${smartfrog.version}.tar"   />
     <property name="full.tar"
         location="${dist.lib.dir}/sf-antbuild-full-${smartfrog.version}.tar"   />
+    <property name="src.zip"
+        location="${dist.lib.dir}/sf-antbuild-src-${smartfrog.version}.zip"/>
+    <property name="src.tar"
+        location="${dist.lib.dir}/sf-antbuild-src-${smartfrog.version}.tar"/>
   </target>
 
   <target name="ready-to-package" depends="filesets,package-names"/>
@@ -101,10 +142,112 @@
   <target name="full-zip" depends="ready-to-package">
     <zip compress="9" destFile="${full.zip}">
       <zipfileset prefix="${prefix}" refid="root.fileset" />
-      <zipfileset prefix="${prefix}" refid="forrest.fileset" />
-      <zipfileset prefix="${prefix}/release" refid="release.fileset" />
-      <zipfileset prefix="${prefix}/components" refid="components.fileset" />
-      <zipfileset prefix="${prefix}/antbuild" refid="antbuild.fileset" />
+      <zipfileset prefix="${prefix}release" refid="release.fileset" />
+      <zipfileset prefix="${pcomp}" refid="components.fileset" />
+      <zipfileset prefix="${prefix}antbuild" refid="antbuild.fileset" />
+      <zipfileset prefix="${prefix}testharness" dir="../testharness" >
+        <patternset refid="project.source"/>
+        <include name="testcases/**" />
+      </zipfileset>
+
+      <zipfileset dir="${ex}/ant" prefix="${pex}/ant"  >
+        <patternset refid="project.source"/>
+        <include name="xdocs/**" />
+      </zipfileset>
+      <zipfileset dir="${comp}/ant" prefix="${pcomp}/ant"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/anubis" prefix="${pcomp}/anubis"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/anubisdeployer" prefix="${pcomp}/anubisdeployer"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/arithmetic-testharness" prefix="${pcomp}/arithmetic-testharness"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+<!--
+      <zipfileset dir="${comp}/atom" prefix="${pcomp}/atom"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+-->
+      <zipfileset dir="${comp}/database" prefix="${pcomp}/database"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+<!--
+      <zipfileset dir="${comp}/cargo" prefix="${pcomp}/cargo"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+-->
+      <zipfileset dir="${comp}/dns" prefix="${pcomp}/dns"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/emailer" prefix="${pcomp}/emailer"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/fun" prefix="${pcomp}/fun"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/jetty" prefix="${pcomp}/jetty"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/jmx" prefix="${pcomp}/jmx"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/junit" prefix="${pcomp}/junit"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/loggingservices" prefix="${pcomp}/loggingservices"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/net" prefix="${pcomp}/net"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/persistence" prefix="${pcomp}/persistence"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/quartz" prefix="${pcomp}/quartz"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/scripting" prefix="${pcomp}/scripting"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/sfinstaller" prefix="${pcomp}/sfinstaller"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/slp" prefix="${pcomp}/slp"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/ssh" prefix="${pcomp}/ssh"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/xmpp" prefix="${pcomp}/xmpp"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/xml" prefix="${pcomp}/xml"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/xunit" prefix="${pcomp}/xunit"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+
+      <zipfileset dir="${comp}/www" prefix="${pcomp}/www"  >
+        <patternset refid="project.source"/>
+        <include name="testwar/**" />
+      </zipfileset>
+
+<!--      <zipfileset dir="${comp}/" prefix="${pcomp}/"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/" prefix="${pcomp}/"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/" prefix="${pcomp}/"  >
+        <patternset refid="project.source"/>
+      </zipfileset>
+      <zipfileset dir="${comp}/" prefix="${pcomp}/"  >
+        <patternset refid="project.source"/>
+      </zipfileset>-->
     </zip>
   </target>
 
@@ -132,29 +275,87 @@
         dest="${minimal.untar.dir}"/>
   </target>
 
-  <target name="full-tar" depends="ready-to-package">
+  <target name="full-tar" depends="full-zip">
     <tar destFile="${full.tar}" longfile="gnu">
-      <tarfileset prefix="${prefix}" refid="root.fileset" />
-      <tarfileset prefix="${prefix}" refid="forrest.fileset" />
-      <tarfileset prefix="${prefix}/release" refid="release.fileset" />
-      <tarfileset prefix="${prefix}/components" refid="components.fileset" />
-      <tarfileset prefix="${prefix}/antbuild" refid="antbuild.fileset" />
+      <zipfileset src="${full.zip}"/>
     </tar>
   </target>
 
 
   <target name="full-untar" depends="full-tar">
-    <property name="full.untar.dir" location="${build.dir}/full"/>
+    <property name="full.untar.dir" location="${build.dir}/fulltar"/>
     <mkdir dir="${full.untar.dir}" />
     <untar src="${full.tar}"
         dest="${full.untar.dir}"/>
   </target>
 
+<!--we zip the system into a dir called core-->
+  <target name="src-zip" depends="full-zip">
+    <property name="srcprefix" value="smartfrog-${smartfrog.version}/" />
+    <zip destfile="${src.zip}">
+      <zipfileset src="${full.zip}" prefix="${srcprefix}"/>
+      <zipfileset prefix="${srcprefix}smartfrog" dir="../smartfrog">
+        <patternset refid="project.source"/>
+        <include name="javacc/**" />
+        <include name="docs/**" />
+        <include name="testCA/**" />
+        <include name="constraints/**" />
+        <include name="forrest_skin/**" />
+        <include name="private/**" />
+        <include name="lib/**" />
+        <include name="sf-build-version.properties" />
+        <include name="*.xml" />
+        <include name="*.txt" />
+        <include name="parsertargets"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+
+  <target name="src-unzip" depends="src-zip">
+    <property name="src.unzip.dir" location="${build.dir}/srczip"/>
+    <mkdir dir="${src.unzip.dir}" />
+    <unzip src="${src.zip}"
+        dest="${src.unzip.dir}"/>
+  </target>
+
+<!-- very very slow, and as people will only expand it with the wrong version of
+    tar, troublesome. 
+  <target name="src-tar" depends="src-zip">
+    <tar destFile="${src.tar}" longfile="gnu" >
+      <zipfileset src="${src.zip}"/>
+    </tar>
+  </target>
+
+  <target name="src-untar" depends="src-tar">
+    <property name="src.untar.dir" location="${build.dir}/srctar"/>
+    <mkdir dir="${src.untar.dir}" />
+    <untar src="${src.tar}"
+        dest="${src.untar.dir}"/>
+  </target>
+-->
+
+
+  <!--this is quite a destructive test as it kills all artifacts in
+  the repository to ensure that all dependencies are satisfiable-->
+<!--
+  <target name="src-tar-test" depends="src-untar">
+    <exec dir="${src.untar.dir}/${srcprefix}" executable="ant"
+      failonerror="true">
+      <arg value="ivy-purge" />
+      <arg value="clean" />
+      <arg value="published" />
+      </exec>
+  </target>
+-->
+
+  <target name="src-expand" depends="src-unzip" />
+
   <target name="untar" depends="full-untar,minimal-untar"
       description="create the tar files, then untar them"/>
 
   <target name="package" depends="minimal-zip,full-zip,minimal-tar,full-tar"/>
-  <target name="packaged" depends="package"/>
+  <target name="packaged" depends="package,unzip,untar"/>
 
 
 
