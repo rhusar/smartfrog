@@ -1,56 +1,160 @@
 package org.smartfrog.avalanche.shared;
 
 /**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+ (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
-*/
+ For more information: www.smartfrog.org
+ */
 
 import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
+import org.smartfrog.avalanche.server.AvalancheFactory;
+import org.smartfrog.avalanche.server.DatabaseAccessException;
+import org.smartfrog.avalanche.server.modules.ModuleCreationException;
+import org.smartfrog.avalanche.core.activeHostProfile.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
- * Modifies the ActiveProfile of a given hosts
+ * Retrieves, saves and modifies the ActiveProfile of a given host
  */
 public class ActiveProfileUpdater {
     private static Log log = LogFactory.getLog(ActiveProfileUpdater.class);
+    private ActiveProfileManager profileManager = null;
+
+    public ActiveProfileUpdater() {
+        try {
+            profileManager = AvalancheFactory.getFactory(AvalancheFactory.BDB).getActiveProfileManager();
+        } catch (ModuleCreationException e) {
+            log.fatal(e);
+        }
+    }
+
+    /**
+     * Get ActiveProfile out of the database
+     *
+     * @param hostId of host whose ActiveProfile should be retrieved.
+     * @return ActiveProfile of the given host
+     */
+    public ActiveProfileType getActiveProfile(String hostId) {
+        try {
+            return profileManager.getProfile(hostId);
+        } catch (DatabaseAccessException ex) {
+            log.error("Error while getting ActiveProfile of " + hostId);
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new ActiveProfile for a specific host
+     *
+     * @param hostId of the new host
+     */
+    public void createActiveProfile(String hostId) {
+        try {
+            profileManager.newProfile(hostId);
+        } catch (Exception ex) {
+            log.error("Error while creating ActiveProfile for " + hostId);
+        }
+    }
+
+    /**
+     * Stores an ActiveProfile in the database
+     *
+     * @param profile of the host
+     */
+    public void storeActiveProfile(ActiveProfileType profile) {
+        try {
+            profileManager.setProfile(profile);
+        } catch (Exception ex) {
+            log.error("Error while storing ActiveProfile of " + profile.getHostId());
+        }
+    }
+
+    /**
+     * Removes an ActiveProfile from the database
+     *
+     * @param hostId of the host
+     */
+    public void removeActiveProfile(String hostId) {
+        try {
+            profileManager.removeProfile(hostId);
+        } catch (Exception ex) {
+            log.error("Error while storing ActiveProfile of " + hostId);
+        }
+    }
 
     /**
      * Updates the availability record of a given machine
      * This needs to be performed e.g. after a XMPP presence change is detected.
      *
-     * @param profileManager is the ActiveProfileManager which holds the Profile of the specifed host.
-     * @param hostId is the name of the machine
+     * @param hostId       is the name of the machine
      * @param availability true if the machine is available; false if it is not.
      */
-    public static void setMachineAvailability(ActiveProfileManager profileManager, String hostId, boolean availability) {
-        try {
-            ActiveProfileType type = profileManager.getProfile(hostId);
+    public void setMachineAvailability(String hostId, boolean availability) {
+        ActiveProfileType type = getActiveProfile(hostId);
+        type.setHostState(availability ? "Available" : "Not Available");
+        storeActiveProfile(type);
+    }
 
-            // No ActiveProfile found - create one
-            if (type == null) {
-                try {
-                    type = profileManager.newProfile(hostId);
-                } catch (Exception x) {
 
+    /**
+     * Saves a MessageType in the ActiveProfile
+     *
+     * @param e is a MonitoringEvent
+     */
+    public void addNewMessage(MonitoringEvent e) {
+        ActiveProfileType type = getActiveProfile(e.getHost());
+        if (type.getMessagesHistoryArray().length > 25) {
+            type.removeMessagesHistory(0);
+        }
+        MessageType newMsg = type.addNewMessagesHistory();
+        newMsg.setTime(e.getTimestamp());
+        newMsg.setMsg(e.getMsg());
+        storeActiveProfile(type);
+    }
+
+    /**
+     * Saves a ModuleStateType in the ActiveProfile
+     *
+     * @param e is a MonitoringEvent
+     */
+    public void setModuleState(MonitoringEvent e) {
+        ActiveProfileType type = getActiveProfile(e.getHost());
+
+        ModuleStateType[] moduleProfiles = type.getModuleStateArray();
+        ModuleStateType moduleProfile = null;
+
+        for (ModuleStateType currentModuleProfile : moduleProfiles) {
+            // If moduleId is found
+            String id = currentModuleProfile.getId();
+            if (e.getModuleId().equals(id)) {
+                // g
+                String instanceName = currentModuleProfile.getInstanceName();
+                if (instanceName.equals(e.getInstanceName())) {
+                    moduleProfile = currentModuleProfile;
+                    break;
                 }
             }
-
-            // Profile could not be created - log error
-            if (type != null)
-                type.setHostState(availability?"Available":"Not Available");
-            else
-                log.error("Could not retrieve ActiveProfileType for host " + hostId);
-
-            profileManager.setProfile(type);
-        } catch (Exception ex) {
-            log.error(ex);
         }
+
+        if (moduleProfile == null) {
+            moduleProfile = type.addNewModuleState();
+            moduleProfile.setId(e.getModuleId());
+            moduleProfile.setInstanceName(e.getInstanceName());
+
+            log.error("Module does not exist - creating module information");
+        }
+
+        moduleProfile.setState(e.getModuleState());
+        moduleProfile.setLastUpdated(e.getTimestamp());
+        moduleProfile.setMsg(e.getMsg());
+        moduleProfile.setLastAction(e.getLastAction());
     }
 }

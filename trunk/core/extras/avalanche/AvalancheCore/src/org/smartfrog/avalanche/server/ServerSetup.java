@@ -210,8 +210,9 @@ public class ServerSetup {
                 log.error("Error while logging onto XMPP server. Exception: " + e);
             }
 
+            // TODO: Should be streamlined in the future!
             // Adding MessageHandlers to the handler chain for events coming from client nodes
-            listenerAdapter.addHandler(new ActiveProfileUpdateHandler(this));
+            listenerAdapter.addHandler(new ActiveProfileUpdateHandler());
             // Register the added Handlers as well as the built-in handlers
             listenerAdapter.registerListeners();
 
@@ -219,24 +220,28 @@ public class ServerSetup {
             factory.getHostManager().addHandler(new HostUpdateRosterHandler(adminAdapter, listenerAdapter));            
 
             // Getting the most recent presence of host
-            Roster roster = this.getListenerAdapter().getRoster();
-            String[] hostNames = this.getFactory().getHostManager().listHosts();
-            boolean hostAvailable = false;
-            Presence p = null;
-            for (int i = 0; i < hostNames.length; i++) {
-                p = roster.getPresence(hostNames[i] + "@" + this.getXmppServer());
-                if (p != null) {
-                    hostAvailable = p.getType().equals(Presence.Type.AVAILABLE);
-                } else {
-                    hostAvailable = false;
-                }
-                ActiveProfileUpdater.setMachineAvailability(factory.getActiveProfileManager(), hostNames[i], hostAvailable);
-            }
+            this.updateHosts(this.getListenerAdapter().getRoster(), this.getFactory().getHostManager().listHosts());
 
             // TODO : Start Smartfrog on server if its not already running using avalancheHome
 
         } catch (XMPPException e) {
-            log.fatal("Avalanche InitializAtion failed : ", e);
+            log.fatal("Avalanche Initialization failed : ", e);
+        }
+    }
+
+    /**
+     * Updates the availability of all hosts on a specific buddy list
+     * @param buddylist a roster of a listening user
+     * @param hostList a list of hosts
+     */
+    private void updateHosts(Roster buddylist, String[] hostList) {
+        ActiveProfileUpdater updater = new ActiveProfileUpdater();
+        boolean hostAvailable = false;
+        Presence p = null;
+        for (String hostName : hostList) {
+            p = buddylist.getPresence(hostName + "@" + this.getXmppServer());
+            hostAvailable = ((p != null) && (p.getType().equals(Presence.Type.AVAILABLE)));
+            updater.setMachineAvailability(hostName, hostAvailable);
         }
     }
 

@@ -11,13 +11,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.handlers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.avalanche.core.host.HostType;
 import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
 import java.net.UnknownHostException;
 import java.net.InetAddress;
 
@@ -45,6 +42,7 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
      * Uses this machine's DNS to look up the hostname
      * @param strHostOrIp is the IP or host name of a system
      * @return the host name of IP or host given
+     * @deprecated
      */
     private String resolve(String strHostOrIp) {
         try {
@@ -56,17 +54,38 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
     }
 
     /**
+     * Updates the ActiveProfile of a given host
+     * @param hostName hostname
+     */
+    private void updateAvailability(String hostName) {
+        ActiveProfileUpdater updater = new ActiveProfileUpdater();
+        boolean hostAvailable = false;
+        Presence p = null;
+        p = listenerAdapter.getRoster().getPresence(hostName + "@" + listenerAdapter.getXmppServer());
+        hostAvailable = ((p != null) && (p.getType().equals(Presence.Type.AVAILABLE)));
+        updater.setMachineAvailability(hostName, hostAvailable);
+    }
+
+    /**
      * Creates a XMPP user for the new host.
      * @param h HostType object of the new host
      */
 	public void hostAdded(HostType h) {
-		String hostAddress = resolve(h.getId());
+		String hostAddress = h.getId().toLowerCase();
 
         // if client is a valid machine on the network
         if (hostAddress != null) {
             // Create user on the XMPP server
             adminAdapter.createUser(hostAddress, hostAddress, hostAddress);
+            // Add the new user to the webuser's buddy list
             listenerAdapter.addUserToRoster(hostAddress);
+
+            // Create an ActiveProfile
+            ActiveProfileUpdater updater = new ActiveProfileUpdater();
+            updater.createActiveProfile(hostAddress);
+
+            // Update the Profile according to the user's presence
+            this.updateAvailability(hostAddress);
         }
     }
 
@@ -75,13 +94,17 @@ public class HostUpdateRosterHandler implements HostUpdateHandler {
      * @param h HostType object of the old host
      */
 	public void hostDeleted(HostType h) {
-        String hostAddress = resolve(h.getId());
+        String hostAddress = h.getId().toLowerCase();
 
         // if client is a valid machine on the network
         if (hostAddress != null) {
             // Delete user
             listenerAdapter.removeUserFromRoster(hostAddress);
             adminAdapter.deleteUser(hostAddress, hostAddress);
+
+            // Remove the ActiveProfile
+            ActiveProfileUpdater updater = new ActiveProfileUpdater();
+            updater.removeActiveProfile(hostAddress);
         }
     }
 }
