@@ -243,7 +243,7 @@ ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
 
 %preun
 #about to uninstall, but all the files are already present
-%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
+#%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
 
 %postun
 #at uninstall time, we delete all logs
