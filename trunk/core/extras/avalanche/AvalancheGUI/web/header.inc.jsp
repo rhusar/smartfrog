@@ -35,6 +35,7 @@ For more information: www.smartfrog.org
 
     <link rel="stylesheet" type="text/css" href="onevoice/css/default.css" />
     <link rel="stylesheet" type="text/css" href="onevoice/css/blue_theme.css" />
+    <link rel="alternate" type="application/rss+xml" title="Avalanche: Host Status" href="host_status_feed.jsp">
 
     <script language="JavaScript" type="text/javascript" src="navigation.js"></script>
     <script language="JavaScript" type="text/javascript" src="ajax.js"></script>

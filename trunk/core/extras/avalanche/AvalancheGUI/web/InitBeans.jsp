@@ -22,7 +22,8 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.server.AvalancheFactory" %>
 
 <%
-	String avalancheHome = getServletContext().getInitParameter("avalancheHome");
+	String avalancheHome = getServletConfig().getServletContext().getInitParameter("avalancheHome");
+    String pathToAvalancheWebApp = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/"));
 %>
 
 <jsp:useBean id="setup"
@@ -30,5 +31,5 @@ For more information: www.smartfrog.org
 
 <%
     AvalancheFactory factory = setup.getFactory();
-    Scheduler scheduler = (Scheduler) getServletContext().getAttribute("scheduler");
+    Scheduler scheduler = (Scheduler)getServletConfig().getServletContext().getAttribute("scheduler");
 %>

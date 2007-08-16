@@ -20,6 +20,7 @@
 
 /* Status update */
 var status_response = "";
+var lastmsg_response = "";
 
 var status_xml = false;
 status_xml = getXMLHttpRequestObject();
@@ -35,13 +36,20 @@ function getStatus() {
                     if (status_xml.status == 200) {
                         var xmlDocument = status_xml.responseXML;
                         var statusMsgs = xmlDocument.getElementsByTagName("status");
+                        var lastMsgs = xmlDocument.getElementsByTagName("lastmsg");
                         for (var i = 0; i < statusMsgs.length; i++) {
                             if (statusMsgs[i].firstChild.data == "true") {
-                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:right;width:100px;\">&nbsp;Available</div>";
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#00FF00\"></div><div style=\"float:left;\">&nbsp;Available</div>";
                             } else {
-                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:right;width:100px;\">&nbsp;Not&nbsp;Available</div>";
+                                status_response = "<div style=\"float:left;height:10px;width:10px;background-color:#FF0000\"></div><div style=\"float:left;\">&nbsp;Not&nbsp;Available</div>";
+                            }
+                            if (lastMsgs[i].firstChild.data != "false") {
+                                lastmsg_response = "<a href=\"log_xmpp.jsp?host=" + statusMsgs[i].parentNode.getAttribute("name") + "\">" +  lastMsgs[i].firstChild.data + "</a>";
+                            } else {
+                                lastmsg_response = "No message has been received yet.";
                             }
                             fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_status", status_response);
+                            fillDivBox(statusMsgs[i].parentNode.getAttribute("name") + "_msg", lastmsg_response);
                         }
                     }
                 }

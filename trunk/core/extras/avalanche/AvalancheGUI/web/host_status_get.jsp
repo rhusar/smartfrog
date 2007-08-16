@@ -22,21 +22,23 @@ For more information: www.smartfrog.org
 <%@ include file="InitBeans.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
-<%@ page import="org.smartfrog.avalanche.server.engines.sf.*" %>
 <%@ page import="org.w3c.dom.*" %>
 <%@ page import="javax.xml.parsers.*" %>
 <%@ page import="javax.xml.transform.*" %>
 <%@ page import="javax.xml.transform.stream.*" %>
 <%@ page import="javax.xml.transform.dom.*" %>
 <%@ page import="java.io.*" %>
+<%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater"%>
+<%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
 
 <%
     // Get all hosts
     HostManager manager = factory.getHostManager();
     String[] hosts = manager.listHosts();
 
-    // Be able to query SmartFrog status
-    SFAdapter adapter = new SFAdapter(factory);
+    // Be able to query ActiveProfile
+    ActiveProfileUpdater updater = new ActiveProfileUpdater();
+    ActiveProfileType type = null;
 
     // Create output document
     DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -49,51 +51,58 @@ For more information: www.smartfrog.org
     Element entry = null;
     Element subentry = null;
     // For each host
-    for (int i = 0; i < hosts.length; i++) {
+    for (String host : hosts) {
         HostType h = null;
         String os = "";
         String arch = "";
+        String lastMsg = "";
         boolean active = false;
 
         try {
             // Get HostType object of current host
-            h = manager.getHost(hosts[i]);
-
+            h = manager.getHost(host);
             // Extract OS and Architecture
             os = h.getPlatformSelector().getOs();
             arch = h.getPlatformSelector().getArch();
 
-            // Query SmartFrog status on that specific host
-            try {
-                active = adapter.isActive(hosts[i]);
-            } catch (Throwable t) {
-
+            // Query ActiveProfile
+            type = updater.getActiveProfile(host);
+            active = type.getHostState().equals("Available");
+            if (type.getMessagesHistoryArray().length != 0) {
+                lastMsg = type.getMessagesHistoryArray(type.getMessagesHistoryArray().length-1).getMsg();
+            } else {
+                lastMsg = "false";
             }
+
+            // Create <host name="xxx"> node
+            entry = xdoc.createElement("host");
+            entry.setAttribute("name", host);
+
+            // Set OS node beneath <host>
+            subentry = xdoc.createElement("os");
+            subentry.appendChild(xdoc.createTextNode(os));
+            entry.appendChild(subentry);
+
+            // Set Architecture node beneath <host>
+            subentry = xdoc.createElement("arch");
+            subentry.appendChild(xdoc.createTextNode(arch));
+            entry.appendChild(subentry);
+
+            // Set status node beneath <host>
+            subentry = xdoc.createElement("status");
+            subentry.appendChild(xdoc.createTextNode(Boolean.toString(active)));
+            entry.appendChild(subentry);
+
+            // Set last message node beneath <host>
+            subentry = xdoc.createElement("lastmsg");
+            subentry.appendChild(xdoc.createTextNode(lastMsg));
+            entry.appendChild(subentry);
+
+            // Append <host> node to hostlist
+            root.appendChild(entry);
         } catch (Exception e) {
             // do nothing
         }
-
-        // Create <host name="xxx"> node
-        entry = xdoc.createElement("host");
-        entry.setAttribute("name", hosts[i]);
-
-        // Set OS node beneath <host>
-        subentry = xdoc.createElement("os");
-        subentry.appendChild(xdoc.createTextNode(os));
-        entry.appendChild(subentry);
-
-        // Set Architecture node beneath <host>
-        subentry = xdoc.createElement("arch");
-        subentry.appendChild(xdoc.createTextNode(arch));
-        entry.appendChild(subentry);
-
-        // Set status node beneath <host>
-        subentry = xdoc.createElement("status");
-        subentry.appendChild(xdoc.createTextNode(Boolean.toString(active)));
-        entry.appendChild(subentry);
-
-        // Append <host> node to hostlist
-        root.appendChild(entry);
     }
 
     // Convert DOM to XML string

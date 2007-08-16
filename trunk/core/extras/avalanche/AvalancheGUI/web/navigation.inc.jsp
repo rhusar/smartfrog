@@ -27,6 +27,7 @@
                     writeMenuHeader("menu4_trigger", "Reports");
                     writeMenuStart("menu4");
                     writeMenuItem("View Logs", "log_view.jsp", "4");
+                    writeMenuItem("View XMPP Messages", "log_xmpp.jsp", "4");
                     writeMenuEnd();
                     -->
                 </script>
