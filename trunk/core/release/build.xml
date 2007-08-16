@@ -196,7 +196,7 @@
 
   <!-- ============================================================================================= -->
 
-  <target name="package-source" depends="ivy-resolve">
+  <target name="package-source" depends="init,ivy-resolve">
     <property name="source.zip" location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip" />
 
     <copy tofile="${source.zip}"
