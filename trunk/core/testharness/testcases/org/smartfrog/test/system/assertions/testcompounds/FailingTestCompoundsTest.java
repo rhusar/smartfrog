@@ -45,14 +45,5 @@ public class FailingTestCompoundsTest extends DeployingTestBase {
         TerminationRecord status = event.getStatus();
     }
 
-    public void testUnexpectedFailure() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testUnexpectedFailure" + ".sf", "testUnexpectedFailure");
-        expectAbnormalTermination((TestBlock) application);
-    }
 
-    public void testFailureWrongMessage() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testFailureWrongMessage" + ".sf", "testFailureWrongMessage");
-        TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
-        assertTerminationRecordContains(record, TestCompoundImpl.TEST_FAILED_WRONG_STATUS, null, null);
-    }
 }
