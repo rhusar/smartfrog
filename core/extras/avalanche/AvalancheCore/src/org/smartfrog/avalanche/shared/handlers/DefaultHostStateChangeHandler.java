@@ -13,9 +13,6 @@ package org.smartfrog.avalanche.shared.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.shared.*;
 
 /**
@@ -26,18 +23,6 @@ import org.smartfrog.avalanche.shared.*;
  */
 public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
     private static Log log = LogFactory.getLog(DefaultHostStateChangeHandler.class);
-    ActiveProfileManager profileManager;
-
-    public DefaultHostStateChangeHandler() {
-        AvalancheFactory factory = AvalancheFactory.getFactory(AvalancheFactory.BDB);
-        try {
-            profileManager = factory.getActiveProfileManager();
-        } catch (ModuleCreationException e) {
-            // TODO : Bad, bring down the whole system
-            e.printStackTrace();
-            log.fatal(e);
-        }
-    }
 
     /**
      * Updates the state of a given host in the database
@@ -45,6 +30,7 @@ public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
      */
     public void handleEvent(HostStateEvent e) {
         log.info("Hosts State Changed: " + e.getHostName() + " : " + e.isAvailable());
-        ActiveProfileUpdater.setMachineAvailability(profileManager, e.getHostName(), e.isAvailable());
+        ActiveProfileUpdater updater = new ActiveProfileUpdater();
+        updater.setMachineAvailability(e.getHostName(), e.isAvailable());
 	}
 }
