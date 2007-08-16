@@ -28,14 +28,14 @@ public class FileGen {
    	* 
    	* @param mapFile map with daemon objects
    	*/
-	static public void createFile(Map mapFile) throws Exception{
+	static public void createFile(Map mapFile, String inFileName) throws Exception{
 	  try {
 		  if (!mapFile.isEmpty()) {
 		  	Collection values = mapFile.values();
 			t = values.iterator();
 		  } 
 
-	  PrintStream out = new PrintStream(new FileOutputStream("data.all", true));
+	  PrintStream out = new PrintStream(new FileOutputStream(inFileName, true));
 	  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
 	  
 	  while (t.hasNext()) {
