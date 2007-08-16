@@ -23,25 +23,21 @@ with the ability to tag attributes, and includes the following items:
 * Ant components: the ability to execute ant tasks in a deployment.
 * Anubis: a partition aware tuple-space that can be used to implement fault 
   tolerant systems.
+* Database: components to issue database commands, and deploy HSLDB and MySQL.
 * JMX: the ability to configure and manage JMX components, and to manage
   SmartFrog components over JMX.
 * Logging: integration with Apache commons-logging and Log4J
 * Networking: email, FTP, SSH, DNS support.
 * Quartz: scheduled operations using Quartz libraries.
 * Scripting: support for BSF-hosted scripting languages
-* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
-  is provided for all application servers that support, and a tomcat-specific
-  component can communicate with Apache Tomcat. The Jetty component can
-  configure and deploy individual servlets, eliminating much of the need for WAR
-  files themselves.
-  
-For Java 1.5 systems, there are some extra components:  
-* Database: components to issue database commands, and deploy HSLDB and MySQL.
 * Testing: Distributed JUnit and component testing with SFUnit.
+* WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
+  is provided for all application servers that support it, and sample templates
+  are provided to start and stop Tomcat and JBoss. The Jetty component can
+  configure and deploy individual servlets, eliminating much of the need for WAR
+  files and application servers.
 * XML: XML support with XOM.
 * XMPP: Presence and messaging over Jabber.
-
-
 
 Packaging
 =========
@@ -86,21 +82,18 @@ RPMs with signed JAR files.
 Building SmartFrog
 ==================
 
-SmartFrog requires Java 1.4 and Ant 1.7 to build. For a complete release,
-Java1.5 or later is required.
-
-
-The distribution does not include a source tree adequate to build the
-entire system. Please follow the instructions at
+SmartFrog requires Java 1.5 and Ant 1.7 to build. The izpack and source .zip and
+.tar.gz distributions include a source tree adequate to build the
+entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
-and check out smartfrog/trunk/core from our repository.
+to check out smartfrog/trunk/core from our repository.
 
 This release was built with revision ${svn.revision} of the repository, which
 is available under the SVN branch
 ${svn.branch.url}
 
 We strongly encourage anyone interested in building or extending
-smartfrog to get involved in the smartfrog developer mailing list, which
+SmartFrog to get involved in the SmartFrog developer mailing list, which
 can be found from the sourceforge project page
 http://sourceforge.net/projects/smartfrog/
 
@@ -116,34 +109,36 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
-Since the 3.11.005beta, there have been changes to some of the
-components. In particular, the www component now has a tomcat deployment
-descriptor that can deploy Apache Tomcat5.5,
+The ${smartfrog.version} release is a stable release, intended for use in
+production systems. All major defects that have been reported have been fixed,
+and the RPM and izpack distribution packages are working well as distribution
+formats.
 
-  /org/smartfrog/services/www/servers/tomcat5.sf
-  
-This is accompanied by one for JBoss 4.0:
+This release is Java1.5+ only; it has been tested on Java1.5 and Java1.6, on
+Linux, Windows XP, Windows Vista and OS/X systems; the tested Linux distributions
+are RHEL4, RHEL5 and Ubuntu 7.04; one of the RedHat servers is a 4-way 64-bit
+machine.  
 
-  /org/smartfrog/services/www/servers/jboss4.sf
-  
-These deployment descriptors are passing our tests of deploy-by-copy
-deployment of a test WAR.
+Very few changes have been made since the last beta, 3.11.007; apart from the switch
+to Java 1.5, the only changes were to the TestCompound (and tests that use it), and
+the components in the sf-www package that test for a remote page being available.
+ 
+** Bug
+    * [SFOS-390] - TestCompound NPEs
+    * [SFOS-393] - www waitforpage component doesnt fail abnormally when there is a timeout
+    * [SFOS-394] - www liveness and waitfor pages uses seconds and not milliseconds for sleeps
+                   -inconsistent with rest of the system
+    * [SFOS-395] - www liveness page tries to read the error text from the far end after an
+                   - IO exception
+    * [SFOS-396] - TestCompoundImpl thinks an expected abnormal termination is still a failure
 
-The language has been enhanced with the OPTIONAL keyword, which allows
-one to define a value to use if the remote reference does not resolve.
-To use an example from the jboss tests, here is a binding of jboss.port
-either to the property test.jboss.port (in the process parsing the .sf
-file, not the destination daemon), and falling back to the value 8080 if
-it does not resolve:
+** Improvement
+    * [SFOS-133] - stop Cruise Control javadocs from complaining about various things in some components
+    * [SFOS-317] - Move test cases to the asynchronous event model
+    * [SFOS-388] - Move to Java1.5 across the entire project
 
-  jboss.port OPTIONAL(8080) PROPERTY test.jboss.port;
-
-Consult the reference documentation for more details on this.
-
-
-
-
-
+** Sub-task
+    * [SFOS-372] - migrate org.smartfrog.services.database.test.system.core.mysql.MysqlTest to async tests
 
 
 

@@ -41,6 +41,8 @@
         description="minimal directory layout"/>
     <conf name="package-antbuild-full"
         description="full build tree"/>
+    <conf name="package-antbuild-source"
+        description="full build tree"/>
     <!--Component bundles-->
     <conf name="package-ant"
         description="ant components"/>
@@ -97,7 +99,7 @@
     <dependency org="org.smartfrog"
         name="sf-antbuild" changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-antbuild-minimal->minimal;package-antbuild-full->full"/>    
+        conf="package-antbuild-minimal->minimal;package-antbuild-full->full;package-antbuild-source->source"/>    
 
     <!-- ant component. do we omit the ant dist?-->
     <dependency org="org.smartfrog"
