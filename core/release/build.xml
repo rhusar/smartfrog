@@ -38,7 +38,7 @@
   <import file="../common.xml"/>
 
   <!-- main distribution target-->
-  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack,release-kernel" />
+  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack,release-kernel,package-source" />
 
 
   <target name="init" depends="common.init">
@@ -192,6 +192,18 @@
       <env key="SFHOME" value="${build.install.dir}"/>
     </exec>
   </target>
+
+
+  <!-- ============================================================================================= -->
+
+  <target name="package-source" depends="ivy-resolve">
+    <property name="source.zip" location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip" />
+
+    <copy tofile="source.zip"
+        file="${ivy.lib.dir}/package-antbuild-source/sf-antbuild-source-${smartfrog.version}.zip" />
+  </target>
+
+  <!-- ============================================================================================= -->
 
 
   <!--
@@ -651,7 +663,7 @@
         description="create the release artifacts and then upload"/>
 
   <target name="upload" depends="upload-no-rebuild"
-      description=" upload; set server property to choose the destination"/>
+      description="upload; set server property to choose the destination"/>
 
   <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
       description="upload the existing artifacts"/>
