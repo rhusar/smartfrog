@@ -24,9 +24,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 /**
- * 
- * @author sanjaydahiya
- *
+ * @deprecated Unused.
  */
 public class AvalancheEventIQ extends IQ implements MonitoringEvent {
 	
