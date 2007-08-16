@@ -30,16 +30,15 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="ivy.enabled" value="true"/>
-
-
   <property name="root.dir" location="../.."/>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-  
+
 
   <target name="init" depends="common.init,use-smartfrog-tasks,use-smartfrog-testharness">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
   </target>
 
   <!-- ========================================================== -->
