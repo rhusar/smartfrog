@@ -37,6 +37,11 @@
 </tr>
 <jsp:include page="header.inc.jsp?subtitle=List Hosts Page"></jsp:include>
 <tr>
+	<td>open</td>
+	<td>/AvalancheGUI/host_list.jsp?active=true</td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>selectedHost</td>
 	<td></td>
@@ -52,11 +57,35 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//center/table/tbody/tr/td</td>
-	<td>There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
+	<td>click</td>
+	<td>selectedHost</td>
+	<td></td>
 </tr>
-
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Delete selected hosts']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertConfirmation</td>
+	<td>This action will permanently delete one host. Are you sure you want to continue?</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>allhosts</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='Delete selected hosts']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertAlert</td>
+	<td>You must select one or more hosts for this action.</td>
+	<td></td>
+</tr>
 </tbody></table>
 </body>
 </html>
