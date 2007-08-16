@@ -275,9 +275,9 @@
         dest="${minimal.untar.dir}"/>
   </target>
 
-  <target name="full-tar" depends="full-zip">
+  <target name="full-tar" depends="full-unzip">
     <tar destFile="${full.tar}" longfile="gnu">
-      <zipfileset src="${full.zip}"/>
+      <fileset dir="${full.unzip.dir}" includes="**/*"/>
     </tar>
   </target>
 
@@ -354,7 +354,7 @@
   <target name="untar" depends="full-untar,minimal-untar"
       description="create the tar files, then untar them"/>
 
-  <target name="package" depends="minimal-zip,full-zip,minimal-tar,full-tar"/>
+  <target name="package" depends="minimal-zip,full-zip,minimal-tar,full-tar,src-zip"/>
   <target name="packaged" depends="package,unzip,untar"/>
 
 
