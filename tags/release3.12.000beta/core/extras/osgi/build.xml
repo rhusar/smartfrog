@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project name="SmartFrog" default="all">
+    <target name="all" depends="init,compile,jar"/>
+
+    <target name="init">
+        <copy todir="build/lib" overwrite="true">
+            <fileset dir="../../smartfrog/dist/lib/">
+                <include name="smartfrog*.jar"/>
+                <include name="sfService*.jar"/>
+            </fileset>
+        </copy>
+        <mkdir dir="./build/classes"/>
+    </target>
+
+    <target name="compile">
+        <javac destdir="./build/classes"
+               debug="on"
+               srcdir="./src">
+            <classpath>
+                <fileset dir="lib" includes="*.jar"/>
+                <fileset dir="build/lib" includes="*.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar">
+        <jar jarfile="./build/smartfrog-osgi.jar"
+             compress="true"
+             includes="**/*"
+             manifest="./META-INF/MANIFEST.MF">
+            <zipfileset dir="build/classes"/>
+            <zipfileset dir="build/lib" includes="*.jar"/>
+        </jar>
+        <copy file="./build/smartfrog-osgi.jar" todir="C:\\" overwrite="true"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="./classes"/>
+        <delete dir="./build"/>
+    </target>
+</project>

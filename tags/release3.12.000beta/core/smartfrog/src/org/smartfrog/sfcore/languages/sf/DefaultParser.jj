@@ -1,0 +1,968 @@
+options {
+  DEBUG_TOKEN_MANAGER = false;
+  STATIC=false;
+  JAVA_UNICODE_ESCAPE = true;
+  FORCE_LA_CHECK=true;
+}
+
+PARSER_BEGIN(DefaultParser)
+package org.smartfrog.sfcore.languages.sf;
+
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
+
+import org.smartfrog.sfcore.languages.sf.IncludeHandler;
+
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HostReferencePart;
+import org.smartfrog.sfcore.reference.PropertyReferencePart;
+import org.smartfrog.sfcore.reference.IPropertyReferencePart;
+import org.smartfrog.sfcore.reference.EnvPropertyReferencePart;
+import org.smartfrog.sfcore.reference.IEnvPropertyReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.RootReferencePart;
+import org.smartfrog.sfcore.reference.AttribReferencePart;
+import org.smartfrog.sfcore.reference.ThisReferencePart;
+
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.Context;
+
+
+import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SFByteArray;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.io.Reader;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.util.Set;
+import java.util.HashSet;
+
+public class DefaultParser {
+  protected IncludeHandler includeHandler;
+  static int nextId = 0;
+
+  static final String appendOp = "org.smartfrog.sfcore.languages.sf.functions.Append";
+  static final String concatOp = "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
+  static final String sumOp = "org.smartfrog.sfcore.languages.sf.functions.Sum";
+  static final String timesOp = "org.smartfrog.sfcore.languages.sf.functions.Product";
+
+  static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.And";
+  static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Or";
+
+  static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
+  static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
+  static final String geOp = "org.smartfrog.sfcore.languages.sf.functions.GE";
+  static final String leOp = "org.smartfrog.sfcore.languages.sf.functions.LE";
+  static final String gtOp = "org.smartfrog.sfcore.languages.sf.functions.GT";
+  static final String ltOp = "org.smartfrog.sfcore.languages.sf.functions.LT";
+
+  static final String minusOp = "org.smartfrog.sfcore.languages.sf.functions.Minus";
+  static final String divOp = "org.smartfrog.sfcore.languages.sf.functions.Divide";
+
+  static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
+  static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.ConstructFunction";
+
+  static final String tbdOp = "org.smartfrog.sfcore.languages.sf.predicates.TBD";
+
+
+  public DefaultParser(Reader is, IncludeHandler handler) {
+    this(is);
+    this.includeHandler = handler;
+  }
+
+
+  private String fixEscapes(String s) {
+    int index = 0;
+    int length = s.length();
+    StringBuffer fixed = new StringBuffer(length);
+
+    while (index < length) {
+      if (s.charAt(index) == '\\') {
+        index++;
+        switch (s.charAt(index)) {
+          case 'n':
+            fixed.append('\n'); break;
+          case 't':
+            fixed.append('\t'); break;
+          case 'b':
+            fixed.append('\b'); break;
+          case 'r':
+            fixed.append('\r'); break;
+          case 'f':
+            fixed.append('\f'); break;
+          case '0': case '1': case '2': case '3':
+          case '4': case '5': case '6': case '7':
+            int i = ((s.charAt(index) - '0') * 64) +
+                    ((s.charAt(index+1) - '0') * 8) +
+                    ((s.charAt(index+2) - '0'));
+            index = index + 2;
+            fixed.append((char) i);
+            break;
+          default:
+            fixed.append(s.charAt(index));
+        }
+      } else {
+        fixed.append(s.charAt(index));
+      }
+      index++;
+    }
+    return fixed.toString();
+  }
+
+  private String eliminateWhitespace(String s) {
+    int index = 0;
+    int length = s.length();
+    StringBuffer fixed = new StringBuffer();
+
+    while (index < length) {
+        switch (s.charAt(index)) {
+          case '\n':
+          case '\t':
+          case ' ':
+            break;
+          default:
+            fixed.append(s.charAt(index));
+        }
+        index++;
+    }
+    return fixed.toString();
+  }
+
+
+  protected Vector parseInclude(String fName, String codebase) throws ParseException {
+    try {
+      return includeHandler.parseInclude(fName, codebase);
+    } catch (TokenMgrError tex) {
+      throw new TokenMgrError("In include file " + fName + " : " +
+                              tex.getMessage(),
+                              tex.errorCode);
+    } catch (Exception ex) {
+      throw new ParseException("Parsing include file " + fName + " : " +
+                               ex.getMessage());
+    }
+  }
+
+}
+
+PARSER_END(DefaultParser)
+
+
+/* WHITE SPACE */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+| <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+| "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <( ~[ "\n" , "\r" ] )* > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/**
+ * if you change this, dont forget to update the reference documentation
+ */
+TOKEN : /* reserved words */
+{
+   <APPLY: "APPLY">
+ | <ASSERT: "ASSERT">
+ | <ATTRIB: "ATTRIB">
+ | <CODEBASE: "#codebase">
+ | <COMMA: ",">
+ | <DATA: "DATA">
+ | <EXTENDS: "extends">
+ | <FALSE: "false">
+ | <HERE: "HERE">
+ | <HOST: "HOST">
+ | <INCLUDE: "#include">
+ | <PROPERTY: "PROPERTY">
+ | <IPROPERTY: "IPROPERTY">
+ | <ENVPROPERTY: "ENVPROPERTY">
+ | <IENVPROPERTY: "IENVPROPERTY">
+ | <LAZY: "LAZY">
+ | <LBRACE: "{">
+ | <LBRACKET: "[">
+ | <NULL: "NULL">
+ | <OPTIONAL: "OPTIONAL">
+ | <PARENT: "PARENT">
+ | <PROCESS: "PROCESS">
+ | <RBRACE: "}">
+ | <RBRACKET: "]">
+ | <REFPARTSEP: ":">
+ | <ROOT: "ROOT">
+ | <SEMICOLON: ";">
+ | <TBD: "TBD">
+ | <THIS: "THIS">
+ | <TRUE: "true">
+ | <VECTOREND: "|]" >
+ | <VECTORSTART: "[|">
+ | <UNIQUE: "--">
+
+ | <OPSTART: "(">
+ | <OPEND: ")">
+
+ | <SUM: "+">
+ | <MINUS: "-">
+ | <TIMES: "*">
+ | <DIV: "/">
+ | <CONCAT: "++">
+ | <APPEND: "<>">
+
+ | <EQ: "==">
+ | <NE: "!=">
+ | <GE: ">=">
+ | <LE: "<=">
+ | <GT: ">">
+ | <LT: "<">
+
+ | <AND: "&&">
+ | <OR: "||">
+ | <NOT: "!">
+
+ | <IF: "IF">
+ | <THEN: "THEN">
+ | <ELSE: "ELSE">
+ | <FI: "FI">
+
+}
+
+TOKEN :
+{
+  < WORD: (<LETTER> (<LETTER>|<DIGIT>|<SPECIAL>)*) >
+| < #SPECIAL: [".", "_", "-", "+", "@", "#", "~", "$", "%", "^", "&"] >
+| < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00A2"-"\u00A5",
+       "\u00AA"-"\u00AA",
+       "\u00B5"-"\u00B5",
+       "\u00BA"-"\u00BA",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039"
+      ]
+  >
+}
+
+
+TOKEN : /* Literals */
+{
+      <STRING:
+      ("\"" (
+          (~["\"","\\","\n","\r"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","\""]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "\"")
+      >
+    | <MULTILINESTRING: ("##" (
+          (~["#","\\"])
+          | ("\\"
+              ( ["n","t","b","r","f","\\","'","#"]
+              | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+              )
+            )
+        )* "#")
+      >
+    | <INTEGER: (("-")? ["0"-"9"] (["0"-"9"])*)
+        | "0" >
+    | <#FLOAT_BASE:
+        ("-")?
+        (
+          (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)?
+        | "." (["0"-"9"])+ (<EXPONENT>)?
+        | (["0"-"9"])+ <EXPONENT>
+        | (["0"-"9"])+ (<EXPONENT>)?
+        )
+      >
+    | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+    | <DOUBLE:
+        <FLOAT_BASE> ["d", "D"]
+      >
+    | <LONG:
+        <INTEGER> ["l", "L"]
+      >
+    | <FLOAT:
+        <FLOAT_BASE> (["f", "F"])?
+      >
+    | <BYTEARRAY:
+          (("#HEX#")
+           (["0"-"9", "a"-"f", "A"-"F", " ", "\n", "\t"])*
+           ("#"))
+          |(("#DEC#")
+           (["0"-"9", " ", "\n", "\t"])*
+           ("#"))
+          |(("#OCT#")
+           (["0"-"7", " ", "\n", "\t"])*
+           ("#"))
+          |(("#BIN#")
+           (["0"-"1", " ", "\n", "\t"])*
+           ("#"))
+          |(("#B64#")
+           (["0"-"9", "a"-"f", "A"-"F", "=", "+", "/", " ", "\n", "\t"])*
+           ("#"))
+       >
+}
+
+
+/*
+ * Entry point to the grammar for component parser
+ */
+
+void Attributes(SFComponentDescription descr) :
+{
+}
+{
+  AttributesNoEOF(descr) <EOF>
+}
+
+/*
+ * Entry point for default include handler
+ */
+
+Vector AttributeList() :
+{
+    Vector res;
+}
+{
+    res = AttributeListNoEOF() <EOF>
+    { return res; }
+}
+
+/*
+ * Entry point for Reference parser
+ */
+
+SFReference Reference() :
+{
+  SFReference res;
+}
+{
+    res = ReferenceNoEOF() <EOF>
+    { return res; }
+}
+
+/*
+ * Entry point for any value parser (e.g. for parsing values in Management Console)
+ */
+ Object AnyValue() :
+{
+  Object res;
+}
+{
+     (res=Component() | res=SimpleValue()) <EOF>
+     { return res; }
+}
+
+
+ /*
+  * Entry point for basic value parser (e.g. for parsing properties)
+  */
+ Object PrimitiveValue() :
+{
+  Object res;
+}
+{
+    res = Primitive() <EOF>
+    { return res; }
+}
+
+ /*
+  * Entry point for tags parser (e.g. for tags in management console)
+  */
+ Object TagsSet() :
+{
+  Set tags = new HashSet();
+}
+{
+    [ <LBRACKET> Tags(tags) <RBRACKET> ] <EOF>
+    { return tags; }
+}
+
+/*
+ * Main body of grammar
+ */
+void AttributesNoEOF(SFComponentDescription descr) :
+{
+  Vector attrs;
+}
+{
+  attrs = AttributeListNoEOF()
+  {
+    for (Enumeration e = attrs.elements(); e.hasMoreElements(); ) {
+      Object[] attribute = (Object[])e.nextElement();
+      descr.sfContext().put(attribute[0], attribute[1]);
+      try {
+         if (((Set)attribute[2]).size() > 0)descr.sfContext().sfSetTags(attribute[0], (Set)attribute[2]);
+      } catch (SmartFrogException sce) {
+         //shouldn't happen
+         sce.printStackTrace();
+      }
+      if (attribute[1] instanceof SFComponentDescription)
+        ((SFComponentDescription)attribute[1]).setParent(descr);
+    }
+  }
+}
+
+
+Vector AttributeListNoEOF() :
+{
+    Vector res = new Vector(10, 5);
+    Object[] c;
+}
+{
+    ( c = Attribute() {res.addElement(c);}
+    | Includes(res)
+    | <SEMICOLON>
+    )*
+    { return res; }
+}
+
+void Includes(Vector res) :
+{
+     String codebase = null;
+     String fName;
+}
+{
+( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
+         { Vector tmp = parseInclude(fName, codebase);
+           for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
+             res.addElement(e.nextElement());
+       } )
+}
+
+Object[] Attribute() :
+{
+  Object[] attribute = new Object[3];
+  SFReference name = new SFReference();
+  Set tags = new HashSet();
+}
+{
+  ([ <LBRACKET> Tags(tags) <RBRACKET> ] AttrName(name) attribute[1]=Value()
+   { if (name.size() == 1)
+        attribute[0] = ((HereReferencePart)name.firstElement()).getValue();
+      else
+        attribute[0] = name;
+     if (attribute[1] == null) attribute[1] = SFNull.get();
+     attribute[2] = tags;
+     return attribute;
+   })
+}
+
+void Tags(Set tags) :
+{
+    Token t;
+}
+{
+    [t=Name() {tags.add(t.image);}
+      [<COMMA>] Tags(tags)
+    ]  
+}
+
+
+void AttrName(SFReference res) :
+{
+  res.setEager(true);
+  Token t;
+}
+{
+     (<UNIQUE>
+       {
+           res.addElement(ReferencePart.here("unique" + nextId++));
+       }
+     )
+    | (
+        (t = <STRING> {res.addElement(ReferencePart.here(fixEscapes(t.image.substring(1, t.image.length() - 1))));})
+      )
+    |
+     (
+       (t=<WORD> {res.addElement(ReferencePart.here(t.image));})
+       [(<REFPARTSEP> AttrName(res))]
+     )
+}
+
+
+
+
+
+
+Object Value() :
+{
+  Object res=null;
+}
+{
+    (
+    res=Component()
+    | res=SimpleValue() <SEMICOLON>
+    | <SEMICOLON>
+    ) { return res; }
+}
+
+
+
+
+
+Object SimpleValue() :
+{
+  Object res=null;
+}
+{
+    (
+    res=ReferenceNoEOF()
+    | res=Basic()
+    | res = Operator()
+    | res = IfThenElse()
+    ) { return res; }
+}
+
+
+Object Operator() :
+{
+    Object res;
+    int arity = 0; //0=nary, 1=unary, 2=binary
+
+    Object a = null;
+    Object b = null;
+    Vector v = new Vector();
+    String operator = "";
+}
+{
+    <OPSTART>
+    ((<NOT> {operator = notOp; arity = 1;} a = SimpleValue() )
+     |
+     (a = SimpleValue() {v.add(a);}) [
+     (
+      ((<APPEND> {operator = appendOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<APPEND> (b = SimpleValue() {v.add(b);}))*)
+         |((<CONCAT> {operator = concatOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<CONCAT> (b = SimpleValue() {v.add(b);}))*)
+         |((<SUM> {operator = sumOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<SUM> (b = SimpleValue() {v.add(b);}))*)
+         |((<TIMES> {operator = timesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<TIMES> (b = SimpleValue() {v.add(b);}))*)
+         |((<AND> {operator = andOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<AND> (b = SimpleValue() {v.add(b);}))*)
+         |((<OR> {operator = orOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<OR> (b = SimpleValue() {v.add(b);}))*)
+
+     |((<EQ> {operator = eqOp; arity=2;}) (b = SimpleValue()))
+     |((<NE> {operator = neOp; arity=2;}) (b = SimpleValue()))
+     |((<GE> {operator = geOp; arity=2;}) (b = SimpleValue()))
+     |((<LE> {operator = leOp; arity=2;}) (b = SimpleValue()))
+     |((<GT> {operator = gtOp; arity=2;}) (b = SimpleValue()))
+     |((<LT> {operator = ltOp; arity=2;}) (b = SimpleValue()))
+         |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
+         |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
+     )
+      ]
+    )
+    <OPEND>
+    {
+    if (operator.equals("")) {
+        res = a;
+    } else {
+        res = SFParser.componentFactory("default");
+        if (arity==0) {
+        for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
+            Object attribute = e.nextElement();
+            ((SFComponentDescription)res).sfContext().put("unique" + nextId++, attribute);
+            if (attribute instanceof SFComponentDescription)
+            ((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
+        }
+        } else if (arity == 2) {
+        ((SFComponentDescription)res).sfContext().put("left", a);
+        if (a instanceof SFComponentDescription)
+            ((SFComponentDescription)a).setParent((SFComponentDescription)res);
+        ((SFComponentDescription)res).sfContext().put("right", b);
+        if (b instanceof SFComponentDescription)
+            ((SFComponentDescription)b).setParent((SFComponentDescription)res);
+        } else { // (arity == 1)
+        ((SFComponentDescription)res).sfContext().put("data", a);
+        if (a instanceof SFComponentDescription)
+            ((SFComponentDescription)a).setParent((SFComponentDescription)res);
+        }
+        ((SFComponentDescription)res).sfContext().put("phase.function", functionPhaseClass);
+        ((SFComponentDescription)res).sfContext().put("sfFunctionClass", operator);
+    }
+    return res;
+    }
+}
+
+
+Object IfThenElse() :
+{
+    Object i,t,e;
+}
+{
+    <IF> i = SimpleValue() <THEN> t = SimpleValue() <ELSE> e = SimpleValue() <FI>
+    {
+    SFComponentDescription ifte = SFParser.componentFactory("default");
+    if (i instanceof SFComponentDescription)
+        ((SFComponentDescription)i).setParent((SFComponentDescription)ifte);
+
+    if (t instanceof SFComponentDescription)
+        ((SFComponentDescription)t).setParent((SFComponentDescription)ifte);
+
+    if (e instanceof SFComponentDescription)
+        ((SFComponentDescription)e).setParent((SFComponentDescription)ifte);
+
+    ifte.sfContext().put("phase.function", functionPhaseClass);
+    ifte.sfContext().put("sfFunctionClass", ifThenElseOp);
+
+    ifte.sfContext().put("if", i);
+    ifte.sfContext().put("then", t);
+    ifte.sfContext().put("else", e);
+    return ifte;
+    }
+}
+
+//
+// Note that the Component() term may include a different node type builder.
+// This is used as follows:
+//
+//   foo extends:someClass etc...
+//
+// Where the default is "default". This is used by the
+// component factory to map to a class to represent that node. This is
+// SFComponentDescriptionImpl in the default factory.
+// This is not documented anywhere (deliberately) and maybe should
+// be removed... (IT has been useful in some special uses of the language
+// outside of SmartFrog).
+//
+SFComponentDescription Component() :
+{
+  SFComponentDescription component;
+  String componentClass="default";
+  Token id;
+}
+{
+  <EXTENDS> [ <REFPARTSEP> id=<WORD> { componentClass = id.image; } ] component=ComponentType(componentClass)
+   { return component; }
+}
+
+SFComponentDescription ComponentType(String componentClass) :
+{
+  SFComponentDescription component =
+      SFParser.componentFactory(componentClass);
+}
+{
+  (EagerComponent(component)|DataComponent(component))
+    { return component; }
+}
+
+void EagerComponent(SFComponentDescription comp) :
+{
+}
+{
+  BaseComponent(comp) { comp.setEager(true); }
+}
+
+void DataComponent(SFComponentDescription comp) :
+{
+}
+{
+  (<DATA> | <LAZY>) BaseComponent(comp) { comp.setEager(false); }
+}
+
+
+void BaseComponent(SFComponentDescription comp) :
+{
+}
+{ (
+  <SEMICOLON>
+  | (<NULL> (BaseComponentRest(comp) | <SEMICOLON>))
+  | (BaseComponentLinkType(comp) (BaseComponentRest(comp)  | <SEMICOLON>))
+  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)]) // for backward compat...
+  )
+  {    // fix the case when the extends is only of a single {...} as assumptions have been made that
+       // type resolution is not required in this case - true before multiple extends!
+       // This is done by moving contexts, as the contained CD may be of the wrong node type!
+       if (comp.getTypes().size() == 1) {
+          Object type = comp.getTypes().firstElement();
+          if (type instanceof SFComponentDescription) {
+               SFComponentDescription cdType = (SFComponentDescription) type;
+               Context cxt = cdType.sfContext();
+               comp.setContext(cxt);
+
+               // re-parent any descriptions in super sfContext
+               for (Enumeration e = cxt.keys(); e.hasMoreElements(); ) {
+                   Object key = e.nextElement();
+                   Object value = cxt.get(key);
+                   if (value instanceof SFComponentDescription) {
+                       ((SFComponentDescription) value).setParent(comp);
+                   }
+               }
+               comp.setTypes(new Vector());
+          }
+       }
+  }
+}
+
+
+ void BaseComponentRest(SFComponentDescription comp) :
+{
+}
+{
+  (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) (BaseComponentRest(comp)  | <SEMICOLON>))
+  | (BaseComponentAttributesType(comp)) // for backward compat...
+}
+
+void BaseComponentLinkType(SFComponentDescription comp) :
+{
+   SFReference prototype = null;
+}
+{
+   prototype = LinkReference()
+   {prototype.setEager(true); comp.addType(prototype);}
+}
+
+void BaseComponentAttributesType (SFComponentDescription comp) :
+{
+   SFComponentDescriptionImpl compType = new SFComponentDescriptionImpl(new Vector(), null, null, true);
+}
+{
+   <LBRACE> AttributesNoEOF(compType) <RBRACE>
+   {comp.addType(compType);}
+}
+
+
+SFReference ReferenceNoEOF() :
+{
+  SFReference res;
+  boolean lazy = false;
+}
+{
+  [<LAZY> { lazy = true; }]  res = BaseReference() {res.setEager(!lazy);  return res; }
+}
+
+SFReference BaseReference() :
+{
+    SFComponentDescription comp;
+    SFReference ref;
+    boolean optional = false;
+    Object defaultValue = null;
+}
+{
+  (
+    ([<OPTIONAL> [<OPSTART> defaultValue = Primitive() ")"] { optional = true; } ] ref = LinkReference()
+             { ref.setOptional(optional); if (defaultValue!=null) ref.setDefaultValue(defaultValue); })
+  |
+    (<APPLY> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>
+             {ref = new SFApplyReference(comp);})
+  |
+    (<ASSERT> <LBRACE> {comp = SFParser.componentFactory("default");} AttributesNoEOF(comp) <RBRACE>
+             {ref = new SFAssertReference(comp);})
+  ) {
+    ref.setEager(true);
+    ref.setData(false);
+    return ref;
+  }
+}
+
+SFReference LinkReference() :
+{
+    SFReference ref = new SFReference();
+}
+{
+   ReferencePart(ref) (<REFPARTSEP> ReferencePart(ref))*
+   { return ref; }
+}
+
+void ReferencePart(SFReference ref) :
+{
+  Token id;
+}
+{
+    (<ROOT> { ref.addElement(ReferencePart.root()); })
+  | (<PARENT> { ref.addElement(ReferencePart.parent()); })
+  | (<ATTRIB> id=Name() { ref.addElement(ReferencePart.attrib(id.image)); })
+  | (<HERE> id=Name() { ref.addElement(ReferencePart.here(id.image)); })
+  | (<THIS> { ref.addElement(ReferencePart.thisref()); })
+  | (<PROPERTY> id=Name() { ref.addElement(ReferencePart.property(id.image));})
+  | (<IPROPERTY> id=Name() { ref.addElement(ReferencePart.iproperty(id.image));})
+  | (<ENVPROPERTY> id=Name() { ref.addElement(ReferencePart.envproperty(id.image));})
+  | (<IENVPROPERTY> id=Name() { ref.addElement(ReferencePart.ienvproperty(id.image));})
+  | (<HOST> (id=Name() { ref.addElement(ReferencePart.host(id.image));}))
+  | (<PROCESS> { ref.addElement(ReferencePart.process());})
+  | (id=<WORD> { if (ref.size() == 0) // id in first position - treat as an attrib, not a here
+                      ref.addElement(ReferencePart.attrib(id.image));
+                 else
+                      ref.addElement(ReferencePart.here(id.image));
+                })
+}
+
+
+Object Basic() :
+{
+  Object res, tmp;
+  Token id;
+}
+{
+  (
+     (res=Primitive())
+   | (<LBRACKET> { res = new Vector(); }
+          [tmp=SimpleValue() { ((Vector)res).addElement(tmp); }
+          (<COMMA> tmp=SimpleValue() { ((Vector)res).addElement(tmp); })*]
+      <RBRACKET> {
+      SFComponentDescription component =
+          SFParser.componentFactory("default");
+      for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
+          Object attribute = e.nextElement();
+          component.sfContext().put("unique" + nextId++, attribute);
+          if (attribute instanceof SFComponentDescription)
+          ((SFComponentDescription)attribute).setParent(component);
+      }
+      component.sfContext().put("phase.function", functionPhaseClass);
+      component.sfContext().put("sfFunctionClass", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+
+      res = component;
+      })
+    ) { return res; }
+}
+
+Object Primitive() :
+{
+  Object res, tmp;
+  Token id;
+}
+{
+  (
+   (<NULL> {res = SFNull.get();})
+   | (res=String())
+   | (res=Number())
+   | (res=Boolean())
+   | (res=ByteArray())
+   | (<VECTORSTART> { res = new Vector(); }
+          [tmp=Primitive() { ((Vector)res).addElement(tmp); }
+          (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
+      <VECTOREND>)
+   | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
+   | <TBD> {res = new SFTBDReference();}
+  ) { return res; }
+}
+
+
+
+Number Number() :
+{
+    Token res;
+    Number num;
+}
+{
+  (
+    res=<DOUBLE >
+    {
+      if (res.image.toUpperCase().charAt(res.image.length() - 1) == 'D')
+        num =  Double.valueOf(res.image.substring(0, res.image.length() - 1));
+      else
+        num =  Double.valueOf(res.image.substring(0, res.image.length()));
+    }
+  | res=<FLOAT>
+    {
+      num = Float.valueOf(res.image.substring(0, res.image.length() - 1));
+    }
+  | res=<INTEGER>
+    {
+      num = Integer.valueOf(res.image);
+    }
+  | res=<LONG>
+    {
+      num = Long.valueOf(res.image.substring(0, res.image.length() - 1));
+    }
+  ) { return num; }
+}
+
+String String() :
+{
+    Token res;
+    String s;
+}
+{
+  (  ( res=<STRING> { s = fixEscapes(res.image.substring(1, res.image.length() - 1)); })
+   | ( res=<MULTILINESTRING> { s = fixEscapes(res.image.substring(2, res.image.length() - 1)); })
+  ) {
+      return s;
+    }
+}
+
+Boolean Boolean() :
+{
+    Token res;
+    Boolean b;
+}
+{
+  (  res = <TRUE> { b = Boolean.TRUE; }
+   | res = <FALSE> { b = Boolean.FALSE; }
+  ) { return b; }
+}
+
+SFByteArray ByteArray() :
+{
+    Token res;
+    String s;
+    String type;
+}
+{
+  (  ( res=<BYTEARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1));
+                         type = eliminateWhitespace(res.image.substring(1, 4)); })
+  ) {
+      try {
+          SFByteArray ba = new SFByteArray(s, type, res.beginLine, res.beginColumn);
+          return ba;
+      } catch (Exception e) {
+          throw new ParseException("error constructing binary data:" + e.toString());
+      }
+    }
+}
+
+Token Name() : {
+    Token res;
+} {
+  ( res = <STRING> { res.image = fixEscapes(res.image.substring(1, res.image.length() - 1)); }
+  | res = <MULTILINESTRING> { res.image = fixEscapes(res.image.substring(1, res.image.length() - 1)); }
+  | res = <WORD> )
+  {return res;}
+}
+
