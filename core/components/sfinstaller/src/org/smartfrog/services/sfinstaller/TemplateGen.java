@@ -125,6 +125,7 @@ public class TemplateGen {
      * File object for the template file.
      */
     static File file = null;
+    private static final String DATA_ALL = "data.all";
 
     /**
      * Class Constructor.
@@ -344,7 +345,7 @@ public class TemplateGen {
         try {
             Vector dummy = new Vector();
 
-            String arguments[] = {"-h", "data.all", "-o", outputFile, "-t", templateFile};
+            String arguments[] = {"-h", DATA_ALL, "-o", outputFile, "-t", templateFile};
 
             for (int i = 0; i < arguments.length; i++)
                 dummy.add(arguments[i]);
@@ -360,10 +361,14 @@ public class TemplateGen {
 
             String args[] = (String[]) dummy.toArray(new String[5]);
             logDir = logdir;
-            FileGen.createFile(map);
+            FileGen.createFile(map, DATA_ALL);
             createDescription(args, jars);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        } finally {
+            File dataFile = new File(DATA_ALL);
+            if (dataFile.exists() && dataFile.isFile())
+                dataFile.delete();
         }
     }
 
@@ -391,8 +396,6 @@ public class TemplateGen {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            File dataFile = new File("data.all");
-            dataFile.delete();
             tempFile.renameTo(file);
         }
     }
