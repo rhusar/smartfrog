@@ -25,7 +25,7 @@ import java.util.Map;
  * If xmpp server is not running when it starts it tries connect repeatedly until success. 
  * if login fails it returns error. 
  * @author sanjaydahiya
- *
+ * @deprecated Unused!
  */
 public class ListenerThread implements Runnable {
 
