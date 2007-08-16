@@ -34,6 +34,7 @@
     <artifact conf="minimal" name="sf-antbuild-minimal" type="tar"/>
     <artifact conf="full" name="sf-antbuild-full" type="zip"/>
     <artifact conf="full" name="sf-antbuild-full" type="tar"/>
+    <artifact conf="source" name="sf-antbuild-src" type="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
