@@ -160,8 +160,6 @@ For more information: www.smartfrog.org
     </echo>
     <patternset id="teststhatfail">
 
-      <exclude name="${systemtests}/assertions/testcompounds/FailingTestCompoundsTest.*"
-          unless="run.failing.tests" />
       <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
       <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
           unless="run.failing.tests" />
