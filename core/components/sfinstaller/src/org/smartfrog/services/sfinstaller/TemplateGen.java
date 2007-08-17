@@ -153,89 +153,104 @@ public class TemplateGen {
      * ....
      */
     void readDaemons() throws Exception {
-
         allDaemons = new Vector();
         Reader r = new BufferedReader(new FileReader(hostsFileName));
         StreamTokenizer st = new StreamTokenizer(r);
-        //    st.resetSyntax();
-        st.eolIsSignificant(false);
-        // Allow single line coments in the input
-        //  st.slashSlashComments(true);
-        st.wordChars('A', 'Z');
-        st.wordChars('a', 'z');
-        st.wordChars('/', '/');
-        st.wordChars('0', '9');
-        st.wordChars('-', '-');
-        st.wordChars('.', '.');
-        st.wordChars(':', ':');
-        st.wordChars('_', '_');
-        st.wordChars('@', '@');
-        st.wordChars('*', '*');
-        st.wordChars('\\', '\\');
-        st.whitespaceChars(' ', ' ');
-        String tempLogicalName = null;
-        String tempOS = null;
-        String tempHostName = null;
-        String tempTransferType = null;
-        String tempLoginType = null;
-        String tempUserName = null;
-        String tempPasswordFile = null;
-        String tempLocalFile1 = null;
-        String tempLocalFile2 = null;
-        String tempLocalFile3 = null;
-        String tempKeyFile = null;
-        String tempSecProperties = null;
-        String tempSmartFrogJar = null;
-        String tempServicesJar = null;
-        String tempExamplesJar = null;
-        String tempReleaseName = null;
-        String tempJavaHome = null;
-        String tempInstallDir = null;
-        String tempEmailTo = null;
-        String tempEmailFrom = null;
-        String tempEmailServer = null;
+        try {
+//    st.resetSyntax();
+            st.eolIsSignificant(false);
 
-        while ((tempLogicalName = getWord(st)) != null) {
-            tempOS = getWord(st);
-            tempHostName = getWord(st);
-            tempTransferType = getWord(st);
-            tempLoginType = getWord(st);
-            tempUserName = getWord(st);
-            tempPasswordFile = getWord(st);
-            tempLocalFile1 = getWord(st);
-            if (tempOS.equals(Daemon.WINDOWS)) {
-                tempLocalFile2 = getWord(st);
-                tempLocalFile3 = getWord(st);
+            // set numbers to be word tokens, too
+            st.ordinaryChars(32, 126);
+            st.ordinaryChars(128, 254);
+
+            // Allow single line coments in the input
+            //  st.slashSlashComments(true);
+
+            // set the word tokens
+            st.wordChars(32, 126);
+            st.wordChars(128, 254);
+
+            // set whitespace chars
+            st.whitespaceChars(255, 255);
+
+//       crude implementation
+//            st.wordChars('A', 'Z');
+//            st.wordChars('a', 'z');
+//            st.wordChars('/', '/');
+//            st.wordChars('0', '9');
+//            st.wordChars('-', '-');
+//            st.wordChars('.', '.');
+//            st.wordChars(':', ':');
+//            st.wordChars('_', '_');
+//            st.wordChars('@', '@');
+//            st.wordChars('*', '*');
+//            st.wordChars('\\', '\\');
+//            st.whitespaceChars(' ', ' ');
+
+            String tempLogicalName = null;
+            String tempOS = null;
+            String tempHostName = null;
+            String tempTransferType = null;
+            String tempLoginType = null;
+            String tempUserName = null;
+            String tempPasswordFile = null;
+            String tempLocalFile1 = null;
+            String tempLocalFile2 = null;
+            String tempLocalFile3 = null;
+            String tempKeyFile = null;
+            String tempSecProperties = null;
+            String tempSmartFrogJar = null;
+            String tempServicesJar = null;
+            String tempExamplesJar = null;
+            String tempReleaseName = null;
+            String tempJavaHome = null;
+            String tempInstallDir = null;
+            String tempEmailTo = null;
+            String tempEmailFrom = null;
+            String tempEmailServer = null;
+
+            while ((tempLogicalName = getWord(st)) != null) {
+                tempOS = getWord(st);
+                tempHostName = getWord(st);
+                tempTransferType = getWord(st);
+                tempLoginType = getWord(st);
+                tempUserName = getWord(st);
+                tempPasswordFile = getWord(st);
+                tempLocalFile1 = getWord(st);
+                if (tempOS.equals(Daemon.WINDOWS)) {
+                    tempLocalFile2 = getWord(st);
+                    tempLocalFile3 = getWord(st);
+                }
+                if (securityOn) {
+                    tempKeyFile = getWord(st);
+                    tempSecProperties = getWord(st);
+                    tempSmartFrogJar = getWord(st);
+                    tempServicesJar = getWord(st);
+                    tempExamplesJar = getWord(st);
+                }
+                tempReleaseName = getWord(st);
+                // if (tempOS.equals(Daemon.WINDOWS))
+                tempJavaHome = getWord(st);
+                tempInstallDir = getWord(st);
+                tempEmailTo = getWord(st);
+                tempEmailFrom = getWord(st);
+                tempEmailServer = getWord(st);
+                allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
             }
-            if (securityOn) {
-                tempKeyFile = getWord(st);
-                tempSecProperties = getWord(st);
-                tempSmartFrogJar = getWord(st);
-                tempServicesJar = getWord(st);
-                tempExamplesJar = getWord(st);
-            }
-            tempReleaseName = getWord(st);
-            // if (tempOS.equals(Daemon.WINDOWS))
-            tempJavaHome = getWord(st);
-            tempInstallDir = getWord(st);
-            tempEmailTo = getWord(st);
-            tempEmailFrom = getWord(st);
-            tempEmailServer = getWord(st);
-            allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            r.close();
         }
-
-        r.close();
     }
-
-
     /**
      * Gets the next tokenized word from a stream.
      *
      * @param st An input StreamTokenizer.
      * @return A word just read from the input.
      */
-    String getWord(StreamTokenizer st) throws Exception {
-
+    private String getWord(StreamTokenizer st) throws Exception {
         int token = st.nextToken();
         if (token == StreamTokenizer.TT_WORD)
             return st.sval;
