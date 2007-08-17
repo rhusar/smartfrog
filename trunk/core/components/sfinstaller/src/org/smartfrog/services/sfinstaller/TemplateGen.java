@@ -37,6 +37,8 @@ import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Instantiates a meta-template with the customization that our
@@ -125,7 +127,6 @@ public class TemplateGen {
      * File object for the template file.
      */
     static File file = null;
-    private static final String DATA_ALL = "data.all";
 
     /**
      * Class Constructor.
@@ -138,6 +139,29 @@ public class TemplateGen {
         readOptions(args);
 
         readDaemons();
+
+        if (outputFileName == null)
+            instantiateTemplate(System.out);
+        else
+            instantiateTemplate(new
+                    PrintStream(new FileOutputStream(outputFileName)));
+    }
+
+    /**
+     * Constructor to avoid unnecessary writing & parsing of hostfiles.
+     * @param args
+     * @param map the map containing the daemons
+     * @throws Exception
+     */
+    public TemplateGen(String[] args, Map map) throws Exception {
+        readOptions(args);
+
+        if (!map.isEmpty()) {
+		  	Collection values = map.values();
+			Iterator t = values.iterator();
+            while (t.hasNext())
+                allDaemons.add((Daemon)t.next());
+        }
 
         if (outputFileName == null)
             instantiateTemplate(System.out);
@@ -358,12 +382,12 @@ public class TemplateGen {
      */
     static public void createTemplate(Map map, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir) throws Exception {
         try {
-            Vector dummy = new Vector();
+            Vector<String> dummy = new Vector<String>();
 
-            String arguments[] = {"-h", DATA_ALL, "-o", outputFile, "-t", templateFile};
+            String arguments[] = {"-o", outputFile, "-t", templateFile};
 
-            for (int i = 0; i < arguments.length; i++)
-                dummy.add(arguments[i]);
+            for (String argument : arguments)
+                dummy.add(argument);
 
             if (securityStatus & dynamicLoadingStatus) {
                 dummy.add("-s");
@@ -374,16 +398,11 @@ public class TemplateGen {
                 dummy.add("-s");
             }
 
-            String args[] = (String[]) dummy.toArray(new String[5]);
+            String args[] = dummy.toArray(new String[5]);
             logDir = logdir;
-            FileGen.createFile(map, DATA_ALL);
-            createDescription(args, jars);
+            createDescription(args, map, jars);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        } finally {
-            File dataFile = new File(DATA_ALL);
-            if (dataFile.exists() && dataFile.isFile())
-                dataFile.delete();
         }
     }
 
@@ -407,12 +426,38 @@ public class TemplateGen {
             }
             TemplateGen result = new TemplateGen(args);
 
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
             tempFile.renameTo(file);
         }
+    }
+
+    /**
+     * Runs the TemplaeGen and generates the description file.
+     * @param args
+     * @param map the map containing the daemons
+     * @param jars
+     * @throws Exception
+     */
+    static void createDescription(String[] args, Map map, String[]jars) throws Exception
+    {
+         try {
+            readOptions(args);
+
+            if (dynamicLoadingOn) {
+                if (jars == null)
+                    throw new Exception("Httpserver or remote classes are missing for dynamic class loading");
+                else {
+                    //	addhttpServer(hostname);
+                    addJars(jars);
+                }
+            }
+            TemplateGen result = new TemplateGen(args, map);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+         }
     }
 
     /**
