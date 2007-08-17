@@ -19,21 +19,16 @@
  */
 package org.smartfrog.test.system.java;
 
-import org.smartfrog.test.SmartFrogTestBase;
+import junit.framework.AssertionFailedError;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.os.java.LibraryArtifact;
+import org.smartfrog.services.os.java.LibraryArtifactImpl;
 import org.smartfrog.services.os.java.LibraryHelper;
 import org.smartfrog.services.os.java.LibraryImpl;
-import org.smartfrog.services.os.java.LibraryArtifactImpl;
-import org.smartfrog.services.os.java.LibraryArtifact;
-import org.smartfrog.services.filesystem.FileUsingComponent;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.test.SmartFrogTestBase;
 
 import java.io.File;
-import java.rmi.RemoteException;
-import java.net.UnknownHostException;
-
-import junit.framework.AssertionFailedError;
+import java.net.ConnectException;
 
 /**
  * Test library work
@@ -127,10 +122,14 @@ public class LibraryTest extends SmartFrogTestBase {
             File file = new File(filename);
             assertTrue("not found " + filename, file.exists());
             file.delete();
-        } catch(Throwable thrown) {
+        } catch (ConnectException cause) {
+            //no network,
+            getLog().info("No connection to the remote server; ignoring result",
+                    cause);
+        } catch(Throwable cause) {
             //connection refused exceptions are a sign of being offline
-            assertFaultCauseAndTextContains(thrown,null, "onnection refused",null);
-            getLog().info("No connection to the remote server; ignoring result",thrown);
+            assertFaultCauseAndTextContains(cause,null, "onnection refused",null);
+            getLog().info("No connection to the remote server; ignoring result",cause);
         }
     }
 
