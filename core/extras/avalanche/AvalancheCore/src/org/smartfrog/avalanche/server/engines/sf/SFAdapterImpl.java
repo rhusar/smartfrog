@@ -16,7 +16,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 /**
  * 
  * @author sanjaydahiya
- *
+ * @deprecated Used
  */
 public class SFAdapterImpl {
 	private String sfHome = null ;
@@ -29,7 +29,10 @@ public class SFAdapterImpl {
 	/** 
 	 * This method checks on localhost on the given port if sfdaemon is running
 	 * it uses that, otherwise it starts a new daemon .
-	 * @return
+     * @param sfHome used
+     * @param port used
+	 * @return unsed
+     * @throws Exception unused
 	 */
 	public static SFAdapterImpl getInstance(String sfHome, int port) throws Exception{
 		SFAdapterImpl adapter = new SFAdapterImpl();
