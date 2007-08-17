@@ -16,7 +16,7 @@ import java.util.Enumeration;
 public class FileGen { 
 
 	/** The seperator for fields of data file*/
-	static String seperator = " ";
+	static char seperator = (char)255;
 
 	/** The Daemon object to be read from map*/
 	static Daemon host ;
