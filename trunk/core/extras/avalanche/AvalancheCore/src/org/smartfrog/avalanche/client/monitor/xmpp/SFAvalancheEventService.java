@@ -19,6 +19,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.jivesoftware.smack.XMPPException;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -31,7 +33,7 @@ import java.util.Calendar;
  * This component acts as a singleton used by other components. SendMsg method is synchronized
  * in this version, so only one  
  * @author sanjaydahiya
- *
+ * @deprecated will become obsolete in the near future
  */
 public class SFAvalancheEventService extends PrimImpl implements Prim {
 	
@@ -72,8 +74,7 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 		// xmpp username is ip address of host 
 		try{
 			String userName = InetAddress.getLocalHost().getHostName().toLowerCase();
-			//TODO: currently uname and pwd are same for sending events
-			// change it 
+			//TODO: currently uname and pwd are same for sending events - change it
 			adapter.setXmppUserName(userName);
 			adapter.setXmppPassword(userName);
 		}catch(UnknownHostException e){
@@ -82,25 +83,10 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 		}
 		
 		try{
-			sfLog().info("Starting XMPP Client Adapter, server = " + xmppServer 
-					+ " this host = " + adapter.getXmppUserName());
-
+			sfLog().info("Starting XMPP Client Adapter, server = " + adapter.getXmppServer() + " this host = " + adapter.getXmppUserName());
             adapter.init();
             adapter.login();
-
-            // send an event to server allowing to subscribe for Roter notification.
-			MonitoringEvent event = new MonitoringEventDefaultImpl();
-			event.setHost(InetAddress.getLocalHost().getHostName());
-			event.setInstanceName("None");
-			event.setLastAction("None");
-			event.setMessageType(MonitoringConstants.HOST_STARTED);
-			event.setTimestamp(""+Calendar.getInstance().getTimeInMillis());
-			event.setMsg("Host started. ");
-			event.setModuleId("None");
-			event.setModuleState("None");
-			
-			adapter.sendEvent(event);
-			
+			sendSimpleMessage("Deploying XMPP component.");
 		}catch(Exception e){
 			sfLog().error("Failed to initialize XMPP Client : "+ e);
 			adapter.close(); 
@@ -112,17 +98,44 @@ public class SFAvalancheEventService extends PrimImpl implements Prim {
 		
 	}
 
-	public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    private void sendSimpleMessage(String msg) {
+        try {
+            MonitoringEvent event = null;
+            try {
+                // Capsulate the message
+                event = new MonitoringEventDefaultImpl();
+                event.setHost(InetAddress.getLocalHost().getHostName());
+                event.setInstanceName("None");
+                event.setLastAction("None");
+                event.setMessageType(MonitoringConstants.HOST_STARTED);
+                event.setTimestamp(""+Calendar.getInstance().getTimeInMillis());
+                event.setMsg(msg);
+                event.setModuleId("None");
+                event.setModuleState("None");
+            } catch (UnknownHostException e) {
+                sfLog().error(e);
+            }
+            // Send the event
+            if (event != null)
+                adapter.sendEvent(event);
+        } catch (XMPPException e) {
+            sfLog().error(e);
+        }
+    }
+
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
 		super.sfStart();
-	}
+        sendSimpleMessage("Host started.");
+    }
 
     /**
      * Called upon the daemon's termination?!
      * @param arg0
      */
-    public void sfTerminate(TerminationRecord arg0) {
+    public void sfTerminateWith(TerminationRecord arg0) {
 		sfLog().info("Closing XMPP Client Adapter");
-		adapter.close();
+        sendSimpleMessage("Host going down.");
+        adapter.close();
 		super.sfTerminate(arg0);
 	}
 	
