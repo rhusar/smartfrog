@@ -49,42 +49,46 @@ For more information: www.smartfrog.org
                 // take an appropriate action
                 // IGNITE SELECTED HOSTS
                 if (pageAction.equals("ignite")) {
-                    BootStrap bs = new BootStrap(factory, setup);
+                    BootStrap bs = new BootStrap(factory);
                     try {
                         bs.ignite(hosts);
-                    } catch (HostIgnitionException e) {
-
+                    } catch (HostIgnitionException e) { 
+                        message = "Host Ignition failed, please check the hosts' settings. " + e.getMessage();
                     }
-                // STOP SMARTFROG ON SELECTED HOSTS
+                    // STOP SMARTFROG ON SELECTED HOSTS
                 } else if (pageAction.equals("stop")) {
-                    for (int i = 0; i < hosts.length; i++) {
+                    for (String host : hosts) {
                         try {
-                            SFAdapter.stopDaemon(hosts[i]);
+                            SFAdapter.stopDaemon(host);
                         } catch (Throwable t) {
                             t.printStackTrace();
                         }
                     }
-                // START THE MANAGEMENT CONSOLE FOR THE SELECTED HOSTS
+                    // START THE MANAGEMENT CONSOLE FOR THE SELECTED HOSTS
                 } else if (pageAction.equals("console")) {
                     if (request.getRemoteHost().equals("127.0.0.1")) {
                         SFAdapter adapter = new SFAdapter(factory, scheduler);
-                        for (int i = 0; i < hosts.length; i++) {
-                            adapter.startMngConsole(hosts[i]);
+                        for (String host : hosts) {
+                            adapter.startMngConsole(host);
                         }
                     } else {
                         message = "Start sfManagementConsole using your command line.";
                     }
-                // DELETE THE SPECIFIED HOSTS FROM THE DATABASE
+                    // DELETE THE SPECIFIED HOSTS FROM THE DATABASE
                 } else if (pageAction.equals("delete")) {
-                    for (int i = 0; i < hosts.length; i++) {
-                        HostType host = manager.getHost(hosts[i]);
-                        manager.removeHost(host);
+                    try {
+                        for (String host : hosts) {
+                            HostType type = manager.getHost(host);
+                            manager.removeHost(type);
+                        }
+                    } catch (DatabaseAccessException e) {
+                        message = "Deletion of the selected hosts failed.";
                     }
                     response.sendRedirect("host_list.jsp?active=true");
                 }
             }
     }
-    
+
     // Create output document
     DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     Document xdoc = db.newDocument();
@@ -95,7 +99,7 @@ For more information: www.smartfrog.org
 
     // Create type-Node
     Element entry = xdoc.createElement("type");
-    entry.appendChild(xdoc.createTextNode((message==null)?"success":"error"));
+    entry.appendChild(xdoc.createTextNode((message == null) ? "success" : "error"));
     root.appendChild(entry);
 
     // Create message-Node
