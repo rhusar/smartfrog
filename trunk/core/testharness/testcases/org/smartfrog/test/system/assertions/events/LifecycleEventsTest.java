@@ -39,9 +39,7 @@ public class LifecycleEventsTest extends DeployingTestBase {
     }
 
     public void testExpectDeployFailure() throws Throwable {
-        TestCompletedEvent event = expectAbnormalTestRun(FILES,
-                "testExpectDeployFailure",
-                false,
-                null);
+        expectSuccessfulTestRun(FILES,
+                "testExpectDeployFailure");
     }
 }
