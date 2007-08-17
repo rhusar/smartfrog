@@ -70,17 +70,9 @@ import java.util.Vector;
 public class SFAdapter {
 
     protected AvalancheFactory avalancheFactory;
-
     protected Scheduler sched;
-
-    private Vector machines = new Vector();
-
+    private Vector<String> machines = new Vector<String>();
     public static Hashtable allValues = new Hashtable();
-
-    Display mngConsole = null;
-
-//	protected String hostname = null;
-
     public static final String AVALANCHE_SERVER = "_Avalanche_server";
 
     public SFAdapter(AvalancheFactory factory) {
@@ -107,7 +99,8 @@ public class SFAdapter {
      * @throws SFSubmitException
      */
     public Map submit(String moduleId, String version, String instanceName,
-                      String title, Map attrMap, String[] hosts) throws SFSubmitException {
+                      String title, Map<String, String> attrMap, String[] hosts) throws SFSubmitException {
+
         ActiveProfileManager apm = null;
         try {
             apm = avalancheFactory.getActiveProfileManager();
@@ -118,9 +111,9 @@ public class SFAdapter {
             if (null != title) {
 
                 SfDescriptionType[] descs = configs.getSfDescriptionArray();
-                for (int i = 0; i < descs.length; i++) {
-                    if (descs[i].getTitle().equals(title)) {
-                        sfDesc = descs[i];
+                for (SfDescriptionType desc : descs) {
+                    if (desc.getTitle().equals(title)) {
+                        sfDesc = desc;
                     }
                 }
             } else {
@@ -128,20 +121,20 @@ public class SFAdapter {
             }
 
             String actionId = sfDesc.getAction();
-            for (int i = 0; i < hosts.length; i++) {
-                ActiveProfileType profile = apm.getProfile(hosts[i]);
+            for (String host : hosts) {
+                ActiveProfileType profile = apm.getProfile(host);
                 if (null == profile) {
-                    profile = apm.newProfile(hosts[i]);
+                    profile = apm.newProfile(host);
                 }
 
                 ModuleStateType[] states = profile.getModuleStateArray();
                 ModuleStateType currentState = null;
-                for (int j = 0; j < states.length; j++) {
-                    String mId = states[j].getId();
-                    String ver = states[j].getVersion();
-                    String ins = states[j].getInstanceName();
+                for (ModuleStateType state : states) {
+                    String mId = state.getId();
+                    String ver = state.getVersion();
+                    String ins = state.getInstanceName();
                     if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins)) {
-                        currentState = states[j];
+                        currentState = state;
                         break;
                     }
                 }
@@ -177,15 +170,16 @@ public class SFAdapter {
                 String h = (String) itor.next();
                 ActiveProfileType ap = apm.getProfile(h);
                 if (ap != null) {
+
                     // first get hold of the module configuration on this host.
                     ModuleStateType[] states = ap.getModuleStateArray();
                     ModuleStateType currentState = null;
-                    for (int j = 0; j < states.length; j++) {
-                        String mId = states[j].getId();
-                        String ver = states[j].getVersion();
-                        String ins = states[j].getInstanceName();
+                    for (ModuleStateType state : states) {
+                        String mId = state.getId();
+                        String ver = state.getVersion();
+                        String ins = state.getInstanceName();
                         if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins)) {
-                            currentState = states[j];
+                            currentState = state;
                             break;
                         }
                     }
@@ -208,17 +202,17 @@ public class SFAdapter {
             // set profile for this module to failed
             try {
                 if (null != apm) {
-                    for (int i = 0; i < hosts.length; i++) {
-                        ActiveProfileType ap = apm.getProfile(hosts[i]);
+                    for (String host : hosts) {
+                        ActiveProfileType ap = apm.getProfile(host);
                         if (ap != null) {
                             // first get hold of the module configuration on this host.
                             ModuleStateType[] states = ap.getModuleStateArray();
                             ModuleStateType currentState = null;
-                            for (int j = 0; j < states.length; j++) {
-                                String mId = states[j].getId();
-                                String ver = states[j].getVersion();
+                            for (ModuleStateType state : states) {
+                                String mId = state.getId();
+                                String ver = state.getVersion();
                                 if (moduleId.equals(mId) && version.equals(ver)) {
-                                    currentState = states[j];
+                                    currentState = state;
                                     break;
                                 }
                             }
@@ -305,11 +299,11 @@ public class SFAdapter {
         try {
 
             SfDescriptionType.Argument[] args = sfDesc.getArgumentArray();
-            java.util.Map finalMap = new java.util.HashMap();
+            HashMap<String, String> finalMap = new HashMap<String, String>();
 
-            for (int i = 0; i < args.length; i++) {
-                String name = args[i].getName();
-                String value = args[i].getValue();
+            for (SfDescriptionType.Argument arg : args) {
+                String name = arg.getName();
+                String value = arg.getValue();
                 finalMap.put(name, value);
             }
 
@@ -321,8 +315,8 @@ public class SFAdapter {
             String sfCodeBase = null;
             if (null != jarFiles && null != avalancheServer) {
                 sfCodeBase = "";
-                for (int i = 0; i < jarFiles.length; i++) {
-                    sfCodeBase += "http://" + avalancheServer + "/" + remoteLoadServer + "/Downloader.jsp?filePath=" + jarFiles[i] + " ";
+                for (String jarFile : jarFiles) {
+                    sfCodeBase += "http://" + avalancheServer + "/" + remoteLoadServer + "/Downloader.jsp?filePath=" + jarFile + " ";
                 }
             }
             String url = sfDesc.getUrl();
@@ -355,10 +349,7 @@ public class SFAdapter {
             String sfBaseLibDir = sfDistDir + File.separator + "lib";
             File[] sfBaseJars = (new File(sfBaseLibDir)).listFiles(new FilenameFilter() {
                 public boolean accept(File f, String s) {
-                    if (s.endsWith(".jar")) {
-                        return true;
-                    }
-                    return false;
+                    return s.endsWith(".jar");
                 }
             });
 
@@ -440,8 +431,7 @@ public class SFAdapter {
         // find hostname from Collector
 
         System.out.println("Number of machines to collect data from are=======" + hosts.length);
-        for (int i = 0; i < hosts.length; i++)
-            machines.add(hosts[i]);
+        for (String host : hosts) machines.add(host);
         setTargetInstances(machines.size());
         //Sort the array based on the values in allValues and then schedule on the first element.
         allValues.put("test", new Integer(200));
@@ -505,7 +495,7 @@ public class SFAdapter {
     }
 
     public void startMngConsole(String hostname) {
-
+        Display mngConsole = null;
         int height = 480;
         int width = 640;
         boolean showRootProcess = false;
@@ -519,7 +509,7 @@ public class SFAdapter {
             display = new Display("Interface");
             Compound cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(hostname));
             if (cp != null) {
-                Display mngConsole = org.smartfrog.services.management.SFDeployDisplay.startConsole(nameDisplay, height, width, positionDisplay,
+                mngConsole = org.smartfrog.services.management.SFDeployDisplay.startConsole(nameDisplay, height, width, positionDisplay,
                         showRootProcess, showCDasChild, showScripting, hostname, port, false);
             }
         } catch (java.net.UnknownHostException uex) {
@@ -563,17 +553,16 @@ public class SFAdapter {
 
     public static void main(String[] args) throws Exception {
         String url = "D:\\programming\\java\\SmartFrog\\components\\quartz\\src\\org\\smartfrog\\services\\sfinterface\\test\\AttribTest1.sf";
-        Map map = SmartFrogAdapterImpl.getAllAttribute(url);
 
-        Set s = map.keySet();
-        Iterator it = s.iterator();
-        while (it.hasNext()) {
-            System.out.println("Next -- " + (String) it.next());
+        Map<String, String> map = SmartFrogAdapterImpl.getAllAttribute(url);
+        Set<String> keySet = map.keySet();
+        for (String key : keySet) {
+            System.out.println("Next -- " + key);
         }
 
         System.out.println("Map--- " + map);
 
-        Map newMap = new HashMap();
+        HashMap<String, String> newMap = new HashMap<String, String>();
         newMap.put("srcFile", "newSrcFile");
         newMap.put("actions:gt4setup:tarFilename", "newTarFileName");
         //	map.put("actions:gt4setup:tomcatLoc","/opt/jakarta-tomcat");
@@ -582,10 +571,7 @@ public class SFAdapter {
         String sfBaseLibDir = sfHome + java.io.File.separator + "lib";
         File[] sfBaseJars = (new File(sfBaseLibDir)).listFiles(new FilenameFilter() {
             public boolean accept(File f, String s) {
-                if (s.endsWith(".jar")) {
-                    return true;
-                }
-                return false;
+                return s.endsWith(".jar");
             }
         });
 

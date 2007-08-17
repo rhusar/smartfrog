@@ -53,7 +53,6 @@ public class ScheduleJob implements Job {
 
             JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-
             String hostname = dataMap.getString("hostname");
 	        String moduleId = dataMap.getString("moduleId");
 	        String version = dataMap.getString("version");
@@ -63,21 +62,16 @@ public class ScheduleJob implements Job {
 	        Map attrMap = null;
 	        SFAdapter adapter = null;
 
-	        for (int i =0; i< keys.length; i++){
-		        if(keys[i].equals("attrMap")) {
-	 		        attrMap = (Map) dataMap.get("attrMap");
-		        }
-		        else if (keys[i].equals("adapter")) {
-			        adapter =(SFAdapter) dataMap.get("adapter");
-		        }
-	        }
+            for (String key : keys) {
+                if (key.equals("attrMap")) {
+                    attrMap = (Map) dataMap.get("attrMap");
+                } else if (key.equals("adapter")) {
+                    adapter = (SFAdapter) dataMap.get("adapter");
+                }
+            }
 
-            // Call Submition API
-
-	        Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle,
-		     attrMap, new String[]{hostname});
-
-                    
+            // Call Submission API
+	        Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, new String[]{hostname});
             log.info("Submission Done " + cd1.toString());
         } catch (Exception ex) {
             log.error(ex);
