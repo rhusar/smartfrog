@@ -56,7 +56,4 @@ public class ConditionalTest extends DeployingTestBase {
         expectSuccessfulTestRun(FILES, "testOneIf");
     }
 
-    public void testFailingWaitFor() throws Throwable {
-        expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
-    }
 }
