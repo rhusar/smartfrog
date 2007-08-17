@@ -10,7 +10,7 @@ as a whole. The project's home page is http://smartfrog.org/
 
 The release artifacts are available at
 
-http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
+http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=108447
 
 This release is 3.12.000; built from revision 5030
 of the SVN repository. This release has an extended language
@@ -116,19 +116,20 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
-The 3.12.000 release is a stable release, intended for use in
-production systems. All major defects that have been reported have been fixed,
-and the RPM and izpack distribution packages are working well as distribution
-formats.
+The 3.12.000 release is a stable release, intended for use in production
+systems. All major defects that have been reported have been fixed, and
+the RPM and izpack distribution packages are working well as
+distribution formats.
 
-This release is Java1.5+ only; it has been tested on Java1.5 and Java1.6, on
-Linux, Windows XP, Windows Vista and OS/X systems; the tested Linux distributions
-are RHEL4, RHEL5 and Ubuntu 7.04; one of the RedHat servers is a 4-way 64-bit
-machine.  
+This release is Java1.5+ only; it has been tested on Java1.5 and
+Java1.6, on Linux, Windows XP, Windows Vista and OS/X systems; the
+tested Linux distributions are RHEL4, RHEL5 and Ubuntu 7.04; one of the
+RedHat servers is a 4-way 64-bit machine.
 
-Very few changes have been made since the last beta, 3.11.007; apart from the switch
-to Java 1.5, the only changes were to the TestCompound (and tests that use it), and
-the components in the sf-www package that test for a remote page being available.
+Very few changes have been made since the last beta, 3.11.007; apart
+from the switch to Java 1.5, the only changes were to the TestCompound
+(and tests that use it), and the components in the sf-www package that
+test for a remote page being available.
  
 ** Bug
     * [SFOS-390] - TestCompound NPEs
