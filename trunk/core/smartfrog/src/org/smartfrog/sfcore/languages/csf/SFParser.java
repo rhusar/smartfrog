@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDe
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 import org.smartfrog.sfcore.parser.Phases;
 
-import org.smartfrog.sfcore.parser.StreamLanguageParser;
+import org.smartfrog.sfcore.parser.ReaderLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -54,7 +54,7 @@ import java.lang.reflect.Constructor;
  * subclasses and changed since it uses the DefaultParser to parse include
  * files
  */
-public class SFParser implements StreamLanguageParser {
+public class SFParser implements ReaderLanguageParser {
 
 
     /**
