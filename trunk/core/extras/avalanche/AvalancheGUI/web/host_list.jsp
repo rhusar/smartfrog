@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 */ --%>
 
-<%@ page contentType="text/html" language="java" %>
+<%@ page language="java" contentType="text/html" %>
 <%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
@@ -112,20 +112,8 @@ For more information: www.smartfrog.org
                 <td><%= host %>
                 </td>
                 <td>
-                    <table cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td>
-                                <a href="log_view.jsp?pageAction=viewSelected&hostId=<%= host %>">
-                                    [Logs]
-                                </a>
-                            </td>
-                            <td class="data">
-                                <a href="host_setup_bs.jsp?hostId=<%= host %>">
-                                    [Settings]
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
+                    <a href="log_view.jsp?pageAction=viewSelected&hostId=<%= host %>">[Logs]</a>&nbsp;
+                    <a href="host_setup_bs.jsp?hostId=<%= host %>">[Settings]</a>
                 </td>
                 <td><%=os%>, <%=arch %>
                 </td>

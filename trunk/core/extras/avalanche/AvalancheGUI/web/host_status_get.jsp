@@ -24,12 +24,9 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
 <%@ page import="org.w3c.dom.*" %>
 <%@ page import="javax.xml.parsers.*" %>
-<%@ page import="javax.xml.transform.*" %>
-<%@ page import="javax.xml.transform.stream.*" %>
-<%@ page import="javax.xml.transform.dom.*" %>
-<%@ page import="java.io.*" %>
 <%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater"%>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
+<%@ page import="org.smartfrog.avalanche.shared.XMLHelper" %>
 
 <%
     // Get all hosts
@@ -69,7 +66,7 @@ For more information: www.smartfrog.org
             type = updater.getActiveProfile(host);
             active = type.getHostState().equals("Available");
             if (type.getMessagesHistoryArray().length != 0) {
-                lastMsg = type.getMessagesHistoryArray(type.getMessagesHistoryArray().length-1).getMsg();
+                lastMsg = type.getMessagesHistoryArray(type.getMessagesHistoryArray().length - 1).getMsg();
             } else {
                 lastMsg = "false";
             }
@@ -105,16 +102,7 @@ For more information: www.smartfrog.org
         }
     }
 
-    // Convert DOM to XML string
-    StringWriter sw = new StringWriter();
-    StreamResult result = new StreamResult(sw);
-    Transformer trans = TransformerFactory.newInstance().newTransformer();
-    trans.setOutputProperty(OutputKeys.INDENT, "yes");
-    trans.transform(new DOMSource(xdoc), result);
-    String xmlString = sw.toString();
-    sw.close();
-
     // Print output
     out.clear();
-    out.write(xmlString);
+    out.write(XMLHelper.XMLToString(xdoc));
 %>
