@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  * as streams.
  *
  */
-public interface Parser extends StreamParser {
+public interface StringParser {
     /**
      * Parses component(s) from a string. Returns the root component. This is a
      * utility access method which currently does not support localization.
@@ -91,7 +91,7 @@ public interface Parser extends StreamParser {
      */
     public Object sfParsePrimitiveValue(String txt) throws SmartFrogCompilationException;
 
-        /**
+    /**
      * Parses a component description from a string.
      * All the langauge phases will have been applied, and the conversion to ComponentDescription
      * carried out.

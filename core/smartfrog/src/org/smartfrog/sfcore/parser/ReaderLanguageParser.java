@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.common.SmartFrogParseException;
  * descriptions.
  *
  */
-public interface StreamLanguageParser {
+public interface ReaderLanguageParser {
     /**
      * Parses component(s) from a reader. Returns a root component which
      * contains the parsed components. Includes should be handled by some

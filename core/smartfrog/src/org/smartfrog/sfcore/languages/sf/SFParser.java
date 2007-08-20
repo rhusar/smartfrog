@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.StreamLanguageParser;
+import org.smartfrog.sfcore.parser.ReaderLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import java.lang.reflect.Constructor;
@@ -46,7 +46,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  *  subclasses and changed since it uses the DefaultParser to parse include
  *  files
  */
-public class SFParser implements StreamLanguageParser {
+public class SFParser implements ReaderLanguageParser {
 
 
    /**
