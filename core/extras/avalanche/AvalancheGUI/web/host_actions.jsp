@@ -25,11 +25,8 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.server.engines.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.HostType" %>
 <%@ page import="javax.xml.parsers.*" %>
-<%@ page import="javax.xml.transform.*" %>
-<%@ page import="javax.xml.transform.stream.*" %>
-<%@ page import="javax.xml.transform.dom.*" %>
-<%@ page import="java.io.*" %>
 <%@ page import="org.w3c.dom.*" %>
+<%@ page import="org.smartfrog.avalanche.shared.XMLHelper" %>
 
 <%
     HostManager manager = factory.getHostManager();
@@ -52,7 +49,7 @@ For more information: www.smartfrog.org
                     BootStrap bs = new BootStrap(factory);
                     try {
                         bs.ignite(hosts);
-                    } catch (HostIgnitionException e) { 
+                    } catch (HostIgnitionException e) {
                         message = "Host Ignition failed, please check the hosts' settings. " + e.getMessage();
                     }
                     // STOP SMARTFROG ON SELECTED HOSTS
@@ -108,16 +105,7 @@ For more information: www.smartfrog.org
         entry.appendChild(xdoc.createTextNode(message));
     root.appendChild(entry);
 
-    // Convert DOM to XML string
-    StringWriter sw = new StringWriter();
-    StreamResult result = new StreamResult(sw);
-    Transformer trans = TransformerFactory.newInstance().newTransformer();
-    trans.setOutputProperty(OutputKeys.INDENT, "yes");
-    trans.transform(new DOMSource(xdoc), result);
-    String xmlString = sw.toString();
-    sw.close();
-
     // Print output
     out.clear();
-    out.write(xmlString);
+    out.write(XMLHelper.XMLToString(xdoc));
 %>

@@ -19,11 +19,8 @@ For more information: www.smartfrog.org */ --%>
 <%@ page language="java" contentType="text/xml" %>
 <%@ page import="org.apache.xerces.parsers.DOMParser" %>
 <%@ page import="javax.xml.parsers.*" %>
-<%@ page import="javax.xml.transform.*" %>
-<%@ page import="javax.xml.transform.stream.*" %>
-<%@ page import="javax.xml.transform.dom.*" %>
-<%@ page import="java.io.*" %>
 <%@ page import="org.w3c.dom.*" %>
+<%@ page import="org.smartfrog.avalanche.shared.XMLHelper" %>
 
 <%
     String pageId = request.getParameter("id");
@@ -69,24 +66,15 @@ For more information: www.smartfrog.org */ --%>
 
     // Create type-Node
     Element entry = xdoc.createElement("type");
-    entry.appendChild(xdoc.createTextNode(((text!=null)?"success":"error")));
+    entry.appendChild(xdoc.createTextNode(((text != null) ? "success" : "error")));
     root.appendChild(entry);
 
     // Create message-Node
     entry = xdoc.createElement("message");
-    entry.appendChild(xdoc.createTextNode(((text!=null)?text:"Sorry, but there is no help on this topic.")));
+    entry.appendChild(xdoc.createTextNode(((text != null) ? text : "Sorry, but there is no help on this topic.")));
     root.appendChild(entry);
-
-    // Convert DOM to XML string
-    StringWriter sw = new StringWriter();
-    StreamResult result = new StreamResult(sw);
-    Transformer trans = TransformerFactory.newInstance().newTransformer();
-    trans.setOutputProperty(OutputKeys.INDENT, "yes");
-    trans.transform(new DOMSource(xdoc), result);
-    String xmlString = sw.toString();
-    sw.close();
 
     // Print output
     out.clear();
-    out.write(xmlString);
+    out.write(XMLHelper.XMLToString(xdoc));
 %>
