@@ -20,21 +20,11 @@ For more information: www.smartfrog.org
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-<%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
-
-<%
-  	String errMsg = null; 
-  	HostManager manager = factory.getHostManager();
-  	
-  	if( null == manager ){
-  		errMsg = "Error connecting to hosts database" ;
-  		throw new Exception ( "Error connecting to hosts database" );
-  	}
-  	
-  	SettingsManager settingsMgr = factory.getSettingsManager();
+<%@ include file="init_hostmanager.inc.jsp"%>
+<%  SettingsManager settingsMgr = factory.getSettingsManager();
   	SettingsType defSettings = settingsMgr.getDefaultSettings();  
   	
 	String []sysProps = defSettings.getSystemPropertyArray();
@@ -59,15 +49,10 @@ For more information: www.smartfrog.org
 			propStr += "\"" +sysProps[i] +"\"";
 	}
 
-    String site = "host_save.jsp?action=env&next=";
-%>
+    String site = "host_save.jsp?action=env&next="; %>
 
 <script language="javascript" type="text/javascript">
     <!--
-function submit(target){
-	document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
-	document.addHostFrm.submit();
-}
 
 function addRowInTable(table)
 {
@@ -106,7 +91,7 @@ setNextSubtitle("Host Properties Page");
     -->
 </script>
 
-<form id='addHostFrm' name='addHostFrm' method='post' action="<%= site %>bs&hostId=<%= host.getId() %>">
+<form id='addHostFrm' name='addHostFrm' method='post' action="">
 
 <!-- This is the page menu -->
 <br>
@@ -116,6 +101,7 @@ setNextSubtitle("Host Properties Page");
 <!-- Actual Body starts here -->
 <br/>
 <center>
+<div align="center">
 
 <table id="argumentTable" class="dataTable" 
 	style="width: 500px; border-collapse: collapse">
@@ -144,14 +130,12 @@ setNextSubtitle("Host Properties Page");
 	<select name="<%=("argument.name." + i)%>">
 	    <option value="">Choose...</option>
 <%
-    for( int j=0; j<sysProps.length; j++){
-%>	
-	    <option<%=(sysProps[j].equals(name))?" selected":""%>>
-		<%=sysProps[j]%>
-	    </option>
-<%
-    }
+    for (String sysProp : sysProps) {
 %>
+        <option<%=(sysProp.equals(name)) ? " selected" : ""%>> <%=sysProp%></option>
+        <%
+            }
+        %>
 	</select>
     </td>
     <td class="medium">
@@ -167,16 +151,31 @@ setNextSubtitle("Host Properties Page");
 </tbody>
 </table>
 <br/>
-<script language="javascript">
-    if (document.getElementById('argumentTable').rows.length < 3)
-    {   addRowInTable(document.getElementById('argumentTable'));
+<script language="javascript" type="text/javascript">
+    <!--
+    if (document.getElementById('argumentTable').rows.length < 3) {
+        addRowInTable(document.getElementById('argumentTable'));
     }
+    -->
 </script>
-<input type='button' value='Add a Property' class="btn" 
-	onclick="javascript:addRowInTable(getElementById('argumentTable'))">
-<input type='submit' name='save' value='Save Changes' class="btn" onclick="submit('bs')">
+<input type='button' value='Add a Property' class="btn" onclick="javascript:addRowInTable(getElementById('argumentTable'))">
+
+<br/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "HostSetup", "footer",
+                                "Save Changes", "javascript:document.addHostFrm.action='<%= site %>bs<%= hostIdent %>'; document.addHostFrm.submit();");
+        -->
+    </script>
+</div>
+
+</div>
 </center>
 </form>
+
+
+
 <%
     } else {
         response.sendRedirect("host_setup_bs.jsp");

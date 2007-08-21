@@ -18,15 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 */ --%>
 <%@ page language="java" %>
-<%@ include file="header.inc.jsp" %>
+<%@ page import="org.smartfrog.avalanche.server.HostManager"%>
 
-<script type="text/javascript" language="JavaScript">
-    <!--
-            setNextSubtitle("Home Page");
-    -->
-</script>
+<%
 
-<h1>Welcome to <b>Avalanche</b>!</h1>
-<p>Please choose an option from the menu above. If you need any help, click on the help button on the pages.</p>
+HostManager manager = factory.getHostManager();
+if (null == manager) {
+    session.setAttribute("error_message", "Error connecting to hosts database");
+    throw new Exception("Error connecting to hosts database");
+}
 
-<%@ include file="footer.inc.jsp" %>
+%>

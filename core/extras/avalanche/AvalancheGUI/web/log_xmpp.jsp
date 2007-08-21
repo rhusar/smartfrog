@@ -19,7 +19,6 @@
  */ --%>
 <%@ page contentType="text/html" language="java" %>
 <%@ include file="header.inc.jsp" %>
-<%@ page import="org.smartfrog.avalanche.server.HostManager" %>
 <%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater" %>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType" %>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.MessageType" %>
@@ -44,9 +43,9 @@
     </script>
 </div>
 
-<%
-    String errMsg = null;
-    String rowClass = "";
+<%@ include file="message.inc.jsp"%>
+
+<%  String rowClass = "";
 
     String hostName = request.getParameter("host");
     ActiveProfileUpdater updater = new ActiveProfileUpdater();
@@ -131,13 +130,8 @@
         </tr>
     </thead>
     <tbody>
-        <% HostManager manager = factory.getHostManager();
-            if (null == manager) {
-                errMsg = "Error connecting to hosts database";
-                throw new Exception("Error connecting to hosts database");
-            }
-
-            String[] hostNames = manager.listHosts();
+        <%@ include file="init_hostmanager.inc.jsp"%>
+        <%  String[] hostNames = manager.listHosts();
             if (hostNames.length != 0) {
                 int count = 0;
                 String messageCount = null;
@@ -177,6 +171,7 @@
         <% } %>
     </tbody>
 </table>
+
 <br/>
 <div align="center" style="width: 95%;">
     <script language="JavaScript" type="text/javascript">

@@ -22,11 +22,9 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.settings.xdefault.*" %>
 
-<%
-    String errMsg = null;
-    SettingsManager sett = factory.getSettingsManager();
+<%  SettingsManager sett = factory.getSettingsManager();
     if (null == sett) {
-        errMsg = "Error connecting to settings database";
+        session.setAttribute("error_msg", "Error connecting to settings database.");
         throw new Exception("Error connecting to settings database");
     }
     SettingsType defSettings = SettingsType.Factory.newInstance();
@@ -44,25 +42,24 @@ For more information: www.smartfrog.org
 
     String[] modes = request.getParameterValues("accessMode");
     if (null != modes) {
-        for (int i = 0; i < modes.length; i++) {
-            SettingsType.AccessMode mode = defSettings.addNewAccessMode();
-            mode.setName(modes[i]);
+        for (String mode1 : modes) {
+            SettingsType.AccessMode newMode = defSettings.addNewAccessMode();
+            newMode.setName(mode1);
         }
     }
     String[] dModes = request.getParameterValues("dataTransferMode");
     if (null != dModes) {
-        for (int i = 0; i < dModes.length; i++) {
-            SettingsType.DataTransferMode mode =
-                    defSettings.addNewDataTransferMode();
-            mode.setName(dModes[i]);
+        for (String dMode : dModes) {
+            SettingsType.DataTransferMode newMode = defSettings.addNewDataTransferMode();
+            newMode.setName(dMode);
         }
     }
 
     String[] actions = request.getParameterValues("action");
     if (null != actions) {
-        for (int i = 0; i < actions.length; i++) {
-            SettingsType.Action action = defSettings.addNewAction();
-            action.setName(actions[i]);
+        for (String action : actions) {
+            SettingsType.Action newAction = defSettings.addNewAction();
+            newAction.setName(action);
         }
     }
 
@@ -87,6 +84,5 @@ For more information: www.smartfrog.org
     }
 
     sett.setDefaultSettings(defSettings);
-    javax.servlet.RequestDispatcher dispatcher = request.getRequestDispatcher("system_settings.jsp");
-    dispatcher.forward(request, response);
+    response.sendRedirect("system_settings.jsp");
 %>

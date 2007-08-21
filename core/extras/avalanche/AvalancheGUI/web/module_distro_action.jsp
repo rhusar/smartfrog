@@ -166,7 +166,7 @@ oneVoiceWritePageMenu("DistroActions","",
 </script>
 </div>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 <!-- Actual Body starts here -->
 <br/>
 <center>

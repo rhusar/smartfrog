@@ -60,7 +60,7 @@ oneVoiceWritePageMenu("ModuleVersions","header");
 
 <form id="moduleListFrm" name="moduleListFrm" method="post" action="">
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <br/><br/>

@@ -23,9 +23,9 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 
 <%
-  	String errMsg = null; 
+  	String errMsg = null;
 
-  	SettingsManager settingsMgr = factory.getSettingsManager();
+    SettingsManager settingsMgr = factory.getSettingsManager();
   	if( null == settingsMgr ){
   		errMsg = "Error connecting to settings database" ;
   		throw new Exception ( "Error connecting to settings database" );
@@ -56,7 +56,7 @@ For more information: www.smartfrog.org
                 </script>
             </div>
 
-            <%@ include file="Message.jsp" %>
+            <%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="sfSettingsTable">

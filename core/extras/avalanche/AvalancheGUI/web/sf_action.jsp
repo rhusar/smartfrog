@@ -70,7 +70,7 @@ setNextSubtitle("Supported Actions Page");
     </script>
 </div>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <table  border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="actionListTable">
@@ -166,9 +166,6 @@ setNextSubtitle("Supported Actions Page");
 </div>
 </form>
 </center>
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
 </div>
 
 <%@ include file="footer.inc.jsp" %>

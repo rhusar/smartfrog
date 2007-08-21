@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
   	
   	String moduleId = request.getParameter("moduleId");
   	String versionNumber = request.getParameter("version");
-
+    VersionType version = null;
 %>
 
 <script language="JavaScript" type="text/javascript">
@@ -66,7 +66,7 @@ setNextSubtitle("Module Distributions Page");
 oneVoiceWritePageMenu("ModuleDistros","header");
 </script>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 <!-- Actual Body starts here -->
 <div align="center">
 <br/><br/>
@@ -82,36 +82,38 @@ Module: <a href="module_version.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> 
 	    <td class="data">Distribution Details</td>
 	</tr>
 <%
-	ModuleType m = manager.getModule(moduleId);
-	VersionType versions[] = m.getVersionArray();
-	VersionType version = null ;
-	for( int j=0;j<versions.length;j++){
-		if( versionNumber.equals(versions[j].getNumber()) ){
-			version = versions[j];
-			break;
-		}
-	}
+    if (versionNumber != null) {
+    ModuleType m = manager.getModule(moduleId);
+    VersionType versions[] = m.getVersionArray();
+    for (VersionType version1 : versions) {
+        if (versionNumber.equals(version1.getNumber())) {
+            version = version1;
+            break;
+        }
+    }
 
-	DistributionType []distros = version.getDistributionArray();
-	for( int i=0;i<distros.length;i++){
-		String id = distros[i].getId();
-		PlatformSelectorType ps = distros[i].getPlatformSelector();
-		String os = (ps.getOs()==null)?"":ps.getOs();
-		String plaf = (ps.getPlatform()==null)?"":ps.getPlatform();
-		String arch = (ps.getArch()==null)?"":ps.getArch();
-%>			
-	<tr>
-	    <td class="data" align="center">
-		<input type="checkbox" name="selectedDistro" value="<%=id%>">
-	    </td>
-	    <td class="data">
-<a href="module_distro_action.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>&distroId=<%=id %>"><%=id %></a>
-	<br/>(OS=<%=os %>,Arch=<%=arch %>,Platform=<%=plaf %>)
-	    </td>
-	</tr>
-<%
-		}
+    if (version != null) {
+    DistributionType[] distros = version.getDistributionArray();
+    for (DistributionType distro : distros) {
+        String id = distro.getId();
+        PlatformSelectorType ps = distro.getPlatformSelector();
+        String os = (ps.getOs() == null) ? "" : ps.getOs();
+        String plaf = (ps.getPlatform() == null) ? "" : ps.getPlatform();
+        String arch = (ps.getArch() == null) ? "" : ps.getArch();
 %>
+        <tr>
+            <td class="data" align="center">
+                <input type="checkbox" name="selectedDistro" value="<%=id%>">
+            </td>
+            <td class="data">
+                <a href="module_distro_action.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>&distroId=<%=id %>"><%=id %>
+                </a>
+                <br/>(OS=<%=os %>,Arch=<%=arch %>,Platform=<%=plaf %>)
+            </td>
+        </tr>
+        <%
+            } } }
+        %>
 	
 </tbody>
 </table>
@@ -132,6 +134,7 @@ oneVoiceWritePageMenu("ModuleDistros","",
 </form>
 
 <center>
+<% if (version != null) { %>
 <div id="newDistro" style="display:none">
 
 <form method="post" action="module_save.jsp?pageAction=addDistro&moduleId=<%=moduleId%>&version=<%=version.getNumber()%>">
@@ -174,11 +177,7 @@ oneVoiceWritePageMenu("ModuleDistros","",
 	<input type="submit" value="Add" name="AddDistro" class="btn">
 </form>
 </div>
-
+<% } %>
 </center>
-
-<script language="JavaScript" type="text/javascript">
-        reconcileEventHandlers();
-</script>
 
 <%@ include file="footer.inc.jsp" %>

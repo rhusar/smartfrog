@@ -20,9 +20,7 @@ For more information: www.smartfrog.org
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
-<%@	page import="org.smartfrog.avalanche.server.modules.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
-<%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
 
 <%
@@ -235,7 +233,7 @@ setNextSubtitle("Select Host Page");
   </script>
 </div>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <table  border="0" cellpadding="0" cellspacing="0" class="dataTable" id="moduleTable">

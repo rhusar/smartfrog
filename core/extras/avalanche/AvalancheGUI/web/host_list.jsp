@@ -20,19 +20,10 @@ For more information: www.smartfrog.org
 
 <%@ page language="java" contentType="text/html" %>
 <%@ include file="header.inc.jsp" %>
-<%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
 
-<%
-    String errMsg = null;
-    HostManager manager = factory.getHostManager();
-
-    if (null == manager) {
-        errMsg = "Error connecting to hosts database";
-        throw new Exception("Error connecting to hosts database");
-    }
-
-    boolean boolListActiveHosts = false;
+<%@ include file="init_hostmanager.inc.jsp" %>
+<%  boolean boolListActiveHosts = false;
     try {
         boolListActiveHosts = Boolean.parseBoolean(request.getParameter("active").trim());
     } catch (Exception e) {
@@ -66,7 +57,7 @@ For more information: www.smartfrog.org
         </script>
     </div>
 
-    <%@ include file="Message.jsp" %>
+    <%@ include file="message.inc.jsp" %>
     <!-- Actual Body starts here -->
     <table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="hostListTable">
         <caption><% if (boolListActiveHosts) { %>Active<% } %> Hosts</caption>

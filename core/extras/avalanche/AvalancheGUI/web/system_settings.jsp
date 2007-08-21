@@ -17,20 +17,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 */ --%>
-<%@ page language="java" %>
+<%@ page language="java" contentType="text/html" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 
-<%
-  	String errMsg = null;
-  	SettingsManager settMgr = factory.getSettingsManager();
+<% SettingsManager settMgr = factory.getSettingsManager();
   	if( null == settMgr ){
-  		errMsg = "Error connecting to settings database" ;
   		throw new Exception ( "Error connecting to settings database" );
   	}
-  	SettingsType defSettings = settMgr.getDefaultSettings();
-%>
+  	SettingsType defSettings = settMgr.getDefaultSettings(); %>
 
 <script type="text/javascript" language="JavaScript">
 <!--
@@ -150,7 +146,7 @@ setNextSubtitle("System Settings Page");
 </div>
 
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <form method="post" action="system_settings_save.jsp">
 
@@ -232,78 +228,81 @@ setNextSubtitle("System Settings Page");
 
 <br/><br/>
 
-<table id='accessModeTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Supported Access Modes
-	</td>
-</tr>
-<%
-	SettingsType.AccessMode []modes =  defSettings.getAccessModeArray();
-	for( int i=0;i<modes.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="accessMode" value="<%=modes[i].getName()%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="accessModeTable">
+        <caption>Supported Access Modes</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% SettingsType.AccessMode[] accessmodes =  defSettings.getAccessModeArray();
+            for (SettingsType.AccessMode accessmode : accessmodes) { %>
+            <tr>
+                <td>
+                    <input type="text" name="platform" value="<%=accessmode.getName()%>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
-<a href="#" onclick="javascript:addRow1(getElementById('accessModeTable'),'accessMode')">Add Access Mode </a>
-<br><br>
+<input type="button" name="access_add" value="Add Access Mode" onclick="addRow1(getElementById('accessModeTable'),'accessMode')"/>
 
-<table id='transferModeTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Supported Data Transfer Modes
-	</td>
-</tr>
-<%
-	SettingsType.DataTransferMode []dModes =  defSettings.getDataTransferModeArray();
-	for( int i=0;i<dModes.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="dataTransferMode" value="<%=dModes[i].getName()%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<br/><br/>
+
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="transferModeTable">
+        <caption>Supported Transfer Modes</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% SettingsType.DataTransferMode[] transfermodes =  defSettings.getDataTransferModeArray();
+            for (SettingsType.DataTransferMode transfermode : transfermodes) { %>
+            <tr>
+                <td>
+                    <input type="text" name="transferMode" value="<%= transfermode.getName() %>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
-<a href="#" onclick="javascript:addRow1(getElementById('transferModeTable'),'dataTransferMode')">Add Data Transfer Mode </a>
-<br><br>
+<input type="button" name="transfer_add" value="Add Transfer Mode" onclick="addRow1(getElementById('transferModeTable'),'transferMode')"/>
 
-<table id='systemPropertiesTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Add System Property
-	</td>
-</tr>
-<%
-	String []props =  defSettings.getSystemPropertyArray();
-	for( int i=0;i<props.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="prop" value="<%=props[i]%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<br/><br/>
+
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="systemPropertiesTable">
+        <caption>System Properties</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% String[] properties =  defSettings.getSystemPropertyArray();
+            for (String property : properties) { %>
+            <tr>
+                <td>
+                    <input type="text" name="systemProperty" value="<%= property %>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
-
-<a href="#" onclick="javascript:addRow1(getElementById('systemPropertiesTable'),'prop')">Add System Property </a>
-<br><br>
+<input type="button" name="property_add" value="Add Property" onclick="addRow1(getElementById('systemPropertiesTable'),'systemProperty')"/>
 
 <br/><br/>
 
@@ -333,7 +332,7 @@ setNextSubtitle("System Settings Page");
             <% } %>
         </tbody>
 </table>
-<input type="button" name="action_add" value="Add Platform" onclick="addRow2(getElementById('deploymentEngineTable'),'engine.name', 'engine.class')"/>
+<input type="button" name="engine_add" value="Add Engine" onclick="addRow2(getElementById('deploymentEngineTable'),'engine.name', 'engine.class')"/>
 
 <br/><br/>
 
@@ -359,14 +358,14 @@ setNextSubtitle("System Settings Page");
             <% } %>
         </tbody>
 </table>
-<input type="button" name="action_add" value="Add Platform" onclick="addRow1(getElementById('actionTable'),'action')"/>
+<input type="button" name="action_add" value="Add Action" onclick="addRow1(getElementById('actionTable'),'action')"/>
 </form>
 
 <div align="center" style="width: 95%;">
     <script language="JavaScript" type="text/javascript">
         <!--
         oneVoiceWritePageMenu(  "SystemSettings", "footer",
-                                "Save Changes", "javascript:submit()");
+                                "Save Changes", "javascript:document.form[0].submit()");
         -->
     </script>
 </div>

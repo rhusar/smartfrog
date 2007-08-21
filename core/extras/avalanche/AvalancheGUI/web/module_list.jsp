@@ -138,7 +138,7 @@ For more information: www.smartfrog.org
                 </script>
             </div>
 
-            <%@ include file="Message.jsp" %>
+            <%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="moduleListTable">
@@ -154,7 +154,7 @@ For more information: www.smartfrog.org
     <tbody>
 <%
     String rowClass = "";
-    if (modules.length == 0) {
+    if (modules.length != 0) {
         for (String module : modules) {
             ModuleType m = null;
             String description = null;
