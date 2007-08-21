@@ -126,6 +126,89 @@ public class ActiveProfileUpdater {
     }
 
     /**
+     * Saves a vmMessageType in the ActiveProfile
+     * @param ext
+     */
+    public void processVMMessage(XMPPEventExtension ext)
+    {
+        ActiveProfileType type = getActiveProfile(ext.getHost());
+        if (type != null) {
+            // clip the history
+            while (type.getMessagesHistoryArray().length > XMPP_HISTORY_LIMIT)
+                type.removeMessagesHistory(0);
+
+            // add a new message
+            MessageType newMsg = type.addNewMessagesHistory();
+            newMsg.setTime(ext.getTimestamp());
+            newMsg.setMsg("VM: " + ext.getPropertyBag().get("vmpath") +
+                            " Command: " + ext.getPropertyBag().get("vmcmd") + 
+                            " Response: " + ext.getPropertyBag().get("vmresponse"));
+
+            if (ext.getPropertyBag().get("vmpath").equals("")) {
+                if (ext.getPropertyBag().get("vmcmd").equals("list")) {
+                    // a list command has been sent and responded to
+                    // the response contains the list of running
+                    // machines divided by '\n'
+
+                    // get the machines
+                    String[] strMachines = ((String)ext.getPropertyBag().get("vmresponse")).split("\n");
+
+                    // indicator whether a machine already exists or not
+                    boolean bFound;
+                    for (String s : strMachines) {
+                        if (s.equals(""))
+                                continue;
+                        
+                        // reset the indicator
+                        bFound = false;
+
+                        // search the profile
+                        for (VmStateType t : type.getVmStateArray()) {
+                            if (t.getVmPath().equals(s)) {
+                                bFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!bFound)
+                        {
+                            // machine hasn't been found, add it
+                            VmStateType newType = type.addNewVmState();
+                            newType.setVmPath(s);
+                            newType.setVmLastCmd("list");
+                            newType.setVmResponse("");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // find the appropriate type
+                boolean bFound = false;
+                for (VmStateType t : type.getVmStateArray()) {
+                    if (t.getVmPath().equals(ext.getPropertyBag().get("vmpath")))
+                    {
+                        bFound = true;
+                        t.setVmLastCmd((String)ext.getPropertyBag().get("vmcmd"));
+                        t.setVmResponse((String)ext.getPropertyBag().get("vmresponse"));
+                    }
+                }
+                if (!bFound)
+                {
+                    // type not found, create a new one
+                    VmStateType newType = type.addNewVmState();
+                    newType.setVmLastCmd((String)ext.getPropertyBag().get("vmcmd"));
+                    newType.setVmResponse((String)ext.getPropertyBag().get("vmresponse"));
+                    newType.setVmPath((String)ext.getPropertyBag().get("vmpath"));
+                }
+            }
+
+            // store the profile
+            storeActiveProfile(type);
+        }
+    }
+
+    /**
      * Saves a ModuleStateType in the ActiveProfile
      *
      * @param e is a MonitoringEvent

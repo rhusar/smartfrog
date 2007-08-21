@@ -71,7 +71,7 @@ public class RelayHandlerImpl extends XmppMessageHandlerImpl {
         super.processPacket(packet);
         Message m=(Message) packet;
         for(String to:recipients) {
-            getListener().sendMessage(to, m.getSubject(), m.getBody());
+            getListener().sendMessage(to, m.getSubject(), m.getBody(), null);
         }
 
     }
