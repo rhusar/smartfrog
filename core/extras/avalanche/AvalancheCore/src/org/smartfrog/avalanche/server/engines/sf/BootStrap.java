@@ -31,6 +31,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Provides Host Ignition functionality (Installs smartfrog on other nodes). Avalanche Server must be installed
@@ -61,7 +62,7 @@ public class BootStrap {
     private static final String DEFAULT_EMAILSERVER = "none";
 
     // Contains one additonal File.separator if server os is windows.
-    private String strOptSeparator = null;
+    private String strOptSeparator = "";
 
     public BootStrap(AvalancheFactory f) {
         // additional separator needed for velocity
@@ -87,11 +88,11 @@ public class BootStrap {
     public void ignite(String[] hosts) throws HostIgnitionException {
         try {
             HostManager hostManager = factory.getHostManager();
-            String templateFile = sfDirectory + java.io.File.separator + sfTemplate;
-            String outDir = sfDirectory + java.io.File.separator + sfWorkDir;
-            String outputFile = outDir + File.separator + "hostIgnition" + getDateTime() + ".sf";
+            String templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
+            String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
+            String outputFile = outDir + File.separator + this.strOptSeparator + "hostIgnition" + getDateTime() + ".sf";
 
-            HashMap<String, Daemon> map = new HashMap<String, Daemon>();
+            ArrayList<Daemon> listDaemons = new ArrayList<Daemon>();
             for (String host : hosts) {
                 // Retrieving host information
                 HostType h = hostManager.getHost(host);
@@ -189,14 +190,14 @@ public class BootStrap {
                         DEFAULT_EMAILFROM,      // emailfrom
                         DEFAULT_EMAILSERVER);   // emailserver
 
-                map.put(host, d);
+                listDaemons.add(d);
             }
 
             String logFileDir = avalancheHome + File.separator + strOptSeparator + "logs" + strOptSeparator;
 
-            // to read from map and write to data. all and then create a description
-            log.info("TemplateGen Map : " + map);
-            TemplateGen.createTemplate(map, templateFile, outputFile, false, false, null, logFileDir);
+            // to read from listDaemons and write to data. all and then create a description
+            log.info("TemplateGen Map : " + listDaemons);
+            TemplateGen.createTemplate(listDaemons, templateFile, outputFile, false, false, null, logFileDir);
 
             File of = new File(outputFile);
             if (!of.exists()) {

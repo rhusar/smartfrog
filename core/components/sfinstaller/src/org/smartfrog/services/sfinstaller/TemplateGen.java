@@ -20,9 +20,6 @@
 
 package org.smartfrog.services.sfinstaller;
 
-import java.io.StringReader;
-import java.util.Vector;
-
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.Template;
@@ -36,9 +33,7 @@ import java.io.FileReader;
 import java.io.StreamTokenizer;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Instantiates a meta-template with the customization that our
@@ -73,7 +68,7 @@ public class TemplateGen {
     /**
      * A collection of all the daemons.
      */
-    Vector allDaemons;
+    Vector<Daemon> allDaemons = new Vector<Daemon>();
 
     /** A special daemon for dynamic loading jar files. */
     //Daemon principalDaemon = null;
@@ -150,18 +145,14 @@ public class TemplateGen {
     /**
      * Constructor to avoid unnecessary writing & parsing of hostfiles.
      * @param args
-     * @param map the map containing the daemons
+     * @param listDaemons the list containing the daemons
      * @throws Exception
      */
-    public TemplateGen(String[] args, Map map) throws Exception {
+    public TemplateGen(String[] args, ArrayList<Daemon> listDaemons) throws Exception {
         readOptions(args);
 
-        if (!map.isEmpty()) {
-		  	Collection values = map.values();
-			Iterator t = values.iterator();
-            while (t.hasNext())
-                allDaemons.add((Daemon)t.next());
-        }
+        for (Daemon d : listDaemons)
+            allDaemons.add(d);
 
         if (outputFileName == null)
             instantiateTemplate(System.out);
@@ -177,14 +168,13 @@ public class TemplateGen {
      * ....
      */
     void readDaemons() throws Exception {
-        allDaemons = new Vector();
         Reader r = new BufferedReader(new FileReader(hostsFileName));
         StreamTokenizer st = new StreamTokenizer(r);
         try {
 //    st.resetSyntax();
             st.eolIsSignificant(false);
 
-            // set numbers to be word tokens, too
+            // set numbers and everything else to be word tokens, too
             st.ordinaryChars(32, 126);
             st.ordinaryChars(128, 254);
 
@@ -328,8 +318,7 @@ public class TemplateGen {
     static void readOptions(String[] args) {
 
         String errorString = null;
-        int i;
-        for (i = 0; i < args.length & errorString == null;) {
+        for (int i = 0; i < args.length && errorString == null; i++) {
             try {
                 if (args[i].charAt(0) == optionFlagIndicator) {
                     switch (args[i].charAt(1)) {
@@ -357,7 +346,6 @@ public class TemplateGen {
                 } else {
                     errorString = "illegal option format for option " + args[i];
                 }
-                i++;
             } catch (Exception e) {
                 errorString = "illegal format for options ";
             }
@@ -371,7 +359,7 @@ public class TemplateGen {
      * Creates the argument set of running the TemplateGen and generating the
      * description file.
      *
-     * @param map                  Map with Daemon objects for the description
+     * @param listDaemons          List with Daemon objects for the description
      * @param templateFile         Template file
      * @param outputFile           Output description file
      * @param securityStatus       A flag to keep security on of off
@@ -380,27 +368,23 @@ public class TemplateGen {
      * @param logdir               log directory
      * @throws Exception
      */
-    static public void createTemplate(Map map, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir) throws Exception {
+    static public void createTemplate(ArrayList<Daemon> listDaemons, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir) throws Exception {
         try {
-            Vector<String> dummy = new Vector<String>();
+            ArrayList<String> dummy = new ArrayList<String>();
 
-            String arguments[] = {"-o", outputFile, "-t", templateFile};
+            dummy.add("-o");
+            dummy.add(outputFile);
+            dummy.add("-t");
+            dummy.add(templateFile);
 
-            for (String argument : arguments)
-                dummy.add(argument);
-
-            if (securityStatus & dynamicLoadingStatus) {
-                dummy.add("-s");
+            if (dynamicLoadingStatus)
                 dummy.add("-d");
-            } else if (dynamicLoadingStatus) {
-                dummy.add("-d");
-            } else if (securityStatus) {
+            
+            if (securityStatus)
                 dummy.add("-s");
-            }
 
-            String args[] = dummy.toArray(new String[5]);
             logDir = logdir;
-            createDescription(args, map, jars);
+            createDescription(dummy.toArray(new String[4]), listDaemons, jars);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -436,11 +420,11 @@ public class TemplateGen {
     /**
      * Runs the TemplaeGen and generates the description file.
      * @param args
-     * @param map the map containing the daemons
+     * @param listDaemons the list containing the daemons
      * @param jars
      * @throws Exception
      */
-    static void createDescription(String[] args, Map map, String[]jars) throws Exception
+    static void createDescription(String[] args, ArrayList<Daemon> listDaemons, String[]jars) throws Exception
     {
          try {
             readOptions(args);
@@ -453,7 +437,7 @@ public class TemplateGen {
                     addJars(jars);
                 }
             }
-            TemplateGen result = new TemplateGen(args, map);
+            TemplateGen result = new TemplateGen(args, listDaemons);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -480,8 +464,8 @@ public class TemplateGen {
      */
     static void addJars(String[] jars) {
         try {
-            for (int i = 0; i <= jars.length; i++) {
-                httpJars.add(jars[i]);
+            for (String jar : jars) {
+                httpJars.add(jar);
                 //	Jars = Jars + " http://"+httpServer+":8080/" + jars[i];
             }
         } catch (Exception e) {
