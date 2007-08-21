@@ -20,20 +20,11 @@ For more information: www.smartfrog.org
 <%@ page language="java" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
-<%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
-<%
-    String errMsg = null; 
-    HostManager manager = factory.getHostManager();
-    
-    if( null == manager ){
-	errMsg = "Error connecting to hosts database" ;
-	throw new Exception ( "Error connecting to hosts database" );
-    }
-    
-    SettingsManager settingsMgr = factory.getSettingsManager();
+<%@ include file="init_hostmanager.inc.jsp"%>
+<%  SettingsManager settingsMgr = factory.getSettingsManager();
     SettingsType defSettings = settingsMgr.getDefaultSettings();  
     
     SettingsType.DataTransferMode sysTransferModes[] =
@@ -63,10 +54,6 @@ For more information: www.smartfrog.org
 
 <script language="JavaScript" type="text/javascript">
  <!--
-function submit(target){
-    document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
-    document.addHostFrm.submit();
-}
 
 function addRowInTable(table)
 {
@@ -123,16 +110,12 @@ setNextSubtitle("Host Transfer Modes Page");
     -->
 </script>
 
-<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>env&hostId=<%= host.getId() %>">
+<form id="addHostFrm" name="addHostFrm" method="post" action="">
 
-<!-- This is the page menu -->
-<br>
-
-<%@ include file="host_setup_menu.inc.jsp" %>
-
-<!-- Actual Body starts here -->
 <br/>
 <center>
+<div align="center">
+<%@ include file="host_setup_menu.inc.jsp" %>
 
 <table id="transferModeTable" class="dataTable" 
 	style="width: 500px; border-collapse: collapse">
@@ -200,9 +183,23 @@ setNextSubtitle("Host Transfer Modes Page");
 <br/>
 <input type='button' value='Add a Transfer Mode' class="btn" 
 	onclick="javascript:addRowInTable(getElementById('transferModeTable'))">
-<input type='submit' name='save' value='Save Changes' class="btn" onClick="submit('env')">
+
+<br/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "HostSetup", "footer",
+                                "Save Changes", "javascript:document.addHostFrm.action='<%= site %>env<%= hostIdent %>'; document.addHostFrm.submit();");
+        -->
+    </script>
+</div>
+
+</div>
 </center>
 </form>
+
+
+
 <%
     } else {
         response.sendRedirect("host_setup_bs.jsp");

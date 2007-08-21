@@ -126,7 +126,7 @@ setNextSubtitle("Library Dependencies Page");
   </script>
 </div>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <form action="SaveSFAction.jsp?pageAction=setActionLibs&&title=<%=title%>" method="post">

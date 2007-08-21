@@ -189,10 +189,12 @@ For more information: www.smartfrog.org
             response.sendRedirect("host_setup_" + ((request.getParameter("next") == null) ? "am" : request.getParameter("next")) + ".jsp?hostId=" + request.getParameter("hostId"));
         } else {
 // Go and create a host
+            session.setAttribute("error_msg", "Please enter a valid host name.");
             response.sendRedirect("host_setup_bs.jsp");
         }
     } else {
 // Go and create a host
+        session.setAttribute("error_msg", "Please enter a valid host name.");
         response.sendRedirect("host_setup_bs.jsp");
     }
 

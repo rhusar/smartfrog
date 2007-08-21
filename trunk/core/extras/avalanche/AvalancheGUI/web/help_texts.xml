@@ -38,4 +38,9 @@ For more information: www.smartfrog.org
         you see a history of all messages received from a specific host.
         To stay tuned for updates, RSS feeds are available for both views.
     </page>
+    <page id="Error">
+        This page displays the error message in case of a serious error.
+        Please try again. If the problem persists, please contact your system administrator.
+        Sorry for any inconvinence.
+    </page>
 </help>

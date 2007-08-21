@@ -17,16 +17,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 */ --%>
-<%@ page language="java" %>
-<%@ include file="header.inc.jsp" %>
+<%@ page language="java" contentType="text/html" %>
+<%@ include file="header.inc.jsp"%>
 
 <script type="text/javascript" language="JavaScript">
     <!--
-            setNextSubtitle("Home Page");
-    -->
+    setNextSubtitle("Host Groups Page");
+     -->
 </script>
 
-<h1>Welcome to <b>Avalanche</b>!</h1>
-<p>Please choose an option from the menu above. If you need any help, click on the help button on the pages.</p>
+<br/>
+<div align="center">
+<center>
+<div align="center" style="width: 95%;">
+        <script language="JavaScript" type="text/javascript">
+            <!--
+            oneVoiceWritePageMenu("Error", "header");
+            -->
+        </script>
+</div>
+<br/>
+<%@ include file="message.inc.jsp"%>
+<br/>
+</center>
+</div>
+<br/>
 
-<%@ include file="footer.inc.jsp" %>
+
+<%@ include file="footer.inc.jsp"%>

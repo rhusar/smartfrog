@@ -18,23 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 */ %>
 
-<%@ page language="java" %>
+<%@ page language="java" contentType="text/html" %>
 <%@ include file="header.inc.jsp"%>
 <%@	page import="org.smartfrog.avalanche.settings.xdefault.*"%>
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
-<%
-  	String errMsg = null;
-  	HostManager manager = factory.getHostManager();
-
-  	if( null == manager ){
-  		errMsg = "Error connecting to hosts database" ;
-  		throw new Exception ( "Error connecting to hosts database" );
-  	}
-
-  	SettingsManager settingsMgr = factory.getSettingsManager();
+<%@ include file="init_hostmanager.inc.jsp"%>
+<%  SettingsManager settingsMgr = factory.getSettingsManager();
   	SettingsType defSettings = settingsMgr.getDefaultSettings();
 
 
@@ -66,41 +58,18 @@ For more information: www.smartfrog.org
 <script type="text/javascript" language="JavaScript">
     <!--
     setNextSubtitle("Host Basic Settings Page");
-
-    function submit(target){
-        var hid = document.getElementById("hostId");
-
-        if (hid != null) {
-            if( hid.value == null || hid.value == ""){
-                alert("Please enter valid Host Id");
-            }
-        } else {
-            <%  if (host != null) { %>
-                  document.addHostFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
-            <% } else { %>
-                  document.addHostFrm.action = "<%= site %>"  + target;
-            <% } %>
-            document.addHostFrm.submit();
-        }
-    }
-
     -->
 </script>
 
-<% if (host != null) { %>
-<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>am&hostId=<%= host.getId() %>">
-<% } else { %>
-<form id="addHostFrm" name="addHostFrm" method="post" action="<%= site %>am">
-<% } %>
-
-<!-- This is the page menu -->
 <br/>
+
+<form id="addHostFrm" name="addHostFrm" method="post" action="">
+<div align="center">
+<center>
 
 <%@ include file="host_setup_menu.inc.jsp" %>
 
-<!-- Actual Body starts here -->
 <br/>
-<div align="center">
 <table id="hostListTable" class="dataTable" 
     style="width: 400px; border-collapse: collapse;">
     <caption>Basic Settings</caption>
@@ -108,17 +77,11 @@ For more information: www.smartfrog.org
 	<tr> 
 	    <td class="medium" align="right">Host:</td> 
 	    <td class="medium"> 
-	<%
-		if (host == null) {
-	%>	
-		    <input type="text" name="hostId" size="30" id="hostId">
-	<%
-		} else {
-	%>
-		    <%= host.getId() %>
-	<%
-		}
-	%>
+	<% if (host == null) { %>
+		    <input type="text" name="hostId" size="30" id="hostId" />
+	<% } else { %>
+		    <input type="text" name="hostId" size="30" id="hostId" disabled="true" value="<%= host.getId() %>" class="default" />
+	<% } %>
 	    </td>
 	</tr>  			
 
@@ -126,15 +89,10 @@ For more information: www.smartfrog.org
 		<td class="medium" align="right">Operating System:</td> 
 		<td class="medium">  
 		<select name="os">
-	    <%
-		    String oses[] = defSettings.getOsArray();
-		    for (int i = 0; i < oses.length; i++) {
-	    %>
-		    <option<%=((os!=null)&&os.equals(oses[i]))?" selected":""%>>
-                <%=oses[i]%>
- 	    <%
-		    }
-	    %>
+	    <%  String oses[] = defSettings.getOsArray();
+            for (String ose : oses) { %>
+            <option<%=((os!=null)&&os.equals(ose))?" selected":""%>><%=ose%></option>
+        <% } %>
 		</select>
 		</td>
 	</tr>  			
@@ -142,16 +100,10 @@ For more information: www.smartfrog.org
 	    <td class="medium" align="right">Platform:</td>
 	    <td class="medium">  
 		<select name="platform">
-		<%
-		    String plafs[] = defSettings.getPlatformArray();
-		    for (int i=0; i<plafs.length; i++) {
-		%>	
-			<option<%=((plaf!=null)&&plaf.equals(plafs[i]))?" selected":""%>>
-			    <%=plafs[i]%>
-			</option>
-		<%
-		    }
-		%>
+		<% String plafs[] = defSettings.getPlatformArray();
+           for (String plaf1 : plafs) { %>
+           <option<%=((plaf != null) && plaf.equals(plaf1))?" selected":""%>><%=plaf1%></option>
+        <% } %>
 		</select>
 		</td>
 	</tr>  	
@@ -159,24 +111,30 @@ For more information: www.smartfrog.org
 	    <td class="medium" align="right">Architecture:</td>
 	    <td class="medium">  
 		<select name="arch">
-	    <%
-		    String archs[] = defSettings.getArchArray();
-		    for (int i=0; i<archs.length; i++) {
-	    %>
-			<option<%=((arch!=null)&&arch.equals(archs[i]))?" selected":""%>>
-                <%=archs[i]%>
-            </option>
-	    <%
-		    }
-	    %>
+	    <% String archs[] = defSettings.getArchArray();
+           for (String arch1 : archs) { %>
+            <option<%= arch1.equals(arch)?" selected":""%>><%=arch1%></option>
+        <% } %>
 		</select>
 		</td>
 	</tr>  	
     </tbody>
 </table>
+
 <br/>
-<input type="submit" name="save" value="Save Changes" class="btn" onclick="submit('am')"/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "HostSetup", "footer",
+                                "Save Changes", "javascript:document.addHostFrm.action='<%= site %>am<%= hostIdent %>'; document.addHostFrm.submit();");
+        -->
+    </script>
+</div>
+
+</center>
 </div>
 </form>
+
+
 
 <%@ include file="footer.inc.jsp"%>

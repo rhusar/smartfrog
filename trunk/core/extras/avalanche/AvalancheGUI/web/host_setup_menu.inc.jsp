@@ -21,14 +21,22 @@ For more information: www.smartfrog.org
 
 <div align="center" style="width:95%;">
   <script type="text/javascript" language="JavaScript">
+    <!--
+
+   <% String hostIdent = request.getParameter("hostId");
+      if (hostIdent == null) hostIdent = ""; else hostIdent = "&hostId=" + hostIdent; %>
+
     oneVoiceWritePageMenu("HostSetup","header",
       "Host Properties",
-  	  "javascript:submit('env')",
+  	  "javascript:document.addHostFrm.action='<%= site %>env<%= hostIdent %>'; document.addHostFrm.submit();",
       "Transfer Modes",
-  	  "javascript:submit('tm')",
+  	  "javascript:document.addHostFrm.action='<%= site %>tm<%= hostIdent %>'; document.addHostFrm.submit();",
       "Access Modes",
-  	  "javascript:submit('am')",
+  	  "javascript:document.addHostFrm.action='<%= site %>am<%= hostIdent %>'; document.addHostFrm.submit();",
       "Basic Settings",
-  	  "javascript:submit('bs')");
+  	  "javascript:document.addHostFrm.action='<%= site %>bs<%= hostIdent %>'; document.addHostFrm.submit();");
+     -->
   </script>
 </div>
+
+<%@ include file="message.inc.jsp"%>

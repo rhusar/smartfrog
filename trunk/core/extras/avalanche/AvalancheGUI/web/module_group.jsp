@@ -17,24 +17,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 */ --%>
-<%@ page language="java" %>
+<%@ page language="java" contentType="text/html" %>
 <%@ include file="header.inc.jsp"%>
 
 <script type="text/javascript" language="JavaScript">
     <!--
- function toggle(divId)
- {
-   var state = document.getElementById(divId).style.visibility ;
-   if ( state == "hidden" )
-   {
-     document.getElementById(divId).style.visibility = "visible";
-   }else{
-     document.getElementById(divId).style.visibility = "hidden";
-   }
- }   
-
-setNextSubtitle("Module Groups Page");
-
+    setNextSubtitle("Module Groups Page");
     -->
 </script>
 

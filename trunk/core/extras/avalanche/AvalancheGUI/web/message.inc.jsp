@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 */ %>
-<%@ page language="java" %>
+<%@ page language="java" contentType="text/html" %>
 <%
 //=================================================================
 // This "page" is intended to be included by other pages
@@ -26,17 +26,35 @@ For more information: www.smartfrog.org
 %>
 
 <%
-    String msg = (String)session.getAttribute("message");
-    if( null != msg && !msg.trim().equals("")) {
+    String session_message = (String)session.getAttribute("error_msg");
+    if(null != session_message && !session_message.trim().equals("")) {
 %>
+
 <center>
   <div id="errmsg" class="data" display="block"
-        style="width:90%; background: #FFAAAA; font-size: 10pt; padding: 4px;
+        style="width:90%; background:#FFAAAA; font-size: 10pt; padding: 4px;
 	    margin: 4px; border: red solid 1px;">
-      <%= "<b>Error:</b> " + msg %>
+      <%= "<b>Error:</b> " + session_message %>
   </div>
 <center>
+
 <%
-	session.removeAttribute("message");
+	session.removeAttribute("error_msg");
+    }
+    
+    session_message = (String)session.getAttribute("success_msg");
+    if(null != session_message && !session_message.trim().equals("")) {
+%>
+
+<center>
+  <div id="msg" class="data" display="block"
+        style="width:90%; background:#AAFFAA; font-size: 10pt; padding: 4px;
+	    margin: 4px; border: red solid 1px;">
+      <%= "<b>Error:</b> " + session_message %>
+  </div>
+<center>
+
+<%
+	session.removeAttribute("success_msg");
     }
 %>

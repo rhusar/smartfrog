@@ -23,20 +23,11 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.host.*"%>
 
-
-<%
-    String errMsg = null;
-    HostManager manager = factory.getHostManager();
-
-    if (null == manager) {
-        errMsg = "Error connecting to hosts database";
-        throw new Exception("Error connecting to hosts database");
-    }
-
-    SettingsManager settingsMgr = factory.getSettingsManager();
+<%@ include file="init_hostmanager.inc.jsp"%>
+<%  SettingsManager settingsMgr = factory.getSettingsManager();
     SettingsType defSettings = settingsMgr.getDefaultSettings();
 
-    SettingsType.AccessMode sysAccessModes[] = defSettings.getAccessModeArray();
+    SettingsType.AccessMode[] sysAccessModes = defSettings.getAccessModeArray();
 
     HostType host = null;
     String hostId = request.getParameter("hostId");
@@ -51,12 +42,10 @@ For more information: www.smartfrog.org
     if (host != null) {
 
     String modeStr = "";
-    for (int i = 0; i < sysAccessModes.length; i++) {
-        if (i != sysAccessModes.length - 1)
-            modeStr += "\"" + sysAccessModes[i].getName() + "\"" + ",";
-        else
-            modeStr += "\"" + sysAccessModes[i].getName() + "\"";
+    for (SettingsType.AccessMode mode : sysAccessModes) {
+        modeStr += "\"" + mode.getName() + "\"" + ",";
     }
+    modeStr = modeStr.substring(0,modeStr.length()-1);
 
     String site = "host_save.jsp?action=am&next=";
 %>
@@ -65,15 +54,9 @@ For more information: www.smartfrog.org
 <script language="JavaScript" type="text/javascript">
     <!--
 
-function submit(target){
-	document.hostAMFrm.action = "<%= site %>" + target + "&hostId=<%= host.getId() %>";
-	document.hostAMFrm.submit();
-}
-
  function addRowInAccessTable(table)
  {
-	
- 	   var modes = new Array (<%=modeStr%> );
+ 	   var modes = new Array (<%=modeStr%>);
  	   
 	   var len = table.rows.length ;
  
@@ -127,18 +110,15 @@ setNextSubtitle("Host Access Modes Page");
     -->
 </script>
 
-<form id="hostAMFrm" name="hostAMFrm" method="post" action="<%= site %>tm&hostId=<%= host.getId() %>">
+<form id="addHostFrm" name="addHostFrm" method="post" action="">
 
-<!-- This is the page menu -->
-<br>
-
-<%@ include file="host_setup_menu.inc.jsp" %>    
-
-<!-- Actual Body starts here -->
 <br/>
+<center>
 <div align="center">
+<%@ include file="host_setup_menu.inc.jsp" %>
 
-<table id="accessModeTable" class="dataTable" 
+
+<table id="accessModeTable" class="dataTable"
 	style="border-collapse: collapse; width: 500px;"> 
 <caption>Access modes for host <%=hostId %></caption>
 <thead>
@@ -153,63 +133,65 @@ setNextSubtitle("Host Access Modes Page");
 <%
 		HostType.AccessModes accessModes = host.getAccessModes();
 		
-		if( null != accessModes ){
-			AccessModeType modes[] = accessModes.getModeArray();
-			for( int i=0;i<modes.length;i++){
-				String modeName = modes[i].getType();
-				String userName = modes[i].getUser();
-				String password = modes[i].getPassword();
+		if( null != accessModes ) {
+            int count = 0;
+            for(AccessModeType mode : accessModes.getModeArray()){
+				String modeName = mode.getType();
+				String userName = mode.getUser();
+				String password = mode.getPassword();
 %>
 	
 	<tr>
 		<td class="medium" align="center">
 		
-	 		<select name="<%=("mode.type." + i)%>">
-<%
-		for( int j=0;j<sysAccessModes.length;j++){
-%>	
-		<option<%=(sysAccessModes[j].getName().equals(modeName))?" selected":""%>><%=sysAccessModes[j].getName()%></option>
-<%
-		}
-%>
+	 		<select name="<%=("mode.type." + count)%>">
+<% for (SettingsType.AccessMode sysAccessMode : sysAccessModes) { %>
+                 <option<%=(sysAccessMode.getName().equals(modeName)) ? " selected=\"true\"" : ""%>>
+                     <%= sysAccessMode.getName() %>
+                 </option>
+<% } %>
 			</select>
 		</td>
 		<td class="medium">
-			<input name="<%=("mode.userName." + i)%>" type="text" value="<%=userName%>"></input>
+			<input name="<%=("mode.userName." + count)%>" type="text" value="<%=userName%>"/>
 		</td>
 		<td class="medium">
-			<input name="<%=("mode.password." + i)%>" type="password" value="<%=password%>"></input>
+			<input name="<%=("mode.password." + count)%>" type="password" value="<%=password%>"/>
 		</td>
 		<td class="medium" align="center">
 <%
 			// TODO : FIXME defaultModeName not set for new modes
-			if( modes[i].getIsDefault() ){
-%>		
-				<p><input type="radio" value="<%=modeName%>" name="defaultAccessMode" checked> </input> </p>
-<%
-			}else{
-%>
-				<input type="radio" value="<%=modeName%>" name="defaultAccessMode"> </input>
-<%
-			}
-%>
+			if(mode.getIsDefault()){ %>
+				<p><input type="radio" value="<%=modeName%>" name="defaultAccessMode" checked="true" /></p>
+<% } else { %>
+				<input type="radio" value="<%=modeName%>" name="defaultAccessMode"/>
+<% } %>
 		</td>
 	</tr>
 
 <%
-				}
-		}
-%>
+                    count++;
+                }
+		} %>
 </tbody>
 </table>
 <br/>
 
 <input type="button" value="Add an Access Mode" class="btn" 
   onclick="javascript:addRowInAccessTable(getElementById('accessModeTable'))">
-<input type="submit" name="save" value="Save Changes" class="btn" onClick="submit('tm')">
-</div>
-</form>
 
+<br/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "HostSetup", "footer",
+                                "Save Changes", "javascript:document.addHostFrm.action='<%= site %>tm<%= hostIdent %>'; document.addHostFrm.submit();");
+        -->
+    </script>
+</div>
+</div>
+</center>
+</form>
 <%
     } else {
         response.sendRedirect("host_setup_bs.jsp");

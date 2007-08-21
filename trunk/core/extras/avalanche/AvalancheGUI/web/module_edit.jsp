@@ -82,7 +82,7 @@ setNextSubtitle("Add Module Basic Settings Page");
   </script>
 </div>
 
-<%@ include file="Message.jsp" %>
+<%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
 <form name='addModuleFrm' method='post' action='module_save.jsp?pageAction=setMod&moduleId=<%=moduleId%>'>
