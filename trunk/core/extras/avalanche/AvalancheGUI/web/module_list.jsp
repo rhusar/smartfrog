@@ -133,7 +133,7 @@ For more information: www.smartfrog.org
         <center>
 
             <div align="center" style="width: 95%;">
-                <script>
+                <script language="JavaScript" type="text/javascript">
                     oneVoiceWritePageMenu("ModulesList", "header");
                 </script>
             </div>
@@ -155,47 +155,48 @@ For more information: www.smartfrog.org
 <%
     String rowClass = "";
     if (modules.length == 0) {
-    for( int i=0;i<modules.length;i++ ){
-      ModuleType m = null;
-      String description = null;
-      try{
-	    m = manager.getModule(modules[i]);
-	    description = m.getDescription();
-      }catch(NullPointerException e){
-      // ugly patch for the xindice bug
-	    description = "Error !!"; 
-      }
-      rowClass = rowClass == "" ? "class='altRowColor'" : "";
-		    
-%>  		
-	<tr <%=rowClass %>>
-	  <td class="checkboxCell">
-	    <input type="checkbox" rowselector="yes"
-		name="selectedModule" value="<%=modules[i]%>">
-	    </input>
-          </td>
-	  <td><%=modules[i]%></td>
-	  <td align="center">
-	    <a href="module_view.jsp?moduleId=<%=modules[i] %>">
-		[View]
-	    </a>
-	  </td>
-	  <td><%=description %></td>
-	  <td>
-<%
-	    if( null != m ){
-		VersionType versions[] = m.getVersionArray();
-		for( int j=0;j<versions.length;j++){
-%>			
-	    <%=versions[j].getNumber() %><br/>
-<%
-		}
+        for (String module : modules) {
+            ModuleType m = null;
+            String description = null;
+            try {
+                m = manager.getModule(module);
+                description = m.getDescription();
+            } catch (NullPointerException e) {
+                // ugly patch for the xindice bug
+                description = "Error !!";
+            }
+            rowClass = rowClass == "" ? "class='altRowColor'" : "";
+
 %>
-	  </td>
-	</tr>
-<%
-	    }
-    }} else { %>
+        <tr <%=rowClass %>>
+            <td class="checkboxCell">
+                <input type="checkbox" rowselector="yes"
+                       name="selectedModule" value="<%=module%>">
+                </input>
+            </td>
+            <td><%=module%>
+            </td>
+            <td align="center">
+                <a href="module_view.jsp?moduleId=<%=module %>">
+                    [View]
+                </a>
+            </td>
+            <td><%=description %>
+            </td>
+            <td>
+                <%
+                    if (null != m) {
+                        VersionType versions[] = m.getVersionArray();
+                        for (VersionType version : versions) {
+                %>
+                        <%=version.getNumber() %><br/>
+                <% } %>
+            </td>
+        </tr>
+        <%
+                }
+            }
+        } else { %>
         <tr><td colspan="5">Currently there are no modules ready. Click "Add a module" to add a module.</td></tr>
         <% } %>
     </tbody>

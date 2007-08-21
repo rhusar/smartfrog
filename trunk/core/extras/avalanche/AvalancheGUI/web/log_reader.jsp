@@ -78,7 +78,7 @@ For more information: www.smartfrog.org
 
 <br/>
 
-<textarea readonly style="width:100%;height:90%"><%=buf.toString()%></textarea>
+<textarea readonly cols="auto" rows="auto" style="width:100%;height:90%"><%=buf.toString()%></textarea>
 
 
 <%@ include file="footer.inc.jsp" %>

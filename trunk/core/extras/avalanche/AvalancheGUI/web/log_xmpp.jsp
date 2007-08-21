@@ -107,7 +107,16 @@
         <% } %>
     </tbody>
 </table>
-<a href="?host=<%= hostName %>&clear=true">Delete messages</a> <a href="host_status_feed.jsp?host=<%= hostName %>">Get messages as RSS feed</a>
+<br/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "XmppReader", "footer",
+                                "RSS", "javascript:window.location='host_status_feed.jsp?host=<%= hostName %>'",
+                                "Delete messages", "javascript:window.location='log_xmpp.jsp?host=<%= hostName %>&clear=true'");
+        -->
+    </script>
+</div>
 <% } else { %>
 
 <p style="text-align:left;">XMPP Message Viewer &gt; Host List</p>
@@ -168,7 +177,15 @@
         <% } %>
     </tbody>
 </table>
-<a href="host_status_feed.jsp">Get host status as RSS feed</a>
+<br/>
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "XmppReader", "footer",
+                                "RSS", "javascript:window.location='host_status_feed.jsp'");
+        -->
+    </script>
+</div>
 <% } %>
 
 </center>

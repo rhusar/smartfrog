@@ -1,6 +1,41 @@
 <?xml version="1.0" ?>
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+For more information: www.smartfrog.org
+*/ -->
 <help>
-    <page id="HostList">This page displays all hosts known to the Avalanche Deployment System. To add a host, simply click on "Add a host" at the top of this page.</page>
-    <page id="HostSetup">All listed properties of a host can be changed here. To change other settings, just click the buttons on right.</page>
-    <page id="ModulesList">This page displays all modules.</page>
+    <page id="HostList">
+        This page displays all hosts known to the Avalanche Deployment System. You can see the host name, jump to log files or
+        the setting page. In the "active" view you can also see a host's SmartFrog status and the most recent message.
+        To add a host, simply click on "Add a host" at the top of this page. In order to make hosts available for further
+        deployment, please click "Ignite selected hosts" at the bottom of this page. There you can also delete hosts,
+        stop SmartFrog on selected nodes and open the management console (only available when connected to Avalanche as localhost).
+    </page>
+    <page id="HostSetup">
+        All listed properties of a host can be changed here. To change other settings, just click the buttons on right.
+    </page>
+    <page id="ModulesList">
+        This page displays all modules that are ready for deployment on registered nodes.
+    </page>
+    <page id="XmppReader">
+        This page shows you the messages sent via XMPP/Jabber by the machines known to Avalanche.
+        Depending on the view, you either see a host list with the most recent messages of those host listed, or a
+        you see a history of all messages received from a specific host.
+        To stay tuned for updates, RSS feeds are available for both views.
+    </page>
 </help>

@@ -16,9 +16,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
-*/
--->
-/* $Id: styles.css 63 2006-02-16 01:05:14Z jem $ */
+*/ -->
 body, td, a, p, .h, div {
     font-family: arial,sans-serif;
 }
@@ -100,5 +98,12 @@ input.default {
     font-weight: bold;
     background: #9A9A9A;
     width: 40%;
-}	
+}
+
+.copyright {
+    font-family:arial, sans-serif;
+    font-size:xx-small;
+    text-align:center; 
+    color:black;
+}
 

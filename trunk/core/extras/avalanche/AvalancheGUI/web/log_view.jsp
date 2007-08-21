@@ -120,7 +120,7 @@ setNextSubtitle("Active View Page");
 <%
 		if( null != logFile ){
 %>			
-	<td><a href="LogReader.jsp?filePath=<%=moduleStates[j].getLogFile() %>"><%=moduleStates[j].getState() %></a>
+	<td><a href="log_reader.jsp?filePath=<%=moduleStates[j].getLogFile() %>"><%=moduleStates[j].getState() %></a>
 	</td>
 <%
 		}else{
