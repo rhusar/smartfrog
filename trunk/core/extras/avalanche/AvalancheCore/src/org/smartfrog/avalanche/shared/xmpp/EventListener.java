@@ -18,19 +18,15 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
-import org.smartfrog.avalanche.shared.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;
-import org.smartfrog.avalanche.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Implements PacketListener, this class is passed to XMPP client libraries 
@@ -43,7 +39,7 @@ import java.util.List;
  */
 public class EventListener implements PacketListener {
 	private static Log log = LogFactory.getLog(EventListener.class);
-	private List handlers = new ArrayList();
+	private ArrayList<XMPPPacketHandler> handlers = new ArrayList<XMPPPacketHandler>();
 
 	public EventListener() {
 		super();
@@ -51,27 +47,10 @@ public class EventListener implements PacketListener {
 
 	public void processPacket(Packet p) {
         log.info("Processing packet from " + p.getFrom() + " to " + p.getTo());
-        PacketExtension pe = p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
-		log.info(pe);
-		// convert XML to AvalancheEvent and call handler chain on the event. 
-		// see if a new thread is need to call event handlers. 
-		try{
-			Document doc = XMLUtils.loadFromString(pe.toXML(), false);
-			MonitoringEvent event = fromXML(doc);
-            log.info("Dispatching to all registered handlers.");
-            for (Iterator it = handlers.iterator(); it.hasNext();) {
-                Object handler = (Object) it.next();
-                MessageHandler h = (MessageHandler) handler;
-                h.handleEvent(event);
-            }
-        }catch(SAXException e){
-			// discard event
-			log.error("XMPP listener, malformed message " , e);
-		}catch(IOException e){
-			// discard event
-			log.error("XMPP listener read error " , e);
-		}
-	}
+        log.info("Dispatching to all registered handlers.");
+        for (XMPPPacketHandler h : handlers)
+            h.handlePacket(p);
+}
 	
 	/**
 	 * Adds a message handler, this method doesnt check for duplicate handlers
@@ -79,7 +58,7 @@ public class EventListener implements PacketListener {
 	 * Handlers should be added at system startup only.  
 	 * @param handler
 	 */
-	public void addHandler(MessageHandler handler){
+	public void addHandler(XMPPPacketHandler handler){
 		handlers.add(handler);
 	}
 	
@@ -105,15 +84,16 @@ public class EventListener implements PacketListener {
             return false;
 		}
 	}
-	/**
-	 * Returns null if the document is not valid event. 
+
+    	/**
+	 * Returns null if the document is not valid event.
 	 * @param doc
 	 * @return
 	 */
-	protected static MonitoringEvent fromXML(Document doc){
+	public static MonitoringEvent fromXML(Document doc){
 		MonitoringEvent event = null ;
 		Element e = (Element)doc.getElementsByTagName("event").item(0);
-		
+
 		// TODO: Add proper error handling for malformed events
 		Element mid = (Element)e.getElementsByTagName("moduleId").item(0);
 		Element insName = (Element)e.getElementsByTagName("instanceName").item(0);
@@ -123,7 +103,7 @@ public class EventListener implements PacketListener {
 		Element msg = (Element)e.getElementsByTagName("msg").item(0);
 		Element lastAction = (Element)e.getElementsByTagName("lastAction").item(0);
 		Element timestamp = (Element)e.getElementsByTagName("timestamp").item(0);
-		
+
 		event = new MonitoringEventDefaultImpl();
 		event.setModuleId(mid.getFirstChild().getNodeValue());
 		event.setInstanceName(insName.getFirstChild().getNodeValue());
@@ -133,7 +113,7 @@ public class EventListener implements PacketListener {
 		event.setMsg(msg.getFirstChild().getNodeValue());
 		event.setLastAction(lastAction.getFirstChild().getNodeValue());
 		event.setTimestamp(timestamp.getFirstChild().getNodeValue());
-		
+
 		return event ;
 	}
 }

@@ -93,8 +93,7 @@ public class LivenessListener implements RosterListener {
 		}
 
         log.info("Dispatching event to all other handlers.");
-        for (Iterator it1 = handlers.iterator(); it1.hasNext();) {
-            Object handler = (Object) it1.next();
+        for (Object handler : handlers) {
             ((HostStateChangeHandler) handler).handleEvent(event);
         }
     }

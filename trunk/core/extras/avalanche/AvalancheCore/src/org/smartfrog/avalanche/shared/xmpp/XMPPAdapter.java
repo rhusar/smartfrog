@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
-import org.smartfrog.avalanche.shared.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.XMPPEventExtension;
 import org.smartfrog.avalanche.shared.handlers.DefaultHostStateChangeHandler;
@@ -225,11 +225,11 @@ public class XMPPAdapter {
 	}
 
     /**
-     * Add a MessageHandler to the list of handlers.
+     * Add a XMPPPacketHandler to the list of handlers.
      * Handlers are not registered until registerListeners() is called.
-     * @param handler a MessageHandler
+     * @param handler a XMPPPacketHandler
      */
-    public void addHandler(MessageHandler handler){
+    public void addHandler(XMPPPacketHandler handler){
 		listener.addHandler(handler);
 	}
 

@@ -26,6 +26,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -305,12 +306,14 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      * @param text the text
      * @return true if the message was sent
      */
-    public boolean sendMessage(String recipient,String subject,String text) {
+    public boolean sendMessage(String recipient,String subject,String text, PacketExtension ext) {
         if(isConnected()) {
             Message m = new Message(recipient);
             m.setSubject(subject);
             m.setBody(text);
             m.setType(Message.Type.NORMAL);
+            if (ext != null)
+                m.addExtension(ext);
             connection.sendPacket(m);
             return true;
         }

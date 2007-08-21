@@ -11,9 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.shared.xmpp;
 
-import org.smartfrog.avalanche.shared.handlers.MessageHandler;
-import org.smartfrog.avalanche.shared.jms.MessageListener;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.avalanche.shared.jms.MessageListener;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,70 +25,70 @@ import java.util.Map;
  * If xmpp server is not running when it starts it tries connect repeatedly until success. 
  * if login fails it returns error. 
  * @author sanjaydahiya
- * @deprecated Unused!
+ * @deprecated Unused! Old! Not working!
  */
 public class ListenerThread implements Runnable {
 
-	private Map handlers ; 
-	MessageListener listener ;
-	boolean stopThread = false ;
-	
+//	private Map handlers ;
+//	MessageListener listener ;
+//	boolean stopThread = false ;
+//
 	protected void init(){
-		listener = new MessageListener();
-		// add listener specific configurations here
+//		listener = new MessageListener();
+//		// add listener specific configurations here
 	}
-	
-	public void addHandler(int eventType, MessageHandler handler){
-		Object o = null; 
-		if( (o = handlers.get(new Integer(eventType))) != null ){
-			List list = (List)o;
-			list.add(handler);
-		}
+//
+	public void addHandler(int eventType, XMPPPacketHandler handler){
+//		Object o = null;
+//		if( (o = handlers.get(new Integer(eventType))) != null ){
+//			List list = (List)o;
+//			list.add(handler);
+//		}
 	}
 	public void tryStop(){
-		stopThread = true ; 
-	} 
+//		stopThread = true ;
+	}
 	/**
-	 * blocking call on JMS. waits for 1000 ms each time to avoid infinite 
+	 * blocking call on JMS. waits for 1000 ms each time to avoid infinite
 	 * waits for shutdown
 	 */
 	protected void nextMessage(){
-		try{
-			MonitoringEvent event = listener.receive();
-			// pass on to handlers. 
-			// DB status update handler 
-			// log handler
-			Object o = handlers.get(new Integer(event.getMessageType())) ;
-			if( null != o){
-				System.out.println("Received message from JMS .");
-				List lst = (List)o;
-				Iterator itor = lst.iterator();
-				while(itor.hasNext()){
-					MessageHandler h = (MessageHandler)itor.next();
-					h.handleEvent(event) ;
-				}
-			}
-		}catch(Exception e){
-			// log and continue for now
-			e.printStackTrace();
-		}
+//		try{
+//			MonitoringEvent event = listener.receive();
+//			// pass on to handlers.
+//			// DB status update handler
+//			// log handler
+//			Object o = handlers.get(new Integer(event.getMessageType())) ;
+//			if( null != o){
+//				System.out.println("Received message from JMS .");
+//				List lst = (List)o;
+//				Iterator itor = lst.iterator();
+//				while(itor.hasNext()){
+//					XMPPPacketHandler h = (XMPPPacketHandler)itor.next();
+//					h.handleEvent(event) ;
+//				}
+//			}
+//		}catch(Exception e){
+//			// log and continue for now
+//			e.printStackTrace();
+//		}
 	}
 
 	public void run() {
-		
-		try{
-			init();
-			// TODO: From context listener use ServerSetup.  
-	//		addHandler( MonitoringConstants.MODULE_STATE_CHANGED, new ActiveProfileUpdateHandler());
-	//		addHandler( MonitoringConstants.MODULE_INFO, new ActiveProfileUpdateHandler());
-	//		addHandler( MonitoringConstants.MODULE_INFO, new ActiveProfileUpdateHandler());
-			while(!stopThread){
-				//
-				nextMessage();
-			}
-			listener.close();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+//
+//		try{
+//			init();
+//			// TODO: From context listener use ServerSetup.
+//	//		addHandler( MonitoringConstants.MODULE_STATE_CHANGED, new ActiveProfileUpdateHandler());
+//	//		addHandler( MonitoringConstants.MODULE_INFO, new ActiveProfileUpdateHandler());
+//	//		addHandler( MonitoringConstants.MODULE_INFO, new ActiveProfileUpdateHandler());
+//			while(!stopThread){
+//				//
+//				nextMessage();
+//			}
+//			listener.close();
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 	}
 }

@@ -11,7 +11,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.shared.handlers;
 
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.jivesoftware.smack.packet.Packet;
 /**
  * Provides an interface to server side monitoring event Handlers. T
  * he handlers are indepenent of monitoring protocols
@@ -20,10 +20,10 @@ import org.smartfrog.avalanche.shared.MonitoringEvent;
  * @author sanjaydahiya
  *
  */
-public interface MessageHandler {
+public interface XMPPPacketHandler {
 	/**
 	 * Callback method invoked by monitoring event listener. 
-	 * @param e
+	 * @param p
 	 */
-	public void handleEvent(MonitoringEvent e);
+	public void handlePacket(Packet p);
 }

@@ -11,7 +11,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.server.monitor.jms;
 
-import org.smartfrog.avalanche.shared.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.handlers.EventHandler;
 import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.jms.MessageListener;
 
@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Start this class after the JMS server has been initialized. It listens for new events
  * on JMS queue and invokes handlers on the new messages. 
- * Use addHandler(eventType, MessageHandler) method to add custom handlers in this thread. 
+ * Use addHandler(eventType, XMPPPacketHandler) method to add custom handlers in this thread.
  * eventTypes are defined in MonitoringConstants interface. 
  * 
  * @author sanjaydahiya
@@ -39,7 +39,7 @@ public class ListenerThread implements Runnable{
 		// add listener specific configurations here
 	}
 	
-	public void addHandler(int eventType, MessageHandler handler){
+	public void addHandler(int eventType, EventHandler handler){
 		Object o = null; 
 		if( (o = handlers.get(new Integer(eventType))) != null ){
 			List list = (List)o;
@@ -60,13 +60,13 @@ public class ListenerThread implements Runnable{
 			// pass on to handlers. 
 			// DB status update handler 
 			// log handler
-			Object o = handlers.get(new Integer(event.getMessageType())) ;
+			Object o = handlers.get(event.getMessageType()) ;
 			if( null != o){
 				System.out.println("Received message from JMS .");
 				List lst = (List)o;
 				Iterator itor = lst.iterator();
 				while(itor.hasNext()){
-					MessageHandler h = (MessageHandler)itor.next();
+					EventHandler h = (EventHandler)itor.next();
 					h.handleEvent(event) ;
 				}
 			}

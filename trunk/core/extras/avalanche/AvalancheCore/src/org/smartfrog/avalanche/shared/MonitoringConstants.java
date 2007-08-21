@@ -26,9 +26,12 @@ public class MonitoringConstants {
 	public static final int MODULE_STATE_CHANGED = 1; 
 	public static final int MODULE_OPERATION_FAILED = 2;
 	public static final int MODULE_VANISH  = 3; 
-	public static final int MODULE_INFO = 4; 
-	
-	public static final int HOST_VANISH = 100; 
+	public static final int MODULE_INFO = 4;
+
+    // message types for vm events
+    public static final int VM_MESSAGE = 10;
+
+    public static final int HOST_VANISH = 100;
 	public static final int HOST_SHUTTING_DOWN = 101; 
 	public static final int HOST_STARTED = 102; 
 }

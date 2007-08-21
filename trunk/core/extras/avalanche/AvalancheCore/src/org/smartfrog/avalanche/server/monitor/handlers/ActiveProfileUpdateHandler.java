@@ -13,18 +13,12 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
-import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.server.AvalancheFactory;
-import org.smartfrog.avalanche.server.DatabaseAccessException;
-import org.smartfrog.avalanche.server.DuplicateEntryException;
-import org.smartfrog.avalanche.server.ServerSetup;
-import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
-import org.smartfrog.avalanche.shared.handlers.MessageHandler;
+import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
+import org.jivesoftware.smack.packet.Packet;
 
 /**
  * This is a server side handler, this updates the active profile of a host
@@ -34,7 +28,7 @@ import org.smartfrog.avalanche.shared.handlers.MessageHandler;
  *
  * @author sanjaydahiya
  */
-public class ActiveProfileUpdateHandler implements MessageHandler {
+public class ActiveProfileUpdateHandler implements XMPPPacketHandler {
     ActiveProfileManager profileManager;
     private static Log log = LogFactory.getLog(ActiveProfileUpdateHandler.class);
 
@@ -46,28 +40,35 @@ public class ActiveProfileUpdateHandler implements MessageHandler {
      * Callback method, this is invoked by event listener on the server when a
      * new Monitoring Event is received. This method updates the Active Profile on
      * a host with the host/module state received in the event.
-     * @param e the to-be-handled event
+     * @param p the to-be-handled event
      */
-    public void handleEvent(MonitoringEvent e) {
-        log.info("Event Received: " + e);
-        if (null != e) {
+    public void handlePacket(Packet p) {
+        if (p != null)
+        {
+            // get the xmpp event
+            XMPPEventExtension pe = (XMPPEventExtension) p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
+		    log.info("Event received: " + pe);
+
+            // decide what to do
             ActiveProfileUpdater updater = new ActiveProfileUpdater();
-            switch (e.getMessageType()) {
+            switch (pe.getMessageType()) {
                 case MonitoringConstants.MODULE_STATE_CHANGED:
                 case MonitoringConstants.MODULE_OPERATION_FAILED:
                     // Set module state
-                    updater.setModuleState(e);
+                    updater.setModuleState(pe);
                     break;
                 case MonitoringConstants.HOST_VANISH:
                 case MonitoringConstants.HOST_STARTED:
                     // Log message to history
-                    updater.addNewMessage(e);
+                    updater.addNewMessage(pe);
+                    break;
+                case MonitoringConstants.VM_MESSAGE:
+                    updater.processVMMessage(pe);
                     break;
                 default:
                     break;
 
             }
-		}
-	}
-
+        }
+    }
 }
