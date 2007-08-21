@@ -136,13 +136,16 @@ setNextSubtitle("System Settings Page");
 -->
 </script>
 
-<br>
+<br/>
+
 <div align="center">
 <center>
 
 <div align="center" style="width: 95%;">
   <script language="javascript" type="text/javascript">
+      <!--
     oneVoiceWritePageMenu("SystemSettings", "header");
+      -->
   </script>
 </div>
 
@@ -151,79 +154,83 @@ setNextSubtitle("System Settings Page");
 
 <form method="post" action="system_settings_save.jsp">
 
-<table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="osTable">
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="osTable">
         <caption>Supported Operating Systems</caption>
         <thead>
             <tr class="captionRow">
-                <th class="checkboxCell"><input type="checkbox" tableid="hostListTable"></th>
                 <th>Name</th>
-                <th>Delete</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-        <% String [] oses = defSettings.getOsArray();
-            for( int i = 0; i < oses.length; i++){ %>
-        <tr>
-            <td>
-                <input type="text" name="os" value="<%=oses[i]%>"></input>
-            </td>
-        </tr>
-        <% } %>
+        <% String[] oses = defSettings.getOsArray();
+            for (String os : oses) { %>
+            <tr>
+                <td>
+                    <input type="text" name="os" value="<%=os%>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
         </tbody>
 </table>
-<input type="button" name="os_add" value="Add Operating System" onclick="javascript:addRow1(getElementById('osTable'), 'os')"/>
+<input type="button" name="os_add" value="Add Operating System" onclick="addRow1(getElementById('osTable'), 'os')"/>
 
 <br/><br/>
 
-<table id='platformTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Supported Platforms
-	</td>
-</tr>
-<%
-	String [] plafs = defSettings.getPlatformArray();
-	for( int i=0;i<plafs.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="platform" value="<%=plafs[i]%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="platformTable">
+        <caption>Supported Platforms</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Platform</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% String[] platforms = defSettings.getPlatformArray();
+            for (String platform : platforms) { %>
+            <tr>
+                <td>
+                    <input type="text" name="platform" value="<%=platform%>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
-<a href="#" onclick="javascript:addRow1(getElementById('platformTable'),'platform')">Add Platform </a>
-<br>
-<br>
+<input type="button" name="platform_add" value="Add Platform" onclick="addRow1(getElementById('platformTable'),'platform')"/>
 
-<table id='archTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Supported Architectures
-	</td>
-</tr>
-<%
-	String [] archs = defSettings.getArchArray();
-	for( int i=0;i<archs.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="arch" value="<%=archs[i]%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<br/><br/>
+
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="archTable">
+        <caption>Supported Architectures</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Architecture</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% String[] archs = defSettings.getArchArray();
+            for (String arch : archs) { %>
+            <tr>
+                <td>
+                    <input type="text" name="platform" value="<%=arch%>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
+<input type="button" name="arch_add" value="Add Platform" onclick="addRow1(getElementById('archTable'),'arch')"/>
 
-<a href="#" onclick="javascript:addRow1(getElementById('archTable'),'arch')">Add Architecture </a>
-<br><br>
+<br/><br/>
 
 <table id='accessModeTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
 <tbody>
@@ -298,68 +305,71 @@ setNextSubtitle("System Settings Page");
 <a href="#" onclick="javascript:addRow1(getElementById('systemPropertiesTable'),'prop')">Add System Property </a>
 <br><br>
 
-<table id='deploymentEngineTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Engine Name
-	</td>
-	<td>
-	Adapter class
-	</td>	
-</tr>
-<%
-	SettingsType.DeploymentEngine[] engines =  defSettings.getDeploymentEngineArray();
-	for( int i=0;i<engines.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="<%=("engine.name"+i)%>" value="<%=engines[i].getName()%>"></input>
-	</td>
-	<td>
-		<input type="text" name="<%=("engine.class"+i)%>" value="<%=engines[i].getClass1()%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<br/><br/>
+
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="deploymentEngineTable">
+        <caption>Supported Deployment Engines</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Name</th>
+                <th>Class</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% SettingsType.DeploymentEngine[] engines =  defSettings.getDeploymentEngineArray();
+            for (SettingsType.DeploymentEngine engine : engines) { %>
+            <tr>
+                <td>
+                    <input type="text" name="engine" value="<%=engine.getName()%>"/>
+                </td>
+                <td>
+                    <input type="text" name="class" value="<%=engine.getClass1()%>"/>
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
+<input type="button" name="action_add" value="Add Platform" onclick="addRow2(getElementById('deploymentEngineTable'),'engine.name', 'engine.class')"/>
 
-<a href="#" onclick="javascript:addRow2(getElementById('deploymentEngineTable'),'engine.name', 'engine.class')">
-Add Deployment Engine </a>
-<br>
-<br>
+<br/><br/>
 
-<table id='actionsTable' cellspacing="2" cellpadding="4" border="1" style="border-collapse: collapse" bordercolor="#00FFFF">
-<tbody>
-<tr>
-	<td>
-	Action Name
-	</td>
-</tr>
-<%
-	SettingsType.Action[] actions =  defSettings.getActionArray();
-	for( int i=0;i<actions.length;i++){
-%>
-<tr>
-	<td>
-		<input type="text" name="action" value="<%=actions[i].getName()%>"></input>
-	</td>
-</tr>
-<%
-	}
-%>
-</tbody>
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="actionTable">
+        <caption>Supported Actions</caption>
+        <thead>
+            <tr class="captionRow">
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% SettingsType.Action[] actions = defSettings.getActionArray();
+            for (SettingsType.Action action : actions) { %>
+            <tr>
+                <td>
+                    <input type="text" name="action" value="<%= action.getName() %>" />
+                </td>
+                <td>
+                    <a href="">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
 </table>
-
-<a href="#" onclick="javascript:addRow1(getElementById('actionsTable'),'action')">Add Action </a>
-<br><br>
-
-
-
-<input type="submit" name="Save" value="Save Changes"></input>
+<input type="button" name="action_add" value="Add Platform" onclick="addRow1(getElementById('actionTable'),'action')"/>
 </form>
+
+<div align="center" style="width: 95%;">
+    <script language="JavaScript" type="text/javascript">
+        <!--
+        oneVoiceWritePageMenu(  "SystemSettings", "footer",
+                                "Save Changes", "javascript:submit()");
+        -->
+    </script>
+</div>
 
 </center>
 </div>
