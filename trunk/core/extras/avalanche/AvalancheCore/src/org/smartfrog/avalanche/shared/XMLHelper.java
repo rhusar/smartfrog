@@ -90,7 +90,7 @@ public class XMLHelper {
             StringWriter sw = new StringWriter();
             StreamResult result = new StreamResult(sw);
             Transformer trans = TransformerFactory.newInstance().newTransformer();
-            trans.setOutputProperty(OutputKeys.INDENT, "yes");
+            //trans.setOutputProperty(OutputKeys.INDENT, "yes");
             trans.transform(new DOMSource(XMLDocument), result);
             xmlString = sw.toString();
             sw.close();
