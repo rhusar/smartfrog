@@ -39,7 +39,6 @@ function fillDivBox(idOfTargetDiv, text) {
     var targetDiv = null;
     targetDiv = document.getElementById(idOfTargetDiv);
 
-    if (targetDiv) {
-            targetDiv.innerHTML = text;
-    }
+    if (targetDiv)
+        targetDiv.innerHTML = text;
 }

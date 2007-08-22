@@ -18,26 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 For more information: www.smartfrog.org
 */ --%>
 
-<%@ page language="java" contentType="text/html" %>
+<%@ page language="java" %>
 <%@ include file="header.inc.jsp" %>
-<%@ page import="org.smartfrog.avalanche.core.host.*" %>
-
-<%@ include file="init_hostmanager.inc.jsp" %>
-<%  boolean boolListActiveHosts = false;
-    try {
-        boolListActiveHosts = Boolean.parseBoolean(request.getParameter("active").trim());
-    } catch (Exception e) {
-        // TODO: Add something useful here or forget about it
-    }
-
-    String[] hosts = manager.listHosts();
-    String rowClass = "";
-
-%>
 
 <script language="JavaScript" type="text/javascript">
     <!--
-    setNextSubtitle("List <% if (boolListActiveHosts) { %>Active <% } %>Hosts Page");
+    setNextSubtitle("List Hosts");
     -->
 </script>
 
@@ -60,72 +46,18 @@ For more information: www.smartfrog.org
     <%@ include file="message.inc.jsp" %>
     <!-- Actual Body starts here -->
     <table border="0" cellpadding="0" cellspacing="0" class="dataTable tableHasCheckboxes" id="hostListTable">
-        <caption><% if (boolListActiveHosts) { %>Active<% } %> Hosts</caption>
-        <thead>
+        <caption>Hosts</caption>
+        <thead id="hostListHeader">
             <tr class="captionRow">
                 <th class="checkboxCell"><input id="allhosts" type="checkbox" tableid="hostListTable" /></th>
-                <th>Host ID</th>
+                <th class="sorted">Host ID</th>
                 <th>Manage</th>
                 <th>Platform</th>
-                <% if (boolListActiveHosts) { %>
                 <th>Status</th>
                 <th>Recent Message</th>
-                <% } %>
             </tr>
         </thead>
-        <tbody>
-            <%
-                if (hosts.length != 0) {
-                int count = 0;
-                for (String host : hosts) {
-                    rowClass = ((count++%2)==0)?"class=\"altRowColor\"":"";
-                    HostType h = null;
-                    String os = "";
-                    String arch = "";
-
-                    try {
-                        h = manager.getHost(host);
-                        os = h.getPlatformSelector().getOs();
-                        arch = h.getPlatformSelector().getArch();
-                    } catch (NullPointerException e) {
-                        // ugly patch for xindice bug
-                        // TODO: Sort out.
-                        os = "Error !!";
-                    } catch (Exception e) {
-                        // do nothing
-                    }
-            %>
-            <tr <%=rowClass %>>
-                <td class="checkboxCell">
-                    <input type="checkbox" rowselector="yes"
-                           name="selectedHost" value="<%= host %>"></input>
-                </td>
-                <td><%= host %>
-                </td>
-                <td>
-                    <a href="log_view.jsp?pageAction=viewSelected&hostId=<%= host %>">[Logs]</a>&nbsp;
-                    <a href="host_setup_bs.jsp?hostId=<%= host %>">[Settings]</a>
-                </td>
-                <td><%=os%>, <%=arch %>
-                </td>
-                <% if (boolListActiveHosts) { %>
-                <td>
-                    <div id="<%= host %>_status" style=""></div>
-                </td>
-                <td>
-                    <div id="<%= host %>_msg" style=""></div>
-                </td>
-                <% } %>
-            </tr>
-            <%
-                }
-                } else {
-            %>
-                <td colspan="<% if (boolListActiveHosts) { %>6<% } else {%>4<% } %>">There are no hosts in the database. To add hosts, please click on the "Add a host" button.</td>
-            <%
-                }
-            %>
-        </tbody>
+        <tbody id="hostListBody" />
     </table>
 
     <br/>
@@ -150,7 +82,6 @@ For more information: www.smartfrog.org
 </div>
 </form>
 
-<% if (boolListActiveHosts) { %>
 <script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
 <script language="JavaScript" type="text/javascript">
     <!--
@@ -159,6 +90,5 @@ For more information: www.smartfrog.org
     getStatus();
     -->
 </script>
-<% } %>
 
 <%@ include file="footer.inc.jsp" %>

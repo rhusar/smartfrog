@@ -81,7 +81,6 @@ For more information: www.smartfrog.org
                     } catch (DatabaseAccessException e) {
                         message = "Deletion of the selected hosts failed.";
                     }
-                    response.sendRedirect("host_list.jsp?active=true");
                 }
             }
     }
