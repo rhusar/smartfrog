@@ -49,7 +49,7 @@ For more information: www.smartfrog.org
         <caption>Hosts</caption>
         <thead id="hostListHeader">
             <tr class="captionRow">
-                <th class="checkboxCell"><input id="allhosts" type="checkbox" tableid="hostListTable" /></th>
+                <th class="checkboxCell"><input id="allhosts" onclick="selectAllHosts(this)" type="checkbox"/></th>
                 <th class="sorted">Host ID</th>
                 <th>Manage</th>
                 <th>Platform</th>
@@ -85,9 +85,9 @@ For more information: www.smartfrog.org
 <script type="text/javascript" language="JavaScript" src="host_list_ajax.js"></script>
 <script language="JavaScript" type="text/javascript">
     <!--
-    window.setInterval("getStatus()", 5000);
+    window.setInterval("updateHostList()", 5000);
 
-    getStatus();
+    updateHostList();
     -->
 </script>
 

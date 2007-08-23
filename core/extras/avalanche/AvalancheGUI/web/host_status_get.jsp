@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 <%@ page language="java" contentType="text/xml" %>
 <%@ include file="InitBeans.jsp" %>
-<%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
 <%@ page import="org.w3c.dom.*" %>
 <%@ page import="javax.xml.parsers.*" %>
@@ -28,10 +27,8 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
 <%@ page import="org.smartfrog.avalanche.shared.XMLHelper" %>
 
-<%
-    // Get all hosts
-    HostManager manager = factory.getHostManager();
-    String[] hosts = manager.listHosts();
+<%@ include file="init_hostmanager.inc.jsp"%>
+<%  String[] hosts = manager.listHosts();
 
     // Be able to query ActiveProfile
     ActiveProfileUpdater updater = new ActiveProfileUpdater();
