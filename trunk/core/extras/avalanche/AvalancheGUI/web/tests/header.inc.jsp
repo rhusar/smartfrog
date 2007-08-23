@@ -91,17 +91,12 @@
 <tr>
 	<td>assertText</td>
 	<td>menu2_trigger</td>
-	<td>Hosts List Hosts List Active Hosts Host Groups</td>
+	<td>Hosts List Hosts Host Groups</td>
 </tr>
 <tr>
 	<td>assertText</td>
 	<td>link=List Hosts</td>
 	<td>List Hosts</td>
-</tr>
-<tr>
-	<td>assertText</td>
-	<td>link=List Active Hosts</td>
-	<td>List Active Hosts</td>
 </tr>
 <tr>
 	<td>assertText</td>
