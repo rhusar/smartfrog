@@ -18,15 +18,30 @@
  For more information: www.smartfrog.org
  */
 
-/* Status update */
-var allSelectedHosts = false;
+/* Tell browsers apart */
+var usingIE = document.all;
 
+
+if (usingIE) {
+    document.getElementsByName = function(name) {
+        var allElements = document.getElementsByTagName('*');
+        var wantedElements = []
+        for (var i = 0; i < allElements.length; i++) {
+            var att = allElements[i].getAttribute('name');
+            if (att == name) {
+                wantedElements.push(allElements[i]);
+            }
+        }
+        return wantedElements;
+    }
+}
+
+/* Status update */
 var status_xml = false;
 status_xml = getXMLHttpRequestObject();
 
-function getStatus() {
+function updateHostList() {
     if (status_xml) {
-        allSelectedHosts = getSelected();
         status_xml.open("GET", "host_status_get.jsp?now=" + (new Date()).getTime(), true);
         status_xml.onreadystatechange = function ()
         {
@@ -34,10 +49,13 @@ function getStatus() {
                 // If everything went alright
                 if (status_xml.readyState == 4) {
                     if (status_xml.status == 200) {
+                        var allSelectedHosts = getSelected();
+
                         var xmlDocument = status_xml.responseXML;
                         var hosts = xmlDocument.getElementsByTagName("host");
 
                         var list = document.getElementById("hostListBody");
+
                         // Delete all rows
                         for (var k = list.rows.length - 1; k > -1; k--) {
                             list.deleteRow(k);
@@ -48,14 +66,15 @@ function getStatus() {
                             for (var i = 0; i < hosts.length; i++) {
                                     var row = list.insertRow(i);
                                     row.className = ((i % 2) == 0) ? "altRowColor" : null;
+                                    row.setAttribute("onclick","selectRow(this, true)");
 
                                     // Cell: Checkbox
                                     var checkBoxCell = row.insertCell(0);
                                     checkBoxCell.className = "checkboxCell";
-                                    checkBoxCell.setAttribute("rowselector","yes");
                                     var checkBox = document.createElement("input");
                                     checkBox.type = "checkbox";
                                     checkBox.name = "selectedHost";
+                                    checkBox.setAttribute("onclick","selectRow(this.parentNode.parentNode, false)");
                                     checkBox.value = hosts[i].getAttribute("name");
                                     checkBoxCell.appendChild(checkBox);
 
@@ -82,10 +101,11 @@ function getStatus() {
                                     // Cell: Status
                                     var statusCell = row.insertCell(4);
                                     var statusColour = document.createElement("div");
-                                    // For Firefox
-                                    statusColour.setAttribute("style", "float:left;");
-                                    // For IE
-                                    statusColour.style.styleFloat = "left";
+                                    if (usingIE) {
+                                        statusColour.style.styleFloat = "left";
+                                    } else {
+                                        statusColour.setAttribute("style", "float:left;");
+                                    }
                                     statusColour.style.display = "block";
                                     statusColour.style.height = "10px";
                                     statusColour.style.width = "10px";
@@ -108,8 +128,8 @@ function getStatus() {
                                     var lastmsg_response = "";
                                     if (hosts[i].childNodes[3].firstChild.data != "false") {
                                         lastmsg_response = document.createElement("a");
-                                        lastmsg_response.href = "log_xmpp.jsp?host=" + hosts.getAttribute("name");
-                                        lastmsg_response.appendChild(document.createTextNode(hosts[i].childNodes[7].firstChild.data));
+                                        lastmsg_response.href = "log_xmpp.jsp?host=" + hosts[i].getAttribute("name");
+                                        lastmsg_response.appendChild(document.createTextNode(hosts[i].childNodes[3].firstChild.data));
                                     } else {
                                         lastmsg_response = document.createTextNode("No message has been received yet.");
                                     }
@@ -126,6 +146,7 @@ function getStatus() {
                 }
             } catch (e) {
                 // TODO: everything went wrong
+                alert(e);
             }
         }
         status_xml.send(null);
@@ -150,6 +171,8 @@ function ajaxHostAction(target) {
                         var xmlDocument = action_xml.responseXML;
                         if (xmlDocument.getElementsByTagName("type")[0].firstChild.data == "error")
                             alert(xmlDocument.getElementsByTagName("message")[0].firstChild.data);
+                        // Update Host List again
+                        updateHostList();
                     }
                 }
             } catch (e) {
@@ -204,6 +227,32 @@ function getSelected() {
     return selectedHosts;
 }
 
+function selectRow(sender, isRow) {
+    var checkbox = sender.firstChild.firstChild;
+    var test = !checkbox.checked;
+    if (isRow) {
+        if (test) {
+            sender.className = sender.className + " rowHighlight";
+            checkbox.checked = true;
+        } else {
+            sender.className = sender.className.substr(0, sender.className.lastIndexOf(" "));
+            checkbox.checked = false;
+        }
+    } else {
+        checkbox.checked = test;
+    }
+}
+
+function selectAllHosts(sender) {
+    var check = sender.checked;
+    var selectors = document.getElementsByName("selectedHost");
+    for (var i = 0; i < selectors.length; i++)
+    {
+        if (check ^ selectors[i].checked)
+            selectors[i].click();
+    }
+}
+
 function perform(action, message) {
     var selectedHosts = getSelected();
 
@@ -229,7 +278,6 @@ function perform(action, message) {
         }
         ajaxHostAction(target);
         delectAll();
-        getStatus();
     }
 }
 
