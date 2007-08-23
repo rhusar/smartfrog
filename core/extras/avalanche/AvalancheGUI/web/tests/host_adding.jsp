@@ -114,9 +114,9 @@
     </td>
 </tr>
 <tr>
-    <td>clickAndWait</td>
-    <td>save</td>
-    <td></td>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save Changes']</td>
+	<td></td>
 </tr>
 <!--Editing access modes-->
 <jsp:include page="header.inc.jsp?subtitle=Host Access Modes Page"></jsp:include>
@@ -139,9 +139,9 @@
     </td>
 </tr>
 <tr>
-    <td>clickAndWait</td>
-    <td>save</td>
-    <td></td>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save Changes']</td>
+	<td></td>
 </tr>
 <!--Editing transfer modes-->
 <jsp:include page="header.inc.jsp?subtitle=Host Transfer Modes Page"></jsp:include>
@@ -164,9 +164,9 @@
     </td>
 </tr>
 <tr>
-    <td>clickAndWait</td>
-    <td>save</td>
-    <td></td>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save Changes']</td>
+	<td></td>
 </tr>
 <!--Editing enviroment variables-->
 <jsp:include page="header.inc.jsp?subtitle=Host Properties Page"></jsp:include>
@@ -199,18 +199,17 @@
     </td>
 </tr>
 <tr>
-    <td>clickAndWait</td>
-    <td>save</td>
-    <td></td>
+	<td>clickAndWait</td>
+	<td>//input[@value='Save Changes']</td>
+	<td></td>
 </tr>
 <!--Basic Settings page again-->
 <jsp:include page="header.inc.jsp?subtitle=Host Basic Settings Page"></jsp:include>
 <jsp:include page="host_setup_actions.inc.jsp"></jsp:include>
 <tr>
-    <td>verifyText</td>
-    <td>//div[2]/table/tbody/tr[1]/td[2]</td>
-    <td><%= xmlHostname %>
-    </td>
+    <td>assertElementPresent</td>
+    <td>//input[@value='<%= xmlHostname %>']</td>
+    <td></td>
 </tr>
 
 <%
