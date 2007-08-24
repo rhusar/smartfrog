@@ -150,7 +150,7 @@ For more information: www.smartfrog.org
      -->
 </script>
 
-<%@ include file="../Message.jsp" %>
+<%@ include file="../message.inc.jsp" %>
 <!-- Actual Body starts here -->
 <br/>
 <center>

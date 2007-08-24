@@ -73,24 +73,16 @@ For more information: www.smartfrog.org
             entry.setAttribute("name", host);
 
             // Set OS node beneath <host>
-            subentry = xdoc.createElement("os");
-            subentry.appendChild(xdoc.createTextNode(os));
-            entry.appendChild(subentry);
+            XMLHelper.addTextNode(xdoc, entry, "os", os);
 
             // Set Architecture node beneath <host>
-            subentry = xdoc.createElement("arch");
-            subentry.appendChild(xdoc.createTextNode(arch));
-            entry.appendChild(subentry);
+            XMLHelper.addTextNode(xdoc, entry, "arch", arch);
 
             // Set status node beneath <host>
-            subentry = xdoc.createElement("status");
-            subentry.appendChild(xdoc.createTextNode(Boolean.toString(active)));
-            entry.appendChild(subentry);
+            XMLHelper.addTextNode(xdoc, entry, "arch", Boolean.toString(active));
 
             // Set last message node beneath <host>
-            subentry = xdoc.createElement("lastmsg");
-            subentry.appendChild(xdoc.createTextNode(lastMsg));
-            entry.appendChild(subentry);
+            XMLHelper.addTextNode(xdoc, entry, "lastmsg", lastMsg);
 
             // Append <host> node to hostlist
             root.appendChild(entry);
