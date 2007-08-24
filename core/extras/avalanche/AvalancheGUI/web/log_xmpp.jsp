@@ -21,10 +21,8 @@
 <%@ include file="header.inc.jsp" %>
 <%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater" %>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType" %>
-<%@ page import="org.smartfrog.avalanche.core.activeHostProfile.MessageType" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.text.DateFormat" %>
 
+<script type="text/javascript" language="JavaScript" src="log_xmpp_ajax.js"></script>
 <script language="JavaScript" type="text/javascript">
     <!--
     setNextSubtitle("XMPP Message Log");
@@ -50,7 +48,6 @@
     String hostName = request.getParameter("host");
     ActiveProfileUpdater updater = new ActiveProfileUpdater();
     ActiveProfileType type = null;
-    MessageType[] messages = null;
 
     if (hostName != null) {
         hostName = hostName.trim().toLowerCase();
@@ -59,6 +56,7 @@
         }
     }
 
+    // Valid host?
     if (type != null) {
         hostName = hostName.trim().toLowerCase();
         type = updater.getActiveProfile(hostName);
@@ -68,43 +66,19 @@
             updater.storeActiveProfile(type);
             type = updater.getActiveProfile(hostName);
         }
-
-        messages = type.getMessagesHistoryArray();
 %>
 
 <p style="text-align:left;">XMPP Message Viewer &gt; <a href="?">Host List</a> &gt; <%=hostName%></p>
-<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="hostListTable">
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="hostMsgList">
     <caption>Messages from <%=hostName%>
     </caption>
-    <thead>
+    <thead id="hostMsgListHeader">
         <tr class="captionRow">
             <th>Time</th>
             <th>Message</th>
         </tr>
     </thead>
-    <tbody>
-        <%
-            if (messages.length != 0) {
-                MessageType msg = null;
-                for (int i = messages.length-1; i >= 0; i--) {
-                    rowClass = ((i % 2) == 0) ? "class=\"altRowColor\"" : "";
-                    String time = "";
-                    String text = "";
-                    msg = messages[i];
-                    time = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(new Date(Long.parseLong(msg.getTime())));
-                    text = msg.getMsg();
-        %>
-        <tr <%= rowClass %>>
-            <td style="width:300px;"><%= time %>
-            </td>
-            <td><%= text %>
-            </td>
-        </tr>
-        <% }
-        } else { %>
-        <td colspan="2">No messages were received from this host. Please check back later.</td>
-        <% } %>
-    </tbody>
+    <tbody id="hostMsgListBody" />
 </table>
 <br/>
 <div align="center" style="width: 95%;">
@@ -116,12 +90,19 @@
         -->
     </script>
 </div>
+<script language="JavaScript" type="text/javascript">
+    <!--
+    window.setInterval("updateMsgList('<%= hostName %>')", 5000);
+
+    updateMsgList('<%= hostName %>');
+    -->
+</script>
 <% } else { %>
 
 <p style="text-align:left;">XMPP Message Viewer &gt; Host List</p>
-<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="hostListTable">
+<table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="hostMsgList">
     <caption>Hosts</caption>
-    <thead>
+    <thead id="hostMsgListHeader">
         <tr class="captionRow">
             <th>Host</th>
             <th>Messages</th>
@@ -129,47 +110,7 @@
             <th>Date/Time</th>
         </tr>
     </thead>
-    <tbody>
-        <%@ include file="init_hostmanager.inc.jsp"%>
-        <%  String[] hostNames = manager.listHosts();
-            if (hostNames.length != 0) {
-                int count = 0;
-                String messageCount = null;
-                String lastMsgText = null;
-                String lastMsgTime = null;
-                MessageType lastMsg = null;
-
-                for (String host : hostNames) {
-                    rowClass = ((count++ % 2) == 0) ? "class=\"altRowColor\"" : "";
-                    type = updater.getActiveProfile(host);
-
-                    if (type.getMessagesHistoryArray().length != 0) {
-                        messageCount = String.valueOf(type.getMessagesHistoryArray().length);
-                        lastMsg = type.getMessagesHistoryArray(type.getMessagesHistoryArray().length - 1);
-                        lastMsgText = lastMsg.getMsg();
-                        lastMsgTime = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(new Date(Long.parseLong(lastMsg.getTime())));
-                    } else {
-                        messageCount = "0";
-                        lastMsgText = "No message received yet.";
-                        lastMsgTime = "";
-                    }
-        %>
-        <tr <%= rowClass %>>
-            <td><a href="?host=<%= host %>"><%= host %>
-            </a></td>
-            <td><%= messageCount %> Message<% if (!messageCount.equals("1")) { %>s<% } %></td>
-            <td><%= lastMsgText %>
-            </td>
-            <td><%= lastMsgTime %>
-            </td>
-        </tr>
-        <% }
-        } else { %>
-        <td colspan="4">There are no active hosts in the database. To add a host, please click <a
-                href="host_setup_bs.jsp">here</a>.
-        </td>
-        <% } %>
-    </tbody>
+    <tbody id="hostMsgListBody" />
 </table>
 
 <br/>
@@ -181,6 +122,14 @@
         -->
     </script>
 </div>
+
+<script language="JavaScript" type="text/javascript">
+    <!--
+    window.setInterval("updateMsgList()", 5000);
+
+    updateMsgList();
+    -->
+</script>
 <% } %>
 
 </center>

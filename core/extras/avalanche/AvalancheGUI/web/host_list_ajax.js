@@ -66,7 +66,11 @@ function updateHostList() {
                             for (var i = 0; i < hosts.length; i++) {
                                     var row = list.insertRow(i);
                                     row.className = ((i % 2) == 0) ? "altRowColor" : null;
-                                    row.setAttribute("onclick","selectRow(this, true)");
+                                    if (usingIE) {
+                                        row.onclick = "selectRow(this, true)";
+                                    } else {
+                                        row.setAttribute("onclick","selectRow(this, true)");
+									}
 
                                     // Cell: Checkbox
                                     var checkBoxCell = row.insertCell(0);
@@ -74,7 +78,12 @@ function updateHostList() {
                                     var checkBox = document.createElement("input");
                                     checkBox.type = "checkbox";
                                     checkBox.name = "selectedHost";
-                                    checkBox.setAttribute("onclick","selectRow(this.parentNode.parentNode, false)");
+                                    if (usingIE) {
+                                        checkBox.onclick = "selectRow(this.parentNode.parentNode, false)";
+                                    } else {
+                                        checkBox.setAttribute("onclick","selectRow(this.parentNode.parentNode, false)");
+                                    }
+
                                     checkBox.value = hosts[i].getAttribute("name");
                                     checkBoxCell.appendChild(checkBox);
 
@@ -146,7 +155,6 @@ function updateHostList() {
                 }
             } catch (e) {
                 // TODO: everything went wrong
-                alert(e);
             }
         }
         status_xml.send(null);
@@ -177,7 +185,6 @@ function ajaxHostAction(target) {
                 }
             } catch (e) {
                 // TODO: Maybe something other?
-                alert(e);
             }
         }
         action_xml.send(null);
@@ -186,7 +193,7 @@ function ajaxHostAction(target) {
 
 /* Actually the following code is not AJAX-related in anyway.
 It is used by the host_list.jsp only and so it kind of fitted in here. */
-function delectAll() {
+function deselectAll() {
     var selectors = document.getElementsByName("selectedHost");
     document.getElementById("allhosts").checked = false;
     for (var i = 0; i < selectors.length; i++)
@@ -277,7 +284,7 @@ function perform(action, message) {
             target = target + "&selectedHost=" + selectedHosts[i];
         }
         ajaxHostAction(target);
-        delectAll();
+        deselectAll();
     }
 }
 
