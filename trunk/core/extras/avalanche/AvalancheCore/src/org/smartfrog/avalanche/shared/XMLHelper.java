@@ -13,6 +13,7 @@ package org.smartfrog.avalanche.shared;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
@@ -24,6 +25,16 @@ import java.util.Date;
 
 public class XMLHelper {
 
+    /**
+     * Add a RSS 2.0 Channel Information to a given node - which is your channel node <channel>
+     * Note: None of the parameter is supposed to be NULL
+     *
+     * @param XMLDocument current XML Document
+     * @param channelRoot the channel node to which you want the information to be attached to
+     * @param title title of your channel
+     * @param link  link to your channel home
+     * @param description description of your channel
+     */
     public static void addRSSChannelInformation (Document XMLDocument, Node channelRoot, String title, String link, String description) {
         // Title node
         Node entry = XMLDocument.createElement("title");
@@ -51,6 +62,18 @@ public class XMLHelper {
         channelRoot.appendChild(entry);
     }
 
+    /**
+     * Add a RSS 2.0 Item to your channel node <channel>
+     * Note: None of the parameter is supposed to be NULL
+     *
+     * @param XMLDocument the current XML Document
+     * @param channelRoot your channel node
+     * @param title title of your entry
+     * @param link link to further information
+     * @param guid globally unique identifier - same as link
+     * @param pubDate date of the new entry
+     * @param text text of the item
+     */
     public static void addRSSItem(Document XMLDocument, Node channelRoot, String title, String link, String guid, String pubDate, String text) {
         // Create <item> node
         Node entry = XMLDocument.createElement("item");
@@ -83,6 +106,26 @@ public class XMLHelper {
         channelRoot.appendChild(entry);
     }
 
+    /**
+     * Adds a simple DOM Node like <tagName>text</tagName> to a given node in a document
+     *
+     * @param XMLDocument current XML document
+     * @param rootElement element you want append the new node to
+     * @param tagName node's tag name
+     * @param text text in the node
+     */
+    public static void addTextNode(Document XMLDocument, Node rootElement, String tagName, String text) {
+        Element newNode = XMLDocument.createElement(tagName);
+        newNode.appendChild(XMLDocument.createTextNode(text));
+        rootElement.appendChild(newNode);
+    }
+
+    /**
+     * Converts DOM document to a string
+     *
+     * @param XMLDocument the document you want to convert
+     * @return  String representation of you XML document
+     */
     public static String XMLToString(Document XMLDocument) {
         String xmlString = null;
         try {
