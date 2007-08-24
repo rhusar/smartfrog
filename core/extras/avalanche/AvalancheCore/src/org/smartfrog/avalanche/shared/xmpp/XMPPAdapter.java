@@ -15,8 +15,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.avalanche.shared.handlers.DefaultHostStateChangeHandler;
 
 import java.util.Map;
@@ -60,6 +60,9 @@ public class XMPPAdapter {
 	public XMPPAdapter(String xmppServer, boolean useSSL) {
         // Save the hostname
         this.xmppServer = xmppServer;
+
+        // setup the event listener
+        this.listener.setup();
 
         // Save useSSL value and set the ports accordingly
         this.useSSL = useSSL ;

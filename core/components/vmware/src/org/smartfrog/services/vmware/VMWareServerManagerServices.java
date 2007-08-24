@@ -13,6 +13,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.vmware;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 
 public interface VMWareServerManagerServices extends Remote {
@@ -21,72 +22,72 @@ public interface VMWareServerManagerServices extends Remote {
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean registerVM(String inVMPath);
+    public boolean registerVM(String inVMPath) throws RemoteException;
 
     /**
      * Unregisters a virtual machine with the vmware server.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean unregisterVM(String inVMPath);
+    public boolean unregisterVM(String inVMPath) throws RemoteException;
 
     /**
      * Starts a virtual machine. Has to be powered off or suspended.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean startVM(String inVMPath);
+    public boolean startVM(String inVMPath) throws RemoteException;
 
     /**
      * Starts a virtual machine. Has to be powered off or suspended.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean stopVM(String inVMPath);
+    public boolean stopVM(String inVMPath) throws RemoteException;
 
     /**
      * Suspends a virtual machine. Has to be running.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean suspendVM(String inVMPath);
+    public boolean suspendVM(String inVMPath) throws RemoteException;
 
     /**
      * Resets a virtual machine.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean resetVM(String inVMPath);
+    public boolean resetVM(String inVMPath) throws RemoteException;
 
     /**
      * Gets the power state of a virtual machine.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public int getPowerState(String inVMPath);
+    public int getPowerState(String inVMPath) throws RemoteException;
 
     /**
      * Gets the tools state of a virtual machine.
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public int getToolsState(String inVMPath);
+    public int getToolsState(String inVMPath) throws RemoteException;
 
     /**
      * Gets the running virtual machines.
      * @return
      */
-    public String getRunningMachines();
+    public String getRunningMachines() throws RemoteException;
 
     /**
      * Shuts down the VMWare Server and all running machines as well.
      * @return
      */
-    public boolean shutdownVMWareServerService();
+    public boolean shutdownVMWareServerService() throws RemoteException;
 
     /**
      * Starts the VMWare Server and all machines in the designated vm folder.
      * @return
      */
-    public boolean startVMWareServerService();
+    public boolean startVMWareServerService() throws RemoteException;
 }

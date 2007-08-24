@@ -12,7 +12,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.shared.handlers;
 
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 
 
 public interface EventHandler {

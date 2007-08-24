@@ -11,9 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.shared.jms;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
 
 import javax.jms.MapMessage;
 import javax.jms.Queue;

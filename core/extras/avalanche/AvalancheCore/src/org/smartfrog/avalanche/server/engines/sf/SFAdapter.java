@@ -31,7 +31,7 @@ import org.smartfrog.avalanche.server.SettingsManager;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.settings.sfConfig.SfConfigsType;
 import org.smartfrog.avalanche.settings.sfConfig.SfDescriptionType;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.services.display.Display;
 import org.smartfrog.services.quartz.collector.DataSource;
 import org.smartfrog.services.sfinterface.SFMultiHostSubmitException;

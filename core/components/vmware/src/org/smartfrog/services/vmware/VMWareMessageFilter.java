@@ -13,7 +13,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.vmware;
 
 import org.smartfrog.services.xmpp.MessageFilter;
-import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Message;
 

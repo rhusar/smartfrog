@@ -12,7 +12,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.monitor.ganglia;
 
-import org.smartfrog.avalanche.client.monitor.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.avalanche.client.monitor.MonitoringService;
 import org.smartfrog.avalanche.client.monitor.Provider;
 

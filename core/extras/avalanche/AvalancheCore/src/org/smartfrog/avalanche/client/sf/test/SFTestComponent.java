@@ -12,9 +12,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.avalanche.client.sf.test;
 
 import org.smartfrog.avalanche.client.sf.anubis.SFModuleStateManager;
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;

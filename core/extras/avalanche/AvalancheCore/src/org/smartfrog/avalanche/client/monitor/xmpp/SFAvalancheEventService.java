@@ -11,9 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
 import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
