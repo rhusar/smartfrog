@@ -15,11 +15,10 @@ import org.smartfrog.avalanche.server.AvalancheFactory;
 import org.smartfrog.avalanche.server.DatabaseAccessException;
 import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.core.activeHostProfile.*;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Retrieves, saves and modifies the ActiveProfile of a given host

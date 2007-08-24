@@ -11,7 +11,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.services.anubis.locator.AnubisListener;
 import org.smartfrog.services.anubis.locator.AnubisLocator;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -34,7 +34,7 @@ public class SFListenerDeployer extends PrimImpl implements Prim {
 		locator = (AnubisLocator)sfResolve("locator") ;
 		
 		// let it be the default configuration
-		listener = new AnubisJMSAdapter(MonitoringConstants.ANUBIS_SHARED_NAME); 
+		listener = new AnubisJMSAdapter(MonitoringConstants.ANUBIS_SHARED_NAME);
 	}
 
 	public synchronized void sfStart() throws SmartFrogException, RemoteException {

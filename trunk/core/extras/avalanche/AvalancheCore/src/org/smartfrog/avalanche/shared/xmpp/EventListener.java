@@ -19,9 +19,10 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
-import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.xmpp.XMPPEventExtensionProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -64,56 +65,24 @@ public class EventListener implements PacketListener {
 	
 	public void setup(){
 		// register extension provider first 
-		ProviderManager.addExtensionProvider(XMPPEventExtension.rootElement, XMPPEventExtension.namespace, new XMPPEventExtension());
+		ProviderManager.addExtensionProvider(XMPPEventExtension.rootElement, XMPPEventExtension.namespace, new XMPPEventExtensionProvider());
 	}
 	
 	public static class XMPPPacketFilter implements PacketFilter{
 		public boolean accept(Packet p) {
 			log.info("Received Packet: " + p.toXML());
-			if ( p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace) != null){
+			if ( p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace) instanceof XMPPEventExtension ){
                 log.info("Accepting packet.");
                 return true;
 			}
 			Iterator itor = p.getExtensions();
 			while(itor.hasNext()){
-				PacketExtension ext = (PacketExtension)itor ;
+				PacketExtension ext = (PacketExtension)itor.next() ;
 				log.info("Received Packet Extension : " + ext.getElementName());
 				log.info("Received Packet Extension NS : " + ext.getNamespace());
 			}
             log.info("Discarding packet.");
             return false;
 		}
-	}
-
-    	/**
-	 * Returns null if the document is not valid event.
-	 * @param doc
-	 * @return
-	 */
-	public static MonitoringEvent fromXML(Document doc){
-		MonitoringEvent event = null ;
-		Element e = (Element)doc.getElementsByTagName("event").item(0);
-
-		// TODO: Add proper error handling for malformed events
-		Element mid = (Element)e.getElementsByTagName("moduleId").item(0);
-		Element insName = (Element)e.getElementsByTagName("instanceName").item(0);
-		Element host = (Element)e.getElementsByTagName("host").item(0);
-		Element moduleState = (Element)e.getElementsByTagName("moduleState").item(0);
-		Element messageType = (Element)e.getElementsByTagName("messageType").item(0);
-		Element msg = (Element)e.getElementsByTagName("msg").item(0);
-		Element lastAction = (Element)e.getElementsByTagName("lastAction").item(0);
-		Element timestamp = (Element)e.getElementsByTagName("timestamp").item(0);
-
-		event = new MonitoringEventDefaultImpl();
-		event.setModuleId(mid.getFirstChild().getNodeValue());
-		event.setInstanceName(insName.getFirstChild().getNodeValue());
-		event.setHost(host.getFirstChild().getNodeValue());
-		event.setModuleState(moduleState.getFirstChild().getNodeValue());
-		event.setMessageType(Integer.parseInt(messageType.getFirstChild().getNodeValue()));
-		event.setMsg(msg.getFirstChild().getNodeValue());
-		event.setLastAction(lastAction.getFirstChild().getNodeValue());
-		event.setTimestamp(timestamp.getFirstChild().getNodeValue());
-
-		return event ;
 	}
 }

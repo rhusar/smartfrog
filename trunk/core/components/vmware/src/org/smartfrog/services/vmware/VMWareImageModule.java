@@ -12,17 +12,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.vmware;
 
-import org.smartfrog.sfcore.prim.Prim;
-
-import org.smartfrog.sfcore.prim.PrimImpl;
-
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-
-import java.rmi.RemoteException;
 import java.io.IOException;
 import java.io.File;
 

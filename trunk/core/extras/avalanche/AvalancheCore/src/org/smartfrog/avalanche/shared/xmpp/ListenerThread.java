@@ -12,12 +12,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.avalanche.shared.xmpp;
 
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.jms.MessageListener;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class logs in as a user on the xmpp server, and receives messages and 

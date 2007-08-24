@@ -19,7 +19,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.xmpp.LocalXmppPacketHandler;
 import org.smartfrog.services.xmpp.XmppListenerImpl;
-import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 
@@ -58,6 +58,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        sfLog().info("VMWare Message Listener deployed.");
     }
 
     /**
@@ -72,10 +73,10 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         super.sfStart();
 
         // get the reference to the vmware server manager
-        refServerManager = (VMWareServerManager)sfResolve("VMWareServerManager", refServerManager, true);
+        refServerManager = (VMWareServerManager)sfResolve("vmServerManager", refServerManager, true);
         if (refServerManager == null)
         {
-            throw new SmartFrogDeploymentException("sfStart failed: VMWareServerManager refernece not found.");
+            throw new SmartFrogDeploymentException("sfStart failed: VMWareServerManager reference not found.");
         }
 
         // get the reference to the xmpp message listener
@@ -128,90 +129,102 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                 newExt.getPropertyBag().put("vmcmd", strCommand);
                 newExt.getPropertyBag().put("vmpath", strPath);
 
-                if (strCommand.equals("start"))
-                {
-                    // attempt to start the machine
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.startVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("stop"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.stopVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("suspend"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.suspendVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("reset"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.resetVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("register"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.registerVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("unregister"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", (refServerManager.unregisterVM(strPath) ? "success" : "failure"));
-                }
-                else if (strCommand.equals("list"))
-                {
-                    newExt.getPropertyBag().put("vmresponse", refServerManager.getRunningMachines());
-                }
-                else if (strCommand.equals("toolsstate"))
-                {
-                    int iState = refServerManager.getToolsState(strPath);
-                    switch (iState)
+                try {
+                    if (strCommand.equals("start"))
                     {
-                        case VMWareImageModule.TOOLS_STATUS_NOT_INSTALLED:
-                            newExt.getPropertyBag().put("vmresponse", "Tools not installed.");
-                            break;
-                        case VMWareImageModule.TOOLS_STATUS_RUNNING:
-                            newExt.getPropertyBag().put("vmresponse", "Tools running.");
-                            break;
-                        case VMWareImageModule.TOOLS_STATUS_UNKNOWN:
-                            newExt.getPropertyBag().put("vmresponse", "Tools state unknown.");
-                            break;
-                        default:
-                            newExt.getPropertyBag().put("vmresponse", "failure");
-                            break;
+                        // attempt to start the machine
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.startVM(strPath) ? "success" : "failure"));
                     }
-                }
-                else if (strCommand.equals("powerstate"))
-                {
-                    int iState = refServerManager.getPowerState(strPath);
-                    switch (iState)
+                    else if (strCommand.equals("stop"))
                     {
-                        case VMWareImageModule.POWER_STATUS_BLOCKED_ON_MSG:
-                            newExt.getPropertyBag().put("vmresponse", "Blocked on message.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_POWERED_OFF:
-                            newExt.getPropertyBag().put("vmresponse", "Powered off.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_POWERED_ON:
-                            newExt.getPropertyBag().put("vmresponse", "Powered on.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_POWERING_OFF:
-                            newExt.getPropertyBag().put("vmresponse", "Powering off.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_POWERING_ON:
-                            newExt.getPropertyBag().put("vmresponse", "Powering on.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_RESETTING:
-                            newExt.getPropertyBag().put("vmresponse", "Resetting.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_SUSPENDED:
-                            newExt.getPropertyBag().put("vmresponse", "Suspended.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_SUSPENDING:
-                            newExt.getPropertyBag().put("vmresponse", "Suspending.");
-                            break;
-                        case VMWareImageModule.POWER_STATUS_TOOLS_RUNNING:
-                            newExt.getPropertyBag().put("vmresponse", "Tools running.");
-                            break;
-                        default:
-                            newExt.getPropertyBag().put("vmresponse", "failure");
-                            break;
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.stopVM(strPath) ? "success" : "failure"));
                     }
+                    else if (strCommand.equals("suspend"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.suspendVM(strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("reset"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.resetVM(strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("register"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.registerVM(strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("unregister"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.unregisterVM(strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("list"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", refServerManager.getRunningMachines());
+                    }
+                    else if (strCommand.equals("toolsstate"))
+                    {
+                        int iState = refServerManager.getToolsState(strPath);
+                        switch (iState)
+                        {
+                            case VMWareImageModule.TOOLS_STATUS_NOT_INSTALLED:
+                                newExt.getPropertyBag().put("vmresponse", "Tools not installed.");
+                                break;
+                            case VMWareImageModule.TOOLS_STATUS_RUNNING:
+                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
+                                break;
+                            case VMWareImageModule.TOOLS_STATUS_UNKNOWN:
+                                newExt.getPropertyBag().put("vmresponse", "Tools state unknown.");
+                                break;
+                            default:
+                                newExt.getPropertyBag().put("vmresponse", "failure");
+                                break;
+                        }
+                    }
+                    else if (strCommand.equals("powerstate"))
+                    {
+                        int iState = refServerManager.getPowerState(strPath);
+                        switch (iState)
+                        {
+                            case VMWareImageModule.POWER_STATUS_BLOCKED_ON_MSG:
+                                newExt.getPropertyBag().put("vmresponse", "Blocked on message.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_POWERED_OFF:
+                                newExt.getPropertyBag().put("vmresponse", "Powered off.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_POWERED_ON:
+                                newExt.getPropertyBag().put("vmresponse", "Powered on.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_POWERING_OFF:
+                                newExt.getPropertyBag().put("vmresponse", "Powering off.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_POWERING_ON:
+                                newExt.getPropertyBag().put("vmresponse", "Powering on.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_RESETTING:
+                                newExt.getPropertyBag().put("vmresponse", "Resetting.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_SUSPENDED:
+                                newExt.getPropertyBag().put("vmresponse", "Suspended.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_SUSPENDING:
+                                newExt.getPropertyBag().put("vmresponse", "Suspending.");
+                                break;
+                            case VMWareImageModule.POWER_STATUS_TOOLS_RUNNING:
+                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
+                                break;
+                            default:
+                                newExt.getPropertyBag().put("vmresponse", "failure");
+                                break;
+                        }
+                    }
+                    else if (strCommand.equals("stopvmwareservice"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.shutdownVMWareServerService() ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("startvmwareservice"))
+                    {
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.startVMWareServerService() ? "success" : "failure"));
+                    }
+                } catch (RemoteException e) {
+                    newExt.getPropertyBag().put("vmresponse", "failure");
                 }
 
                 // send the message

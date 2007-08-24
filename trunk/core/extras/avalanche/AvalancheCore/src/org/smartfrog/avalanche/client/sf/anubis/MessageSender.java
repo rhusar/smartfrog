@@ -11,8 +11,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.avalanche.client.sf.anubis;
 
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 
 import javax.jms.MapMessage;
 import javax.jms.Queue;

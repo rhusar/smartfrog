@@ -14,9 +14,9 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
-import org.smartfrog.avalanche.shared.MonitoringConstants;
+import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
-import org.smartfrog.avalanche.shared.XMPPEventExtension;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.jivesoftware.smack.packet.Packet;
 
@@ -47,27 +47,29 @@ public class ActiveProfileUpdateHandler implements XMPPPacketHandler {
         {
             // get the xmpp event
             XMPPEventExtension pe = (XMPPEventExtension) p.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
-		    log.info("Event received: " + pe);
+            if (pe != null) {
+                log.info("Event received: " + pe);
 
-            // decide what to do
-            ActiveProfileUpdater updater = new ActiveProfileUpdater();
-            switch (pe.getMessageType()) {
-                case MonitoringConstants.MODULE_STATE_CHANGED:
-                case MonitoringConstants.MODULE_OPERATION_FAILED:
-                    // Set module state
-                    updater.setModuleState(pe);
-                    break;
-                case MonitoringConstants.HOST_VANISH:
-                case MonitoringConstants.HOST_STARTED:
-                    // Log message to history
-                    updater.addNewMessage(pe);
-                    break;
-                case MonitoringConstants.VM_MESSAGE:
-                    updater.processVMMessage(pe);
-                    break;
-                default:
-                    break;
+                // decide what to do
+                ActiveProfileUpdater updater = new ActiveProfileUpdater();
+                switch (pe.getMessageType()) {
+                    case MonitoringConstants.MODULE_STATE_CHANGED:
+                    case MonitoringConstants.MODULE_OPERATION_FAILED:
+                        // Set module state
+                        updater.setModuleState(pe);
+                        break;
+                    case MonitoringConstants.HOST_VANISH:
+                    case MonitoringConstants.HOST_STARTED:
+                        // Log message to history
+                        updater.addNewMessage(pe);
+                        break;
+                    case MonitoringConstants.VM_MESSAGE:
+                        updater.processVMMessage(pe);
+                        break;
+                    default:
+                        break;
 
+                }
             }
         }
     }

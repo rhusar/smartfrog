@@ -13,7 +13,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.avalanche.client.monitor.xmpp;
 
 import org.jivesoftware.smack.packet.IQ;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.avalanche.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

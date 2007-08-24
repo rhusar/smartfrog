@@ -12,15 +12,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.vmware;
 
-import org.smartfrog.sfcore.prim.Prim;
-
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -56,6 +54,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
         // create the list of image modules
         listImgModules = new ArrayList<VMWareImageModule>();
+
+        sfLog().info("VMWare Server Manager deployed.");
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -67,6 +67,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         // start all virtual machines
         for (VMWareImageModule img : listImgModules)
             img.startUp();  // TODO: error handling
+
+        sfLog().info("VMWareServerManager started.");
     }
 
     /**
@@ -109,7 +111,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean unregisterVM(String inVMPath) {
+    public boolean unregisterVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -127,7 +129,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean startVM(String inVMPath) {
+    public boolean startVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -145,7 +147,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean stopVM(String inVMPath) {
+    public boolean stopVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -163,7 +165,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean suspendVM(String inVMPath) {
+    public boolean suspendVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -181,7 +183,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean resetVM(String inVMPath) {
+    public boolean resetVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -199,7 +201,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public int getPowerState(String inVMPath) {
+    public int getPowerState(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -217,7 +219,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public int getToolsState(String inVMPath) {
+    public int getToolsState(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
@@ -234,7 +236,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      *
      * @return
      */
-    public String getRunningMachines() {
+    public String getRunningMachines() throws RemoteException {
         // execute the command
         try {
             return vmComm.execVMcmd("list");
@@ -271,7 +273,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      *
      * @return
      */
-    public boolean shutdownVMWareServerService() {
+    public boolean shutdownVMWareServerService() throws RemoteException {
         // shutdown the vmware server service, which will automatically shut down all vms
         if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
             try {
@@ -292,7 +294,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     /**
      * Starts the vmware server service.
      */
-    public boolean startVMWareServerService()
+    public boolean startVMWareServerService() throws RemoteException
     {
         // start the vmware server service
         if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
@@ -319,7 +321,11 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             img.shutDown();     // TODO: error handling
 
         // shut down the vmware server service
-        shutdownVMWareServerService();
+        try {
+            shutdownVMWareServerService();
+        } catch (RemoteException e) {
+
+        }
     }
 
     /**
@@ -327,7 +333,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return
      */
-    public boolean registerVM(String inVMPath) {
+    public boolean registerVM(String inVMPath) throws RemoteException {
         // get a machine module
         VMWareImageModule tmp = getMachineModule(inVMPath);
 

@@ -11,25 +11,21 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/xmpp/components.sf"
 
 VMWareServerManager extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareServerManager";
 }
 
 VMWareMessageListener extends Prim {
-    sfClass "org.smartfrog.services.vmware.VMWareMessageListener"
+    sfClass "org.smartfrog.services.vmware.VMWareMessageListener";
 }
 
 sfConfig extends Compound {
-
-    manager extends   VMWareServerManager;
-    listener extends    VMWareMessageListener;
-    
-    vm extends Prim {
-        ServerManager LAZY PARENT:manager;
-    }
-
-    ml extends Prim {
-        VMListener LAZY PARENT:listener;
+    manager extends VMWareServerManager;
+    listener extends XmppListener;
+    vmMessageListener extends VMWareMessageListener {
+        vmServerManager LAZY PARENT:manager;
+        listener LAZY PARENT:listener;
     }
 }

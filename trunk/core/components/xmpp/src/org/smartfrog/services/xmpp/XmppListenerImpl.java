@@ -50,9 +50,9 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
     private long timeout;
 
-    private long reconnectStarted=0;
+    private long reconnectStarted;
 
-    private List<LocalXmppPacketHandler> handlers=new ArrayList<LocalXmppPacketHandler>(1);
+    private List<LocalXmppPacketHandler> handlers=new ArrayList<LocalXmppPacketHandler>();
 
     public XmppListenerImpl() throws RemoteException {
     }

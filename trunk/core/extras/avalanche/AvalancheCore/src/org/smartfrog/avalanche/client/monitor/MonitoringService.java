@@ -12,6 +12,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.avalanche.client.monitor;
 
+import org.smartfrog.services.xmpp.MonitoringEvent;
+
 public interface MonitoringService {
 	public void registerProvider(Provider p);
 	public void unRegisterProvider(Provider p);

@@ -13,6 +13,7 @@ package org.smartfrog.avalanche.shared;
 
 import org.smartfrog.services.anubis.locator.AnubisValue;
 import org.smartfrog.services.anubis.locator.names.ProviderInstance;
+import org.smartfrog.services.xmpp.MonitoringEvent;
 
 import java.util.Map;
 
