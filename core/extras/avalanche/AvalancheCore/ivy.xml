@@ -101,6 +101,10 @@
         name="sf-quartz"
         rev="latest.integration"
         conf="compile,runtime->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-vmware"
+        rev="latest.integration"
+        conf="compile,runtime->default" />
     <!--include XML parser and related services-->
 <!--
     <dependency org="org.smartfrog"

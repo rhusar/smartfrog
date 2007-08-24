@@ -82,6 +82,7 @@ For more information: www.smartfrog.org
     <property name="ssh.project" location="ssh" />
     <property name="tomcat.project" location="tomcat" />
     <property name="xml.project" location="xml" />
+    <property name="vmware.project" location="vmware" />
     <property name="www.project" location="www" />
 
     <!--where the files for release will go-->
@@ -146,6 +147,7 @@ For more information: www.smartfrog.org
       <pathelement location="${sfinstaller.project}"/>
       <pathelement location="${slp.project}"/>
       <pathelement location="${ssh.project}"/>
+      <pathelement location="${vmware.project}" />
     </path>
     
     <property name="component.path.asproperty"
@@ -454,6 +456,7 @@ For more information: www.smartfrog.org
         <pathelement path="${ssh.project}/${src}"/>
         <pathelement path="${dns.project}/${src}"/>
         <pathelement path="${jetty.project}/${src}"/>
+        <pathelement path="${vmware.project}/${src}"/>
         <pathelement path="${www.project}/${src}"/>
         <!--pathelement path="${xml.project}/${src}"/-->
       </sourcepath>
@@ -491,6 +494,7 @@ For more information: www.smartfrog.org
     <copybuild project="${ssh.project}" />
     <copybuild project="${dns.project}" />
     <copybuild project="${jetty.project}" />
+    <copybuild project="${vmware.project}"/>
     <copybuild project="${www.project}" />
     <!--copybuild project="${xml.project}" /-->
 
@@ -514,6 +518,7 @@ For more information: www.smartfrog.org
     <copybins project="${ssh.project}" />
     <copybins project="${dns.project}" />
     <copybins project="${jetty.project}" />
+    <copybins project="${vmware.project}" />
     <copybins project="${www.project}" />
     <!--copybins project="${xml.project}" /-->
   </target>
@@ -535,6 +540,7 @@ For more information: www.smartfrog.org
     <copylibs project="${ssh.project}" />
     <copylibs project="${dns.project}" />
     <copylibs project="${jetty.project}" />
+    <copylibs project="${vmware.project}" />
     <copylibs project="${www.project}" />
     <!--copylibs project="${xml.project}" /-->
   </target>
@@ -558,6 +564,7 @@ For more information: www.smartfrog.org
     <copycomponents project="${ssh.project}" />
     <copycomponents project="${dns.project}" />
     <copycomponents project="${jetty.project}" />
+    <copycomponents project="${vmware.project}" />
     <copycomponents project="${www.project}" />
     <!--copycomponents project="${xml.project}" /-->
   </target>
@@ -579,6 +586,7 @@ For more information: www.smartfrog.org
     <copydocs project="${ssh.project}" />
     <copydocs project="${dns.project}" />
     <copydocs project="${jetty.project}" />
+    <copydocs project="${vmware.project}" />
     <copydocs project="${www.project}" />
     <!--copydocs project="${xml.project}" /-->
   </target>
@@ -601,6 +609,7 @@ For more information: www.smartfrog.org
     <copyjdocs project="${ssh.project}" name="ssh"/>
     <copyjdocs project="${dns.project}" name="dns"/>
     <copyjdocs project="${jetty.project}" name="jetty"/>
+    <copyjdocs project="${vmware.project}" name="vmware"/>
     <copyjdocs project="${www.project}" name="www"/>
     <!--copyjdocs project="${xml.project}" name="xml"/-->
   </target>
@@ -625,6 +634,7 @@ For more information: www.smartfrog.org
       <zipfileset dir="${ssh.project}/dist/${src}" />
        <zipfileset dir="${dns.project}/dist/${src}" />
       <zipfileset dir="${jetty.project}/dist/${src}" />
+      <zipfileset dir="${vmware.project}/dist/${src}"/>
       <zipfileset dir="${www.project}/dist/${src}" />
       <!--zipfileset dir="${xml.project}/dist/${src}" /-->
     </zip>
@@ -649,6 +659,7 @@ For more information: www.smartfrog.org
     <updateversion project="${ssh.project}" compname="ssh"/>
     <updateversion project="${dns.project}" compname="dns"/>
     <updateversion project="${jetty.project}" compname="jetty"/>
+    <updateversion project="${vmware.project}" compname="vmware"/>
     <updateversion project="${www.project}" compname="www"/>
     <!--updateversion project="${xml.project}" compname="xml"/-->
   </target>
