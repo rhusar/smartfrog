@@ -88,6 +88,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
         // register this listener to the xmpp message listener
         refXmppListener.registerPacketHandler(this);
+
+        sfLog().info("VMWare Message Listener started.");
     }
 
     /**
@@ -112,6 +114,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
     }
 
     public void processPacket(Packet packet) {
+        sfLog().info("VMWare Message Listener: Received packet: " + packet);
         // get the extension
         XMPPEventExtension ext = (XMPPEventExtension) packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
         if (ext != null)
