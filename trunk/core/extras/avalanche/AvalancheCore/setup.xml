@@ -212,6 +212,8 @@
         <include name="sf-quartz*.jar" />
         <include name="ant*.jar" />
         <include name="ant-launcher*.jar" />
+        <include name="sf-vmware*.jar" />
+        <include name="sf-xmpp*.jar" />
       </fileset>
     </copy>
 

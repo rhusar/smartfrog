@@ -36,6 +36,7 @@
   <property file="build.properties"/>
   <!--<property file="setup.properties"/>-->
   <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true" />
   <property name="root.dir" location="../../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
@@ -182,7 +183,7 @@
 
   <target name="sfXMPPClient" depends="ready-to-jar">
     <jar jarfile="${dist.dir}/lib/client/sfXmppClient.jar" basedir="${build.classes.dir}"
-        includes="**/client/monitor/xmpp/**,**/shared/xmpp/**"/>
+        includes="**/client/monitor/**,**/shared/xmpp/**,**/shared/handlers/XMPPPacketHandler.class" excludes="**/client/monitor/ganglia/**"/>
   </target>
 
   <target name="shared" depends="ready-to-jar">
