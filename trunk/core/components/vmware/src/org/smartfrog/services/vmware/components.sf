@@ -22,8 +22,15 @@ VMWareMessageListener extends Prim {
 }
 
 sfConfig extends Compound {
+
     manager extends VMWareServerManager;
-    listener extends XmppListener;
+
+    listener extends XmppListener {
+        server (ENVPROPERTY AVALANCHE_EVENT_SERVER);
+        login "avala-prj-2.hpl.hp.com";
+        password "avala-prj-2.hpl.hp.com";
+    }
+
     vmMessageListener extends VMWareMessageListener {
         vmServerManager LAZY PARENT:manager;
         listener LAZY PARENT:listener;
