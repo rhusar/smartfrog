@@ -370,7 +370,7 @@ with env.SFHOME set to the directory into which SmartFrog is distributed
   <!-- ========================================================== -->  
   <target name="install" depends="clean, dist" if="env.SFHOME" description="Copy jar files to the SmartFrog distribution directory">    
 	<copy todir="${core.smartfrog.lib}" failonerror="false">
-         <fileset dir="${basedir}" includes="*.jar, **/*.jar"/>
+         <fileset dir="${dist.lib.dir}" includes="*.jar, **/*.jar"/>
     </copy>  	
   </target>		
 
