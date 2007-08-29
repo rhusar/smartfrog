@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+
+<!--
+/** (C) Copyright Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<project name="ant" default="dist" basedir=".">
+
+<description>
+Introduction
+============
+The build script for SmartFrog Ant component.
+To run the build script ant 1.6.5 must be installed
+and ant executable should be in the system path.
+
+Installing the build tools
+==========================
+Please go though the installation guide and install ant 1.6.5 or later.
+Reference URL:http://ant.apache.org
+
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+  <property name="ivy.enabled" value="true"/>
+  <property name="is.component" value="true"  />
+  <property name="system.tests" value="true"/>
+  <property name="root.dir" location="../../"  />
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <import file="${root.dir}/common.xml"/>
+
+
+
+  <target name="init" depends="common.init">
+    <echo message="==================================================================="/>
+    <echo message="= ${ant.project.name}"/>
+  </target>
+
+
+
+  <!-- =================================================================== -->
+  <!-- Global properties                                                   -->
+  <!-- =================================================================== -->
+  
+
+
+    <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
+     <!-- a list of files for rmic -->
+    <property name="rmitargets" value="${basedir}/rmitargets"/>
+
+
+
+    <!-- Security related files
+    =================================================================
+    <property name="manifestName" value="${private}/sealManifest.mf"/>
+    =================================================================-->
+
+
+  <!-- =================================================================== -->
+  <!--  Release                                                            -->
+  <!-- =================================================================== -->
+  <target name="release"  depends="clean, dist, jdocs" description="Creates clean new release">
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="initbuild"  depends="init">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build.classes.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="initdist" depends="init">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.bin.dir}"/>
+    <mkdir dir="${dist.docs.dir}"/>
+    <mkdir dir="${dist.src.dir}"/>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!--   Copy .sf files to "build" directories                             -->
+  <!-- =================================================================== -->
+  <target name="copySF" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.sf*" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Copy .bat files to "build" directories                            -->
+  <!-- =================================================================== -->
+  <target name="copyBAT" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.bat*" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Copy .html files to "build" directories                           -->
+  <!-- =================================================================== -->
+  <target name="copyHTML" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.htm*" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  Copy Gif files to "build" directories                              -->
+  <!-- =================================================================== -->
+  <target name="copyGif" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.gif" />
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copylibs" depends="initdist">
+    <copy todir="${dist.lib.dir}">
+      <fileset dir="${lib}">
+        <include name="**/*.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+
+
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copybins">
+    <copy todir="${dist.bin.dir}">
+      <fileset dir="${bin.dir}">
+        <include name="**/*" />
+        <exclude name="**/*.bak" />
+        <exclude name="**/tools" />
+      </fileset>
+    </copy>
+   <chmod dir="${dist.bin.dir}"
+          perm="ugo+rx"
+          excludes="**/*.ico, **/*.ini, **/*.sf*"/>
+  </target>
+
+
+
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copydocs" depends="initdist">
+    <copy todir="${dist.docs.dir}">
+      <fileset dir="${docs}">
+        <include name="**/*.pdf, **/*.htm*" />
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!--  BUILD                                                              -->
+  <!-- =================================================================== -->
+
+  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML"
+      description="Recompile and create all packages"/>
+
+  <!-- =================================================================== -->
+  <!--  Jar Files                                                          -->
+  <!-- =================================================================== -->
+
+  <!--  sfAnubis.jar                                               -->
+  <target name="jar" depends="build">
+    <jar jarfile="${dist.lib.dir}/sf${Name.System}.jar"
+         basedir="${build.classes.dir}"
+	 includes="**/services/${Name.System}/**"/>
+     <mkdir dir="build/dist/lib"/>
+     <copy file="${dist.lib.dir}/sf${Name.System}.jar" todir="build/dist/lib"/>
+     <copy todir="build/dist/lib">
+	     <fileset dir="lib">
+		     <include name="**/*.jar"/>
+	     </fileset>
+     </copy>
+  </target>
+
+
+  <target name="jars" depends="initdist, jar"/>
+  <!-- =================================================================== -->
+  <!-- Initialization path for SF Libs                                     -->
+  <!-- =================================================================== -->
+  <path id="smartfrog.run.class.path">
+       <pathelement location="${core.smartfrog.lib}/smartfrog.jar"/>
+       <pathelement location="${core.smartfrog.lib}/sfServices.jar"/>
+       <pathelement location="${core.smartfrog.lib}/sfExamples.jar"/>
+       <pathelement location="${lib.dir}/ant.jar"/>
+  </path>
+
+
+  <!-- =================================================================== -->
+  <!--  DIST                                                               -->
+  <!-- =================================================================== -->
+  <!--target name="dist"
+    depends="build,initdist,jars,copylibs,copybins,copydocs,sfParseTest"
+    description="Prepares distribution package">
+  </target-->
+
+	<target name="dist" depends="common.dist , jdocs" description="create the jar files">
+	 <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy> 
+	<copy todir = "${dist.src.dir}">
+		    <fileset dir ="${src.dir}">
+		        <include name="**/examples/**"/>
+		    </fileset>
+	         </copy>
+	<copy todir = "${dist.doc.dir}">
+             <fileset dir ="${doc.dir}" />
+        </copy>  
+	 <!--antcall target="copybins"/-->
+	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
+	  <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+	</target>
+
+
+  <!-- =================================================================== -->
+  <!-- a clean distribution                                               -->
+  <!-- =================================================================== -->
+  <target name="fromclean" depends="clean,dist"/>
+
+    <!-- =================================================================== -->
+    <!-- sfParse parsertargets                                                -->
+    <!-- =================================================================== -->
+    <target name="sfParseTest"  depends="build,jars">
+      <java classname="org.smartfrog.SFParse"
+          failonerror="true" fork="true"
+          classpathref="smartfrog.run.class.path">
+        <arg value="-R"/>
+        <!--<arg value="-r"/> -->
+        <arg value="-q"/>
+        <arg value="-f"/>
+        <arg file="parsertargets"/>
+     </java>
+    </target>
+
+</project>
+
+<!-- End of file -->
+

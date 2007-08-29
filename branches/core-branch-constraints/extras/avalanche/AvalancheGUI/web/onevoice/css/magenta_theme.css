@@ -1,0 +1,177 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+
+
+
+/* Tabs */
+div.tabOff {
+	background-color:#CC6699;
+	background-image:url(../images/themes/magenta/tab_right.gif);
+	background-position:top right;
+	background-repeat:no-repeat;
+}
+div.secondaryTabSet div.tabOff {
+	background-color:#CC6699;
+	background-image:url(../images/themes/magenta/tab_secondary_right.gif);
+	background-position:top right;
+	background-repeat:no-repeat;
+}
+
+
+button.hpButton,
+button.hpButtonSmall,
+button.hpButtonVerySmall,
+input.hpButton,
+input.hpButtonSmall,
+input.hpButtonVerySmall {
+	background-color: #CC6699;
+}
+div.bEmphasized button,
+div.bEmphasized input,
+div.bEmphasized submit {
+	background-color:#A30051;
+	color:#fff;
+}
+
+/* these are the right and bottom edge colors for the various states */
+div.bWrapperUp,
+div.bWrapperUp div{
+	background-color:#9D4470;
+}
+div.bWrapperDown,
+div.bWrapperDown div{
+	background-color:#7A003D;
+}
+div.bEmphasized,
+div.bEmphasized div{
+	background-color:#7A003D;
+}
+div.bWrapperDisabled,
+div.bWrapperDisabled div{
+	background-color:#ADADAD;
+}
+div.bWrapperOver,
+div.bWrapperOver div{
+	background-color:#A30051;
+}
+
+/* these are the background colors for the button face states. */
+div.bWrapperOver button,
+div.bWrapperOver input,
+div.bWrapperOver submit {
+	background-color:#CC0066;
+	color:#fff;
+}
+div.bWrapperDown button,
+div.bWrapperDown input,
+div.bWrapperDown submit {
+	background-color:#A30051;
+	color:#fff;
+}
+div.bWrapperDisabled button,
+div.bWrapperDisabled input,
+div.bWrapperDisabled submit {
+	background-color:#c1c1c1;
+	color:#fff;
+}
+
+
+div.treeOpen div.treeDisclosure,
+div.treeOpenSelected div.treeDisclosure {
+	background-image:url(../images/themes/magenta/button_tree_contract.gif);
+}
+div.treeClosed div.treeDisclosure,
+div.treeClosedSelected div.treeDisclosure {
+	background-image:url(../images/themes/magenta/button_tree_expand.gif);
+}
+div.treeDisclosure{
+	background-repeat:no-repeat;
+}
+
+
+
+
+
+
+td.dropdownNavMainCell {
+	background-color:#CC6699;
+	width:100%;
+}
+td.dropdownNavRightBorder {
+	background-color:#CC0066;
+	vertical-align:top;
+}
+td.dropdownNavBottomBorder {
+	background-color:#CC0066;
+}
+
+ul.dropdownMenu {
+	border:1px solid #CC0066;
+}
+
+div.dropdownMenuItemChecked {
+	background:url(../images/themes/magenta/navbar_checkbox.gif);
+}
+div.globalNavTrigger {
+	background-color:#CC6699;
+}
+li.subMenuTrigger {
+	background:url(../images/themes/magenta/navbar_parent_bg.gif);
+	background-position:right;
+	background-repeat:no-repeat;
+}
+li.subMenuTriggerOver {
+	background:url(../images/themes/magenta/navbar_parent_bg_over.gif);
+	background-position:right;
+	background-repeat:no-repeat;
+}
+div.globalNavTrigger {
+	background:url(../images/themes/magenta/navbar_global_trigger_bg.gif);
+	background-position:right;
+	background-repeat:no-repeat;
+}
+div.globalNavTriggerOver {
+	background:url(../images/themes/magenta/navbar_global_trigger_over_bg.gif);
+	background-position:right;
+	background-repeat:no-repeat;
+}
+
+
+
+tr.treeTableTitleRowOpen div.treeControl {		
+	background:transparent;
+	background-image:url(../images/themes/magenta/button_tree_contract.gif);
+	background-position: 0px 1px;
+	background-repeat:no-repeat;
+}
+tr.treeTableTitleRowClosed div.treeControl {		
+	background:transparent;
+	background-image:url(../images/themes/magenta/button_tree_expand.gif);
+	background-position: 0px 1px;
+	background-repeat:no-repeat;
+}
+
+table.applicationMastheadSmall,
+table.applicationMastheadSmall td,
+table.applicationMastheadLarge,
+table.applicationMastheadLarge td {
+	background-color:#CC0066;
+}
