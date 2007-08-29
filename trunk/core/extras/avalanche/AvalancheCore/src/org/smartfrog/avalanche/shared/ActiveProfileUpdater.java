@@ -162,50 +162,53 @@ public class ActiveProfileUpdater {
                         XmlString str = type.insertNewVmMasterCopy(0);
                         str.setStringValue(s);
                     }
-                } else {
-                    if (strVMPath != null) {
-                        if (ext.getPropertyBag().get("vmcmd").equals("list")) {
-                            // a list command has been sent and responded to
-                            // the response contains the list of running
-                            // machines divided by '\n'
+                } else if (strCommand.equals("list")) {
+                    // a list command has been sent and responded to
+                    // the response contains the list of running
+                    // machines divided by '\n'
 
-                            // clear the old entries
-                            while (type.getVmStateArray().length > 0)
-                                type.removeVmState(0);
+                    // clear the old entries
+                    while (type.getVmStateArray().length > 0)
+                        type.removeVmState(0);
 
-                            // add the new data
-                            String[] strMachines = strResponse.split("\n");
-                            for (String s : strMachines) {
-                                if (s.equals(""))
-                                        continue;
+                    // add the new data
+                    String[] strMachines = strResponse.split("\n");
+                    for (String s : strMachines) {
+                        if (s.equals(""))
+                                continue;
 
-                                VmStateType newType = type.addNewVmState();
-                                newType.setVmPath(s);
-                                newType.setVmLastCmd("list");
-                                newType.setVmResponse("");
-                            }
+                        VmStateType newType = type.addNewVmState();
+                        newType.setVmPath(s);
+                        newType.setVmLastCmd("list");
+                        newType.setVmResponse("success");
+                    }
+                } else if (strCommand.equals("delete")) {
+                    // find the entry
+                    for (int i = 0; i < type.getVmStateArray().length; i++) {
+                        VmStateType t = type.getVmStateArray()[i];
+                        if (t.getVmPath().equals(strVMPath)) {
+                            type.removeVmState(i);
+                            break;
                         }
                     }
-                    else
-                    {
-                        // find the appropriate type
-                        boolean bFound = false;
-                        for (VmStateType t : type.getVmStateArray()) {
-                            if (t.getVmPath().equals(strVMPath))
-                            {
-                                bFound = true;
-                                t.setVmLastCmd(strCommand);
-                                t.setVmResponse(strResponse);
-                            }
-                        }
-                        if (!bFound)
+                } else if (strVMPath != null) {
+                    // find the appropriate type
+                    boolean bFound = false;
+                    for (VmStateType t : type.getVmStateArray()) {
+                        if (t.getVmPath().equals(strVMPath))
                         {
-                            // type not found, create a new one
-                            VmStateType newType = type.addNewVmState();
-                            newType.setVmLastCmd(strCommand);
-                            newType.setVmResponse(strResponse);
-                            newType.setVmPath(strVMPath);
+                            bFound = true;
+                            t.setVmLastCmd(strCommand);
+                            t.setVmResponse(strResponse);
                         }
+                    }
+                    if (!bFound)
+                    {
+                        // type not found, create a new one
+                        VmStateType newType = type.addNewVmState();
+                        newType.setVmLastCmd(strCommand);
+                        newType.setVmResponse(strResponse);
+                        newType.setVmPath(strVMPath);
                     }
                 }
 

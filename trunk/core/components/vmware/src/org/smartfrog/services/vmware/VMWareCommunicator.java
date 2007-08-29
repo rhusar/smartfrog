@@ -12,9 +12,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.vmware;
 
-import java.io.IOException;
-
-
 public class VMWareCommunicator {
 
 

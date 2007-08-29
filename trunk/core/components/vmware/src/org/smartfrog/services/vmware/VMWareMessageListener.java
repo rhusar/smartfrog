@@ -28,6 +28,7 @@ import java.rmi.RemoteException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
+import java.io.File;
 
 public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHandler, Prim {
 
@@ -243,6 +244,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                     {
                         // create a vmware from a master model
                         newExt.getPropertyBag().put("vmresponse", (refServerManager.createCopyOfMaster(ext.getPropertyBag().get("vmmasterpath"), strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put("vmpath", VMWareServerManager.VM_IMAGES_FOLDER + File.separator + strPath);
                     }
                     else if (strCommand.equals("delete")) 
                     {
