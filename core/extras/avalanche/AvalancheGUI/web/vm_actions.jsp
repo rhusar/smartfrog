@@ -31,7 +31,7 @@ For more information: www.smartfrog.org
         // Be able to query ActiveProfile
         ActiveProfileUpdater updater = new ActiveProfileUpdater();
         String strHost = request.getParameter("host");
-        String[] strVMPathes = request.getParameterValues("vmpath");
+        String[] strVMPathes = request.getParameterValues("selectedVM");
 
         try {
             // get the active profile of this machine
@@ -52,17 +52,17 @@ For more information: www.smartfrog.org
                 } else if (strAction.equals("create")) {
                     ServerSetup.sendVMCommand(strHost, strVMPathes[0], request.getParameter("vmmasterpath"), "create");
                 } else if (strAction.equals("delete")) {
-                    for (String s : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, s, null, "delete");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "delete");
                 } else if (strAction.equals("stop")) {
-                    for (String s : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, s, null, "stop");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "stop");
                 } else if (strAction.equals("start")) {
-                    for (String s : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, s, null, "start");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "start");
                 } else if (strAction.equals("suspend")) {
-                    for (String s : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, s, null, "suspend");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "suspend");
                 } else if (strAction.equals("list")) {
                     ServerSetup.sendVMCommand(strHost, null, null, "list");
                     ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
@@ -73,13 +73,15 @@ For more information: www.smartfrog.org
                 } else if (strAction.equals("startvmwareservice")) {
                     ServerSetup.sendVMCommand(strHost, null, null, "startvmwareservice");
                 } else if (strAction.equals("getstate")) {
-                    for (String s : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, s, null, "powerstate");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "powerstate");
                 }
             }
         } catch (Exception e) {
 
         }
+
+        out.write("WTF");
 
         // redirect
         if (request.getParameter("redirect") == null)

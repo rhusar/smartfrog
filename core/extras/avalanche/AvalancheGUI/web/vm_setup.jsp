@@ -72,7 +72,7 @@ For more information: www.smartfrog.org
 <tr>
     <td class="medium" align="right">Name for the VM:</td>
     <td class="medium">
-        <input type="text" name="vmpath" id="host" class="default" />
+        <input type="text" name="selectedVM" id="host" class="default" />
     </td>
 </tr>
 

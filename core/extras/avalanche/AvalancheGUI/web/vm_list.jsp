@@ -57,7 +57,7 @@ For more information: www.smartfrog.org
         <caption>Virtual Machines</caption>
         <thead id="vmListHeader">
             <tr class="captionRow">
-                <th class="checkboxCell"><input id="allvms" onclick="" type="checkbox"/></th>
+                <th class="checkboxCell"><input id="allvms" onclick="selectAllVMs(this)" type="checkbox"/></th>
                 <th class="sorted">Virtual Machine ID</th>
                 <th>Manage</th>
                 <th>Last Command</th>
@@ -69,20 +69,21 @@ For more information: www.smartfrog.org
 
     <br/>
 
+    <script type="text/javascript" language="JavaScript" src="vm_list_ajax.js"></script>
     <div align="center" style="width: 95%;">
         <script language="JavaScript" type="text/javascript">
             <!--
             oneVoiceWritePageMenu("VMList", "footer",
-                        "Start selected VMs",
-                        "javascript:perform('start')",
-                        "Suspend selected VMs",
-                        "javascript:perform('suspend')",
-                        "Stop selected VMs",
-                        "javascript:perform('stop')",
-                        "Get state of selected Vms",
-                        "javascript:perform('getstate')",
                         "Delete selected VMs",
-                        "javascript:perform('delete')");
+                        "javascript:perform('delete', '<%=strHost%>')",
+                        "Get state of selected VMs",
+                        "javascript:perform('getstate', '<%=strHost%>')",
+                        "Stop selected VMs",
+                        "javascript:perform('stop', '<%=strHost%>')",
+                        "Suspend selected VMs",
+                        "javascript:perform('suspend', '<%=strHost%>')",
+                        "Start selected VMs",
+                        "javascript:perform('start', '<%=strHost%>')");
             -->
         </script>
     </div>
@@ -91,7 +92,6 @@ For more information: www.smartfrog.org
 </div>
 </form>
 
-<script type="text/javascript" language="JavaScript" src="vm_list_ajax.js"></script>
 <script language="JavaScript" type="text/javascript">
     <!--
     window.setInterval("updateVmList(\"<%=strHost%>\")", 5000);

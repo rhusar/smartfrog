@@ -199,7 +199,7 @@ function selectAllVMs(sender) {
     }
 }
 
-function perform(action) {
+function perform(action, host) {
     var selectedVMs = getSelected();
 
     if (selectedVMs.length == 0)
@@ -208,7 +208,7 @@ function perform(action) {
         return;
     }
 
-    var target = "vm_actions.jsp?redirect=no&action=" + action;
+    var target = "vm_actions.jsp?redirect=no&action=" + action + "&host=" + host;
     for (var i = 0; i < selectedVMs.length; i++) {
         target = target + "&selectedVM=" + selectedVMs[i];
     }

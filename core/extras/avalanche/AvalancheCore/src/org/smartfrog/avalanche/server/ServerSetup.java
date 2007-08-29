@@ -173,7 +173,7 @@ public class ServerSetup {
         try {
             listenerAdapter.sendEvent(inTargetMachine + "@" + xmppServer, ext);
         } catch (XMPPException e) {
-
+            log.error(e.getMessage());
         }
     }
 

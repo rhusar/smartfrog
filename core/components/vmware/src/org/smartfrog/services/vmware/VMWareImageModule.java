@@ -206,6 +206,50 @@ public class VMWareImageModule {
 //        return STATUS_ERROR;
 //    }
 
+// VMFox code
+//    /**
+//     * Starts the machine. Has to be powered off or suspended.
+//     * @return True if the start command has been given and no error occured, false otherwise.
+//     */
+//    public boolean startUp() {
+//        // only try to start the machine if it's powered off or suspended
+//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
+//                                            false,
+//                                            strImagePath + " start");
+//    }
+//
+//    /**
+//     * Shuts this virtual machine down. Has to be powered on.
+//     * @return True if the shutdown command has been given and no error occured, false otherwise.
+//     */
+//    public boolean shutDown() {
+//        // only try to shutdown if the machine is running
+//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
+//                                            true,
+//                                            strImagePath + " stop");
+//    }
+//
+//    /**
+//     * Suspends the virtual machine. Has to be running.
+//     * @return True if the suspend command has been given and no error occured, false otherwise.
+//     */
+//    public boolean suspend() {
+//        // only try to suspend if the machine is running
+//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
+//                                            true,
+//                                            strImagePath + " suspend");
+//    }
+//
+//    /**
+//     * Resets a virtual machine.
+//     * @return True if the reset command has been given and no error occured, false otherwise.
+//     */
+//    public boolean reset() {
+//        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
+//                                            true,
+//                                            strImagePath + " reset");
+//  }
+
     /**
      * Starts the machine. Has to be powered off or suspended.
      * @return True if the start command has been given and no error occured, false otherwise.
@@ -214,7 +258,7 @@ public class VMWareImageModule {
         // only try to start the machine if it's powered off or suspended
         return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
                                             false,
-                                            strImagePath + " start");
+                                            "start " + strImagePath);
     }
 
     /**
@@ -225,7 +269,7 @@ public class VMWareImageModule {
         // only try to shutdown if the machine is running
         return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
                                             true,
-                                            strImagePath + " stop");
+                                            "stop " + strImagePath);
     }
 
     /**
@@ -236,7 +280,7 @@ public class VMWareImageModule {
         // only try to suspend if the machine is running
         return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
                                             true,
-                                            strImagePath + " suspend");
+                                            "suspend " + strImagePath);
     }
 
     /**
@@ -246,7 +290,7 @@ public class VMWareImageModule {
     public boolean reset() {
         return powerCondExecVMFoxCommand(   POWER_COND_NONE,
                                             true,
-                                            strImagePath + " reset");
+                                            "reset " + strImagePath);
     }
 
 //      VMFox code

@@ -35,8 +35,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     /**
      * The folder where all vm images are stored which are under control of the daemon.
      */
-    private static String VM_IMAGES_FOLDER;
-    private static String VM_MASTER_FOLDER;
+    public static String VM_IMAGES_FOLDER;
+    public static String VM_MASTER_FOLDER;
 
     /**
      * Used to communicate with the vmware server.
