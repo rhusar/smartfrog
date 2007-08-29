@@ -79,7 +79,7 @@ For more information: www.smartfrog.org
             XMLHelper.addTextNode(xdoc, entry, "arch", arch);
 
             // Set status node beneath <host>
-            XMLHelper.addTextNode(xdoc, entry, "arch", Boolean.toString(active));
+            XMLHelper.addTextNode(xdoc, entry, "status", Boolean.toString(active));
 
             // Set last message node beneath <host>
             XMLHelper.addTextNode(xdoc, entry, "lastmsg", lastMsg);

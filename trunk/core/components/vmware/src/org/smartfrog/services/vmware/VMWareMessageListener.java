@@ -20,10 +20,14 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.xmpp.LocalXmppPacketHandler;
 import org.smartfrog.services.xmpp.XmppListenerImpl;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Calendar;
 
 public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHandler, Prim {
 
@@ -120,13 +124,21 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         if (ext != null)
         {
             // use the property bag
-            String strCommand = (String)ext.getPropertyBag().get("command");
-            String strPath = (String)ext.getPropertyBag().get("vmpath");
+            String strCommand = ext.getPropertyBag().get("vmcmd");
+            String strPath = ext.getPropertyBag().get("vmpath");
 
             if (strCommand != null)
             {
                 // extension for the response message
                 XMPPEventExtension newExt = new XMPPEventExtension();
+
+                newExt.setMessageType(MonitoringConstants.VM_MESSAGE);
+                newExt.setTimestamp(String.format("%d", Calendar.getInstance().getTimeInMillis()));
+                try {
+                    newExt.setHost(InetAddress.getLocalHost().getHostName());
+                } catch (UnknownHostException e) {
+                    newExt.setHost(packet.getTo());
+                }
 
                 // fill the response bag
                 newExt.getPropertyBag().put("vmcmd", strCommand);
@@ -160,27 +172,28 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                     }
                     else if (strCommand.equals("list"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", refServerManager.getRunningMachines());
+                        newExt.getPropertyBag().put("vmresponse", refServerManager.getControlledMachines());
                     }
-                    else if (strCommand.equals("toolsstate"))
-                    {
-                        int iState = refServerManager.getToolsState(strPath);
-                        switch (iState)
-                        {
-                            case VMWareImageModule.TOOLS_STATUS_NOT_INSTALLED:
-                                newExt.getPropertyBag().put("vmresponse", "Tools not installed.");
-                                break;
-                            case VMWareImageModule.TOOLS_STATUS_RUNNING:
-                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
-                                break;
-                            case VMWareImageModule.TOOLS_STATUS_UNKNOWN:
-                                newExt.getPropertyBag().put("vmresponse", "Tools state unknown.");
-                                break;
-                            default:
-                                newExt.getPropertyBag().put("vmresponse", "failure");
-                                break;
-                        }
-                    }
+//      VMFox code
+//                    else if (strCommand.equals("toolsstate"))
+//                    {
+//                        int iState = refServerManager.getToolsState(strPath);
+//                        switch (iState)
+//                        {
+//                            case VMWareImageModule.TOOLS_STATUS_NOT_INSTALLED:
+//                                newExt.getPropertyBag().put("vmresponse", "Tools not installed.");
+//                                break;
+//                            case VMWareImageModule.TOOLS_STATUS_RUNNING:
+//                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
+//                                break;
+//                            case VMWareImageModule.TOOLS_STATUS_UNKNOWN:
+//                                newExt.getPropertyBag().put("vmresponse", "Tools state unknown.");
+//                                break;
+//                            default:
+//                                newExt.getPropertyBag().put("vmresponse", "failure");
+//                                break;
+//                        }
+//                    }
                     else if (strCommand.equals("powerstate"))
                     {
                         int iState = refServerManager.getPowerState(strPath);
@@ -226,12 +239,27 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                     {
                         newExt.getPropertyBag().put("vmresponse", (refServerManager.startVMWareServerService() ? "success" : "failure"));
                     }
+                    else if (strCommand.equals("create"))
+                    {
+                        // create a vmware from a master model
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.createCopyOfMaster(ext.getPropertyBag().get("vmmasterpath"), strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("delete")) 
+                    {
+                        // delete a vmware
+                        newExt.getPropertyBag().put("vmresponse", (refServerManager.deleteCopy(strPath) ? "success" : "failure"));
+                    }
+                    else if (strCommand.equals("getmasters"))
+                    {
+                        // list the master copies
+                        newExt.getPropertyBag().put("vmresponse", refServerManager.getMasterImages());
+                    }
                 } catch (RemoteException e) {
                     newExt.getPropertyBag().put("vmresponse", "failure");
                 }
 
                 // send the message
-                refXmppListener.sendMessage("listener", "", "AE", newExt);
+                refXmppListener.sendMessage(packet.getFrom(), "", "AE", newExt);
             }
         }
     }

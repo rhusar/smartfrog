@@ -53,8 +53,10 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         super.sfStart();
         server = sfResolve(ATTR_SERVER, server, true);
         serviceName = sfResolve(ATTR_SERVICE_NAME, server, true);
-        login = sfResolve(ATTR_LOGIN, login, true);
-        password = sfResolve(ATTR_PASSWORD, password, true);
+        if (login == null)
+            login = sfResolve(ATTR_LOGIN, login, true);
+        if (password == null)
+            password = sfResolve(ATTR_PASSWORD, password, true);
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);

@@ -1,4 +1,4 @@
-package org.smartfrog.avalanche.shared.xmpp;
+package org.smartfrog.avalanche.server.monitor.xmpp;
 
 /**
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
@@ -39,8 +39,6 @@ public class XMPPAdapter {
 
     private String xmppServer = "localhost";
 	private int xmppServerPort = default_xmpp_port_ssl;
-
-    private String xmppListenerName = "listener";
 
     private EventListener listener = new EventListener();
 
@@ -126,15 +124,6 @@ public class XMPPAdapter {
         this.xmppServerPort = xmppServerPort;
 	}
 
-    // Get and set XMPP listener name
-    public String getXmppListenerName() {
-		return xmppListenerName;
-	}
-
-	public void setXmppListenerName(String xmppListenerName) {
-		this.xmppListenerName = xmppListenerName;
-	}
-
     private String getCurrentServerInfo() {
         return "\"" + xmppServer + ":" + xmppServerPort + "\"";
     }
@@ -206,7 +195,7 @@ public class XMPPAdapter {
 	 * @param event is the event that is encapsulated and send to the Avalanche listening user.
 	 * @throws XMPPException is thrown if anything went wrong sending the message
 	 */
-	public void sendEvent(MonitoringEvent event) throws XMPPException{
+	public void sendEvent(String recipient, MonitoringEvent event) throws XMPPException{
 		try {
             if (this.getConnection() == null) {
                 this.close();
@@ -214,7 +203,7 @@ public class XMPPAdapter {
                 this.login();
             }
             // Setup and send the event as message
-            Message msg = new Message(xmppListenerName + "@"+ xmppServer, Message.Type.HEADLINE);
+            Message msg = new Message(recipient, Message.Type.HEADLINE);
             msg.setBody("AE");
 			msg.addExtension(new XMPPEventExtension(event));
             log.info("Sending message: " + msg + ". " + this.getCurrentConnectionInfo());

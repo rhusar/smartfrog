@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.shared.xmpp;
+package org.smartfrog.avalanche.server.monitor.xmpp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +22,6 @@ import org.smartfrog.avalanche.shared.HostStateEventDefaultImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class listens for Liveness status of nodes, when it receives a liveness

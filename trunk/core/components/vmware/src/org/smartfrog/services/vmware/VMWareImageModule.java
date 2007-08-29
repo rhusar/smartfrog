@@ -74,11 +74,43 @@ public class VMWareImageModule {
 
         // validate the path
         File file = new File(inImagePath);
-        if (file.exists() && file.isFile())
+        if (file.exists() && file.getName().endsWith(".vmx"))
             newModule = new VMWareImageModule(inImagePath);
 
         return newModule;
     }
+
+//      VMFox code
+//          to be used when VMFox is running correctly
+//    /**
+//     * Executes a command (or doesn't) based on the power state conitions.
+//     * If no condition is required use: powerCondExecVMFoxCommand(POWER_COND_NONE, true, [command]);
+//     * @param inFlags The flags which are required. (Use POWER_STATUS_ flags and combine them bitwise.)
+//     * @param inStrict Determines whether all bits of the flag have to be set (true) or not (false).
+//     * @param inCommand The command which should be executed.
+//     * @return True if it was executed and no error occured, false otherwise.
+//     */
+//    private boolean powerCondExecVMFoxCommand(int inFlags, boolean inStrict, String inCommand)
+//    {
+//        // check the flags
+//        int iResult = getPowerState() & inFlags;
+//
+//        // determine wether the conditions have been fulfilled
+//        if ((inStrict ? (iResult == inFlags) : (iResult != 0)))
+//        {
+//            try {
+//                String strOutput = vmComm.execVMcmd(inCommand);
+//
+//                if (strOutput.length() == 0)
+//                    return true;
+//                else
+//                    strLastError = strOutput;
+//            } catch (IOException e) {
+//                // TODO: error logging
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Executes a command (or doesn't) based on the power state conitions.
@@ -97,14 +129,14 @@ public class VMWareImageModule {
         if ((inStrict ? (iResult == inFlags) : (iResult != 0)))
         {
             try {
-                String strOutput = vmComm.execVMcmd(inCommand);
+                String strOutput = vmComm.execVMcmd("vmrun", inCommand);
 
                 if (strOutput.length() == 0)
                     return true;
                 else
                     strLastError = strOutput;
-            } catch (IOException e) {
-                // TODO: error logging
+            } catch (Exception e) {
+                return false;
             }
         }
         return false;
@@ -118,39 +150,61 @@ public class VMWareImageModule {
         return strLastError;
     }
 
-    /**
-     * @return the powerstate of this machine
-     */
+//      VMFox code
+//          to be used when VMFox is running correctly
+//    /**
+//     * @return the powerstate of this machine
+//     */
+//    public int getPowerState()
+//    {
+//        try {
+//            String strOutput = vmComm.execVMcmd(strImagePath + " powerstate");
+//
+//            // parse the output status id
+//            return Integer.parseInt(strOutput);
+//        } catch (IOException e) {
+//            // TODO: error logging
+//        }
+//
+//        return STATUS_ERROR;
+//    }
+
     public int getPowerState()
     {
         try {
-            String strOutput = vmComm.execVMcmd(strImagePath + " powerstate");
+            // execute the command
+            String strOutput = vmComm.execVMcmd("vmware-cmd", strImagePath + " getstate");
 
-            // parse the output status id
-            return Integer.parseInt(strOutput);
-        } catch (IOException e) {
-            // TODO: error logging
+            if (strOutput.trim().endsWith("on"))
+                return POWER_STATUS_POWERED_ON;
+            else if (strOutput.trim().endsWith("off"))
+                return POWER_STATUS_POWERED_OFF;
+            else
+                // don't know which are the other output strings
+                return STATUS_ERROR;
+        } catch (Exception e) {
+            return STATUS_ERROR;
         }
-
-        return STATUS_ERROR;
     }
 
-    /**
-     * @return the tools state of this machine
-     */
-    public int getToolsState()
-    {
-        try {
-            String strOutput = vmComm.execVMcmd(strImagePath + " toolsstate");
-
-            // parse the output status id
-            return Integer.parseInt(strOutput);
-        } catch (IOException e) {
-            // TODO: error logging
-        }
-
-        return STATUS_ERROR;
-    }
+//      VMFox code
+//          to be used when VMFox is running correctly
+//    /**
+//     * @return the tools state of this machine
+//     */
+//    public int getToolsState()
+//    {
+//        try {
+//            String strOutput = vmComm.execVMcmd(strImagePath + " toolsstate");
+//
+//            // parse the output status id
+//            return Integer.parseInt(strOutput);
+//        } catch (IOException e) {
+//            // TODO: error logging
+//        }
+//
+//        return STATUS_ERROR;
+//    }
 
     /**
      * Starts the machine. Has to be powered off or suspended.
@@ -195,14 +249,42 @@ public class VMWareImageModule {
                                             strImagePath + " reset");
     }
 
+//      VMFox code
+//          to be used when VMFox is running correctly
+//    /**
+//     * Registers a virtual machine.
+//     * @return True if the register command has been given and no error occured, false otherwise.
+//     */
+//    public boolean registerVM() {
+//        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
+//                                            true,
+//                                            strImagePath + " register");
+//    }
+//
+//    /**
+//     * Unregisters a virtual machine. Has to be shut down or suspended.
+//     * @return True if the unregister command has been given and no error occured, false otherwise.
+//     */
+//    public boolean unregisterVM() {
+//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
+//                                            false,
+//                                            strImagePath + " unregister");
+//    }
+
     /**
      * Registers a virtual machine.
      * @return True if the register command has been given and no error occured, false otherwise.
      */
     public boolean registerVM() {
-        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
-                                            true,
-                                            strImagePath + " register");
+        try {
+            String strOutput = vmComm.execVMcmd("vmware-cmd", "-s register " + strImagePath);
+            if (strOutput.replace("\r","").replace("\n","").trim().endsWith(" = 1"))
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -210,8 +292,14 @@ public class VMWareImageModule {
      * @return True if the unregister command has been given and no error occured, false otherwise.
      */
     public boolean unregisterVM() {
-        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
-                                            false,
-                                            strImagePath + " unregister");
+        try {
+            String strOutput = vmComm.execVMcmd("vmware-cmd", "-s unregister " + strImagePath);
+            if (strOutput.replace("\r","").replace("\n","").trim().endsWith(" = 1"))
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

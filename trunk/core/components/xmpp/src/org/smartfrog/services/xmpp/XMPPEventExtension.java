@@ -26,15 +26,15 @@ import java.util.HashMap;
 public class XMPPEventExtension implements PacketExtension, MonitoringEvent {
 	public static final String namespace = "http://smartfrog.org/avalanche/core/Event/05";
 	public static final String rootElement = "event" ; 
-	private String moduleId ;
-	private String host ;
-	private String moduleState ;
-	private String msg ;
+	private String moduleId = "None";
+	private String host = "None";
+	private String moduleState = "None";
+	private String msg = "None";
 	private Map<String, String> propertyBag = new HashMap<String, String>();
-	private String instanceName = null;
-	private int messageType ; 
-	private String timestamp ; 
-	private String lastAction ; 
+	private String instanceName = "None";
+	private int messageType = -1; 
+	private String timestamp = "None";
+	private String lastAction = "None";
 
 	/**
 	 * Default constructor

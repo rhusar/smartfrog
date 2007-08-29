@@ -11,7 +11,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/xmpp/components.sf"
+#include "/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf"
 
 VMWareServerManager extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareServerManager";
@@ -25,10 +25,10 @@ sfConfig extends Compound {
 
     manager extends VMWareServerManager;
 
-    listener extends XmppListener {
+    listener extends AvlXmppListener {
         server (ENVPROPERTY AVALANCHE_EVENT_SERVER);
-        login "avala-prj-2.hpl.hp.com";
-        password "avala-prj-2.hpl.hp.com";
+        login "x";
+        password "x";
     }
 
     vmMessageListener extends VMWareMessageListener {

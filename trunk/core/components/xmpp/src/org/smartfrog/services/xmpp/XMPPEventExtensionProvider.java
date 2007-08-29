@@ -49,24 +49,27 @@ public class XMPPEventExtensionProvider implements PacketExtensionProvider {
                 } else if (strName.equals("propertyBag")) {
                     // extra parsing of the property bag needed
                     iNext = xmlPullParser.next();
-                    if (iNext == XmlPullParser.START_TAG) {
-                        iNext = xmlPullParser.next();
-                        while (iNext != XmlPullParser.END_TAG) {
-                            // get the name of the element
-                            String strTmp = xmlPullParser.getName();
+                    while (iNext == XmlPullParser.START_TAG) {
+                        // get the name of the element
+                        String strTmp = xmlPullParser.getName();
 
-                            // put it into the property bag
-                            ext.getPropertyBag().put(strTmp, getText(xmlPullParser, strTmp));
+                        // get the text
+                        ext.getPropertyBag().put(strTmp, getText(xmlPullParser, strTmp));
 
+                        // peek the next tag
+                        iNext = xmlPullParser.nextTag();
+                    }
+
+                    // check the closing of the property bag
+                    if (iNext == XmlPullParser.END_TAG)
+                        if (xmlPullParser.getName().equals(strName)) {
                             // peek the next token
                             iNext = xmlPullParser.next();
+                            continue;
                         }
-                    } else if (iNext == XmlPullParser.END_TAG) {
-                        if (!xmlPullParser.getName().equals(strName)) {
-                            // closing tag found but it wasn't "</propertyBag>
-                            throw new XmlPullParserException("Wrong closing tag found. \"</propertyBag>\" expected but \"</" + xmlPullParser.getName() + ">\" found.");
-                        }
-                    } else throw new XmlPullParserException("Error while parsing \"propertyBag\". Unexpected token.");
+
+                    // error
+                    throw new XmlPullParserException("Unexpected closing tag found. \"</propertyBag>\" expected.");
                 } else throw new XmlPullParserException("Unexpected token found: " + strName);
 
                 // peek the next token

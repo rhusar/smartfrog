@@ -22,6 +22,7 @@
       <xs:element name="messagesHistory" type="this:messageType" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="moduleState" type="this:moduleStateType" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="vmState" type="this:vmStateType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="vmMasterCopy" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
@@ -52,6 +53,5 @@
       <xs:element name="vmResponse" type="xs:string" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
-
 </xs:schema>
 

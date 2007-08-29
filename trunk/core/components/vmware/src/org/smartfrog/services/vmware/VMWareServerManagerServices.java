@@ -66,18 +66,20 @@ public interface VMWareServerManagerServices extends Remote {
      */
     public int getPowerState(String inVMPath) throws RemoteException;
 
-    /**
-     * Gets the tools state of a virtual machine.
-     * @param inVMPath The full path to the machine.
-     * @return
-     */
-    public int getToolsState(String inVMPath) throws RemoteException;
+//      VMFox code
+//          to be used when VMFox is running correctly    
+//    /**
+//     * Gets the tools state of a virtual machine.
+//     * @param inVMPath The full path to the machine.
+//     * @return
+//     */
+//    public int getToolsState(String inVMPath) throws RemoteException;
 
     /**
-     * Gets the running virtual machines.
+     * Gets the controlled virtual machines.
      * @return
      */
-    public String getRunningMachines() throws RemoteException;
+    public String getControlledMachines() throws RemoteException;
 
     /**
      * Shuts down the VMWare Server and all running machines as well.
@@ -90,4 +92,28 @@ public interface VMWareServerManagerServices extends Remote {
      * @return
      */
     public boolean startVMWareServerService() throws RemoteException;
+
+    /**
+     * Return a list of the vmware images in the master folder.
+     * @return
+     * @throws RemoteException
+     */
+    public String getMasterImages() throws RemoteException;
+
+    /**
+     * Create a new instance of a master copy.
+     * @param inVMMaster
+     * @param inVMCopyName
+     * @return
+     * @throws RemoteException
+     */
+    public boolean createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException;
+
+    /**
+     * Delete a instance of a master copy.
+     * @param inVMPath
+     * @return
+     * @throws RemoteException
+     */
+    public boolean deleteCopy(String inVMPath) throws RemoteException;
 }

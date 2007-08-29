@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.shared.xmpp;
+package org.smartfrog.avalanche.server.monitor.xmpp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,12 +19,8 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
-import org.smartfrog.services.xmpp.MonitoringEvent;
-import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.xmpp.XMPPEventExtensionProvider;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Iterator;

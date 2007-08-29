@@ -5,6 +5,6 @@
 
 "HOST localhost:rootProcess:cpumonitor":DEPLOY:org/smartfrog/services/quartz/monitor/monitor.sf::localhost:
 
-"HOST localhost:rootProcess:avalancheEventService":DEPLOY:org/smartfrog/avalanche/client/monitor/xmpp/AvalancheEventService.sf::localhost:
+//"HOST localhost:rootProcess:avalancheEventService":DEPLOY:/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf::localhost:
 
 "HOST localhost:rootProcess:vmware":DEPLOY:org/smartfrog/services/vmware/components.sf::localhost:
