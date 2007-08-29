@@ -9,14 +9,24 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-#include "/org/smartfrog/components.sf"
 
-AvalancheEventService extends Prim{
-	sfProcessComponentName "avalancheEventService";
-	sfClass "org.smartfrog.avalanche.client.monitor.xmpp.SFAvalancheEventService";
+#include "/org/smartfrog/services/xmpp/components.sf"
 
-	avalancheListenerUserId "avl" ;
-}
+AvlXmppListener extends XmppComponent {
 
-sfConfig extends AvalancheEventService{
+    xmppListenerSchema extends Schema {
+        presence extends Boolean {
+            description "should the component register itself as present";
+        }
+        reconnect extends Boolean;
+        offlineMinutesTimeout extends Integer {
+            description "time in minutes for a timeout before it is reported";
+        }
+
+    }
+    sfClass "org.smartfrog.avalanche.client.monitor.xmpp.AvlXMPPListener";
+    presence true;
+    reconnect true;
+    //a lot of servers go down. To be robust you have to retry a lot.
+    offlineMinutesTimeout 60;
 }

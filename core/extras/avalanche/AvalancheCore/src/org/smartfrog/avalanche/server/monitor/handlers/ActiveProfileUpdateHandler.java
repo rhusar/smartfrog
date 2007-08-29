@@ -16,9 +16,11 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.avalanche.server.ActiveProfileManager;
 import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
+import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.XMPPException;
 
 /**
  * This is a server side handler, this updates the active profile of a host
@@ -29,11 +31,12 @@ import org.jivesoftware.smack.packet.Packet;
  * @author sanjaydahiya
  */
 public class ActiveProfileUpdateHandler implements XMPPPacketHandler {
-    ActiveProfileManager profileManager;
+    private ActiveProfileManager profileManager;
+    private XMPPAdapter refXMPPAdapter;
     private static Log log = LogFactory.getLog(ActiveProfileUpdateHandler.class);
 
-    public ActiveProfileUpdateHandler() {
-
+    public ActiveProfileUpdateHandler(XMPPAdapter inAdapter) {
+        refXMPPAdapter = inAdapter;
     }
     
     /**

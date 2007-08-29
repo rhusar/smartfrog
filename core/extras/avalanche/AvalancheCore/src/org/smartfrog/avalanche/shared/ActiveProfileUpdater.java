@@ -19,6 +19,7 @@ import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xmlbeans.XmlString;
 
 /**
  * Retrieves, saves and modifies the ActiveProfile of a given host
@@ -136,72 +137,86 @@ public class ActiveProfileUpdater {
             while (type.getMessagesHistoryArray().length > XMPP_HISTORY_LIMIT)
                 type.removeMessagesHistory(0);
 
-            // add a new message
-            MessageType newMsg = type.addNewMessagesHistory();
-            newMsg.setTime(ext.getTimestamp());
-            newMsg.setMsg("VM: " + ext.getPropertyBag().get("vmpath") +
-                            " Command: " + ext.getPropertyBag().get("vmcmd") + 
-                            " Response: " + ext.getPropertyBag().get("vmresponse"));
+            String strCommand = ext.getPropertyBag().get("vmcmd");
+            String strResponse = ext.getPropertyBag().get("vmresponse");
+            String strVMPath = ext.getPropertyBag().get("vmpath");
 
-            if (ext.getPropertyBag().get("vmpath").equals("")) {
-                if (ext.getPropertyBag().get("vmcmd").equals("list")) {
-                    // a list command has been sent and responded to
-                    // the response contains the list of running
-                    // machines divided by '\n'
+            if (strCommand != null) {
+                if (strCommand.equals("create")) {
+                    if (strResponse.equals("success")) {
+                        // create a new type
+                        VmStateType vst = type.addNewVmState();
+                        vst.setVmLastCmd(strCommand);
+                        vst.setVmPath(strVMPath);
+                        vst.setVmResponse(strResponse);
+                    }
+                } else if (strCommand.equals("getmasters")) {
+                    // delete the old masters list
+                    while (type.getVmMasterCopyArray().length > 0)
+                        type.removeVmMasterCopy(0);
 
-                    // get the machines
-                    String[] strMachines = ((String)ext.getPropertyBag().get("vmresponse")).split("\n");
+                    // add the new ones
+                    String[] strMasters = strResponse.split("\n");
+                    for (String s : strMasters)
+                    {
+                        XmlString str = type.insertNewVmMasterCopy(0);
+                        str.setStringValue(s);
+                    }
+                } else {
+                    if (strVMPath != null) {
+                        if (ext.getPropertyBag().get("vmcmd").equals("list")) {
+                            // a list command has been sent and responded to
+                            // the response contains the list of running
+                            // machines divided by '\n'
 
-                    // indicator whether a machine already exists or not
-                    boolean bFound;
-                    for (String s : strMachines) {
-                        if (s.equals(""))
-                                continue;
-                        
-                        // reset the indicator
-                        bFound = false;
+                            // clear the old entries
+                            while (type.getVmStateArray().length > 0)
+                                type.removeVmState(0);
 
-                        // search the profile
-                        for (VmStateType t : type.getVmStateArray()) {
-                            if (t.getVmPath().equals(s)) {
-                                bFound = true;
-                                break;
+                            // add the new data
+                            String[] strMachines = strResponse.split("\n");
+                            for (String s : strMachines) {
+                                if (s.equals(""))
+                                        continue;
+
+                                VmStateType newType = type.addNewVmState();
+                                newType.setVmPath(s);
+                                newType.setVmLastCmd("list");
+                                newType.setVmResponse("");
                             }
                         }
-
+                    }
+                    else
+                    {
+                        // find the appropriate type
+                        boolean bFound = false;
+                        for (VmStateType t : type.getVmStateArray()) {
+                            if (t.getVmPath().equals(strVMPath))
+                            {
+                                bFound = true;
+                                t.setVmLastCmd(strCommand);
+                                t.setVmResponse(strResponse);
+                            }
+                        }
                         if (!bFound)
                         {
-                            // machine hasn't been found, add it
+                            // type not found, create a new one
                             VmStateType newType = type.addNewVmState();
-                            newType.setVmPath(s);
-                            newType.setVmLastCmd("list");
-                            newType.setVmResponse("");
+                            newType.setVmLastCmd(strCommand);
+                            newType.setVmResponse(strResponse);
+                            newType.setVmPath(strVMPath);
                         }
                     }
                 }
-            }
-            else
-            {
-                // find the appropriate type
-                boolean bFound = false;
-                for (VmStateType t : type.getVmStateArray()) {
-                    if (t.getVmPath().equals(ext.getPropertyBag().get("vmpath")))
-                    {
-                        bFound = true;
-                        t.setVmLastCmd((String)ext.getPropertyBag().get("vmcmd"));
-                        t.setVmResponse((String)ext.getPropertyBag().get("vmresponse"));
-                    }
-                }
-                if (!bFound)
-                {
-                    // type not found, create a new one
-                    VmStateType newType = type.addNewVmState();
-                    newType.setVmLastCmd((String)ext.getPropertyBag().get("vmcmd"));
-                    newType.setVmResponse((String)ext.getPropertyBag().get("vmresponse"));
-                    newType.setVmPath((String)ext.getPropertyBag().get("vmpath"));
-                }
-            }
 
+                // add a new message
+                MessageType newMsg = type.addNewMessagesHistory();
+                newMsg.setTime(ext.getTimestamp());
+                newMsg.setMsg("VM Path: " + strVMPath +
+                                ", Command: " + strCommand +
+                                ", Response: " + strResponse);
+            }
+            
             // store the profile
             storeActiveProfile(type);
         }

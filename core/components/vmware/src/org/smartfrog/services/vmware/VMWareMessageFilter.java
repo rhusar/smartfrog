@@ -19,18 +19,6 @@ import org.jivesoftware.smack.packet.Message;
 
 public class VMWareMessageFilter extends MessageFilter {
     public boolean accept(Packet packet) {
-        // is it a xmpp message?
-        if (packet instanceof Message)
-        {
-            // try to get the extension
-            XMPPEventExtension ext = (XMPPEventExtension) packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
-            if (ext != null)
-            {
-                if (ext.getPropertyBag().get("vmpath") != null)
-                    return true;
-            }
-        }
-
-        return false;
+        return (packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace) instanceof XMPPEventExtension);
     }
 }

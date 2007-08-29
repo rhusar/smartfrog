@@ -110,6 +110,8 @@
     <mkdir dir="${avalanche.home}/smartfrog/boot"/>
     <mkdir dir="${avalanche.home}/smartfrog/boot/work"/>
     <mkdir dir="${avalanche.home}/smartfrog/dist"/>
+    <mkdir dir="${avalanche.home}/smartfrog/dist/vmmasterimages"/>
+    <mkdir dir="${avalanche.home}/smartfrog/dist/vmcopyimages"/>
     <mkdir dir="${avalanche.home}/smartfrog/lib"/>
     <mkdir dir="${avalanche.home}/smartfrog/dist/private"/>
     <mkdir dir="${avalanche.home}/smartfrog/dist/private/host1"/>
@@ -185,6 +187,9 @@
     <mkdir dir="${avalanche.home}/temp"/>
     <mkdir dir="${avalanche.home}/temp/smartfrog"/>
     <mkdir dir="${avalanche.home}/temp/smartfrog/dist"/>
+    <mkdir dir="${avalanche.home}/temp/smartfrog/dist/vmmasterimages"/>
+    <mkdir dir="${avalanche.home}/temp/smartfrog/dist/vmcopyimages"/>
+    
     <!--Copy smartFrog jars-->
     <copy todir="${avalanche.home}/temp/smartfrog/dist">
       <fileset dir="${smartfrog.home}/dist"/>

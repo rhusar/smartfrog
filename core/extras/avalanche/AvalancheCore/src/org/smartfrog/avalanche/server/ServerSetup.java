@@ -15,10 +15,15 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.avalanche.server.monitor.handlers.*;
-import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Wrapper class for Avalanche server initialization and shutdown. This can be used independently 
@@ -61,9 +66,9 @@ import org.smartfrog.sfcore.logging.LogFactory;
  *
  */
 public class ServerSetup {
-    private String xmppServer = "localhost";
+    private static String xmppServer = "localhost";
 	private int xmppServerPort = 0;
-
+                                                  
     private String xmppServerAdminUser ;
 	private String xmppServerAdminPassword ; 
 	private String useSSLForXMPP ;
@@ -144,7 +149,35 @@ public class ServerSetup {
 		this.xmppServerPort = xmppServerPort;
 	}
 
-	/**
+    /**
+     * Used by the website to send commands to a host.
+     * @param inTargetMachine
+     * @param inVMPath
+     * @param inCmd
+     */
+    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inMasterVM, String inCmd)
+    {
+        XMPPEventExtension ext = new XMPPEventExtension();
+        try {
+            ext.setHost(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            ext.setHost("");
+        }
+        ext.setMessageType(MonitoringConstants.VM_MESSAGE);
+        ext.getPropertyBag().put("vmcmd", inCmd);
+        if (inVMPath != null)
+            ext.getPropertyBag().put("vmpath", inVMPath);
+        if (inMasterVM != null)
+            ext.getPropertyBag().put("vmmasterpath", inMasterVM);
+
+        try {
+            listenerAdapter.sendEvent(inTargetMachine + "@" + xmppServer, ext);
+        } catch (XMPPException e) {
+
+        }
+    }
+
+    /**
 	 * Starts up Avalanche server. Avalanche server must be installed and @see setAvalancheHome(String)
 	 * should be set properly before calling this method. 
 	 * @throws Exception
@@ -212,7 +245,7 @@ public class ServerSetup {
 
             // TODO: Should be streamlined in the future!
             // Adding MessageHandlers to the handler chain for events coming from client nodes
-            listenerAdapter.addHandler(new ActiveProfileUpdateHandler());
+            listenerAdapter.addHandler(new ActiveProfileUpdateHandler(listenerAdapter));
             // Register the added Handlers as well as the built-in handlers
             listenerAdapter.registerListeners();
 
@@ -259,7 +292,7 @@ public class ServerSetup {
      * Hosts report to the AVL user (messages, presence updates, etc.)
      * @return XMPPAdapter logged in as 'avl'
      */
-    public XMPPAdapter getListenerAdapter(){
+    public static XMPPAdapter getListenerAdapter(){
 		return listenerAdapter ; 
 	}
 	

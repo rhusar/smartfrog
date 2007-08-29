@@ -23,6 +23,7 @@ package org.smartfrog.services.xmpp;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -57,10 +58,6 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     public XmppListenerImpl() throws RemoteException {
     }
 
-
-
-
-
     /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
@@ -72,11 +69,12 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        // add the xmpp event extension provider        
+        ProviderManager.addExtensionProvider(XMPPEventExtension.rootElement, XMPPEventExtension.namespace, new XMPPEventExtensionProvider());
         handlers.add(this);
         reconnect = sfResolve(ATTR_RECONNECT, reconnect, true);
         timeout = sfResolve(ATTR_TIMEOUT, 0, true) * 60000L;
         connectAndRegister();
-
     }
 
     /**
@@ -165,7 +163,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
                 connection = null;
             }
         }
-    }
+    }                                           
 
 
     /**
@@ -250,6 +248,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
     }
 
     private void addHandler(LocalXmppPacketHandler handler) {
+        sfLog().info("Adding handler: " + handler);
         connection.addPacketListener(handler,handler.getFilter());
     }
 

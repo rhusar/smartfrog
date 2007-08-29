@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package org.smartfrog.avalanche.shared.xmpp;
+package org.smartfrog.avalanche.server.monitor.xmpp;
 
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 

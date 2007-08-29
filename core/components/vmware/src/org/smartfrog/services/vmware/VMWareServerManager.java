@@ -17,14 +17,11 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.util.regex.*;
+import java.io.*;
 
 
 // TODO: think of a better approach to error handling when getting an image module failed
@@ -38,7 +35,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     /**
      * The folder where all vm images are stored which are under control of the daemon.
      */
-    private static final String VM_IMAGES_FOLDER = "./VMImages";
+    private static String VM_IMAGES_FOLDER;
+    private static String VM_MASTER_FOLDER;
 
     /**
      * Used to communicate with the vmware server.
@@ -60,6 +58,13 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        // get the vm image folders
+        String strSFHome = System.getenv("SFHOME");
+        if (strSFHome != null) {
+            VM_IMAGES_FOLDER = strSFHome + File.separator + "vmcopyimages";
+            VM_MASTER_FOLDER = strSFHome + File.separator + "vmmasterimages";
+        }
+        else throw new SmartFrogException("Environment variable \"SFHOME\" not set.");
 
         // generate the control modules for the vm images
         generateModulesFromImgFolder();
@@ -101,6 +106,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     VMWareImageModule newImg = VMWareImageModule.createImageModule(curFile.getAbsolutePath());
                     if (newImg != null)
                         listImgModules.add(newImg);
+
+                    // register it with the vm in case some aren't yet
+                    newImg.registerVM();
                 }
         }
     }
@@ -139,6 +147,205 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
         // an error occured
         return false;
+    }
+
+    /**
+     * Return a list of the vmware images in the master folder.
+     * @return
+     * @throws RemoteException
+     */
+    public String getMasterImages() throws RemoteException {
+        String strResult = "";
+
+        // get the files
+        File folder = new File(VM_MASTER_FOLDER);
+        if (folder.exists()) {
+            File[] files = folder.listFiles();
+            for (File f : files) {
+                if (f.getName().endsWith(".vmx")) {
+                    strResult += f.getName() + "\n";
+                }
+            }
+        }
+
+        return strResult;
+    }
+
+    /**
+     * Loads the whole content of a file into a stringbuffer.
+     * @param inFile
+     * @return
+     * @throws Exception
+     */
+    private String loadIntoBuffer(File inFile) throws Exception {
+        // open the file
+        FileInputStream in = new FileInputStream(inFile);
+
+        // set the buffer size
+        byte[] buffer = new byte[in.available()];
+
+        // read the content
+        in.read(buffer);
+
+        // close the file
+        in.close();
+
+        return new String(buffer);
+    }
+
+    /**
+     * Create a new instance of a master copy.
+     *
+     * @param inVMMaster
+     * @param inVMCopyName
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public boolean createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException {
+        String copyVMX;
+        try {
+            // first copy the master .vmx file
+            copyVMX = VM_IMAGES_FOLDER + File.separator + inVMCopyName;
+            if (!copyVMX.endsWith(".vmx"))
+                copyVMX += ".vmx";
+
+            if (copy(VM_MASTER_FOLDER + File.separator + inVMMaster, copyVMX)) {
+                // read all of the .vmx file
+                File fileVMX = new File(copyVMX);
+                String buffer = loadIntoBuffer(fileVMX);
+                String[] strLines = buffer.replace("\r", "").split("\n");
+
+                // extract the name of the new vm
+                String strNewName = fileVMX.getName().replace(".vmx", "");
+
+                // open the vmx file to write the changes
+                FileWriter out = new FileWriter(fileVMX);
+
+                // parse the lines
+                int iHDDIndex = 0;
+                for (String line : strLines) {
+                    if (line.startsWith("scsi") && line.contains(".fileName = ")) {
+                        // get the old name
+                        String strOld = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
+
+                        // in case there are more than one hdd append an index
+                        String strNewHDD = strNewName + iHDDIndex;
+
+                        // replace it
+                        line = line.replace(strOld, strNewHDD + ".vmdk");
+
+                        // copy the .vmdk files
+                        File folder = new File(VM_MASTER_FOLDER);
+                        strOld = strOld.replace(".vmdk", "");
+                        File[] files = folder.listFiles();
+                        for (File f : files) {
+                            if ((f.getName().startsWith(strOld + "-f") && f.getName().endsWith(".vmdk"))) {
+                                // copy the file
+                                if (!copy(f.getPath(), VM_IMAGES_FOLDER + File.separator + f.getName().replace(strOld, strNewHDD)))
+                                    return false;
+                            } else if (f.getName().equals(strOld + ".vmdk")) {
+                                // it's the .vmdk config file
+                                // read it's content
+                                String strBuffer = loadIntoBuffer(f);
+
+                                // replace the old names
+                                strBuffer = strBuffer.replace(strOld, strNewHDD);
+
+                                // write it to the new destination
+                                FileWriter o = new FileWriter(VM_IMAGES_FOLDER + File.separator + f.getName().replace(strOld, strNewHDD));
+                                o.write(strBuffer);
+                                o.close();
+                            }
+                        }
+
+                        ++iHDDIndex;
+                    }
+                    else if (line.startsWith("displayName = ")) {
+                        // replace the display name
+                        line = "displayName = \"" + strNewName + "\"";
+                    }
+                    out.write(line + "\n");
+                }
+
+                // close the vmx file
+                out.close();
+
+                // set execution rights if were using linux
+                if (!System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                    Process ps = Runtime.getRuntime().exec("chmod 755 " + fileVMX.getPath());
+                    ps.waitFor();
+                }
+            }
+            else return false;
+        } catch (Exception e) {
+            sfLog().error("VMWareServerManager createCopyOfMaster failed: " + e.getMessage());
+            return false;
+        }
+
+        // register the file with the vmware server
+        return registerVM(copyVMX);
+    }
+
+    /**
+     * Copies a file.
+     * @param from
+     * @param to
+     * @return
+     */
+    private boolean copy(String from, String to) throws IOException
+    {
+        sfLog().info("VMWareServerManager creating copy. From: " + from + " to: " + to);
+        File fromFile = new File(from);
+        File toFile = new File(to);
+
+        if (fromFile.exists() && fromFile.isFile()) {
+            // create the input stream
+            FileInputStream in = new FileInputStream(fromFile);
+
+            // create the output stream
+            FileOutputStream out = new FileOutputStream(toFile);
+
+            // set the buffer to 4mb
+            byte[] buffer = new byte[4096];
+
+            // copy
+            int len;
+            while ((len = in.read(buffer)) > 0)
+                out.write(buffer, 0, len);
+
+            in.close();
+            out.close();
+
+            return true;
+        }
+        else return false;
+    }
+
+    /**
+     * Delete a instance of a master copy.
+     *
+     * @param inVMPath
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public boolean deleteCopy(String inVMPath) throws RemoteException {
+        // first stop the vm
+        stopVM(inVMPath);
+
+        // then unregister it
+        unregisterVM(inVMPath);
+
+        // remove the image module
+        removeMachineModule(inVMPath);
+
+        // then get the file
+        File file = new File(inVMPath);
+
+        // then delete it
+        if (file.exists() && file.isFile() && file.getName().endsWith(".vmx"))
+            return file.delete();
+        else
+            return false;
     }
 
     /**
@@ -213,37 +420,33 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return VMWareImageModule.STATUS_ERROR;
     }
 
-    /**
-     * Gets the tools state of a virtual machine.
-     *
-     * @param inVMPath The full path to the machine.
-     * @return
-     */
-    public int getToolsState(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+//      VMFox code
+//          to be used when VMFox is running correctly
+//    /**
+//     * Gets the tools state of a virtual machine.
+//     *
+//     * @param inVMPath The full path to the machine.
+//     * @return
+//     */
+//    public int getToolsState(String inVMPath) throws RemoteException {
+//        // get a machine module
+//        VMWareImageModule tmp = getMachineModule(inVMPath);
+//
+//        // check if it worked
+//        if (tmp != null)
+//            return tmp.getToolsState();
+//
+//        // an error occurred
+//        return VMWareImageModule.STATUS_ERROR;
+//    }
 
-        // check if it worked
-        if (tmp != null)
-            return tmp.getToolsState();
+    public String getControlledMachines() throws RemoteException {
+        String strResult = "";
 
-        // an error occurred
-        return VMWareImageModule.STATUS_ERROR;
-    }
+        for (VMWareImageModule mod : listImgModules)
+            strResult += mod.getVMPath() + "\n";
 
-    /**
-     * Gets the running virtual machines.
-     *
-     * @return
-     */
-    public String getRunningMachines() throws RemoteException {
-        // execute the command
-        try {
-            return vmComm.execVMcmd("list");
-        } catch (IOException e) {
-
-        }
-        return "";
+        return strResult;
     }
 
     /**
@@ -262,10 +465,25 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule newMod = VMWareImageModule.createImageModule(inVMPath);
 
         // if valid add it to the list
-        if (newMod != null)
+        if (newMod != null) {
             listImgModules.add(newMod);
+        }
 
         return newMod;
+    }
+
+    /**
+     * Removes a vm image module.
+     * @param inVMPath
+     */
+    private void removeMachineModule(String inVMPath) {
+        // find the appropriate module
+        for (VMWareImageModule mod : listImgModules)
+            if (mod.getVMPath().equals(inVMPath))
+            {
+                listImgModules.remove(mod);
+                break;
+            }
     }
 
     /**

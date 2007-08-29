@@ -13,7 +13,7 @@ package org.smartfrog.avalanche.server.monitor.handlers;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.avalanche.core.host.HostType;
-import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
+import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
 import java.net.UnknownHostException;
 import java.net.InetAddress;

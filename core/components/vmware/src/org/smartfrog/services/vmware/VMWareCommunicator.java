@@ -17,10 +17,32 @@ import java.io.IOException;
 
 public class VMWareCommunicator {
 
-    /**
-     * The commandline-tool to be used.
-     */
-    private static final String VMWARE_CMD = "VMFox";
+
+//      VMFox
+//          to be used when VMFox is running correctly
+//    /**
+//     * The commandline-tool to be used.
+//     */
+//    private static final String VMWARE_CMD = "VMFox";
+//
+//     /**
+//     * Executes the VMWARE_CMD with the given parameters and returns the output.
+//     * @param strParameters
+//     * @return
+//     * @throws java.io.IOException
+//     */
+//    public String execVMcmd(String strParameters) throws IOException {
+//        // execute the command
+//        Process ps = Runtime.getRuntime().exec(VMWARE_CMD + " " + strParameters);
+//
+//        // read the output stream
+//        byte[] iOutput = new byte[ps.getInputStream().available()];
+//        ps.getInputStream().read(iOutput);
+//
+//        // convert the output
+//        return new String(iOutput);
+//    }
+
 
      /**
      * Executes the VMWARE_CMD with the given parameters and returns the output.
@@ -28,9 +50,10 @@ public class VMWareCommunicator {
      * @return
      * @throws java.io.IOException
      */
-    public String execVMcmd(String strParameters) throws IOException {
+    public String execVMcmd(String strCommandLineTool, String strParameters) throws Exception {
         // execute the command
-        Process ps = Runtime.getRuntime().exec(VMWARE_CMD + " " + strParameters);
+        Process ps = Runtime.getRuntime().exec(strCommandLineTool + " " + strParameters);
+        ps.waitFor();
 
         // read the output stream
         byte[] iOutput = new byte[ps.getInputStream().available()];

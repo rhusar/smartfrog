@@ -100,6 +100,12 @@ function updateHostList() {
                                     var settingsLink = document.createElement("a");
                                     settingsLink.href = "host_setup_bs.jsp?hostId=" + hosts[i].getAttribute("name");
                                     settingsLink.appendChild(document.createTextNode("[ Settings ]"));
+                                    if (hosts[i].childNodes[2].firstChild.data == "true") {
+                                        var vmwareLink = document.createElement("a");
+                                        vmwareLink.href = "vm_actions.jsp?action=list&host=" + hosts[i].getAttribute("name");
+                                        vmwareLink.appendChild(document.createTextNode("[ Virtual Machines ]"));
+                                        managementCell.appendChild(vmwareLink);
+                                    }
                                     managementCell.appendChild(logLink);
                                     managementCell.appendChild(settingsLink);
 
