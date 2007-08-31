@@ -35,6 +35,9 @@
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
-  <target name="dist" depends="common.dist" description="Compile the Eclipse Solver and create jar">
+  <target name="init" depends="common.init">
+     <copy todir="${build.classes.dir}/org/smartfrog/sfcore/languages/csf/plugins" file="HP_ICON.PNG"/> 
   </target>
+
+  <target name="dist" depends="common.dist" description="Compile the Eclipse Solver and create jar"/>
 </project>

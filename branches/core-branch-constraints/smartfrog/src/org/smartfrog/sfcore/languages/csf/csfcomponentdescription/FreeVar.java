@@ -142,7 +142,8 @@ public class FreeVar implements Copying {
     }
 
     public String toString() {
-        return "VAR/" + getId();
+    	if (prov_data!=null) return prov_data.toString();
+    	else return "VAR/" + getId();
     }
 
     public Object copy(){

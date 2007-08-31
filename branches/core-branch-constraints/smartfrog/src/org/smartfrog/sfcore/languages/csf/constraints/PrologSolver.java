@@ -139,7 +139,7 @@ abstract public class PrologSolver extends CoreSolver {
         	Constraint c = (Constraint) e.nextElement();
         	totalConstraint.append(c.getQuery());
         }
-        
+        totalConstraint.append(", sfuser(sfvar(0))");
         //Preprocess agg constraint goal
 	    String goal=agg_preprocess(totalConstraint.toString());
          

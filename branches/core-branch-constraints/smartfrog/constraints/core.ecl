@@ -194,21 +194,24 @@ preprocess(Cxt,G,Gs) :-
 
 preprocess_sfop_done(sfget,(sfget,_)).
 preprocess_sfop_done(sfset,(_,sfset)).
+preprocess_sfop_done(sfuser,(_,sfset)).
 preprocess_sfop_done(sfattr,(sfget,sfset)).
 
 preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1, GLP, GLS1, GLS):-
-            HGOut=..[sfvar, Cnt], 
+            (F==sfuser -> HGOut=sfuser((sfvar(0), Cxt), Key, sfvar(Cnt));
+                          HGOut=sfvar(Cnt)), 
             (hash_get(AC,Key,(Cnt,SFG,SFS)) ->
                 (preprocess_sfop_done(F,(SFG,SFS))->
                     GLP=GLP1, GLS=GLS1; 
                     (F==sfget ->   hash_set(AC, Key, (Cnt,sfget,SFS)),
-                                   GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1],GLS=GLS1);
+                                   GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1],GLS=GLS1;
                     (F==sfset ->   hash_set(AC,Key,(Cnt, SFG, sfset)),
-                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1);
-                    
+                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1;
+                    (F==sfuser ->  hash_set(AC,Key,(Cnt, SFG, sfset)),
+                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1;
                     (SFG==sfget -> GLP=GLP1;GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1]),
                     (SFS==sfset -> GLS=GLS1;GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1]),
-                    hash_set(AC,Key,(Cnt,sfget,sfset)));
+                    hash_set(AC,Key,(Cnt,sfget,sfset))))));
                 %%No entry present
                 incr_cnt(Cnt), 
                 (F==sfget -> hash_set(AC, Key, (Cnt, sfget, nil)),
@@ -220,11 +223,10 @@ preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1, GLP, GLS1, GLS):-
                              GLP=[sfget((sfvar(0),Cxt),Key, sfvar(Cnt))|GLP1],
                              GLS=[sfset((sfvar(0),Cxt),Key, sfvar(Cnt))|GLS1]))).
                                           
-
-
 preprocess_sfop(sfget).
 preprocess_sfop(sfset).
 preprocess_sfop(sfattr).
+preprocess_sfop(sfuser).
 
 preprocess_attr_try(AC,Cxt,F,HGOut,Args,GLP1,GLP,GLS1,GLS) :- 
         (Args=[Key] -> preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1,
@@ -276,12 +278,82 @@ incr_cnt(Cnt) :-
 %Description hierarchy state
 
 %1
+
+:-dynamic sfuser_back/1.
+:-dynamic sfuser_refs/1.
+
 sfget((SFBinds, Cxt), Attr, Val) :- 
         sfop(SFBinds, Cxt, sfget, Attr, Val).
 
 sfset((SFBinds, Cxt), Attr, Val) :- 
         sfop(SFBinds, Cxt, sfset, Attr, Val).
 
+sfuser((SFBinds, Cxt), Attr, Val) :-
+        sfop(SFBinds, Cxt, sfset, Attr, Val).
+
+sfuser(SFBinds):-
+        assert(sfuser_back(0    )),
+        write_exdr(eclipse_to_java, sfuser),
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, ValOut),        
+        sfuser_wkr(SFBinds, ValOut).
+
+sfuser_wkr(_, done).
+
+sfuser_wkr(SFBinds, range) :-
+        sfuser_refs(Refs),
+        sfuser_wkr_range(SFBinds, Refs).
+
+sfuser_wkr(SFBinds, range(Refs)) :-
+        assert(sfuser_refs(Refs)),
+        sfuser_wkr_range(SFBinds, Refs).
+
+sfuser_wkr(SFBinds, set(Ref, ValIn)) :-
+        atom_string(RefA, Ref),
+        hash_get(SFBinds, RefA, Val),
+        sfuser_unify(SFBinds, Val,ValIn),
+        sfuser_back(N),
+        sfuser_msg(SFBinds, set(N, noback)).
+
+sfuser_wkr(_, back):-
+        fail.
+
+sfuser_unify(_, Val, Val2):-
+        retract(sfuser_back(N)), N1 is N+1,
+        assert(sfuser_back(N1)),         
+        Val=Val2.
+
+sfuser_unify(SFBinds, _, _):-
+        retract(sfuser_back(N)), N1 is N-1,
+        assert(sfuser_back(N1)), 
+        write_exdr(eclipse_to_java, set(N1, back)),
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, ValOut),        
+        sfuser_wkr(SFBinds, ValOut).
+
+sfuser_msg(SFBinds, CDOp):-
+        write_exdr(eclipse_to_java, CDOp), 
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, ValOut),
+        sfuser_wkr(SFBinds, ValOut).                      
+
+sfuser_wkr_range(SFBinds, Refs):-
+        sfuser_range(SFBinds, Refs, Ranges, Succ),
+        (Succ==yes -> 
+             sfuser_msg(SFBinds, range(Ranges));
+             sfuser_msg(SFBinds, norange(Ranges))).
+
+
+sfuser_range(_, [], [], yes).
+sfuser_range(SFBinds, [HRef|TRefs], Rans, Succ):-
+        atom_string(HRefA, HRef),
+        (hash_get(SFBinds, HRefA, Var)->
+            get_domain_as_list(Var, HRan),
+            sfuser_range(SFBinds, TRefs, TRans, Succ),
+            Rans=[HRan|TRans];
+            Succ=no
+        ).
+        
 sfop(SFBinds, Cxt, Op, AttrA, Val) :-
         (atom(AttrA) -> atom_string(AttrA, Attr); AttrA=Attr),
         CDOpL = [Op, Cxt, Attr, Val],
@@ -299,14 +371,6 @@ sfop(_,_,_,_,_) :-
         read_exdr(java_to_eclipse, _), fail.
 
 
-% sflocal(Attrs, Pref) :-
-%         write_exdr(eclipse_to_java, sflocal(Pref)), 
-%         flush(eclipse_to_java), 
-%         read_exdr(java_to_eclipse, sflocal(Attrs, Pref)).
 
-% sflocal(Attrs, Pref, Pos) :-
-%         write_exdr(eclipse_to_java, sflocal(Pref, Pos)), 
-%         flush(eclipse_to_java), 
-%         read_exdr(java_to_eclipse, sflocal(Attrs, Pref, Pos)).
 
 
