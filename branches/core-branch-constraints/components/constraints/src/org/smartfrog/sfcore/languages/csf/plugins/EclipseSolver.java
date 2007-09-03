@@ -120,7 +120,18 @@ public class EclipseSolver extends PrologSolver  {
     	private boolean done;
     	private int undo;
     	private boolean back;
+    	private String ref;
+    	private String val;
 
+    	public void undo(){
+    		m_get_val = new Atom("back");
+			try{
+		    	m_java_to_eclipse.setListener(m_ql);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unanable to set JtoE listener");            	
+	        }
+    	}
+    	
     	public void done(){
     		m_cdbm.kill();
     		Iterator atiter = m_rangeAttrs.iterator();
@@ -155,6 +166,11 @@ public class EclipseSolver extends PrologSolver  {
         public int getUndo(){
         	return undo;
         }
+        
+        public String getUndoLabel(){
+        	if (ref!=null) return ref+" currently set to "+val;
+        	else return "";
+        }
     }
     
     
@@ -169,15 +185,6 @@ public class EclipseSolver extends PrologSolver  {
     	
     	public boolean isSet(){
     		return set;
-    	}
-    	
-    	public void undo(){
-    		m_get_val = new Atom("back");
-			try{
-		    	m_java_to_eclipse.setListener(m_ql);
-			} catch (Exception e){
-	            throw new SmartFrogEclipseRuntimeException("Unanable to set JtoE listener");            	
-	        }
     	}
     	
     	public boolean process_sel(String entry){
@@ -440,7 +447,11 @@ public class EclipseSolver extends PrologSolver  {
 	    
 	    void set(CompoundTerm ct){
 	    	m_est.undo = ((Integer)ct.arg(1)).intValue();
-	    	m_est.back = ((Atom)ct.arg(2)).functor().compareTo("back")==0;
+	    	String ref = (String)ct.arg(2);
+	    	if (ref!=null) m_est.ref = ref.substring(1, ref.length()-1);
+	    	Object val = ct.arg(3);
+	    	if (val!=null) m_est.val = val.toString();
+	    	m_est.back = ct.arg(4).toString().compareTo("back")==0;
 	    	m_get_val = new Atom("range");
 	    }
 	    

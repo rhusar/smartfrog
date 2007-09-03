@@ -1,6 +1,7 @@
 package org.smartfrog.sfcore.languages.csf.plugins;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
@@ -26,6 +28,7 @@ import org.smartfrog.sfcore.languages.csf.constraints.CDBrowserModel;
 public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	private JScrollPane m_scpane;
 	private JLabel m_label;
+	private JLabel m_undo_label;
 	private JTextField m_entry;
 	private JButton m_set;
 	private JButton m_undo;
@@ -59,29 +62,29 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 
 		   if (m_est.isBack()){
 			   m_est.setBack(false);
-    		   m_label.setText("Attribute setting undone. Click on an attribute with range to set its value.");
+			   String label = "Attribute setting undone. "+m_label.getText();
+    		   m_label.setText(label);
     		   m_set.setEnabled(true);
 		   }
     	   int undo = m_est.getUndo();
 	       if (undo>0){
-    	      m_undo.setText("Undo ("+undo+")");
+    	      m_undo_label.setText(m_est.getUndoLabel());
+	    	  m_undo.setText("Undo ("+undo+")");
     	      m_undo.setEnabled(true);
 	       } else {
+	    	  m_undo_label.setText(""); 
 	    	  m_undo.setText("Undo");
 	    	  m_undo.setEnabled(false);
 	       }
 	       m_done.setEnabled(m_est.isDone());
 	       repaint();
-	   }
-	   	
+	   }   	
 	}
 		
 	void reset_display(){
 		m_label.setText("Click on an attribute with range to set its value");
 		m_entry.setText("");
-		m_undo.setEnabled(false);
 		m_set.setEnabled(false);
-		m_done.setEnabled(false);
 		m_entry.setEnabled(false);		
 	}	
 	
@@ -112,10 +115,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 		                    m_label.setText(m_ecda.toString());
 		                    m_entry.setEnabled(true);
 		                }	   	                	
-	                } else reset_display();
-	                	
-	                	
-	                
+	                } else reset_display();	                
 	             }
 	          });
 	       int mode = TreeSelectionModel.SINGLE_TREE_SELECTION;
@@ -127,27 +127,47 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	       vbox.add(m_scpane);	    
 	       
 	       m_label = new JLabel();
-	       vbox.add(m_label);
+	       Box labelbox = Box.createHorizontalBox();
+	       labelbox.add(Box.createHorizontalGlue());
+	       labelbox.add(m_label);
+	       labelbox.add(Box.createHorizontalGlue());
+	       vbox.add(labelbox);
+	       
 	       vbox.add(Box.createVerticalStrut(10));
 	       m_entry = new JTextField();
 	       vbox.add(Box.createVerticalGlue());
 	       vbox.add(m_entry); 
 	       vbox.add(Box.createVerticalStrut(10));
-	
-	       Box hbox = Box.createHorizontalBox(); 
+		       
+	       JPanel hbox = new JPanel();
+	       hbox.setLayout(new GridLayout(2,3));
 	       vbox.add(hbox);
 	       
 	       m_set = new JButton("Set");
-	       hbox.add(m_set);
+	       Box setbox = Box.createHorizontalBox();
+	       setbox.add(m_set);
+	       setbox.add(Box.createHorizontalGlue());
+	       hbox.add(setbox);
 	       
-	       hbox.add(Box.createHorizontalGlue());
 	       m_undo = new JButton("Undo");
-	       hbox.add(m_undo);
+	       m_undo.setEnabled(false);
+	       Box undobox = Box.createHorizontalBox();
+	       undobox.add(Box.createHorizontalGlue());
+	       undobox.add(m_undo);
+	       undobox.add(Box.createHorizontalGlue());
+	       hbox.add(undobox);
 	       
-	       hbox.add(Box.createHorizontalGlue());
 	       m_done = new JButton("Done");
-	       hbox.add(m_done);
+	       m_done.setEnabled(false);
+	       Box donebox = Box.createHorizontalBox();
+	       donebox.add(Box.createHorizontalGlue());
+	       donebox.add(m_done);
+	       hbox.add(donebox);
 	       
+	       m_undo_label = new JLabel("");
+	       hbox.add(new JPanel());
+	       hbox.add(m_undo_label);
+	       	       
 	       reset_display();
 	       
 	       m_set.addActionListener(new ActionListener(){
@@ -165,7 +185,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	       
 	       m_undo.addActionListener(new ActionListener(){
 	    	   public void actionPerformed(ActionEvent event){
-	    		   m_ecda.undo();
+	    		   m_est.undo();
 	    	   }
 	       });
 	    	  
