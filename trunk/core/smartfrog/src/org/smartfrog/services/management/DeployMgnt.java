@@ -83,12 +83,12 @@ public class DeployMgnt {
         if (obj instanceof Prim) {
             ((Prim)obj).sfReplaceAttribute(attribName, attribValue);
             if (attribTags != null){
-               ((Prim)obj).sfAddTags(attribName,(Set)attribTags);
+               ((Prim)obj).sfSetTags(attribName,(Set)attribTags);
             }
         } else if (obj instanceof ComponentDescription){
             ((ComponentDescription)obj).sfReplaceAttribute(attribName, attribValue);
             if (attribTags != null){
-               ((ComponentDescription)obj).sfAddTags(attribName,(Set)attribTags);
+               ((ComponentDescription)obj).sfSetTags(attribName,(Set)attribTags);
             }
         }
     }
