@@ -34,14 +34,15 @@ import java.rmi.RemoteException;
 
 
 public class HTAccess extends HandlerImpl implements HTAccessIntf {
-    protected Reference accessFileRef = new Reference(ACCESS_FILE);
+    private final Reference accessFileRef = new Reference(ACCESS_FILE);
 
-    protected String accessFile = ".htaccess";
+    private String accessFile = ".htaccess";
 
-    protected HTAccessHandler hthandler = new HTAccessHandler();
+    private HTAccessHandler hthandler = new HTAccessHandler();
 
     /**
-     * Standard RMI constructor
+     * Standard constructor
+     * @throws RemoteException    In case of network/rmi error
      */
     public HTAccess() throws RemoteException {
         super();
@@ -53,7 +54,7 @@ public class HTAccess extends HandlerImpl implements HTAccessIntf {
      * @throws SmartFrogException In case of error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
-    public void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         accessFile = sfResolve(accessFileRef, accessFile, false);
         hthandler.setAccessFile(accessFile);

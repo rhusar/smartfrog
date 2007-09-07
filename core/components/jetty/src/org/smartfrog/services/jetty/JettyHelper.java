@@ -87,6 +87,10 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * bind to the server, cache it
+     * @return the server binding
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
+     *
      */
     public HttpServer bindToServer() throws SmartFrogException,
             RemoteException {
@@ -95,16 +99,20 @@ public class JettyHelper extends WebApplicationHelper {
         return httpServer;
     }
 
+    /**
+     * Set the component acting as a server
+     * @param serverComponent new value
+     */
     public void setServerComponent(Prim serverComponent) {
         this.serverComponent = serverComponent;
     }
 
     /**
-     * locate jetty
+     * locate jetty or throw an exception
      *
-     * @return
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @return the jetty binding
+     * @throws SmartFrogException smartfrog problems, including no server found
+     * @throws RemoteException network problems
      */
     private HttpServer findJettyServer() throws SmartFrogException,
             RemoteException {
@@ -119,8 +127,8 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * look for the jetty component by -looking for a server attribute
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException if one is not found
+     * @throws RemoteException network problems
      */
     private void findJettyComponent() throws SmartFrogResolutionException,
             RemoteException {
@@ -136,11 +144,12 @@ public class JettyHelper extends WebApplicationHelper {
     }
 
     /**
-     * save the jetty info for retrieval
+     * save the jetty info for retrieval.
+     * This is done by adding it as a (non-serializable) attribute
      *
-     * @param server
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param server the jetty instance
+     * @throws SmartFrogException a failure of the operation to set the server
+     * @throws RemoteException network problems
      */
     public void cacheJettyServer(HttpServer server)
             throws SmartFrogException, RemoteException {

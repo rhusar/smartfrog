@@ -39,13 +39,17 @@ import java.rmi.RemoteException;
 /**
  * A wrapper for a Jetty http server for admin configurations
  *
+ * Look at this, tehre's no reason why this shouldnt be donen from the normal
+ * Jetty component. If you cannot do it declaratively, then the components
+ * need improving.
+ *
  * @author Ritu Sabharwal
  */
 
 public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
-    private Reference listenerPortRef = new Reference(LISTENER_PORT);
-    private Reference httpserverHostRef = new Reference(HTTP_SERVER_HOST);
-    private Reference contextPathRef = new Reference(CONTEXT_PATH);
+    private final Reference listenerPortRef = new Reference(LISTENER_PORT);
+    private final Reference httpserverHostRef = new Reference(HTTP_SERVER_HOST);
+    private final Reference contextPathRef = new Reference(CONTEXT_PATH);
 
     private int listenerPort = 8081;
     private String httpserverHost=null;
@@ -73,20 +77,10 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
     private static final String ADMIN_REALM_NAME = "Admin Realm";
 
     /**
-     * Standard RMI constructor
-     */
-    public SFJettyAdmin() throws RemoteException {
-        super();
-    }
-
-    /**
-     * Deploy the SFJettyAdmin component
-     *
-     * @throws SmartFrogException In case of error while starting
+     * Constructor
      * @throws RemoteException    In case of network/rmi error
      */
-    public void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
+    public SFJettyAdmin() throws RemoteException {
     }
 
     /**
@@ -117,6 +111,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
 
     /**
      * Configure the http server for admin configurations
+     * @throws SmartFrogException In case of error while starting
      */
     public void configureHttpServer() throws SmartFrogException {
         try {
@@ -147,9 +142,9 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
     }
 
     /**
-     * Termination phase
+     * Termination phase. shut the server and the listener
      */
-    public void sfTerminateWith(TerminationRecord status) {
+    public synchronized void sfTerminateWith(TerminationRecord status) {
         server.removeListener(listener);
         server.removeContext(realmcontext);
         try {
@@ -158,7 +153,6 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
           if (sfLog().isErrorEnabled()){
             sfLog().error(" Interrupted on server termination " , ie);
           }
-//          Logger.log(" Interrupted on server termination " , ie);
         }
         super.sfTerminateWith(status);
     }

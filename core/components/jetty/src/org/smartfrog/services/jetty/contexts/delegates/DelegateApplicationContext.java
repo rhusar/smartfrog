@@ -36,12 +36,17 @@ public abstract class DelegateApplicationContext
     public static final String ERROR_NULL_CONTEXT = "Null context";
     public static final String ERROR_NOT_RUNNING = "Not started";
 
-    public DelegateApplicationContext(SFJetty server, HttpContext context) {
+    /**
+     *
+     * @param server jetty sever
+     * @param context context
+     */
+    protected DelegateApplicationContext(SFJetty server, HttpContext context) {
         this.server = server;
         this.context = context;
     }
 
-    public DelegateApplicationContext() {
+    protected DelegateApplicationContext() {
     }
 
     /**
@@ -114,8 +119,8 @@ public abstract class DelegateApplicationContext
     /**
      * liveness check
      *
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
+     * @throws SmartFrogLivenessException In case of liveness failure
+     * @throws RemoteException    In case of network/rmi error
      */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (context == null) {
@@ -132,8 +137,8 @@ public abstract class DelegateApplicationContext
      * undeployment is skipped without an error. The context field is
      * set to null, to tell the system to skip this in future.
      *
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    In case of network/rmi error
      *
      */
     public void terminate() throws RemoteException, SmartFrogException {

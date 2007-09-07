@@ -22,7 +22,6 @@
 package org.smartfrog.services.jetty.contexts.handlers;
 
 import org.mortbay.http.HttpHandler;
-import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.www.ServletComponent;
@@ -52,7 +51,11 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
     public static final String ERROR_HANDLER_STOPPED = "Handler is stopped";
     public static final String ERROR_HANDER_UNDEFINED = "No handler";
 
-    public HandlerImpl() throws RemoteException {
+    /**
+     *
+     * @throws RemoteException parent failure
+     */
+    protected HandlerImpl() throws RemoteException {
         super();
     }
 
@@ -62,9 +65,9 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -77,9 +80,9 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -96,11 +99,15 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
         super.sfTerminateWith(status);
         try {
             stopHandler();
-        } catch (SmartFrogException e) {
+        } catch (SmartFrogException ignored) {
             //ignore
         }
     }
 
+    /**
+     * start a handler
+     * @throws SmartFrogException failure to start
+     */
     protected void startHandler() throws SmartFrogException {
         if(handler!=null) {
             try {
@@ -111,6 +118,10 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
         }
     }
 
+    /**
+     * stop a handler
+     * @throws SmartFrogException smartfrog problems
+     */
     protected void stopHandler() throws SmartFrogException {
         if (handler != null) {
             try {
@@ -123,13 +134,13 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
 
     /**
      * add a handler to the context of this smartfrog instance
-     * @param handler
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     * @throws java.rmi.RemoteException
+     * @param newHandler handler
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
-    protected void addHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
-        context.addHandler(handler);
-        this.handler=handler;
+    protected void addHandler(HttpHandler newHandler) throws SmartFrogException, RemoteException {
+        context.addHandler(newHandler);
+        handler= newHandler;
     }
 
     protected void removeHandler() throws SmartFrogException, RemoteException {
@@ -147,9 +158,9 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
     /**
      * Liveness call in to check if this component is still alive.
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
+     * @throws RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);

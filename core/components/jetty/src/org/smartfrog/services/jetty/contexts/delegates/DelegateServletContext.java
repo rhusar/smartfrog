@@ -74,9 +74,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
     /**
      * do all deployment short of starting the thing
-     * @param declaration
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param declaration the description to deploy
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
         log = LogFactory.getOwnerLog(declaration);
@@ -133,6 +133,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param extension extension to map (no '.')
      * @param mimeType  mimetype to generate
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
         getServletContext().setMimeMapping(extension, mimeType);
@@ -144,8 +146,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param extension extension to unmap
      * @return true if the unmapping was successful
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
 
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
@@ -159,8 +161,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param servletDeclaration component declaring the servlet
      * @return the delegate that implements the servlet binding
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException {
         JettyServletDelegate servletDelegate=new JettyServletDelegate(this,(Prim)servletDeclaration);
@@ -172,8 +174,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * add a handler to the server
      *
      * @param handler handler
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void addHandler(HttpHandler handler) throws SmartFrogException,
             RemoteException {
@@ -184,9 +186,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     /**
      * remove a handler. The handler should be stopped first, though we do try
      * and do it ourselves
-     * @param handler
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param handler handler
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void removeHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
         ServletHttpContext context = getServletContext();
@@ -194,7 +196,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
             if(handler.isStarted()) {
                 handler.stop();
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignore) {
             //ignore
         }
         context.removeHandler(handler);
