@@ -61,9 +61,9 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
 
     /**
      * at deploy time, do everything except starting the component
-     * @param declaration
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param declaration owner
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void deploy(Prim declaration)
             throws SmartFrogException, RemoteException {

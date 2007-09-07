@@ -42,7 +42,10 @@ public class Forward extends HandlerImpl  implements ForwardIntf {
     private ForwardHandler fwdhandler = new ForwardHandler();
 
   
-  /** Standard RMI constructor */
+    /**
+     * Standard RMI constructor
+     * @throws RemoteException In case of network/rmi error  
+     */
    public Forward() throws RemoteException {
        super();
    }
@@ -52,7 +55,7 @@ public class Forward extends HandlerImpl  implements ForwardIntf {
    * @exception  SmartFrogException In case of error while deploying  
    * @exception  RemoteException In case of network/rmi error  
    */  
-   public void sfDeploy() throws SmartFrogException, RemoteException {
+   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();      
        
        mapfromPath = sfResolve(mapfromPathRef, mapfromPath, false);

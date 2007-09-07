@@ -51,19 +51,14 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
 
     private JettyHelper jettyHelper = new JettyHelper(this);
 
-  /** Standard RMI constructor */
+    /**
+     * constructor
+     * @throws RemoteException parent failure
+     */
   public Socketlistener() throws RemoteException {
-          super();
   }
 
-  /**
-   * Deploy the SocketListener listener
-   * @exception  SmartFrogException In case of error while deploying
-   * @exception  RemoteException In case of network/rmi error
-   */
-  public void sfDeploy() throws SmartFrogException, RemoteException {
-          super.sfDeploy();
-  }
+
 
   /**
    * sfStart: adds the SocketListener to the jetty server
@@ -71,7 +66,7 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    * @exception  SmartFrogException In case of error while starting
    * @exception  RemoteException In case of network/rmi error
    */
-  public void sfStart() throws SmartFrogException, RemoteException {
+  public synchronized void sfStart() throws SmartFrogException, RemoteException {
       super.sfStart();
       try {
         listenerPort = sfResolve(listenerPortRef, listenerPort, true);
@@ -87,7 +82,7 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
   /**
    * Termination phase
    */
-  public void sfTerminateWith(TerminationRecord status) {
+  public synchronized void sfTerminateWith(TerminationRecord status) {
       jettyHelper.terminateListener(listener);
       super.sfTerminateWith(status);
   }
@@ -96,13 +91,13 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    * Add the listener to the http server
    * @exception  RemoteException In case of network/rmi error
    */
-  public void addlistener(int listenerPort, String serverHost) throws
+  public void addlistener(int port, String host) throws
           SmartFrogException, RemoteException {
       try {
           listener = new SocketListener();
-          listener.setPort(listenerPort);
-          if (serverHost != null) {
-              listener.setHost(serverHost);
+          listener.setPort(port);
+          if (host != null) {
+              listener.setHost(host);
           }
           jettyHelper.addAndStartListener(listener);
       } catch (UnknownHostException unex) {

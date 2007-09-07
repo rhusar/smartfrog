@@ -36,7 +36,7 @@ public interface JettyServletContextIntf extends ServletContextIntf {
      * guarantees, etc, etc. 
      * {@value}
      */
-    public static final String ATTR_CONTEXT = "_context";
+    String ATTR_CONTEXT = "_context";
 
 
 }

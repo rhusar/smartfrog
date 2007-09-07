@@ -48,31 +48,31 @@ import java.rmi.RemoteException;
 
 public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
-    protected Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
+    private final Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
 
     /**
      * Jetty home path
      */
-    protected String jettyhome;
+    private String jettyhome;
 
 
     /**
      * A jetty helper
      */
-    protected JettyHelper jettyHelper = new JettyHelper(this);
+    private JettyHelper jettyHelper = new JettyHelper(this);
 
     /**
      * The Http server
      */
-    protected HttpServer server;
+    private HttpServer server;
 
     /**
      * flag to turn logging on.
      */
-    protected boolean enableLogging = false;
+    private boolean enableLogging = false;
 
-    protected String logDir;
-    protected String logPattern;
+    private String logDir;
+    private String logPattern;
 
     /**
      * log pattern.
@@ -95,9 +95,10 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     /**
      * Standard RMI constructor
+     * @throws RemoteException    In case of network/rmi error
      */
+
     public SFJetty() throws RemoteException {
-        super();
     }
 
     /**
@@ -115,7 +116,7 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      * @throws SmartFrogException In case of error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
-    public void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
             super.sfDeploy();
             server = new HttpServer();
@@ -154,6 +155,7 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     /**
      * Configure the http server
+     * @throws SmartFrogException In case of error while starting
      */
     public void configureLogging() throws SmartFrogException {
         try {
@@ -179,8 +181,9 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     /**
      * Termination phase
+     * Shut down the server, logging any errors that happen on the way
      */
-    public void sfTerminateWith(TerminationRecord status) {
+    public synchronized void sfTerminateWith(TerminationRecord status) {
         try {
             if (server != null) {
                 server.stop();
@@ -196,9 +199,9 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     /**
      * liveness test verifies the server is started
      *
-     * @param source
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
+     * @param source caller
+     * @throws SmartFrogLivenessException the server is  not started
+     * @throws RemoteException network trouble
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -218,9 +221,8 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
      *                       (both mandatory and optional) are also permitted
      * @return an entry
-     * @throws java.rmi.RemoteException on network trouble
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  on any other problem
+     * @throws SmartFrogException errors thrown by the delegate
+     * @throws RemoteException network trouble
      */
     public JavaWebApplication deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
@@ -231,12 +233,12 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     }
 
     /**
-     * Deploy an EAR file
+     * Deploy an EAR file -not supported
      *
-     * @param enterpriseApplication
+     * @param enterpriseApplication the application
      * @return an entry referring to the application
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException always
+     * @throws RemoteException network trouble
      */
     public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
         throw new SmartFrogException(ERROR_EAR_UNSUPPORTED);
@@ -245,16 +247,15 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     /**
      * Deploy a servlet context. This can be initiated with other things
      *
-     * @param servlet
+     * @param servletContext the servlet context
      * @return a token referring to the application
-     * @throws java.rmi.RemoteException on network trouble
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  on any other problem
+     * @throws RemoteException network trouble
+     * @throws SmartFrogException on any other problem
      */
-    public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
+    public ServletContextIntf deployServletContext(Prim servletContext) throws RemoteException, SmartFrogException {
 
         DelegateServletContext delegate = new DelegateServletContext(this, null);
-        delegate.deploy(servlet);
+        delegate.deploy(servletContext);
         return delegate;
     }
 

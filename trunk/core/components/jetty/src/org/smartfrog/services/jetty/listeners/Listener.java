@@ -30,14 +30,27 @@ import java.rmi.RemoteException;
  */
 
 public interface Listener extends Remote {
-    public static final String LISTENER_PORT = "listenerPort";
-    public static final String SERVER_HOST = "serverHost";
-    public static final String SERVER_NAME = "serverName";
+    /**
+     * attribute name: {@value}
+     */
+    String LISTENER_PORT = "listenerPort";
+    /**
+     * attribute name: {@value}
+     */
+    String SERVER_HOST = "serverHost";
+
+    /**
+     * attribute name: {@value}
+     */
+    String SERVER_NAME = "serverName";
 
     /**
 	 * Add the listener to the http server
-	 * @exception  RemoteException In case of network/rmi error 
-	 */
+     * @param listenerPort port to listen on
+     * @param serverHost hostname
+     * @throws SmartFrogException
+     * @throws RemoteException In case of network/rmi error
+     */
     public void addlistener(int listenerPort, String serverHost) throws
             SmartFrogException, RemoteException;
 }
