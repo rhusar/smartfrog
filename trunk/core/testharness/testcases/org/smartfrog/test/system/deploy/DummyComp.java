@@ -21,12 +21,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.test.system.deploy;
 
 import java.rmi.RemoteException;
-import java.io.*;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 
 /**

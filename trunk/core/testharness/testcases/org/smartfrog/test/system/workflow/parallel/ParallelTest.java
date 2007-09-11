@@ -21,8 +21,6 @@ package org.smartfrog.test.system.workflow.parallel;
 
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 
 /**
  * @author Ashish Awasthi

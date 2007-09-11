@@ -20,8 +20,6 @@
 package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.filesystem.FileUsingComponent;
 
 import java.io.File;
 

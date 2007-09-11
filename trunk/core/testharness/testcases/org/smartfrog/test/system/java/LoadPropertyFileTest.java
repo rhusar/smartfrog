@@ -21,7 +21,6 @@ package org.smartfrog.test.system.java;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.os.java.JavaPackage;
 import org.smartfrog.services.os.java.LoadPropertyFile;
 
 import java.util.Vector;
@@ -60,9 +59,9 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
 
     private void assertTupleEquals(List list,String name,String expected) {
         Iterator it=list.iterator();
-        while (it.hasNext()) {
-            List tuple = (List) it.next();
-            if(name.equals(tuple.get(0))) {
+        for (Object aList : list) {
+            List tuple = (List) aList;
+            if (name.equals(tuple.get(0))) {
                 assertEquals(expected, tuple.get(1));
                 return;
             }

@@ -15,11 +15,8 @@
 package org.smartfrog.test.unit.java;
 
 import org.smartfrog.services.os.java.LocalCachePolicy;
-import org.smartfrog.services.os.java.RemoteCachePolicy;
 import org.smartfrog.services.os.java.SerializedArtifact;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
-import java.io.File;
 
 public abstract class AbstractLocalPolicyTestBase extends AbstractPolicyTestBase {
     protected LocalCachePolicy policy;

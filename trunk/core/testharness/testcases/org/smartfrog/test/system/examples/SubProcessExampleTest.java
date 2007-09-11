@@ -23,6 +23,8 @@ package org.smartfrog.test.system.examples;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.test.DeployingTestBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * JUnit test class for test cases related to Subprocess Example
@@ -34,7 +36,7 @@ public class SubProcessExampleTest
   //private static final String FILES = "org/smartfrog/examples/subprocesses/";
   //#include "org/smartfrog/test/system/deploy/subprocessTestHarness.sf"
   private static final String FILES = "org/smartfrog/test/system/deploy/";
-
+  private static final Log log = LogFactory.getLog(SubProcessExampleTest.class);
   public SubProcessExampleTest(String s) {
     super(s);
   }
@@ -82,7 +84,7 @@ public class SubProcessExampleTest
     Prim displayLOCALHOST = (Prim) foobar.sfResolveHere("displayLOCALHOST");
     String actualSfClassDLH = (String) displayLOCALHOST.sfResolveHere("sfClass");
     String desiredClass = "org.smartfrog.sfcore.compound.CompoundImpl";
-    System.out.println("    Asserting: " + desiredClass
+    log.info("    Asserting: " + desiredClass
                        + " with " + actualSfClassDLH);
     assertEquals(desiredClass, actualSfClassDLH);
 
@@ -122,17 +124,17 @@ public class SubProcessExampleTest
 
     Reference refCUATRO = Reference.fromString("HOST localhost:CUATRO-VM:CUATRO");
     Prim cuatro2 = (Prim)application.sfResolve(refCUATRO,true);
-    System.out.println("      Testing: "+refCUATRO);
+    log.info("      Testing: "+refCUATRO);
     assertEquals(cuatro.sfCompleteName().toString(), cuatro2.sfCompleteName().toString());
 
     Reference refTRES = Reference.fromString("HOST localhost:rootProcess:TRES");
     Prim tres2 = (Prim)application.sfResolve(refTRES,true);
-    System.out.println("      Testing: "+refTRES);
+    log.info("      Testing: "+refTRES);
     assertEquals(tres.sfCompleteName().toString(), tres2.sfCompleteName().toString());
 
     Reference refDOS = Reference.fromString("HOST localhost:DOS-VM:DOS");
     Prim dos2 = (Prim)application.sfResolve(refDOS,true);
-    System.out.println("      Testing: "+refDOS);
+    log.info("      Testing: "+refDOS);
     assertEquals(dos.sfCompleteName().toString(), dos2.sfCompleteName().toString());
 
 

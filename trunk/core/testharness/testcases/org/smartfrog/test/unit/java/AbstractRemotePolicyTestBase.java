@@ -17,7 +17,6 @@ package org.smartfrog.test.unit.java;
 import org.smartfrog.services.os.java.RemoteCachePolicy;
 import org.smartfrog.services.os.java.SerializedArtifact;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBase {
 

@@ -20,13 +20,13 @@
 package org.smartfrog.test.unit.net;
 
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
-
-import org.smartfrog.sfcore.processcompound.*;
-import org.smartfrog.sfcore.common.*;
 
 /**
  * created Jul 12, 2004 3:55:32 PM
@@ -34,11 +34,10 @@ import org.smartfrog.sfcore.common.*;
 
 public class BasicNetworkingTest extends TestCase {
 
-    Logger log;
+    private static final Log log = LogFactory.getLog(BasicNetworkingTest.class);
 
     public BasicNetworkingTest(String name) {
         super(name);
-        log=Logger.getLogger(name);
     }
 
     public void testHasHostname() throws UnknownHostException {

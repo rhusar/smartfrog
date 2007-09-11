@@ -291,7 +291,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param test condition to evaluate
      * @param message message to print
      * @param event related event
-     * @throws {@link AssertionFailedError} if the condition is true
+     * @throws AssertionFailedError if the condition is true
      */
     private void conditionalFail(boolean test,String message,LifecycleEvent event) {
         if(test) {

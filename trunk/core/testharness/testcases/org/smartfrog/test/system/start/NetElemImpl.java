@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
@@ -39,18 +38,17 @@ import org.smartfrog.sfcore.reference.Reference;
 // make the class abstract as the evaluate() method must be completed correctly before use
 public abstract class NetElemImpl extends CompoundImpl implements Compound,
     NetElem, Remote {
-    Context outputs;
-    Reference nameRef;
-    String name;
-    Vector currentValues = new Vector();
+    protected Context outputs;
+    protected Reference nameRef;
+    protected String name;
+    protected Vector currentValues = new Vector();
 
     // need a thread to decouple incoming RPC thread in from the RPCs out
     // otherwise the RPCs will block until the entire NetElem tree has been traversed
-    Thread outputer = null;
+    protected Thread outputter = null;
 
     // standard constructor
-    public NetElemImpl() throws RemoteException {
-        super();
+    protected NetElemImpl() throws RemoteException {
     }
 
     protected void addValue(int i) {
@@ -90,13 +88,12 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                                 if (sfLog().isErrorEnabled()){
                                   sfLog().error("Uncaught Exception ", e);
                                 }
-                                //e.printStackTrace();
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                sfLog().error("Exception ", e);
             }
         }
     }
@@ -123,12 +120,12 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             // start the thread here because we need to make sure that when the
             // constants and generators issue their values - triggered in sfStart()
             // the outputer is waiting to pass them on.
-            outputer = new Outputer();
-            outputer.start();
-            System.out.println(name + " deployed");
+            outputter = new Outputter();
+            outputter.start();
+            sfLog().info(name + " deployed");
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfDeployFailure", this.sfContext);
+            sfex.put("sfDeployFailure", sfContext);
 
             // trigger termination of component
             try {
@@ -155,33 +152,33 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
     public void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
-    } catch (Exception ex) {
-               // any exception causes termination
-               Reference componentName = sfCompleteNameSafe();
-               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                                  componentName));
-    }
+        } catch (Exception ex) {
+            // any exception causes termination
+            Reference componentName = sfCompleteNameSafe();
+            sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
+                    componentName));
+        }
     }
 
     public void sfTerminateWith(TerminationRecord tr) {
         try {
-            if (outputer != null) {
-                outputer.stop();
+            if (outputter != null) {
+                outputter.stop();
             }
         } catch (Exception e) {
         }
 
-        System.out.println(name + " has terminated with " + tr.toString());
+        sfLog().info(name + " has terminated with " + tr.toString());
         super.sfTerminateWith(tr);
     }
 
-    class Outputer extends Thread {
+    class Outputter extends Thread {
         public void run() {
             try {
                 doOutputs();
             } finally {
                 try {
-                    System.out.println(sfCompleteName() +
+                    sfLog().info(sfCompleteNameSafe() +
                         " Thread terminated ");
                 } catch (Exception e) {
                 }

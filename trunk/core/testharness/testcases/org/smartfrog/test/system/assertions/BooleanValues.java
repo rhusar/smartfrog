@@ -47,20 +47,22 @@ public interface BooleanValues extends Remote {
     /**
      * always evaluates to true
      * @return true
-     * @throws RemoteException
+     * @throws RemoteException on network problems
      */
     public boolean getTrue() throws RemoteException;
 
     /**
      *
      * @return false
-     * @throws RemoteException
+     * @throws RemoteException on network problems
      */
     public boolean getFalse() throws RemoteException;
 
     /**
      * get whatever the value attribute is set to
-     * @throws RemoteException
+     * @return the current value
+     * @throws RemoteException on network problems
+     * @throws SmartFrogResolutionException if the value does not resolve
      */
     public boolean getValue() throws RemoteException, SmartFrogResolutionException;
 
@@ -69,7 +71,8 @@ public interface BooleanValues extends Remote {
      * toggle the value from true to false
      * @return the new value
      *
-     * @throws RemoteException
+     * @throws RemoteException on network problems
+     * @throws SmartFrogException if the toggling fails
      */
     public boolean toggle()
         throws RemoteException, SmartFrogException;
@@ -77,7 +80,7 @@ public interface BooleanValues extends Remote {
     /**
      * throw a runtime fault when invoking
      * @return boolean
-     * @throws RemoteException
+     * @throws RemoteException on network problems
      * @throws java.lang.RuntimeException always.
      */
     public boolean throwRuntimeException() throws RemoteException;

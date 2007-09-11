@@ -20,7 +20,6 @@
 
 package org.smartfrog.test.system.workflow.delay;
 
-import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.test.DeployingTestBase;
 
 

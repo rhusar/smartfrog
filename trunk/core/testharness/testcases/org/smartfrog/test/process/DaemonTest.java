@@ -26,8 +26,6 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.test.unit.sfcore.StartDaemon;
 
-import java.net.InetAddress;
-
 /**
  * created Oct 14, 2005 4:14:04 PM
  */

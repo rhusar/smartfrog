@@ -59,7 +59,7 @@ public class LocalTestDaemon {
      * @throws java.rmi.ConnectException
      */
     public LocalTestDaemon(String[] args)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception, RemoteException, ConnectException {
         OptionSet optionset = new OptionSet(args);
         start(optionset);
     }
@@ -73,7 +73,7 @@ public class LocalTestDaemon {
      * @throws java.rmi.ConnectException
      */
     public LocalTestDaemon(OptionSet options)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception, RemoteException, ConnectException {
         start(options);
     }
 
@@ -117,15 +117,15 @@ public class LocalTestDaemon {
      * @param compound
      */
     public synchronized void bind(ProcessCompound compound) {
-        this.process=compound;
+        process =compound;
     }
 
     /**
      * detach from the process
      */
     public synchronized void detach() {
-        this.process=null;
-        this.system=null;
+        process =null;
+        system =null;
     }
 
     /**
@@ -137,13 +137,13 @@ public class LocalTestDaemon {
      * @throws ConnectException
      */
     public synchronized void start(OptionSet optionset)
-            throws Exception, SmartFrogException, RemoteException, ConnectException {
+            throws Exception, RemoteException, ConnectException {
         if(isRunning()) {
             throw new Exception("Already running a daemon here");
         }
-        this.options=optionset;
+        options =optionset;
         system=new SFSystem();
-        process=system.runSmartFrog(options.cfgDescriptors);
+        process= SFSystem.runSmartFrog(options.cfgDescriptors);
     }
 
     /**

@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.test.system.assertions.events;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /**
  *
