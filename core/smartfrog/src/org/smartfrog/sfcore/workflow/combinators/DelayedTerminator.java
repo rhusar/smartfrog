@@ -36,7 +36,7 @@ import java.rmi.RemoteException;
  */
 public class DelayedTerminator implements Runnable {
     private long time;
-    private WeakReference/*<Prim>*/ primref;
+    private WeakReference<Prim> primref;
     private Throwable terminationFault;
     private volatile Thread self;
     private volatile boolean shutdown;
@@ -66,7 +66,7 @@ public class DelayedTerminator implements Runnable {
             time=Long.MAX_VALUE;
         }
         this.time = time;
-        primref = new WeakReference/*<Prim>*/(prim);
+        primref = new WeakReference<Prim>(prim);
         this.log = log;
         if (description == null) {
             this.description = "Terminate "
@@ -194,7 +194,7 @@ public class DelayedTerminator implements Runnable {
     }
 
     private Prim getTarget() {
-        return (Prim) primref.get();
+        return primref.get();
     }
 
     /**

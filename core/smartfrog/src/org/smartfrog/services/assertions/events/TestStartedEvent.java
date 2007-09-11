@@ -23,7 +23,7 @@ import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- *
+ * the test has started
  * Created 16-Jul-2007 13:21:23
  *
  */

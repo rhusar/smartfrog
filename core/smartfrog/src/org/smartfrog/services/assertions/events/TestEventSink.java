@@ -61,9 +61,9 @@ public class TestEventSink implements EventSink {
     /**
      * for java1.5+; a queue would be much nicer
      */
-    private List/*<LifecycleEvent>*/ incoming =new ArrayList();
+    private List<LifecycleEvent> incoming =new ArrayList<LifecycleEvent>();
 
-    private List/*<LifecycleEvent>*/ history=new ArrayList();
+    private List<LifecycleEvent> history=new ArrayList<LifecycleEvent>();
 
     /**
      * The source of events
@@ -201,7 +201,7 @@ public class TestEventSink implements EventSink {
         if(incoming.size()==0) {
             return null;
         } else {
-            LifecycleEvent event= (LifecycleEvent) incoming.remove(0);
+            LifecycleEvent event= incoming.remove(0);
             history.add(event);
             return event;
         }
@@ -210,9 +210,9 @@ public class TestEventSink implements EventSink {
 
     /**
      * Get at the history of past events
-     * @return
+     * @return the history
      */
-    public List getHistory() {
+    public List<LifecycleEvent> getHistory() {
         return history;
     }
 
@@ -265,7 +265,7 @@ public class TestEventSink implements EventSink {
             throw new RemoteException("Only instances of  LifecycleEvent are supported");
         }
         synchronized(this) {
-            incoming.add(event);
+            incoming.add((LifecycleEvent) event);
             notifyAll();
         }
     }
@@ -294,7 +294,7 @@ public class TestEventSink implements EventSink {
         invokeStart();
         LifecycleEvent event;
         do {
-            event = (LifecycleEvent) waitForEvent(LifecycleEvent.class, timeout);
+            event = waitForEvent(LifecycleEvent.class, timeout);
             if(event instanceof TerminatedEvent) {
                 throw new TestFailureException(ERROR_PREMATURE_TERMINATION,event);
             }
@@ -335,9 +335,7 @@ public class TestEventSink implements EventSink {
      */
     public String dumpHistory() {
         StringBuffer buffer=new StringBuffer("Event history has "+history.size()+" events\n");
-        Iterator it=history.iterator();
-        while (it.hasNext()) {
-            LifecycleEvent event = (LifecycleEvent) it.next();
+        for (LifecycleEvent event : history) {
             buffer.append(event.toString());
             buffer.append('\n');
         }
@@ -352,9 +350,9 @@ public class TestEventSink implements EventSink {
     private static class AsyncUnsubscribe implements Runnable {
 
         private TestEventSink owner;
-        RemoteException result;
+        private RemoteException result;
 
-        public AsyncUnsubscribe(TestEventSink owner) {
+        private AsyncUnsubscribe(TestEventSink owner) {
             this.owner = owner;
         }
 
@@ -364,6 +362,11 @@ public class TestEventSink implements EventSink {
             } catch (RemoteException e) {
                 result=e;
             }
+        }
+
+
+        public RemoteException getResult() {
+            return result;
         }
     }
 }

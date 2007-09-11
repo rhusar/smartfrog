@@ -38,10 +38,10 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class EventPrimImpl extends PrimImpl implements EventRegistration,
     EventSink, EventBus, Prim {
-    static Reference receiveRef = new Reference("registerWith");
-    static Reference sendRef = new Reference("sendTo");
-    Vector receiveFrom = new Vector();
-    Vector sendTo = new Vector();
+    private static final Reference receiveRef = new Reference("registerWith");
+    private static final Reference sendRef = new Reference("sendTo");
+    private  Vector<EventRegistration> receiveFrom = new Vector<EventRegistration>();
+    private Vector<EventSink> sendTo = new Vector<EventSink>();
 
     /**
      * Constructs EventPrimImpl.
@@ -49,7 +49,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @throws RemoteException In case of RMI or network failure.
      */
     public EventPrimImpl() throws RemoteException {
-        super();
     }
 
     /**
@@ -78,9 +77,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
         }
-        if (sendTo.contains(sink)) {
-            sendTo.removeElement(sink);
-        }
+        sendTo.removeElement(sink);
     }
 
     /**
@@ -112,8 +109,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param event java.lang.Object
      */
     synchronized public void sendEvent(Object event) {
-        for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
-            EventSink s = (EventSink) e.nextElement();
+        for (EventSink s:sendTo) {
             try {
                 if (sfLog().isDebugEnabled()) {
                     String infoStr = "'"+sfCompleteNameSafe().toString()+"' sending '"+ event+"' to '"+s+"'";
@@ -176,9 +172,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             Reference l = (Reference) rcxt.get(k);
             //Protection against wrong descriptions
             Object s = sfResolve(l);
-            if (s instanceof EventRegistration){
-                receiveFrom.addElement(s);
-                ((EventRegistration)s).register(this);
+            if (s instanceof EventRegistration) {
+                EventRegistration registration = (EventRegistration) s;
+                receiveFrom.addElement(registration);
+                registration.register(this);
             } else {
                if (sfLog().isErrorEnabled()){
                    sfLog().error("'"+ l + "' in '"+receiveRef+"' does not implement EventRegistration");
@@ -194,9 +191,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
-        for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
-            EventRegistration s = (EventRegistration) e.nextElement();
-
+        for(EventRegistration s:receiveFrom) {
             try {
                 s.deregister(this);
             } catch (RemoteException ex) {

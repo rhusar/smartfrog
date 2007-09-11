@@ -77,9 +77,9 @@ public class TestCompletedEvent extends LifecycleEvent {
         if(description!=null && description.length()>0) {
             buffer.append("\n").append(description);
         }
-        buffer.append("\nsucceeded:"+succeeded);
-        buffer.append("\nforcedTimeout:" + forcedTimeout);
-        buffer.append("\nskipped:" + skipped);
+        buffer.append("\nsucceeded:").append(succeeded);
+        buffer.append("\nforcedTimeout:").append(forcedTimeout);
+        buffer.append("\nskipped:").append(skipped);
         return buffer.toString();
     }
 }
