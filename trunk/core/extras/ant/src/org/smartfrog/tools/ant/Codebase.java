@@ -97,11 +97,11 @@ public class Codebase {
      * @param codebases the codebase list
      * @return the codebases as space sparated list
      */
-    public static String getCodebaseString(List codebases) {
+    public static String getCodebaseString(List<Codebase> codebases) {
         StringBuffer results = new StringBuffer();
-        Iterator it = codebases.iterator();
+        Iterator<Codebase> it = codebases.iterator();
         while (it.hasNext()) {
-            Codebase codebase = (Codebase) it.next();
+            Codebase codebase = it.next();
             String l = codebase.getLocation();
             if (l == null) {
                 throw new BuildException(ERROR_UNDEFINED_CODEBASE);

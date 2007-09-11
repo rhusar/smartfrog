@@ -81,7 +81,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     /**
      * a list of filesets
      */
-    private List source = new LinkedList();
+    private List<FileSet> source = new LinkedList<FileSet>();
 
     /**
      * parser subprocess
@@ -175,9 +175,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
         int err;
         try {
 
-            //NB: ignore the deprecation, as this is the only 1.6 compatible tactic
-
-            tempFile = FileUtils.newFileUtils().createTempFile("parse",
+            tempFile = FileUtils.getFileUtils().createTempFile("parse",
                 ".txt", null);
             int filesCount = buildParserTargetsFile(tempFile);
 
@@ -241,14 +239,12 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     private int buildParserTargetsFile(File tempFile) {
         int filesCount=0;
 
-        List files = new LinkedList();
-        Iterator src = source.iterator();
-        while (src.hasNext()) {
-            FileSet set = (FileSet) src.next();
+        List<String> files = new LinkedList<String>();
+        for (FileSet set : source) {
             DirectoryScanner scanner = set.getDirectoryScanner(getProject());
             String[] included = scanner.getIncludedFiles();
-            for (int i = 0; i < included.length; i++) {
-                File parsefile = new File(scanner.getBasedir(), included[i]);
+            for (String anIncluded : included) {
+                File parsefile = new File(scanner.getBasedir(), anIncluded);
                 log("scanning " + parsefile, Project.MSG_VERBOSE);
                 files.add(parsefile.toString());
                 filesCount++;
@@ -261,9 +257,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             PrintWriter out = null;
             try {
                 out = new PrintWriter(new FileOutputStream(tempFile));
-                src = files.iterator();
-                while (src.hasNext()) {
-                    String s = (String) src.next();
+                for (String s : files) {
                     out.println(s);
                 }
             } catch (IOException e) {

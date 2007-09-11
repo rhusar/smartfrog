@@ -112,7 +112,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
      */
     public void addPropertiesToJvm(SysPropertyAdder dest) {
         Properties props=getProperties();
-        Enumeration en=props.propertyNames();
+        Enumeration<?> en=props.propertyNames();
         while (en.hasMoreElements()) {
             String name = (String) en.nextElement();
             String value=props.getProperty(name);
@@ -131,11 +131,11 @@ public class PropertyFile  extends DataType  implements Cloneable {
         /**
          * internal cache
          */
-        private List list=new LinkedList();
+        private List<PropertyFile> list=new LinkedList<PropertyFile>();
 
         /**
          * add to the list
-         * @param propFile
+         * @param propFile the property file
          */
         public void add(PropertyFile propFile) {
             list.add(propFile);
@@ -146,9 +146,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
          * @param jvm JVM to add to
          */
         public void addPropertiesToJvm(SysPropertyAdder jvm) {
-            Iterator it=list.iterator();
-            while (it.hasNext()) {
-                PropertyFile propertyFile = (PropertyFile) it.next();
+            for (PropertyFile propertyFile : list) {
                 propertyFile.addPropertiesToJvm(jvm);
             }
         }
@@ -157,7 +155,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
          * get an iterator.
          * @return the iterator
          */
-        public ListIterator iterator() {
+        public ListIterator<PropertyFile> iterator() {
             return list.listIterator();
         }
 
