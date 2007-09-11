@@ -42,7 +42,8 @@ AnubisPartitionTestConsole extends {
     heartbeatTimeout  ATTRIB anubisParameters:heartbeatTimeout;
 }
 
-PartitionManager extends AnubisDefaultParameters {
+// PartitionManager extends AnubisDefaultParameters {
+PartitionManager extends Compound {
     sfExport false;
     sfClass "org.smartfrog.services.anubis.partition.PartitionManager";
     partitionProtocol TBD;
@@ -63,16 +64,16 @@ ConnectionSet extends Compound {
     sfExport false;
     sfClass "org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet";
     partitionProtocol        TBD;
-    identity            LAZY ATTRIB anubisParameters:identity;
-    connectionServerFactory  ATTRIB anubisParameters:connectionTransport;
-    heartbeatCommsAddress    ATTRIB anubisParameters:heartbeatGroup;
-    heartbeatCommsFactory    ATTRIB anubisParameters:heartbeatTransport;
-    contactAddress           ATTRIB anubisParameters:contactAddress;
-    heartbeatProtocolFactory ATTRIB anubisParameters:heartbeatProtocolFactory;
-    leaderProtocolFactory    ATTRIB anubisParameters:leaderProtocolFactory;
-    preferred                ATTRIB anubisParameters:preferred;
-    heartbeatInterval        ATTRIB anubisParameters:heartbeatInterval;
-    heartbeatTimeout         ATTRIB anubisParameters:heartbeatTimeout;
+    identity                 LAZY ATTRIB anubisParameters:identity;
+    connectionServerFactory  LAZY ATTRIB anubisParameters:connectionTransport;
+    heartbeatCommsAddress         ATTRIB anubisParameters:heartbeatGroup;
+    heartbeatCommsFactory    LAZY ATTRIB anubisParameters:heartbeatTransport;
+    contactAddress                ATTRIB anubisParameters:contactAddress;
+    heartbeatProtocolFactory LAZY ATTRIB anubisParameters:heartbeatProtocolFactory;
+    leaderProtocolFactory    LAZY ATTRIB anubisParameters:leaderProtocolFactory;
+    preferred                     ATTRIB anubisParameters:preferred;
+    heartbeatInterval             ATTRIB anubisParameters:heartbeatInterval;
+    heartbeatTimeout              ATTRIB anubisParameters:heartbeatTimeout;
 }
 
 TestMgr extends Compound {
@@ -98,7 +99,7 @@ AnubisPartitionManager extends PartitionManager {
     }
 
     testMgr extends TestMgr {
-        contactAddress            PARENT:ATTRIB contactAddress;
+        contactAddress            PARENT:ATTRIB anubisParameters:contactAddress;
         partitionManager     LAZY PARENT:ATTRIB partitionManager;
     }
 }
