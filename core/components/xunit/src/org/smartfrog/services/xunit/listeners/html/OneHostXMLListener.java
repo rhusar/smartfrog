@@ -511,8 +511,7 @@ public class OneHostXMLListener implements XmlListener {
                     true);
             StackTraceElement[] stack = fault.getStack();
             StringBuffer stackTrace = new StringBuffer();
-            for (int i = 0; i < stack.length; i++) {
-                StackTraceElement frame = stack[i];
+            for (StackTraceElement frame : stack) {
                 StringBuffer attrs = new StringBuffer();
                 attrs.append(attr("classname", frame.getClassName()));
                 attrs.append(attr("method", frame.getMethodName()));

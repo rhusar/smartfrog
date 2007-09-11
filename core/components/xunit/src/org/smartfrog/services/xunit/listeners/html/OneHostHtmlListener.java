@@ -291,8 +291,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
             enter(buf, "tr", null);
             enter(buf, "td", attr("colspan","2"));
             StackTraceElement[] stack = fault.getStack();
-            for (int i = 0; i < stack.length; i++) {
-                StackTraceElement frame = stack[i];
+            for (StackTraceElement frame : stack) {
                 buf.append(div("fault-frame",
                         escape(frame.toString(), false)));
             }

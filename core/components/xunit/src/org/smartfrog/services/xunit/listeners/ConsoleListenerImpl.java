@@ -124,8 +124,8 @@ public class ConsoleListenerImpl extends PrimImpl
         println(fault.getClassname());
         println(fault.getMessage());
         StackTraceElement stack[] = fault.getStack();
-        for (int i = 0; i < stack.length; i++) {
-            println(stack[i].toString());
+        for (StackTraceElement aStack : stack) {
+            println(aStack.toString());
         }
         flush();
         //recurse
