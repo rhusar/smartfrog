@@ -35,16 +35,16 @@ public class FilterImpl extends Thread {
 
     //--- BufferFiller
     private class BufferFiller extends Thread {
-    private boolean stopRequested = false;
-    private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
+    private boolean stopWorkerRequested = false;
+    private LogSF log = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
     public BufferFiller() {
       super("BufferFiller-Filter " +"(" + type + ")");
-      sfLog = LogFactory.getLog(ID);
+      log = LogFactory.getLog(ID);
     }
 
     public void stopRequest() {
-      stopRequested = true;
+      stopWorkerRequested = true;
     }
 
     public void run() {
@@ -71,7 +71,7 @@ public class FilterImpl extends Thread {
             if (reader.ready()) {
               if ( (line = reader.readLine()) == null) {
                 //log.info("run" + ID + " -- no more output to process");
-                stopRequested = true;
+                stopWorkerRequested = true;
                 continue;
               }
 
@@ -80,7 +80,7 @@ public class FilterImpl extends Thread {
                 buffer.notify();
               }
             } else {
-              if (stopRequested) {
+              if (stopWorkerRequested) {
                 break;
               }
 
@@ -91,32 +91,32 @@ public class FilterImpl extends Thread {
               }
             }
           } catch (IOException e) {
-              if (sfLog.isErrorEnabled()) {
-                  sfLog.error("problem reading output", e);
+              if (log.isErrorEnabled()) {
+                  log.error("problem reading output", e);
               }
-              stopRequested = true;
+              stopWorkerRequested = true;
           }
         }
 
         try {
-          if (sfLog.isTraceEnabled()){
-             sfLog.trace("closing input stream");
+          if (log.isTraceEnabled()){
+             log.trace("closing input stream");
           }
           reader.close();
           iStream.close();
           in.close();
         } catch (IOException e) {
-            if (sfLog.isErrorEnabled()){
-              sfLog.error("failed to close input stream", e);
+            if (log.isErrorEnabled()){
+              log.error("failed to close input stream", e);
             }
         }
       } catch (Throwable t) {
-          if (sfLog.isErrorEnabled()){
-            sfLog.error("unexpected exception",t);
+          if (log.isErrorEnabled()){
+            log.error("unexpected exception",t);
           }
       }
-      if (sfLog.isTraceEnabled()){
-        sfLog.trace("stopped");
+      if (log.isTraceEnabled()){
+        log.trace("stopped");
       }
 
     }
@@ -240,16 +240,16 @@ public class FilterImpl extends Thread {
   }
 
   // Compares line with filters[] set
-  protected void filter(String line, String filters[]) {
+  protected void filter(String line, String lineFilters[]) {
       if (listener !=null) {
           listener.line(line, getName());
       }
 
-      if (filters==null) return;
+      if (lineFilters==null) return;
 
-      for (int i = 0; i<filters.length; ++i) {
+      for (int i = 0; i<lineFilters.length; ++i) {
           //sfLog.trace("Comparing: "+ line +", "+filters[i]);
-          if (line.indexOf(filters[i])==-1) {
+          if (line.indexOf(lineFilters[i])==-1) {
               //No match
               continue;
           }

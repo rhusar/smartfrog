@@ -388,12 +388,12 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
     /**
      * Description of the Method
      *
-     * @param host Description of the Parameter
+     * @param targetHost Description of the Parameter
      * @param uriSocket Description of the Parameter
      *
      * @return Description of the Return Value
      */
-    private long handleConnection(String host, Socket uriSocket) {
+    private long handleConnection(String targetHost, Socket uriSocket) {
         try {
             if (uriSocket == null) {
                 return 0;
@@ -422,17 +422,17 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
     /**
      * Description of the Method
      *
-     * @param host Description of the Parameter
+     * @param targetHost Description of the Parameter
      *
      * @return Description of the Return Value
      */
-    private boolean checkHost(String host) {
+    private boolean checkHost(String targetHost) {
         try {
-            InetAddress.getByName(host);
+            InetAddress.getByName(targetHost);
 
             return (true);
         } catch (java.net.UnknownHostException uhe) {
-            logger.err(name, "Bogus host: " + host);
+            logger.err(name, "Bogus host: " + targetHost);
 
             return (false);
         }
@@ -441,29 +441,29 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
     /**
      * Establishes the connection, then passes the socket to handleConnection.
      *
-     * @param host Description of the Parameter
-     * @param port Description of the Parameter
+     * @param targetHost Description of the Parameter
+     * @param targetPort Description of the Parameter
      *
      * @return Description of the Return Value
      */
-    public Socket connect(String host, int port) {
+    public Socket connect(String targetHost, int targetPort) {
         try {
             //logger.log(name, "Connecting to:"+host+":"+port);
             if (client != null) {
                 client.close();
             }
 
-            client = new Socket(host, port);
+            client = new Socket(targetHost, targetPort);
             connected = true;
 
             return client;
 
             //handleConnection(client);
         } catch (java.net.UnknownHostException uhe) {
-            logger.err(name, "Unknown host: " + host + ", " + uhe.getMessage());
+            logger.err(name, "Unknown host: " + targetHost + ", " + uhe.getMessage());
         } catch (IOException ioe) {
             logger.err(name,
-                host + ":" + port + ", IOException: " + ioe.getMessage());
+                targetHost + ":" + targetPort + ", IOException: " + ioe.getMessage());
         }
 
         connected = false;

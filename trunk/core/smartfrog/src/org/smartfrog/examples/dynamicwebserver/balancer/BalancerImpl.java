@@ -89,12 +89,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
      * Implementation of the Balancer interface
      *
      * @param hostname The host name of the new server
-     * @param port The port number on the new server used open the connection
+     * @param serverport The port number on the new server used open the connection
      *        from the balancer
      */
-    public void addServer(String hostname, int port) {
+    public void addServer(String hostname, int serverport) {
         if (!stopping) {
-            serverSelector.addServer(hostname, port);
+            serverSelector.addServer(hostname, serverport);
         }
     }
 

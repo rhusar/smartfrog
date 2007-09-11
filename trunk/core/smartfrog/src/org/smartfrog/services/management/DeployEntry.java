@@ -883,17 +883,17 @@ public class DeployEntry implements Entry {
      *  Replacement method introduced: 12-2-02
      *
      *@param  value  inp object
-     *@param  isCopy of the original object?
+     *@param  isaCopy of the original object?
      *@return        DeployEntry object
      */
-    private DeployEntry obj2Entry(Object value, boolean isCopy) {
+    private DeployEntry obj2Entry(Object value, boolean isaCopy) {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
             if ((value instanceof Prim)) {
                 return (new DeployEntry(value, false, newShowRootProcessName,this.showCDasChild));
             }
             if ((value instanceof ComponentDescription)) {
-                return (new DeployEntry(value, isCopy, newShowRootProcessName,this.showCDasChild));
+                return (new DeployEntry(value, isaCopy, newShowRootProcessName,this.showCDasChild));
             }
 //            else if (value instanceof Reference) {
 //                //sfLog().info("resolving reference...");

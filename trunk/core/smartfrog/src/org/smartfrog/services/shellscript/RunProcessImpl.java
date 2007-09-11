@@ -107,11 +107,11 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       }
     }
 
-    private String stateToString( int state )
+    private String stateToString( int stateValue )
     {
         String s = null;
 
-        switch ( state )
+        switch ( stateValue )
         {
             case STATE_INACTIVE:
                 s = "INACTIVE";
@@ -196,7 +196,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 }
             }
             if (cmd.restart()) {
-                try {  this.sleep(sleepBeforeRestart); } catch (InterruptedException ex1) {  }
+                try {  Thread.sleep(sleepBeforeRestart); } catch (InterruptedException ex1) {  }
             }
         } while (cmd.restart());
 

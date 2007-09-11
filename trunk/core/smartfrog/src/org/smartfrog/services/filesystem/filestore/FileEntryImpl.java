@@ -92,10 +92,10 @@ public class FileEntryImpl implements FileEntry {
      * Add metadata to the system
      *
      * @param key String name
-     * @param metadata value
+     * @param metadataValue value
      */
-    public void addMetadata(String key, Object metadata) {
-        data().put(key, metadata);
+    public void addMetadata(String key, Object metadataValue) {
+        data().put(key, metadataValue);
     }
 
     /**

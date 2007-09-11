@@ -89,9 +89,9 @@ public class ConstructSchema implements PhaseAction {
     }
 
     // the component description which is to be transformed
-    public void forComponent(SFComponentDescription cd, String phaseName, Stack path) {
+    public void forComponent(SFComponentDescription componentDescription, String phaseName, Stack pathStack) {
         this.phaseName = phaseName;
-        this.cd = cd;
-        this.path = path;
+        this.cd = componentDescription;
+        this.path = pathStack;
     }
 }

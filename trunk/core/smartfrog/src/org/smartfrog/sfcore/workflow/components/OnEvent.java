@@ -68,12 +68,12 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         ComponentDescription act;
 
         try {
-            String name = ATTR_OTHERWISE;
+            String eventname = ATTR_OTHERWISE;
             try {
                 act = (ComponentDescription)sfResolve(event.toString());
-                name = event.toString();
+                eventname = event.toString();
             } catch (SmartFrogResolutionException e) {
-                act = (ComponentDescription)sfResolve(name);
+                act = (ComponentDescription)sfResolve(eventname);
             }
 
             synchronized (this) {
@@ -85,7 +85,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 }
             }
 
-            sfCreateNewChild(name+index++, act, null);
+            sfCreateNewChild(eventname+index++, act, null);
 
         } catch (SmartFrogResolutionException e) {
             // no handler - log and ignore

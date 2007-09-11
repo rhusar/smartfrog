@@ -90,11 +90,11 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
 
     /**
      * Deploy the template description in hosts
-     * @param hosts Vector of hosts
+     * @param hostlist Vector of hosts
      * @throws SmartFrogException error in deploying
      */
-    private void deployTemplates (Vector hosts) throws SmartFrogException {
-        for (Enumeration h = hosts.elements(); h.hasMoreElements(); ) {
+    private void deployTemplates (Vector hostlist) throws SmartFrogException {
+        for (Enumeration h = hostlist.elements(); h.hasMoreElements(); ) {
             deployTemplate((String) h.nextElement());
         }
     }

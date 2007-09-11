@@ -195,11 +195,11 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      * @param  root  Root of the tree
      * @param isCopy is root a copy?.
      * @param inRootPanel flag indicating to show in root panel
-     * @param showCDasChild flag indicating to show CD as child
+     * @param shouldShowCDasChild flag indicating to show CD as child
      */
-    private void treeInit(Object root, boolean isCopy, boolean inRootPanel, boolean showCDasChild) {
+    private void treeInit(Object root, boolean isCopy, boolean inRootPanel, boolean shouldShowCDasChild) {
         if (root != null) {
-            treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,showCDasChild);
+            treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,shouldShowCDasChild);
         } else {
             treeModel = new DeployTreeModelSF();
         }
@@ -211,8 +211,8 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
         //systemViewJTree.setPreferredSize(new Dimension(200, 100));
     }
 
-    public void showCDasChild(boolean showCDasChild){
-       treeModel.showCDasChild(showCDasChild);
+    public void showCDasChild(boolean shouldShowCDasChild){
+       treeModel.showCDasChild(shouldShowCDasChild);
     }
 
     /**

@@ -1417,10 +1417,10 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
      * Initializes with custom details.
      *
      * @param title         Window title
-     * @param stopResumeObj stop resume object
+     * @param stopResumeObject stop resume object
      * @throws Exception if unable to initialize
      */
-    private void customInit(String title, StopResume stopResumeObj)
+    private void customInit(String title, StopResume stopResumeObject)
             throws Exception {
         out = new PrintStream(new TextAreaOutputStream(screen));
         out.println("");
@@ -1428,7 +1428,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         setTitle(title);
         setSize(500, 400);
         validate();
-        this.stopResumeObj = stopResumeObj;
+        this.stopResumeObj = stopResumeObject;
 
         if (this.stopResumeObj == null) {
             stopResume.setVisible(false);

@@ -79,7 +79,7 @@ public class SFLogStdStreamImpl extends PrimImpl implements Prim, SFLogStdStream
                 String line = null;
                try {
                    while (!br.ready()) {
-                       this.sleep(500);
+                       Thread.sleep(500);
                    }
                } catch (InterruptedException ex) {
                }

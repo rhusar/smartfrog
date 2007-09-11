@@ -738,14 +738,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      * Subclasses can override this method to return alternative componentDescription implementations
      * 
      */
-    protected ComponentDescription createComponentDescription(final ComponentDescription parent, final Context context, final boolean eager) {
-    	return new ComponentDescriptionImpl(parent, context, eager);
+    protected ComponentDescription createComponentDescription(final ComponentDescription parentCD, final Context context, final boolean isEager) {
+    	return new ComponentDescriptionImpl(parentCD, context, isEager);
     }
     
    /**
     *  Return a component description as required by the deployer.
     *  Works by side-effect on the SFComponentDescription for efficiency.
-    *  This becomes uniseable after the conversion.
+    *  This becomes usable after the conversion.
     *
     *@return    the equivalent component description
     */
@@ -860,17 +860,17 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  Public method to carry out specific resolution actions as defined by the
     *  phases provided.
     *
-    *@param  phases               a vector of strings defining the names of the
+    *@param  phaseList               a vector of strings defining the names of the
     *      phases
     *@return                      the resultant Phases object, ready for the
-    *      next phase action or convertion into the core ComponentDescription
+    *      next phase action or conversion into the core ComponentDescription
     *@throws  SmartFrogException  In case of SmartFrog system error
     */
-   public Phases sfResolvePhases(Vector phases)
+   public Phases sfResolvePhases(Vector phaseList)
           throws SmartFrogException {
       SFComponentDescription actOn = this;
 
-      for (Enumeration e = phases.elements(); e.hasMoreElements(); ) {
+      for (Enumeration e = phaseList.elements(); e.hasMoreElements(); ) {
          String name = (String) e.nextElement();
          try {
            if (name.equals(PhaseNames.TYPE)) {

@@ -147,7 +147,7 @@ public class DumperCDImpl implements Dumper {
       * Tries to get the the String once  the object finished visiting all nodes
       * or until given timeout expires.
       *
-      * @param timeout max time to wait in millis
+      * @param waitTimeout max time to wait in millis
       *
       * @return The string representation of the description
       *
@@ -155,8 +155,8 @@ public class DumperCDImpl implements Dumper {
       * @throws RemoteException if there is any network or remote error
      *
       */
-     public ComponentDescription getComponentDescription ( long timeout) throws SmartFrogException {
-         long endTime = (new Date()).getTime()+timeout;
+     public ComponentDescription getComponentDescription ( long waitTimeout) throws SmartFrogException {
+         long endTime = (new Date()).getTime()+waitTimeout;
          synchronized (visitingLock) {
              while (visiting.longValue()!=0L) {
                      // try to return the String if not visiting logs.
@@ -172,7 +172,7 @@ public class DumperCDImpl implements Dumper {
                               if (sfLog().isWarnEnabled()) sfLog().warn("Description creation Timeout (\"+ (timeout/1000) +\"sec)");
                               return cd;
                           } else {
-                             throw new SmartFrogException("Description creation Timeout ("+ (timeout/1000) +"sec)");
+                             throw new SmartFrogException("Description creation Timeout ("+ (waitTimeout/1000) +"sec)");
                           }
                         }
                          try {
@@ -221,14 +221,14 @@ public class DumperCDImpl implements Dumper {
          //if (sfLog().isInfoEnabled()) sfLog().info("Visited #"+visiting+ " "+name);
      }
 
-    /** Get the resultiong Component Description in a String format
+    /** Get the resulting Component Description in a String format
      *
-     * @param timeout to get a valid result
+     * @param waitTimeout to get a valid result
      * @return a ComponentDescription in a deployable String format
      */
-    protected String getCDAsString(long timeout) {
+    protected String getCDAsString(long waitTimeout) {
         try {
-            return "sfConfig extends {\n" + getComponentDescription(timeout).toString() + "}";
+            return "sfConfig extends {\n" + getComponentDescription(waitTimeout).toString() + "}";
         } catch (Exception e) {
             if (sfLog().isWarnEnabled()) sfLog().warn(e);
             return e.getMessage();
@@ -240,7 +240,7 @@ public class DumperCDImpl implements Dumper {
       * Tries to get the the String once the object finished visiting all nodes
       * or until given timeout expires.
       *
-      * @param timeout max time to wait in millis
+      * @param waitTimeout max time to wait in millis
       *
       * @return The string representation of the description
       *
@@ -248,8 +248,8 @@ public class DumperCDImpl implements Dumper {
       * @throws RemoteException if there is any network or remote error
      *
       */
-     public String toString ( long timeout) throws Exception {
-        return getCDAsString(timeout);
+     public String toString ( long waitTimeout) throws Exception {
+        return getCDAsString(waitTimeout);
     }
 
     /** This modifies the default timeout used to
@@ -265,10 +265,10 @@ public class DumperCDImpl implements Dumper {
     /** This modifies the default set of sfKeys that are removed from every context.
      * @todo once the visits are started this method should not allow any updates. In any case,
      * the updates are ignored once the visits start
-     * @param sfKeysToBeRemoved
+     * @param keysToBeRemoved
      */
-    public void sfKeysToBeRemoved (String[] sfKeysToBeRemoved) {
-        this.sfKeysToBeRemoved = sfKeysToBeRemoved;
+    public void sfKeysToBeRemoved (String[] keysToBeRemoved) {
+        this.sfKeysToBeRemoved = keysToBeRemoved;
 
     }
 
@@ -308,9 +308,9 @@ public class DumperCDImpl implements Dumper {
             out = new FileWriter(new File(fileName));
             out.write("sfConfig ");
             try {
-                ComponentDescription cd = getComponentDescription(timeout);
-                cd.setEager(true);
-                ((PrettyPrinting)cd).writeOn(out, 1);
+                ComponentDescription componentDescription = getComponentDescription(timeout);
+                componentDescription.setEager(true);
+                ((PrettyPrinting)componentDescription).writeOn(out, 1);
             } catch (SmartFrogException e) {
                 out.write(e.getMessage());
             }

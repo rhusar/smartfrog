@@ -41,7 +41,8 @@ public class CheckSchemaElement extends BaseFunction {
 
     /**
      * Method to check if a class is compliant with predicate sfClass attribute.
-     * It thorws an exception if it failes to check the attributes.
+     * It throws an exception if it fails to check the attributes.
+     * @param attribute the attribute name
      * @param value the value of the attribute to check
      * @param optional boolean that indicates if the attributes is optional
      * @param binding type of binding for the class
@@ -50,7 +51,7 @@ public class CheckSchemaElement extends BaseFunction {
      * @param errorString error string used to prefix error messages
      * @throws SmartFrogAssertionResolutionException failed to check the attributes
      */
-    private void checkSchemaClass(Object value, String name,
+    private void checkSchemaClass(Object value, String attribute,
                                   boolean optional, String binding,
                                   Object schemaClass, String description,
                                   String errorString) throws SmartFrogAssertionResolutionException {
@@ -59,7 +60,7 @@ public class CheckSchemaElement extends BaseFunction {
                return;
            } else {
                throw new SmartFrogAssertionResolutionException (
-                     errorString + "non-optional attribute "+ getNameAndDescription(name,description)+" is missing" , null, null, null
+                     errorString + "non-optional attribute "+ getNameAndDescription(attribute,description)+" is missing" , null, null, null
                     );
            }
         }
@@ -78,25 +79,25 @@ public class CheckSchemaElement extends BaseFunction {
 
                 if (!condition)
                     throw new SmartFrogAssertionResolutionException (
-                           "errorString + (lazy) reference value for non-reference eager attribute " + getNameAndDescription(name,description), null, null, null
+                           "errorString + (lazy) reference value for non-reference eager attribute " + getNameAndDescription(attribute,description), null, null, null
                         );
             } else {
                 if (binding.equals("lazy"))
                     throw new SmartFrogAssertionResolutionException (
-                           errorString + "non-reference value found for lazy attribute " + getNameAndDescription(name,description)+"",
+                           errorString + "non-reference value found for lazy attribute " + getNameAndDescription(attribute,description)+"",
                            null, null, null
                         );
                   //else if (!(valueClass.equals("anyClass")) && !(SFClassLoader.forName(valueClass).isAssignableFrom(testvalue.getClass())))
                   else if (!(isValidClass(schemaClass,value)))
                     throw new SmartFrogAssertionResolutionException (
-                           errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + schemaClass + ", found: " + testvalueClass,
+                           errorString + "wrong class found for attribute " + getNameAndDescription(attribute,description)+ ", expected: " + schemaClass + ", found: " + testvalueClass,
                            null, null, null
                         );
             }
         } catch (Throwable e) {
             if (!(e instanceof SmartFrogAssertionResolutionException))
                 throw new SmartFrogAssertionResolutionException (
-                     "error checking attribute " + getNameAndDescription(name,description), e, null, null
+                     "error checking attribute " + getNameAndDescription(attribute,description), e, null, null
                     );
             else
                 throw (SmartFrogAssertionResolutionException)e;
@@ -147,29 +148,29 @@ public class CheckSchemaElement extends BaseFunction {
 
     /**
      * Composes a string using name and description strings
-     * @param name for an attribute
+     * @param attribute name of an attribute
      * @param description for the attribute
-     * @return string 'name' or 'name(description)'
+     * @return string the attribute name, with the description if present, both in single quotes. 
      */
-    private String getNameAndDescription (Object name, String description){
+    private String getNameAndDescription (Object attribute, String description){
           if (description.equals(""))
-              return "'"+name+"'";
+              return "'"+attribute+"'";
           else
-              return "'"+name+" ("+description+")"+"'";
+              return "'"+attribute+" ("+description+")"+"'";
     }
     /**
      * Applies predicates.
      * @throws SmartFrogAssertionResolutionException if fail to apply predicates.
      */
     protected Object doFunction() throws SmartFrogAssertionResolutionException {
-        String name = (String) context.get("name");
+        String elementname = (String) context.get("name");
 
-        //System.out.println("checking schema " + name);
+        
 
         Object value = null;
         Reference attributeRef = new Reference();
         attributeRef.addElement(ReferencePart.parent());
-        attributeRef.addElement(ReferencePart.here(name));
+        attributeRef.addElement(ReferencePart.here(elementname));
         try {
             if (rr != null) {
                 value = rr.sfResolve(attributeRef);
@@ -184,7 +185,6 @@ public class CheckSchemaElement extends BaseFunction {
         } catch (RemoteException e) {
             return Boolean.FALSE; // treat as a failure
         }
-        //System.out.println("checking schema " + name + " with value class " + ((value != null)?value.getClass():null));
 
         String description = (String) context.get("description");
         if (description == null) description = "";
@@ -196,13 +196,13 @@ public class CheckSchemaElement extends BaseFunction {
         String binding = (String)context.get("binding");
         if (!(binding.equals("anyBinding") || binding.equals("eager") || binding.equals("lazy") )) {
             throw new SmartFrogAssertionResolutionException (
-                     errorString + "binding not valid value for attribute '" + name + "'", null, null, null
+                     errorString + "binding not valid value for attribute '" + elementname + "'", null, null, null
             );
         }
         Object schemaClass = context.get("class");
         boolean optional = ((Boolean)context.get("optional")).booleanValue();
 
-        checkSchemaClass(value, name, optional, binding, schemaClass, description, errorString);
+        checkSchemaClass(value, elementname, optional, binding, schemaClass, description, errorString);
         return Boolean.TRUE;
     }
 

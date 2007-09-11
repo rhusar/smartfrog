@@ -87,10 +87,10 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      * This handler catches the exception and logs it, so that smartfrog
      * keeps running even if graceful shutdown is broken.
      * @param name name of interrupt to bind to.
-     * @param log log to log messages to
+     * @param logger log to log messages to
      */
-    public void bind(String name, LogSF log) {
-        this.log=log;
+    public void bind(String name, LogSF logger) {
+        this.log=logger;
         try {
             oldHandler=Signal.handle(new Signal(name), this);
         } catch (IllegalArgumentException e) {

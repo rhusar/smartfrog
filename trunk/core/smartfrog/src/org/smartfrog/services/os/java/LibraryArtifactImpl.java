@@ -386,14 +386,14 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * @param file file to check
      * @param algorithm java crypto api algorithm
      * @param hexValue expected hex value
-     * @param blocksize buffer size to read the file
+     * @param bufferSize buffer size to read the file
      *
      * @throws SmartFrogException on a checksum failure
      */
     public void checkChecksum(File file,
                               String algorithm,
                               String hexValue,
-                              int blocksize)
+                              int bufferSize)
             throws SmartFrogException {
         MessageDigest messageDigest;
         try {
@@ -406,11 +406,11 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         byte[] buffer= new byte[0];
         try {
             instream = new FileInputStream(file);
-            buffer = new byte[blocksize];
+            buffer = new byte[bufferSize];
 
             digestStream = new DigestInputStream(instream,
                     messageDigest);
-            while (digestStream.read(buffer, 0, blocksize) != -1) {
+            while (digestStream.read(buffer, 0, bufferSize) != -1) {
                 // all the work is in the digest stream; here we just pump
                 // the channel.
             }

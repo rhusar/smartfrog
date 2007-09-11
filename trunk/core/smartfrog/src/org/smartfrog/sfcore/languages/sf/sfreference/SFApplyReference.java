@@ -64,15 +64,15 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof SFApplyReference)) {
+    public boolean equals(Object reference) {
+        if (!(reference instanceof SFApplyReference)) {
             return false;
         }
 
-        return ((SFApplyReference) ref).comp == comp;
+        return ((SFApplyReference) reference).comp == comp;
 
     }
 
@@ -265,9 +265,9 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      * Adds a parameter to the Context contained in the reference.
      *
      * @param name String representing the name of the parameter
-     * @param data the Object which is the data associated with the parameter
+     * @param dataValue the Object which is the data associated with the parameter
      */
-    public void sfAddParameter(String name, Object data) throws SmartFrogRuntimeException {
-        comp.sfReplaceAttribute(name, data);
+    public void sfAddParameter(String name, Object dataValue) throws SmartFrogRuntimeException {
+        comp.sfReplaceAttribute(name, dataValue);
     }
 }

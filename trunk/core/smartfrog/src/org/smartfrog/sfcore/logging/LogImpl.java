@@ -691,24 +691,24 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *
      * Is current log level enabled?
      *
-     * @param log  logger
+     * @param logger  logger
      * @return boolean
      */
-     private boolean isCurrentLevelEnabled(Log log) {
+     private boolean isCurrentLevelEnabled(Log logger) {
          if (currentLogLevel >=LOG_LEVEL_OFF) {
              return false;
          } else if (currentLogLevel==LOG_LEVEL_FATAL) {
-             return log.isFatalEnabled();
+             return logger.isFatalEnabled();
          } else if (currentLogLevel==LOG_LEVEL_ERROR) {
-             return log.isErrorEnabled();
+             return logger.isErrorEnabled();
          } else if (currentLogLevel==LOG_LEVEL_WARN) {
-             return log.isWarnEnabled();
+             return logger.isWarnEnabled();
          } else if (currentLogLevel==LOG_LEVEL_INFO) {
-             return log.isInfoEnabled();
+             return logger.isInfoEnabled();
          } else if (currentLogLevel==LOG_LEVEL_DEBUG) {
-             return log.isDebugEnabled();
+             return logger.isDebugEnabled();
          } else if (currentLogLevel==LOG_LEVEL_TRACE) {
-             return log.isTraceEnabled();
+             return logger.isTraceEnabled();
          } else if (currentLogLevel<=LOG_LEVEL_ALL) {
              return true;
          }
@@ -1213,13 +1213,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Log Registration interface
      *
      * @param name log name
-     * @param log logger to register
+     * @param logger logger to register
      * @throws SmartFrogLogException  if failed to register
      * @throws RemoteException in case of remote/network error
      */
-    public void register(String name,Log log)  throws SmartFrogLogException , RemoteException{
+    public void register(String name,Log logger)  throws SmartFrogLogException , RemoteException{
         try {
-            registeredLogs.put(logName+"."+name, log);
+            registeredLogs.put(logName+"."+name, logger);
         } catch (Exception ex) {
             throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
         }
@@ -1228,13 +1228,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /**
      *  Log Registration interface
      * @param name log name
-     * @param log logger to register
+     * @param logger logger to register
      * @param logLevel  log level
      * @throws RemoteException in case of remote/network error
      * @throws SmartFrogLogException if failed to register
      */
-   public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException{
-       register(name,log);
+   public void register(String name,Log logger, int logLevel)  throws RemoteException, SmartFrogLogException{
+       register(name,logger);
        if (currentLogLevel>=logLevel){
          currentLogLevel=logLevel;
        }

@@ -166,8 +166,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     }
 
 
-      public synchronized void ready(final Integer code) {
-        this.code = code;
+      public synchronized void ready(final Integer result) {
+        this.code = result;
         resultReady = true;
         notifyAll();
       }
@@ -297,13 +297,13 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
    * @param command String
-   * @param lock ScriptLock
+   * @param scriptLock ScriptLock
    * @return ScriptResults
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
-    return execute (command,lock,false);
+  public ScriptResults execute(String command, ScriptLock scriptLock) throws SmartFrogException {
+    return execute (command,scriptLock,false);
   }
 
   /**
@@ -311,14 +311,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
    * @param command String
-   * @param lock ScriptLock
+   * @param scriptLock ScriptLock
    * @param verbose script output
    * @return ScriptResults
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException {
-    if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
+  public ScriptResults execute(String command, ScriptLock scriptLock, boolean verbose) throws SmartFrogException {
+    if (this.lock!=scriptLock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
     //Close results blocking
     closeResults(command, true, -1);
     ScriptResults res =  results;
@@ -358,9 +358,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
-    ScriptLock lock = lockShell(timeout);
-    ScriptResults result = execute (commands,lock,verbose);
-    releaseShell(lock);
+    ScriptLock lockedShell = lockShell(timeout);
+    ScriptResults result = execute (commands,lockedShell,verbose);
+    releaseShell(lockedShell);
     return result;
   }
 
@@ -378,9 +378,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
-    ScriptLock lock = lockShell(timeout);
-    ScriptResults result = execute (command,lock,verbose);
-    releaseShell(lock);
+    ScriptLock scriptLock = lockShell(timeout);
+    ScriptResults result = execute (command,scriptLock,verbose);
+    releaseShell(scriptLock);
     return result;
   }
 
@@ -406,13 +406,13 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
    * @param commands List
-   * @param lock ScriptLock
+   * @param scriptLock ScriptLock
    * @return ScriptResults
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(List commands, ScriptLock lock) throws  SmartFrogException {
-    return execute (commands,lock,false);
+  public ScriptResults execute(List commands, ScriptLock scriptLock) throws  SmartFrogException {
+    return execute (commands,scriptLock,false);
   }
 
   /**
@@ -423,14 +423,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
    * @param commands List
-   * @param lock ScriptLock
+   * @param scriptLock ScriptLock
    * @param verbose script output
    * @return ScriptResults
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws  SmartFrogException {
-    if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
+  public ScriptResults execute(List commands, ScriptLock scriptLock, boolean verbose) throws  SmartFrogException {
+    if (this.lock!=scriptLock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
     // Loop through using extra echo to mark end of command and a lock to continue.
 
     //Close results blocking
@@ -508,14 +508,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *
    * @throws SmartFrogException if the lock object is not valid, i.e.
    *
-   * @param lock the lock object receieved from the lockShell
+   * @param scriptLock the lock object received from the lockShell
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the l0ck
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public synchronized void releaseShell(ScriptLock lock) throws SmartFrogException {
-    if (this.lock != lock ) throw new SmartFrogException("LockOwnershipException");
+  public synchronized void releaseShell(ScriptLock scriptLock) throws SmartFrogException {
+    if (this.lock != scriptLock ) throw new SmartFrogException("LockOwnershipException");
     this.lock = null;
     notify();
   }

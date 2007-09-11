@@ -96,7 +96,7 @@ public class SFUnparser implements WriterLanguageUnparser {
      *
      * @param ps writer to write on
      * @param indent level
-     * @param keys enumeation over the keys of the context to write out
+     * @param keys enumeration over the keys of the context to write out
      *
      * @throws IOException failure while writing
      */

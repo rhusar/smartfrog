@@ -51,11 +51,11 @@ public class SFTBDReference extends SFReference implements ReferencePhases {
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        return this == ref;
+    public boolean equals(Object reference) {
+        return this == reference;
     }
 
     /**
