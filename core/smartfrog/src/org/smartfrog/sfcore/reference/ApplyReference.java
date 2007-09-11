@@ -63,15 +63,15 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof ApplyReference)) {
+    public boolean equals(Object reference) {
+        if (!(reference instanceof ApplyReference)) {
             return false;
         }
 
-        if (((ApplyReference) ref).comp != comp) {
+        if (((ApplyReference) reference).comp != comp) {
             return false;
         }
 

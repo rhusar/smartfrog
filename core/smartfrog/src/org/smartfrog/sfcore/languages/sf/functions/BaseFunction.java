@@ -54,9 +54,9 @@ public abstract class BaseFunction implements Function  {
      * 
      * @throws SmartFrogFunctionResolutionException if the doFunction method does.
      */
-    public Object doit(Context context, Reference name, ReferenceResolver rr) throws SmartFrogFunctionResolutionException {
-        this.context = context;
-        this.rr = rr;
+    public Object doit(Context ctx, Reference unused, ReferenceResolver resolver) throws SmartFrogFunctionResolutionException {
+        this.context = ctx;
+        this.rr = resolver;
 
         Object result = doFunction();
         if (result instanceof ComponentDescription) {
@@ -75,9 +75,9 @@ public abstract class BaseFunction implements Function  {
      *
      * @throws SmartFrogFunctionResolutionException if the doFunction method does.
      */
-    public Object doit(Context context, Reference name, RemoteReferenceResolver rr) throws SmartFrogFunctionResolutionException {
-        this.context = context;
-        this.rrr = rr;
+    public Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver) throws SmartFrogFunctionResolutionException {
+        this.context = ctx;
+        this.rrr = resolver;
 
         Object result = doFunction();
         if (result instanceof ComponentDescription) {

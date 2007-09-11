@@ -209,52 +209,52 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * To String
-     * @param separator the separator to be used
+     * @param separatorString the separator to be used
      * @return String
      */
-    public String toString(String separator){
+    public String toString(String separatorString){
         StringBuffer str = new StringBuffer();
         if (getName()!=null) {
             str.append(" name:"); str.append(getName());
         }
-        str.append(separator);
+        str.append(separatorString);
         str.append(" type:"); str.append(Action.type[actionType]);
 
         if (getUrl()!=null) {
-            str.append(separator);
+            str.append(separatorString);
             str.append(" url:"); str.append(getUrl());
         }
         if (getDeployReference()!=null && getDeployReference().size()>0) {
-            str.append(separator);
+            str.append(separatorString);
             str.append(" depRef:");
             str.append(getDeployReference().toString());
         }
         if (getHost()!=null) {
-            str.append(separator);
+            str.append(separatorString);
             str.append(" host:");
             str.append(getHost());
         }
         if (getSubProcess()!=null) {
-            str.append(separator);
+            str.append(separatorString);
             str.append(" subProc:");
             str.append(getSubProcess());
         }
 
-        str.append(separator);
+        str.append(separatorString);
         str.append(" resultType:");
         str.append(Result.type[resultType]);
 
         if (resultMessage!=null) {
-            str.append(separator);
+            str.append(separatorString);
             str.append(" resultMessage:");
             str.append(resultMessage);
             }
         if (resultException!=null) {
-          str.append(separator);
+          str.append(separatorString);
           str.append(" resultExceptionMessage:");
           str.append(resultException.getMessage());
           if (Logger.logStackTrace) {
-             str.append(parseExceptionStackTrace(resultException,separator));
+             str.append(parseExceptionStackTrace(resultException,separatorString));
           }
         }
         return str.toString();
@@ -270,10 +270,10 @@ public class ConfigurationDescriptor implements MessageKeys {
     }
     /**
      * Gets status message
-     * @param separator  the separator to be used
+     * @param separatorString  the separator to be used
      * @return String status message
      */
-    public String statusString(String separator){
+    public String statusString(String separatorString){
           StringBuffer message = new StringBuffer();
           StringBuffer messageError=null;
           String result = "";
@@ -301,23 +301,23 @@ public class ConfigurationDescriptor implements MessageKeys {
           }
 
           if ((getUrl() != null) && !isEmpty(getUrl())) {
-              message.append(separator);
+              message.append(separatorString);
               message.append(" [");
               message.append(getUrl());
               message.append("]");
           }
           if (getDeployReference()!=null) {
-              message.append(separator);
+              message.append(separatorString);
               message.append(" deployReference: ");
               message.append(getDeployReference().toString());
           }
           if (getHost()!=null) {
-              message.append(separator);
+              message.append(separatorString);
               message.append(" host:");
               message.append(getHost());
           }
           if (getSubProcess()!=null) {
-              message.append(separator);
+              message.append(separatorString);
               message.append(" subProcess:");
               message.append(getSubProcess());
           }
@@ -326,7 +326,7 @@ public class ConfigurationDescriptor implements MessageKeys {
             if ( (resultObject != null) && (resultObject instanceof Prim)) {
               try {
                 Object time = ( (Prim)resultObject).sfResolveHere(SF_PARSE_TIME);
-                message.append(separator);
+                message.append(separatorString);
                 message.append(" parse time: ");
                 message.append(time);
               }
@@ -341,7 +341,7 @@ public class ConfigurationDescriptor implements MessageKeys {
             if ( (resultObject != null) && (resultObject instanceof Prim)) {
               try {
                 Object time = ( (Prim)resultObject).sfResolveHere(SF_DEPLOY_TIME);
-                message.append(separator);
+                message.append(separatorString);
                 message.append(" deploy time: ");
                 message.append(time);
               }
@@ -460,7 +460,7 @@ public class ConfigurationDescriptor implements MessageKeys {
                   if (originalSFACT!=null && Logger.logStackTrace) {
                       messageError.append(lineSeparator);
                       messageError.append("* To String: '");
-                      messageError.append(toString(separator));
+                      messageError.append(toString(separatorString));
                       messageError.append("'");
                   }
                   result = result + messageError.toString();
@@ -1102,11 +1102,11 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * Gets the value from option hashtable
-     * @param name Objct name
+     * @param option Option name
      * @return Object value
      */
-    public Object getOption(Object name){
-       return options.get(name);
+    public Object getOption(Object option){
+       return options.get(option);
     }
 
     /**
@@ -1141,11 +1141,11 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * Get Context Attribute
-     * @param name attribute name
+     * @param attributeName attribute name
      * @return Object attribute value
      */
-    public Object getContextAttribute(Object name){
+    public Object getContextAttribute(Object attributeName){
        if (context==null)  return null;
-       return context.get(name);
+       return context.get(attributeName);
     }
 }

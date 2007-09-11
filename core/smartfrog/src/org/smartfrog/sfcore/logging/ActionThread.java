@@ -66,11 +66,11 @@ public class ActionThread implements Runnable {
 
     /**
      * Thread body launches method with arguments given from object specified
-     * @param method  method to invoke
+     * @param actionmethod  method to invoke
      * @return ActionThread
      */
-   public ActionThread executeAction(Method method){
-       this.method=method;
+   public ActionThread executeAction(Method actionmethod){
+       this.method=actionmethod;
        return executeAction();
    }
 

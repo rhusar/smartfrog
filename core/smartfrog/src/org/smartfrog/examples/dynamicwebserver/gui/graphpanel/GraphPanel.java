@@ -622,27 +622,27 @@ public class GraphPanel extends JPanel implements ComponentListener,
      * than xMax or xData less than  xMin the return values  are 0 and
      * xAxisPixelLength respectively
      *
-     * @param xData DOCUMENT ME!
+     * @param xDataValue DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      */
-    protected int scaleX(int xData) {
+    protected int scaleX(int xDataValue) {
         int result = 0;
 
-        if (xData >= xMax) {
+        if (xDataValue >= xMax) {
             return xAxisPixelLength;
         }
 
-        if (xData <= xMin) {
+        if (xDataValue <= xMin) {
             return 0;
         }
 
         if (xMin != 0) {
             double xcoeff = ((double) xAxisPixelLength) / (xMax - xMin);
             double xOr = -xcoeff * xMin;
-            result = (int) ((xcoeff * xData) + xOr);
+            result = (int) ((xcoeff * xDataValue) + xOr);
         } else {
-            result = (int) (xData * ((double) xAxisPixelLength / xMax));
+            result = (int) (xDataValue * ((double) xAxisPixelLength / xMax));
         }
 
         return result;
@@ -653,18 +653,18 @@ public class GraphPanel extends JPanel implements ComponentListener,
      * than yMax or yData less than yMin the return values  are 0 and
      * yAxisPixelLength respectively
      *
-     * @param yData DOCUMENT ME!
+     * @param yDataValue DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      */
-    protected int scaleY(int yData) {
+    protected int scaleY(int yDataValue) {
         int result = 0;
 
-        if (yData >= yMax) {
+        if (yDataValue >= yMax) {
             if (!adjustable) {
                 return yAxisPixelLength;
             } else {
-                yMax = yData + 1; // here the CompleteGraphPanel should also be notified
+                yMax = yDataValue + 1; // here the CompleteGraphPanel should also be notified
                 cgp.setLabels(
                 //            " MIN = "+
                 new Integer(yMin) + "", // " MAX = "+
@@ -676,7 +676,7 @@ public class GraphPanel extends JPanel implements ComponentListener,
             }
         }
 
-        if (yData <= yMin) {
+        if (yDataValue <= yMin) {
             return 0;
         }
 
@@ -684,10 +684,10 @@ public class GraphPanel extends JPanel implements ComponentListener,
             double ycoeff = ((double) yAxisPixelLength) / (double) (yMax -
                 yMin);
             double yOr = -ycoeff * yMin;
-            result = (int) ((ycoeff * yData) + yOr);
+            result = (int) ((ycoeff * yDataValue) + yOr);
         } else {
             double coeff = (((double) yAxisPixelLength) / (double) yMax);
-            result = (int) (yData * coeff);
+            result = (int) (yDataValue * coeff);
         }
 
         return result;

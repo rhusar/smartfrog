@@ -519,8 +519,8 @@ class ConnectionRelay implements Runnable {
         private Selector delayedSelector;
         private List writeQueue;
         private Map delayedInfo; // Map from write socket to corresponding DelayedDataInfo instance
-        private Thread thread;
-        private volatile boolean running = true; // Used to cleanly stop the thread
+        private Thread writerThread;
+        private volatile boolean isRunning = true; // Used to cleanly stop the thread
 
         private DelayedWriter() {
             try {
@@ -538,15 +538,15 @@ class ConnectionRelay implements Runnable {
          */
         void start() {
             // Create a thread for ourselves and start it
-            thread = new Thread(this, toString());
-            thread.start();
+            writerThread = new Thread(this, toString());
+            writerThread.start();
         }
 
         /**
          * Stop the DelayedWriter thread.
          */
         void stop() {
-            running = false;
+            isRunning = false;
             delayedSelector.wakeup();
         }
 
@@ -639,7 +639,7 @@ class ConnectionRelay implements Runnable {
             int numberOfBytes;
             SocketChannel src;
 
-            while (running) {
+            while (isRunning) {
                 // Register any new connections with the selector
                 pqReturn = processQueue();
 

@@ -246,14 +246,14 @@ public class HereReferencePart extends ReferencePart {
         try {
             Vector vec = new Vector();
             for (Enumeration e = vToResolve.elements(); e.hasMoreElements(); ) {
-                Object value = e.nextElement();
-                if (value instanceof Reference) {
-                    value = rr.sfResolve((Reference)value, 0);
+                Object element = e.nextElement();
+                if (element instanceof Reference) {
+                    element = rr.sfResolve((Reference)element, 0);
                 }
-                if (value instanceof Vector) {
-                    value = sfResolveVector(rr, (Vector)value);
+                if (element instanceof Vector) {
+                    element = sfResolveVector(rr, (Vector)element);
                 }
-                vec.add(value);
+                vec.add(element);
             }
             return vec;
         } catch (SmartFrogResolutionException ex) {
@@ -273,16 +273,16 @@ public class HereReferencePart extends ReferencePart {
 
     protected Vector sfResolveVector(RemoteReferenceResolver rr, Vector vToResolve) throws
         SmartFrogResolutionException, RemoteException {
-        Object value = null;
+        Object element = null;
         try {
             Vector vec = new Vector();
             for (Enumeration e = vToResolve.elements();e.hasMoreElements(); ) {
-                value = e.nextElement();
-                if (value instanceof Reference) {
-                    value = rr.sfResolve((Reference)value, 0);
-                    if (value instanceof SFMarshalledObject) {
+                element = e.nextElement();
+                if (element instanceof Reference) {
+                    element = rr.sfResolve((Reference)element, 0);
+                    if (element instanceof SFMarshalledObject) {
                         try {
-                            value = ((SFMarshalledObject)value).get();
+                            element = ((SFMarshalledObject)element).get();
                         } catch (IOException ex) {
                             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex.getMessage(),ex);
                         } catch (ClassNotFoundException ex) {
@@ -291,15 +291,15 @@ public class HereReferencePart extends ReferencePart {
 
                     }
                 }
-                if (value instanceof Vector) {
-                    value = sfResolveVector(rr, (Vector)value);
+                if (element instanceof Vector) {
+                    element = sfResolveVector(rr, (Vector)element);
                 }
-                vec.add(value);
+                vec.add(element);
             }
             return vec;
         } catch (SmartFrogResolutionException ex) {
             SmartFrogResolutionException rex = new SmartFrogResolutionException(ex);
-            rex.setContainer(value,vToResolve);
+            rex.setContainer(element,vToResolve);
             throw rex;
         }
     }

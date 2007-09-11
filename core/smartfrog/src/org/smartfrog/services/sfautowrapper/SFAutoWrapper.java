@@ -173,7 +173,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
         }
         sfLog().info("Going to sleep for some time...");
         try {
-            Thread.currentThread().sleep(15*1000);
+            Thread.sleep(15*1000);
         } catch (InterruptedException e) {
             if (log().isErrorEnabled()) log().err(e);
         }

@@ -70,9 +70,9 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      */
     public void touch() throws RemoteException, SmartFrogException {
         //get the file
-        String file = getFile().getAbsolutePath();
+        String touchFile = getFile().getAbsolutePath();
         try {
-            touch(file, age);
+            touch(touchFile, age);
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
         }
@@ -82,19 +82,19 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      * touch a file
      *
      * @param filename file to create
-     * @param age      timestamp (optional, use -1 for current time)
+     * @param newAge      timestamp (optional, use -1 for current time)
      * @throws IOException for IO error
      * @throws RemoteException In case of network/rmi error
      */
-    public void touch(String filename, long age) throws IOException, RemoteException {
-        File file = new File(filename);
-        File parentFile = file.getParentFile();
+    public void touch(String filename, long newAge) throws IOException, RemoteException {
+        File target = new File(filename);
+        File parentFile = target.getParentFile();
         if(parentFile!=null) {
             parentFile.mkdirs();
         }
-        file.createNewFile();
-        if (age >= 0) {
-            file.setLastModified(age);
+        target.createNewFile();
+        if (newAge >= 0) {
+            target.setLastModified(newAge);
         }
     }
 }

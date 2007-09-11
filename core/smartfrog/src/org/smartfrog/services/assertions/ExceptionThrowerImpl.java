@@ -97,22 +97,22 @@ public class ExceptionThrowerImpl extends PrimImpl implements ExceptionThrower {
 
     /**
      * Raise an exception
-     * @param classname name of the class to use
-     * @param message message to raise
+     * @param exceptionClassname name of the class to use
+     * @param errorMessage message to raise
      * @throws RemoteException network problems or this exception was asked for
      * @throws SmartFrogException which can be the exception, or wrap something inside
      * @throws RuntimeException if that was asked for
      */
-    protected void raiseException(String classname, String message) throws RemoteException, SmartFrogException {
+    protected void raiseException(String exceptionClassname, String errorMessage) throws RemoteException, SmartFrogException {
         Throwable instance;
         try {
-            Class eClass = getClass().getClassLoader().loadClass(classname);
+            Class eClass = getClass().getClassLoader().loadClass(exceptionClassname);
             Class oneStringCtor[] = {
                     String.class
             };
             Constructor constructor = eClass.getConstructor(oneStringCtor);
             Object args[]= {
-                    message
+                    errorMessage
             };
             instance = (Throwable) constructor.newInstance(args);
         } catch (ClassNotFoundException e) {

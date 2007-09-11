@@ -177,13 +177,13 @@ public class PopUpTree extends JComponent implements ActionListener {
      *@param  comp    Component to be displayed
      *@param  x       x coordinate
      *@param  y       y coordinate
-     *@param  parent  parent of this component
+     *@param  parentPanel  parent of this component
      */
-    public void show(Component comp, int x, int y, DeployTreePanel parent) {
+    public void show(Component comp, int x, int y, DeployTreePanel parentPanel) {
         tempComp = comp;
         tempX = x;
         tempY = y;
-        this.parent = parent;
+        this.parent = parentPanel;
         if ( getNode() instanceof Prim){
           menuItemRemoveAttribute.setVisible(false);
             menuItemDetach.setVisible(true);

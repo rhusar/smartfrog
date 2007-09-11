@@ -62,15 +62,15 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof AssertReference)) {
+    public boolean equals(Object reference) {
+        if (!(reference instanceof AssertReference)) {
             return false;
         }
 
-        if (((AssertReference) ref).comp != comp) {
+        if (((AssertReference) reference).comp != comp) {
             return false;
         }
 

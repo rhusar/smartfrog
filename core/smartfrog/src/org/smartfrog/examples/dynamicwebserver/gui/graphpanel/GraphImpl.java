@@ -254,19 +254,19 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
         return initPanel(new GraphPanel(size));
     }
 
-    protected GraphPanel initPanel(GraphPanel gp) {
-        gp.setAdjustable(adjust);
-        gp.setOffset(xOffset, yOffset);
-        gp.setDataDimensions(minX, maxX, stepX, minY, maxY);
-        gp.setGridDimensions(gridStepX, gridStepY);
-        gp.setGraphWidth(graphPencilWidth);
+    protected GraphPanel initPanel(GraphPanel panel) {
+        panel.setAdjustable(adjust);
+        panel.setOffset(xOffset, yOffset);
+        panel.setDataDimensions(minX, maxX, stepX, minY, maxY);
+        panel.setGridDimensions(gridStepX, gridStepY);
+        panel.setGraphWidth(graphPencilWidth);
         numberOfSamples = (int) ((maxX - minX) / stepX);
-        gp.setSampleNumber(numberOfSamples);
-        gp.keysAllowed = keysAllowed;
-        gp.toggleDisplay(histogram);
-        gp.setPencilColour(pencilColour);
+        panel.setSampleNumber(numberOfSamples);
+        panel.keysAllowed = keysAllowed;
+        panel.toggleDisplay(histogram);
+        panel.setPencilColour(pencilColour);
 
-        return gp;
+        return panel;
     }
 
     /**

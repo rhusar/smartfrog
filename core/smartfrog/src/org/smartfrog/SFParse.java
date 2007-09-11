@@ -404,10 +404,10 @@ public class SFParse implements MessageKeys {
     }
     /**
      * Shows diagnostics report
-     * @param opts OptionSet
+     * @param options OptionSet
      */
-    private static void showDiagnostics(ParseOptionSet opts) {
-      if (opts.diagnostics){
+    private static void showDiagnostics(ParseOptionSet options) {
+      if (options.diagnostics){
         //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);

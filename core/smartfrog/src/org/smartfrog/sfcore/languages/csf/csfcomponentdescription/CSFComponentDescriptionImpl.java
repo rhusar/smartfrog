@@ -131,18 +131,18 @@ public class CSFComponentDescriptionImpl extends SFComponentDescriptionImpl
      * Public method to carry out specific resolution actions as defined by the
      * phases provided.
      *
-     * @param phases a vector of strings defining the names of the
+     * @param phaseList a vector of strings defining the names of the
      *               phases
      * @return the resultant Phases object, ready for the
      *         next phase action or convertion into the core ComponentDescription
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *          In case of SmartFrog system error
      */
-    public Phases sfResolvePhases(Vector phases)
+    public Phases sfResolvePhases(Vector phaseList)
             throws SmartFrogException {
         CSFComponentDescription actOn = this;
 
-        for (Enumeration e = phases.elements(); e.hasMoreElements();) {
+        for (Enumeration e = phaseList.elements(); e.hasMoreElements();) {
             String name = (String) e.nextElement();
             try {
                 if (name.equals("type")) {

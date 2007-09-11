@@ -83,11 +83,11 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
                 true,
                 null);
 
-        File file = new File(filename);
+        File bindFile = new File(filename);
         if (debugEnabled) {
-            sfLog().debug("absolute file=" + file.toString());
+            sfLog().debug("absolute file=" + bindFile.toString());
         }
-        bind(file);
+        bind(bindFile);
 
         //now test our state
 
@@ -99,7 +99,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         testOnStartup = getBool(ATTR_TEST_ON_STARTUP, false, false);
         testOnLiveness = getBool(ATTR_TEST_ON_LIVENESS, false, false);
 
-        exists = file.exists();
+        exists = bindFile.exists();
         boolean isDirectory;
         boolean isFile;
         boolean isEmpty;
@@ -107,17 +107,17 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         long timestamp;
         long length;
         if (exists) {
-            isDirectory = file.isDirectory();
+            isDirectory = bindFile.isDirectory();
             if (isDirectory && debugEnabled) {
                 sfLog().debug("file is a directory");
             }
-            isFile = file.isFile();
+            isFile = bindFile.isFile();
             if (isFile && debugEnabled) {
                 sfLog().debug("file is a normal file");
             }
-            timestamp = file.lastModified();
-            length = file.length();
-            isHidden = file.isHidden();
+            timestamp = bindFile.lastModified();
+            length = bindFile.length();
+            isHidden = bindFile.isHidden();
         } else {
             if (debugEnabled) {
                 sfLog().debug("file does not exist");

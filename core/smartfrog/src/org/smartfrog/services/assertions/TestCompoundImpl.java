@@ -310,16 +310,16 @@ public class TestCompoundImpl extends ConditionCompound
                         sfLog().debug("Exit type is as expected");
                         expected = true;
                         if (exitText != null && exitText.length() > 0) {
-                            String description = childStatus.description;
-                            if (description == null) {
-                                description = "";
+                            String childDescription = childStatus.description;
+                            if (childDescription == null) {
+                                childDescription = "";
                             }
 
-                            if (description.indexOf(exitText) < 0) {
+                            if (childDescription.indexOf(exitText) < 0) {
                                 sfLog().info("Action text mismatch: expected \""
                                         + exitText
                                         + "\" but got \""
-                                        + description
+                                        + childDescription
                                         + "\"");
                                 expected = false;
                             }

@@ -104,14 +104,14 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  compTable  JTable object
     *@param  x          X Coordinate
     *@param  y          Y Coordinate
-    *@param  parent     Reference to parent component
+    *@param  parentPanel     Reference to parent component
     */
-   public void show(JTree compTree, JTable compTable, int x, int y, DeployTreePanel parent) {
+   public void show(JTree compTree, JTable compTable, int x, int y, DeployTreePanel parentPanel) {
       tempTree = compTree;
       tempTable = compTable;
       tempX = x;
       tempY = y;
-      this.parent = parent;
+      this.parent = parentPanel;
       popupTable.show((Component) compTable, x, y);
    }
 

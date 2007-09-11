@@ -63,11 +63,11 @@ public class Phase implements CDVisitor {
      */
     protected PhaseAction phaseAction(Object action,
                                       SFComponentDescription cd,
-                                      Stack path)
+                                      Stack pathStack)
             throws SmartFrogResolutionException {
         try {
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
-            p.forComponent(cd, phaseName, path);
+            p.forComponent(cd, phaseName, pathStack);
             return p;
         } catch (Exception ex){
             String actionClass;
@@ -88,7 +88,7 @@ public class Phase implements CDVisitor {
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException failed to create PhaseAction
      */
-    public void actOn(ComponentDescription cd, Stack path) throws SmartFrogResolutionException {
+    public void actOn(ComponentDescription cd, Stack pathStack) throws SmartFrogResolutionException {
         Context c = cd.sfContext();
         for (Enumeration e = ((Context) c.clone()).keys(); e.hasMoreElements();) {
             Object name = e.nextElement();
@@ -100,7 +100,7 @@ public class Phase implements CDVisitor {
                     Object value = c.get(sname);
                     //this classcast shouldn't cause problems - but if it does, its an error anyway
                     // maybe should be prepared to provide better error message!
-                    phaseAction(value, (SFComponentDescription)cd, path).doit();
+                    phaseAction(value, (SFComponentDescription)cd, pathStack).doit();
                 }
             }
         }

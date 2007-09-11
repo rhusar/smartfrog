@@ -283,21 +283,21 @@ public class Reference implements Copying, Cloneable, Serializable {
      * Reference equality does NOT mean that the two references point to the
      * same object
      *
-     * @param ref to be compared
+     * @param reference to be compared
      *
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof Reference)) {
+    public boolean equals(Object reference) {
+        if (!(reference instanceof Reference)) {
             return false;
         }
 
-        if (((Reference) ref).size() != size()) {
+        if (((Reference) reference).size() != size()) {
             return false;
         }
 
         Enumeration e1 = elements();
-        Enumeration e2 = ((Reference) ref).elements();
+        Enumeration e2 = ((Reference) reference).elements();
 
         for (; e1.hasMoreElements();)
             if (!e1.nextElement().equals(e2.nextElement())) {
@@ -400,15 +400,15 @@ public class Reference implements Copying, Cloneable, Serializable {
      * Adds a reference to the end of the reference. ReferenceParts in the
      * given reference are NOT copied.
      *
-     * @param ref of elements to be added
+     * @param reference of elements to be added
      *
      * @return Reference reference that was added to this one
      */
-    public Reference addElements(Reference ref) {
-        for (int i = 0; i < ref.size(); i++)
-            addElement(ref.elementAt(i));
+    public Reference addElements(Reference reference) {
+        for (int i = 0; i < reference.size(); i++)
+            addElement(reference.elementAt(i));
 
-        return ref;
+        return reference;
     }
 
     /**
