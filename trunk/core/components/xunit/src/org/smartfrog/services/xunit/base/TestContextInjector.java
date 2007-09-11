@@ -35,7 +35,7 @@ public interface TestContextInjector {
     /**
      * Set the context of a test.
      *
-     * @param context
+     * @param context the name to value context
      */
-    void setTestContext(HashMap context);
+    void setTestContext(HashMap<String, Object> context);
 }
