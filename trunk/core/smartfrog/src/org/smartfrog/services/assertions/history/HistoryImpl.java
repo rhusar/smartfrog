@@ -31,7 +31,7 @@ import java.util.List;
 
 public class HistoryImpl extends PrimImpl implements History {
 
-    private List/*<Event>*/ events=new ArrayList/*<Event>*/();
+    private List<HistoryEvent> events=new ArrayList<HistoryEvent>();
 
     public HistoryImpl() throws RemoteException {
     }
@@ -121,10 +121,8 @@ public class HistoryImpl extends PrimImpl implements History {
      * @return the first event that matched, or null for no match
      */
     public synchronized HistoryEvent lookup(String text,boolean partialMatch) {
-        Iterator it=events.listIterator();
         boolean match=false;
-        while (it.hasNext()) {
-            HistoryEvent event = (HistoryEvent) it.next();
+        for(HistoryEvent event:events) {
             String message=event.message;
             if(partialMatch) {
                 match= message.indexOf(text)>=0;
@@ -168,9 +166,9 @@ public class HistoryImpl extends PrimImpl implements History {
     public void assertEventsOrdered(String text1,String text2) throws SmartFrogAssertionException {
         HistoryEvent event1 = assertEventFound(text1,true,null);
         HistoryEvent event2 = assertEventFound(text2, true, null);
-        if(event1.index>event2.index) {
+        if (event1.index > event2.index) {
             throw new SmartFrogAssertionException(
-                    "Event "+event1+" came after "+event2+"\nin\n"+toString(),
+                    "Event " + event1 + " came after " + event2 + "\nin\n" + toString(),
                     this);
         }
     }
@@ -185,9 +183,7 @@ public class HistoryImpl extends PrimImpl implements History {
         buffer.append("size=");
         buffer.append(size());
         buffer.append('\n');
-        Iterator it = events.listIterator();
-        while (it.hasNext()) {
-            HistoryEvent event = (HistoryEvent) it.next();
+        for (HistoryEvent event : events) {
             buffer.append(event.toString());
             buffer.append('\n');
         }

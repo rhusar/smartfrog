@@ -50,10 +50,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, EventCompound {
     private static Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
     private static Reference sendRef = new Reference(ATTR_SEND_TO);
-    private Vector receiveFrom = new Vector();
+    private Vector<EventRegistration> receiveFrom = new Vector<EventRegistration>();
+    private Vector<EventSink> sendTo = new Vector<EventSink>();
 
-
-    private Vector sendTo = new Vector();
     protected ComponentDescription action=null;
     protected Context actions=null;
     protected Enumeration actionKeys=null;
@@ -67,10 +66,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     /**
      * Constructs EventCompoundImpl.
      *
-     * @throws java.rmi.RemoteException In case of RMI or network failure.
+     * @throws RemoteException In case of RMI or network failure.
      */
     public EventCompoundImpl() throws RemoteException {
-        super();
     }
 
     /**
@@ -149,10 +147,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
         }
-
-        if (sendTo.contains(sink)) {
-            sendTo.removeElement(sink);
-        }
+        sendTo.removeElement(sink);
     }
 
     /**
@@ -185,8 +180,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
-        for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
-            EventSink s = (EventSink) e.nextElement();
+        for (EventSink s : sendTo) {
             try {
                 String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
                 if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);  }
@@ -350,9 +344,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
-        for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
-            EventRegistration sink = (EventRegistration) e.nextElement();
-
+        for (EventRegistration sink: receiveFrom) {
             try {
                 sink.deregister(this);
             } catch (RemoteException ex) {

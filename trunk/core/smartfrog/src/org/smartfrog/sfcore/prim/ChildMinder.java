@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 
 /**
- * Defines the interface an object needs to implement if it wants to manager
+ * Defines the interface an object needs to implement if it wants to manage
  * children. Primitives expect their parent to implement this interface so
  * they can register for liveness and termination messages
  *

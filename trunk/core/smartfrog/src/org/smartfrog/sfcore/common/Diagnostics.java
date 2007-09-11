@@ -653,11 +653,12 @@ public final class Diagnostics {
      */
     private static void printLibraries(File[] libs, StringBuffer out) {
         if (libs == null) {
-            out.append("No such directory.");out.append("\n");
+            out.append("No such directory.\n");
             return;
         }
-        for (int i = 0; i < libs.length; i++) {
-            out.append(libs[i].getName()+ " (" + libs[i].length() + " bytes)");out.append("\n");
+        for (File lib : libs) {
+            out.append(lib.getName() + " (" + lib.length() + " bytes)");
+            out.append("\n");
         }
     }
 

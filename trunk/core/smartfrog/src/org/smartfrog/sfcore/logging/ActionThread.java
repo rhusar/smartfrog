@@ -80,12 +80,12 @@ public class ActionThread implements Runnable {
     */
    public ActionThread executeAction() {
       synchronized (actions) {
-          for (int i = 0; i<actions.length; i++) {
+          for (Log action : actions) {
               try {
-                  method.invoke(actions[i], args);
+                  method.invoke(action, args);
               } catch (Exception e) {
-                 System.err.println("ActionThread - Error launching thread:\n"+e);
-                 e.printStackTrace();
+                  System.err.println("ActionThread - Error launching thread:\n" + e);
+                  e.printStackTrace();
               }
           }
       }

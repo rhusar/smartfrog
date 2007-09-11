@@ -478,8 +478,8 @@ public class ComponentHelper {
             return false;
         }
         Class[] interfaces = clazz.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            if (interfaces[i].getName().equals(interfaceName)) {
+        for (Class anInterface : interfaces) {
+            if (anInterface.getName().equals(interfaceName)) {
                 return true;
             }
         }
