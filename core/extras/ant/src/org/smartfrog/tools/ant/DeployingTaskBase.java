@@ -46,13 +46,13 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * list of applications
      */
-    protected List applications = new LinkedList();
+    protected List<Application> applications = new LinkedList<Application>();
 
 
     /**
      * codebase string
      */
-    protected List codebase = new LinkedList();
+    protected List<Codebase> codebase = new LinkedList<Codebase>();
     public static final String ERROR_NO_APPLICATIONS_DECLARED = "No applications declared";
     public static final String ACTION_DEPLOY = "DEPLOY";
     public static final String DEFAULT_SUBPROCESS = "";
@@ -103,13 +103,11 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     public void deployApplications() {
         verifyHostDefined();
         setupCodebase();
-        Iterator it = applications.iterator();
-        while (it.hasNext()) {
-            Application application = (Application) it.next();
+        for (Application application : applications) {
             application.validate();
             addArg("-a");
-            String path= makePath(application);
-            String subprocess=getSubprocess();
+            String path = makePath(application);
+            String subprocess = getSubprocess();
 
             addArg(application.getName() + ":" //NAME
                     + ACTION_DEPLOY + ":"      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
@@ -155,7 +153,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     public void addCodebase(Codebase codebaseEntry) {
         if (codebase == null) {
-            codebase = new LinkedList();
+            codebase = new LinkedList<Codebase>();
         }
         codebase.add(codebaseEntry);
     }

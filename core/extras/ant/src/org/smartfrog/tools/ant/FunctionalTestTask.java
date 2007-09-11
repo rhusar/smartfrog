@@ -64,6 +64,9 @@ public class FunctionalTestTask extends Task {
     private Sequential setup;
     //nested application (if not null)
     private Sequential application;
+    //reporting operation
+    private Sequential reporting;
+    private String reportingIf,reportingUnless;
     //teardown operation
     private Sequential teardown;
     //waitfor operation

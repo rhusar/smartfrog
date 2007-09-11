@@ -65,12 +65,12 @@ public class ToUrlTask extends Task {
     /**
      * filesets of nested files to add to this url
      */
-    private List filesets = new LinkedList();
+    private List<FileSet> filesets = new LinkedList<FileSet>();
 
     /**
      * paths to add
      */
-    private List paths = new LinkedList();
+    private List<Path> paths = new LinkedList<Path>();
 
     /**
      * validation flag
@@ -148,17 +148,15 @@ public class ToUrlTask extends Task {
         }
         int count=0;
         StringBuffer urls=new StringBuffer();
-        ListIterator list=filesets.listIterator();
-        while (list.hasNext()) {
-            FileSet set = (FileSet) list.next();
+        for(FileSet set:filesets) {
             DirectoryScanner scanner = set.getDirectoryScanner(getProject());
             String[] files=scanner.getIncludedFiles();
-            for(int i=0;i<files.length;i++) {
-                File f=new File(scanner.getBasedir(), files[i]);
+            for (String file1 : files) {
+                File f = new File(scanner.getBasedir(), file1);
                 validateFile(f);
                 String asUrl = toURL(f);
                 urls.append(asUrl);
-                log(asUrl,Project.MSG_DEBUG);
+                log(asUrl, Project.MSG_DEBUG);
                 urls.append(separator);
                 count++;
             }
@@ -199,8 +197,8 @@ public class ToUrlTask extends Task {
         while (list.hasNext()) {
             Path path= (Path) list.next();
             String[] elements=path.list();
-            for (int i = 0; i < elements.length; i++) {
-                File f = new File(elements[i]);
+            for (String element : elements) {
+                File f = new File(element);
                 validateFile(f);
                 String asUrl = toURL(f);
                 urls.append(asUrl);

@@ -122,7 +122,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * source files
      */
-    protected List sourceFiles = new LinkedList();
+    protected List<String> sourceFiles = new LinkedList<String>();
 
     /**
      * ini file
