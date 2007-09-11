@@ -21,10 +21,8 @@
 
 package org.smartfrog.test.system.assertions;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * Date: 30-Apr-2004

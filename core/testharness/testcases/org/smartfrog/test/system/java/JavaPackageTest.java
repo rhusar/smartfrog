@@ -19,7 +19,6 @@
  */
 package org.smartfrog.test.system.java;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.services.os.java.JavaPackage;
 

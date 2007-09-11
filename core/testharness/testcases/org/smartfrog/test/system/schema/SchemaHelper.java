@@ -21,15 +21,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.test.system.schema;
 
 import java.rmi.RemoteException;
-import java.util.Vector;
-import java.text.SimpleDateFormat;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 
 /**

@@ -60,7 +60,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     protected File classesDir;
     protected String hostname;
-    private static Log log= LogFactory.getLog(SmartFrogTestBase.class);
+    private static final Log log= LogFactory.getLog(SmartFrogTestBase.class);
 
     /**
      * Smartforg assertion.
@@ -162,18 +162,17 @@ public abstract class SmartFrogTestBase extends TestCase {
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM
      * paramaters -but do not complain if they are missing
-     * @param name
+     * @param name test case name
      */
     protected SmartFrogTestBase(String name) {
         super(name);
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
+     * Sets up the fixture,by extracting the hostname and classes dir 
      */
     protected void setUp() throws Exception {
-        super.setUp();
+        //super.setUp();
 
         hostname = TestHelper.getTestProperty(TestHelper.HOSTNAME, "localhost");
         String classesdirname = TestHelper.getTestProperty(TestHelper.CLASSESDIR, null);
@@ -212,7 +211,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * set the application
-     * @param application
+     * @param application new application
      */
     public void setApplication(Prim application) {
         this.application = application;
@@ -446,8 +445,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         buffer.append('\n');
         buffer.append("Stack:    ");
         StackTraceElement[] stackTrace = thrown.getStackTrace();
-        for(int i=0;i<stackTrace.length;i++) {
-            StackTraceElement frame=stackTrace[i];
+        for (StackTraceElement frame : stackTrace) {
             buffer.append(frame.toString());
             buffer.append('\n');
         }
@@ -464,7 +462,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     public static void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
         assertNotNull("No string to look for ["+substring+"]",source);
         assertNotNull("No substring ", substring);
-        final boolean contained = source.indexOf(substring)>=0;
+        final boolean contained = source.contains(substring);
 
         if(!contained) {
             String message = "- Did not find \n["+substring+"]\nin \n["+source+"]"+
@@ -485,7 +483,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     public static void assertContains(String source, String substring, String cfgDescMsg, Throwable exception) {
         assertNotNull("No string to look for [" + substring + "]", source);
         assertNotNull("No substring ", substring);
-        final boolean contained = source.indexOf(substring) >= 0;
+        final boolean contained = source.contains(substring);
 
         if (!contained) {
             String message = "- Did not find \n[" + substring + "] \nin \n[" + source + "]" +
@@ -655,7 +653,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         String fileUrl;
         try {
             fileUrl = file.toURL().toString();
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException ignore) {
             String msg = MessageUtil.
                     formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND,
                             file.toString());
@@ -689,8 +687,8 @@ public abstract class SmartFrogTestBase extends TestCase {
             if (is != null) {
                 try {
                     is.close();
-                } catch (IOException swallowed) {
-
+                } catch (IOException ignore) {
+                    //ignore
                 }
             }
         }
@@ -737,13 +735,13 @@ public abstract class SmartFrogTestBase extends TestCase {
                 return resultException;
             } else {
                 //here we deploy the application
-                Prim application=(Prim)deployedApp;
+                Prim prim =(Prim)deployedApp;
                 try {
-                    application.sfPing(null);
-                    application.sfPing(null);
-                    application.sfPing(null);
-                    application.sfPing(null);
-                    application.sfPing(null);
+                    prim.sfPing(null);
+                    prim.sfPing(null);
+                    prim.sfPing(null);
+                    prim.sfPing(null);
+                    prim.sfPing(null);
                 } catch (SmartFrogLivenessException liveness) {
                     assertFaultCauseAndTextContains(liveness, EXCEPTION_LIFECYCLE,
                             null,"expected lifecycle failure");
@@ -751,7 +749,7 @@ public abstract class SmartFrogTestBase extends TestCase {
                             EXCEPTION_SMARTFROG_ASSERTION, null,
                             "expected nested assertion failure");
                 } finally {
-                    terminateApplication(application);
+                    terminateApplication(prim);
                 }
             }
 
@@ -791,7 +789,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         Reference name;
         try {
             name = target.sfCompleteName();
-        } catch (RemoteException e) {
+        } catch (RemoteException ignore) {
             name = null;
         }
         try {
@@ -838,7 +836,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     private static String describe(Prim target,String attribute) {
         try {
             return "attribute " + attribute + " on " + target.sfCompleteName();
-        } catch (RemoteException e) {
+        } catch (RemoteException ignore) {
             return "attribute '" + attribute + "' on an unresponsive component";
         }
     }

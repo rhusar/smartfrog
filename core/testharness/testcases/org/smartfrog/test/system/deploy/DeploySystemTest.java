@@ -22,7 +22,6 @@
 package org.smartfrog.test.system.deploy;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
@@ -35,15 +34,6 @@ public class DeploySystemTest extends SmartFrogTestBase {
     public DeploySystemTest(String s) {
         super(s);
     }
-
-//    public void testCaseTCN1() throws Exception {
-//        deployExpectingException(FILES+"tcn1.sf",
-//                "tcn1",
-//                "SmartFrogLifecycleException",
-//                "sfDeploy",
-//                "SmartFrogResolutionException",
-//                "Reference not found");
-//    }
 
     public void testCaseTCN2() throws Exception {
         deployExpectingException(FILES+"tcn2.sf",

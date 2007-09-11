@@ -24,8 +24,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.services.autoloader.Autoloader;
 
-import java.rmi.RemoteException;
-
 /**
  *
  * Created 18-Jul-2007 16:44:13
@@ -55,14 +53,14 @@ public class AutoloaderTest extends DeployingTestBase {
         deploy("testAutoloader");
         Prim example = (Prim) application.sfResolve("example");
         String text=example.sfResolve("text","",true);
-        assertTrue(text.indexOf(TEXT1)>=0);
+        assertTrue(text.contains(TEXT1));
     }
 
     public void testAutoloaderTest2() throws Throwable {
         deploy("testAutoloaderTest2");
         Prim example = (Prim) application.sfResolve("example");
         String text = example.sfResolve("text", "", true);
-        assertTrue(text.indexOf(TEXT2) >= 0);
+        assertTrue(text.contains(TEXT2));
     }
 
     public void testMissingReference() throws Throwable {

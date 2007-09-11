@@ -44,22 +44,22 @@ public class LocalJVMTestBase extends SmartFrogTestBase {
 
     /**
      * set the daemon options from a string array
-     * @param args
+     * @param args arguments for the daemon
      */
     public void setDaemonOptions(String[] args) {
         OptionSet opts=new OptionSet(args);
         setDaemonOptions(opts);
     }
 
-    protected static OptionSet daemonOptions;
+    protected static volatile OptionSet daemonOptions;
 
 
     /**
      * start a local daemon if the options request it
      */
     protected void setUp() throws Exception {
-       TestHelper.demandStartDaemon(daemonOptions);
-
+        super.setUp();
+        TestHelper.demandStartDaemon(daemonOptions);
     }
 
 

@@ -22,10 +22,6 @@
 package org.smartfrog.test.system.compiler;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 
 /**

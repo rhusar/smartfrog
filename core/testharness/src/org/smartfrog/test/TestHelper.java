@@ -19,11 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.test;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.OptionSet;
-
-import java.rmi.RemoteException;
-import java.rmi.ConnectException;
 
 /**
  * This class helps tests; it runs daemons and contains other code which is used across different
@@ -105,7 +101,7 @@ public class TestHelper {
      * a cached daemon
      */
 
-    static private LocalTestDaemon daemon;
+    static private volatile LocalTestDaemon daemon;
 
 
     /**

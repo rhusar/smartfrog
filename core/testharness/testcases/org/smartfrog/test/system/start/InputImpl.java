@@ -31,12 +31,11 @@ import org.smartfrog.sfcore.reference.Reference;
 
 
 public class InputImpl extends PrimImpl implements Prim, Input, Remote {
-    String me;
-    NetElem function;
+    private String me;
+    private NetElem function;
 
     // standard constructor
     public InputImpl() throws RemoteException {
-        super();
     }
 
     // Input methods
@@ -46,6 +45,7 @@ public class InputImpl extends PrimImpl implements Prim, Input, Remote {
 
     // lifecycle methods
     public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
         try {
             // get the function part; currently the parent
             // (perhaps should be a link...)

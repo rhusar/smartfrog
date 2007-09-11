@@ -22,7 +22,6 @@
 package org.smartfrog.test.system.deadlock;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 
 /**

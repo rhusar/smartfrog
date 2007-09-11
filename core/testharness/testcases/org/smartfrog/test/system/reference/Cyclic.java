@@ -20,9 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.test.system.reference;
 
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-
 
 public interface Cyclic {
     // Attribute names

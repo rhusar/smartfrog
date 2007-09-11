@@ -22,7 +22,6 @@
 package org.smartfrog.test.system.components.utils;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * JUnit test class for test cases related to "utils" component

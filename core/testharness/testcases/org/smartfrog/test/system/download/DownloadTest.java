@@ -20,10 +20,6 @@
 package org.smartfrog.test.system.download;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.services.filesystem.TempFileImpl;
-import org.smartfrog.services.os.download.DownloadImpl;
-
-import java.net.UnknownHostException;
 
 /**
  * created 15-Apr-2005 14:16:30

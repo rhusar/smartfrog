@@ -22,8 +22,6 @@
 package org.smartfrog.test.system.workflow.sequence;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * @author Ashish Awasthi

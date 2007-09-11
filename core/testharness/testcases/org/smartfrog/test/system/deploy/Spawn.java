@@ -72,6 +72,7 @@ public class Spawn extends CompoundImpl implements Prim{
           offspringName = (String) sfResolve(refOffspringName);
           //} catch (SmartFrogResolutionException ex) {}
 
+          //TODO: fix this for test cleanup
           String str = null;
           System.out.println(str.toString()); // -> To Fail
           try {

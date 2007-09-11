@@ -20,11 +20,7 @@
 package org.smartfrog.test.system.workflow.retry;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.test.system.workflow.repeat.RepeatTest;
 import org.smartfrog.sfcore.workflow.combinators.Retry;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /**
  * test delays

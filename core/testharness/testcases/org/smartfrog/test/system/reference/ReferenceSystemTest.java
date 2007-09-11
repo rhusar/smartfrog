@@ -22,7 +22,6 @@
 package org.smartfrog.test.system.reference;
 
 import java.util.Vector;
-import java.util.Calendar;
 import java.net.InetAddress;
 
 import org.smartfrog.test.SmartFrogTestBase;

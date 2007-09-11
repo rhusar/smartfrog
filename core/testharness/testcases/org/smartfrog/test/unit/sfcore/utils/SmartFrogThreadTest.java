@@ -48,6 +48,8 @@ public class SmartFrogThreadTest extends TestCase {
         SmartFrogThread thread=new SmartFrogThread(
                 new ThrowingRunnable(
                         new RuntimeException("test")));
+        //IDEs may complain that we call Thread.run instead of Thread.start(),
+        //but this is deliberate...leave the code as is.
         thread.run();
         assertTrue(thread.isThrown());
         try {
@@ -73,7 +75,7 @@ public class SmartFrogThreadTest extends TestCase {
          * A runnable designed to throw a RuntimeException
          * @param rte the exception to throw
          */
-        public ThrowingRunnable(RuntimeException rte) {
+        ThrowingRunnable(RuntimeException rte) {
             this.rte = rte;
         }
 

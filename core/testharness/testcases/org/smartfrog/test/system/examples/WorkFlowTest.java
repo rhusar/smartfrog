@@ -48,7 +48,7 @@ public class WorkFlowTest
           assertNotNull(application);
           applicationName = application.sfCompleteName().toString();
 
-          diag = (((Prim)application).sfDiagnosticsReport()).toString();
+          diag = ((application).sfDiagnosticsReport()).toString();
           h1 = (Prim)application.sfResolveHere("h1");
         } catch (Exception ex) {
             throw new SmartFrogResolutionException ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);

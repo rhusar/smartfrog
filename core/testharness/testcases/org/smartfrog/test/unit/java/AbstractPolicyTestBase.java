@@ -47,6 +47,7 @@ public abstract class AbstractPolicyTestBase extends TestCase {
     }
 
     protected void setUp() throws Exception {
+        super.setUp();
         createArtifact();
     }
     
@@ -54,7 +55,7 @@ public abstract class AbstractPolicyTestBase extends TestCase {
         String m=t.getMessage();
         assertNotNull("Looking for "+text+" but the message is null in "+t,m);
         assertTrue("Did not find "+text+" in "+m,
-                m.indexOf(text)>=0);
+                m.contains(text));
     }
 
     /**

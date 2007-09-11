@@ -20,9 +20,6 @@
 package org.smartfrog.test.system.workflow.conditional;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * test delays

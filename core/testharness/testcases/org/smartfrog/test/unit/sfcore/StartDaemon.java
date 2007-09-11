@@ -2,10 +2,8 @@ package org.smartfrog.test.unit.sfcore;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.rmi.RemoteException;
 import java.rmi.ConnectException;
 
-import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -60,7 +58,7 @@ public class StartDaemon {
         }
     }
 
-    public static ProcessCompound getSFDaemon() throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
+    public static ProcessCompound getSFDaemon() throws Exception {
         try {  // there is a Daemon  running in local system
             sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
         } catch (ConnectException cEx) {  // there is no Daemon  running in local system
@@ -87,8 +85,8 @@ public class StartDaemon {
         });
         // Set the classpath to includes all jar files in dist lib directory
         String baseClasssPath = "";
-        for (int i = 0; i < sfBaseJars.length; i++) {
-            baseClasssPath += sfBaseJars[i].getAbsolutePath() + pathSeparator;
+        for (File sfBaseJar : sfBaseJars) {
+            baseClasssPath += sfBaseJar.getAbsolutePath() + pathSeparator;
         }
         System.setProperty("java.class.path", System.getProperty("java.class.path") + pathSeparator + baseClasssPath);
     }

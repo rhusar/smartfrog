@@ -25,9 +25,7 @@ import java.util.Vector;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 
 /**

@@ -19,17 +19,12 @@
  */
 package org.smartfrog.test.system.filesystem;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.filesystem.TouchFileImpl;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.TouchFileIntf;
 
 import java.io.File;
-import java.rmi.RemoteException;
 
 /**
  * created 18-May-2004 13:29:12

@@ -20,11 +20,8 @@
 package org.smartfrog.test.system.assertions.testblock;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.test.system.assertions.testcompounds.TestCompoundsTest;
-import org.smartfrog.services.assertions.TestCompoundImpl;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.TestBlockImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
