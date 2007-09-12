@@ -398,7 +398,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     private synchronized boolean hasActiveChildren() {
         //If hasPendingDeployments() is appended here, then we check for startup problems;
-        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() || hasPendingDeployments();
+        return sfChildList().size()>0 || !asynchChildren.isEmpty() || hasPendingDeployments();
 
     }
 
