@@ -200,11 +200,11 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * need to. At its most efficient if no flattening is needed.
      *
      * @param src source list
-     * @param name name of the list, for reporting errors
+     * @param listName name of the list, for reporting errors
      * @return a flatter list
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
-    public List<String> flattenStringList(List src, String name)
+    public List<String> flattenStringList(List src, String listName)
             throws SmartFrogException {
         if (src == null) {
             return new ArrayList<String>(0);
@@ -212,14 +212,14 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
         List<String> dest = new ArrayList<String>(src.size());
         for(Object element:src) {
             if (element instanceof List) {
-                List<String> l2 = flattenStringList((List) element, name);
+                List<String> l2 = flattenStringList((List) element, listName);
                 for (String s:l2) {
                     dest.add(s);
                 }
             } else if (!(element instanceof String)) {
                 throw new SmartFrogInitException("An element in "
                         +
-                        name +
+                        listName +
                         " is not string or a list: " +
                         element.toString() + " class=" + element.getClass());
             } else {
@@ -259,18 +259,18 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Create a new listener from the current factory.
-     * @param name name of the suite
+     * @param suiteName name of the suite
      * @return a new listener
      * @throws SmartFrogRuntimeException if needed
      * @throws RemoteException on network trouble
      */
-    protected TestListener listen(String name) throws RemoteException, SmartFrogException {
+    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
         TestListenerFactory listenerFactory = getTestListenerFactory();
 
         TestListener newlistener = listenerFactory.listen(this,
                 getHostname(),
                 sfDeployedProcessName(),
-                name,
+                suiteName,
                 System.currentTimeMillis());
         return newlistener;
     }

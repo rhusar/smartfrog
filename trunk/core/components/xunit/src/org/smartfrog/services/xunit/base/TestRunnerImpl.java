@@ -333,9 +333,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
 
     private boolean executeBatchTests() throws RemoteException, SmartFrogException, InterruptedException {
         boolean successful = true;
-        Enumeration e = sfChildren();
-        while (e.hasMoreElements()) {
-            Object child = e.nextElement();
+        for (Prim child:sfChildList()) {
             if (child instanceof TestSuite) {
                 TestSuite suiteComponent = (TestSuite) child;
                 successful &= executeTestSuite(suiteComponent);
@@ -468,8 +466,8 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     /**
      * Get test execution statistics
      *
-     * @return stats
-     * @throws java.rmi.RemoteException
+     * @return statistics
+     * @throws RemoteException
      */
     public Statistics getStatistics() throws RemoteException {
         return statistics;

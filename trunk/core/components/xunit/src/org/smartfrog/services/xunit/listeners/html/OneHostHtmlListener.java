@@ -77,12 +77,12 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         }
         //write the root tag
         writeln("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
-        String title = getTitle()
+        String fullTitle = getTitle()
                 + " suite " + suitename
                 + " on " +hostname
                 + " started " + startTime.toString();
         enter("head");
-        write("title", null, title, true);
+        write("title", null, fullTitle, true);
         if(cssURL!=null && cssURL.length()>0) {
             write("link",
                     attr("rel","stylesheet")
@@ -102,7 +102,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         }
         exit("head");
         enter("body");
-        write("h1", style("title"), title, true);
+        write("h1", style("title"), fullTitle, true);
         enter("div",style("toc"));
         write("a", "href='#summary'", "summary", false);
         exit("div");
