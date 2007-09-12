@@ -411,7 +411,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param configurationClass configurationClass Object
      * @param defaultConfig configuration Object returned if nothing is found
      * @return componentdescription configuration found or default value if nothing was found or null if
-     * a problem ocurred
+     * a problem occurred
      * @throws SmartFrogResolutionException if failed to resolve
      */
     private Object getConfigurationForClass(ComponentDescription componentDescription, String configurationClass, ComponentDescription defaultConfig) throws SmartFrogResolutionException {
@@ -419,7 +419,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             return defaultConfig;
         }
         String className = configurationClass.substring(configurationClass.lastIndexOf("."));
-        return (ComponentDescription)componentDescription.sfResolve(className+"Config", defaultConfig, false);
+        return componentDescription.sfResolve(className+"Config", defaultConfig, false);
     }
 
     /**
@@ -990,8 +990,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void err(Object message){
-        Throwable thrNull = null;
-        err (message, (Throwable)thrNull);
+        err (message, null);
     }
 
     /**

@@ -1275,7 +1275,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public ComponentDescription sfDiagnosticsReport() {
       ComponentDescription cd = null;
       try {
-        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        cd = new ComponentDescriptionImpl(null,new ContextImpl(), false);
         cd.setParent(this);
         StringBuffer report = new StringBuffer();
         Diagnostics.doReport(report,this);
@@ -1607,11 +1607,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
       */
      public boolean hasSameParent(ComponentDescription o) {
          if (primParent==null) {
-           if (!(parent == (((ComponentDescription)o).sfParent()))){
+           if (!(parent == o.sfParent())){
                return true;
            }
          } else {
-           if (!(primParent == (((ComponentDescription)o).sfPrimParent()))){
+           if (!(primParent == o.sfPrimParent())){
                return true;
            }
          }

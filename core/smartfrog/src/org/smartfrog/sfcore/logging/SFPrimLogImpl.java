@@ -125,16 +125,16 @@ public class SFPrimLogImpl extends PrimImpl implements Prim, SFPrimLog, Log {
     /**
      * Loads the right logger implementing Log interface with the rigth configuration
      * If logToCD is null, the component log is used (this.sfLog())
-     * @param logToCD ComponentDescription
+     * @param logCD ComponentDescription
      * @return Log
      */
-    private Log getLog(ComponentDescription logToCD) throws SmartFrogException, RemoteException{
-        if (logToCD == null) return sfLog();
+    private Log getLog(ComponentDescription logCD) throws SmartFrogException, RemoteException{
+        if (logCD == null) return sfLog();
         String logClass = null;
         String codeBase=null;
-        logClass = logToCD.sfResolve(ATR_LOGGER_CLASS, logClass, true);
+        logClass = logCD.sfResolve(ATR_LOGGER_CLASS, logClass, true);
         codeBase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE, codeBase, false);
-        return LogImpl.loadLogger(logName,logToCD, new Integer(logLevel),logClass,codeBase);
+        return LogImpl.loadLogger(logName,logCD, new Integer(logLevel),logClass,codeBase);
 
     }
 
