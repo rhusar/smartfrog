@@ -264,7 +264,7 @@ public class NewAttributeDialog extends JDialog {
                     //end phases
                 }
 
-                if (phase.equals("all")) {
+                if ((phases != null) && phase.equals("all")) {
                     auxphases = (Vector) (phases.clone());
 
                     //for multilanguage!

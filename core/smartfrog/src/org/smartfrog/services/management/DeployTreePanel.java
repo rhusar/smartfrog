@@ -194,12 +194,12 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
      *
      * @param  root  Root of the tree
      * @param isCopy is root a copy?.
-     * @param inRootPanel flag indicating to show in root panel
+     * @param isInRootPanel flag indicating to show in root panel
      * @param shouldShowCDasChild flag indicating to show CD as child
      */
-    private void treeInit(Object root, boolean isCopy, boolean inRootPanel, boolean shouldShowCDasChild) {
+    private void treeInit(Object root, boolean isCopy, boolean isInRootPanel, boolean shouldShowCDasChild) {
         if (root != null) {
-            treeModel = new DeployTreeModelSF(root, isCopy, inRootPanel,shouldShowCDasChild);
+            treeModel = new DeployTreeModelSF(root, isCopy, isInRootPanel,shouldShowCDasChild);
         } else {
             treeModel = new DeployTreeModelSF();
         }
@@ -242,14 +242,11 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener, Fo
     private void updateTable() {
         Object treeNode = systemViewTree.getLastSelectedPathComponent();
 
-        //System.out.println(treeNode.getClass());
         if (treeNode == null) {
             return;
         }
 
-        //System.out.println("Query to Node: "+treeNode.toString());
         if (treeNode instanceof DeployEntry) {
-            //System.out.println("TreeNode: "+treeNode);
             Object[][] data = ((DeployEntry) treeNode).getAttributes();
             String[] title = { "Attribute", "Value","Tag(s)" };
             table.setModel(new DefaultTableModel(data, title));

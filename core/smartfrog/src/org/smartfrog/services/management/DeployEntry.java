@@ -81,7 +81,7 @@ public class DeployEntry implements Entry {
      */
     public DeployEntry(Object entry,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
         try {
-            this.entry = (Object) entry;
+            this.entry = entry;
             this.isCopy = isCopy;
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
