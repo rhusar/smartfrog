@@ -63,7 +63,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     private static final Log log= LogFactory.getLog(SmartFrogTestBase.class);
 
     /**
-     * Smartforg assertion.
+     * Smartfrog assertion.
      * Value: {@value}
      */
     private static final String EXCEPTION_SMARTFROG_ASSERTION = "SmartFrogAssertionException";
@@ -93,7 +93,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     public static final String EXCEPTION_LINKRESOLUTION = "SmartFrogLinkResolutionException";
 
     /**
-     * Text to look for in classname when seeking afunction  resolution exception.
+     * Text to look for in classname when seeking a function  resolution exception.
      * Value: {@value}
      */
     public static final String EXCEPTION_FUNCTIONRESOLUTION = "SmartFrogFunctionResolutionException";
@@ -161,7 +161,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM
-     * paramaters -but do not complain if they are missing
+     * parameters -but do not complain if they are missing
      * @param name test case name
      */
     protected SmartFrogTestBase(String name) {
@@ -524,7 +524,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * start smartfrog if it isnt already live
+     * start smartfrog if it isn't already live
      *
      * @throws RemoteException in the event of remote trouble.
      * @throws SmartFrogException The component did not deploy with some other exception
@@ -550,7 +550,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * Deploys an application and returns the refence to deployed application.
+     * Deploys an application and returns the reference to deployed application.
      * @param testURL  URL to test
      * @param appName  Application name
      * @return Reference to deployed application
@@ -652,7 +652,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     protected Phases parse(File file) throws SmartFrogException {
         String fileUrl;
         try {
-            fileUrl = file.toURL().toString();
+            fileUrl = file.toURI().toURL().toString();
         } catch (MalformedURLException ignore) {
             String msg = MessageUtil.
                     formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND,
@@ -697,7 +697,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     /**
      * work out the language of a file by getting the extension
-     * @param filename file whose extension wil be examined
+     * @param filename file whose extension will be examined
      * @return the extension; default is .sf
      */
     protected String determineLanguage(String filename) {
