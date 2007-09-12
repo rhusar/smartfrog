@@ -201,20 +201,20 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
 
     /**
      * Configure the logger
-     * @param configuratorURL URL or string. to the configuration
+     * @param configurationURL URL or string. to the configuration
      */
 
-    private void configureLog4JLogger(Object configuratorURL) {
+    private void configureLog4JLogger(Object configurationURL) {
 
-        if (configuratorURL == null) {
+        if (configurationURL == null) {
             error("LogToLog4JImpl: Failed to find configuration. Using Log4J.BasicConfigurator");
             return;
         }
         try {
-            if (configuratorURL instanceof URL) {
-                configureWithURL((URL) configuratorURL);
-            } else if (configuratorURL instanceof String) {
-                configureWithFilename((String) configuratorURL);
+            if (configurationURL instanceof URL) {
+                configureWithURL((URL) configurationURL);
+            } else if (configurationURL instanceof String) {
+                configureWithFilename((String) configurationURL);
             } else {
                 warn("LogToLog4JImpl: Using Log4J.BasicConfigurator");
             }
@@ -226,24 +226,24 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * bind the logger to a URL
      *
-     * @param configuratorURL URL of the configuration
+     * @param configurationURL URL of the configuration
      * @throws FactoryConfigurationError if the configuration is invalid
      */
-    private void configureWithURL(URL configuratorURL) throws FactoryConfigurationError {
-        if (configuratorURL.getFile().endsWith(".xml")) {
+    private void configureWithURL(URL configurationURL) throws FactoryConfigurationError {
+        if (configurationURL.getFile().endsWith(".xml")) {
             //Initial configurator is removed
             BasicConfigurator.resetConfiguration();
-            DOMConfigurator.configure(configuratorURL);
+            DOMConfigurator.configure(configurationURL);
             if (isTraceEnabled()) {
-                out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configuratorURL
+                out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configurationURL
                         .toString());
             }
         } else {
             //Initial configurator is removed
             BasicConfigurator.resetConfiguration();
-            PropertyConfigurator.configure(configuratorURL);
+            PropertyConfigurator.configure(configurationURL);
             if (isTraceEnabled()) {
-                out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configuratorURL
+                out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configurationURL
                         .toString());
             }
         }
