@@ -186,7 +186,7 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
         histogram = sfResolve(HISTOGRAM, false, false);
         pencilColour = sfResolve(PENCILCOLOUR, "0xFFFF00", false);
         positionDisplay = sfResolve(POSITIONDISPLAY, "NW", false);
-        graphPencilWidth = (float) sfResolve(GRAPHPENCILWIDTH, 5, false);
+        graphPencilWidth = sfResolve(GRAPHPENCILWIDTH, 5, false);
         frameTitle = sfResolve(FRAMETITLE, "Graph", false);
         logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
     }

@@ -382,8 +382,7 @@ public class ReplaceVar {
         return;
      }
      for (int i = 0; i < size; i++) {
-        dataElement =(Object)appendData.elementAt(i);
-        //System.out.println(" Element is "+ dataElement.toString());
+        dataElement =appendData.elementAt(i);
         if (dataElement!=null)
            this.cache.add(dataElement);
      }

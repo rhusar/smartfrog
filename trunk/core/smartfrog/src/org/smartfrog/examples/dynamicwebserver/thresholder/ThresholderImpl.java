@@ -279,7 +279,9 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                 if (sfLog().isWarnEnabled()) sfLog().warn (name+ "help... exception in starting instance", e);
 
                 try {
-                    deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
+                    if(deployed!=null) {
+                    	deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
+                    }
                 } catch (Exception ex) {
                     if (sfLog().isIgnoreEnabled()) sfLog().ignore (ex);
                 }

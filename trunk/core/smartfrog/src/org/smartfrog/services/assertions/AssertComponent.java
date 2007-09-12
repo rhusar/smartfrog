@@ -236,7 +236,7 @@ public class AssertComponent extends PrimImpl implements Condition,Assert {
         Reference reference = new Reference();
         Prim prim = null;
         try {
-            reference = sfResolve(ATTR_REFERENCE, (Reference) reference, false);
+            reference = sfResolve(ATTR_REFERENCE, reference, false);
             if ( reference == null ) {
                 //there was no reference
                 return null;
