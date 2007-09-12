@@ -91,10 +91,10 @@ public class FunctionalTestTask extends Task {
      * Define a sequence of operations to run at startup. After running these,
      * the teardown sequence will be called to tear down the system.
      *
-     * @param setup
+     * @param setupSequence
      */
-    public void addSetup(Sequential setup) {
-        this.setup = setup;
+    public void addSetup(Sequential setupSequence) {
+        this.setup = setupSequence;
     }
 
     public Sequential getTeardown() {
@@ -104,13 +104,13 @@ public class FunctionalTestTask extends Task {
     /**
      * A sequence of operations that are used to tear down the system.
      *
-     * @param teardown teardown sequence
+     * @param teardownSequence teardown sequence
      */
-    public void addTeardown(Sequential teardown) {
+    public void addTeardown(Sequential teardownSequence) {
         if (this.teardown != null) {
             log("Overriding previous definition of <teardown>");
         }
-        this.teardown = teardown;
+        this.teardown = teardownSequence;
     }
 
 
@@ -122,13 +122,13 @@ public class FunctionalTestTask extends Task {
      * The sequence of tasks used to define the application. This is for hosting
      * the server in a parallel thread to the test run.
      *
-     * @param application application sequence
+     * @param app application sequence
      */
-    public void addApplication(Sequential application) {
+    public void addApplication(Sequential app) {
         if(this.application!=null) {
             log("Overriding previous definition of <test>");
         }
-        this.application = application;
+        this.application = app;
     }
 
     /**
@@ -153,13 +153,13 @@ public class FunctionalTestTask extends Task {
     /**
      * Add a probe, conditions that have to be met before testing begins.
      *
-     * @param probe test to probe
+     * @param waitFor test to probe
      */
-    public void addProbe(FaultingWaitForTask probe) {
+    public void addProbe(FaultingWaitForTask waitFor) {
         if (this.probe != null) {
             log("Overriding previous definition of <probe>");
         }
-        this.probe = probe;
+        this.probe = waitFor;
     }
 
     /**

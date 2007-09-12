@@ -267,12 +267,12 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * set text inside. This will get saved.
          *
-         * @param text text to add; properties are expanded
+         * @param unexpandedText text to add; properties are expanded in the process.
          */
-        public void addText(String text) {
+        public void addText(String unexpandedText) {
             //convert properties
-            text = owner.getProject().replaceProperties(text);
-            this.text=text;
+            unexpandedText = owner.getProject().replaceProperties(unexpandedText);
+            this.text=unexpandedText;
             //create a temp file
             File tempfile = FileUtils.newFileUtils().createTempFile("deploy",
                     ".sf", null);
@@ -285,7 +285,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 tempfile.deleteOnExit();
             }
             owner.log("Saving to temporary file "+tempfile,Project.MSG_VERBOSE);
-            owner.log(text, Project.MSG_VERBOSE);
+            owner.log(unexpandedText, Project.MSG_VERBOSE);
             OutputStream out = null;
             OutputStreamWriter writer = null;
             PrintWriter printer = null;
