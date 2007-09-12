@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.processcompound;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Collection;
@@ -519,9 +520,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
         // Terminate legitimate children except subProc
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+    	List<Prim> children = sfChildList();
+        for (int i = children.size() -1 ; i >= 0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = children.get(i);
             if ((!(child instanceof ProcessCompound))
                 &&(child.sfParent()== null)) {
               //Logger.log("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
@@ -533,12 +535,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           }
         }
         // Terminate illegitimate children except subProc
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        children = sfChildList();
+        for (int i = children.size()-1; i>=0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = children.get(i);
             if ((! (child instanceof ProcessCompound))){
               //Logger.log("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
-              //Full termination notifiying its parent
+              //Full termination notifying its parent
               (child).sfTerminate(status);
             }
           } catch (Exception ex) {
@@ -547,9 +550,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           }
         }
         // Terminate subprocesses
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        children = sfChildList();
+        for (int i = children.size()-1; i>=0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = children.get(i);
             //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
             (child).sfTerminateQuietlyWith(status);
           } catch (Exception ex) {
@@ -560,19 +564,20 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     }
 
     /**
-     * Terminate children asynchronously using a seperate thread for each call.
+     * Terminate children asynchronously using a separate thread for each call.
      * It iterates from the last one created to the first one.
      *
      * @param status status to terminate with
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
         // Terminate legitimate children except subProc
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+    	
+        List<Prim> children = sfChildList();
+		for (int i = children.size()-1; i>=0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = children.get(i);
             if ((! (child instanceof ProcessCompound))&&(child.sfParent()==null)) {
               //Logger.log("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
-              //Deprecated: new TerminateCall( child, status,true);
               (new TerminatorThread(child,status).quietly()).start();
             }
           } catch (Exception ex) {
@@ -585,13 +590,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           }
         }
         // Terminate illegitimate children except subProc
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+		children = sfChildList();
+        for (int i = children.size()-1; i>=0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = (Prim) children.get(i);
             if ((! (child instanceof ProcessCompound))){
-              //Full termination notifiying its parent
+              //Full termination notifying its parent
               //Logger.log("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
-              //Deprecated: new TerminateCall( child, status,false);
               (new TerminatorThread(child,status)).start();
             }
           } catch (Exception ex) {
@@ -600,11 +605,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           }
         }
         // Terminate subprocesses
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        children = sfChildList();
+        for (int i = children.size()-1; i>=0; i--) {
           try {
-            Prim child = (Prim) sfChildren.elementAt(i);
+            Prim child = (Prim) children.get(i);
             //Logger.log("ASynchTerminate sent to: "+ child.sfCompleteName());
-            //Deprecated: new TerminateCall( child, status,true);
             (new TerminatorThread(child,status).quietly()).start();
           } catch (Exception ex) {
             if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
@@ -669,7 +674,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (gcTimeout > 0) {
             //System.out.println("SPGC lease being checked " + countdown);
-            if ((countdown-- < 0) && (sfChildren.size() == 0) &&
+            if ((countdown-- < 0) && (sfChildList().size() == 0) &&
                     (sfParent != null)) {
                 //System.out.println("SPGC being activated");
                 sfTerminate(TerminationRecord.normal(null));
@@ -782,7 +787,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         sfAddAttribute(compName, comp);
 
         // Add liveness so we know when to unregister
-        if (!sfChildren.contains(comp)) {
+        if (!sfChildList().contains(comp)) {
             sfAddChild(comp);
         }
         return compName;
@@ -953,8 +958,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // Locate timeout
         Object timeoutObj = null;
         long timeout = 0L;
+        timeoutObj = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT);
         try {
-            timeoutObj = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT);
             timeout = 1000*  ((Number)timeoutObj).intValue();
         } catch (ClassCastException ccex) {
             throw SmartFrogResolutionException.illegalClassType(

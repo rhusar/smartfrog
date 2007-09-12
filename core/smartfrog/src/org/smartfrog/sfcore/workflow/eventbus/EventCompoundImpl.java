@@ -416,20 +416,11 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
         //Actions are now children of this component, they are deployed and
         //started
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfDeploy();
-            }
+        for (Prim child:sfChildList()) {
+            child.sfDeploy();
         }
-
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfStart();
-            }
+        for (Prim child:sfChildList()) {
+            child.sfStart();
         }
     }
 

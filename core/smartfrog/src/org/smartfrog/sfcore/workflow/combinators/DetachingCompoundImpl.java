@@ -32,9 +32,9 @@ import org.smartfrog.sfcore.reference.Reference;
 
 
 /**
- * Implements the detaching compound component behavior. A detaching compound
+ * Implements the detaching compound component behaviour. A detaching compound
  * deploys component descriptions, and may detach them from its liveness after
- * succesfull deployment, or detach itself from its parent. After this, the
+ * succesful deployment, or detach itself from its parent. After this, the
  * component can be set to terminate itself.
  *
  */
@@ -64,7 +64,7 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
     }
 
     /**
-     * Collects the values of the behavior booleans on the deploy phase and
+     * Collects the values of the behaviour booleans on the deploy phase and
      * deploys the component.
      *
      * @throws SmartFrogException In case of error while deployment
@@ -85,15 +85,15 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
      * Starts the detaching compound. This sends sfStart to all managed
      * components in the compound context, then detaches them from itself if
      * detachDownwards has been set to true in the compound description. The
-     * compound detaches itslef from its parent if detachUpwards has been set
+     * compound detaches itself from its parent if detachUpwards has been set
      * to true.Failures while detaching cause autodestruct to be set to true,
-     * and a flag indicates abormal termination. Components that did not
+     * and a flag indicates abnormal termination. Components that did not
      * detach will terminate, since there liveness times out. On completion
-     * (successfull or not) the compound terminates itself if autoDestruct has
+     * (successful or not) the compound terminates itself if autoDestruct has
      * been set to true.
      *
      * @throws SmartFrogException if failed to start detaching compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
@@ -134,10 +134,9 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
 
             if (detachDownwards) {
                 // detach all children
-                for (Enumeration e = sfChildren();
-                        e.hasMoreElements();) {
+            	for (Prim child:sfChildList()) {
                     try {
-                        ((Prim) e.nextElement()).sfDetach();
+                        child.sfDetach();
                     } catch (SmartFrogException remex) {
                         sfTerminate(TerminationRecord.abnormal(
                                 "DetachingCompound failed to detach children",
@@ -156,7 +155,7 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
                 if (autoDestruct) {
                     try {
                         name = sfCompleteName();
-                    } catch (Exception e) {
+                    } catch (Exception ignore) {
                     }
 
                     sfTerminate(TerminationRecord.normal(name));
