@@ -197,7 +197,6 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
     protected static InetAddress getRegistryBindAddress(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         Object bindAddr=null;
-        try {
             if (registryBindAddr == null) {
                 if (c!=null) {
                   bindAddr = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false));
@@ -210,15 +209,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 } else if (bindAddr instanceof java.net.InetAddress) {
                    return ((java.net.InetAddress) bindAddr);
                 } else {
-                  registryBindAddr = InetAddress.getByName(bindAddr.toString());
+                    try {
+                    	registryBindAddr = InetAddress.getByName(bindAddr.toString());
+                    } catch (UnknownHostException uhex){
+                    	throw new SmartFrogResolutionException(
+                    			"Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+                    			+": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
+
+                    }
                 }
             }
-        } catch (UnknownHostException uhex){
-           throw new SmartFrogResolutionException(
-             "Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-             +": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
-
-        }
         return registryBindAddr;
     }
 
@@ -332,7 +332,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * avoid all calls going through RMI
      *
      * @param hostAddress host to look up root process compound
-     * @param portNum port to locate registry for root process conmpound if not
+     * @param portNum port to locate registry for root process compound if not
      *        default
      *
      * @return the root process compound on given host
