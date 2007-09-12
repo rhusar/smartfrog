@@ -28,27 +28,13 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
 
 
     /**
-     * Deploy the compound. Deployment is defined as iterating over the context
-     * and deploying any parsed eager components.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure deploying compound or
-     *                                  sub-component
-     * @throws java.rmi.RemoteException In case of Remote/nework error
-     */
-    public synchronized void sfDeploy()
-            throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-    }
-
-    /**
      * Starts the compound. This sends a synchronous sfStart to all managed
      * components in the compound context. Any failure will cause the compound
      * to terminate
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failed to start compound
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -96,10 +82,8 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
                 null);
 
         int terminated=0;
-        for (Enumeration e = sfChildren();
-             e.hasMoreElements();) {
+        for (Prim child:sfChildList()) {
             try {
-                Prim child = (Prim) e.nextElement();
                 if(!child.sfIsTerminated() && !child.sfIsTerminating()) {
                     terminated++;
                     child.sfDetachAndTerminate(terminationRecord);
@@ -120,7 +104,7 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
     private class WatchDogThread extends Thread {
 
         //timeout in seconds. If <=0 the timeout is disabled
-        private int timeout;
+        private int timeoutSeconds;
 
 
         /**
@@ -128,7 +112,7 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          *
          */
         public WatchDogThread(int timeout) {
-            this.timeout = timeout;
+            this.timeoutSeconds = timeout;
         }
 
         public void stopWatching() {
@@ -141,10 +125,10 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          *
          */
         public void run() {
-            if(timeout<=0) {
+            if(timeoutSeconds<=0) {
                 return;
             }
-            int sleepTime = timeout * 1000;
+            int sleepTime = timeoutSeconds * 1000;
 
             try {
                 Thread.sleep(sleepTime);

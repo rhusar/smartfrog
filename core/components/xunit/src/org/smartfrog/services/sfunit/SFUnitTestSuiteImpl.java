@@ -122,11 +122,12 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     }
 
     /**
-     * Starts the compound. This sends a synchronous sfStart to all managed components in the compound context. Any
-     * failure will cause the compound to terminate
+     * Starts the compound.
+     * This sends a synchronous sfStart to all managed components in the compound context. 
+     * Any failure will cause the compound to terminate
      *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException    In case of Remote/nework error
+     * @throws RemoteException    In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -142,11 +143,10 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         }
 
         //now start anything that is not a test
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
+        for (Prim elem:sfChildList()) {
 
-            if (elem instanceof Prim && !(elem instanceof TestBlock)) {
-                ((Prim) elem).sfStart();
+            if (!(elem instanceof TestBlock)) {
+                elem.sfStart();
             }
         }
 
@@ -158,7 +158,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      *
      * This is done by running through every child in turn, and deploying it.
      *
-     * When it terminates, it is evaluated. No, that doesnt work. We need notification?
+     * When it terminates, it is evaluated. No, that doesn't work. We need notification?
      *
      * @return true if they worked
      * @throws RemoteException    for network problems
@@ -185,14 +185,13 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         boolean successful = true;
 
-        testChildren = new ArrayList<TestBlock>(sfChildren.size());
+        final List<Prim> children = sfChildList();
+		testChildren = new ArrayList<TestBlock>(children.size());
 
 
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof TestBlock) {
-                TestBlock testBlock = (TestBlock) elem;
+        for (Prim child:children) {
+            if (child instanceof TestBlock) {
+                TestBlock testBlock = (TestBlock) child;
                 testChildren.add(testBlock);
             }
         }
@@ -253,9 +252,16 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     }
 
     /**
-     * Handle child termination. Sequence behaviour for a normal child termination is <ol> <li> to start the next
-     * component.</li> <li> if it is the last - terminate normally. </li> <li> If starting the next component raised an
-     * error, terminate abnormally</li> </ol> Abnormal child terminations are relayed up.
+     * Handle child termination. 
+     * Sequence behaviour for a normal child termination is 
+     * <ol>
+     *  <li> to start the next component.</li>
+     *  <li> if it is the last - terminate normally. </li>
+     *  <li> If starting the next component raised an
+     * error, terminate abnormally</li> 
+     * </ol> 
+     * 
+     * Abnormal child terminations are relayed up.
      *
      * @param record exit record of the component
      * @param comp   child component that is terminating
@@ -267,13 +273,13 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             TestBlock test = (TestBlock) activeTest;
             //get the results
             boolean success=false;
-            boolean skipped=false;
-            boolean failed=false;
+            boolean isSkipped=false;
+            boolean isFailed=false;
             Exception caught=null;
             try {
                 success = test.isSucceeded();
-                skipped = test.isSkipped();
-                failed = test.isFailed();
+                isSkipped = test.isSkipped();
+                isFailed = test.isFailed();
             } catch (RemoteException e) {
                 caught = e;
             } catch (SmartFrogException e) {
@@ -282,12 +288,12 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             if(caught!=null) {
                 sfLog().error("Unreachable or terminated child -assuming failure");
                 success=false;
-                failed = true;
+                isFailed = true;
             }
             succeeded &=success;
-            failed |= failed;
-            //if we failed, we didnt succeed. Just to make sure :)
-            succeeded &=!failed;
+            isFailed |= isFailed;
+            //if we failed, we didn't succeed. Just to make sure :)
+            succeeded &=!isFailed;
             //now, report things
             if(getConfiguration().getKeepGoing()) {
                 

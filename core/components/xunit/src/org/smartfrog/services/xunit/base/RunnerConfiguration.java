@@ -26,7 +26,8 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- * This is the configuration to run created 17-May-2004 17:22:03 The clone policy creates a shallow clone, and retains
+ * This is the configuration to run.
+ * The clone policy creates a shallow clone, and retains
  * the same listener
  */
 
