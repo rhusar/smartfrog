@@ -47,7 +47,7 @@ public class RunJavaUtils {
         Vector flat=new Vector(in.size());
         Iterator flattener=in.iterator();
         while (flattener.hasNext()) {
-            Object o = (Object) flattener.next();
+            Object o = flattener.next();
             if(o instanceof Collection) {
                 Collection c=(Collection)o;
                 Vector v=recursivelyFlatten(c);
@@ -109,7 +109,7 @@ public class RunJavaUtils {
         Vector dest=new Vector(source.size());
         Iterator it=source.iterator();
         while (it.hasNext()) {
-            Object o = (Object) it.next();
+            Object o = it.next();
             if(map.get(o)==null) {
                 map.put(o,o);
                 dest.add(o);
