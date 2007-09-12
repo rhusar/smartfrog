@@ -162,7 +162,7 @@ public final class BrowserEntry implements Entry {
                             this.children = new HashMap();
                         }
 
-                        if (children.containsKey((Object) nameChild)) {
+                        if (children.containsKey(nameChild)) {
                             BrowserEntry newChild = (BrowserEntry) children.
                     get(nameChild);
 
@@ -520,7 +520,7 @@ public final class BrowserEntry implements Entry {
             return name;
         } else {
             try {
-                return parentDN.substring(0, ((String) parentDN).indexOf(':'));
+                return parentDN.substring(0, parentDN.indexOf(':'));
             } catch (Exception ex) {
                 return parentDN;
             }

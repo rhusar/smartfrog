@@ -122,7 +122,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
        * @param timeout the maximum time to wait in milliseconds for the results: 0 don't wait, -1 wait forever
        *
        * @return a component description containing aspects of the result:
-       * The resut contains three attributes as follows:
+       * The result contains three attributes as follows:
        *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
        *   "stdOut" a list of lines on stdout - empty if not supported in shell,
        *   "stdErr" a list of lines on stderr - empty if not supported in shell.
@@ -439,7 +439,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     if (verbose) res.verbose();
     if (commands==null) {
       runEcho("exec_list_commands","NO Commands to run - NULL command list");
-      closeResults(commands.toString(), false, -1);
+      closeResults("", false, -1);
       return res;
     }
     for (int i = 0; i < commands.size(); ++i) {
@@ -455,7 +455,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
   /**
    * obtain a lock on the shell, will block until it is available
-   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+   * @param timeout max number of milliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time

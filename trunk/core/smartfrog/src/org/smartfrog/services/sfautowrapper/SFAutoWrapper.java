@@ -217,7 +217,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
         //Load jars if needed.
 
         File libDir=null;
-        libDir = (File)cd.sfResolve("libDir",libDir,false);
+        libDir = cd.sfResolve("libDir",libDir,false);
         List urls = new ArrayList();
         if (libDir!=null) {
             FileSystem.scanDir(libDir,urls,"*(jar|zip)",true);
@@ -301,7 +301,7 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
     public static Object[] getParameters(ComponentDescription cd) throws SmartFrogResolutionException {
         Object[] parameters = null;
         Vector parametersV = null;
-        parametersV = ((Vector) cd.sfResolve ("parameters",parametersV,false));
+        parametersV = cd.sfResolve ("parameters",parametersV,false);
         if (parametersV!=null) {
             if (log().isInfoEnabled()){
                log().info ("       + parameters: "+ parametersV.toString());
