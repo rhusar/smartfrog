@@ -256,7 +256,9 @@ public class OptionSet {
             throw SmartFrogException.forward(e);
         } finally {
             try {
-                file.close();
+                if(file!=null) {
+                	file.close();
+                }
             } catch (Exception ex) {
                 SFSystem.sfLog().ignore(ex);
             }

@@ -417,8 +417,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public String toString(String nm) {
       StringBuffer strb = null;
+      strb = new StringBuffer();
       try {
-        strb = new StringBuffer();
         strb.append (shortClassName() +":: ");
 
         strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)

@@ -370,7 +370,7 @@ public final class Diagnostics {
         StringBuffer reportPC = new StringBuffer();
         Diagnostics.header(out, "sfContext host ProcessCompound");
         out.append("+++++++++++++++++++++++++++++++++++++++++++");
-        doReportPrim (reportPC,(Prim)pc);
+        doReportPrim (reportPC,pc);
         out.append(reportPC.toString().replaceAll("\n","\n    "));
         out.append("\n+++++++++++++++++++++++++++++++++++++++++++\n");
       } catch (Exception ex2) {
@@ -381,15 +381,15 @@ public final class Diagnostics {
     /**
       * Report specific Compound information.
      * @param out StringBuffer
-     * @param prim Compound
+     * @param compound Compound
      */
-    private static void doReportCompound(StringBuffer out, Compound prim) {
+    private static void doReportCompound(StringBuffer out, Compound compound) {
       Enumeration enu = null;
       StringBuffer childrenInfo = new StringBuffer();
       Prim child = null;
       try {
         Diagnostics.header(out, "sfChildren");
-        for (enu = ( (Compound) prim).sfChildren(); enu.hasMoreElements(); ) {
+        for (enu =  compound.sfChildren(); enu.hasMoreElements(); ) {
           try {
             child = (Prim) enu.nextElement();
             childrenInfo.append("- ");
@@ -438,28 +438,29 @@ public final class Diagnostics {
     private static void doReportSystemProperties(StringBuffer out) {
         Properties sysprops = null;
         try {
-            sysprops = System.getProperties();
+        	sysprops = System.getProperties();
+
+        	Vector<String> keysVector = new Vector<String>();
+        	for (Enumeration keys = sysprops.propertyNames(); keys.hasMoreElements();) {
+        		keysVector.add((String) keys.nextElement());
+        	}
+        	// Order keys
+        	keysVector= JarUtil.sort(keysVector);
+
+
+        	for(String key:keysVector) {
+        		String value = "";
+        		try {
+        			if (!(key.trim().equals(""))) value = System.getProperty(key);
+        		} catch (SecurityException e) {
+        			value = "Access to this property blocked by a security manager";
+        		}
+        		out.append(key).append(" : ").append(value);
+        		out.append("\n");
+        	}
         } catch (SecurityException  e) {
-            out.append("Access to System.getProperties() blocked " +
-                    "by a security manager");out.append("\n");
-        }
-
-        Vector keysVector = new Vector();
-        for (Enumeration keys = sysprops.propertyNames(); keys.hasMoreElements();) {
-          keysVector.add((String) keys.nextElement());
-        }
-        // Order keys
-        keysVector= JarUtil.sort(keysVector);
-
-        for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
-            String key = (String) keys.nextElement();
-            String value = "";
-            try {
-                if (!(key.trim().equals(""))) value = System.getProperty(key);
-            } catch (SecurityException e) {
-                value = "Access to this property blocked by a security manager";
-            }
-            out.append(key + " : " + value);out.append("\n");
+        	out.append("Access to System.getProperties() blocked " +
+        	"by a security manager\n");
         }
     }
 
