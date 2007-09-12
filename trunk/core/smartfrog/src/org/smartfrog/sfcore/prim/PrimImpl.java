@@ -950,7 +950,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
    /** Iterate over all the attributes in the context to see if they require to be injected (have the sfIntect tag)
     *  and if so, carry out the injection using injectAttribute
     *
-    * @throws SmartFrogException - an error occured during one  of the injections
+    * @throws SmartFrogException - an error occurred during one  of the injections
     */
    private void injectAttributes() throws SmartFrogException {
          Iterator i = null;

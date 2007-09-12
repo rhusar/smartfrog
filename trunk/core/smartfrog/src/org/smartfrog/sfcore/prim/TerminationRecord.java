@@ -60,7 +60,7 @@ public final class TerminationRecord implements Serializable {
     /**
      * Constructs a new termination record.
      *
-     * @param errType error type, system recognized types are "normal",
+     * @param errType error type, system recognised types are "normal",
      *        "abnormal" and "externalReferenceDead".
      * @param descr description of termination
      * @param id id of failing component
@@ -77,7 +77,7 @@ public final class TerminationRecord implements Serializable {
      * The cause will be converted into a serializable form if the exception is not
      * believed to be portable
      * @see SmartFrogExtractedException
-     * @param errType error type, system recognized types are "normal",
+     * @param errType error type, system recognised types are "normal",
      *        "abnormal" and "externalReferenceDead".
      * @param descr description of termination
      * @param id id of failing component
@@ -137,7 +137,7 @@ public final class TerminationRecord implements Serializable {
      *
      * @param description description of the termination
      * @param id          id of component
-     * @param cause an exception to include in the recird
+     * @param cause an exception to include in the record
      * @return a SFTerminationRecord
      */
     public static TerminationRecord normal(String description, Reference id, Throwable cause) {
