@@ -95,10 +95,10 @@ public abstract class TaskBase extends Task {
     /**
      * the classpath to run the parser
      *
-     * @param classpath classpath element
+     * @param cp classpath element
      */
-    public void addClasspath(Path classpath) {
-        this.classpath = classpath;
+    public void addClasspath(Path cp) {
+        this.classpath = cp;
     }
 
     /**
