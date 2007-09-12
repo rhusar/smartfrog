@@ -300,35 +300,5 @@ public class JarUtil {
    }
 }
 
-/**
- *  Description of the Class
- *
- *@author     julgui
- *created    04 October 2001
- */
-class StringComparator  implements Comparator, Serializable {
-
-   /**
-    *  Description of the Method
-    *
-    *@param  o1  Description of Parameter
-    *@param  o2  Description of Parameter
-    *@return     Description of the Returned Value
-    */
-   public int compare(
-         Object o1, Object o2) {
-      if (!(o1 instanceof String)) {
-         throw new ClassCastException();
-      }
-      if (!(o2 instanceof String)) {
-         throw new ClassCastException();
-      }
-
-      int result = ((String)o1).
-            compareTo(((String)o2));
-      return result * (-1);
-   }
-   //end compare()
-}
 //end class TheComparator
 
