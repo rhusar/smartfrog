@@ -173,7 +173,9 @@ public class DelayedTerminator implements Runnable {
             }
             //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
             //we actually force the termination
-            if(record!=null) {
+            //the target!=null test is gratuitous, as record is only set if it is not null, but
+            //this stops the IDEs from warning
+            if(record!=null && target!=null) {
                 try {
                     target.sfTerminate(record);
                 } catch (RemoteException e) {
