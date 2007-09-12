@@ -472,10 +472,10 @@ public class ConfigurationDescriptor implements MessageKeys {
     /**
      * Generates a user friendly message for certain exceptions.
      * @param thr Exception
-     * @param lineSeparator the line separartor to be used in the message
+     * @param separatorString the line separator to be used in the message
      * @return String Exception message
      */
-    private String parseException (Throwable thr, String lineSeparator){
+    private String parseException (Throwable thr, String separatorString){
         StringBuffer messageError = new StringBuffer();
         if (thr instanceof SmartFrogException){
             //messageError.append(((SmartFrogException)thr).toString("\n   "));
@@ -503,7 +503,7 @@ public class ConfigurationDescriptor implements MessageKeys {
                 messageError.append(thr.toString());
             }
         }
-        return messageError.toString().replaceAll("\n",lineSeparator);
+        return messageError.toString().replaceAll("\n",separatorString);
     }
 
     /**

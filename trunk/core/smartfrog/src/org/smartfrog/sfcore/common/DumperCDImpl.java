@@ -108,7 +108,7 @@ public class DumperCDImpl implements Dumper {
 
             //Create new CD if not created yet and inspecting root ref
             if ((cd==null) && rootRef.equals(from)) {
-                cd = new ComponentDescriptionImpl(null,(Context)stateCopy,false);
+                cd = new ComponentDescriptionImpl(null,stateCopy,false);
                 return;
             }
 

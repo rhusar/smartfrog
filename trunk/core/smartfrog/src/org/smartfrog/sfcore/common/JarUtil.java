@@ -260,11 +260,11 @@ public class JarUtil {
                  if (size == -1) {
                     size = ((Integer)htSizes.get(ze.getName())).intValue();
                  }
-                 byte[] b = new byte[(int)size];
+                 byte[] b = new byte[size];
                  int rb = 0;
                  int chunk = 0;
                  while (((int)size - rb) > 0) {
-                    chunk = zis.read(b, rb, (int)size - rb);
+                    chunk = zis.read(b, rb, size - rb);
                     if (chunk == -1) {
                        break;
                     }

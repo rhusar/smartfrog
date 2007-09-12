@@ -85,7 +85,7 @@ public class SFByteArray implements Serializable {
      * @param array the data
      */
     public SFByteArray(byte[] array) {
-        this.array = (byte[])(array.clone());
+        this.array = (array.clone());
     }
 
     /**
@@ -101,7 +101,7 @@ public class SFByteArray implements Serializable {
      * @return  internal array of data
      */
     public byte[] byteArray() {
-        return (byte[])array.clone();
+        return array.clone();
     }
 
     /**
