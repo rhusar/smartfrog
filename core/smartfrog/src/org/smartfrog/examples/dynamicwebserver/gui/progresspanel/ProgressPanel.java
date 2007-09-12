@@ -107,14 +107,14 @@ public class ProgressPanel extends JPanel {
                 JLabel label = ((JLabel) (balls.elementAt((ball - 1))));
 
                 if (status == 0) {
-                    label.setIcon((Icon) this.redBall);
+                    label.setIcon(redBall);
                 } else if (status == 1) {
                     message = "[" +dateFormat.format(new Date(System.currentTimeMillis())) + "] " + message;
                     label.setToolTipText(message);
-                    label.setIcon((Icon) this.yelBall);
+                    label.setIcon(yelBall);
                 } else if (status == 2) {
                     if (label.getIcon() == this.yelBall) {
-                        label.setIcon((Icon) this.grnBall);
+                        label.setIcon(this.grnBall);
                     }
                 } else {
                     // Non existent progress status
@@ -140,7 +140,7 @@ public class ProgressPanel extends JPanel {
      * Adds a feature to the Ball attribute of the ProgressPanel object
      */
     void addBall() {
-        JLabel ball = new JLabel((Icon) this.redBall);
+        JLabel ball = new JLabel(this.redBall);
         jPanelBalls.add(ball);
         balls.add(ball);
     }

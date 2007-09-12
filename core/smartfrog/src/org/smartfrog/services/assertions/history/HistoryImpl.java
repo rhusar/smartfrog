@@ -109,7 +109,7 @@ public class HistoryImpl extends PrimImpl implements History {
      * @throws IndexOutOfBoundsException if the offset is out of range 
      */
     public HistoryEvent elementAt(int offset) {
-        return (HistoryEvent) events.get(offset);
+        return events.get(offset);
     }
 
     /**

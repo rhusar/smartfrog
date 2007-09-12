@@ -280,7 +280,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             Reference l = (Reference) rcxt.get(k);
             EventRegistration s = (EventRegistration) sfResolve(l);
             receiveFrom.addElement(s);
-            s.register((EventSink) this);
+            s.register(this);
         }
 
         // -----------
@@ -296,7 +296,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             message = name + message;
         }
 
-        //creating panelf
+        //creating panel
         if (display == null) {
             return;
         }

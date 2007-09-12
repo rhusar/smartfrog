@@ -146,7 +146,7 @@ public class ParserVar extends Thread {
     *  Detach
     */
    public void detach() {
-      if ((this.sfObj != null) && (this.sfObj instanceof Prim)) {
+      if (this.sfObj != null) {
          try {
             this.sfObj.sfDetach();
          } catch (Exception ex) {

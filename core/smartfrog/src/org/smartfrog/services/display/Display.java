@@ -733,9 +733,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
     /** Exits from the screen */
     void exit() {
         if (okToAbandon()) {
-            //System.out.println("Display finished.");
-            //System.exit(0);
-            if ((this.sfObj != null) && (this.sfObj instanceof Prim)) {
+            if ((this.sfObj != null)) {
                 // Terminate root process compound
                 if ((((SFDisplay) this.sfObj).terminateSFProcessOnExit) &&
                         // If the process name is in the title we assume that is being
@@ -755,7 +753,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                                 TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
                                         "sfDaemon display closed", null);
                                 System.out.println("Terminating Daemon");
-                                new TerminatorThread(((Prim) SFProcess.
+                                new TerminatorThread((SFProcess.
                                         getRootLocator().
                                         getRootProcessCompound(address)), tr).start();
                             } catch (Exception ex) {

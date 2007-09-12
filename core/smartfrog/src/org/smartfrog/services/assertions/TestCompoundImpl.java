@@ -281,7 +281,7 @@ public class TestCompoundImpl extends ConditionCompound
      * This is an override point; it is where subclasses get to change their workflow depending on what happens
      * underneath. It is only called outside of component termination, i.e. when {@link #isWorkflowTerminating()} is
      * false, and when the comp parameter is a child, that is <code>sfContainsChild(comp)</code> holds. If the the
-     * method returns true, the event is forwarded up the object heirarchy, which will eventually trigger a component
+     * method returns true, the event is forwarded up the object hierarchy, which will eventually trigger a component
      * termination. <p/> Always return false if you start new components from this method! </p>
      *
      * @param childStatus exit record of the component

@@ -51,16 +51,16 @@ public class TextAreaOutputStream extends OutputStream {
     }
 
     /**
-     *Sets a single instance of jtext area accesible via static methods
+     *Sets a single instance of jtext area accessible via static methods
      *
      *@param  jta  The new staticOutput value of jtext area
      */
     public static void setStaticOutput(Object jta) {
-        staticRef = new TextAreaOutputStream((JTextArea) jta);
+        staticRef = new TextAreaOutputStream(jta);
     }
 
     /**
-     *Gets a single instance accesible jtext area
+     *Gets a single instance accessible jtext area
      *
      *@return    The staticOutput value
      */

@@ -250,7 +250,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                         value = (sfResolve((String) key));
 //                System.out.println("Found Key Match  "+ value);
                         //if (value instanceof Vector) {
-                        data.add((Object) value);
+                        data.add(value);
                         //System.out.println("Put:"+((Vector)value).elementAt(0)+"->"+((Vector)value).elementAt(1));
                         //}
                     }
