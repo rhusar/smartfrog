@@ -253,7 +253,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");
             }
-           newfileName.append(logName);
+           newfileName.append(instanceName);
         }
 
         if (datedName){
