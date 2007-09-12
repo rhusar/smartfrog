@@ -67,7 +67,7 @@ public class Version {
 
     private static String buildDate= "buildDate";
 
-    // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
+    // Don't change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
     private static String copyright = "(C) Copyright 1998-2006 HP Development Company, LP";
 
