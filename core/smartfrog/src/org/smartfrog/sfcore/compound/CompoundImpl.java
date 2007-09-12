@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.compound;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -36,9 +36,9 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 
 /**
- * Implements the compound component behavior. A compound deploys component
+ * Implements the compound component behaviour. A compound deploys component
  * descriptions, and maintains them as its children. This includes liveness,
- * termination and location behavior
+ * termination and location behaviour
  *
  */
 public class CompoundImpl extends PrimImpl implements Compound {
@@ -75,7 +75,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Creates a compound implementation.
      *
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public CompoundImpl() throws RemoteException {
     }
@@ -86,7 +86,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * parent compound. Also start heartbeating the deployed component
      * if the component registers. Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
-     * This is primarily an internal method - the prefered method for end users is
+     * This is primarily an internal method - the preferred method for end users is
      * #sfCreateNewChild.
      *
      * Note that the remaining lifecycle methods must
@@ -155,7 +155,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                   result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
-                    //This should throw an excetion when a
+                    //This should throw an exception when a
                     //component is registered without a name
                     //in a processcompound, but compound should not know anything
                     //about processcompound
@@ -172,7 +172,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 try {
                     newRef = parent.sfCompleteName();
                 } catch (Exception ex){
-                    // LOG ex
                     ignoreThrowable("could not get complete name", ex);
                 }
             }
@@ -204,11 +203,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
@@ -231,11 +230,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-        return this.sfCreateNewChild(name, null, cmp, parms);
+        return sfCreateNewChild(name, null, cmp, parms);
     }
 
     /**
@@ -256,7 +255,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewChild(Object name, Prim parent,
                                  ComponentDescription cmp, Context parms) throws
@@ -351,9 +350,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
     //
 
     /**
-     * Liveness interface to compound. A liveness target must be an attribute
-     * off the compound.
-     *
+     * Ad a child. Although the parameter is Liveness,
+     * the implementation casts to a Prim internally: only Prim
+     * children are supported.
      * @param target target to heartbeat
      */
     //public synchronized void sfAddChild(Liveness target) {
@@ -401,6 +400,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
         return ((Vector) sfChildren.clone()).elements();
     }
 
+    /**
+     * Return a list of all the children. 
+     * This vector is a shallow clone of the internal list; changes to the
+     * list do not affect the internal data structures, though
+     * actions on the children will do so.
+     * It relies on all children implementing Prim.
+     * @since SmartFrog 3.13.003
+     * @return a cloned list of all deployed children
+     */
+    public List<Prim> sfChildList() {
+    	return (List<Prim>)sfChildren.clone();
+    }
+    
+    
     //
     // Prim
     //
@@ -472,7 +485,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @throws SmartFrogException failure deploying compound or
      *            sub-component
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
@@ -525,7 +538,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * to terminate
      *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
@@ -608,7 +621,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
-                ((Prim)sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
+                ((Prim)sfChildren.get(i)).sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
                 // Log
                 ignoreThrowable("ignoring during termination", ex);
@@ -618,7 +631,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * Terminate children asynchronously using a seperate thread for each call.
+     * Terminate children asynchronously using a separate thread for each call.
      * It iterates from the last one created to the first one.
      *
      * @param status status to terminate with
@@ -662,8 +675,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfDumpState(target);
         // call sfDumpState in every child.
         // remote childrens are called in a separate thread
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Prim elem = (Prim)e.nextElement();
+        for (Prim elem:sfChildList()) {
             if (ComponentHelper.isRemote(elem)) {
               new DumpCall(elem, target).start();
             } else {
@@ -683,7 +695,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Implements ping for a compound. A compound extends prim functionality by
      * pinging each of its children, any failure to do so will call
      * sfLivenessFailure with the compound as source and the errored child as
-     * target. The exception that ocurred is also passed in. This check is
+     * target. The exception that occurred is also passed in. This check is
      * only done if the source is non-null and if the source is the parent (if
      * parent exists). If there is no parent and the source is non-null the
      * check is still done.
@@ -759,19 +771,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param child child to send to
      *
      * @throws SmartFrogLivenessException failed to ping child
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     protected void sfPingChild(Liveness child) throws SmartFrogLivenessException, RemoteException {
         child.sfPing(this);
     }
 
     /**
-     * Parentage changed in component hierachy. A notification is sent to all
+     * Parentage changed in component hierarchy. A notification is sent to all
      * children.
      */
     public void sfParentageChanged() throws RemoteException {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-             Prim p = (Prim)(e.nextElement());
+    	for (Prim p:sfChildList()) {
              p.sfParentageChanged();
         }
         super.sfParentageChanged();
@@ -780,8 +791,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * handler for any throwable/exception whose throwing is being ignored
-     * @param message
-     * @param thrown
+     * @param message message
+     * @param thrown what is being ignored
      */
     private void ignoreThrowable(String message,Throwable thrown) {
         sfGetCoreLog().ignore(message, thrown);
@@ -838,20 +849,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Inform component (and children, typically) that an update is about to take place.
      * Normally a component would quiesce its activity
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
+     * @throws RemoteException
+     * @throws SmartFrogException - not OK to update
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         super.sfPrepareUpdate();
         // iterate over all children, preparing them for update.
         // if an exception is returned, trigger an abandon downwards and return an exception
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
+        for (Object p:sfChildren) {
             if (p instanceof Update) {
                 ((Update) p).sfPrepareUpdate();
             } else {
                 sfAbandonUpdate();
-                throw new SmartFrogUpdateException("Component not fully updateable, comopnent " +
+                throw new SmartFrogUpdateException("Component not fully updateable, component " +
                         sfCompleteNameSafe() + " attribute " + sfContext.sfAttributeKeyFor(p));
             }
         }
@@ -865,8 +875,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Validate whether the component (and its children) can be updated
      * @param newCxt - the data that will replace the original context
      * @return true - OK to update, false - OK to terminate and redeploy, exception - not OK to update
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
         // validate the description, return false if it requires termination, exception to fail
@@ -891,7 +901,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             Object currentValue = sfContext().get(key);
             if (value instanceof ComponentDescription) {
                 if (((ComponentDescription)value).getEager()) {
-                   // if there is a componment of the same name - stash as a name to update
+                   // if there is a component of the same name - stash as a name to update
                    // if there is no component, then stash as a name to create
                    if (currentValue == null)
                        childrenToCreate.add(key);
@@ -901,9 +911,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
         }
 
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
+        for (Prim p:sfChildList()) {
             // get the name, if it is not in the to be updated vector, add it to the to be terminated vector
-            Prim p = (Prim) e.nextElement();
             Object key = sfContext().keyFor(p);
             if (childrenToUpdate.contains(p)) {
                 if (p instanceof Update) {
@@ -931,12 +940,12 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Carry out the context update - no roll back from this point on.
      * Terminates children that need terminating, create and deployWith children that need to be
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-         Reference componentId = sfCompleteName();
-         if (sfIsTerminated) {
+        Reference componentId = sfCompleteName();
+        if (sfIsTerminated) {
             throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
         if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
@@ -977,20 +986,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Next phase of start-up after update - includes calling sfDeply on new children
      * Errors are considered terminal unless behaviour overridden.
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
         super.sfUpdateDeploy();
 
         // sfUpdateDeploy() all previously existing children, sfDeploy() new ones
-        for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
-            Update child = (Update) e.nextElement();
+        for (Prim prim:sfChildList()) {
+            Update child = prim;
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateDeploy();
             }  else {
-                ((Prim)child).sfDeploy();
+                prim.sfDeploy();
             }
         }
         //
@@ -1000,19 +1009,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Final phase of startup after update - includes calling sfStart on new children
      * Errors are considered terminal unless behaviour overridden.
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
         super.sfUpdateStart();
 
         // sfUpdateStart() all previously existing children, sfStart() new ones
-        for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
-            Update child = (Update) e.nextElement();
+        for (Prim prim:sfChildList()) {
+            Update child = prim;
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateStart();
             }  else {
-                ((Prim)child).sfStart();
+                prim.sfStart();
             }
         }
         //
@@ -1021,24 +1030,25 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * Can occur after prepare and check, but not afterwards to roll back from actual update process.
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException  In case of Remote/network error
      */
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
         if (updateAbandoned) return;
         updateAbandoned = true;
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
-            if (p instanceof Update) ((Update) p).sfAbandonUpdate();
+        for (Prim p:sfChildList()) {
+            if (p instanceof Update) {
+            	((Update) p).sfAbandonUpdate();
+            }
         }
     }
 
     /**
      * Control of complete update process for a component, running through all the above phases.
-     * @param desc
-     * @throws java.rmi.RemoteException
-     * @throws SmartFrogUpdateException
+     * @param desc new component description
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
     public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException {
         boolean ready;
