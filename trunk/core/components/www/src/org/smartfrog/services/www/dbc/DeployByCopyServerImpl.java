@@ -52,7 +52,7 @@ import java.util.List;
 public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServer,
         ChildMinder {
 
-    private final List/*<QueuedFile>*/ filesToCopy = new ArrayList/*<QueuedFile>*/();
+    private final List<QueuedFile> filesToCopy = new ArrayList<QueuedFile>();
     private File destDir;
     private ComponentDescription startup;
     private ComponentDescription shutdown;
@@ -129,7 +129,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
     /**
      * handle liveness check by throwing any fault received in the worker thread, then
      * checking the health of the startup component.
-     * @param source
+     * @param source caller
      * @throws SmartFrogLivenessException ping failure
      * @throws RemoteException network failure
      */
@@ -149,7 +149,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * then kill the startup prim.
      * If shutdown was not null, it is started and then immediately terminated (so it
      * had better do its work in the start component)
-     * @param status
+     * @param status exit record
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         //close down the thread
@@ -315,7 +315,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
                     return EndOfQueue.END_OF_QUEUE;
                 }
             }
-            return (QueuedFile) filesToCopy.remove(0);
+            return filesToCopy.remove(0);
         }
     }
 
