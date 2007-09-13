@@ -25,6 +25,7 @@ import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlElement;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -75,8 +76,7 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      *                            XMLExceptions
      */
     protected void addChildren() throws SmartFrogException, RemoteException {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
+        for (Prim elem:sfChildList()) {
             if (elem instanceof LocalNode) {
                 LocalNode node = (LocalNode) elem;
                 appendChild(node);
