@@ -52,10 +52,9 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-    	List<Prim> children = sfChildList();
-        for (int i = children.size() - 1; i >= 0; i--) {
+        for (Prim child : sfReverseChildren()) {
             try {
-                children.get(i).sfTerminateQuietlyWith(status);
+                child.sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
               if (sfLog().isErrorEnabled()) {
                   String errStr="Exception while terminating one of the children";

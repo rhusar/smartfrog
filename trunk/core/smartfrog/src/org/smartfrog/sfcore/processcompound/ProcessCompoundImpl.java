@@ -520,46 +520,46 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
         // Terminate legitimate children except subProc
-    	List<Prim> children = sfChildList();
-        for (int i = children.size() -1 ; i >= 0; i--) {
-          try {
-            Prim child = children.get(i);
-            if ((!(child instanceof ProcessCompound))
-                &&(child.sfParent()== null)) {
-              //Logger.log("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
-              (child).sfTerminateQuietlyWith(status);
+        for (Prim child : sfReverseChildren()) {
+            try {
+                if ((!(child instanceof ProcessCompound))
+                        && (child.sfParent() == null)) {
+                    //Logger.log("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
+                    (child).sfTerminateQuietlyWith(status);
+                }
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
             }
-          } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex);  }
-            // ignore
-          }
         }
         // Terminate illegitimate children except subProc
-        children = sfChildList();
-        for (int i = children.size()-1; i>=0; i--) {
-          try {
-            Prim child = children.get(i);
-            if ((! (child instanceof ProcessCompound))){
-              //Logger.log("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
-              //Full termination notifying its parent
-              (child).sfTerminate(status);
+        for (Prim child : sfReverseChildren()) {
+            try {
+                if ((!(child instanceof ProcessCompound))) {
+                    //Logger.log("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
+                    //Full termination notifying its parent
+                    (child).sfTerminate(status);
+                }
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
             }
-          } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){  sfLog().ignore(ex);  }
-            // ignore
-          }
         }
         // Terminate subprocesses
-        children = sfChildList();
-        for (int i = children.size()-1; i>=0; i--) {
-          try {
-            Prim child = children.get(i);
-            //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
-            (child).sfTerminateQuietlyWith(status);
-          } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
-            // ignore
-          }
+        for (Prim child : sfReverseChildren()) {
+            try {
+                //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
+                (child).sfTerminateQuietlyWith(status);
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
+            }
         }
     }
 
@@ -571,54 +571,51 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
         // Terminate legitimate children except subProc
-    	
-        List<Prim> children = sfChildList();
-		for (int i = children.size()-1; i>=0; i--) {
-          try {
-            Prim child = children.get(i);
-            if ((! (child instanceof ProcessCompound))&&(child.sfParent()==null)) {
-              //Logger.log("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
-              (new TerminatorThread(child,status).quietly()).start();
+
+        for (Prim child : sfReverseChildren()) {
+            try {
+                if ((!(child instanceof ProcessCompound)) && (child.sfParent() == null)) {
+                    //Logger.log("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
+                    (new TerminatorThread(child, status).quietly()).start();
+                }
+            } catch (Exception ex) {
+                //@TODO: Log
+                //Logger.logQuietly(ex);
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
             }
-          } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
-          }
         }
         // Terminate illegitimate children except subProc
-		children = sfChildList();
-        for (int i = children.size()-1; i>=0; i--) {
-          try {
-            Prim child = (Prim) children.get(i);
-            if ((! (child instanceof ProcessCompound))){
-              //Full termination notifying its parent
-              //Logger.log("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
-              (new TerminatorThread(child,status)).start();
+        for (Prim child : sfReverseChildren()) {
+            try {
+                if ((!(child instanceof ProcessCompound))) {
+                    //Full termination notifying its parent
+                    //Logger.log("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
+                    (new TerminatorThread(child, status)).start();
+                }
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
             }
-          } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex);  }
-            // ignore
-          }
         }
         // Terminate subprocesses
-        children = sfChildList();
-        for (int i = children.size()-1; i>=0; i--) {
-          try {
-            Prim child = (Prim) children.get(i);
-            //Logger.log("ASynchTerminate sent to: "+ child.sfCompleteName());
-            (new TerminatorThread(child,status).quietly()).start();
-          } catch (Exception ex) {
-            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
-            // ignore
-          }
+        for (Prim child : sfReverseChildren()) {
+            try {
+                //Logger.log("ASynchTerminate sent to: "+ child.sfCompleteName());
+                (new TerminatorThread(child, status).quietly()).start();
+            } catch (Exception ex) {
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(ex);
+                }
+                // ignore
+            }
         }
 
     }
-
 
 
     /**
