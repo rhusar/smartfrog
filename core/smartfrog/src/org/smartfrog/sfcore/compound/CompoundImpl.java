@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ReverseListIterator;
 
 
 /**
@@ -64,7 +65,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /** Maintains a temporal list of the children that have to be driven
      * through their sfDeploy and sfStart lifecycle methods.*/
-    protected Vector lifecycleChildren = new Vector();
+    private Vector<Prim> lifecycleChildren = new Vector<Prim>();
 
     /**
      * Whether termination should be synchronous. Determined by the
@@ -412,8 +413,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
     public List<Prim> sfChildList() {
     	return (List<Prim>)sfChildren.clone();
     }
-    
-    
+
+    /**
+     * Clone the child list and return a reverse iterator to it.
+     * This iterator walks backwards through the list.
+     * It also implements Iterable, so can act as a factory
+     * for new iterators. This enables the method to be used directly
+     * in a foreach loop.
+     * @return a new Iterator/Iterable of Prim children
+     */
+    public ReverseListIterator<Prim> sfReverseChildren() {
+        return new ReverseListIterator<Prim>(sfChildList());
+    }
+
     //
     // Prim
     //
@@ -461,7 +473,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Method that selects the children that compound will drive through their lifecycle
      * The children are stored in 'lifecycleChildren'
-     * @throws SmartFrogDeploymentException
+     * If the deployment fails, a SmartFrogDeploymentException is thrown, and an asynchronous
+     * termination of this component is started.
+     * @throws SmartFrogDeploymentException for any failure to deploy
      */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
       try { // if an exception is thrown in the super call - the termination is already handled
@@ -515,19 +529,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * raised by a child component.
      */
     protected void sfDeployChildren() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
-        for (Enumeration e = lifecycleChildren.elements(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-            if (elem instanceof Prim) {
-                try{
-                    ((Prim) elem).sfDeploy();
-                } catch (Throwable thr){
-                    String name = "";
-                    try {name =((Prim)elem).sfCompleteName().toString();} catch (RemoteException ex) {};
-                    SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
-                    String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
-                    sflex.add(SmartFrogLifecycleException.DATA,"Failed object class: "+ classFailed);
-                    throw sflex;
-                }
+        for(Prim child:lifecycleChildren) {
+            try {
+                child.sfDeploy();
+            } catch (Throwable thr) {
+                String name = getChildNameSafe(child);
+                SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name, thr, this);
+                String classFailed = child.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", false);
+                sflex.add(SmartFrogLifecycleException.DATA, "Failed object class: " + classFailed);
+                throw sflex;
             }
         }
     }
@@ -568,21 +578,32 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     protected void sfStartChildren() throws SmartFrogLifecycleException,
         RemoteException, SmartFrogResolutionException {
-        for (Enumeration e = lifecycleChildren.elements(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-            if (elem instanceof Prim) {
-                try {
-                    ((Prim) elem).sfStart();
-                } catch (Throwable thr){
-                    String name = "";
-                    try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                    SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,this);
-                    sflex.add(SmartFrogLifecycleException.DATA,
-                            "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
-                    throw sflex;
-                }
+        for (Prim child : lifecycleChildren) {
+            try {
+                child.sfStart();
+            } catch (Throwable thr) {
+                String name = getChildNameSafe(child);
+                ;
+                SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name, thr, this);
+                sflex.add(SmartFrogLifecycleException.DATA,
+                        "Failed object class: " + child.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", false));
+                throw sflex;
             }
         }
+    }
+
+    /**
+     * Get the name of a child, or "" for an eror
+     * @param child child to name
+     * @return a string describing the child
+     */
+    private String getChildNameSafe(Prim child) {
+        String name = "";
+        try {
+            name = child.sfCompleteName().toString();
+        } catch (Exception ignore) {
+        }
+        return name;
     }
 
     /**
@@ -596,7 +617,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         //Re-check of sfSynchTerminate to get runtime changes.
         try {
             sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, sfSyncTerminate, false);
-        } catch (Exception sfrex){
+        } catch (Exception ignore){
           //Ignore
         }
         if (sfSyncTerminate) {
@@ -619,9 +640,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
            sfLog().trace("SYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        for (Prim child : sfReverseChildren()) {
             try {
-                ((Prim)sfChildren.get(i)).sfTerminateQuietlyWith(status);
+                child.sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
                 // Log
                 ignoreThrowable("ignoring during termination", ex);
@@ -640,10 +661,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
            sfLog().trace("ASYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        for(Prim child:sfReverseChildren()) {
             try {
-                //Deprecated: new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
-                (new TerminatorThread((Prim)(sfChildren.elementAt(i)),status).quietly()).start();
+                new TerminatorThread(child,status).quietly().start();
             } catch (Exception ex) {
                 // ignore
                 ignoreThrowable("ignoring during termination", ex);
