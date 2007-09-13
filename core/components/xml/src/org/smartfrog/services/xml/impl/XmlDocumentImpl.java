@@ -151,16 +151,9 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
         Prim root = resolveRoot();
         //we still iterate through comments and things, but skip the root
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-            if (!(elem instanceof Prim)) {
-                //ignore this, whatever it is
-                continue;
-            }
-            Prim p = (Prim) elem;
-
+        for (Prim p : sfChildList()) {
             if (p instanceof LocalNode && p != root) {
-                LocalNode node = (LocalNode) elem;
+                LocalNode node = (LocalNode) p;
                 appendChild(node);
             }
         }
@@ -200,7 +193,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * optional code to bind to a source file.
      * @todo Implement file loading, building up a graph of prims as we go
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogException For smartfrog problems, and for caught
+     * @throws SmartFrogRuntimeException For smartfrog problems, and for caught
      *                            XMLExceptions
      */
     private void bindToSourceFile() throws RemoteException,
@@ -216,14 +209,14 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
     /**
      * Get the source file attribute
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @return the source file
+     * @throws SmartFrogResolutionException failure to resolve
+     * @throws RemoteException network problems
      */
     private String getSourcefile() throws SmartFrogResolutionException, RemoteException {
         return FileSystem.lookupAbsolutePath(this,
                 new Reference(ATTR_SOURCEFILE),
-                (String) null,
+                null,
                 null,
                 false,
                 null);

@@ -178,7 +178,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
     }
 
     private int currentInstances() {
-        return sfChildren.size();
+        return sfChildList().size();
     }
 
     public synchronized Object sfReplaceAttribute(Object name, Object value)
@@ -267,9 +267,9 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
 
     protected void stopInstance() throws Exception {
         synchronized (instanceLock) {
-            logger.logOptional(name, "stoping instance");
+            logger.logOptional(name, "stopping instance");
 
-            Prim child = (Prim) sfChildren.elementAt(0);
+            Prim child = sfChildList().get(0);
             String server = (String) childServerMapping.get(child);
             if (balancer != null) {
                 balancer.removeServer(server);
