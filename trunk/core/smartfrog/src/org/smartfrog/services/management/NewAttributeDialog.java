@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.display.WindowUtilities;
 
 import javax.swing.*;
@@ -107,7 +108,7 @@ public class NewAttributeDialog extends JDialog {
                         }
                         value = sw.toString();
                     }
-                    this.ValuejTextArea.setText(value);
+                    if (attribute[1] != null) this.ValuejTextArea.setText(value);
                 }
                 if (attribute[2] != null) {
                     this.tagsjTextField.setText(attribute[2].toString());
@@ -296,14 +297,9 @@ public class NewAttributeDialog extends JDialog {
      * @param language language
      * @return Object
      */
-    public Object parseValue(String textToParse, String language) {
-        try {
-            SFParser parser = new SFParser(language);
-            return parser.sfParseAnyValue( textToParse);
-        } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
-        }
-        return null;
+    public Object parseValue(String textToParse, String language) throws SmartFrogException {
+       SFParser parser = new SFParser(language);
+       return parser.sfParseAnyValue( textToParse);
     }
 
     /**
@@ -312,14 +308,9 @@ public class NewAttributeDialog extends JDialog {
      * @param language language
      * @return Object
      */
-    public Object parseTags(String textToParse, String language) {
-        try {
-            SFParser parser = new SFParser(language);
-            return parser.sfParseTags( textToParse);
-        } catch (Throwable ex) {
-            if (sfLog().isErrorEnabled()) sfLog().error (ex);
-        }
-        return null;
+    public Object parseTags(String textToParse, String language) throws SmartFrogException {
+       SFParser parser = new SFParser(language);
+       return parser.sfParseTags( textToParse);
     }
 
     /**
