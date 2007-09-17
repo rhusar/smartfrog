@@ -246,10 +246,12 @@ ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
 #%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
 
 %postun
-#at uninstall time, we delete all logs
-rm -rf %{logdir}
-#and the links
-rm -rf %{linkdir}
+if [ $1 = 0 ]; then
+    #at uninstall time, we delete all logs
+    rm -rf %{logdir}
+    #and the links
+    rm -rf %{linkdir}
+fi
 
 # -----------------------------------------------------------------------------
 
@@ -385,13 +387,15 @@ ln -s %{smartfrogd} %{rcd}/rc6.d/S60${rpm.daemon.name}
 # -----------------------------------------------------------------------------
 # at uninstall time, we blow away the symlinks
 %postun daemon
-rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
-rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
-rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
+if [ $1 = 0 ]; then
+    rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
+    rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
+    rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
+    rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
+    rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
+    rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
+    rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
+fi 
 
 %files daemon
 #and the etc stuff
@@ -408,7 +412,9 @@ rm -f %{linkdir}/sf-anubis.jar
 ln -s %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
 
 %postun anubis
-rm -f %{linkdir}/sf-anubis.jar
+if [ $1 = 0 ]; then
+    rm -f %{linkdir}/sf-anubis.jar
+fi 
 
 %files logging
 
@@ -420,15 +426,18 @@ rm -f %{linkdir}/sf-anubis.jar
 rm -f %{linkdir}/sf-loggingservices.jar
 rm -f %{linkdir}/commons-logging.jar
 rm -f %{linkdir}/log4j.jar
-
 ln -s %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
 ln -s %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
 ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
 
 %postun logging
-rm -f %{linkdir}/sf-loggingservices.jar
-rm -f %{linkdir}/commons-logging.jar
-rm -f %{linkdir}/log4j.jar
+
+if [ $1 = 0 ]; then
+    rm -f %{linkdir}/sf-loggingservices.jar
+    rm -f %{linkdir}/commons-logging.jar
+    rm -f %{linkdir}/log4j.jar
+fi 
+
 
 # -----------------------------------------------------------------------------
 
