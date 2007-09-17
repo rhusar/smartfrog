@@ -443,6 +443,9 @@ fi
 
 %changelog
 # to get the date, run:   date +"%a %b %d %y"
+* Mon Sep 17 07 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
+-all link deletion during uninstall is skipped during upgrades, so 
+ that rpm --upgrade should now work properly. 
 * Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-1
 - daemon RPM now runs "smartfrogd stop" before uninstalling
 - smartfrog RPM tries to terminate any running smartfrog process before uninstalling
