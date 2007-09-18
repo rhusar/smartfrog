@@ -374,7 +374,7 @@ public class SFSystem implements MessageKeys {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(ex);
                 }
-            } catch (Exception ex1) {ex1.printStackTrace();}
+            } catch (Throwable ex1) {ex.printStackTrace();}
             exitWith("Failed to initialize SmartFrog", ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
