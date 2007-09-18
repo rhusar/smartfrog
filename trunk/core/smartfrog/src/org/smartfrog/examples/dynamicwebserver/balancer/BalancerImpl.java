@@ -326,49 +326,54 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
          * them to one of the servers.
          */
         public void run() {
-            ServerSocketChannel server = null; // Server socket to accept connections from clients
+        	ServerSocketChannel server = null; // Server socket to accept connections from clients
+        	try {
 
-            try {
-                server = ServerSocketChannel.open();
+        		try {
+        			server = ServerSocketChannel.open();
 
-                InetSocketAddress address = new InetSocketAddress(port);
-                server.socket().bind(address);
-            } catch (IOException e) {
-                logger.err(name, "Error with server socket: " + e.getMessage());
+        			InetSocketAddress address = new InetSocketAddress(port);
+        			server.socket().bind(address);
+        		} catch (IOException e) {
+        			logger.err(name, "Error creating server socket: " + e.getMessage());
 
-                // Exit thread because encountered a severe problem
-                stopRequested = true;
-            }
+        			// Exit thread because encountered a severe problem
+        			return;
+        		}
 
-            //
-            // Now loop to wait for connections from clients.
-            while (!stopRequested) {
-                try {
-                    SocketChannel client = server.accept();
-                    connectionCount += 1;
-                    logger.log(name, "Accepted connection from " + client);
+        		//
+        		// Now loop to wait for connections from clients.
 
-                    // Select a server to handle the new client socket, and hand off processing to it.
-                    serverSelector.addClient(client);
-                } catch (IOException ioe) {
-                    logger.err(name,
-                        "Error accepting connection from client" +
-                        ioe.getMessage());
-                }
-            }
+        		while (!stopRequested) {
+        			try {
+        				SocketChannel client = server.accept();
+        				connectionCount += 1;
+        				logger.log(name, "Accepted connection from " + client);
 
-            //
-            // Clean up the socket when we stop.
-            if (server != null) {
-                try {
-                    server.close();
-                } catch (IOException ioe) {
-                    logger.err(name,
-                        "Error closing server socket " + ioe.getMessage());
-                }
-            }
+        				// Select a server to handle the new client socket, and hand off processing to it.
+        				serverSelector.addClient(client);
+        			} catch (IOException ioe) {
+        				logger.err(name,
+        						"Error accepting connection from client" +
+        						ioe.getMessage());
+        			}
+        		}
 
-            balancerThread = null;
+        		//
+
+        	} finally {
+        		// Clean up the socket when we stop.
+        		try {
+        			if( server != null) {
+        				server.close();
+        			}
+        		} catch (IOException ioe) {
+        			logger.err(name,
+        					"Error closing server socket " + ioe.getMessage());
+        		} 	
+        		//and remove our self-reference
+        		balancerThread = null;
+        	}
         }
     }
 }

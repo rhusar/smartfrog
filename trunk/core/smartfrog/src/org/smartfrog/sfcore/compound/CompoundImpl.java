@@ -111,7 +111,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
             Object res = ((parent == null) || (name == null)) ? null: sfResolveHere(name,false);
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
-                throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,
+                throw new SmartFrogDeploymentException(null,
+                		ComponentHelper.completeNameSafe(parent),
                             name, cmp, parms,MessageUtil.
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
@@ -128,7 +129,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
                 if (parent != null) {
                   message.append(", Parent: ");
-                  message.append(parent.sfCompleteName());
+                  message.append(ComponentHelper.completeNameSafe(parent));
                 }
                 message.append(", Component description: ");
                 message.append(cmp.toString());

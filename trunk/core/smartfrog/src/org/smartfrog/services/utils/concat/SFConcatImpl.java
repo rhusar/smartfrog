@@ -197,9 +197,9 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
 
                     if (value instanceof java.net.InetAddress) {
                         auxString.append(((java.net.InetAddress) value).
-                    getCanonicalHostName());
+                            getCanonicalHostName());
                     } else {
-                        auxString.append(value.toString());
+                        auxString.append(""+value);
                     }
                 }
             } catch (Exception ex) {

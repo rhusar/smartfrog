@@ -176,7 +176,8 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         } catch (ClassCastException ccex){
             throw new SmartFrogResolutionException(
                 "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-                +": "+portObj+", "+portObj.getClass().getName()+"", ccex, c);
+                +": "+portObj+", "+portObj!=null?portObj.getClass().getName():"", 
+                ccex, c);
         }
         return registryPort;
     }

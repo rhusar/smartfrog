@@ -1005,7 +1005,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (Exception ex) {
             // failed to find new compound. Destroy process and re-throw
             // exception
-            process.destroy();
+        	if (process != null) {
+        		process.destroy();
+        	}
             throw ex;
         }
     }
