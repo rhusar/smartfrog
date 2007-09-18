@@ -25,6 +25,9 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.net.InetAddress;
 
@@ -231,6 +234,13 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
         rmicsf = new SFClientSocketFactory(this);
         rmissf = new SFServerSocketFactory(rmissfBindAddr,this);
         rmisf = new SFRMISocketFactory(rmicsf, rmissf);
+    }
+
+   /**
+    * Get the keystore Entry associated with a specific alias
+    */
+    KeyStore.Entry getEntry (String alias) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
+      return ks.getEntry(alias, new KeyStore.PasswordProtection(keyStorePasswd.toCharArray()));
     }
 
     /**
