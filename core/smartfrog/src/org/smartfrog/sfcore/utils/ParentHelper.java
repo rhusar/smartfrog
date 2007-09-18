@@ -171,7 +171,7 @@ public class ParentHelper implements ChildMinder {
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
                 throw new SmartFrogDeploymentException(null,
-                        parent.sfCompleteName(),
+                		ComponentHelper.completeNameSafe(parent),
                         name,
                         cmp,
                         parms,
@@ -222,7 +222,7 @@ public class ParentHelper implements ChildMinder {
                     result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
-                    //This should throw an excetion when a
+                    //This should throw an exception when a
                     //component is registered without a name
                     //in a processcompound, but compound should not know anything
                     //about processcompound
@@ -238,12 +238,14 @@ public class ParentHelper implements ChildMinder {
                         .containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
                     name = cmp.sfContext()
                             .get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
-                try {
-                    newRef = parent.sfCompleteName();
-                } catch (Exception ex) {
-                    // LOG ex
-                    LogFactory.sfGetProcessLog()
-                            .ignore("could not get complete name", ex);
+                if(parent!=null) {
+	                try {
+	                    newRef = parent.sfCompleteName();
+	                } catch (Exception ex) {
+	                    // LOG ex
+	                    LogFactory.sfGetProcessLog()
+	                            .ignore("could not get complete name", ex);
+	                }
                 }
             }
             if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME)) != null) {

@@ -221,10 +221,14 @@ private void checkResult(Object script, ComponentDescription cd) throws  SmartFr
       }
       cd =run(item);
       count++;
-      if (cd !=null) cdAll.sfAddAttribute(new Integer(count).toString(),cd);
+      if (cd !=null)  {
+    	  cdAll.sfAddAttribute(new Integer(count).toString(),cd);
+      }
    }
    Integer lastExitCode=new Integer (-9999);
-   lastExitCode = (Integer) cd.sfResolve("code",lastExitCode,false);
+   if( cd != null ) {
+	   lastExitCode = (Integer) cd.sfResolve("code",lastExitCode,false);
+   }
    cdAll.sfAddAttribute("code",lastExitCode);
    return cdAll;
  }

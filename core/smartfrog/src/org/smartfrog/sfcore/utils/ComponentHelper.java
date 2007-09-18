@@ -128,10 +128,13 @@ public class ComponentHelper {
      * Returns the complete name for any component from the root of the
      * application and does not throw any exception. If an exception is
      * thrown it will return a new empty reference.
-     * @param owner component whose completename is to be returned
+     * @param owner component whose completename is to be returned. Can be null
      * @return reference of attribute names to this component or an empty reference
      */
     public static Reference completeNameSafe(Prim owner) {
+    	if(owner==null) {
+    		return new Reference();
+    	}
         try {
             return owner.sfCompleteName();
         } catch (Throwable thr) {

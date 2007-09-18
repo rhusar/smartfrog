@@ -929,7 +929,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
         if (!(obj instanceof ComponentDescription)){
            throw new SmartFrogResolutionException(null,null,"Error resolving '"
-                 +ref.toString()+"' in "+ url
+                 +ref+"' in "+ url
                  + ". The result is not a ComponentDescription, resolved to: "
                  + obj.toString()
                  +" ("+obj.getClass().getName()+")" );

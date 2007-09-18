@@ -80,13 +80,13 @@ public class QueuedFile {
             //do the blocking copy
             FileSystem.fCopy(source, dest);
         } catch (IOException e) {
-            SmartFrogDeploymentException fault =
+            SmartFrogDeploymentException ex =
                     new SmartFrogDeploymentException("Failed: " + this,
                             e,
                             owner,
                             owner.sfContext());
-            setFault(fault);
-            throw fault;
+            setFault(ex);
+            throw ex;
         } finally {
             setProcessed(true);
         }

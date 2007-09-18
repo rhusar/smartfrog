@@ -555,19 +555,19 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @return iterator
      *
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public  Iterator sfAttributes() throws RemoteException{
         return sfContext.sfAttributes();
     }
 
     /**
-     * Returns an ordered iterator over the attibute values in this component.
+     * Returns an ordered iterator over the attribute values in this component.
      * The remove operation of this Iterator won't affect
      * the contents of this component
      *
      * @return iterator
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public  Iterator sfValues() throws RemoteException{
       return sfContext.sfValues();
@@ -639,7 +639,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * Returns the parent of this component.
      *
      * @return parent component
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public Prim sfParent() throws RemoteException {
         return sfParent;
@@ -736,7 +736,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
      * @param portObj Object
      * @return Object Reference to exported object
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      * @throws SmartFrogException  if failed to export
      */
     protected Object sfExport(Object portObj) throws RemoteException,
@@ -793,7 +793,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /**
      * Registers component with local ProcessCompound only if it is root component,
      * its parent is remote or the attribute sfProcessComponentName is defined.
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      * @throws SmartFrogException if failed to register
      */
     protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
@@ -954,7 +954,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     */
    private void injectAttributes() throws SmartFrogException {
          Iterator i = null;
-         try { i = sfAttributes(); } catch (Exception e) {}
+         try { i = sfAttributes(); } catch (Exception e) { 
+        	 throw SmartFrogException.forward(e);
+         }
          while (i.hasNext()) {
             Object name = i.next();
 
@@ -1514,7 +1516,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @return Logger implementing LogSF and Log
      * @throws SmartFrogException if failed
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
@@ -1553,7 +1555,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /**
      * Parentage changed in component hierachy.
      * Actions: sfCompleteName cache is cleaned
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public void sfParentageChanged() throws RemoteException{
        sfCompleteName=null;

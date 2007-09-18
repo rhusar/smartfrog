@@ -318,7 +318,9 @@ public class DumperCDImpl implements Dumper {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
         } finally {
             try {
-                out.close();
+                if( out != null ) {
+                	out.close();
+                }
             } catch (IOException e) {
                 if (sfLog().isErrorEnabled()) sfLog().error(e);
             }

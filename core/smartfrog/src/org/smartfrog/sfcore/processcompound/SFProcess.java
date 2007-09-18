@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -231,13 +232,7 @@ public class SFProcess implements MessageKeys {
             comp.sfStart();
             return comp;
         } catch (Exception ex) {
-            Reference newRef = null;
-
-            try {
-                newRef = comp.sfCompleteName();
-            } catch (Exception exName) {
-            }
-
+            Reference newRef = ComponentHelper.completeNameSafe(comp);
             try {
                 TerminationRecord tr = TerminationRecord.abnormal("Failed to start ", newRef);
                 if (sfLog().isErrorEnabled()) {
