@@ -59,6 +59,9 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     /** The name of the key store resource. */
     private String keyStoreName = "sfkeys.st";
 
+   /** the type of the keystore */
+    private static final String keyStoreType = "JCEKS";
+
     /** The password needed to unlock the key store. */
     private String keyStorePasswd = "pleasechange";
 
@@ -92,7 +95,8 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     private SFDebug debug;
 
 
-    /**
+
+   /**
      * Constructs SFSecurityEnvironmentImpl. Initializes key store, key
      * managers,trust managers, contexts, SSL socket factories and RMI socket
      * factories
@@ -145,7 +149,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
                     keyStoreName);
 
             // Open and check integrity of the key store.
-            ks = KeyStore.getInstance("JKS");
+            ks = KeyStore.getInstance(keyStoreType);
             ks.load(SFClassLoader.getResourceAsStream(keyStoreName),
                 keyStorePasswd.toCharArray());
         } catch (Exception e) {
