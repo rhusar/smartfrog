@@ -59,7 +59,7 @@
   </target>
 
   <target name="default" depends="published"/>
-
+  <target name="release" depends="published"/>
   <target name="published" depends="ivy-report,dist"/>
 
   <!--
@@ -286,7 +286,7 @@
         location="${dist.rpm.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar" />
     <property name="rpms.tar.gz"
       location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.gz" />
-
+    <property name="remote-smartfrogd" value="/etc/init.d/${rpm.daemon.name}" />
     <macrodef name="rpmpackage">
       <attribute name="package"/>
       <sequential >
@@ -325,7 +325,9 @@
 
   <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm"/>
 
-  <target name="rpm" depends="gzip-rpm"/>
+  <target name="release-rpm" description="release the rpm" depends="rpm"/>
+  
+  <target name="rpm" depends="gzip-rpm" description="create the gzipped RPM"/>
 
   <target name="build-rpm" depends="ready-to-rpm"
       if="has.rpm.tools"
@@ -785,7 +787,11 @@
   <target name="rpm-remote-install" depends="rpm-remote-install-all"
       description="install the RPMs to the remote server">
   </target>
-
+  
+  <target name="rpm-remote-query" depends="rpm-upload-init" >
+    <rootssh command="rpm -q ${rpms.list}" failonerror="false"/>
+  </target>
+  
   <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init" >
     <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"/>
   </target>
@@ -814,7 +820,27 @@
       the installed smartfrog is not what we just built and pushed up.
     </fail>
   </target>
+  
+  <target name="rpm-remote-initd-status" depends="rpm-ready-to-remote-install,rpm-remote-install"
+      description="check that initd parses">
+    <rootssh command="${remote-smartfrogd} status"/>
+  </target>  
 
+  <target name="rpm-remote-initd" depends="rpm-ready-to-remote-install,rpm-remote-install"
+      description="check that initd parses">
+    <rootssh command="${remote-smartfrogd} start"/>
+    <rootssh command="${remote-smartfrogd} status"/>
+    <rootssh command="${remote-smartfrogd} start"/>
+    <rootssh command="${remote-smartfrogd} status"/>
+    <rootssh command="${remote-smartfrogd} stop"/>
+    <rootssh command="${remote-smartfrogd} stop"/>
+    <rootssh command="${remote-smartfrogd} restart"/>
+    <rootssh command="${remote-smartfrogd} status"/>
+    <rootssh command="${remote-smartfrogd} restart"/>
+    <rootssh command="${remote-smartfrogd} status"/>
+    <rootssh command="${remote-smartfrogd} stop"/>
+  </target>  
+  
 <!--  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
     <rpmssh command="sfVersion"
         outputProperty="rpm.daemon.results"/>
