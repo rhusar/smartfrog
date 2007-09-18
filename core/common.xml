@@ -1804,6 +1804,16 @@ java.class.path=
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
+    <!-- sometimes that doesn't seem to fail when ivy is missing, 
+     so let's explicitly test that Ivy is there, just in case -->
+    <fail>
+    <condition>
+      <not>
+       <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+      </not>
+    </condition>
+    No Ivy found in ${ivy.jar}
+    </fail>
   </target>
 
   <target name="maybe-ivy-init"
