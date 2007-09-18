@@ -114,6 +114,7 @@ if it is unassigned, it takes.-->
             signedjar="${dist.signedLib.dir}/@{name}"
             alias="${aliasSelfKey}"
             keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+            storetype="${keystoreType}"
             storepass="${defaultCAPassword}"/>
       </sequential>
     </macrodef>
