@@ -246,7 +246,7 @@ ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
 #%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
 
 %postun
-if [ $1 = 0 ]; then
+if [ "$1" = "0" ] ; then
     #at uninstall time, we delete all logs
     rm -rf %{logdir}
     #and the links
@@ -301,7 +301,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfTerminate
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfUpdate
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/sfVersion
-#%attr(755, -, -) %{bindir}/
+#%attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/
 %{bindir}/*.bat
 #bin/metadata
 %{bindir}/metadata
@@ -321,6 +321,7 @@ rm -rf $RPM_BUILD_ROOT
 %{binsecurity}/*.bat
 
 #now the files in the lib directory...use ant library versions to include version numbers
+%dir %attr(755, ${rpm.username},${rpm.groupname}) %{libdir}/
 %{libdir}/smartfrog-${smartfrog.version}.jar
 %{libdir}/sfExamples-${smartfrog.version}.jar
 %{libdir}/sfServices-${smartfrog.version}.jar
@@ -356,28 +357,29 @@ rm -rf $RPM_BUILD_ROOT
 #%{javadocdir}/%{name}-%{version}
 
 %files demo
-%defattr(0644,root,root,0755)
+%defattr(0644,${rpm.username},${rpm.username},0755)
 #%{_datadir}/%{name}-%{version}
 %{srcdir}
 
 # -----------------------------------------------------------------------------
-#after installing, we set symlinks
+# the daemon is set up to autorun
 %post daemon
-rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
-rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
-rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
-rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
 
-ln -s %{smartfrogd} %{rcd}/rc0.d/K60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc1.d/K60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc2.d/S60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc3.d/S60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc4.d/S60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc5.d/S60${rpm.daemon.name}
-ln -s %{smartfrogd} %{rcd}/rc6.d/S60${rpm.daemon.name}
+if [ -x /usr/lib/lsb/install_initd ]; then
+# this is the SuSE/LSB executable; not found in ubuntu without LSB
+  /usr/lib/lsb/install_initd /etc/init.d/${rpm.daemon.name}
+elif [ -x /sbin/chkconfig ]; then
+# found in RHEL, Fedora platforms 
+  /sbin/chkconfig --add ${rpm.daemon.name}
+else
+#no explicit support (yet!). Will include debian systems without LSB
+   for i in 2 3 4 5; do
+        ln -sf /etc/init.d/${rpm.daemon.name} /etc/rc.d/rc${i}.d/S${rpm.daemon.start.number}${rpm.daemon.name}
+   done
+   for i in 1 6; do
+        ln -sf /etc/init.d/${rpm.daemon.name} /etc/rc.d/rc${i}.d/K${rpm.daemon.stop.number}${rpm.daemon.name}
+   done
+fi
 
 
 %preun daemon
@@ -385,17 +387,18 @@ ln -s %{smartfrogd} %{rcd}/rc6.d/S60${rpm.daemon.name}
 %{smartfrogd} stop
 
 # -----------------------------------------------------------------------------
-# at uninstall time, we blow away the symlinks
+# at uninstall time, we delete all links to the daemon
 %postun daemon
-if [ $1 = 0 ]; then
-    rm -f %{rcd}/rc0.d/K60${rpm.daemon.name}
-    rm -f %{rcd}/rc1.d/K60${rpm.daemon.name}
-    rm -f %{rcd}/rc2.d/S60${rpm.daemon.name}
-    rm -f %{rcd}/rc3.d/S60${rpm.daemon.name}
-    rm -f %{rcd}/rc4.d/S60${rpm.daemon.name}
-    rm -f %{rcd}/rc5.d/S60${rpm.daemon.name}
-    rm -f %{rcd}/rc6.d/S60${rpm.daemon.name}
-fi 
+
+if [ "$1" = "0" ] ; then
+  if [ -x /usr/lib/lsb/remove_initd ]; then
+    /usr/lib/lsb/install_initd /etc/init.d/${rpm.daemon.name}
+  elif [ -x /sbin/chkconfig ]; then
+    /sbin/chkconfig --del ${rpm.daemon.name}
+  else
+    rm -f /etc/rc.d/rc?.d/???${rpm.daemon.name}
+  fi
+fi
 
 %files daemon
 #and the etc stuff
@@ -408,11 +411,10 @@ fi
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 
 %post anubis
-rm -f %{linkdir}/sf-anubis.jar
-ln -s %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
+ln -sf %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
 
 %postun anubis
-if [ $1 = 0 ]; then
+if [ "$1" = "0" ] ; then
     rm -f %{linkdir}/sf-anubis.jar
 fi 
 
@@ -423,16 +425,13 @@ fi
 %{libdir}/log4j-${log4j.version}.jar
 
 %post logging
-rm -f %{linkdir}/sf-loggingservices.jar
-rm -f %{linkdir}/commons-logging.jar
-rm -f %{linkdir}/log4j.jar
-ln -s %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
-ln -s %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
-ln -s %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
+ln -sf %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
+ln -sf %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
+ln -sf %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
 
 %postun logging
 
-if [ $1 = 0 ]; then
+if [ "$1" = "0" ] ; then
     rm -f %{linkdir}/sf-loggingservices.jar
     rm -f %{linkdir}/commons-logging.jar
     rm -f %{linkdir}/log4j.jar
@@ -442,10 +441,13 @@ fi
 # -----------------------------------------------------------------------------
 
 %changelog
-# to get the date, run:   date +"%a %b %d %y"
-* Mon Sep 17 07 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
--all link deletion during uninstall is skipped during upgrades, so 
- that rpm --upgrade should now work properly. 
+# to get the date, run:   date +"%a %b %d %Y"
+* Mon Sep 17 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
+- all cleanup is skipped during upgrades, so that rpm --upgrade should now work properly.
+- lib dir is explicitly listed with permissions
+- chkconfig is used where present (RHEL and Fedora systems)
+- /usr/lib/lsb/install_initd is used where present (SuSE systems, and others
+  with Linux Standard Base installed) 
 * Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-1
 - daemon RPM now runs "smartfrogd stop" before uninstalling
 - smartfrog RPM tries to terminate any running smartfrog process before uninstalling
