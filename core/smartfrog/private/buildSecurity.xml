@@ -55,6 +55,8 @@ if it is unassigned, it takes.-->
 
     <property name="defaultKeyStore" value="mykeys.st"/>
     <property name="defaultCodeSignerCAKeyStore" value="codesigner.st"/>
+    <property name="keystoreType" value="JCEKS"/>
+
     <property name="defaultPolicyName" value="sf.policy"/>
     <!--length that certificates remain valid-->
     <property name="certificate.duration" value="365"/>
@@ -182,6 +184,7 @@ if it is unassigned, it takes.-->
         verbose="true"
         validity="${certificate.duration}"
         storepass="${defaultCAPassword}"
+        storetype="${keystoreType}"
         >
       <dname>
         <param name="CN" value="sfCodeSigner"/>
@@ -202,6 +205,8 @@ if it is unassigned, it takes.-->
       <arg value="${defaultCAPassword}"/>
       <arg value="-file"/>
       <arg value="codesigner.cer"/>
+      <arg value="-storetype"/>
+      <arg value="${keystoreType}"/>
     </sec:keytool>
   </target>
 
@@ -274,6 +279,7 @@ if it is unassigned, it takes.-->
         keystore="${daemonDir}/${defaultKeyStore}"
         keyalg="RSA"
         storepass="${defaultPassword}"
+        storetype="${keystoreType}"
         dname="CN=SmartFrog${Unique}, OU=HPL, O=HP, C=UK"/>
 
     <!-- Generate request for certificate -->
@@ -287,8 +293,10 @@ if it is unassigned, it takes.-->
       <arg value="${defaultPassword}"/>
       <arg value="-file"/>
       <arg value="${CAFromPrivate}/client.crs"/>
+      <arg value="-storetype"/>
+      <arg value="${keystoreType}"/>
 
-      <!--line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs"-->
+      <!--line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs  -storetype ${ketstoreType}"-->
     </sec:keytool>
 
     <!-- Get the CA to sign it -->
@@ -332,7 +340,7 @@ if it is unassigned, it takes.-->
 
     <!-- Add public of Community CA to Root of Trust -->
     <!--
-      -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem
+      -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem  -storetype ${keystoreType}
     -->
     <sec:keytool dir="${dist.private.dir}">
       <arg value="-keystore"/>
@@ -345,11 +353,13 @@ if it is unassigned, it takes.-->
       <arg value="${defaultPassword}"/>
       <arg value="-file"/>
       <arg value="${CAFromPrivate}/${CAsubdir}/cacert.pem"/>
+      <arg value="-storetype"/>
+      <arg value="${keystoreType}"/>
     </sec:keytool>
 
     <!-- Add certificate to my keys storage -->
     <!--
-              line="-storepass ${defaultPassword} -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der"/>
+              line="-storepass ${defaultPassword} -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der -storetype ${keystoreType}"/>
     -->
     <sec:keytool dir="${dist.private.dir}">
       <arg value="-keystore"/>
@@ -361,10 +371,12 @@ if it is unassigned, it takes.-->
       <arg value="${defaultPassword}"/>
       <arg value="-file"/>
       <arg value="${CAFromPrivate}/client.crs.der"/>
+      <arg value="-storetype"/>
+      <arg value="${keystoreType}"/>
     </sec:keytool>
 
     <!-- Add public of CodeSigner CA to Root of Trust -->
-    <!--          line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer"/>-->
+    <!--          line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer" -storetype ${keystoreType}/>-->
     <exec dir="${dist.private.dir}" executable="keytool">
       <arg value="-keystore"/>
       <arg value="${daemonFromPrivate}/${defaultKeyStore}"/>
@@ -376,6 +388,8 @@ if it is unassigned, it takes.-->
       <arg value="${defaultPassword}"/>
       <arg value="-file"/>
       <arg value="${CAFromPrivate}/codesigner.cer"/>
+      <arg value="-storetype"/>
+      <arg value="${keystoreType}"/>
     </exec>
 
 
