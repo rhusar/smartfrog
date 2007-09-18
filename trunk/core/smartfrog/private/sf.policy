@@ -1,5 +1,5 @@
 
-keystore "file:${org.smartfrog.sfcore.security.keyStoreName}";
+keystore "file:${org.smartfrog.sfcore.security.keyStoreName}", "JCEKS";
 
 
 grant signedBy "sfcodesigner" {
