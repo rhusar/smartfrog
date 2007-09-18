@@ -1,13 +1,13 @@
 package org.smartfrog.sfcore.security;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import javax.crypto.Mac;
 import javax.crypto.ShortBufferException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
+import java.security.*;
 
 /**
  * Calculate/check the MAC associated with data in a byte array.
@@ -22,52 +22,36 @@ import java.security.InvalidKeyException;
 public class MACData {
    private static String macType = "HmacSHA1";  //Use HmacSHA512 for better protection
    private static int macSize = 20; //size in bytes
+   private static String keyAlias = "macdata";
 
-   private static Key defaultKey = null;
-
-   /**
-    * Initialise the default key to be the provided key for MAC generation.
-    * This is used when SmartFrog security is on, extracting the key from the keystore.
-    * May be overridden by a further call by some key distribution service.
-    */
-   public static void setDefaultKey(Key k) throws InvalidKeyException {
-      Mac defaultMac;
-      try {
-         defaultMac = Mac.getInstance(macType);
-         defaultMac.init(k);
-         defaultKey = k;  //will only happen if its a legal key!!!
-      } catch (NoSuchAlgorithmException e) {
-         e.printStackTrace();  //shouldn't happen as predefined to work...
-      }
-   }
-
-   /**
-    * Initialise the default key to be the standard key for MAC generation.
-    * This is used when SmartFrog security is off so a secure key is not required
-    */
-   public static void setStandardDefaultKey() {
-      byte[] keyData = {
+   private static byte[] defaultKeyData = {
             (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
             (byte) 0x23, (byte) 0x46, (byte) 0x83, (byte) 0xad,
             (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
             (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
             (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad
       };
-      defaultKey = new SecretKeySpec(keyData, "HmacSHA1");
-   }
+   private static Key defaultKey = new SecretKeySpec(defaultKeyData, macType);
+
 
    private Mac lastMAC = null;
    private Mac currentMAC = null;
-   private Mac defaultMAC = null; //only to be used if no key set
+   private Mac defaultMAC = null; //only to be used if no key explicitly set
 
-   public MACData() {
-      if (defaultKey != null) {
+   public MACData() throws SmartFrogException {
+      try {
+         defaultMAC = Mac.getInstance(macType);
+      } catch (NoSuchAlgorithmException e) {
+         e.printStackTrace();  //shouldn't ever happen...
+      }
+      if (SFSecurity.isSecurityOn()) {
          try {
-            defaultMAC = Mac.getInstance(macType);
-         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();  //shouldn't happen as predefined to work...
+            Key k = ((KeyStore.SecretKeyEntry)(((SFSecurityEnvironmentImpl) SFSecurity.getSecurityEnvironment()).getEntry(keyAlias))).getSecretKey();
+            defaultMAC.init(k);
+         } catch (Exception e) {
+            throw new SmartFrogException("Error in setting up security of MACData service", e);
          }
-
+      } else {
          try {
             defaultMAC.init(defaultKey);
          } catch (InvalidKeyException e) {
@@ -159,13 +143,6 @@ public class MACData {
    public static void main(String[] args) {
       //for testing
       try {
-         byte[] keyData1 = {
-               (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
-               (byte) 0x23, (byte) 0x46, (byte) 0x83, (byte) 0xad,
-               (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
-               (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
-               (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad
-         };
          byte[] keyData2 = {
                (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
                (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
@@ -173,8 +150,8 @@ public class MACData {
                (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad,
                (byte) 0x23, (byte) 0x45, (byte) 0x83, (byte) 0xad
          };
-         SecretKey sk1 = new SecretKeySpec(keyData1, "HmacSHA1");
-         SecretKey sk2 = new SecretKeySpec(keyData2, "HmacSHA1");
+
+         SecretKey sk2 = new SecretKeySpec(keyData2, macType);
 
          int startOffset = 0;
          int endOffset = 15;
@@ -205,7 +182,7 @@ public class MACData {
                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
          };
-         MACData.setDefaultKey(sk1);
+
          MACData m1a = new MACData();
          MACData m2a = new MACData();
          m2a.setKey(sk2);

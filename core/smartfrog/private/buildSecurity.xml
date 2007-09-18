@@ -66,6 +66,8 @@ if it is unassigned, it takes.-->
     <property name="aliasCSKey" value="sfcodesigner"/>
     <property name="aliasCommunityKey" value="sfcommunity"/>
     <property name="aliasSelfKey" value="self"/>
+    <property name="aliasMACDataKey" value="macdata"/>
+
     <property name="randomFile" value=".rnd"/>
     <property name="tempPasswdFile" value="passwd"/>
     <property name="hostDirPrefix" value="host"/>
@@ -208,6 +210,20 @@ if it is unassigned, it takes.-->
       <arg value="-storetype"/>
       <arg value="${keystoreType}"/>
     </sec:keytool>
+
+    <!-- Generate and store secret key for MACData service -->
+    <java classname="org.smartfrog.sfcore.security.GenerateSecretKey" failonerror="true">
+      <arg value="-password"/>
+      <arg value="${defaultCAPassword}"/>
+      <arg value="-file"/>
+      <arg value="${CA}/${defaultCodeSignerCAKeyStore}"/>
+      <arg value="-alias"/>
+      <arg value="${aliasMACDataKey}"/>
+      <classpath>
+	<fileset dir="${dist.lib.dir}" includes="*.jar" />
+        <pathelement path="${java.class.path}"/>
+      </classpath>
+    </java>
   </target>
 
 
@@ -392,6 +408,24 @@ if it is unassigned, it takes.-->
       <arg value="${keystoreType}"/>
     </exec>
 
+
+    <!-- copy secret key for MACData service from the codesigner keystore to host keystore -->
+    <java classname="org.smartfrog.sfcore.security.CopySecretKey" failonerror="true">
+      <arg value="-sourcepassword"/>
+      <arg value="${defaultCAPassword}"/>
+      <arg value="-sourcefile"/>
+      <arg value="${CA}/${defaultCodeSignerCAKeyStore}"/>
+      <arg value="-destpassword"/>
+      <arg value="${defaultPassword}"/>
+      <arg value="-destfile"/>
+      <arg value="${dist.private.dir}/${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="-alias"/>
+      <arg value="${aliasMACDataKey}"/>
+      <classpath>
+	<fileset dir="${dist.lib.dir}" includes="*.jar" />
+        <pathelement path="${java.class.path}"/>
+      </classpath>
+    </java>
 
     <!-- Create ad-hoc security properties file -->
     <copy file="${dist.private.dir}/${defaultSecProp}" tofile="${daemonDir}/${defaultSecProp}"/>

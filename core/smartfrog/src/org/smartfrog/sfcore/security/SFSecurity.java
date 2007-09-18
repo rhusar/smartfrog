@@ -114,9 +114,6 @@ public class SFSecurity {
                           classes are available in our codebase...*/
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
 
-                    //@TODO: must put this right - get it out of the keystore!!!!!!!!
-                    MACData.setStandardDefaultKey(); // no security default MAC key set
-
                     securityOn = true;
                 } else {
                     //System.setSecurityManager(new DummySecurityManager());
@@ -126,8 +123,6 @@ public class SFSecurity {
                     if  (secPro!=null ) {
                         System.setSecurityManager(new SecurityManager());
                     }
-
-                    MACData.setStandardDefaultKey(); // no security default MAC key set
 
                     securityOn = false;
                     //Notification moved to SFSyten after the ini file is read.
