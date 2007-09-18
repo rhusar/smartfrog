@@ -274,7 +274,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             unexpandedText = owner.getProject().replaceProperties(unexpandedText);
             this.text=unexpandedText;
             //create a temp file
-            File tempfile = FileUtils.newFileUtils().createTempFile("deploy",
+            File tempfile = FileUtils.getFileUtils().createTempFile("deploy",
                     ".sf", null);
             //mark for cleanup later
             if(owner.isDebug()) {
