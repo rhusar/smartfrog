@@ -43,9 +43,11 @@ public class VMWareCommunicator {
 
      /**
      * Executes the VMWARE_CMD with the given parameters and returns the output.
-     * @param strParameters
-     * @return
-     * @throws java.io.IOException
+     *
+     * @param strCommandLineTool name of the executalbe
+     * @param strParameters parameters
+     * @return the output stream
+     * @throws Exception
      */
     public String execVMcmd(String strCommandLineTool, String strParameters) throws Exception {
         // execute the command

@@ -2,7 +2,7 @@
 <project name="vmware" default="default">
 
 <!--
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -38,55 +38,10 @@ For more information: www.smartfrog.org
 
 
 
-<!--    <property name="lib.dir" location="lib" description=
-                        "place to put third party libraries"/> -->
-       
-  
- <property name="Name.System" value="VMWare"/>   
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
 
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- set the verified.ok property if everything needed is present -->
-  <!-- Do Not Fail. This test is used to control conditional builds -->
-  <!-- NB, set property verify.fail.message to something meaningful
-       for better diagnostic messages on failure (see assert-prerequisites) 
-       -->
-  <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
-		<property name="verified.ok" value=""/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="common.dist,jdocs"  description="create the jar files">
-    <copy toDir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}">
-            <include name = "**/*.jar"/>
-        </fileset>    
-     </copy>
-    <copy toDir = "${dist.bin.dir}">
-	<fileset dir ="${bin.dir}"/>
-    </copy>
-     <copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
-     <copy todir = "${dist.src.dir}">
-        <fileset dir ="${src.dir}">
-      <include name="**/examples/**"/>
-  
-    </fileset>
-    </copy>  
-   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
-   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-  </target>
 
 
 

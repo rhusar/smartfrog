@@ -5,8 +5,7 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-        install smartfrog on other systems
-        Created 17-Nov-2006 by slo
+        vmware support
     </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug

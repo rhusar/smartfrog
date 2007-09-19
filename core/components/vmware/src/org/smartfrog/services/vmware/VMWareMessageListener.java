@@ -1,46 +1,76 @@
-/**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ Disclaimer of Warranty
 
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ The Software is provided "AS IS," without a warranty of any kind. ALL
+ EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
+ INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+ PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
+ EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
+ not undergone complete testing and may contain errors and defects. It
+ may not function properly and is subject to change or withdrawal at
+ any time. The user must assume the entire risk of using the
+ Software. No support or maintenance is provided with the Software by
+ Hewlett-Packard. Do not install the Software if you are not accustomed
+ to using experimental software.
 
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Limitation of Liability
 
-For more information: www.smartfrog.org
-*/
+ TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
+ OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+ FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+ HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+ OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
+ THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
+ SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
+ BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
+ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
+ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
+
+ */
 
 package org.smartfrog.services.vmware;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.services.xmpp.LocalXmppPacketHandler;
-import org.smartfrog.services.xmpp.XmppListenerImpl;
-import org.smartfrog.services.xmpp.XMPPEventExtension;
-import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
+import org.smartfrog.services.xmpp.LocalXmppPacketHandler;
+import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.xmpp.XmppListener;
+import org.smartfrog.services.xmpp.XmppListenerImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.io.File;
 
+/**
+ * Component that listens for VMWARE messages
+ */
 public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHandler, Prim {
 
     /**
      * Reference to the VMWare Server manager module.
      */
-    private VMWareServerManager refServerManager;
+    private VMWareServerManager manager;
 
     /**
      * Reference to the XMPP listener.
      */
     private XmppListenerImpl refXmppListener;
+    public static final String ATTR_LISTENER = "listener";
+    public static final String SUCCESS = "success";
+    private static final String FAILURE = "failure";
+    private static final String VMRESPONSE = "vmresponse";
+    private static final String VMPATH = "vmpath";
+    public static final String VMMASTERPATH = "vmmasterpath";
 
     /**
      * Constructor.
@@ -78,18 +108,15 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         super.sfStart();
 
         // get the reference to the vmware server manager
-        refServerManager = (VMWareServerManager)sfResolve("vmServerManager", refServerManager, true);
-        if (refServerManager == null)
-        {
-            throw new SmartFrogDeploymentException("sfStart failed: VMWareServerManager reference not found.");
-        }
+        manager = (VMWareServerManager)sfResolve("vmServerManager", manager, true);
 
         // get the reference to the xmpp message listener
-        refXmppListener = (XmppListenerImpl)sfResolve("listener", refXmppListener, true);
-        if (refXmppListener == null)
-        {
-            throw new SmartFrogDeploymentException("sfStart failed: listener reference not found.");
+        XmppListener xmppListener = (XmppListener) sfResolve(ATTR_LISTENER, refXmppListener, true);
+        if(!(xmppListener instanceof XmppListenerImpl)) {
+            throw new SmartFrogDeploymentException("The XmppListener referenced by "+ATTR_LISTENER+" must be in the same process");
         }
+        refXmppListener = (XmppListenerImpl) xmppListener;
+
 
         // register this listener to the xmpp message listener
         refXmppListener.registerPacketHandler(this);
@@ -118,6 +145,10 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         return new VMWareMessageFilter();
     }
 
+    private String  outcome(boolean value) {
+        return value? SUCCESS : FAILURE;
+    }
+
     public void processPacket(Packet packet) {
         sfLog().info("VMWare Message Listener: Received packet: " + packet);
         // get the extension
@@ -126,7 +157,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         {
             // use the property bag
             String strCommand = ext.getPropertyBag().get("vmcmd");
-            String strPath = ext.getPropertyBag().get("vmpath");
+            String strPath = ext.getPropertyBag().get(VMPATH);
 
             if (strCommand != null)
             {
@@ -143,37 +174,37 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
                 // fill the response bag
                 newExt.getPropertyBag().put("vmcmd", strCommand);
-                newExt.getPropertyBag().put("vmpath", strPath);
+                newExt.getPropertyBag().put(VMPATH, strPath);
 
                 try {
                     if (strCommand.equals("start"))
                     {
                         // attempt to start the machine
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.startVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.startVM(strPath)));
                     }
                     else if (strCommand.equals("stop"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.stopVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.stopVM(strPath)));
                     }
                     else if (strCommand.equals("suspend"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.suspendVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.suspendVM(strPath)));
                     }
                     else if (strCommand.equals("reset"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.resetVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.resetVM(strPath)));
                     }
                     else if (strCommand.equals("register"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.registerVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.registerVM(strPath)));
                     }
                     else if (strCommand.equals("unregister"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.unregisterVM(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.unregisterVM(strPath)));
                     }
                     else if (strCommand.equals("list"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", refServerManager.getControlledMachines());
+                        newExt.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
                     }
 //      VMFox code
 //                    else if (strCommand.equals("toolsstate"))
@@ -197,67 +228,68 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 //                    }
                     else if (strCommand.equals("powerstate"))
                     {
-                        int iState = refServerManager.getPowerState(strPath);
+                        int iState = manager.getPowerState(strPath);
                         switch (iState)
                         {
                             case VMWareImageModule.POWER_STATUS_BLOCKED_ON_MSG:
-                                newExt.getPropertyBag().put("vmresponse", "Blocked on message.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Blocked on message.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERED_OFF:
-                                newExt.getPropertyBag().put("vmresponse", "Powered off.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Powered off.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERED_ON:
-                                newExt.getPropertyBag().put("vmresponse", "Powered on.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Powered on.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERING_OFF:
-                                newExt.getPropertyBag().put("vmresponse", "Powering off.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Powering off.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERING_ON:
-                                newExt.getPropertyBag().put("vmresponse", "Powering on.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Powering on.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_RESETTING:
-                                newExt.getPropertyBag().put("vmresponse", "Resetting.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Resetting.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_SUSPENDED:
-                                newExt.getPropertyBag().put("vmresponse", "Suspended.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Suspended.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_SUSPENDING:
-                                newExt.getPropertyBag().put("vmresponse", "Suspending.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Suspending.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_TOOLS_RUNNING:
-                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
+                                newExt.getPropertyBag().put(VMRESPONSE, "Tools running.");
                                 break;
                             default:
-                                newExt.getPropertyBag().put("vmresponse", "failure");
+                                newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
                                 break;
                         }
                     }
                     else if (strCommand.equals("stopvmwareservice"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.shutdownVMWareServerService() ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.shutdownVMWareServerService()));
                     }
                     else if (strCommand.equals("startvmwareservice"))
                     {
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.startVMWareServerService() ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.startVMWareServerService()));
                     }
                     else if (strCommand.equals("create"))
                     {
                         // create a vmware from a master model
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.createCopyOfMaster(ext.getPropertyBag().get("vmmasterpath"), strPath) ? "success" : "failure"));
-                        newExt.getPropertyBag().put("vmpath", VMWareServerManager.VM_IMAGES_FOLDER + File.separator + strPath);
+                        newExt.getPropertyBag().put(VMRESPONSE,
+                                outcome(manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath)));
+                        newExt.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath);
                     }
                     else if (strCommand.equals("delete")) 
                     {
                         // delete a vmware
-                        newExt.getPropertyBag().put("vmresponse", (refServerManager.deleteCopy(strPath) ? "success" : "failure"));
+                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.deleteCopy(strPath)));
                     }
                     else if (strCommand.equals("getmasters"))
                     {
                         // list the master copies
-                        newExt.getPropertyBag().put("vmresponse", refServerManager.getMasterImages());
+                        newExt.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
                     }
                 } catch (RemoteException e) {
-                    newExt.getPropertyBag().put("vmresponse", "failure");
+                    newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
                 }
 
                 // send the message

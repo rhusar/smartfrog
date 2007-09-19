@@ -1,85 +1,107 @@
-/**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ Disclaimer of Warranty
 
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ The Software is provided "AS IS," without a warranty of any kind. ALL
+ EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
+ INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+ PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
+ EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
+ not undergone complete testing and may contain errors and defects. It
+ may not function properly and is subject to change or withdrawal at
+ any time. The user must assume the entire risk of using the
+ Software. No support or maintenance is provided with the Software by
+ Hewlett-Packard. Do not install the Software if you are not accustomed
+ to using experimental software.
 
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Limitation of Liability
 
-For more information: www.smartfrog.org
-*/
+ TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
+ OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+ FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+ HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+ OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
+ THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
+ ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
+ SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
+ BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
+ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
+ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
+
+ */
 
 package org.smartfrog.services.vmware;
 
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
-
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.regex.*;
-import java.io.*;
 
 
 // TODO: think of a better approach to error handling when getting an image module failed
 public class VMWareServerManager extends PrimImpl implements VMWareServerManagerServices {
 
-     /**
-     * The list of images this manager controls.
-     */
-    private ArrayList<VMWareImageModule> listImgModules;
+    /** The list of images this manager controls. */
+    private ArrayList<VMWareImageModule> listImgModules = new ArrayList<VMWareImageModule>();
 
-    /**
-     * The folder where all vm images are stored which are under control of the daemon.
-     */
-    public static String VM_IMAGES_FOLDER;
-    public static String VM_MASTER_FOLDER;
+    /** The folder where all vm images are stored which are under control of the daemon. */
+    private String vmImagesFolder;
+    private String vmMasterFolder;
 
-    /**
-     * Used to communicate with the vmware server.
-     */
+    /** Used to communicate with the vmware server. */
     private VMWareCommunicator vmComm = new VMWareCommunicator();
 
     public VMWareServerManager() throws RemoteException {
-        
+
     }
 
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
 
-        // create the list of image modules
-        listImgModules = new ArrayList<VMWareImageModule>();
 
-        sfLog().info("VMWare Server Manager deployed.");
-    }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         // get the vm image folders
-        String strSFHome = System.getenv("SFHOME");
-        if (strSFHome != null) {
-            VM_IMAGES_FOLDER = strSFHome + File.separator + "vmcopyimages";
-            VM_MASTER_FOLDER = strSFHome + File.separator + "vmmasterimages";
-        }
-        else throw new SmartFrogException("Environment variable \"SFHOME\" not set.");
+        setVmImagesFolder(FileSystem.lookupAbsolutePath(this,ATTR_COPY_IMAGES_DIR,null,null,true,null));
+        setVmMasterFolder(FileSystem.lookupAbsolutePath(this, ATTR_MASTER_IMAGES_DIR, null, null, true, null));
 
         // generate the control modules for the vm images
         generateModulesFromImgFolder();
 
         // start all virtual machines
-        for (VMWareImageModule img : listImgModules)
+        for (VMWareImageModule img : listImgModules) {
             img.startUp();  // TODO: error handling
+        }
 
         sfLog().info("VMWareServerManager started.");
     }
 
-    /**
-     * A filename filter which only accepts ".vmx" files.
-     */
-    private class vmxFileFilter implements FilenameFilter {
+    public String getVmImagesFolder() {
+        return vmImagesFolder;
+    }
+
+    public void setVmImagesFolder(String vmImagesFolder) {
+        this.vmImagesFolder = vmImagesFolder;
+    }
+
+    public String getVmMasterFolder() {
+        return vmMasterFolder;
+    }
+
+    public void setVmMasterFolder(String vmMasterFolder) {
+        this.vmMasterFolder = vmMasterFolder;
+    }
+
+    /** A filename filter which only accepts ".vmx" files. */
+    private static class vmxFileFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
             return name.endsWith(".vmx");
         }
@@ -88,28 +110,27 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     // TODO: add createVMImage functionality
 
     /**
-     * Should only be called in sfStart()!
-     * Generates a VMWareImageModule for each .vmx file in the designated vm images folder.
+     * Should only be called in sfStart()! Generates a VMWareImageModule for each .vmx file in the designated vm images
+     * folder.
      */
-    private void generateModulesFromImgFolder()
-    {
+    private void generateModulesFromImgFolder() {
         // get the folder
-        File folder = new File(VM_IMAGES_FOLDER);
-        if (folder.exists())
-        {
+        File folder = new File(getVmImagesFolder());
+        if (folder.exists()) {
             // get the files in the folder
             File[] files = folder.listFiles(new vmxFileFilter());
-            if (files != null)
-                for (File curFile : files)
-                {
+            if (files != null) {
+                for (File curFile : files) {
                     // create a new image module and add it to the list if successful
                     VMWareImageModule newImg = VMWareImageModule.createImageModule(curFile.getAbsolutePath());
-                    if (newImg != null)
+                    if (newImg != null) {
                         listImgModules.add(newImg);
+                    }
 
                     // register it with the vm in case some aren't yet
                     newImg.registerVM();
                 }
+            }
         }
     }
 
@@ -124,8 +145,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.unregisterVM();
+        }
 
         // an error occurred
         return false;
@@ -142,8 +164,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.startUp();
+        }
 
         // an error occured
         return false;
@@ -151,6 +174,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /**
      * Return a list of the vmware images in the master folder.
+     *
      * @return
      * @throws RemoteException
      */
@@ -158,7 +182,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResult = "";
 
         // get the files
-        File folder = new File(VM_MASTER_FOLDER);
+        File folder = new File(getVmMasterFolder());
         if (folder.exists()) {
             File[] files = folder.listFiles();
             for (File f : files) {
@@ -173,24 +197,29 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /**
      * Loads the whole content of a file into a stringbuffer.
+     *
      * @param inFile
      * @return
      * @throws Exception
      */
     private String loadIntoBuffer(File inFile) throws Exception {
         // open the file
-        FileInputStream in = new FileInputStream(inFile);
+        FileInputStream in=null;
+        try {
+            in = new FileInputStream(inFile);
 
-        // set the buffer size
-        byte[] buffer = new byte[in.available()];
+            // set the buffer size
+            byte[] buffer = new byte[in.available()];
 
-        // read the content
-        in.read(buffer);
+            // read the content
+            in.read(buffer);
+            return new String(buffer);
+        } finally {
+            // close the file
+            FileSystem.close(in);
+        }
 
-        // close the file
-        in.close();
 
-        return new String(buffer);
     }
 
     /**
@@ -205,11 +234,12 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String copyVMX;
         try {
             // first copy the master .vmx file
-            copyVMX = VM_IMAGES_FOLDER + File.separator + inVMCopyName;
-            if (!copyVMX.endsWith(".vmx"))
+            copyVMX = getVmImagesFolder() + File.separator + inVMCopyName;
+            if (!copyVMX.endsWith(".vmx")) {
                 copyVMX += ".vmx";
+            }
 
-            if (copy(VM_MASTER_FOLDER + File.separator + inVMMaster, copyVMX)) {
+            if (copy(getVmMasterFolder() + File.separator + inVMMaster, copyVMX)) {
                 // read all of the .vmx file
                 File fileVMX = new File(copyVMX);
                 String buffer = loadIntoBuffer(fileVMX);
@@ -235,14 +265,16 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                         line = line.replace(strOld, strNewHDD + ".vmdk");
 
                         // copy the .vmdk files
-                        File folder = new File(VM_MASTER_FOLDER);
+                        File folder = new File(getVmMasterFolder());
                         strOld = strOld.replace(".vmdk", "");
                         File[] files = folder.listFiles();
                         for (File f : files) {
                             if ((f.getName().startsWith(strOld + "-f") && f.getName().endsWith(".vmdk"))) {
                                 // copy the file
-                                if (!copy(f.getPath(), VM_IMAGES_FOLDER + File.separator + f.getName().replace(strOld, strNewHDD)))
+                                if (!copy(f.getPath(),
+                                        getVmImagesFolder() + File.separator + f.getName().replace(strOld, strNewHDD))) {
                                     return false;
+                                }
                             } else if (f.getName().equals(strOld + ".vmdk")) {
                                 // it's the .vmdk config file
                                 // read it's content
@@ -252,15 +284,15 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                                 strBuffer = strBuffer.replace(strOld, strNewHDD);
 
                                 // write it to the new destination
-                                FileWriter o = new FileWriter(VM_IMAGES_FOLDER + File.separator + f.getName().replace(strOld, strNewHDD));
+                                FileWriter o = new FileWriter(
+                                        getVmImagesFolder() + File.separator + f.getName().replace(strOld, strNewHDD));
                                 o.write(strBuffer);
                                 o.close();
                             }
                         }
 
                         ++iHDDIndex;
-                    }
-                    else if (line.startsWith("displayName = ")) {
+                    } else if (line.startsWith("displayName = ")) {
                         // replace the display name
                         line = "displayName = \"" + strNewName + "\"";
                     }
@@ -275,8 +307,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     Process ps = Runtime.getRuntime().exec("chmod 755 " + fileVMX.getPath());
                     ps.waitFor();
                 }
+            } else {
+                return false;
             }
-            else return false;
         } catch (Exception e) {
             sfLog().error("VMWareServerManager createCopyOfMaster failed: " + e.getMessage());
             return false;
@@ -288,12 +321,12 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /**
      * Copies a file.
+     *
      * @param from
      * @param to
      * @return
      */
-    private boolean copy(String from, String to) throws IOException
-    {
+    private boolean copy(String from, String to) throws IOException {
         sfLog().info("VMWareServerManager creating copy. From: " + from + " to: " + to);
         File fromFile = new File(from);
         File toFile = new File(to);
@@ -310,15 +343,17 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
             // copy
             int len;
-            while ((len = in.read(buffer)) > 0)
+            while ((len = in.read(buffer)) > 0) {
                 out.write(buffer, 0, len);
+            }
 
             in.close();
             out.close();
 
             return true;
+        } else {
+            return false;
         }
-        else return false;
     }
 
     /**
@@ -342,10 +377,11 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         File file = new File(inVMPath);
 
         // then delete it
-        if (file.exists() && file.isFile() && file.getName().endsWith(".vmx"))
+        if (file.exists() && file.isFile() && file.getName().endsWith(".vmx")) {
             return file.delete();
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -359,8 +395,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.shutDown();
+        }
 
         // an error occurred
         return false;
@@ -377,8 +414,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.suspend();
+        }
 
         // an error occurred
         return false;
@@ -395,8 +433,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.reset();
+        }
 
         // an error occurred
         return false;
@@ -413,8 +452,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.getPowerState();
+        }
 
         // an error occurred
         return VMWareImageModule.STATUS_ERROR;
@@ -443,23 +483,26 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public String getControlledMachines() throws RemoteException {
         String strResult = "";
 
-        for (VMWareImageModule mod : listImgModules)
+        for (VMWareImageModule mod : listImgModules) {
             strResult += mod.getVMPath() + "\n";
+        }
 
         return strResult;
     }
 
     /**
      * Gets an existing machine module or attempts to create a new one.
+     *
      * @param inVMPath The path to the .vmx file.
      * @return Returns an VMWareImageModule or null if inVMPath isn't valid.
      */
-    private VMWareImageModule getMachineModule(String inVMPath)
-    {
+    private VMWareImageModule getMachineModule(String inVMPath) {
         // parse the list of image modules
-        for (VMWareImageModule imgMod : listImgModules)
-            if (imgMod.getVMPath().equals(inVMPath))
+        for (VMWareImageModule imgMod : listImgModules) {
+            if (imgMod.getVMPath().equals(inVMPath)) {
                 return imgMod;
+            }
+        }
 
         // no module found, create a new one
         VMWareImageModule newMod = VMWareImageModule.createImageModule(inVMPath);
@@ -474,16 +517,17 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /**
      * Removes a vm image module.
+     *
      * @param inVMPath
      */
     private void removeMachineModule(String inVMPath) {
         // find the appropriate module
-        for (VMWareImageModule mod : listImgModules)
-            if (mod.getVMPath().equals(inVMPath))
-            {
+        for (VMWareImageModule mod : listImgModules) {
+            if (mod.getVMPath().equals(inVMPath)) {
                 listImgModules.remove(mod);
                 break;
             }
+        }
     }
 
     /**
@@ -493,40 +537,41 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     public boolean shutdownVMWareServerService() throws RemoteException {
         // shutdown the vmware server service, which will automatically shut down all vms
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             try {
                 Runtime.getRuntime().exec("net.exe stop VMWare");
             } catch (IOException e) {
                 return false;
             }
-        else
+        } else {
             try {
                 Runtime.getRuntime().exec("/etc/init.d/vmware stop");
             } catch (IOException e) {
                 return false;
             }
+        }
 
         return true;
     }
 
-    /**
-     * Starts the vmware server service.
-     */
-    public boolean startVMWareServerService() throws RemoteException
-    {
+    /** Starts the vmware server service. */
+    public boolean startVMWareServerService() throws RemoteException {
         // start the vmware server service
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             try {
                 Runtime.getRuntime().exec("net.exe start VMWare");
             } catch (IOException e) {
+                sfLog().error("failed to start vmware", e);
                 return false;
             }
-        else
+        } else {
             try {
                 Runtime.getRuntime().exec("/etc/init.d/vmware start");
             } catch (IOException e) {
+                sfLog().error("failed to start vmware",e);
                 return false;
             }
+        }
 
         return true;
     }
@@ -535,19 +580,21 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         super.sfTerminateWith(status);
 
         // shut down every virtual machine manually to be indepentant of the vmserver service behaviour
-        for (VMWareImageModule img : listImgModules)
+        for (VMWareImageModule img : listImgModules) {
             img.shutDown();     // TODO: error handling
+        }
 
         // shut down the vmware server service
         try {
             shutdownVMWareServerService();
         } catch (RemoteException e) {
-
+            sfLog().ignore(e);
         }
     }
 
     /**
      * Registes a virtual machine with the vmware server.
+     *
      * @param inVMPath The full path to the machine.
      * @return
      */
@@ -556,8 +603,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         VMWareImageModule tmp = getMachineModule(inVMPath);
 
         // check if it worked
-        if (tmp != null)
+        if (tmp != null) {
             return tmp.registerVM();
+        }
 
         // an error occurred
         return false;

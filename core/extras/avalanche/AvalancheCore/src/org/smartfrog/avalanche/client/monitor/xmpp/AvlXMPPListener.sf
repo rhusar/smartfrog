@@ -12,18 +12,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/xmpp/components.sf"
 
-AvlXmppListener extends XmppComponent {
-
-    xmppListenerSchema extends Schema {
-        presence extends Boolean {
-            description "should the component register itself as present";
-        }
-        reconnect extends Boolean;
-        offlineMinutesTimeout extends Integer {
-            description "time in minutes for a timeout before it is reported";
-        }
-
-    }
+AvlXmppListener extends XmppListener {
     sfClass "org.smartfrog.avalanche.client.monitor.xmpp.AvlXMPPListener";
     presence true;
     reconnect true;
