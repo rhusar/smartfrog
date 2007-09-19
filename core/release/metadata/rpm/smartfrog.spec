@@ -386,15 +386,11 @@ fi
 # shut down the daemon before the uninstallation
 %{smartfrogd} stop
 
-# -----------------------------------------------------------------------------
-# at uninstall time, we delete all links to the daemon
-%postun daemon
-
 if [ "$1" = "0" ] ; then
   if [ -x /usr/lib/lsb/remove_initd ]; then
     /usr/lib/lsb/install_initd /etc/init.d/${rpm.daemon.name}
   elif [ -x /sbin/chkconfig ]; then
-    /sbin/chkconfig --del ${rpm.daemon.name}
+    /sbin/chkconfig --del ${rpm.daemon.name} || echo "trouble shutting down the daemon"
   else
     rm -f /etc/rc.d/rc?.d/???${rpm.daemon.name}
   fi
