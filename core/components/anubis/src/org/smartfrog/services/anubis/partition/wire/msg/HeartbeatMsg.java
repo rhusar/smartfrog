@@ -79,7 +79,7 @@ public class HeartbeatMsg extends TimedMsg implements Heartbeat {
     public static final int HEARTBEAT_MSG_WIRE_TYPE = 300;
 
     protected int getType() { return HEARTBEAT_MSG_WIRE_TYPE; }
-    protected int getSize() { return HEARTBEAT_MSG_WIRE_SIZE; }
+    public int getSize() { return HEARTBEAT_MSG_WIRE_SIZE; }
 
     protected HeartbeatMsg() {
         super();

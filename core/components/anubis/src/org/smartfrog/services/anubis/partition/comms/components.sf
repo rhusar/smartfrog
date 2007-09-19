@@ -23,14 +23,17 @@ For more information: www.smartfrog.org
 MulticastHeartbeatTransport extends Compound {
     sfExport           false;
     sfClass            "org.smartfrog.services.anubis.partition.comms.multicast.HeartbeatCommsFactory";
+    security           LAZY anubisParameters:security;
 }
 
 BlockingConnectionTransport extends Prim {
     sfExport           false;
     sfClass            "org.smartfrog.services.anubis.partition.comms.blocking.MessageConnectionServerFactory";
+    security           LAZY anubisParameters:security;
 }
 
 NonBlockingConnectionTransport extends Prim {
     sfExport           false;
     sfClass            "org.smartfrog.services.anubis.partition.comms.nonblocking.MessageNioServerFactory";
+    security           LAZY anubisParameters:security;
 }

@@ -31,7 +31,11 @@ import org.smartfrog.services.anubis.partition.comms.multicast.HeartbeatConnecti
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.Wire;
+import org.smartfrog.services.anubis.partition.wire.WireMsg;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.msg.TimedMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurityException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -43,6 +47,9 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     private MessageConnectionServer server            = null;
     private ConnectionSet           connectionSet     = null;
     private boolean                 announceTerm      = true;
+    private WireSecurity            wireSecurity      = null;
+    private long                    sendCount         = 0;
+    private long                    receiveCount      = 0;
     private LogSF                   log               = null;
 
     /**
@@ -50,40 +57,96 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
      */
     private boolean                 ignoring          = false;
 
-    public MessageConnectionImpl(Identity id, ConnectionSet cs, ConnectionAddress address, MessageConnection mc) {
+    public MessageConnectionImpl(Identity id, ConnectionSet cs, ConnectionAddress address, MessageConnection mc, WireSecurity sec) {
         super("Anubis: node " + mc.getSender().id + " Connection Comms", address);
         me = id;
         connectionSet = cs;
         messageConnection = mc;
+        wireSecurity = sec;
         setPriority(MAX_PRIORITY);
         log = LogFactory.getLog(this.getClass().toString());
     }
 
-    public MessageConnectionImpl(Identity id, SocketChannel channel, MessageConnectionServer mcs, ConnectionSet cs) {
+    public MessageConnectionImpl(Identity id, SocketChannel channel, MessageConnectionServer mcs, ConnectionSet cs, WireSecurity sec) {
         super("Anubis: new Connection Comms", channel);
         me = id;
         server = mcs;
         connectionSet = cs;
+        wireSecurity = sec;
         setPriority(MAX_PRIORITY);
         log = LogFactory.getLog(this.getClass().toString());
     }
 
+    
+    /************************************************************ SECURITY
     public void send(byte[] bytes) {
         super.send(bytes);
+    }
+    ****************************************************************/
+    public void send(TimedMsg tm) {
+        try {
+            tm.setOrder(sendCount);
+            sendCount++;
+            super.send( wireSecurity.toWireForm(tm) );
+        } catch (Exception ex) {
+            if( log.isErrorEnabled() )
+                log.error(me + " failed to marshall timed message: " + tm + " - shutting down connection", ex);
+            shutdown();   
+        }
     }
 
     public void deliver(byte[] bytes) {
 
         if( ignoring )
             return;
+        
+        WireMsg msg = null;
+        try {
+
+            msg = wireSecurity.fromWireForm(bytes);
+
+        } catch (WireSecurityException ex) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "connection transport encountered security violation unmarshalling message - ignoring " ); // + this.getSender() );
+            return;
+            
+        } catch (Exception ex) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "connection transport unable to unmarshall message " ); // + this.getSender() );
+            shutdown();
+            return;
+        }
+        
+        if( !(msg instanceof TimedMsg) ) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "connection transport received non timed message " ); // + this.getSender() );
+            shutdown();
+            return;
+        }
+        
+        TimedMsg tm = (TimedMsg)msg;
+        
+        if( tm.getOrder() != receiveCount ) {
+            if( log.isErrorEnabled() ) {
+                log.error(me + "connection transport has delivered a message out of order - shutting down");
+            }
+            shutdown();
+            return;
+        }
+        
 
         if( messageConnection == null ) {
-            initialMsg(bytes);
+            initialMsg(tm);
         } else {
-            messageConnection.deliver(bytes);
+            messageConnection.deliver(tm);
         }
     }
 
+    
+    /*************************************************************************** SECURITY
     private void initialMsg(byte[] bytes) {
 
         Object obj = null;
@@ -94,6 +157,15 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
                 log.error(me + " failed to unmarshall initial message on new connection - shutdown", ex);
             shutdown();
         }
+        ***************************************************************/
+    
+    private void initialMsg(TimedMsg tm) {
+        
+        /**
+         * temporary - get rid of these   SECURITY
+         */
+        Object obj = tm;
+        TimedMsg bytes = tm;
 
 
         /**
@@ -131,7 +203,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
             if( ((MessageConnection)con).assignImpl(this) ) {
                 messageConnection = (MessageConnection)con;
                 setName("Anubis: node " + con.getSender().id + " Connection Comms");
-                messageConnection.deliver(bytes);
+                messageConnection.deliver(bytes); 
             } else {
                 if( log.isErrorEnabled() )
                     log.error(me + " failed to assign incoming connection from " + con.getSender().toString());

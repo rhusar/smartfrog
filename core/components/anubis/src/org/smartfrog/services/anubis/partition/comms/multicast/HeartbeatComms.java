@@ -32,6 +32,8 @@ import org.smartfrog.services.anubis.partition.views.View;
 import org.smartfrog.services.anubis.partition.wire.Wire;
 import org.smartfrog.services.anubis.partition.wire.msg.Heartbeat;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurityException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 
@@ -41,6 +43,7 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
     private Identity                 me                       = null;
     private HeartbeatReceiver        connectionSet            = null;
     private Map                      messageHandlers          = Collections.synchronizedMap(new HashMap());
+    private WireSecurity             wireSecurity             = null;
     private LogSF                    log = LogFactory.getLog(this.getClass().toString());
 
     /**
@@ -50,10 +53,11 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
     private Object                   ingnoringMonitor         = new Object();
 
 
-   public HeartbeatComms(MulticastAddress address, HeartbeatReceiver cs, String threadName, Identity id) throws Exception {
+   public HeartbeatComms(MulticastAddress address, HeartbeatReceiver cs, String threadName, Identity id, WireSecurity sec) throws Exception {
        super(threadName, address);
        me = id;
        connectionSet = cs;
+       wireSecurity = sec;
        setPriority(Thread.MAX_PRIORITY);
    }
 
@@ -61,10 +65,19 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
 
         Object obj = null;
         try {
-            obj = Wire.fromWire(bytes);
-        } catch (Exception ex) {
+            
+//            obj = Wire.fromWire(bytes); SECURITY
+            obj = wireSecurity.fromWireForm(bytes);
+            
+        } catch (WireSecurityException ex) {
+
             if( log.isErrorEnabled() )
-                log.error("Error reading wire form message", ex);
+                log.error(me + "multicast transport encountered security violation receiving message - ignoring the message " ); // + this.getSender() );
+            return;
+            
+        }  catch (Exception ex) {
+            if( log.isErrorEnabled() )
+                log.error(me + "Error reading wire form message - ignoring", ex);
             return;
         }
 
@@ -134,7 +147,8 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      * @param msg message to send.
      */
     public void sendHeartbeat(HeartbeatMsg msg) {
-        try { super.sendObject(msg.toWire()); }
+//        try { super.sendObject(msg.toWire()); }  SECURITY
+        try { super.sendObject(wireSecurity.toWireForm(msg)); }
         catch (Exception ex) {
             if( log.isErrorEnabled() )
                 log.error("Error sending heartbeat message", ex);

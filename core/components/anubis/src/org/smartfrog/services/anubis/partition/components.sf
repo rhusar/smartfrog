@@ -20,6 +20,15 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "/org/smartfrog/services/anubis/basiccomms/components.sf"
 
+NoSecurity extends Prim {
+    sfExport     false;
+    sfClass      "org.smartfrog.services.anubis.partition.wire.security.NoSecurityImpl";
+}
+
+MACSecurity extends Prim {
+    sfExport     false;
+    sfClass      "org.smartfrog.services.anubis.partition.wire.security.MACSecurityImpl";
+}
 
 TestMgr extends Compound {
     sfExport           false;
@@ -42,7 +51,6 @@ AnubisPartitionTestConsole extends {
     heartbeatTimeout  ATTRIB anubisParameters:heartbeatTimeout;
 }
 
-// PartitionManager extends AnubisDefaultParameters {
 PartitionManager extends Compound {
     sfExport false;
     sfClass "org.smartfrog.services.anubis.partition.PartitionManager";

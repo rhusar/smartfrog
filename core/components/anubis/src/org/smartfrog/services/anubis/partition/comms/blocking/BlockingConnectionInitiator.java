@@ -21,6 +21,7 @@ package org.smartfrog.services.anubis.partition.comms.blocking;
 
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import java.io.IOException;
@@ -32,7 +33,9 @@ public class BlockingConnectionInitiator
     private Identity me = null;
     private ConnectionSet connectionSet = null;
     private MessageConnection connection = null;
-    private byte[] heartbeat = null;
+//    private byte[] heartbeat = null; // SECURITY
+    private HeartbeatMsg heartbeat = null;
+    private WireSecurity wireSecurity = null;
 
     public BlockingConnectionInitiator(Identity id,
                                        MessageConnection con,
@@ -43,7 +46,8 @@ public class BlockingConnectionInitiator
         me = id;
         connection = con;
         connectionSet = cset;
-        heartbeat = hb.toWire();
+//        heartbeat = hb.toWire();  // SECURITY
+        heartbeat = hb;
     }
 
     /**
@@ -54,7 +58,7 @@ public class BlockingConnectionInitiator
     public void run() {
 
         MessageConnectionImpl impl = new MessageConnectionImpl(
-                me, connectionSet, connection.getSenderAddress(), connection);
+                me, connectionSet, connection.getSenderAddress(), connection, wireSecurity);
 
         /**
          * If the attempt to establish a connection failed we just give up. In

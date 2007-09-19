@@ -24,8 +24,9 @@ import java.nio.ByteBuffer;
 
 public class WireMsg implements WireSizes {
 
-    protected ByteBuffer wireForm = null;
-    protected byte[]     bytes    = null;
+    protected ByteBuffer wireForm    = null;
+    protected byte[]     bytes       = null;
+    protected int        trailerSize = 0;
 
     public static final int WIRE_TYPE = 100;
     protected static final int WIRE_SIZE = intSz;
@@ -42,7 +43,24 @@ public class WireMsg implements WireSizes {
      * @return int
      * @throws WireFormException
      */
-    protected int getSize() throws WireFormException { return WIRE_SIZE; }
+    public int getSize() throws WireFormException { return WIRE_SIZE; }
+    
+    /**
+     * Set the size of the trailer. When the message is converted to its
+     * wire form, the byte array will include a sequence of unused 
+     * bytes equal to the trailer size at the end. The byte array length will
+     * be getSize() + trailerSize.
+     * 
+     * @param n
+     * @throws WireFormException
+     */
+    public void setTrailerSize(int n) throws WireFormException { 
+        if( n < 0 ) {
+            throw new WireFormException("Negative trailer size specified: " + n);
+        } else {
+            trailerSize = n;
+        }
+    }
 
     /**
      * Default constructor - used when constructing from wire form
@@ -81,7 +99,7 @@ public class WireMsg implements WireSizes {
 
         fixDynamicSizedAttributes();
 
-        bytes = new byte[getSize()];
+        bytes = new byte[getSize() + trailerSize];
         wireForm = ByteBuffer.wrap(bytes);
 
         writeWireForm();

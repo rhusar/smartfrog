@@ -30,7 +30,7 @@ public class CloseMsg extends HeartbeatMsg implements Close {
     public static final int CLOSE_MSG_WIRE_SIZE = HEARTBEAT_MSG_WIRE_SIZE;
 
     protected int getType() { return CLOSE_MSG_WIRE_TYPE; }
-    protected int getSize() { return CLOSE_MSG_WIRE_SIZE; }
+    public int getSize() { return CLOSE_MSG_WIRE_SIZE; }
 
     /**
      * Construct a close message that matches the heartbeat messsage

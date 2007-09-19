@@ -19,19 +19,33 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.anubis.partition.comms.nonblocking;
 
+import java.rmi.RemoteException;
+
 import org.smartfrog.services.anubis.basiccomms.connectiontransport.ConnectionAddress;
 import org.smartfrog.services.anubis.partition.comms.IOConnectionServer;
 import org.smartfrog.services.anubis.partition.comms.IOConnectionServerFactory;
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 public class MessageNioServerFactory extends PrimImpl implements Prim, IOConnectionServerFactory {
+    
+    private WireSecurity wireSecurity = null;
+    
     public MessageNioServerFactory() throws Exception {
         super();
     }
+    
+    public void sfDeploy() throws RemoteException, SmartFrogException {
+        super.sfDeploy();
+        wireSecurity = (WireSecurity)sfResolve("security");
+    }
+    
+
     public IOConnectionServer create(ConnectionAddress address, Identity id, ConnectionSet cs) throws Exception {
-        return new MessageNioServer(address, id, cs);
+        return new MessageNioServer(address, id, cs, wireSecurity);
     }
 }

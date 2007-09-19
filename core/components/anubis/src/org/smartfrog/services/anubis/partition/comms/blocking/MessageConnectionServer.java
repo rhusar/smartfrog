@@ -32,6 +32,7 @@ import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -56,6 +57,7 @@ public class MessageConnectionServer
     private Identity me = null;
     private ConnectionSet connectionSet = null;
     private Set pending = new HashSet();
+    private WireSecurity wireSecurity = null;
     private LogSF log = LogFactory.getLog(this.getClass().toString());
 
     /**
@@ -66,10 +68,11 @@ public class MessageConnectionServer
      * @param cs - the connection set
      * @throws Exception - if problems with creating the server socket
      */
-     public MessageConnectionServer(ConnectionAddress address, Identity id, ConnectionSet cs) throws Exception {
+     public MessageConnectionServer(ConnectionAddress address, Identity id, ConnectionSet cs, WireSecurity sec) throws Exception {
         super("Anubis: Connection Server", address.ipaddress.getHostName());// , address.port);
         me            = id;
         connectionSet = cs;
+        wireSecurity = sec;
         setConnectionFactory(this);
         setPriority(MAX_PRIORITY);
     }
@@ -90,8 +93,7 @@ public class MessageConnectionServer
     }
      */
     public void createConnection(SocketChannel channel) {
-        MessageConnectionImpl impl = new MessageConnectionImpl(me, channel, this,
-            connectionSet);
+        MessageConnectionImpl impl = new MessageConnectionImpl(me, channel, this, connectionSet, wireSecurity);
         impl.start();
         pending.add(impl);
     }

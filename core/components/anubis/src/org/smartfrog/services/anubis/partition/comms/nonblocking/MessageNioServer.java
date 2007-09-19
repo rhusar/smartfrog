@@ -39,6 +39,7 @@ import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -49,6 +50,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 
     private Identity      me            = null;
     private ConnectionSet connectionSet = null;
+    private WireSecurity  wireSecurity  = null;
     private LogSF         syncLog       = LogFactory.getLog(this.getClass().toString());
     private LogSF         asyncLog      = new LogImplAsyncWrapper( syncLog );
 
@@ -73,13 +75,14 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
      * A pre-defined number of worker threads deal with those RX deserialized jobs and deliver them to the anubis layers.  By default there
      * is only 1 decoupling thread.
      */
-    public MessageNioServer(ConnectionAddress address, Identity id, ConnectionSet cs) throws Exception {
+    public MessageNioServer(ConnectionAddress address, Identity id, ConnectionSet cs, WireSecurity sec) throws Exception {
 
 	if( debug && asyncLog.isTraceEnabled() )
 	    asyncLog.trace("MNS: constructing a new server");
 
 	me = id;
 	connectionSet = cs;
+    wireSecurity = sec;
 
 	// create a server
 	try{
@@ -142,7 +145,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	try{
 	    SocketChannel sendingChannel = SocketChannel.open();
 	    sendingChannel.configureBlocking(false);
-	    mnh = new MessageNioHandler(selector, sendingChannel, deadKeys, writePendingKeys, assignRxQueue());
+	    mnh = new MessageNioHandler(selector, sendingChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
 	    mnh.init(me, cs, con, mci);
 	    sendingChannel.connect(new InetSocketAddress(conAd.ipaddress, conAd.port));
 	    if( debug && asyncLog.isTraceEnabled() )
@@ -244,7 +247,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 		    try{
 			SocketChannel clientChannel = server.accept();
 			clientChannel.configureBlocking(false);
-			MessageNioHandler conHandler = new MessageNioHandler(selector, clientChannel, deadKeys, writePendingKeys, assignRxQueue());
+			MessageNioHandler conHandler = new MessageNioHandler(selector, clientChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
 			conHandler.init(me, connectionSet);
 			// only register for read - write is still enabled by default
 			clientChannel.register(selector, SelectionKey.OP_READ, conHandler);
