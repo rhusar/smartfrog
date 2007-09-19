@@ -802,8 +802,8 @@
         failonerror="false"/>
   </target>
 
-  <target name="rpm-remote-test" depends="rpm-remote-version,
-    rpm-remote-uninstall-strict"
+  <target name="rpm-remote-test"
+    depends="rpm-remote-version,rpm-remote-initd,rpm-remote-uninstall-strict"
       description="install, verify and uninstall the RPMs to a remote target"/>
 
   <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install" >

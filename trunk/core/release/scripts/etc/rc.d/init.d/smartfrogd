@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# bluetooth:    Start/stop bluetooth services
+# smartfrogd:    Start/stop smartfrog services
 #
 # chkconfig:    35 25 90
 # description:  The SmartFrog deployment daemon
