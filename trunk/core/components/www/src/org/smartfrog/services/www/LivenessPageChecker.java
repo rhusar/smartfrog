@@ -583,7 +583,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Get any error message raised by the last poll
-     * @return
+     * @return the error message, which may be null
      */
     public String getErrorMessage() {
         return errorMessage;
