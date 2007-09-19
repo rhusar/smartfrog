@@ -28,4 +28,8 @@ public class WireFormException extends Exception {
     public WireFormException(String str) {
         super(str);
     }
+    
+    public WireFormException(String str, Throwable thr) {
+        super(str, thr);
+    }
 }

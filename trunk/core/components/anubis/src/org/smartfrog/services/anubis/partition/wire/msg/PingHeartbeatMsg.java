@@ -42,7 +42,7 @@ public class PingHeartbeatMsg extends HeartbeatMsg {
         return PING_HEARTBEAT_MSG_WIRE_TYPE;
     }
 
-    protected int getSize() {
+    public int getSize() {
         return PING_HEARTBEAT_MSG_WIRE_SIZE;
     }
 

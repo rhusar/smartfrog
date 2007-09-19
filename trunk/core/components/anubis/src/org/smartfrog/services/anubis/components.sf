@@ -76,6 +76,7 @@ AnubisDefaultParameters extends Compound {
     connectionTransport      extends NonBlockingConnectionTransport;
     heartbeatProtocolFactory extends TimedHeartbeatProtocol;
     leaderProtocolFactory    extends MajorityLeaderProtocol;
+    security                 extends NoSecurity;
 
     preferred                false;
     testable                 true;

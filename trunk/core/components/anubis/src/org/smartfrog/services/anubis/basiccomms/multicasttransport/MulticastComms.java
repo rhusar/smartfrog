@@ -53,7 +53,7 @@ public class MulticastComms extends Thread {
    * but any network will be capable of handling this size so its transfer
    * semantics are atomic (no fragmentation in the network).
    */
-  static public  final   int                 MAX_SEG_SIZE = 1024;
+  static public  final   int                 MAX_SEG_SIZE = 1500;   // Eathernet standard MTU
 
          private         MulticastAddress    groupAddress;
          private         MulticastSocket     sock;

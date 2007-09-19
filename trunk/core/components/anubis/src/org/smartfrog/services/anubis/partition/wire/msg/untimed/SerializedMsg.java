@@ -44,10 +44,10 @@ public final class SerializedMsg extends WireMsg {
     public static final int MESSAGE_MSG_WIRE_SIZE = UNDEFINED_SIZE;
 
     protected int getType() { return SERIALIZED_MSG_WIRE_TYPE; }
-    protected int getSize() throws WireFormException {
+    public int getSize() throws WireFormException {
         if( payloadSz == UNDEFINED_SIZE )
             throw new WireFormException("Attampt to get size of message when it has not been defined");
-        return payloadLengthIdx + payloadSz + intSz;
+        return payloadIdx + payloadSz;
     }
 
     protected SerializedMsg() {
@@ -114,8 +114,8 @@ public final class SerializedMsg extends WireMsg {
         ObjectInputStream objectIS = new ObjectInputStream(byteArrayIS);
         msg = objectIS.readObject();
 
-        payload = null;
-        payloadSz = UNDEFINED_SIZE;
+//        payload = null;
+//        payloadSz = UNDEFINED_SIZE;
     }
     /**
      * Writes the timed message attributes to wire form in the given byte

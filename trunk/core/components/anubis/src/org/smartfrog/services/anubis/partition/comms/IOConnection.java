@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.anubis.partition.comms;
 
+import org.smartfrog.services.anubis.partition.wire.msg.TimedMsg;
+
 
 
 public interface IOConnection {
@@ -26,7 +28,8 @@ public interface IOConnection {
     public void terminate();
     public void silent();
     public boolean connected();
-    public void send(byte[] msg);
+//    public void send(byte[] msg);
+    public void send(TimedMsg msg);
     public void setIgnoring(boolean ignoring);
 
 }

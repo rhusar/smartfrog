@@ -30,13 +30,15 @@ import org.smartfrog.sfcore.logging.LogFactory;
 public class NonBlockingConnectionInitiator {
 
     private MessageConnection connection = null;
-    private byte[] heartbeat = null;
+//    private byte[] heartbeat = null;   // SECURITY
+    private HeartbeatMsg heartbeat = null;
     private LogSF  log       = LogFactory.getLog(this.getClass().toString());
 
     public NonBlockingConnectionInitiator(MessageConnection con, HeartbeatMsg hb) throws IOException,
         WireFormException {
         connection = con;
-        heartbeat = hb.toWire();
+//        heartbeat = hb.toWire();  // SECURITY
+        heartbeat = hb;
     }
 
 

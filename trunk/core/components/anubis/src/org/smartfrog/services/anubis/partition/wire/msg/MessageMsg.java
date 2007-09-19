@@ -42,10 +42,10 @@ public final class MessageMsg extends TimedMsg {
     public static final int MESSAGE_MSG_WIRE_SIZE = UNDEFINED_SIZE;
 
     protected int getType() { return MESSAGE_MSG_WIRE_TYPE; }
-    protected int getSize() throws WireFormException {
+    public int getSize() throws WireFormException {
         if( payloadSz == UNDEFINED_SIZE )
             throw new WireFormException("Attampt to get size of message when it has not been defined");
-        return payloadLengthIdx + payloadSz + intSz;
+        return payloadIdx + payloadSz;
     }
 
     protected MessageMsg() {
@@ -118,8 +118,8 @@ public final class MessageMsg extends TimedMsg {
         ObjectInputStream objectIS = new ObjectInputStream(byteArrayIS);
         message = objectIS.readObject();
 
-        payload = null;
-        payloadSz = UNDEFINED_SIZE;
+//        payload = null;
+//        payloadSz = UNDEFINED_SIZE;
     }
 
 

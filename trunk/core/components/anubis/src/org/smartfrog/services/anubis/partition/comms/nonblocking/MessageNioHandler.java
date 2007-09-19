@@ -34,8 +34,12 @@ import org.smartfrog.services.anubis.partition.comms.multicast.HeartbeatConnecti
 import org.smartfrog.services.anubis.partition.protocols.partitionmanager.ConnectionSet;
 import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.wire.Wire;
+import org.smartfrog.services.anubis.partition.wire.WireMsg;
 import org.smartfrog.services.anubis.partition.wire.WireSizes;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.msg.TimedMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurityException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -68,6 +72,7 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
     private boolean announceTerm = true;
     private boolean open = false;
     private boolean sendingDoneOK = false;
+    private WireSecurity wireSecurity = null;
 
     private RxQueue rxQueue = null;
 
@@ -82,9 +87,10 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
      * from it and to write serialized objects onto it.  A serialized object can be recovered by many calls from the selector thread
      * and serializing an object onto the socketChannel can occur in many chunks as well if the channel is busy.
      */
-    public MessageNioHandler(Selector selector, SocketChannel sc, Vector deadKeys, Vector writePendingKeys, RxQueue rxQueue){
+    public MessageNioHandler(Selector selector, SocketChannel sc, Vector deadKeys, Vector writePendingKeys, RxQueue rxQueue, WireSecurity sec){
        	if( debug && log.isTraceEnabled() )
 	    log.trace("MNH: Constructing a new MessageNioHandler");
+    this.wireSecurity = sec;
 	this.sc = sc;
 	this.deadKeys = deadKeys;
 	this.writePendingKeys = writePendingKeys;
@@ -370,7 +376,22 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 
     // blocking write method: calls the above asynchronous one and this object needs to register itself as
     // a SendingListener
-    public synchronized void send(byte[] bytesToSend){
+    
+    // public synchronized void send(byte[] bytesToSend){  // SECURITY
+        
+    public synchronized void send(TimedMsg tm){ 
+        
+        byte[] bytesToSend = null;
+        try {
+            bytesToSend = wireSecurity.toWireForm(tm);
+        } catch (Exception ex) {
+            if( log.isErrorEnabled() )
+                log.error(me + " failed to marshall timed message: " + tm + " - not sent", ex);
+            return;
+        }
+   
+        
+        
 	if( debug && log.isTraceEnabled() )
 	    log.trace("MNH: sendObject withOUT listener is being called");
 	sendingDoneOK = false;
@@ -423,12 +444,50 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 
         if (ignoring)
             return;
-
+/******************************************************** SECURITY
         if (messageConnection == null) {
             initialMsg(fullRxBuffer.array());
         } else {
             messageConnection.deliver(fullRxBuffer.array());
         }
+        ********************************************************************/
+        
+        WireMsg msg = null;
+        try {
+
+            msg = wireSecurity.fromWireForm(fullRxBuffer.array());
+
+        } catch (WireSecurityException ex) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "non blocking connection transport encountered security violation unmarshalling message - ignoring the message " ); // + this.getSender() );
+            return;
+            
+        }  catch (Exception ex) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "connection transport unable to unmarshall message " ); // + this.getSender() );
+            shutdown();
+            return;
+        }
+        
+        if( !(msg instanceof TimedMsg) ) {
+
+            if( log.isErrorEnabled() )
+                log.error(me + "connection transport received non timed message " ); // + this.getSender() );
+            shutdown();
+            return;
+        }
+        
+        TimedMsg tm = (TimedMsg)msg;
+        
+
+        if( messageConnection == null ) {
+            initialMsg(tm);
+        } else {
+            messageConnection.deliver(tm);
+        }
+
     }
 
     public void closing(){
@@ -482,9 +541,11 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 
     // private methods
     // lifted from MessageConnectionImpl: I do not intend to modify it...
-    private void initialMsg(byte[] bytes) {
-	if( debug && log.isTraceEnabled() )
-	    log.trace("MNH: initialMsg is being called");
+    
+    /*************************************************************** SECURITY
+     private void initialMsg(byte[] bytes) {
+    if( debug && log.isTraceEnabled() )
+        log.trace("MNH: initialMsg is being called");
 
         Object obj = null;
         try {
@@ -494,6 +555,21 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
                 log.error(me + " failed to unmarshall initial message on new connection - shutdown", ex);
             shutdown();
         }
+      **********************************************************************/
+    
+    
+    private void initialMsg(TimedMsg tm) {
+            
+        if( debug && log.isTraceEnabled() )
+            log.trace("MNH: initialMsg is being called");
+
+            /**
+             * temporary - get rid of these   SECURITY
+             */
+            Object obj = tm;
+            TimedMsg bytes = tm;
+
+
 
         /**
          * must be a heartbeat message
