@@ -7,6 +7,11 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 
-call %SFHOME%\bin\setClassPath
-java com.hp.SmartFrog.SFSystem -h localhost -t sfJMXAgent -e
+rem call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+
+java org.smartfrog.SFSystem  -a \"sfJMXAgent\":TERMINATE:::localhost: -e
+
+
+rem java com.hp.SmartFrog.SFSystem -h localhost -t sfJMXAgent -e
 endlocal
