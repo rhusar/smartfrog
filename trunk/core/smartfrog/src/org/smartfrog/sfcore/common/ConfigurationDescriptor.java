@@ -34,6 +34,8 @@ import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
 import java.io.LineNumberReader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -152,15 +154,20 @@ public class ConfigurationDescriptor implements MessageKeys {
                                "UNKNOWN"};
      }
 
+    /**
+     * Indicates if "execute" wass call. You need to use resetWasExecuted().
+     */
+    private boolean wasExecuted = false;
+
      /**
       * Result type for action
       */
      private int resultType = Result.UNDEFINED;
 
-     /**
+    /**
       * Result Object return by EXEC action
       */
-     public Object resultObject = null;
+     private Object resultObject = null;
 
      /**
       *  A result can be terminated if during a set of deployments one of them
@@ -168,22 +175,26 @@ public class ConfigurationDescriptor implements MessageKeys {
       * to DEPLOY actions.
       */
      public boolean isResultTerminated = false;
+
     /**
      * Indicates if the termination of a result object was succesful.
     */
      public boolean isResultTerminatedSuccessfully=true;
 
-    /** possible result termination error message */
-    public String resultTerminationMessage=null;
+     /** possible result termination error message */
+     private String resultTerminationMessage=null;
 
      /**
       * Result message for action
       */
      private String resultMessage = null;
-     /**
+
+
+    /**
       * Result exception for action
       */
-     public Throwable resultException = null;
+     private Throwable resultException = null;
+
 
 
 
@@ -681,6 +692,108 @@ public class ConfigurationDescriptor implements MessageKeys {
         }
     }
 
+
+    /** String name for attribute '{@value}'. */
+    final static String ATR_NAME = "name";
+    /** String name for attribute '{@value}'. */
+    final static String ATR_ACTION = "action";
+    /** String name for attribute '{@value}'. */
+    final static String ATR_DESC_URL = "descriptionURL";
+    /** String name for attribute '{@value}'. */
+    final static String ATR_TARGET = "targetReference";
+    /** String name for attribute '{@value}'. */
+    final static String ATR_HOST = "host";
+    /** String name for attribute '{@value}'. */
+    final static String ATR_PROCESS = "process";
+
+    /**
+     * Creates a Configuration Descriptor using a ComponentDescription
+     * @param ComponentDescription Format:
+     * <pre>
+     *      CfgDesc extends {
+     *         name;
+     *         action;
+     *         descriptionURL;
+     *         targetReference;
+     *         host;
+     *         process;
+     *      }
+     *
+     * Where:
+     *      - name: name where to apply ACTION
+     *            ex. "foo"
+     *            ex. "HOST localhost:foo"
+     *      - action: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD  {@see type}
+     *      - descriptionURL: description used by ACTION
+     *            ex. "/home/sf/foo.sf"
+     *            ex. "c:\sf\foo.sf"
+     *            ex. "c:\My documents\foo.sf"
+     *      - target: component description name to use with action. It can be empty
+     *            ex: "foo"
+     *            ex: "first:foo"
+     *            note: "sfConfig" cannot be use with DEPLOY!
+     *      - host: host name or IP where to apply ACTION. When empty it assumes localhost.
+     *            ex: "localhost"
+     *            ex: "127.0.0.1"
+     *      - process: process namewhere to apply ACTION. When empty it assumes rootProcess
+     *
+     *</pre>
+     * @see Action
+     * @throws SmartFrogInitException  failure in some part of the process
+     */
+    public ConfigurationDescriptor (ComponentDescription cd) throws SmartFrogInitException {
+        if (cd==null) {
+                throw new SmartFrogInitException("Deployment URL: null");
+        }
+        try {
+
+            try {
+                setName(cd.sfResolve(ATR_NAME, "", false));
+            } catch (Exception ex) {
+                SFSystem.sfLog().error(ex);
+                throw new SmartFrogInitException("Error parsing NAME in: "+ cd +"("+ex.getMessage()+")", ex);
+            }
+
+            try {
+                setActionType(cd.sfResolve(ATR_ACTION, "", true));
+            } catch (Exception ex) {
+                SFSystem.sfLog().error(ex);
+                throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ cd +"("+ex.getMessage()+")", ex);
+            }                       
+
+            try {
+                setUrl(cd.sfResolve(ATR_DESC_URL, "", false));
+            } catch (Exception ex) {
+                 SFSystem.sfLog().error(ex);
+                 throw new SmartFrogInitException( "Error parsing DESCRIPION_URL in: "+ cd +"("+ex.getMessage()+")", ex);
+            }
+
+            try {
+                setDeployReference(cd.sfResolve(ATR_TARGET, "", false));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing TARGET_REFERENCE in: "+ cd +"("+ex.getMessage()+")", ex);
+            }
+
+            try {
+                setHost (cd.sfResolve(ATR_HOST, "", false));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing HOST in: "+ cd +"("+ex.getMessage()+")", ex);
+            }
+
+            try {
+                setSubProcess (cd.sfResolve(ATR_PROCESS, "", false));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException( "Error parsing PROCESS_NAME in: "+ cd +"("+ex.getMessage()+")", ex);
+            }
+
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("ConfigurationDescriptor created: ["+this+"], from "+cd);}
+
+        } catch (Throwable thr){
+           resultException = thr;
+           throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
+        }
+    }
+
     /**
      * Returns and cuts the last field from TempURL. Token marks the beginning
      * of the field. It previously removes " or '
@@ -940,7 +1053,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @throws SmartFrogException if smartfrog is unhappy
      * @throws RemoteException if the network is unhappy
      */
-    public Object execute(ProcessCompound targetProcess) throws SmartFrogException,
+    public synchronized Object execute(ProcessCompound targetProcess) throws SmartFrogException,
             RemoteException {
         try {
             if (action==null) {
@@ -958,7 +1071,16 @@ public class ConfigurationDescriptor implements MessageKeys {
              setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
              throw rex;
         }
+        wasExecuted = true; //even if it failed.
         return resultObject;
+    }
+
+    public synchronized void resetExecute (){
+        wasExecuted = false;
+    }
+
+    public boolean wasExecuted (){
+        return wasExecuted;
     }
 
     /** Terminates result object ONLY a result exists and it was deployed by this configuration descriptor using
@@ -988,6 +1110,30 @@ public class ConfigurationDescriptor implements MessageKeys {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets result termination message. wasExecuted() should be true for a valid result. Null otherwise.
+     * @return String termination message
+     */
+    public String getResultTerminationMessage() {
+        return resultTerminationMessage;
+    }
+
+    /**
+     * Gets result Termination exception if any. wasExecuted() should be true for a valid result. Null otherwise.
+     * @return Throwable exception
+     */
+    public Throwable getResultException() {
+        return resultException;
+    }
+
+    /**
+     * Get action result. wasExecuted() should be true for a valid result. Null otherwise.
+     * @return action result
+     */
+    public Object getResultObject() {
+        return resultObject;
     }
 
     /**
