@@ -1071,7 +1071,7 @@ public class ConfigurationDescriptor implements MessageKeys {
              setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
              throw rex;
         }
-        wasExecuted = true; //even if it failed.
+        wasExecuted = true; //even if it failed. Should be reset by using resetExecute();
         return resultObject;
     }
 

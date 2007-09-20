@@ -291,11 +291,41 @@ public class SFSystem implements MessageKeys {
      * @see ConfigurationDescriptor
      */
 
-    public static void runConfigurationDescriptors (Vector cfgDescs) {
+    public static void runConfigurationDescriptors (Vector cfgDescs, boolean terminateOnFailure) {
         if (cfgDescs==null) return;
-        for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
-           runConfigurationDescriptor((ConfigurationDescriptor)items.nextElement());
+
+        if (!terminateOnFailure) {
+            for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
+                runConfigurationDescriptor((ConfigurationDescriptor)items.nextElement());
+            }
+        } else {
+           //Store successful DEPLOY actions only
+           boolean terminateSuccessfulDeployments = false;
+           java.util.Stack deployedStack = new java.util.Stack();
+           ConfigurationDescriptor cdesc= null;
+           for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
+              cdesc = (ConfigurationDescriptor)items.nextElement();
+              runConfigurationDescriptor(cdesc);
+              if (cdesc.getResultType() != ConfigurationDescriptor.Result.SUCCESSFUL){
+                 terminateSuccessfulDeployments = true;
+                 break;
+              }
+              // if it was a successful DEPLOY action then store it just in case we need to terminate it.
+              if (cdesc.getActionType()== ConfigurationDescriptor.Action.DEPLOY){
+                  deployedStack.push(cdesc);
+              }
+           }
+           if (terminateSuccessfulDeployments) {
+              //Terminate last one just in case
+              cdesc.terminateDeployedResult();
+              //Terminate the successful ones
+              while (!deployedStack.empty()){
+                 ((ConfigurationDescriptor)deployedStack.pop()).terminateDeployedResult();
+              }
+           }
         }
+
+
     }
 
     /**
@@ -332,7 +362,7 @@ public class SFSystem implements MessageKeys {
             return targetC;
 
         } catch (Throwable thrown) {
-            if (configuration.resultException == null) {
+            if (configuration.getResultException() == null) {
                 configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,thrown);
             } else {
                 if (!throwException){
@@ -392,7 +422,7 @@ public class SFSystem implements MessageKeys {
         //engage headless mode
         maybeGoHeadless(opts);
         try {
-            setRootProcess(runSmartFrog(opts.cfgDescriptors));
+            setRootProcess(runSmartFrog(opts.cfgDescriptors,opts.terminateOnDeploymentFailure));
         } catch (SmartFrogException sfex) {
             sfLog().out(sfex);
             exitWithException(sfex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
@@ -425,8 +455,8 @@ public class SFSystem implements MessageKeys {
 		         opts.exitCode = ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
              sfLog().out(" - "+(cfgDesc).statusString()+"\n");
-             if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
-               sfLog().ignore(cfgDesc.resultException);
+             if (sfLog().isIgnoreEnabled() && cfgDesc.getResultException()!=null){
+               sfLog().ignore(cfgDesc.getResultException());
             }
          }
         // Check for exit flag
@@ -514,16 +544,34 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
-        Exception {
+    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws Exception {
+        return runSmartFrog (cfgDescriptors, false);
+    }
+
+   /**
+     * Run SmartFrog as configured. This call does not exit SmartFrog, even if the OptionSet requests it.
+     * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
+     * Important: things like the output streams can be redirected inside this call
+     * @param  cfgDescriptors Vector of Configuration  opts with list of ConfigurationDescriptors
+     *         @see ConfigurationDescriptor
+     * @param terminateOnFailure boolean. When true, if any of the deployments fails then any
+    *         deployment from cfgDescriptors that previouly succeeded will be terminated (in reverse order of deployment).
+     * @return the root process
+     * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws UnknownHostException if the target host is unknown
+     * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
+     * @throws RemoteException if something goes wrong during the communication
+     * @throws Exception if anything else went wrong
+     */
+
+    public static ProcessCompound runSmartFrog(Vector cfgDescriptors, boolean terminateOnFailure) throws Exception {
         ProcessCompound process;
         process = runSmartFrog();
         if (cfgDescriptors!=null){
-            runConfigurationDescriptors(cfgDescriptors);
+            runConfigurationDescriptors(cfgDescriptors, terminateOnFailure);
         }
         return process;
     }
-
 
     /**
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
