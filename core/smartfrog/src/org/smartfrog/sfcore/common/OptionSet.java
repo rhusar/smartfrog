@@ -67,7 +67,7 @@ public class OptionSet {
         "              ex. \"HOST localhost:foo\"\n" +
          "             ex. 'HOST localhost:foo'\n" +
         "          - ACTION: defines the action to be taken on the named component\n"+
-        "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS\n" +
+        "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, DUMP\n" +
         "          - SFREF: SmartFrog description (if needed) to be used by ACTION\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex. /home/sf/foo.sf\n" +
@@ -94,6 +94,8 @@ public class OptionSet {
         "                   counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:\n" +
         "              ex4: Get diagnostics report for \"sfDefault\" component running in remote daemon\n" +
         "                   'rootProcess:sfDefault':DIAGNOSTICS:::remoteHostName:\n" +
+        "              ex5. Dump description for local sfDaemon\n" +
+        "                   rootProcess:DUMP:::localhost:\n" +        
         "\n" +
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +"\n" +
         "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +

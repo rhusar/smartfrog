@@ -83,6 +83,8 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final int UPDATE = 8;
         public static final String ACT_LOAD = "LOAD";
         public static final int LOAD = 9;
+        public static final String ACT_DUMP = "DUMP";
+        public static final int DUMP = 10;
 
         static public String[] type= {
                       ACT_DEPLOY,
@@ -94,7 +96,8 @@ public class ConfigurationDescriptor implements MessageKeys {
                       ACT_PARSE,
                       ACT_DIAGNOSTICS,
                       ACT_UPDATE,
-                      ACT_LOAD
+                      ACT_LOAD,
+                      ACT_DUMP
         };
     }
 
@@ -391,6 +394,13 @@ public class ConfigurationDescriptor implements MessageKeys {
                     break;
                 case ConfigurationDescriptor.Action.PING: {
                     result = MessageUtil.formatMessage(MSG_PING_SUCCESS,
+                                                       name,
+                                                       getHostsString(),
+                                                       getResultMessage());
+                    }
+                    break;
+                case ConfigurationDescriptor.Action.DUMP: {
+                    result = MessageUtil.formatMessage(MSG_DUMP_SUCCESS,
                                                        name,
                                                        getHostsString(),
                                                        getResultMessage());
@@ -1000,6 +1010,9 @@ public class ConfigurationDescriptor implements MessageKeys {
                 break;
             case Action.LOAD:
                 action = new ActionLoad();
+                break;
+            case Action.DUMP:
+                action = new ActionDump();
                 break;
             default:
                 throw new SmartFrogInitException("Action type unknown");
