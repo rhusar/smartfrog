@@ -494,7 +494,6 @@ public class SFSystem implements MessageKeys {
      */
     private void maybeShowDiagnostics(OptionSet opts) {
       if (opts.diagnostics){
-        //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         sfLog().out(report.toString());
@@ -512,9 +511,7 @@ public class SFSystem implements MessageKeys {
         }
     }
 
-    private void maybeGoNoExitCodeOptionSet(OptionSet opts)
-
-    {
+    private void maybeGoNoExitCodeOptionSet(OptionSet opts) {
         if (opts.headless) {
             sfLog().info(HEADLESS_MODE_MESSAGE);
             System.setProperty("java.awt.headless", "true");
@@ -684,7 +681,7 @@ public class SFSystem implements MessageKeys {
     /**
      * Gets input stream for the given resource. Throws exception if stream is
      * null.
-     * @param resourceSFURL Name of the resource. SF url valid.
+     * @param resourceSFURL Name of the resource. SF URL valid.
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
@@ -757,7 +754,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * set the root process; this is called after it is started.
-     * @param rootProcess process compoond; may be
+     * @param rootProcess process compound; may be
      */
     public void setRootProcess(ProcessCompound rootProcess) {
         this.rootProcess = rootProcess;

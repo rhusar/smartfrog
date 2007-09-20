@@ -297,27 +297,28 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
     public void sfParentageChanged() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been terminated.
-     *  @throws RemoteException In case of Remote/nework error
+     *  @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsTerminated() throws RemoteException;
 
     /** Returns value of flag indicating if this component is terminating.
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsTerminating() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been deployed.
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsDeployed() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been started.
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsStarted() throws RemoteException;
 
     /**
      * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
+     *  @throws RemoteException In case of Remote/network error
      */
      public boolean sfValid() throws RemoteException;
 }

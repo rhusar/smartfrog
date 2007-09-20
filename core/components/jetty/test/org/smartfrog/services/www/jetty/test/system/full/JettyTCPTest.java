@@ -138,11 +138,11 @@ public class JettyTCPTest
     public void testCaseTCP19() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp19.sf", "tcp19");
         int port = 0;
-        String hostname = application.sfResolve("serverHost",
+        String host = application.sfResolve("serverHost",
                 (String) null,
                 true);
         port = application.sfResolve("port", port, true);
-        URL url = new URL("http", hostname, port, ROOT_DOC);
+        URL url = new URL("http", host, port, ROOT_DOC);
         HttpURLConnection connection = null;
         connection = (HttpURLConnection) url.openConnection();
         int errorcode = 0;
@@ -219,11 +219,11 @@ public class JettyTCPTest
         application = deployExpectingSuccess(FILES + "tcp22.sf", "tcp22");
         assertNotNull(application);
         Prim server = (Prim) application.sfResolve("adminServer");
-        String hostname = server.sfResolve("httpserverHost",
+        String host = server.sfResolve("httpserverHost",
                 (String) null,
                 true);
         int port = server.sfResolve("listenerPort", 0, true);
-        URL url = new URL("http", hostname, port, "/");
+        URL url = new URL("http", host, port, "/");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         String expectedmessage = "Unauthorized";
         String actualmessage = urlConnection.getResponseMessage();
