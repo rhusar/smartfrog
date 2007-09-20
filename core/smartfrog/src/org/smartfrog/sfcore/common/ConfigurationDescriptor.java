@@ -28,6 +28,9 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Arrays;
 import java.rmi.RemoteException;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -120,9 +123,9 @@ public class ConfigurationDescriptor implements MessageKeys {
     private String url = null;
 
     /**
-     * host where to apply action. Can be null and then no rootProcess is used.
+     * host/hosts where to apply action. Can be null and then no rootProcess is used.
      */
-    private String host = null;
+    private String[] hostsList = null;
     /**
      * subProcess where to apply action. Can be null.
      */
@@ -240,10 +243,10 @@ public class ConfigurationDescriptor implements MessageKeys {
             str.append(" depRef:");
             str.append(getDeployReference().toString());
         }
-        if (getHost()!=null) {
+        if (getHostsString()!=null) {
             str.append(separatorString);
             str.append(" host:");
-            str.append(getHost());
+            str.append(getHostsString());
         }
         if (getSubProcess()!=null) {
             str.append(separatorString);
@@ -322,10 +325,10 @@ public class ConfigurationDescriptor implements MessageKeys {
               message.append(" deployReference: ");
               message.append(getDeployReference().toString());
           }
-          if (getHost()!=null) {
+          if (getHostsString()!=null) {
               message.append(separatorString);
               message.append(" host:");
-              message.append(getHost());
+              message.append(getHostsString());
           }
           if (getSubProcess()!=null) {
               message.append(separatorString);
@@ -389,7 +392,7 @@ public class ConfigurationDescriptor implements MessageKeys {
                 case ConfigurationDescriptor.Action.PING: {
                     result = MessageUtil.formatMessage(MSG_PING_SUCCESS,
                                                        name,
-                                                       host,
+                                                       getHostsString(),
                                                        getResultMessage());
                     }
                     break;
@@ -492,13 +495,13 @@ public class ConfigurationDescriptor implements MessageKeys {
             //messageError.append(((SmartFrogException)thr).toString("\n   "));
         } else if (thr instanceof UnknownHostException){
           //Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
-          messageError.append( MessageUtil.formatMessage(MSG_UNKNOWN_HOST, host));
+          messageError.append( MessageUtil.formatMessage(MSG_UNKNOWN_HOST, getHostsString()));
         } else if (thr instanceof ConnectException){
           //Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
-          messageError.append(MessageUtil.formatMessage(MSG_CONNECT_ERR, host));
+          messageError.append(MessageUtil.formatMessage(MSG_CONNECT_ERR, getHostsString()));
         } else if (thr instanceof RemoteException) {
             //Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,opts.host), rmiEx);
-            messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,host));
+            messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,getHostsString()));
         } else if (thr instanceof Exception) {
             //Logger.log(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             messageError.append(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION)
@@ -592,6 +595,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *      - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.
      *            ex: localhost
      *            ex: 127.0.0.1
+     *            ex(multiple host):["127.0.0.1","localhost"]
      *      - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess
      *     ex1: Deploy a description in local daemon
      *        counterEx:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
@@ -735,6 +739,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *      - host: host name or IP where to apply ACTION. When empty it assumes localhost.
      *            ex: "localhost"
      *            ex: "127.0.0.1"
+     *            ex(multiple host):["127.0.0.1","localhost"]
      *      - process: process namewhere to apply ACTION. When empty it assumes rootProcess
      *
      *</pre>
@@ -806,24 +811,24 @@ public class ConfigurationDescriptor implements MessageKeys {
         if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
             String tag ="\"";
             if (tempURL.trim().endsWith("'")) tag="'";
-            String newURL = tempURL.substring(0, tempURL.length()-1);
+            String newURL = tempURL.substring(0, tempURL.length()-1).trim();
             int indexFirstQuote = newURL.lastIndexOf(tag);
-            field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1);
+            field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1).trim();
             // shell like input will take away the " but if using -f
             // then the " will be there
             if (field.trim().endsWith("\"")||field.trim().endsWith("'")) {
-               field = field.substring(1,field.length()-1);
+               field = field.substring(1,field.length()-1).trim();
             }
 
             if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
             if (indexFirstQuote==-1) {
                 indexFirstQuote = 1;
             }
-            tempURL=tempURL.substring(0,indexFirstQuote-1);
+            tempURL=tempURL.substring(0,indexFirstQuote-1).trim();
         } else {
-            field = tempURL.substring(tempURL.lastIndexOf(token)+1, tempURL.length());
+            field = tempURL.substring(tempURL.lastIndexOf(token)+1, tempURL.length()).trim();
             if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
-            tempURL = (tempURL.substring(0, tempURL.lastIndexOf(token)));
+            tempURL = (tempURL.substring(0, tempURL.lastIndexOf(token)).trim());
         }
         return field;
     }
@@ -1189,17 +1194,64 @@ public class ConfigurationDescriptor implements MessageKeys {
      * host for action. May be null
      * @return  String hostname
      */
-    public String getHost() {
-        return host;
+    public String[] getHosts() {
+        return hostsList;
     }
 
     /**
-     * host where to apply action. Can be null and then no rootProcess is used.
-     * @param host hostname
+     * host (first on the list) for action. May be null
+     * @return  String hostname
      */
-    public void setHost(String host) {
-        if (host==null || isEmpty(host)) return;
-        this.host = host;
+    public String getHost() {
+        if ((hostsList == null)||(hostsList.length==0)) return null;
+        return hostsList[0];
+    }
+
+    /**
+     * host/s string representation. May be null when no hosts in list
+     * @return  String hostname/s
+     */
+    public String getHostsString() {
+        if (hostsList == null) return null;
+        if (hostsList.length==1) return hostsList[0];
+        else return Arrays.toString(hostsList);
+    }
+
+    /**
+     * Host where to apply action. Can be null and then no rootProcess is used or can be a list
+     * with the format [...,...,...]
+     * This creates a list of one host only.
+     * @param hostsString hostname/hostnames
+     */
+    public void setHost(String hostsString) throws SmartFrogInitException {
+        if (hostsString==null || isEmpty(hostsString)) return;
+        this.hostsList = getHostList(hostsString);
+    }
+
+    /**
+     * Hosts where to apply action. Can be null and then no rootProcess is used.
+     * @param hosts hostname
+     */
+    public void setHosts(String[] hosts) {
+        if (hosts==null || hosts.length == 0) return;
+
+        this.hostsList = hosts;
+    }
+
+
+    public String[] getHostList (String hostUrlString) throws SmartFrogInitException{
+        String[] hostList = null;
+        if (hostUrlString.startsWith("[")){
+            if (!hostUrlString.endsWith("]")) throw new SmartFrogInitException( "Error parsing HOST_URLString in: "+ hostUrlString +", missing ']'");
+            String newURLList = hostUrlString.substring(1, hostUrlString.length()-1).trim();
+            hostList= newURLList.split(",");
+        } else {
+            //Remove [] and break the list in individual strings for separate hosts.
+            // Assumes only one
+            hostList = new String[1];
+            hostList[0]=hostUrlString;
+        }
+        return hostList;
     }
 
     /**

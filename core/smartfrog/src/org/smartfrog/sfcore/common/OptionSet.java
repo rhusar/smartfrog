@@ -82,6 +82,7 @@ public class OptionSet {
         "          - HOST: host name or IP from where to resolve NAME. It can be empty.\n" +
         "              ex: localhost\n" +
         "              ex: 127.0.0.1\n" +
+        "              ex (multiple hosts): [127.0.0.1,\"localhost\"]\n" +
         "          - PROCESS: process name from where to resolve NAME. When empty it assumes rootProcess.\n" +
         "          \n" +
         "          SFACT Examples:\n" +

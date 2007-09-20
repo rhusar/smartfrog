@@ -75,9 +75,8 @@ public class ActionDetach extends ConfigurationAction{
             Prim result=null;
             try {
                 if (targetP==null)
-                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),
-                        configuration.getSubProcess());
-                result = Detach(configuration.getName(), targetP);
+                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),configuration.getSubProcess());
+                    result = Detach(configuration.getName(), targetP);
             } catch (SmartFrogException sex){
                  configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
                  throw sex;
