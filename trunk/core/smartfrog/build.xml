@@ -222,6 +222,7 @@
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
+	  
 	  <entry key="sf.build.java.version" value="${java.version}"/>
 	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
 	  <entry key="sf.build.os.name" value="${os.name}"/>
