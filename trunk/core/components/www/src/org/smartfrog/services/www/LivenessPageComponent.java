@@ -33,11 +33,13 @@ import java.util.Vector;
 
 
 /**
- * Initial liveness component. The initial implementation does a liveness check
+ * Component to check the health of a web page.
+ * The initial implementation does a liveness check
  * every sfPing, and only every sfPing(); a revision would run the checks in a
  * separate thread at its own rate and then report errors. That revision could
- * cache information about the GET with remote access, too. created 21-Apr-2004
- * 13:46:23
+ * cache information about the GET with remote access, too.
+ *
+ * Created 21-Apr-2004 13:46:23
  */
 public class LivenessPageComponent extends PrimImpl implements LivenessPage, Condition {
 
@@ -74,7 +76,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     /**
      * empty constructor
      *
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public LivenessPageComponent() throws RemoteException {
     }
@@ -107,9 +109,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -188,6 +189,11 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     }
 
 
+    /**
+     * Turn the enabled state on or off by checking our enabled attribute
+     * @throws SmartFrogResolutionException for a failure to resolve the attribute
+     * @throws RemoteException  for network problems
+     */
     private void updateEnabledState()
             throws SmartFrogResolutionException, RemoteException {
         enabled = sfResolve(ATTR_ENABLED, enabled, false);
@@ -199,8 +205,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *          component is terminated
+     * @throws RemoteException  for network problems
+     * @throws SmartFrogLivenessException on a failure of the check
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -213,8 +219,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     /**
      * This is the routine called in sfPing that checks the liveness.
      * Override it if you want different behaviour on liveness
-     * @throws RemoteException
-     * @throws SmartFrogLivenessException
+     * @throws RemoteException  for network problems
+     * @throws SmartFrogLivenessException  on a failure of the check
      */
     protected void livenessPing() throws RemoteException,
         SmartFrogLivenessException {
@@ -239,7 +245,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * Check the page, regardless of whether the component is enabled or not.
      * This is the programmatic option.
      *
-     * @throws SmartFrogLivenessException
+     * @throws SmartFrogLivenessException on a failure of the check
      */
     public void checkPage() throws SmartFrogLivenessException {
         livenessPage.checkPage();
@@ -262,9 +268,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * For liveness we evaluate the page and return true if the page is there
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException   for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         try {

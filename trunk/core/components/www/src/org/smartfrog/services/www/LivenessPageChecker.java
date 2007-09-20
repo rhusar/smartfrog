@@ -35,9 +35,12 @@ import java.util.Vector;
 
 
 /**
- * Model a liveness page. This is not quite a SmartFrog component, but rather a
- * helper component for importing into other things, as needed. created
- * 20-Apr-2004 16:11:51
+ * Model a liveness page.
+ *
+ * This is not quite a SmartFrog component, but rather a helper component for
+ * importing into other things, as needed.
+ *
+ * Created 20-Apr-2004 16:11:51
  */
 public class LivenessPageChecker implements LivenessPage {
 
