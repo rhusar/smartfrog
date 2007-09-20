@@ -92,8 +92,8 @@ SmartFrog and its components are implemented in Java.
 This RPM installs smartfrog into %{basedir} and adds scripts to /etc/profile.d
 and /etc/sysconfig so that SmartFrog is available on the command line.
 
-#In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
-#using LogToFileImpl. The GUI is turned off.
+In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
+using LogToFileImpl. The GUI is turned off.
 
 
 
@@ -143,7 +143,7 @@ Summary:        SmartFrog logging services
 Requires:       %{name} = %{version}-%{release}
 #
 %description logging
-This package integrates SmartFrog with Apache Log4j. It includes the
+This package integrates SmartFrog with Apache Log4j. It includes the Apache
 commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
 
 
@@ -306,6 +306,7 @@ rm -rf $RPM_BUILD_ROOT
 #bin/metadata
 %{bindir}/metadata
 #bin/security
+%dir %{bindir}/security
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/smartfrog
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDaemon
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfDetachAndTerminate
@@ -321,20 +322,25 @@ rm -rf $RPM_BUILD_ROOT
 %{binsecurity}/*.bat
 
 #now the files in the lib directory...use ant library versions to include version numbers
-%dir %attr(755, ${rpm.username},${rpm.groupname}) %{libdir}/
+%dir %{libdir}
 %{libdir}/smartfrog-${smartfrog.version}.jar
 %{libdir}/sfExamples-${smartfrog.version}.jar
 %{libdir}/sfServices-${smartfrog.version}.jar
+
+#the links directory is created empty
+%{basedir}/links
 
 #other directories
 %{basedir}/testCA
 %{basedir}/private
 %{basedir}/signedLib
+#the log output
+${rpm.log.dir}
 
-#and the shell scripts
+#and the shell scripts, which belong to root
 %attr(755, root,root) /etc/profile.d/smartfrog.sh
 %attr(755, root,root) /etc/profile.d/smartfrog.csh
-/etc/sysconfig/smartfrog
+%attr(755, root,root) ${rpm.etc.dir}
 
 #%doc # add docs here
 #%{javadir}/*
@@ -366,7 +372,8 @@ rm -rf $RPM_BUILD_ROOT
 %post daemon
 
 if [ -x /usr/lib/lsb/install_initd ]; then
-# this is the SuSE/LSB executable; not found in ubuntu without LSB
+# this is the SuSE/LSB executable; not found in ubuntu without the LSB deb
+# installed
   /usr/lib/lsb/install_initd /etc/init.d/${rpm.daemon.name}
 elif [ -x /sbin/chkconfig ]; then
 # found in RHEL, Fedora platforms 
@@ -386,6 +393,9 @@ fi
 # shut down the daemon before the uninstallation
 %{smartfrogd} stop
 
+#we have to run these before uninstalling the files, because 
+#chkconfig and install_initd both read (different) comment headers
+#in the initd script
 if [ "$1" = "0" ] ; then
   if [ -x /usr/lib/lsb/remove_initd ]; then
     /usr/lib/lsb/install_initd /etc/init.d/${rpm.daemon.name}
@@ -440,6 +450,8 @@ fi
 # to get the date, run:   date +"%a %b %d %Y"
 * Mon Sep 17 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
 - all cleanup is skipped during upgrades, so that rpm --upgrade should now work properly.
+- link removal is moved to the pre-uninstall phase, so that chkconfig and install_initd have the
+  daemon file (with metadata in its comments) to work on
 - lib dir is explicitly listed with permissions
 - chkconfig is used where present (RHEL and Fedora systems)
 - /usr/lib/lsb/install_initd is used where present (SuSE systems, and others
@@ -461,7 +473,7 @@ fi
 - Built from contributions and the JPackage template
 
 
-# CERN install statements
+# install statements
 #%install
 #mkdir -p ${RPM_BUILD_ROOT}/%{prefix}
 #cd SmartFrog.${smartfrog.version}
@@ -471,9 +483,6 @@ fi
 #%clean
 #rm -rf ${RPM_BUILD_ROOT}
 
-#%files
-#%defattr(-,root,root)
-#%{prefix}/SmartFrog.${smartfrog.version}
 
 
 
