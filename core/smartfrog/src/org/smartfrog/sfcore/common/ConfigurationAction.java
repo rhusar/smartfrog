@@ -57,18 +57,19 @@ public abstract class ConfigurationAction {
          */
         public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess) throws SmartFrogException, RemoteException {
             ProcessCompound pc = null;
-            Exception excep = null;
+            Throwable thr = null;
             for (String host : hosts) {
               try {
                 pc = SFProcess.sfSelectTargetProcess(host,subProcess);
-              } catch (Exception ex) {
+                return pc;
+              } catch (Throwable ex) {
                 //keep trying
-                excep = ex;
+                thr = ex;
                 if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Fail to locate target host: "+ host, ex); }  
               }
             }
-            if ((excep!=null)) {   //Throw the last exception
-                throw SmartFrogException.forward(excep);
+            if ((thr!=null)) {   //Throw the last exception
+                throw SmartFrogException.forward(thr);
             }
             //return last PC
             return pc;
