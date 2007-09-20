@@ -372,6 +372,8 @@
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
+    <mkdir dir="${build.rpm.dir}/root${rpm.install.dir}/links" />
+    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}" />
     <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
       <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
     </sf-tar>
@@ -803,7 +805,7 @@
   </target>
 
   <target name="rpm-remote-test"
-    depends="rpm-remote-version,rpm-remote-initd,rpm-remote-uninstall-strict"
+    depends="rpm-remote-version,rpm-remote-initd,rpm-queries-test,rpm-remote-uninstall-strict"
       description="install, verify and uninstall the RPMs to a remote target"/>
 
   <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install" >
@@ -840,6 +842,32 @@
     <rootssh command="${remote-smartfrogd} status"/>
     <rootssh command="${remote-smartfrogd} stop"/>
   </target>  
+  
+  <target name="rpm-queries-test" depends="rpm-remote-install"
+      description="check that files and directories belong to the RPMs">
+    <expandingcopy file="${rpm.metadata.dir}/rpm-queries.txt"
+      todir="${build.dir}"/>
+    <rootssh commandResource="${build.dir}/rpm-queries.txt"
+    failonerror="true"
+        outputProperty="rpm.queries.results"/>
+    <echo>${rpm.queries.results}</echo>
+    <fail>
+      <condition>
+        <or>
+          <contains string="${rpm.queries.results}" 
+          substring="is not owned by any package"/>
+          <contains string="${rpm.queries.results}" 
+          substring="No such file or directory"/>
+        </or>
+      </condition> 
+      One of the directories/files in the RPM is not declared as being owned by any RPM.
+      This file/directory will not be managed correctly, or have the correct permissions
+      on a hardened linux
+    </fail>
+    
+
+  </target> 
+  
   
 <!--  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
     <rpmssh command="sfVersion"
