@@ -87,13 +87,11 @@ public class ActionTerminate extends ConfigurationAction{
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
-    public Object execute(ProcessCompound targetP,
-                          ConfigurationDescriptor configuration) throws SmartFrogException,
-            RemoteException {
+    public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration) throws SmartFrogException, RemoteException {
         Prim targetC=null;
         try {
             if (targetP==null)
-                targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             targetC = sfTerminate(configuration.getName(), targetP);
         } catch (SmartFrogException sex) {
             configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);

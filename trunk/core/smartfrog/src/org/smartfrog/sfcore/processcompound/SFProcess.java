@@ -466,8 +466,7 @@ public class SFProcess implements MessageKeys {
                 return sfSelectTargetProcess(InetAddress.getByName(host), subProcess);
             }
         } catch (UnknownHostException uhex) {
-            throw new SmartFrogException(MessageUtil.formatMessage(
-                MSG_UNKNOWN_HOST, host), uhex);
+            throw new SmartFrogException(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, host), uhex);
         }
 
     }

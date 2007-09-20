@@ -47,6 +47,34 @@ public abstract class ConfigurationAction {
             return SFProcess.sfSelectTargetProcess(host,subProcess);
         }
 
+        /**
+         * Select target process compound using list of hosts and subprocess names returning the first successfull one
+         *
+         * @param hosts list of host names. If null, assumes localhost.
+         * @param subProcess subProcess name (optional; can be null)
+         * @return ProcessCompound the target process compound
+         * @throws SmartFrogException In case of SmartFrog system error
+         * @throws RemoteException In case of network/rmi error
+         */
+        public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess, boolean stopFirstSuccess) throws SmartFrogException, RemoteException {
+            ProcessCompound pc = null;
+            Exception excep = null;
+            for (String host : hosts) {
+              try {
+                pc = SFProcess.sfSelectTargetProcess(host,subProcess);
+                if (stopFirstSuccess)return pc;
+              } catch (Exception ex) {
+                //keep trying
+                excep = ex;
+                if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Fail to locate target host: "+ host, ex); }  
+              }
+            }
+            if ((!stopFirstSuccess)&& (excep!=null)) {   //Throw the last exception
+                throw SmartFrogException.forward(excep);
+            }
+            //return last PC
+            return pc;
+        }
 
     /**
      * this has to be implemented by subclasses; execute a configuration command against
@@ -64,7 +92,7 @@ public abstract class ConfigurationAction {
 
     /**
      * Locate the target from the configuration, then call #execute() with
-     * the target specified
+     * the target (or first successfull target if list of hosts) specified
      * this is an optional override point, giving the overrider the option of
      * using an alternate target mapping process
      *
@@ -73,12 +101,20 @@ public abstract class ConfigurationAction {
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
-    public Object execute(ConfigurationDescriptor configuration) throws SmartFrogException,
-            RemoteException {
+    public Object execute(ConfigurationDescriptor configuration) throws SmartFrogException, RemoteException {
         ProcessCompound targetProcess;
-        targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
-  //      assert targetProcess!=null;
-        return execute(targetProcess,configuration);
+        Object result = null;
+        if (configuration.getHosts()==null) {
+            targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            return execute(targetProcess,configuration);
+        } else if (configuration.getHosts().length<=1) {
+            targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            return execute(targetProcess,configuration);
+        } else {
+            //Select the first available from the list
+            targetProcess = selectTargetProcess(configuration.getHosts(), configuration.getSubProcess(), true);
+            return execute(targetProcess,configuration);
+        }
     }
 
     /**
