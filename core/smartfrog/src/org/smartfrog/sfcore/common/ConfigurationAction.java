@@ -42,8 +42,7 @@ public abstract class ConfigurationAction {
          * @throws SmartFrogException In case of SmartFrog system error
          * @throws RemoteException In case of network/rmi error
          */
-        public static ProcessCompound selectTargetProcess(String host,
-            String subProcess) throws SmartFrogException, RemoteException {
+        public static ProcessCompound selectTargetProcess(String host, String subProcess) throws SmartFrogException, RemoteException {
             return SFProcess.sfSelectTargetProcess(host,subProcess);
         }
 
@@ -56,20 +55,19 @@ public abstract class ConfigurationAction {
          * @throws SmartFrogException In case of SmartFrog system error
          * @throws RemoteException In case of network/rmi error
          */
-        public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess, boolean stopFirstSuccess) throws SmartFrogException, RemoteException {
+        public static ProcessCompound selectTargetProcess(String[] hosts, String subProcess) throws SmartFrogException, RemoteException {
             ProcessCompound pc = null;
             Exception excep = null;
             for (String host : hosts) {
               try {
                 pc = SFProcess.sfSelectTargetProcess(host,subProcess);
-                if (stopFirstSuccess)return pc;
               } catch (Exception ex) {
                 //keep trying
                 excep = ex;
                 if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Fail to locate target host: "+ host, ex); }  
               }
             }
-            if ((!stopFirstSuccess)&& (excep!=null)) {   //Throw the last exception
+            if ((excep!=null)) {   //Throw the last exception
                 throw SmartFrogException.forward(excep);
             }
             //return last PC
@@ -112,7 +110,7 @@ public abstract class ConfigurationAction {
             return execute(targetProcess,configuration);
         } else {
             //Select the first available from the list
-            targetProcess = selectTargetProcess(configuration.getHosts(), configuration.getSubProcess(), true);
+            targetProcess = selectTargetProcess(configuration.getHosts(), configuration.getSubProcess());
             return execute(targetProcess,configuration);
         }
     }
