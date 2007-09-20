@@ -10,3 +10,5 @@ common.properties
 *.log
 .classpath
 .project
+.externalToolBuilders
+.settings
