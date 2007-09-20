@@ -294,10 +294,10 @@ public abstract class SmartFrogTestBase extends TestCase {
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
             ConfigurationDescriptor deployedCD;
             if ((deployedApp instanceof ConfigurationDescriptor) &&
-                    (deployedCD=(ConfigurationDescriptor) deployedApp).resultException != null) {
+                    (deployedCD=(ConfigurationDescriptor) deployedApp).getResultException() != null) {
                 searchForExpectedExceptions(deployedCD, cfgDesc, exceptionName,
                         searchString, containedExceptionName,containedExceptionText);
-                resultException = ((ConfigurationDescriptor) deployedApp).resultException;
+                resultException = ((ConfigurationDescriptor) deployedApp).getResultException();
                 return resultException;
             } else {
                 //clean up
@@ -332,7 +332,7 @@ public abstract class SmartFrogTestBase extends TestCase {
                                              String containedExceptionText) {
         //we got an exception. let's take a look.
         Throwable returnedFault;
-        returnedFault =  deployedApp.resultException;
+        returnedFault =  deployedApp.getResultException();
         assertFaultCauseAndCDContains(returnedFault, exceptionName, searchString, cfgDesc);
         //get any underlying cause
         Throwable cause = returnedFault.getCause();
@@ -585,8 +585,8 @@ public abstract class SmartFrogTestBase extends TestCase {
             ConfigurationDescriptor cd = (ConfigurationDescriptor) deployedApp;
             log.error("* ERROR IN: Test success in description: \n      "
                         + cd.toString("\n        "));
-            if (cd.resultException !=null) {
-                throw cd.resultException;
+            if (cd.getResultException() !=null) {
+                throw cd.getResultException();
             }
         }
     }
@@ -728,10 +728,10 @@ public abstract class SmartFrogTestBase extends TestCase {
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
             ConfigurationDescriptor deployedCD;
             if ((deployedApp instanceof ConfigurationDescriptor) &&
-                    ((deployedCD=(ConfigurationDescriptor) deployedApp).resultException != null)) {
+                    ((deployedCD=(ConfigurationDescriptor) deployedApp).getResultException() != null)) {
                 searchForExpectedExceptions(deployedCD, cfgDesc, EXCEPTION_LIFECYCLE,
                         null, EXCEPTION_SMARTFROG_ASSERTION,null);
-                resultException = ((ConfigurationDescriptor) deployedApp).resultException;
+                resultException = ((ConfigurationDescriptor) deployedApp).getResultException();
                 return resultException;
             } else {
                 //here we deploy the application
