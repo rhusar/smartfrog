@@ -106,6 +106,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_UPDATE_SUCCESS , "Successfully updated: {0}"},            
         { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
         { MSG_PING_SUCCESS , "\"{0}\" was successfully contacted in \"{1}\". {2}"},
+        { MSG_DUMP_SUCCESS , "\"{0}\" was successfully contacted and configuratin read in \"{1}\". {2}"},
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},

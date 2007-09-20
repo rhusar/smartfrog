@@ -219,6 +219,11 @@ public interface MessageKeys {
     public static String MSG_PING_SUCCESS = "MSG_PING_SUCCESS";
 
     /**
+     * Message key: successful dump of components.
+     */
+    public static String MSG_DUMP_SUCCESS = "MSG_DUMP_SUCCESS";
+
+    /**
     * Message key: successful detachment of components.
     */
    public static String MSG_DETACH_SUCCESS = "MSG_DETACH_SUCCESS";
