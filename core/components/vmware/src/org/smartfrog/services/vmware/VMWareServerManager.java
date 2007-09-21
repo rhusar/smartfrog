@@ -322,7 +322,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Delete a instance of a master copy.
      *
      * @param inVMPath
-     * @return
      * @throws java.rmi.RemoteException
      */
     public boolean deleteCopy(String inVMPath) throws RemoteException {
@@ -350,7 +349,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Starts a virtual machine. Has to be powered off or suspended.
      *
      * @param inVMPath The full path to the machine.
-     * @return
      */
     public boolean stopVM(String inVMPath) throws RemoteException {
         // get a machine module
@@ -369,7 +367,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Suspends a virtual machine. Has to be running.
      *
      * @param inVMPath The full path to the machine.
-     * @return
      */
     public boolean suspendVM(String inVMPath) throws RemoteException {
         // get a machine module
@@ -388,7 +385,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Resets a virtual machine.
      *
      * @param inVMPath The full path to the machine.
-     * @return
      */
     public boolean resetVM(String inVMPath) throws RemoteException {
         // get a machine module
@@ -407,7 +403,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Gets the power state of a virtual machine.
      *
      * @param inVMPath The full path to the machine.
-     * @return
      */
     public int getPowerState(String inVMPath) throws RemoteException {
         // get a machine module
@@ -495,7 +490,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     /**
      * Shuts down the VMWare Server and all running machines as well.
      *
-     * @return
      */
     public boolean shutdownVMWareServerService() throws RemoteException {
         // shutdown the vmware server service, which will automatically shut down all vms

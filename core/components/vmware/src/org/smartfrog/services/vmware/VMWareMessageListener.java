@@ -139,7 +139,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
     /**
      * get a message filter object
-     * @return
+     * @return a filter that only accepts messages in the vmware namespace
      */
     public PacketFilter getFilter() {
         return new VMWareMessageFilter();
@@ -156,55 +156,55 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         if (ext != null)
         {
             // use the property bag
-            String strCommand = ext.getPropertyBag().get("vmcmd");
+            String command = ext.getPropertyBag().get("vmcmd");
             String strPath = ext.getPropertyBag().get(VMPATH);
 
-            if (strCommand != null)
+            if (command != null)
             {
                 // extension for the response message
-                XMPPEventExtension newExt = new XMPPEventExtension();
+                XMPPEventExtension response = new XMPPEventExtension();
 
-                newExt.setMessageType(MonitoringConstants.VM_MESSAGE);
-                newExt.setTimestamp(String.format("%d", Calendar.getInstance().getTimeInMillis()));
+                response.setMessageType(MonitoringConstants.VM_MESSAGE);
+                response.setTimestamp(String.format("%d", Calendar.getInstance().getTimeInMillis()));
                 try {
-                    newExt.setHost(InetAddress.getLocalHost().getHostName());
+                    response.setHost(InetAddress.getLocalHost().getHostName());
                 } catch (UnknownHostException e) {
-                    newExt.setHost(packet.getTo());
+                    response.setHost(packet.getTo());
                 }
 
                 // fill the response bag
-                newExt.getPropertyBag().put("vmcmd", strCommand);
-                newExt.getPropertyBag().put(VMPATH, strPath);
+                response.getPropertyBag().put("vmcmd", command);
+                response.getPropertyBag().put(VMPATH, strPath);
 
                 try {
-                    if (strCommand.equals("start"))
+                    if (command.equals("start"))
                     {
                         // attempt to start the machine
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.startVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.startVM(strPath)));
                     }
-                    else if (strCommand.equals("stop"))
+                    else if (command.equals("stop"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.stopVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.stopVM(strPath)));
                     }
-                    else if (strCommand.equals("suspend"))
+                    else if (command.equals("suspend"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.suspendVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.suspendVM(strPath)));
                     }
-                    else if (strCommand.equals("reset"))
+                    else if (command.equals("reset"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.resetVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.resetVM(strPath)));
                     }
-                    else if (strCommand.equals("register"))
+                    else if (command.equals("register"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.registerVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.registerVM(strPath)));
                     }
-                    else if (strCommand.equals("unregister"))
+                    else if (command.equals("unregister"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.unregisterVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.unregisterVM(strPath)));
                     }
-                    else if (strCommand.equals("list"))
+                    else if (command.equals("list"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
+                        response.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
                     }
 //      VMFox code
 //                    else if (strCommand.equals("toolsstate"))
@@ -226,75 +226,82 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 //                                break;
 //                        }
 //                    }
-                    else if (strCommand.equals("powerstate"))
+                    else if (command.equals("powerstate"))
                     {
                         int iState = manager.getPowerState(strPath);
                         switch (iState)
                         {
                             case VMWareImageModule.POWER_STATUS_BLOCKED_ON_MSG:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Blocked on message.");
+                                response.getPropertyBag().put(VMRESPONSE, "Blocked on message.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERED_OFF:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Powered off.");
+                                response.getPropertyBag().put(VMRESPONSE, "Powered off.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERED_ON:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Powered on.");
+                                response.getPropertyBag().put(VMRESPONSE, "Powered on.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERING_OFF:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Powering off.");
+                                response.getPropertyBag().put(VMRESPONSE, "Powering off.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_POWERING_ON:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Powering on.");
+                                response.getPropertyBag().put(VMRESPONSE, "Powering on.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_RESETTING:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Resetting.");
+                                response.getPropertyBag().put(VMRESPONSE, "Resetting.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_SUSPENDED:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Suspended.");
+                                response.getPropertyBag().put(VMRESPONSE, "Suspended.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_SUSPENDING:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Suspending.");
+                                response.getPropertyBag().put(VMRESPONSE, "Suspending.");
                                 break;
                             case VMWareImageModule.POWER_STATUS_TOOLS_RUNNING:
-                                newExt.getPropertyBag().put(VMRESPONSE, "Tools running.");
+                                response.getPropertyBag().put(VMRESPONSE, "Tools running.");
                                 break;
                             default:
-                                newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
+                                response.getPropertyBag().put(VMRESPONSE, FAILURE);
                                 break;
                         }
                     }
-                    else if (strCommand.equals("stopvmwareservice"))
+                    else if (command.equals("stopvmwareservice"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.shutdownVMWareServerService()));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.shutdownVMWareServerService()));
                     }
-                    else if (strCommand.equals("startvmwareservice"))
+                    else if (command.equals("startvmwareservice"))
                     {
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.startVMWareServerService()));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.startVMWareServerService()));
                     }
-                    else if (strCommand.equals("create"))
+                    else if (command.equals("create"))
                     {
                         // create a vmware from a master model
-                        newExt.getPropertyBag().put(VMRESPONSE,
-                                outcome(manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath)));
-                        newExt.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath);
+                        manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath);
+                        response.getPropertyBag().put(VMRESPONSE,SUCCESS);
+                        response.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath);
                     }
-                    else if (strCommand.equals("delete")) 
+                    else if (command.equals("delete"))
                     {
                         // delete a vmware
-                        newExt.getPropertyBag().put(VMRESPONSE, outcome(manager.deleteCopy(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.deleteCopy(strPath)));
                     }
-                    else if (strCommand.equals("getmasters"))
+                    else if (command.equals("getmasters"))
                     {
                         // list the master copies
-                        newExt.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
+                        response.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
                     }
                 } catch (RemoteException e) {
-                    newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
+                    ProcessException(command, response, e);
+                } catch (SmartFrogException e) {
+                    ProcessException(command, response, e);
                 }
 
                 // send the message
-                refXmppListener.sendMessage(packet.getFrom(), "", "AE", newExt);
+                refXmppListener.sendMessage(packet.getFrom(), "", "AE", response);
             }
         }
+    }
+
+    private void ProcessException(String command, XMPPEventExtension newExt, Throwable thrown) {
+        sfLog().error(" Failing command "+ command, thrown);
+        newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
     }
 }

@@ -74,7 +74,7 @@ public class VMWareImageModule {
 
     /**
      * Gets the path to the .vmx image file.
-     * @return
+     * @return the path
      */
     public String getVMPath()
     {
@@ -189,7 +189,7 @@ public class VMWareImageModule {
 
     /**
      * Get the power state of this VM
-     * @return
+     * @return a POWER_STATUS value
      */
     public int getPowerState()
     {

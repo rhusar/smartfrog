@@ -49,7 +49,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Registes a virtual machine with the vmware server.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean registerVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -57,7 +58,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Unregisters a virtual machine with the vmware server.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean unregisterVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -65,7 +67,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Starts a virtual machine. Has to be powered off or suspended.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean startVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -73,7 +76,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Starts a virtual machine. Has to be powered off or suspended.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean stopVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -81,7 +85,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Suspends a virtual machine. Has to be running.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean suspendVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -89,7 +94,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Resets a virtual machine.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean resetVM(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -97,7 +103,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Gets the power state of a virtual machine.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public int getPowerState(String inVMPath) throws RemoteException, SmartFrogException;
 
@@ -112,31 +119,33 @@ public interface VMWareServerManagerServices extends Remote {
 
     /**
      * Gets the controlled virtual machines.
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      *
-     * @return
      */
     public String getControlledMachines() throws RemoteException, SmartFrogException;
 
     /**
      * Shuts down the VMWare Server and all running machines as well.
      *
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean shutdownVMWareServerService() throws RemoteException, SmartFrogException;
 
     /**
      * Starts the VMWare Server and all machines in the designated vm folder.
-     *
-     * @return
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean startVMWareServerService() throws RemoteException, SmartFrogException;
 
     /**
      * Return a list of the vmware images in the master folder.
-     *
-     * @return
-     * @throws RemoteException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
+
     public String getMasterImages() throws RemoteException, SmartFrogException;
 
     /**
@@ -144,8 +153,8 @@ public interface VMWareServerManagerServices extends Remote {
      *
      * @param inVMMaster
      * @param inVMCopyName
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException, SmartFrogException;
 
@@ -153,8 +162,8 @@ public interface VMWareServerManagerServices extends Remote {
      * Delete a instance of a master copy.
      *
      * @param inVMPath
-     * @return
-     * @throws RemoteException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     public boolean deleteCopy(String inVMPath) throws RemoteException, SmartFrogException;
 }
