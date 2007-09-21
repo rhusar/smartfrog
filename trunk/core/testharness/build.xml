@@ -163,8 +163,10 @@ For more information: www.smartfrog.org
       <exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
           unless="run.failing.tests" />
       <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
+<!--
       <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
           unless="run.failing.tests" />
+-->
       <!--SFOS-202 test case tcn1 is being skipped (failing) -->
       <exclude name="${systemtests}/deploy/DeployTCN1Test.*"
           unless="run.failing.tests" />
