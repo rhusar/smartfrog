@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
 import java.io.OutputStreamWriter;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ListIterator;
 import java.util.List;
@@ -538,11 +539,6 @@ public class FileSystem {
             return;
         }
         blockcopy(src,dest);
-/*
-        validateCopyDestination(dest);
-        FileInputStream inputStream = new FileInputStream(src);
-        fCopy(inputStream, dest);
-*/
     }
 
     /**
@@ -935,6 +931,79 @@ public class FileSystem {
             throw SmartFrogException.forward("When trying to write to " +
                     file,
                     ioe);
+        }
+    }
+
+    /**
+     * Write to a text file
+     *
+     * @param file     file to write to
+     * @param text     text to write
+     * @param encoding encoding file encoding
+     * @throws SmartFrogException on any failure to write the file
+     */
+    public static void writeTextFile(File file, String text, Charset encoding) throws SmartFrogException {
+        Writer wout = null;
+        try {
+            OutputStream fout;
+            fout = new FileOutputStream(file);
+            wout = new OutputStreamWriter(fout, encoding);
+            wout.write(text);
+            wout.flush();
+            wout.close();
+        } catch (IOException ioe) {
+            close(wout);
+            throw SmartFrogException.forward("When trying to write to " +
+                    file,
+                    ioe);
+        }
+    }
+
+    private String loadIntoBuffer(File inFile) throws Exception {
+        // open the file
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(inFile);
+
+            // set the buffer size
+            byte[] buffer = new byte[in.available()];
+
+            // read the content
+            in.read(buffer);
+            return new String(buffer);
+        } finally {
+            // close the file
+            FileSystem.close(in);
+        }
+
+
+    }
+
+    /**
+     * Read a binary file into a buffer.
+     * @param file file to read
+     * @param limit limit on the buffer size
+     * @return the buffer
+     * @throws IOException
+     */
+    public static byte[] readBinaryFile(File file,int limit) throws IOException {
+        // open the file
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            // set the buffer size
+            int size = in.available();
+            if(size>limit) {
+                throw new IOException("File size too large: limit:"+limit+" actual "+size);
+            }
+
+            byte[] buffer = new byte[size];
+            // read the content
+            in.read(buffer);
+            return buffer;
+        } finally {
+            // close the file
+            close(in);
         }
     }
 }
