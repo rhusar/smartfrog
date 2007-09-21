@@ -195,6 +195,8 @@
         location="${rpm.root.dir}/${rpm.install.dir}"/>
     <m:newdir name="rpm.bin.dir"
         location="${core.install.dir}/bin"/>
+    <m:newdir name="rpm.bin.dir"
+        location="${core.install.dir}/bin/security"/>
     <m:newdir name="rpm.lib.dir"
         location="${core.install.dir}/lib"/>
     <m:newdir name="rpm.links.dir"
@@ -207,11 +209,13 @@
     <rpmpackage package="${rpm.module.name}"/>
   </target>
 
+  <!-- override point -->
+  <target name="rpm-extras" depends="rpm-components" />
 
   <!--
   The tar is passed to rpm to create the artifacts
   -->
-  <target name="prepare-rpm" depends="copy-rpm-specs,rpm-components">
+  <target name="prepare-rpm" depends="copy-rpm-specs,rpm-extras">
     <m:tar destfile="${rpmfiles.tar}">
       <fileset dir="${build.rpm.dir}/root/" includes="**/*"/>
     </m:tar>
