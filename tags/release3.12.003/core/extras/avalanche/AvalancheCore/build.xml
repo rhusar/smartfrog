@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+<project name="avalanche-core" basedir="." default="allJars">
+
+
+
+  <description>
+    Build file for Avalanche core
+  </description>
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <!--<property file="setup.properties"/>-->
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true" />
+  <property name="root.dir" location="../../.."/>
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+
+
+  <target name="init" depends="common.init">
+
+    <property name="avalanche-types.jar"
+        location="${dist.dir}/lib/avalanche-types.jar"/>
+
+    <property name="src.dir" location="src"/>
+    <property name="lib" location="lib"/>
+    <property name="dist.dir" location="dist"/>
+
+    <path id="xbean.class.path">
+      <pathelement path="${lib}/xbean.jar"/>
+      <pathelement path="${lib}/jsr173_api.jar"/>
+    </path>
+
+    <path id="avalanche-core.class.path">
+      <pathelement path="${classpath}"/>
+      <fileset dir="${lib}">
+        <include name="*.jar"/>
+      </fileset>
+      <filelist >
+        <file name="${avalanche-types.jar}"/>
+      </filelist>
+      <pathelement location="${build.classes.dir}"/>
+    </path>
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/lib"/>
+    <mkdir dir="${dist.dir}/lib/client"/>
+    <mkdir dir="${build.classes.dir}"/>
+  </target>
+
+
+  <target name="declare-xmlbean" depends="ivy-resolve,init">
+    <ivy:cachepath pathid="xbean.class.path" conf="xbean"
+        xmlns:ivy="antlib:fr.jayasoft.ivy.ant"/>
+    <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean"
+        classpathref="xbean.class.path"/>
+  </target>
+
+  <!-- *** Must export XBEAN jars in CLASSPATH manually, including in build.xml is not working -->
+  <!-- ========================================================== -->
+  <!-- xmlbeans creates various xml classes in avalanche-types.jar-->
+  <!-- which we expand in to build/classes to merge with the final JARs-->
+  <!-- ========================================================== -->
+  <target name="schema-compile" depends="declare-xmlbean"
+      description="Generate classes from XML Schemas">
+    <xmlbean schema="schemas" destfile="${avalanche-types.jar}">
+      <classpath refid="xbean.class.path"/>
+    </xmlbean>
+    <!--<unzip src="${avalanche-types.jar}" dest="${build.classes.dir}" />-->
+  </target>
+
+
+
+  <target name="pre-compile" depends="common.pre-compile,schema-compile">
+<!--    <copy todir="lib">
+      <fileset dir="${smartfrog.home}/dist/lib" includes="**/*.jar"/>
+    </copy>-->
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
+    <depend srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
+    <sf-javac
+        srcdir="${src.dir}"
+        includeJavaRuntime="true"
+        includeAntRuntime="true"
+        destdir="${build.classes.dir}">
+      <classpath>
+        <path refid="compile.classpath" />
+        <path path="${avalanche-types.jar}" />
+      </classpath>
+    </sf-javac>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
+
+  <target name="ready-to-jar" depends="rmi,copyTemplates">
+
+  </target>
+
+  <target name="coreJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/avalanche.jar" basedir="${build.classes.dir}" includes="**/**"
+        excludes="**/client/**"/>
+  </target>
+
+  <target name="copyTemplates" depends="init">
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"
+        pattern="**/*.tmpl*"/>
+  </target>
+
+  <target name="compressComponentJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/compressComponent.jar" basedir="${build.classes.dir}"
+        includes="**/sf/compress/**"/>
+  </target>
+
+  <target name="ftpComponentJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/ftpComponent.jar" basedir="${build.classes.dir}" includes="**/sf/ftp/**"/>
+  </target>
+
+  <target name="simpleExecComponentJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/simpleExecComponent.jar" basedir="${build.classes.dir}"
+        includes="**/sf/exec/simple/**"/>
+  </target>
+
+  <target name="rpmComponentJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/rpmComponent.jar" basedir="${build.classes.dir}" includes="**/sf/rpm/**"/>
+  </target>
+
+  <target name="sfAntJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/sfAnt.jar" basedir="${build.classes.dir}" includes="**/sf/exec/ant/**"/>
+  </target>
+
+  <target name="sfAnubisListenerJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/sfAnubisListener.jar" basedir="${build.classes.dir}"
+        includes="**/sf/anubis/**"/>
+  </target>
+
+  <target name="sfTestJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/sfAnubisTest.jar" basedir="${build.classes.dir}" includes="**/sf/test/**"/>
+  </target>
+
+  <target name="sfUninstallJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/sfUninstall.jar" basedir="${build.classes.dir}" includes="**/sf/uninstall/**"/>
+  </target>
+
+  <target name="sfGT4WSCoreJar" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4WsCoreComponent.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4wscore/**"/>
+  </target>
+
+  <target name="sfXMPPClient" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/sfXmppClient.jar" basedir="${build.classes.dir}"
+        includes="**/client/monitor/**,**/shared/xmpp/**,**/shared/handlers/XMPPPacketHandler.class" excludes="**/client/monitor/ganglia/**"/>
+  </target>
+
+  <target name="shared" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/shared.jar" basedir="${build.classes.dir}" includes="**/shared/**"/>
+  </target>
+
+  <target name="clientutils" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/clientutils.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/utils/**"/>
+  </target>
+
+  <target name="diskutils" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/diskutils.jar" basedir="${build.classes.dir}" includes="**/sf/disk/**"/>
+  </target>
+
+  <target name="gt4prereqs" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4prereqs.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/prereqs/**"/>
+  </target>
+
+  <target name="gnubuild" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gnubuild.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gnubuild/**"/>
+  </target>
+
+  <target name="gt4build" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4build.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/build/**"/>
+  </target>
+
+  <target name="gt4exec" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4exec.jar" basedir="${build.classes.dir}" includes="**/sf/apps/gt4/exec/**"/>
+  </target>
+
+  <target name="gt4javawscore" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4javawscore.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/javawscore/**"/>
+  </target>
+
+  <target name="gt4security" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4security.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/security/**"/>
+  </target>
+
+  <target name="gt4wsgram" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gt4wsgram.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/wsgram/**"/>
+  </target>
+
+  <target name="gridftp" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/gridftp.jar" basedir="${build.classes.dir}"
+        includes="**/sf/apps/gt4/gridftp/**"/>
+  </target>
+
+  <target name="ca" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/ca.jar" basedir="${build.classes.dir}" includes="**/sf/apps/ca/**"/>
+  </target>
+
+
+  <target name="jboss" depends="ready-to-jar">
+    <jar jarfile="${dist.dir}/lib/client/jboss.jar" basedir="${build.classes.dir}" includes="**/sf/jboss/**"/>
+  </target>
+
+
+  <target name="allJars"
+      depends="coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
+		gt4prereqs,clientutils,diskutils,gt4exec,gt4javawscore,gt4security,gt4wsgram,ca,compressComponentJar,rpmComponentJar,
+		sfUninstallJar,sfGT4WSCoreJar,jboss">
+  </target>
+
+  <target name="docs">
+    <javadoc packagenames="org.smartfrog.avalanche.*"
+        sourcepath="src"
+        defaultexcludes="yes"
+        classpathref="avalanche-core.class.path"
+        destdir="docs/api"
+        author="true"
+        version="true"
+        use="true"
+        windowtitle="Avalanche Server API"
+        linksource="yes">
+      <doctitle><![CDATA[<h1>Avalanche API</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2007 Hewlett Packard. All Rights Reserved.</i>]]></bottom>
+    </javadoc>
+  </target>
+
+
+  <target name="setup-library" depends="ivy-retrieve,schema-compile">
+    <property name="dist.dependencies.dir" location="${dist.dir}/dependencies"/>
+    <mkdir dir="${dist.dependencies.dir}" />
+    <copy todir="${dist.dependencies.dir}" >
+      <fileset dir="${ivy.lib.dir}/default" includes="*.jar" />
+    </copy>
+    <copy todir="${dist.dependencies.dir}" file="${avalanche-types.jar}"/>
+
+  </target>
+
+</project>
+

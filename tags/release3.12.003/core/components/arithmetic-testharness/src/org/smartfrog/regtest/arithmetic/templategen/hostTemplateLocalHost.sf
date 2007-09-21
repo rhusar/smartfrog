@@ -1,0 +1,79 @@
+
+/* This should be added by the testharness and it is common to all tests. */
+sfConfig extends sfConfig1 {
+  // host0 is the "root" known by the scheduler to stop sfConfig...
+  host0 "localhost";
+  // all the virtual nodes used by the examples ...
+  host1 "localhost";
+  host2 "localhost";
+  host3 "localhost";
+  host4 "localhost";  
+  host5 "localhost";
+  host6 "localhost";
+  host7 "localhost";
+  host8 "localhost";  
+  host9 "localhost";
+  host10 "localhost";
+  host11 "localhost";
+  host12 "localhost";  
+  host13 "localhost";
+  host14 "localhost";
+  host15 "localhost";
+  host16 "localhost";
+  host17 "localhost";
+  host18 "localhost";
+  host19 "localhost";
+  host20 "localhost";
+  host21 "localhost";
+  host22 "localhost";  
+  host23 "localhost";
+  host24 "localhost";
+  host25 "localhost";
+  host26 "localhost";
+  host27 "localhost";
+  host28 "localhost";
+  host29 "localhost";
+  host30 "localhost";
+  host31 "localhost";
+  host32 "localhost";  
+  host33 "localhost";
+  host34 "localhost";
+  host35 "localhost";
+  host36 "localhost";
+  host37 "localhost";
+  host38 "localhost";
+  host39 "localhost";
+  host40 "localhost";
+  host41 "localhost";
+  host42 "localhost";  
+  host43 "localhost";
+  host44 "localhost";
+  host45 "localhost";
+  host46 "localhost";
+  host47 "localhost";
+  host48 "localhost";
+  host49 "localhost";
+  host50 "localhost";
+  host51 "localhost";
+  host52 "localhost";  
+  host53 "localhost";
+  host54 "localhost";
+  host55 "localhost";
+  host56 "localhost";
+  host57 "localhost";
+  host58 "localhost";
+  host59 "localhost";
+  host60 "localhost";
+  host61 "localhost";
+  host62 "localhost";  
+  host63 "localhost"; 
+        
+  /* Testharness daemons use the normal port(3800). This example should ALWAYS 
+     use this port instead... */
+  port 3801;
+  // deploy the sfConfig in the "root"
+  sfProcessHost ATTRIB host0;
+  numMatches 5;
+  intervalGen 10;
+
+}

@@ -1,0 +1,134 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/dns/dnsData.sf"
+
+
+/*
+ * A service instance exported by using DNS-SD convention.
+ *
+ */
+DNSServiceBinding extends Prim {
+
+    sfClass "org.smartfrog.services.dns.DNSModifierImpl";
+
+
+    data extends LAZY DNSCollectionData {
+
+        directoryEntry extends DNSBindingDataAliasPTR {
+
+            zoneName ATTRIB serviceZoneName;
+            
+            
+            hostName ATTRIB serviceTypeName;
+
+            alias ATTRIB serviceName;
+        }
+
+        srvEntry extends DNSBindingDataSRV {
+
+            zoneName PARENT:ATTRIB serviceZoneName;
+
+            // It picks up (i.e., ATTRIB)  serviceName, hostName and port
+
+            // It could override here defaults for : priority, weight. 
+            
+            /* A priority number for the server (lower better). */
+             priority PARENT:ATTRIB priority; //int
+
+            /* A proportional random factor for equal priority selection 
+               (0-65535).*/
+             weight PARENT:ATTRIB weight;
+
+        }
+
+        txtEntry extends DNSBindingDataTXT {
+            
+            zoneName ATTRIB serviceZoneName;
+
+            name ATTRIB serviceName;
+            attributes PARENT:ATTRIB attributes;
+        }
+    }
+
+
+    /* A zone name for PTR, SRV & TXT records of all the instances of our 
+       service.*/
+    serviceZoneName TBD; //string, e.g., _tcp.sfcluster.hpl.hp.com
+
+    /* A name for the type of service,i.e., entry name for PTR record.*/
+    serviceTypeName TBD; //string. e.g.,  _sfrmi._tcp.sfcluster.hpl.hp.com
+
+   /* A name for the service described in the SRV & TXT records. */
+    serviceName TBD; //String, e.g., foo._sfrmi._tcp.sfcluster.hpl.hp.com
+
+    /* A string describing the host  name of the service. */
+    hostName TBD; // String 
+
+    /* A port number for the service in the SRV record. */
+    port TBD; //int
+    
+    /* A collection of attributes to be included in the TXT record. */
+    attributes extends LAZY {
+
+    }
+
+    /* A priority number for the server (lower better). */
+    priority 0; //int
+
+    /* A proportional random factor for equal priority selection 
+       (0-65535).*/
+    weight 65535;
+
+    /* A string that identifies the view used for this binding, or "default"
+       if we use the manager's default view. */
+    viewName "default";
+    
+    /* A reference to a (remote) DNS manager. */
+    manager LAZY HOST localhost:dnsManager; // LAZY Link
+
+}
+
+/*
+ * A service instance for deploying SF descriptions using a DNS-SD convention.
+ *
+ */
+DNSServiceSFRMIBinding extends DNSServiceBinding {
+
+    // A suffix domain name
+    suffixDomainName TBD; //string, e.g., hpl.hp.com
+
+    // A name for the serviceInstance without domain info
+    relativeServiceName TBD; // string, e.g., foo
+
+    // needs hostName and port...
+
+
+    
+    // computed attributes using SF convention...
+    serviceZoneName ("_tcp." ++ suffixDomainName);
+
+    serviceTypeName  ("_sfrmi." ++ serviceZoneName);
+
+    serviceName (relativeServiceName ++ "." ++ serviceTypeName);
+    
+}   
+    
+    
