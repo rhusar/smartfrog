@@ -28,7 +28,6 @@ import org.smartfrog.services.assertions.TestBlock;
  */
 public class ParallelTest extends DeployingTestBase {
     protected static final String FILES = "org/smartfrog/test/system/workflow/parallel/";
-    private TestBlock block;
 
     public ParallelTest(String s) {
         super(s);
