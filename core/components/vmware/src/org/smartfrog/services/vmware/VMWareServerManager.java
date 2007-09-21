@@ -38,13 +38,12 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.nio.charset.Charset;
 
 
 // TODO: think of a better approach to error handling when getting an image module failed
@@ -59,6 +58,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /** Used to communicate with the vmware server. */
     private VMWareCommunicator vmComm = new VMWareCommunicator();
+    private static final Charset BUFFER_ENCODING = Charset.defaultCharset();
+    private static final String VMDK = ".vmdk";
 
     public VMWareServerManager() throws RemoteException {
 
@@ -102,8 +103,10 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /** A filename filter which only accepts ".vmx" files. */
     private static class vmxFileFilter implements FilenameFilter {
+        private static final String VMX = ".vmx";
+
         public boolean accept(File dir, String name) {
-            return name.endsWith(".vmx");
+            return name.endsWith(VMX);
         }
     }
 
@@ -138,7 +141,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Unregisters a virtual machine with the vmware server.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @return true if the upgrade worked
      */
     public boolean unregisterVM(String inVMPath) throws RemoteException {
         // get a machine module
@@ -157,7 +160,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Starts a virtual machine. Has to be powered off or suspended.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @return true if the vm started
      */
     public boolean startVM(String inVMPath) throws RemoteException {
         // get a machine module
@@ -175,7 +178,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     /**
      * Return a list of the vmware images in the master folder.
      *
-     * @return
+     * @return a string containing every master image (.vmx file) listed on a separate line
      * @throws RemoteException
      */
     public String getMasterImages() throws RemoteException {
@@ -186,7 +189,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (folder.exists()) {
             File[] files = folder.listFiles();
             for (File f : files) {
-                if (f.getName().endsWith(".vmx")) {
+                if (f.getName().endsWith(vmxFileFilter.VMX)) {
                     strResult += f.getName() + "\n";
                 }
             }
@@ -195,165 +198,124 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return strResult;
     }
 
-    /**
-     * Loads the whole content of a file into a stringbuffer.
-     *
-     * @param inFile
-     * @return
-     * @throws Exception
-     */
-    private String loadIntoBuffer(File inFile) throws Exception {
-        // open the file
-        FileInputStream in=null;
-        try {
-            in = new FileInputStream(inFile);
-
-            // set the buffer size
-            byte[] buffer = new byte[in.available()];
-
-            // read the content
-            in.read(buffer);
-            return new String(buffer);
-        } finally {
-            // close the file
-            FileSystem.close(in);
-        }
-
-
-    }
 
     /**
      * Create a new instance of a master copy.
      *
      * @param inVMMaster
      * @param inVMCopyName
-     * @return
      * @throws java.rmi.RemoteException
      */
-    public boolean createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException {
+    public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException,SmartFrogException {
         String copyVMX;
+        // first copy the master .vmx file
+        copyVMX = getVmImagesFolder() + File.separator + inVMCopyName;
+        if (!copyVMX.endsWith(vmxFileFilter.VMX)) {
+            copyVMX += vmxFileFilter.VMX;
+        }
+        File fileVMX = new File(copyVMX);
+        FileWriter out = null;
         try {
-            // first copy the master .vmx file
-            copyVMX = getVmImagesFolder() + File.separator + inVMCopyName;
-            if (!copyVMX.endsWith(".vmx")) {
-                copyVMX += ".vmx";
-            }
 
-            if (copy(getVmMasterFolder() + File.separator + inVMMaster, copyVMX)) {
-                // read all of the .vmx file
-                File fileVMX = new File(copyVMX);
-                String buffer = loadIntoBuffer(fileVMX);
-                String[] strLines = buffer.replace("\r", "").split("\n");
+            copy(getVmMasterFolder() + File.separator + inVMMaster, copyVMX);
+            // read all of the .vmx file
+            String buffer = FileSystem.readFile(fileVMX, BUFFER_ENCODING).toString();
+            String[] strLines = buffer.replace("\r", "").split("\n");
 
-                // extract the name of the new vm
-                String strNewName = fileVMX.getName().replace(".vmx", "");
+            // extract the name of the new vm
+            String strNewName = fileVMX.getName().replace(vmxFileFilter.VMX, "");
 
-                // open the vmx file to write the changes
-                FileWriter out = new FileWriter(fileVMX);
+            // open the vmx file to write the changes
+            out = new FileWriter(fileVMX);
 
-                // parse the lines
-                int iHDDIndex = 0;
-                for (String line : strLines) {
-                    if (line.startsWith("scsi") && line.contains(".fileName = ")) {
-                        // get the old name
-                        String strOld = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
+            // parse the lines
+            int iHDDIndex = 0;
+            for (String line : strLines) {
+                if (line.startsWith("scsi") && line.contains(".fileName = ")) {
+                    // get the old name
+                    String strOld = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
 
-                        // in case there are more than one hdd append an index
-                        String strNewHDD = strNewName + iHDDIndex;
+                    // in case there are more than one hdd append an index
+                    String strNewHDD = strNewName + iHDDIndex;
 
-                        // replace it
-                        line = line.replace(strOld, strNewHDD + ".vmdk");
+                    // replace it
+                    line = line.replace(strOld, strNewHDD + VMDK);
 
-                        // copy the .vmdk files
-                        File folder = new File(getVmMasterFolder());
-                        strOld = strOld.replace(".vmdk", "");
-                        File[] files = folder.listFiles();
-                        for (File f : files) {
-                            if ((f.getName().startsWith(strOld + "-f") && f.getName().endsWith(".vmdk"))) {
-                                // copy the file
-                                if (!copy(f.getPath(),
-                                        getVmImagesFolder() + File.separator + f.getName().replace(strOld, strNewHDD))) {
-                                    return false;
-                                }
-                            } else if (f.getName().equals(strOld + ".vmdk")) {
-                                // it's the .vmdk config file
-                                // read it's content
-                                String strBuffer = loadIntoBuffer(f);
-
-                                // replace the old names
-                                strBuffer = strBuffer.replace(strOld, strNewHDD);
-
-                                // write it to the new destination
-                                FileWriter o = new FileWriter(
-                                        getVmImagesFolder() + File.separator + f.getName().replace(strOld, strNewHDD));
-                                o.write(strBuffer);
-                                o.close();
-                            }
+                    // copy the .vmdk files
+                    File folder = new File(getVmMasterFolder());
+                    strOld = strOld.replace(VMDK, "");
+                    File[] files = folder.listFiles();
+                    for (File file : files) {
+                        String destPath = getVmImagesFolder() + File.separator + file.getName()
+                                .replace(strOld, strNewHDD);
+                        File destFile = new File(destPath);
+                        if ((file.getName().startsWith(strOld + "-f") && file.getName().endsWith(VMDK))) {
+                            // copy the file
+                            FileSystem.fCopy(file, destFile);
+                        } else if (file.getName().equals(strOld + VMDK)) {
+                            // it's the .vmdk config file
+                            // read it's content
+                            String strBuffer = FileSystem.readFile(file, BUFFER_ENCODING).toString();
+                            // replace the old names
+                            strBuffer = strBuffer.replace(strOld, strNewHDD);
+                            FileSystem.writeTextFile(destFile, strBuffer, BUFFER_ENCODING);
                         }
-
-                        ++iHDDIndex;
-                    } else if (line.startsWith("displayName = ")) {
-                        // replace the display name
-                        line = "displayName = \"" + strNewName + "\"";
                     }
-                    out.write(line + "\n");
-                }
 
-                // close the vmx file
-                out.close();
-
-                // set execution rights if were using linux
-                if (!System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-                    Process ps = Runtime.getRuntime().exec("chmod 755 " + fileVMX.getPath());
-                    ps.waitFor();
+                    ++iHDDIndex;
+                } else if (line.startsWith("displayName = ")) {
+                    // replace the display name
+                    line = "displayName = \"" + strNewName + "\"";
                 }
-            } else {
-                return false;
+                out.write(line + "\n");
             }
-        } catch (Exception e) {
-            sfLog().error("VMWareServerManager createCopyOfMaster failed: " + e.getMessage());
-            return false;
+
+            // close the vmx file
+            out.flush();
+            out.close();
+            out=null;
+            // set execution rights if were using linux
+            chmod(fileVMX, "755");
+        } catch (IOException e) {
+            throw SmartFrogException.forward("Failed to copy " + inVMMaster + " to " + inVMCopyName,
+                    e);
+        } finally {
+            FileSystem.close(out);
         }
 
+
         // register the file with the vmware server
-        return registerVM(copyVMX);
+        if (!registerVM(copyVMX)) {
+            throw new SmartFrogException("Failed to register the VM");
+        }
+    }
+
+    private void chmod(File fileVMX, String mask) throws SmartFrogException {
+        String command = "chmod " + mask + fileVMX.getPath();
+        try {
+            if (!System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                Process ps = Runtime.getRuntime().exec(command);
+                ps.waitFor();
+            }
+        } catch (IOException e) {
+            throw SmartFrogException.forward("Failed to execute "+command,e);
+        } catch (InterruptedException e) {
+            throw SmartFrogException.forward("Failed to execute " + command, e);
+        }
     }
 
     /**
      * Copies a file.
      *
-     * @param from
-     * @param to
-     * @return
+     * @param from source
+     * @param to dest
+     * @throws IOException on failure to copy
      */
-    private boolean copy(String from, String to) throws IOException {
+    private void copy(String from, String to) throws IOException {
         sfLog().info("VMWareServerManager creating copy. From: " + from + " to: " + to);
         File fromFile = new File(from);
         File toFile = new File(to);
-
-        if (fromFile.exists() && fromFile.isFile()) {
-            // create the input stream
-            FileInputStream in = new FileInputStream(fromFile);
-
-            // create the output stream
-            FileOutputStream out = new FileOutputStream(toFile);
-
-            // set the buffer to 4mb
-            byte[] buffer = new byte[4096];
-
-            // copy
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
-            }
-
-            in.close();
-            out.close();
-
-            return true;
-        } else {
-            return false;
-        }
+        FileSystem.fCopy(fromFile,toFile);
     }
 
     /**
@@ -377,7 +339,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         File file = new File(inVMPath);
 
         // then delete it
-        if (file.exists() && file.isFile() && file.getName().endsWith(".vmx")) {
+        if (file.exists() && file.isFile() && file.getName().endsWith(vmxFileFilter.VMX)) {
             return file.delete();
         } else {
             return false;
