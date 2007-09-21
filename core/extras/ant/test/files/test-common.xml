@@ -35,4 +35,6 @@
       </waitfor>
    </presetdef>
 
+  <target name="teardown" />
+
 </project>  

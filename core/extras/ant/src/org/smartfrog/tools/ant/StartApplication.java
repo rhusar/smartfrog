@@ -48,7 +48,7 @@ public class StartApplication extends DeployingTaskBase {
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
-        setHost("localhost");
+        bindToLocalhost();
     }
 
     /**

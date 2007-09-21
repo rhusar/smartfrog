@@ -12,6 +12,7 @@
       xmlns:sf="antlib:org.smartfrog.tools.ant" />
 
   -->
+  <taskdef name="conditional" classname="org.smartfrog.tools.ant.ConditionalSequence"/>
   <taskdef name="deploy" classname="org.smartfrog.tools.ant.StartApplication"/>
   <taskdef name="faultingwaitfor" classname="org.smartfrog.tools.ant.FaultingWaitForTask"/>
   <taskdef name="functionaltest"
@@ -27,6 +28,8 @@
   <taskdef name="stopdaemon" classname="org.smartfrog.tools.ant.StopDaemon"/>
   <taskdef name="startdaemon" classname="org.smartfrog.tools.ant.StartDaemon"/>
   <taskdef name="undeploy" classname="org.smartfrog.tools.ant.StopApplication"/>
+
+
 
   <!-- this is the security type declaration -->
   <typedef name="security" classname="org.smartfrog.tools.ant.Security"/>
