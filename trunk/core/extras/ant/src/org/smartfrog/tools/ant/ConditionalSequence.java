@@ -45,8 +45,8 @@ public class ConditionalSequence extends Sequential {
      * @throws BuildException if one of the nested tasks fails.
      */
     public void execute() throws BuildException {
-        if((ifAttr.isEmpty() || getProject().getProperty(ifAttr) != null) &&
-                ( unlessAttr.isEmpty() || getProject().getProperty(unlessAttr) == null)) {
+        if((ifAttr.length() == 0 || getProject().getProperty(ifAttr) != null) &&
+                ( unlessAttr.length()==0 || getProject().getProperty(unlessAttr) == null)) {
             super.execute();
         }
     }
