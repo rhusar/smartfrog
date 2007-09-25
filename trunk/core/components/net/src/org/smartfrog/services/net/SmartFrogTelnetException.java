@@ -20,7 +20,6 @@
 package org.smartfrog.services.net;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
