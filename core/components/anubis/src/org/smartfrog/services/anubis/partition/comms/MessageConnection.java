@@ -117,24 +117,8 @@ public class MessageConnection
      * General deliver method - any messaage received by the transport will
      * be delivered using this method. The message will be a valid TimedMsg!
      *
-     * @param bytes - the message
+     * @param msg - the message
      */
-    /******************************************************************* SECURITY
-    public void deliver(byte[] bytes) {
-
-        WireMsg msg = null;
-        try {
-
-            msg = Wire.fromWire(bytes);
-
-        } catch (Exception ex) {
-
-            if( log.isErrorEnabled() )
-                log.error(me + "connection transport unable to unmarshall message " + this.getSender() );
-
-            return;
-        }
-    **************************************************************************/
     public void deliver(TimedMsg msg) {
 
         if( msg instanceof HeartbeatMsg ) {
@@ -241,7 +225,6 @@ public class MessageConnection
             connectionImpl = null;
             try {
 
-//                closingImpl.send( connectionSet.getHeartbeatMsg().toClose().toWire());   // SECURITY
                 closingImpl.send( connectionSet.getHeartbeatMsg().toClose());
 
             } catch (Exception ex) {
@@ -290,36 +273,6 @@ public class MessageConnection
 
 
 
-    /****************************************************************************
-     * SECURITY
-     * @param tm
-     *
-    public void sendMsg(TimedMsg tm) {
-        if (tm == null) {
-            if (log.isErrorEnabled())
-                log.error(me + " sendBytes(byte[]) called with null parameter ",
-                          new Exception());
-            return;
-        }
-        try {
-            sendBytes(tm.toWire());
-        } catch (Exception ex) {
-            if( log.isErrorEnabled() )
-                log.error(me + " failed to marshall timed message: " + tm + " for " + getSender() + " - not sent", ex);
-        }
-    }
-     *
-
-    public void sendBytes(byte[] bytes) {
-
-        if (bytes == null) {
-            if (log.isErrorEnabled())
-                log.error(me + " sendBytes(byte[]) called with null parameter ",
-                          new Exception());
-            return;
-        }
-        
-        **********************************************************************/
 
     public void sendMsg(TimedMsg msg) {
         
@@ -338,7 +291,6 @@ public class MessageConnection
              *         deal with too many messages!
              */
             if (connectionImpl == null) {
-//                msgQ.addLast(bytes);  // SECURITY
                 msgQ.addLast(msg);
                 return;
             }
@@ -355,8 +307,6 @@ public class MessageConnection
             /**
              * If the connectionImpl exists and it is connected then just send on it.
              */
-            // System.out.println(me + " sending " + msg);
-//            connectionImpl.send(bytes); // SECURITY
             connectionImpl.send(msg);
         }
     }
@@ -387,7 +337,6 @@ public class MessageConnection
             connectionImpl.setIgnoring(ignoring); // indicate if it should ignore messages
 
             while( !msgQ.isEmpty() )
-//                connectionImpl.send((byte[])msgQ.removeFirst());   // SECURITY
                 connectionImpl.send((TimedMsg)msgQ.removeFirst());
 
             if(disconnectPending)

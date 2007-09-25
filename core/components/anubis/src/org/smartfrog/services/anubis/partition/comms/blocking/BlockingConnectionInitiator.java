@@ -33,7 +33,6 @@ public class BlockingConnectionInitiator
     private Identity me = null;
     private ConnectionSet connectionSet = null;
     private MessageConnection connection = null;
-//    private byte[] heartbeat = null; // SECURITY
     private HeartbeatMsg heartbeat = null;
     private WireSecurity wireSecurity = null;
 
@@ -46,7 +45,6 @@ public class BlockingConnectionInitiator
         me = id;
         connection = con;
         connectionSet = cset;
-//        heartbeat = hb.toWire();  // SECURITY
         heartbeat = hb;
     }
 

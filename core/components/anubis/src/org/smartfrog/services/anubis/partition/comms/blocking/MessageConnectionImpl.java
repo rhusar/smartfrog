@@ -78,11 +78,6 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     }
 
     
-    /************************************************************ SECURITY
-    public void send(byte[] bytes) {
-        super.send(bytes);
-    }
-    ****************************************************************/
     public void send(TimedMsg tm) {
         try {
             tm.setOrder(sendCount);
@@ -146,24 +141,9 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     }
 
     
-    /*************************************************************************** SECURITY
-    private void initialMsg(byte[] bytes) {
-
-        Object obj = null;
-        try {
-            obj = Wire.fromWire(bytes);
-        } catch (Exception ex) {
-            if( log.isErrorEnabled() )
-                log.error(me + " failed to unmarshall initial message on new connection - shutdown", ex);
-            shutdown();
-        }
-        ***************************************************************/
     
     private void initialMsg(TimedMsg tm) {
         
-        /**
-         * temporary - get rid of these   SECURITY
-         */
         Object obj = tm;
         TimedMsg bytes = tm;
 

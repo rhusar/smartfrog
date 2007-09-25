@@ -377,8 +377,6 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
     // blocking write method: calls the above asynchronous one and this object needs to register itself as
     // a SendingListener
     
-    // public synchronized void send(byte[] bytesToSend){  // SECURITY
-        
     public synchronized void send(TimedMsg tm){ 
         
         byte[] bytesToSend = null;
@@ -444,14 +442,7 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 
         if (ignoring)
             return;
-/******************************************************** SECURITY
-        if (messageConnection == null) {
-            initialMsg(fullRxBuffer.array());
-        } else {
-            messageConnection.deliver(fullRxBuffer.array());
-        }
-        ********************************************************************/
-        
+
         WireMsg msg = null;
         try {
 
@@ -542,33 +533,14 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
     // private methods
     // lifted from MessageConnectionImpl: I do not intend to modify it...
     
-    /*************************************************************** SECURITY
-     private void initialMsg(byte[] bytes) {
-    if( debug && log.isTraceEnabled() )
-        log.trace("MNH: initialMsg is being called");
-
-        Object obj = null;
-        try {
-            obj = Wire.fromWire(bytes);
-        } catch (Exception ex) {
-            if( debug && log.isTraceEnabled() )
-                log.error(me + " failed to unmarshall initial message on new connection - shutdown", ex);
-            shutdown();
-        }
-      **********************************************************************/
-    
     
     private void initialMsg(TimedMsg tm) {
             
         if( debug && log.isTraceEnabled() )
             log.trace("MNH: initialMsg is being called");
 
-            /**
-             * temporary - get rid of these   SECURITY
-             */
-            Object obj = tm;
-            TimedMsg bytes = tm;
-
+        Object obj = tm;
+        TimedMsg bytes = tm;
 
 
         /**
