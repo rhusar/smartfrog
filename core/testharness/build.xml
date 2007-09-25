@@ -160,8 +160,8 @@ For more information: www.smartfrog.org
     </echo>
     <patternset id="teststhatfail">
       <!--SFOS-403-->
-      <exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
-          unless="run.failing.tests" />
+<!--      <exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
+          unless="run.failing.tests" />-->
       <!-- SFOS-154; test failing on VMWare only. Possible race condition-->
 <!--
       <exclude name="${systemtests}/workflow/parallel/ParallelAsyncTest.*"
