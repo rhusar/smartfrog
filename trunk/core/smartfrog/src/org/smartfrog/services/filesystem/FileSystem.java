@@ -720,7 +720,7 @@ public class FileSystem {
             String str = null;
             while (null != (str = reader.readLine())) {
                 buf.append(str);
-                buf.append("\n");
+                buf.append('\n');
             }
             return buf;
         } finally {
