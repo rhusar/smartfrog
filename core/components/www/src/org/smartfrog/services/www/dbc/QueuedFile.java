@@ -39,7 +39,7 @@ public class QueuedFile {
 
     /**
      * set the processed bit.
-     * @param processed
+     * @param processed flag set if the file is processed.
      */
     public synchronized void setProcessed(boolean processed) {
         this.processed = processed;

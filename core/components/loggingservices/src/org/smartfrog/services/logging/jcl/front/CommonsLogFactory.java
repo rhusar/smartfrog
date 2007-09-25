@@ -44,13 +44,15 @@ public class CommonsLogFactory extends LogFactoryImpl {
 
     /**
      * To get the sfCore logger
-     *
+     * @param name The name of the log to look for
      * @return Logger implementing LogSF and Log
      */
     private LogSF sfLog(String name) {
         try {
+            //try to create a log and register it
             return LogFactory.getLog(name,true);
         } catch (SmartFrogLogException e) {
+            //if we can't register, get a simpler log
             return LogFactory.getLog(name);
         }
     }

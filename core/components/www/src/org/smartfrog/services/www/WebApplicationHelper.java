@@ -67,6 +67,7 @@ public class WebApplicationHelper extends ComponentHelper {
      * Get the ipaddrs of the local machine
      *
      * @return the IP address that we are deployed on
+     * @throws RemoteException if the owner is not talking
      */
     public String getIpAddress() throws RemoteException {
         InetAddress deployedHost = getOwner().sfDeployedHost();
@@ -78,7 +79,7 @@ public class WebApplicationHelper extends ComponentHelper {
      * strip any trailing * from a path and give the base bit up to where that
      * began.
      *
-     * @param path
+     * @param path path to tidy up
      * @return the stripped path
      */
     public static String deregexpPath(String path) {
