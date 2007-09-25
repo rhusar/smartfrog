@@ -20,9 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.net;
 
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * SmartFrog Telnet client Interface. 
@@ -42,4 +40,5 @@ public interface Telnet extends Prim {
     public static String LOG_FILE = "logFile";
     public static String CMDS_FAILURE_MSGS = "cmdsFailureMsgs";
     public static String TERMINATE = "shouldTerminate";
+    String ATTR_PASSWORD_PROVIDER = "passwordProvider";
 }

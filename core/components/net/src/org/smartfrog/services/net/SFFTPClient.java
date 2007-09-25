@@ -20,9 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.net;
 
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * SmartFrog FTP client Interface. 
