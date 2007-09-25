@@ -24,6 +24,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.passwords.PasswordProvider;
 
 import java.rmi.RemoteException;
 
