@@ -62,23 +62,23 @@ public class OptionSet {
         "           -a rootProcess:TERMINATE:::localhost:" + "\n" +
         "\n" +
         "       Format for SFACT: " +"NAME:ACTION:SFREF:SUBREF:HOST:PROCESS\n" +
-        "           - NAME: name used by the ACTION to be taken\n" +
+        "           - NAME: name used by ACTION\n" +
         "              ex. foo\n" +
         "              ex. \"HOST localhost:foo\"\n" +
          "             ex. 'HOST localhost:foo'\n" +
-        "          - ACTION: defines the action to be taken on the named component\n"+
+        "          - ACTION: defines the applied action on the named component\n"+
         "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, DUMP\n" +
-        "          - SFREF: SmartFrog description (if needed) to be used by ACTION\n" +
+        "          - SFREF: SmartFrog description (if needed) used by ACTION\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex. /home/sf/foo.sf\n" +
         "              ex. \"c:\\sf\\foo.sf\"\n" +
         "              ex. 'c:\\sf\\foo.sf'\n" +
-        "          - SUBREF: component description name to use by ACTION. It can be empty\n" +
+        "          - SUBREF: component description name used by ACTION. It can be empty\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex: foo\n" +
         "              ex: \"fist:foo\"\n" +
         "              ex: 'fist:foo'\n" +
-        "              note: sfConfig cannot be use with DEPLOY!\n" +
+        "              note: sfConfig cannot be used with DEPLOY!\n" +
         "          - HOST: host name or IP from where to resolve NAME. It can be empty.\n" +
         "              ex: localhost\n" +
         "              ex: 127.0.0.1\n" +
@@ -95,7 +95,7 @@ public class OptionSet {
         "              ex4: Get diagnostics report for \"sfDefault\" component running in remote daemon\n" +
         "                   'rootProcess:sfDefault':DIAGNOSTICS:::remoteHostName:\n" +
         "              ex5. Dump description for local sfDaemon\n" +
-        "                   rootProcess:DUMP:::localhost:\n" +        
+        "                   rootProcess:DUMP:::localhost:\n" +
         "\n" +
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +"\n" +
         "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +
