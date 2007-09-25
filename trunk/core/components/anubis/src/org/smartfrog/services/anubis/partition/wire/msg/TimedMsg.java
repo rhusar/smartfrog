@@ -32,7 +32,7 @@ import org.smartfrog.services.anubis.partition.wire.WireMsg;
 public class TimedMsg extends WireMsg implements Timed, Sender {
 
     protected long              time;
-    protected long              order;
+    protected long              order = -1;
     protected Identity          sender;
     protected ConnectionAddress address  = null;
 
@@ -100,7 +100,7 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
     
     /**
      * Msg order (only used in ordered connections)
-     * @return
+     * @return the order (-1 if not set)
      */
     public long   getOrder()      { return order; }
     public void   setOrder(long o){ order = o; }

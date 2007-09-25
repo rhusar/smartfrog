@@ -66,7 +66,6 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
         Object obj = null;
         try {
             
-//            obj = Wire.fromWire(bytes); SECURITY
             obj = wireSecurity.fromWireForm(bytes);
             
         } catch (WireSecurityException ex) {
@@ -147,7 +146,6 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
      * @param msg message to send.
      */
     public void sendHeartbeat(HeartbeatMsg msg) {
-//        try { super.sendObject(msg.toWire()); }  SECURITY
         try { super.sendObject(wireSecurity.toWireForm(msg)); }
         catch (Exception ex) {
             if( log.isErrorEnabled() )
