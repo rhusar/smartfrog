@@ -268,6 +268,8 @@
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="initbuild" depends="init">
+    <!--for redistributions, the lib dir is empty-->
+    <mkdir dir="lib"/>
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.classes.dir}"/>
     <mkdir dir="${build.extra.dir}"/>
