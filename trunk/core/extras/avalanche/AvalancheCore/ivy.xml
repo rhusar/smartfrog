@@ -172,11 +172,11 @@
         name="xmldb-xupdate"
         rev="${xmldb-xupdate.version}"
         conf="compile,redist->default"/>
-
+<!--
     <dependency org="kizoom"
         name="lift"
         rev="${lift.version}"
-        conf="compile,test->default"/>
+        conf="compile,test->default"/>-->
   </dependencies>
 
 </ivy-module>

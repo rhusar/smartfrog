@@ -11,10 +11,11 @@ For more information: www.smartfrog.org
 */
 package tests.org.smartfrog.avalanche.server;
 
-import org.smartfrog.avalanche.shared.xmpp.XMPPAdapter;
-import org.smartfrog.avalanche.shared.MonitoringConstants;
-import org.smartfrog.avalanche.shared.MonitoringEvent;
-import org.smartfrog.avalanche.shared.MonitoringEventDefaultImpl;
+
+import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
+import org.smartfrog.services.xmpp.MonitoringEventDefaultImpl;
+import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.services.xmpp.MonitoringConstants;
 
 // TODO: Test Settings _OBSOLETE_!
 public class XMPPClientStub {
@@ -27,7 +28,7 @@ public class XMPPClientStub {
 		
 		adapter.setXmppUserName(hostId);
 		adapter.setXmppPassword(hostId);
-		adapter.setXmppListenerName("avl") ; 
+		adapter.setXmppUserName("avl"); ;
 		adapter.init();
 		System.out.println("Connected to xmpp server "); 
 		
