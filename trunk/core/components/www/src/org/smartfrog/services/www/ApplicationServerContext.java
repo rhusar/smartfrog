@@ -79,7 +79,7 @@ public interface ApplicationServerContext extends Remote {
     /**
      * liveness check
      *
-     * @throws SmartFrogException for deployment problems
+     * @throws SmartFrogLivenessException for deployment problems
      * @throws RemoteException for RMI/Networking problems
      */
     void ping() throws SmartFrogLivenessException, RemoteException;

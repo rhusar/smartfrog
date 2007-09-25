@@ -28,5 +28,5 @@ public interface ServletContextComponent extends Remote {
     /**
      * context to declare for {@value}
      */
-    final static String ATTR_SERVLET_CONTEXT = "context";
+    String ATTR_SERVLET_CONTEXT = "context";
 }

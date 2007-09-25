@@ -167,7 +167,8 @@ public class WaitForPageImpl extends LivenessPageComponent
             //failure. Abnormal termination
             String errorText = ERROR_WAIT_FOR_TIMEOUT + getLivenessPage().getTargetURL();
             if (getLivenessPage().getErrorMessage() != null) {
-                errorText = errorText + "\n" + getLivenessPage().getErrorMessage();
+                errorText = errorText +
+                    '\n' + getLivenessPage().getErrorMessage();
             }
             record = TerminationRecord.abnormal(
                     errorText,

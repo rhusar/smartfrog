@@ -47,9 +47,9 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
      * @param server owner server
      * @param owner owner as a Prim interface.
      */
-    public AbstractDbcDelegate(DeployByCopyServerImpl server, Prim owner) {
+    protected AbstractDbcDelegate(DeployByCopyServerImpl server, Prim owner) {
         this.server = server;
-        this.declaration = owner;
+        declaration = owner;
     }
 
     public Prim getDeclaration() {

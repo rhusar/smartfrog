@@ -61,7 +61,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     /**
      * Log to this logger
      */
-    private transient Logger logger = null;
+    private Logger logger = null;
 
     /**
      * Logger name
@@ -69,7 +69,8 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel {
     private String logName = null;
 
     /**
-     * Output stream to print to. Bonded at construct time, and usually system.err unless
+     * Output stream to print to.
+     * Bonded at construct time, and usually system.err unless
      * otherwise chosen
      */
     private PrintStream outstream;
