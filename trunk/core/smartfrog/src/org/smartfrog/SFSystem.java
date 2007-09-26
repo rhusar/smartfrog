@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog;
 
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.Diagnostics;
+import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -30,14 +32,14 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -50,9 +52,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.Vector;
-import org.smartfrog.sfcore.common.Diagnostics;
-import org.smartfrog.sfcore.parser.SFParser;
 
 
 /**
@@ -301,7 +302,7 @@ public class SFSystem implements MessageKeys {
         } else {
            //Store successful DEPLOY actions only
            boolean terminateSuccessfulDeployments = false;
-           java.util.Stack deployedStack = new java.util.Stack();
+           Stack<ConfigurationDescriptor> deployedStack = new Stack<ConfigurationDescriptor>();
            ConfigurationDescriptor cdesc= null;
            for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
               cdesc = (ConfigurationDescriptor)items.nextElement();
@@ -320,7 +321,7 @@ public class SFSystem implements MessageKeys {
               cdesc.terminateDeployedResult();
               //Terminate the successful ones
               while (!deployedStack.empty()){
-                 ((ConfigurationDescriptor)deployedStack.pop()).terminateDeployedResult();
+                 deployedStack.pop().terminateDeployedResult();
               }
            }
         }
