@@ -48,13 +48,27 @@
       <format property="year" pattern="yyyy"/>
     </tstamp>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company"
-        value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
+	<echo message="  "/>
+    <echo message="  "/>
+    <echo message=" ======================================================="/>
+    <echo message=" Build info - Project: ${Name.System} ${version}"/>
+    <echo message="   ${Name.Company}"/>
+	<echo message="      Java: ${java.version} ${java.vendor} "/>
+	<echo message="            ${java.home} "/>
+    <echo message="      OS: ${os.name} ${os.version}"/>	
+    <echo message=" --------------------------------------------------------"/>
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>	
+    <echo message=" ======================================================="/>
+    <echo message="  "/>		
     <echo level="verbose">
       ===================================================================
       = ${Name.System} ${version}
       = ${Name.Company}
+      = Java: ${java.version} ${java.vendor}
+	  =       ${java.home} 
+      = OS: ${os.name} ${os.version}	
       ===================================================================
     </echo>
     <fail>
@@ -105,7 +119,13 @@
     <pathelement path="${classpath}"/>
     <pathelement path="./lib/ProActive.jar"/>
   </path>
-
+  <!-- to get the classpath in a printable form -->
+  <pathconvert pathsep="${line.separator}|   |-- "  
+               property="echo.smartfrog.class.path" 
+               refid="smartfrog.class.path">
+  </pathconvert>
+   
+  
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
