@@ -164,11 +164,6 @@ JettyHTAccessHandler extends JettyHandler {
  accessFile ".htaccess";
 }
 
-JettyForwardHandler extends JettyHandler {
- sfClass "org.smartfrog.services.jetty.contexts.handlers.Forward";
- mapfromPath "/forward/*";
- maptoPath "/dump";
-}
 
 /*==========================================
   declare servlets
