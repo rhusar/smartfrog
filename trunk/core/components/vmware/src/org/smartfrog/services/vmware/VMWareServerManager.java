@@ -552,7 +552,8 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Registes a virtual machine with the vmware server.
      *
      * @param inVMPath The full path to the machine.
-     * @return
+     * @return true if it worked
+     *
      */
     public boolean registerVM(String inVMPath) throws RemoteException {
         // get a machine module
