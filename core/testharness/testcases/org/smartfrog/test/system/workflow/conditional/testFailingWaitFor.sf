@@ -23,9 +23,9 @@ For more information: www.smartfrog.org
  * this test is expected to fail with a timeout.
  */
 
-sfConfig extends BaseTestCompound {
+sfConfig extends ExpectDeployFailure {
 
-   tests extends Sequence {
+   action extends Sequence {
         WaitForever extends BaseWait {
           timeout 10;
           interval 10;
