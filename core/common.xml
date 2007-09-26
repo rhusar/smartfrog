@@ -464,7 +464,7 @@ java.class.path=
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
         <fail if="@{failed}">Tests failed see:
-          @{reports}</fail>
+		@{reports}</fail>
       </sequential>
     </macrodef>
 
@@ -474,8 +474,7 @@ java.class.path=
     **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties;
     override the pattern property to set more
      -->
-   <property name="copy.useful.files.pattern"
-       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif">
+   <property name="copy.useful.files.pattern" value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif"/>
    <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
