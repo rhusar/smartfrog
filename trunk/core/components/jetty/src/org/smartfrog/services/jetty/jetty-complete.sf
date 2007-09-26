@@ -259,9 +259,6 @@ Listeners extends Compound {
   directListener extends DirectPortListener {
     server LAZY PARENT:server;
   }
-  apacheListener extends ApacheHttpdListener {
-    server LAZY PARENT:server;
-  }
 }
 
 /**
@@ -271,11 +268,3 @@ DirectPortListener extends JettyListener {
   listenerPort LAZY server:port;
 }
 
-/**
- * this fields requests handed off from Apache HTTPD
- * this is not a secure protocol, and the port must not be externally visible.
- */
-ApacheHttpdListener extends JettyListener {
- sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
- listenerPort 8009;
-}
