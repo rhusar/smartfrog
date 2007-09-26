@@ -1,24 +1,28 @@
-/**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
-*/
-/*
- * Created on May 13, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ For more information: www.smartfrog.org
+
  */
 package org.smartfrog.avalanche.client.sf.rpm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,22 +33,21 @@ import java.io.InputStreamReader;
  * @author sandya
  * 
  * Contains RPM utilities to Install, Un-install and Upgrade RPM packages
- * 
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class RPMUtils {
-	private static Log log = LogFactory.getLog(RPMUtils.class);
+	private LogSF log;
 	private Runtime rt = null;
 
 	/**
-	 * Constructor which initialises a Runtime object 
+	 * Constructor which initialises a Runtime object
+     * @param log the log to use for messages
 	 */
-	public RPMUtils() {
-		rt = Runtime.getRuntime();
+	public RPMUtils(LogSF log) {
+        this.log=log;
+        rt = Runtime.getRuntime();
 	}
 
-	/*
+	/**
 	 * Installs the RPM package without any install-options
 	 * @param rpmPackage - full path of RPM Package to be installed
 	 * @return boolean - returns true if Package is installed successfully
@@ -56,7 +59,7 @@ public class RPMUtils {
 		return (InstallPackage(rpmPackage, installOptions));
 	}
 	
-	/*
+	/**
 	 * Installs the RPM package in the install path provided.
 	 * Note: Only relocatable RPM packages can use this method.
 	 * @param rpmPackage - full path of RPM Package to be installed
@@ -78,7 +81,7 @@ public class RPMUtils {
 		return InstallPackage(rpmPackage, installOptions);				
 	}
 	
-	/*
+	/**
 	 * Installs RPM Package with the given install-options.
 	 * @param rpmPackage - RPM package to be installed
 	 * @param installOptions - RPM install options
@@ -125,25 +128,33 @@ public class RPMUtils {
 		String cmd = command + " " + rpmPackage;		
 		
 		p = rt.exec(cmd);
-		BufferedReader cmdError = new BufferedReader(new InputStreamReader(p
-				.getErrorStream()));
-		while ((line = cmdError.readLine()) != null) {
-			error = true;
-			log.error(line);			
-		}
-		cmdError.close();
+		BufferedReader cmdError= null;
+        try {
+            cmdError = new BufferedReader(new InputStreamReader(p
+                    .getErrorStream()));
+            while ((line = cmdError.readLine()) != null) {
+                error = true;
+                log.error(line);
+            }
+        } finally {
+            FileSystem.close(cmdError);
+        }
 		if (error)
 			return false;
 		
-		BufferedReader cmdOutput = new BufferedReader(new InputStreamReader(p
+		BufferedReader cmdOutput = null;
+        cmdOutput=new BufferedReader(new InputStreamReader(p
 				.getInputStream()));
-		while ((line = cmdOutput.readLine()) != null) {
-			error = true;
-			log.error(line);
-		}
-		cmdOutput.close();
-				
-		if (!error) {
+        try {
+            while ((line = cmdOutput.readLine()) != null) {
+                error = true;
+                log.error(line);
+            }
+        } finally {
+            FileSystem.close(cmdOutput);
+        }
+
+        if (!error) {
 			log.info("The RPM package " + rpmPackage + " is successfully installed.");
 			return true;
 		}
