@@ -15,6 +15,6 @@ public class FailingConditionTest extends DeployingTestBase {
     }
 
     public void testFailingWaitFor() throws Throwable {
-        expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
+        expectSuccessfulTestRun(FILES, "testFailingWaitFor");
     }
 }
