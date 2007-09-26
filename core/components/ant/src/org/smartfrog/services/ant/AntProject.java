@@ -63,7 +63,7 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class AntProject {
 
-    private org.apache.tools.ant.Project project = null;
+    private Project project = null;
 
     private Object aobj = null;
     private Object parent = null;
@@ -80,7 +80,7 @@ public class AntProject {
         this.owner=owner;
         validateAnt();
         log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
-        project = new org.apache.tools.ant.Project();
+        project = new Project();
         project.setCoreLoader(null);
         project.init();
 
@@ -94,7 +94,7 @@ public class AntProject {
         level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
 
         //Register build listener TODO replace this with our own listener
-        org.apache.tools.ant.DefaultLogger logger = new org.apache.tools.ant.DefaultLogger();
+        org.apache.tools.ant.DefaultLogger logger = new AntToSmartFrogLogger(log);
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
         logger.setMessageOutputLevel(level);
