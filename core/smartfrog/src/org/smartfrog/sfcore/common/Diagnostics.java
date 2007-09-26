@@ -51,12 +51,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.Vector;
+import java.util.*;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
@@ -301,6 +297,9 @@ public final class Diagnostics {
         header(out, "Locale information");
         doReportLocale(out);
 
+        header(out, "Thread Dump");
+        doReportThreadDump(out);
+
         doReportPrim(out, prim);
 
         header(out, "System properties");
@@ -459,9 +458,36 @@ public final class Diagnostics {
         		out.append("\n");
         	}
         } catch (SecurityException  e) {
-        	out.append("Access to System.getProperties() blocked " +
-        	"by a security manager\n");
+        	out.append("Access to System.getProperties() blocked by a security manager\n");
         }
+    }
+
+    /**
+      * Report specific information to local process compound.
+     * @param out StringBuffer
+     */
+    private static void doReportThreadDump(StringBuffer out) {
+      try {
+        ThreadDump td = new ThreadDump();
+        StringBuffer reportTD = new StringBuffer();
+        out.append("+++ Threads - [nane (id), state, priority, isDaemon, thread group]\n");
+        for (Thread thread : td.getThreads()){
+           out.append( thread.getName()+" ("+thread.getId()+")"+
+                      ", "+thread.getState()+", "+thread.getPriority()+", "+thread.isDaemon()+
+                      ", "+thread.getThreadGroup()+"\n");
+        }
+
+        out.append("\n+++ Traces - [name (id), stack trace \n");
+        Map<Thread, StackTraceElement[]> traces = td.getTraces();   
+        for (Thread thread : traces.keySet()){
+            out.append(thread.getName()+" ("+thread.getId()+")"+"\n");
+            for (StackTraceElement threadTraceLine :traces.get(thread)){
+               out.append("    "+ threadTraceLine+"\n");
+            }
+        }        
+      } catch (Exception ex2) {
+        out.append(" Error:" + ex2.getMessage() + "\n");
+      }
     }
 
 
