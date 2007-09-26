@@ -474,12 +474,14 @@ java.class.path=
     **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties;
     override the pattern property to set more
      -->
+   <property name="copy.useful.files.pattern"
+       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif">
    <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
      <attribute name="failonerror" default="false"/>
      <attribute name="pattern"
-         default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl"/>
+         default="${copy.useful.files.pattern}"/>
      <sequential>
        <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
        <copy todir="@{dest}" failonerror="@{failonerror}">
@@ -1384,9 +1386,11 @@ java.class.path=
         <teardown>
           <parallel>
             <sf-stopdaemon failonerror="false"/>
-            <sf-junitreport data="${test.data.dir}"
-                reports="${test.reports.dir}"
-                />
+            <sf-conditional unless="tests.skip.reports">
+              <sf-junitreport data="${test.data.dir}"
+                  reports="${test.reports.dir}"
+                  />
+            </sf-conditional>
           </parallel>
         </teardown>
       </sf-functionaltest>
@@ -1413,7 +1417,8 @@ java.class.path=
 
     <!-- define the system test post processor-->
     <presetdef name="sf-system-test-validate">
-      <fail if="system.test.failed">System Tests failed - see
+      <fail if="system.test.failed" unless="tests.skip.failing">
+        System Tests failed - see
         ${test.reports.dir}
       </fail>
     </presetdef>
