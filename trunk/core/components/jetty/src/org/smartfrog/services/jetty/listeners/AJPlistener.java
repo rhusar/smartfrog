@@ -21,6 +21,7 @@
 package org.smartfrog.services.jetty.listeners;
 
 import org.mortbay.http.ajp.AJP13Listener;
+import org.mortbay.jetty.ajp.Ajp13Connection;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -47,7 +48,7 @@ public class AJPlistener extends PrimImpl implements Listener {
 
     private String serverName = null;
 
-    private AJP13Listener listener = null;
+    private Ajp13Connection listener = null;
 
     private JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -91,7 +92,7 @@ public class AJPlistener extends PrimImpl implements Listener {
     public void addlistener(int port, String host) throws
         SmartFrogException, RemoteException {
         try {
-            listener = new AJP13Listener();
+            listener = new Ajp13Connection(port);
             listener.setPort(port);
             listener.setHost(host);
             jettyHelper.addAndStartListener(listener);
