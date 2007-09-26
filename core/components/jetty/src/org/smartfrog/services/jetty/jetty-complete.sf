@@ -142,22 +142,11 @@ JettyCGIBIN extends ServletContext {
 
 Handlers extends Compound {
  context TBD;
-
- Handler1 extends JettyForwardHandler {
-  context LAZY PARENT:context;
- }
  Handler2 extends JettyHTAccessHandler {
   context LAZY PARENT:context;
  }
- Handler3 extends JettyDumpHandler {
-  context LAZY PARENT:context;
- }
 }
 
-
-JettyDumpHandler extends JettyHandler {
- sfClass "org.smartfrog.services.jetty.contexts.handlers.Dump";
-}
 
 JettyHTAccessHandler extends JettyHandler {
  sfClass "org.smartfrog.services.jetty.contexts.handlers.HTAccess";
