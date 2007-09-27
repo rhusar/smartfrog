@@ -87,10 +87,10 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
 
     /**
      * creates the file object instance, to the absolute path,
-     * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
-     * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
+     * then sets the attribute {@link FileIntf#ATTR_ABSOLUTE_PATH}
+     * to the absolute path, and {@link FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
-     * @param absolutePath
+     * @param absolutePath the absolute path to set
      * @throws SmartFrogRuntimeException  runtime error
      * @throws RemoteException In case of network/rmi error
      */

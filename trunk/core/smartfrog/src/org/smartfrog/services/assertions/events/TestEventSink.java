@@ -177,7 +177,7 @@ public class TestEventSink implements EventSink {
     }
     /**
      * Get the application/event source we are bonded to.
-     * @return
+     * @return the application
      */
     public Prim getApplication() {
         return (Prim)source;

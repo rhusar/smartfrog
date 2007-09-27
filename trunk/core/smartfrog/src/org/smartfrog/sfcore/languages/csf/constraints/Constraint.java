@@ -133,9 +133,9 @@ public class Constraint implements Copying, Comparable {
     }
 
     /**
-     * Get the query string for #suchThat#...#
+     * Get the do constraint
      *
-     * @param query the query string
+     * @param docons the constraint
      */
     public void setDoCons(boolean docons) {
         this.docons = docons;

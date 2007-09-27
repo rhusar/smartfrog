@@ -38,7 +38,7 @@ public class IfImpl extends ConditionCompound implements If {
     /**
      * Starts the component by deploying the condition
      *
-     * @throwsSmartFrogException in case of problems creating the child
+     * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {

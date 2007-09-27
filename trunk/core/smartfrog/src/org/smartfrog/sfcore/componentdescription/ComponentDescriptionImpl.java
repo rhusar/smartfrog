@@ -1603,7 +1603,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      /**
       * Checks component description for same parentage
       * @param o parent to compare with
-      * @return
+      * @return true if they share a parent
       */
      public boolean hasSameParent(ComponentDescription o) {
          if (primParent==null) {
