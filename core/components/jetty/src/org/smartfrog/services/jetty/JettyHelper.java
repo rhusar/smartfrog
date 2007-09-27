@@ -21,10 +21,9 @@
 
 package org.smartfrog.services.jetty;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpListener;
-import org.mortbay.http.HttpServer;
-import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.WebApplicationHelper;
@@ -32,9 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.net.InetAddress;
 import java.rmi.RemoteException;
 
 /**
@@ -47,7 +44,7 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * the server
      */
-    private HttpServer httpServer;
+    private Server httpServer;
 
 
     /**
@@ -55,25 +52,6 @@ public class JettyHelper extends WebApplicationHelper {
      */
     private Prim serverComponent = null;
 
-    /**
-     * Name of the interface of jetty component we look for.
-     * <p/>
-     * {@value}
-     */
-    public static final String JETTY_INTERFACE_NAME = "org.smartfrog.services.jetty.JettyIntf";
-    //
-    /**
-     * Name of the servlet interface of jetty component we look for.
-     * <p/>
-     * {@value}
-     */
-    public static final String JETTY_SERVLET_INTERFACE = "org.smartfrog.services.jetty.contexts.JettyServletContextIntf";
-
-    /**
-     * max depth to recurse down
-     */
-
-    private static final int MAX_PARENT_DEPTH = 99999;
 
     /**
      * Error if we cannot locate an app server.
@@ -92,7 +70,7 @@ public class JettyHelper extends WebApplicationHelper {
      * @throws RemoteException network problems
      *
      */
-    public HttpServer bindToServer() throws SmartFrogException,
+    public Server bindToServer() throws SmartFrogException,
             RemoteException {
         findJettyComponent();
         httpServer = findJettyServer();
@@ -114,12 +92,12 @@ public class JettyHelper extends WebApplicationHelper {
      * @throws SmartFrogException smartfrog problems, including no server found
      * @throws RemoteException network problems
      */
-    private HttpServer findJettyServer() throws SmartFrogException,
+    private Server findJettyServer() throws SmartFrogException,
             RemoteException {
         assert serverComponent != null;
-        HttpServer server = null;
+        Server server = null;
         server =
-                (HttpServer) serverComponent.sfResolve(JettyIntf.ATTR_JETTY_SERVER,
+                (Server) serverComponent.sfResolve(JettyIntf.ATTR_JETTY_SERVER,
                         server,
                         true);
         return server;
@@ -151,7 +129,7 @@ public class JettyHelper extends WebApplicationHelper {
      * @throws SmartFrogException a failure of the operation to set the server
      * @throws RemoteException network problems
      */
-    public void cacheJettyServer(HttpServer server)
+    public void cacheJettyServer(Server server)
             throws SmartFrogException, RemoteException {
         getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_SERVER, server);
 
@@ -196,15 +174,15 @@ public class JettyHelper extends WebApplicationHelper {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public ServletHttpContext getServletContext(boolean mandatory)
+    public Context getServletContext(boolean mandatory)
             throws SmartFrogException, RemoteException {
 
 
-        ServletHttpContext jettyContext = null;
+        Context jettyContext = null;
 
         Prim contextImpl = findServletContext();
         if (contextImpl != null) {
-            jettyContext = (ServletHttpContext) contextImpl.
+            jettyContext = (Context) contextImpl.
                     sfResolve(JettyServletContextIntf.ATTR_CONTEXT);
         }
         if (mandatory && jettyContext == null) {
@@ -219,6 +197,13 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * find whatever ancestor is a servlet context
      */
+    /**
+     * Find the servlet context.
+     * This is done by resolving the owner and looking for its server attribute
+     * @return the owner server, null if there is no server,
+     * @throws RemoteException network trouble
+     * @throws SmartFrogResolutionException failure to resolve
+     */
     public Prim findServletContext() throws RemoteException, SmartFrogResolutionException {
         return getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,(Prim)null,false);
     }
@@ -227,19 +212,19 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * add a listener to the server
      *
-     * @param listener
+     * @param listener a listener
      */
-    public void addListener(HttpListener listener) {
-        httpServer.addListener(listener);
+    public void addListener(Connector listener) {
+        httpServer.addConnector(listener);
     }
 
     /**
      * add a listener, then start it
      *
-     * @param listener
-     * @throws SmartFrogException
+     * @param listener a listener
+     * @throws SmartFrogException failue to start the listener
      */
-    public void addAndStartListener(HttpListener listener)
+    public void addAndStartListener(Connector listener)
             throws SmartFrogException {
         addListener(listener);
         try {
@@ -251,11 +236,11 @@ public class JettyHelper extends WebApplicationHelper {
 
     /**
      * remove a listener
-     * @param listener
+     * @param listener a listener
      */
-    public void removeListener(HttpListener listener) {
+    public void removeListener(Connector listener) {
         if (httpServer != null) {
-            httpServer.removeListener(listener);
+            httpServer.removeConnector(listener);
         }
     }
 
@@ -264,16 +249,16 @@ public class JettyHelper extends WebApplicationHelper {
      *
      * @return server or null if unbound.
      */
-    public HttpServer getServer() {
+    public Server getServer() {
         return httpServer;
     }
 
     /**
      * terminate a context log failures but do not throw anything
      *
-     * @param context
+     * @param context context to terminate
      */
-    public void terminateContext(HttpContext context) {
+    public void terminateContext(Context context) {
         if (context != null) {
             try {
                 context.stop();
@@ -284,7 +269,7 @@ public class JettyHelper extends WebApplicationHelper {
                 }
             }
             if (httpServer != null) {
-                httpServer.removeContext(context);
+                httpServer.removeLifeCycle(context);
             }
         }
     }
@@ -292,9 +277,9 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * terminate a listener; log trouble but continue
      *
-     * @param listener
+     * @param listener a listener
      */
-    public synchronized void terminateListener(HttpListener listener) {
+    public synchronized void terminateListener(Connector listener) {
         if (listener != null) {
             try {
                 listener.stop();
@@ -303,12 +288,10 @@ public class JettyHelper extends WebApplicationHelper {
                     getLogger().error(" Interrupted on listener termination ",
                             ex);
                 }
-            } catch (NullPointerException npe) {
-                if (getLogger().isErrorEnabled()) {
-                    getLogger().warn(
-                            " Dropping NPE caught during Jetty teardown",
+            } catch (Exception npe) {
+                    getLogger().error(
+                            " Ignoring caught during Jetty teardown",
                             npe);
-                }
             }
             removeListener(listener);
         }

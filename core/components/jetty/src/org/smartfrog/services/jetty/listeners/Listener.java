@@ -48,7 +48,7 @@ public interface Listener extends Remote {
 	 * Add the listener to the http server
      * @param listenerPort port to listen on
      * @param serverHost hostname
-     * @throws SmartFrogException
+     * @throws SmartFrogException other errors
      * @throws RemoteException In case of network/rmi error
      */
     public void addlistener(int listenerPort, String serverHost) throws

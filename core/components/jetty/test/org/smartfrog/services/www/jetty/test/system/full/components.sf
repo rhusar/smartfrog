@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 20052--7 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,8 @@
 #include "/org/smartfrog/components.sf";
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/filesystem/components.sf";
+#include "/org/smartfrog/services/assertions/components.sf"
 
-/**
- * This is an example of jetty component
- */
 
 
 /**

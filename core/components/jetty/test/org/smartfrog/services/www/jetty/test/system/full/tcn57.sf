@@ -25,10 +25,10 @@ sfConfig extends Compound {
 
   server1 extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
-
-      list1 extends JettyListener {
-            listenerPort 8014;
-            server LAZY PARENT:PARENT;
-      }
    }
+   
+ list1 extends JettyListener {
+    listenerPort 8014;
+    server LAZY PARENT:server1;
+  }
 }

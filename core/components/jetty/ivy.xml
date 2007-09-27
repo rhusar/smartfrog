@@ -61,29 +61,42 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
+
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
         conf="compile->master;redist->default"/>
+
+    <!--
+    Core Jetty libraries
+     -we apply our own dependency logic to the components here
+     which is why the master is picked up. Everything else we need is asked for by hand 
+    -->
     <dependency org="org.mortbay.jetty"
         name="jetty"
         rev="${jetty.version}"
-        conf="compile->default;redist->default"/>
+        conf="compile->master;redist->master"/>
     <dependency org="org.mortbay.jetty"
-        name="jetty"
+        name="jetty-util"
         rev="${jetty.version}"
-        conf="compile->default;redist->default"/>
-    <dependency org="tomcat"
-        name="jasper-runtime"
-        rev="${jetty.jasper.version}"
-        conf="jsp->default"/>
-    <dependency org="tomcat"
-        name="jasper-compiler"
-        rev="${jetty.jasper.version}"
+        conf="compile->master;redist->master"/>
+
+    <!--JSP support -->
+    <dependency org="org.mortbay.jetty"
+        name="jsp-2.1"
+        rev="${jetty.version}"
         conf="jsp->master"/>
-    <dependency org="javax.servlet"
-        name="jsp-api"
-        rev="${jsp-api.version}"
+    <dependency org="org.mortbay.jetty"
+        name="jsp-api-2.1"
+        rev="${jetty.version}"
+        conf="jsp->master"/>
+    <dependency org="org.apache.ant"
+        name="ant"
+        rev="${apache.ant.version}"
+        conf="jsp->master"/>
+    <dependency org="org.eclipse.jdt"
+        name="core"
+        rev="${org.eclipse.jdt.core.version}"
         conf="jsp->master"/>
     <dependency org="commons-logging"
         name="commons-logging"

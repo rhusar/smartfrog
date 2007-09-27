@@ -20,10 +20,8 @@
 
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpServer;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.servlet.WebApplicationContext;
+import org.mortbay.jetty.webapp.WebAppContext;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.SFJetty;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
@@ -49,7 +47,7 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
     private boolean requestId = false;
 
 
-    private WebApplicationContext application = new WebApplicationContext();
+    private WebAppContext application = new WebAppContext();
 
 
     public DelegateWebApplicationContext(SFJetty server, Prim declaration) {
@@ -90,11 +88,13 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         String absolutePath = contextPath;
         declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         application.setContextPath(contextPath);
-        application.setWAR(webApp);
+        application.setWar(webApp);
         ServletHandler servlethandler = application.getServletHandler();
+/*      TODO: turn this on if needed
         AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
+        */
         setContext(application);
     }
 
