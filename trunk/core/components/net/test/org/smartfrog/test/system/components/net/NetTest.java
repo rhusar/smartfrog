@@ -42,7 +42,7 @@ public class NetTest
                                  "SmartFrogLifecycleException",
                                  "sfDeploy",
                                  "SmartFrogException",
-                                 "java.io.FileNotFoundException: e:\\test\\password.txt");
+                                 "java.io.FileNotFoundException");
     }
 
     public void testCaseTCN69() throws Exception {
@@ -78,7 +78,7 @@ public class NetTest
                                  "SmartFrogLifecycleException",
                                  "sfStart",
                                  "SmartFrogException",
-                                 "java.io.FileNotFoundException: e:\\test\\password.txt");
+                                 "java.io.FileNotFoundException");
     }
 
     public void testCaseTCN73() throws Exception {
