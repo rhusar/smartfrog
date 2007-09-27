@@ -58,12 +58,12 @@ public class Autoloader extends CompoundImpl implements Compound {
     }
 
     /**
-     * Override the superclasses actions with automatic loading of components on demand
-     * @param name
-     * @param index
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * Override the superclasses actions with automatic loading of components on demand.
+     *
+     * {@inheritDoc}
+     * @return the resolved object
+     * @throws SmartFrogResolutionException other problems
+     * @throws RemoteException network problems
      */
     public synchronized Object sfResolve(Reference name, int index) throws SmartFrogResolutionException, RemoteException {
         String namePart;

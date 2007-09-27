@@ -465,7 +465,7 @@ public class DeployEntry implements Entry {
 
     /**
      *
-     * @return
+     * @return the tags of the component
      */
     public Object getEntryTags(){
        Object parent = null;

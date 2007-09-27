@@ -722,7 +722,7 @@ public class ConfigurationDescriptor implements MessageKeys {
 
     /**
      * Creates a Configuration Descriptor using a ComponentDescription
-     * @param ComponentDescription Format:
+     * @param cd Format:
      * <pre>
      *      CfgDesc extends {
      *         name;
@@ -737,7 +737,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *      - name: name where to apply ACTION
      *            ex. "foo"
      *            ex. "HOST localhost:foo"
-     *      - action: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD  {@see type}
+     *      - action: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD
      *      - descriptionURL: description used by ACTION
      *            ex. "/home/sf/foo.sf"
      *            ex. "c:\sf\foo.sf"
@@ -753,7 +753,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *      - process: process namewhere to apply ACTION. When empty it assumes rootProcess
      *
      *</pre>
-     * @see Action
+     * See also {@link Action}
      * @throws SmartFrogInitException  failure in some part of the process
      */
     public ConfigurationDescriptor (ComponentDescription cd) throws SmartFrogInitException {

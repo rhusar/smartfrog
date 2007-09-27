@@ -64,7 +64,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * Return true iff the component is finished.
      * Spin on this, with a (delay) between calls
      *
-     * @return
+     * @return true if we are finished
      */
     public boolean isFinished() {
         return finished;

@@ -35,14 +35,14 @@ public class SmartFrogThread extends Thread {
 
 
     /**
-     * {@inheritDoc}
+     * Create a basic thread
      * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread() {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a basic thread bound to a runnable
      *
      * @param target the object whose <code>run</code> method is called.
      * @see Thread#Thread(ThreadGroup,Runnable,String)
@@ -60,7 +60,7 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
      * @param group  the thread group.
      * @param target the object whose <code>run</code> method is called.
      * @throws SecurityException if the current thread cannot create a thread in the specified thread group.
@@ -72,7 +72,7 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
      * @param name the name of the new thread.
      * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
@@ -81,7 +81,7 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
      *
      * @param group the thread group.
      * @param name  the name of the new thread.
@@ -93,7 +93,7 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
      *
      * @param target the object whose <code>run</code> method is called.
      * @param name   the name of the new thread.
@@ -105,7 +105,7 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
      *
      * @param group  the thread group.
      * @param target the object whose <code>run</code> method is called.
@@ -125,7 +125,8 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * {@inheritDoc}
+     * Create a thread
+     *
      * @param group     the thread group.
      * @param target    the object whose <code>run</code> method is called.
      * @param name      the name of the new thread.
