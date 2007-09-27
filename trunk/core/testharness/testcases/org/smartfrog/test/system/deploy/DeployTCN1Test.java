@@ -52,8 +52,8 @@ public class DeployTCN1Test extends SmartFrogTestBase {
     }
 
     public void testCaseTCN1c() throws Exception {
-        deployExpectingException(FILES + "tcn1b.sf",
-                "tcn1b",
+        deployExpectingException(FILES + "tcn1c.sf",
+                "tcn1c",
                 "SmartFrogLifecycleException",
                 "sfDeploy",
                 "SmartFrogResolutionException",
