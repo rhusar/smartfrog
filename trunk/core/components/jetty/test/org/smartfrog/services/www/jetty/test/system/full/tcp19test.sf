@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,14 +17,17 @@
  For more information: www.smartfrog.org
 
  */
+//test components
+
+
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
+sfConfig extends DeploySequence {
 
-tcp19 extends JettyHttpServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      port 5050;
+	action extends tcp19;
+	
+	waitFor extends LivenessPage {
+		port tcp19:port;
+	}
 }
-
-
-sfConfig extends tcp19;
 

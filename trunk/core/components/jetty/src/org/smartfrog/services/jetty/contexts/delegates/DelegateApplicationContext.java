@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpServer;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.SFJetty;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -41,7 +41,7 @@ public abstract class DelegateApplicationContext
      * @param server jetty sever
      * @param context context
      */
-    protected DelegateApplicationContext(SFJetty server, HttpContext context) {
+    protected DelegateApplicationContext(SFJetty server, Context context) {
         this.server = server;
         this.context = context;
     }
@@ -57,7 +57,7 @@ public abstract class DelegateApplicationContext
     /**
      * The actual context
      */
-    private HttpContext context;
+    private Context context;
 
 
     /**
@@ -74,7 +74,7 @@ public abstract class DelegateApplicationContext
      *
      * @return the context; will be null if not running
      */
-    public HttpContext getContext() {
+    public Context getContext() {
         return context;
     }
 
@@ -83,7 +83,7 @@ public abstract class DelegateApplicationContext
      *
      * @param context the jetty context
      */
-    public void setContext(HttpContext context) {
+    public void setContext(Context context) {
         this.context = context;
     }
 
@@ -105,7 +105,7 @@ public abstract class DelegateApplicationContext
      */
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
-            getServer().getServer().addContext(getContext());
+            getServer().getServer().addLifeCycle(getContext());
             try {
                 getContext().start();
             } catch (RemoteException ex) {
@@ -144,9 +144,9 @@ public abstract class DelegateApplicationContext
     public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
-                HttpServer httpServer = getServer().getServer();
+                Server httpServer = getServer().getServer();
                 if (httpServer != null) {
-                    httpServer.removeContext(context);
+                    httpServer.removeLifeCycle(context);
                 } else {
                     //do nothing, the server is not alive any more
                 }

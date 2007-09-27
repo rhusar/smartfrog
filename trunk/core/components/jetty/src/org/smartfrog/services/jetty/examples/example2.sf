@@ -27,10 +27,6 @@ sfConfig extends Compound {
       contexts extends JettySampleContexts {
          server LAZY PARENT;
       }
-      list2 extends ApacheHttpdListener {
-            listenerPort 8010;
-            server LAZY PARENT;
-      }
    }
     //out of band instance
     list1 extends JettyListener {

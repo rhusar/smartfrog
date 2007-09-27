@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.jetty.listeners;
 
-import org.mortbay.http.SocketListener;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 /**
@@ -47,7 +46,7 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
 
     private String serverName = null;
 
-    private SocketListener listener = null;
+    private SocketConnector listener = null;
 
     private JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -93,15 +92,11 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    */
   public void addlistener(int port, String host) throws
           SmartFrogException, RemoteException {
-      try {
-          listener = new SocketListener();
-          listener.setPort(port);
-          if (host != null) {
-              listener.setHost(host);
-          }
-          jettyHelper.addAndStartListener(listener);
-      } catch (UnknownHostException unex) {
-          throw SmartFrogException.forward(unex);
+      listener = new SocketConnector();
+      listener.setPort(port);
+      if (host != null) {
+          listener.setHost(host);
       }
+      jettyHelper.addAndStartListener(listener);
   }
 }

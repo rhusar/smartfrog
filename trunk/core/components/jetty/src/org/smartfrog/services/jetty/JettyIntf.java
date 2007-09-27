@@ -62,6 +62,32 @@ public interface JettyIntf extends JavaWebApplicationServer {
      */
 
     public static final String ATTR_LOGPATTERN="logPattern";
-    
+
+    /**
+     * timezone for log data
+     * {@value}
+     */
+
+    public static final String ATTR_LOG_TZ = "logTimezone";
+
+    /**
+     * max# of threads in the pool.
+     * {@value}
+     */
+    public static final String ATTR_MAXTHREADS="maxThreads";
+
+    /**
+     * min# of threads in the pool.
+     * {@value}
+     */
+    public static final String ATTR_MINTHREADS = "minThreads";
+
+    /**
+     * max idle time for a thread before it is closed
+     * {@value}
+     */
+
+    public static final String ATTR_MAXIDLETIME = "maxIdleTime";
+
 
 }

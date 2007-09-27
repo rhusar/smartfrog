@@ -21,8 +21,7 @@
 
 package org.smartfrog.services.jetty.contexts.handlers;
 
-import org.mortbay.http.HttpHandler;
-import org.smartfrog.services.jetty.JettyHelper;
+import org.mortbay.jetty.Handler;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -45,9 +44,8 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
     private DelegateServletContext context;
 
 
-    private JettyHelper jettyHelper;
 
-    private HttpHandler handler;
+    private Handler handler;
     public static final String ERROR_HANDLER_STOPPED = "Handler is stopped";
     public static final String ERROR_HANDER_UNDEFINED = "No handler";
 
@@ -71,7 +69,6 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        jettyHelper = new JettyHelper(this);
         context = (DelegateServletContext) sfResolve(ServletComponent.ATTR_SERVLET_CONTEXT,true);
 
     }
@@ -126,7 +123,7 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
         if (handler != null) {
             try {
                 handler.stop();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 throw new SmartFrogException(e);
             }
         }
@@ -138,7 +135,7 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    protected void addHandler(HttpHandler newHandler) throws SmartFrogException, RemoteException {
+    protected void addHandler(Handler newHandler) throws SmartFrogException, RemoteException {
         context.addHandler(newHandler);
         handler= newHandler;
     }

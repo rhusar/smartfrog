@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpHandler;
-import org.mortbay.http.handler.ResourceHandler;
-import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.MimeTypes;
+import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.SFJetty;
 import org.smartfrog.services.www.ServletComponent;
@@ -30,10 +30,10 @@ import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -61,11 +61,11 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * Get the context cast to a servlet context
      * @return the servlet context of jetty
      */
-    public final ServletHttpContext getServletContext() {
-        return (ServletHttpContext)getContext();
+    public final Context getServletContext() {
+        return (Context)getContext();
     }
 
-    public DelegateServletContext(SFJetty server, HttpContext context) {
+    public DelegateServletContext(SFJetty server, Context context) {
         super(server, context);
     }
 
@@ -81,7 +81,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
         log = LogFactory.getOwnerLog(declaration);
         JettyHelper jettyHelper = new JettyHelper(declaration);
-        ServletHttpContext context = new ServletHttpContext();
+        Context context = new Context();
         setContext(context);
         jettyHelper.setServerComponent(getServer());
         String jettyhome = jettyHelper.findJettyHome();
@@ -100,14 +100,14 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         }
         //classpath stuff.
         //REVISIT: what does this bring to the table?
-        String classPath = declaration.sfResolve(classPathRef, (String) null, false);
+/*        String classPath = declaration.sfResolve(classPathRef, (String) null, false);
         if (classPath != null) {
             if (!new File(classPath).exists()) {
                 classPath = jettyhome+classPath;
             }
             log.info("Jetty classpath="+classPath);
             context.setClassPath(classPath);
-        }
+        }*/
         //configure the context
         log.debug("Jetty resource base ="+resourceBase);
         context.setResourceBase(resourceBase);
@@ -137,8 +137,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws RemoteException network problems
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
-        getServletContext().setMimeMapping(extension, mimeType);
         log.info("Adding mime mapping "+extension+" maps to "+mimeType);
+        MimeTypes mimes = getServletContext().getMimeTypes();
+        mimes.addMimeMapping(extension,mimeType);
     }
 
     /**
@@ -151,9 +152,13 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
-        Map mimeMap = getServletContext().getMimeMap();
         log.info("removing mime mapping " + extension);
-        return (mimeMap.remove(extension) != null);
+        Map mimeMap = getServletContext().getMimeTypes().getMimeMap();
+        if(mimeMap!=null) {
+            return (mimeMap.remove(extension) != null);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -177,9 +182,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    public void addHandler(HttpHandler handler) throws SmartFrogException,
+    public void addHandler(Handler handler) throws SmartFrogException,
             RemoteException {
-        ServletHttpContext context = getServletContext();
+        Context context = getServletContext();
         context.addHandler(handler);
     }
 
@@ -190,16 +195,17 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    public void removeHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
-        ServletHttpContext context = getServletContext();
+    public void removeHandler(Handler handler) throws SmartFrogException, RemoteException {
         try {
             if(handler.isStarted()) {
                 handler.stop();
             }
-        } catch (InterruptedException ignore) {
-            //ignore
+        } catch (Exception ignore) {
+            log.info(ignore);
         }
-        context.removeHandler(handler);
+        //TODO: remove the handler?
+        Context context = getServletContext();
+        //context.removeHandler(handler);
 
     }
 

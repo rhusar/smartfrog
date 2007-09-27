@@ -1,7 +1,9 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
+import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletMapping;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
@@ -16,7 +18,6 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -84,10 +85,11 @@ public class JettyServletDelegate
             pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
             className = prim.sfResolve(classNameRef, className, true);
 
-            ServletHttpContext servletContext;
+            Context servletContext;
             servletContext = ctx.getServletContext();
 
-            holder = servletContext.addServlet(name, pathSpec, className);
+            holder = servletContext.addServlet(pathSpec, className);
+            holder.setDisplayName(name);
 
             //get and apply init order
             int initOrder = prim.sfResolve(ATTR_INIT_ORDER,
@@ -119,11 +121,16 @@ public class JettyServletDelegate
             Vector mappings = null;
             mappings = prim.sfResolve(ATTR_MAPPINGS, mappings, false);
             if (mappings != null) {
-                for (Object mapping1 : mappings) {
-                    String mapping = mapping1.toString();
-                    servletContext.getServletHandler()
-                        .mapPathToServlet(mapping, name);
+                String[] pathSpecs=new String[mappings.size()];
+                int counter=0;
+                for (Object mapping : mappings) {
+                    pathSpecs[counter++]= mapping.toString();
                 }
+                ServletHandler servletHandler = servletContext.getServletHandler();
+                ServletMapping servletMapping = new ServletMapping();
+                servletMapping.setPathSpecs(pathSpecs);
+                servletMapping.setServletName(name);
+                servletHandler.addServletMapping(servletMapping);
             }
 
         } catch (RemoteException ex) {
@@ -182,9 +189,13 @@ public class JettyServletDelegate
      * @throws RemoteException network problems
      */
     public void terminate() throws RemoteException, SmartFrogException {
-        if (holder != null) {
-            holder.stop();
-            holder = null;
+        try {
+            if (holder != null) {
+                holder.stop();
+                holder = null;
+            }
+        } catch (Exception e) {
+            throw SmartFrogException.forward(e);
         }
     }
 

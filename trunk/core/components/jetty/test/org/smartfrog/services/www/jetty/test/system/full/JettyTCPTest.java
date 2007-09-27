@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -43,32 +44,14 @@ import java.net.URLConnection;
  * runtime.jetty.home</li> </ol>
  */
 public class JettyTCPTest
-        extends DeployingTestBase {
+        extends JettyTestBase {
 
-    private static final String FILES = "org/smartfrog/services/www/jetty/test/system/full/";
-    private static final String JETTY_HOME = "jetty.home";
-    private static final String TEST_JETTY_HOME = "test." + JETTY_HOME;
-    private static final String TEST_JASPER_FOUND = "test.jasper.found";
-
-    private static final String ROOT_DOC = "/";//""/jetty/index.html";
-
-    private boolean hasJasper;
 
     public JettyTCPTest(String s) {
         super(s);
     }
 
-    /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        String runtimeJettyHome = TestHelper.getRequiredTestProperty(TEST_JETTY_HOME);
-        System.setProperty(JETTY_HOME, runtimeJettyHome);
-        hasJasper= TestHelper.getTestProperty(TEST_JASPER_FOUND,null)!=null;
 
-    }
 
 
     public void testCaseTCPJettyCore() throws Throwable {
@@ -144,14 +127,18 @@ public class JettyTCPTest
         port = application.sfResolve("port", port, true);
         URL url = new URL("http", host, port, ROOT_DOC);
         HttpURLConnection connection = null;
-        connection = (HttpURLConnection) url.openConnection();
         int errorcode = 0;
         try {
+            connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             errorcode = connection.getResponseCode();
         } catch (FileNotFoundException e) {
             //if this is a 404 error, we have succeeded.
-            errorcode = connection.getResponseCode();
+        	if(connection!=null) {
+        		errorcode = connection.getResponseCode();
+        	}
+        } catch (ConnectException e  ) {
+        	fail("Connection refused to "+url.toString());
         }
         assertEquals("Expected a 404 response from " + url + " but got " + errorcode,
                 HttpURLConnection.HTTP_NOT_FOUND, errorcode);

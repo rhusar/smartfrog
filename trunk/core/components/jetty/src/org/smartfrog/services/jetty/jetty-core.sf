@@ -44,6 +44,10 @@ CoreJettySchema extends Schema {
     //could be a file or a directory
     //relative paths are resolved relative to jetty home
     logDir extends Optional;
+    maxThreads extends Integer;
+    minThreads extends Integer;
+    maxIdleTime extends Integer;
+
 }
 
 /**
@@ -67,6 +71,12 @@ CoreJettyServer extends ApplicationServer {
    enableLogging false;
    logPattern "yyyy_mm_dd.request.log";
    logDir "log";
+   logTimezone "GMT";
+   
+   //thread pool policy.
+   maxThreads 8;
+   minThreads 2;
+   maxIdleTime 10000;
 }
 
 

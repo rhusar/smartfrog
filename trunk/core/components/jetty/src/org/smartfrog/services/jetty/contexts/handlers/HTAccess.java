@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.jetty.contexts.handlers;
 
-import org.mortbay.http.handler.HTAccessHandler;
+import org.mortbay.jetty.security.HTAccessHandler;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
 
