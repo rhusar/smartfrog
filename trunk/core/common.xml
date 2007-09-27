@@ -1122,6 +1122,7 @@ java.class.path=
 	               refid="compile.classpath">
 	  </pathconvert>
       <echo message=" --------------------------------------------------------"/>
+	  <echo message=" Project: ${ant.project.name}"/>
 	  <echo message=" Ant file: ${ant.file}"/>
       <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
 	  <echo message=" --------------------------------------------------------"/>
