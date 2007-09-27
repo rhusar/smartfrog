@@ -40,10 +40,6 @@ import org.smartfrog.services.filesystem.FileSystem;
 public class FilePasswordProvider extends PrimImpl implements Prim, 
                                                     PasswordProvider     {
 
-    private String passwordFile = "";
-    private String password = "";
-    // attribute name for password file
-
     /**
      * The attribute of the password file: "{@value}"
      */
