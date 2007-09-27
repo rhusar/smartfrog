@@ -737,7 +737,10 @@ public class FileSystem {
      */
     public static StringBuffer readFile(File file, Charset encoding) throws IOException {
         StringBuffer buf = new StringBuffer();
-        if (!file.exists() || !file.canRead()) {
+        if (!file.exists()) {
+            throw new FileNotFoundException("File not found:"+file);
+        }
+        if (!file.canRead()) {
             throw new IOException(ERROR_INACCESSIBLE_FILE + file);
         }
         FileInputStream fileIn = new FileInputStream(file);
