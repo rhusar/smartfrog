@@ -738,7 +738,7 @@ public class FileSystem {
     public static StringBuffer readFile(File file, Charset encoding) throws IOException {
         StringBuffer buf = new StringBuffer();
         if (!file.exists()) {
-            throw new FileNotFoundException("File not found:"+file);
+            throw new FileNotFoundException(file.toString());
         }
         if (!file.canRead()) {
             throw new IOException(ERROR_INACCESSIBLE_FILE + file);
@@ -753,7 +753,7 @@ public class FileSystem {
      * Read an input stream; turn it into a buffer.
      * After reading everything in, the input stream is closed.
      * @param in input stream
-     * @param encoding encoding to use
+     * @param encoding encoding to useles
      * @return the input stream completely loaded into memory
      * @throws IOException if something went wrong.
      */
