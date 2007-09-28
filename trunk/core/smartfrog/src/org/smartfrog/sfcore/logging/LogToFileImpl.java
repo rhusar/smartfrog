@@ -45,7 +45,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     /** Log file. */
     File logFile;
 
-    StringBuffer fullLogFileName = new StringBuffer();
+    StringBuilder fullLogFileName = new StringBuilder();
 
     /** String name for path. */
     String path=".";//+File.separator+"log";

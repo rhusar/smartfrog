@@ -177,7 +177,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      */
     private String createConcatFromContext(ComponentDescription compDesc) {
         Object value = null;
-        StringBuffer auxString = new StringBuffer();
+        StringBuilder auxString = new StringBuilder();
 
         for (Enumeration e = compDesc.sfContext().elements();
                 e.hasMoreElements();) {

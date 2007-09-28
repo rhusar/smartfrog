@@ -170,7 +170,7 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
      * @return reason source and ref of exception
      */
     public String toString(String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
         strb.append ((((this.containsKey(REFERENCE))) ? (nm+REFERENCE+  ": "
                                                     + get(REFERENCE)) : "" ));

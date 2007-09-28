@@ -138,7 +138,7 @@ public abstract class LifecycleEvent implements Serializable {
      * @return a readable outcome
      */
     public String toString() {
-        StringBuffer buf=new StringBuffer();
+        StringBuilder buf=new StringBuilder();
         buf.append(getComponentName());
         buf.append(" -"+getEventName());
         buf.append(" at ");

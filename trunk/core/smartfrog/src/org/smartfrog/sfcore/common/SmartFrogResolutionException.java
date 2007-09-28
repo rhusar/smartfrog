@@ -416,8 +416,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return string representation of the resolution exception
      */
     public String toString(String nm) {
-      StringBuffer strb = null;
-      strb = new StringBuffer();
+        StringBuilder strb = null;
+      strb = new StringBuilder();
       try {
         strb.append (shortClassName() +":: ");
 

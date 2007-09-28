@@ -101,7 +101,7 @@ public class PlatformHelper {
             return null;
         }
         int len = filename.length();
-        StringBuffer buffer=new StringBuffer(len);
+        StringBuilder buffer=new StringBuilder(len);
         for(int i=0;i<len;i++) {
             char c=filename.charAt(i);
             if(c=='/') {
