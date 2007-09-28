@@ -901,7 +901,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.version" value="2.0.0-alpha-2" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
