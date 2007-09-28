@@ -245,6 +245,7 @@ if it is unassigned, it takes.-->
         alias="${aliasSelfKey}"
         keystore="${CA}/${defaultCodeSignerCAKeyStore}"
         signedjar="${signedjarname}"
+        storetype="${keystoreType}"
         storepass="${defaultCAPassword}"/>
   </target>
 
