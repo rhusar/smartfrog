@@ -57,6 +57,7 @@ public class NodeData {
     private ThreadsMsg     threadsInfo    = null;
     private long           threadsInfoExpire = 0;
 
+    private long           lastReceive    = 0;
     private long           lastHB         = 0;
     private TestConnection connection     = null;
     private NodeButton     button;
@@ -72,6 +73,7 @@ public class NodeData {
                     Controller       controller) {
         this.controller           = controller;
         this.colorAllocator       = colorAllocator;
+        lastReceive               = System.currentTimeMillis();
         lastHB                    = hb.getTime();
         view                      = hb.getView();
         nodeId                    = hb.getSender();
@@ -128,6 +130,7 @@ public class NodeData {
 
         if( lastHB <= hb.getTime() ) {
             lastHB = hb.getTime();
+            lastReceive = System.currentTimeMillis();
             if( (view.isStable() != hb.getView().isStable()) ||
                 !view.equals(hb.getView()) ) {
                 view   = hb.getView();
@@ -307,7 +310,7 @@ public class NodeData {
     }
 
     public boolean olderThan(long oldTime) {
-        return lastHB < oldTime;
+        return lastReceive < oldTime;
     }
 
     public void setTiming(long interval, long timeout) {
