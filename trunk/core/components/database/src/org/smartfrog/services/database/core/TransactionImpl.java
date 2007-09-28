@@ -333,7 +333,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         List<String> list = new ArrayList<String>();
         int delimiterSize = commandDelimiter.length();
         String line;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         BufferedReader in = new BufferedReader(new StringReader(sql));
 
         while ((line = in.readLine()) != null) {
@@ -499,7 +499,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
     protected void printResults(ResultSet results) throws SQLException {
         ResultSetMetaData md = results.getMetaData();
         int columnCount = md.getColumnCount();
-        StringBuffer line = new StringBuffer();
+        StringBuilder line = new StringBuilder();
         if (printHeaders) {
             for (int col = 1; col < columnCount; col++) {
                 line.append(md.getColumnName(col));
@@ -507,7 +507,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
             }
             line.append(md.getColumnName(columnCount));
             getLog().info(line);
-            line = new StringBuffer();
+            line = new StringBuilder();
         }
         while (results.next()) {
             boolean first = true;
