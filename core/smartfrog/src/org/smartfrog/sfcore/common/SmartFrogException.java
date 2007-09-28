@@ -317,7 +317,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return String this object to String.
      */
     public String toString (String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append (shortClassName() +":: ");
         if (getMessage()!=null){
             if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {
@@ -377,7 +377,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return string representation of the exception
      */
     public String toStringAll(String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append("ALL: ").append(shortClassName()).append(": ");
 
         if ((getMessage()!=null) && (getCause()!=null) && (!((getCause().toString().equals(getMessage()))))) {

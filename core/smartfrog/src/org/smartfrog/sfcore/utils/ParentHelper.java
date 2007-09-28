@@ -183,7 +183,7 @@ public class ParentHelper implements ChildMinder {
             }
 
             if (log.isTraceEnabled()) {
-                StringBuffer message = new StringBuffer();
+                StringBuilder message = new StringBuilder();
                 try {
                     message.append(helper.completeNameSafe());
                     message.append(" is deploying: ");

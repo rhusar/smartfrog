@@ -204,7 +204,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @return the message value
      */
     public String getMessage(){
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append ((((this.containsKey(SOURCE)&&
                                 (this.get(SOURCE)!=null)&&
                                 (((Reference)this.get(SOURCE)).size()!=0)))
@@ -224,7 +224,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @return reason source and ref of exception
      */
     public String toString(String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append (""+ shortClassName() +": ");
 
         if (getMessage()!=null){

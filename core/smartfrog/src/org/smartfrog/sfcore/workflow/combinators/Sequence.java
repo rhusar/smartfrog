@@ -162,7 +162,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
         } else {
             //abnormal terminations
             if (sfLog().isErrorEnabled()) {
-                StringBuffer text=new StringBuffer();
+                StringBuilder text=new StringBuilder();
                 text.append(name);
                 text.append("- error in child component\n");
                 text.append(status.toString());

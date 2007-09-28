@@ -168,7 +168,7 @@ public class SFUnparser implements WriterLanguageUnparser {
             } catch (IOException ex) {
                 throw ex;
             } catch (java.lang.StackOverflowError thr) {
-                   StringBuffer msg = new StringBuffer("Failed to pretty print value. Possible cause: cyclic reference.");
+                   StringBuilder msg = new StringBuilder("Failed to pretty print value. Possible cause: cyclic reference.");
                    msg.append("Cause:#<0># ");
                    msg.append(thr.getCause().toString());
                    throw new java.io.IOException(msg.toString());

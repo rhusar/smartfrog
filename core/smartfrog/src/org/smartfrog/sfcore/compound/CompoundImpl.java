@@ -118,7 +118,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
 
             if (sfLog().isTraceEnabled()){
-              StringBuffer message = new StringBuffer();
+              StringBuilder message = new StringBuilder();
               try {
                 message.append(this.sfCompleteNameSafe());
                 message.append(" is deploying: ");

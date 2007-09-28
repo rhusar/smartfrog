@@ -463,12 +463,14 @@ public class FileSystem {
     public static List scanDir(File dir, List filePaths, String extensionsRegex, boolean recursive) throws IOException {
         if (!dir.isDirectory()) throw new IOException(dir + " is not a directory.");
         File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory())
-                if (recursive) {scanDir (files[i], filePaths, extensionsRegex, recursive);}
-            else {
-                String path = files[i].getCanonicalPath();
-                if (path.matches(extensionsRegex)) filePaths.add(path);
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if (recursive) {
+                    scanDir(file, filePaths, extensionsRegex, recursive);
+                } else {
+                    String path = file.getCanonicalPath();
+                    if (path.matches(extensionsRegex)) filePaths.add(path);
+                }
             }
         }
         return filePaths;
@@ -482,7 +484,7 @@ public class FileSystem {
      * @throws MalformedURLException
      */
     public List toFileURLs (List filePaths) throws MalformedURLException {
-      List urls = new ArrayList();
+      List<URL> urls = new ArrayList<URL>();
       ListIterator it = filePaths.listIterator();
       while (it.hasNext()) {
           urls.add(toFileURL(it.next().toString()));

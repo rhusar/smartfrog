@@ -486,7 +486,7 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return String representing the reference
      */
     public String toString() {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         res.append (eager ? "" : "LAZY ");
         if (optional) {
             res.append("OPTIONAL ");

@@ -169,7 +169,7 @@ public class SmartFrogCompilationException extends SmartFrogException implements
      * @return string representation of the compilation exception
      */
     public String toString(String nm){
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
         if ( (this.containsKey(SOURCE) && (this.get(SOURCE)!=null) && (this.get(SOURCE)instanceof Reference))){
         strb.append ((((((Reference)this.get(SOURCE)).size()!=0)))

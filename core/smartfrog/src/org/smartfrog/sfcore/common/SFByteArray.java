@@ -235,7 +235,7 @@ public class SFByteArray implements Serializable {
      * @return String
      */
     private String processArray() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
             int j = (array[i] < 0)? 256 + array[i] : array[i] ;  // deal with caste-up sign-extending!
             int k = (j >> 4);
