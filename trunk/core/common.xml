@@ -1676,7 +1676,10 @@ java.class.path=
 
     <!--a string that is copied into the pom comments-->
     <property name="pom.comments"
-      value="Created ${build.date} by ${user.name}" />
+      value="
+      Created ${build.date} by ${user.name}.
+      This metadata file is published under an Apache license. 
+      " />
   </target>
 
 
