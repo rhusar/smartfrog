@@ -39,16 +39,16 @@ public class SSHTest
     public void testCaseTCN83() throws Exception {
         deployExpectingException(FILES+"tcn83.sf",
                                  "tcn83",
-                                 "SmartFrogLifecycleException",
-                                 "sfDeploy",
-                                 "SmartFrogException",
-                                 "java.io.FileNotFoundException");
+                                 EXCEPTION_DEPLOYMENT,
+                                 null,
+                                 EXCEPTION_RESOLUTION,
+                                 "attribute is still TBD");
     }
 /*scp :  host is missing*/
     public void testCaseTCN84() throws Exception {
         deployExpectingException(FILES+"tcn84.sf",
                                  "tcn84",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'host' is missing");
@@ -58,7 +58,7 @@ public class SSHTest
 	public void testCaseTCN86() throws Exception {
         deployExpectingException(FILES+"tcn86.sf",
                                  "tcn86",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
@@ -67,7 +67,7 @@ public class SSHTest
 	public void testCaseTCN87() throws Exception {
         deployExpectingException(FILES+"tcn87.sf",
                                  "tcn87",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'localFiles' is missing");
@@ -76,7 +76,7 @@ public class SSHTest
 		public void testCaseTCN88() throws Exception {
         deployExpectingException(FILES+"tcn88.sf",
                                  "tcn88",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'remoteFiles' is missing");
@@ -85,7 +85,7 @@ public class SSHTest
 		public void testCaseTCN89() throws Exception {
         deployExpectingException(FILES+"tcn89.sf",
                                  "tcn89",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'transferType' is missing");
@@ -102,7 +102,7 @@ public class SSHTest
     public void testCaseTCN91() throws Exception {
         deployExpectingException(FILES+"tcn91.sf",
                                  "tcn91",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'host' is missing");
@@ -112,7 +112,7 @@ public class SSHTest
 	public void testCaseTCN92() throws Exception {
         deployExpectingException(FILES+"tcn92.sf",
                                  "tcn92",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
@@ -121,7 +121,7 @@ public class SSHTest
 	public void testCaseTCN93() throws Exception {
         deployExpectingException(FILES+"tcn93.sf",
                                  "tcn93",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'commands' is missing");
