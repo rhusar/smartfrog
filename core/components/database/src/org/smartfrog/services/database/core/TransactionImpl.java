@@ -525,7 +525,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                 line.append(columnValue);
             }
             getLog().info(line);
-            line = new StringBuffer();
+            line = new StringBuilder();
         }
     }
 }
