@@ -23,7 +23,7 @@
     It requires
       -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 1.4.1 or later from apache.org
+      -Ivy 2.0alpha2 or later from apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -42,7 +42,7 @@
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
-    <property name="core.dir" location=".." />
+    <property name="core.dir" location=".."/>
     <tstamp/>
     <tstamp>
       <format property="year" pattern="yyyy"/>
@@ -50,25 +50,25 @@
     <property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-	<echo message="  "/>
+    <echo message="  "/>
     <echo message="  "/>
     <echo message=" ======================================================="/>
     <echo message=" Build info - Project: ${Name.System} ${version}"/>
     <echo message="   ${Name.Company}"/>
-	<echo message="      Java: ${java.version} ${java.vendor} "/>
-	<echo message="            ${java.home} "/>
-    <echo message="      OS: ${os.name} ${os.version}"/>	
+    <echo message="      Java: ${java.version} ${java.vendor} "/>
+    <echo message="            ${java.home} "/>
+    <echo message="      OS: ${os.name} ${os.version}"/>
     <echo message=" --------------------------------------------------------"/>
-    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>	
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
-    <echo message="  "/>		
+    <echo message="  "/>
     <echo level="verbose">
       ===================================================================
       = ${Name.System} ${version}
       = ${Name.Company}
       = Java: ${java.version} ${java.vendor}
-	  =       ${java.home} 
-      = OS: ${os.name} ${os.version}	
+      = ${java.home}
+      = OS: ${os.name} ${os.version}
       ===================================================================
     </echo>
     <fail>
