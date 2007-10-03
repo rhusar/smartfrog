@@ -630,6 +630,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+
 <!--      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
@@ -640,6 +641,9 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/jetty-${jetty.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/jetty-util-${jetty.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <depends packname="Logging"/>
