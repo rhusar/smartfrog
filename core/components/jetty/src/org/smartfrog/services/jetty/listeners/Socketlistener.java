@@ -93,6 +93,7 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
   public void addlistener(int port, String host) throws
           SmartFrogException, RemoteException {
       listener = new SocketConnector();
+
       listener.setPort(port);
       if (host != null) {
           listener.setHost(host);

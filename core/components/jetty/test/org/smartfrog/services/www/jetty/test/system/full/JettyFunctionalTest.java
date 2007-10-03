@@ -32,6 +32,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.services.www.jetty.test.system.full;
 
+import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
+
 public class JettyFunctionalTest extends JettyTestBase {
 
 	public JettyFunctionalTest(String name) {
@@ -39,6 +41,11 @@ public class JettyFunctionalTest extends JettyTestBase {
 	}
 
     public void testTcp19() throws Throwable {
-		expectSuccessfulTestRun(FILES, "tcp19test");
+		expectSuccessfulTestRun(FULL_FILES, "tcp19test");
 	}
+
+
+    public void testTcp20() throws Throwable {
+        expectSuccessfulTestRun(FULL_FILES, "tcp20test");
+    }
 }

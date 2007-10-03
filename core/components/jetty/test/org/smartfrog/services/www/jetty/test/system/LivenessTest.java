@@ -23,7 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 /**
  */
-public class LivenessTest extends WebappTestBase {
+public class LivenessTest extends JettyTestBase {
 
 
     public LivenessTest(String name) {
@@ -36,7 +36,7 @@ public class LivenessTest extends WebappTestBase {
 
     protected void expectLivenessFailure(String target) throws Throwable {
         try {
-            deployWebApp(JettyWarTest.FILE_BASE + target + ".sf",
+            deployWebApp(SYSTEM_FILES + target + ".sf",
                     target);
             fail("expected a liveness exception");
         } catch (SmartFrogLivenessException liveness) {
@@ -49,7 +49,7 @@ public class LivenessTest extends WebappTestBase {
     }
 
     public void testLivenessURL() throws Throwable {
-        deployWebApp(JettyWarTest.FILE_BASE + "testLivenessURL" + ".sf",
+        deployWebApp(SYSTEM_FILES + "testLivenessURL" + ".sf",
                 "testLivenessURL");
     }
 

@@ -77,3 +77,18 @@ Root extends RootWAR {
  filename ((ROOT:jetty_home) ++ "/demo/webapps/root");
 }
 
+
+waitForPage extends FailingWaitFor {
+  port TBD;
+    condition extends LivenessPage {
+      port PARENT:port;
+    }
+    interval waitForInterval;
+    timeout waitForTimeout;
+  }
+
+JettyTestCompound extends TestCompound {
+
+  testTimeout 20000;
+
+}

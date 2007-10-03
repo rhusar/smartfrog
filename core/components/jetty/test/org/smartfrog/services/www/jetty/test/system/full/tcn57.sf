@@ -29,6 +29,6 @@ sfConfig extends Compound {
    
  list1 extends JettyListener {
     listenerPort 8014;
-    server LAZY PARENT:server1;
+    server LAZY PARENT:server1:jettyHome;
   }
 }

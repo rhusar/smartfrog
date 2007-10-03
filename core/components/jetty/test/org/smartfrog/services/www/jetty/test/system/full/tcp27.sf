@@ -24,10 +24,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
    sfProcessHost ROOT:hostname;
-   adminServer extends HttpServerAdmin {
-         httpserverHost ROOT:hostname; // optional
-         listenerPort 8081; // mandatory
-   }
+
    server extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost ROOT:hostname; //mandatory

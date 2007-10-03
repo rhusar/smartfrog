@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,25 +17,42 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www.jetty.test.system;
+//test components
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.test.SmartFrogTestBase;
 
-/**
- */
-public abstract class WebappTestBase extends SmartFrogTestBase {
+#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
-    protected WebappTestBase(String name) {
-        super(name);
-    }
 
-    public void deployWebApp(String resource, String name) throws
-            Throwable {
-        setApplication(deployExpectingSuccess(resource, name));
-        Prim liveness = (Prim)getApplication().sfResolve("ping");
-        for (int i = 0; i < 100; i++) {
-            liveness.sfPing(null);
-        }
-    }
+
+tcp20 extends Compound {
+
+  server1 extends TempDirServer {
+    maxThreads 20;
+    listenerPort 8010;
+  }
+
+  server2 extends TempDirServer {
+    listenerPort 8011;
+  }
+
+
 }
+
+  
+sfConfig extends JettyTestCompound {
+
+	action extends tcp20;
+
+	
+
+  tests extends Sequence {
+     wait extends waitForPage {
+       port tcp20:server1:listenerPort;
+     }
+     wait2 extends waitForPage {
+       port tcp20:server2:listenerPort;  
+     }
+   }
+
+}
+

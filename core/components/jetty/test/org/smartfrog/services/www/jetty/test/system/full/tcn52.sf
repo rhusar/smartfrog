@@ -26,10 +26,6 @@
 
 
 sfConfig extends Compound {
-   adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-         listenerPort "8081"; // mandatory
-   }
 
    server1 extends CoreJettyServer {
       jettyhome LAZY PROPERTY java.io.tmpdir;
