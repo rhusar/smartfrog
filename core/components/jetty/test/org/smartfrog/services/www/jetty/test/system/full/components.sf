@@ -35,6 +35,9 @@ hostname "127.0.0.1";
 
 resourcebase LAZY PROPERTY java.io.tmpdir;
 
+waitForTimeout 10000;
+//interval in ms between checks
+waitForInterval 200;
 
 /*
   * serves up the entire temp directory

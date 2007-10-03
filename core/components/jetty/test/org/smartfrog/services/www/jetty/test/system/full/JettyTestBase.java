@@ -55,7 +55,7 @@ public abstract class JettyTestBase extends DeployingTestBase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        String runtimeJettyHome = TestHelper.getRequiredTestProperty(TEST_JETTY_HOME);
+        String runtimeJettyHome = TestHelper.getTestProperty(TEST_JETTY_HOME,"");
         System.setProperty(JETTY_HOME, runtimeJettyHome);
         hasJasper= TestHelper.getTestProperty(TEST_JASPER_FOUND,null)!=null;
     }

@@ -118,7 +118,7 @@ public class JettyTCPTest
 */
     }
 
-    public void testCaseTCP19() throws Throwable {
+    public void NotestCaseTCP19() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp19.sf", "tcp19");
         int port = 0;
         String host = application.sfResolve("serverHost",

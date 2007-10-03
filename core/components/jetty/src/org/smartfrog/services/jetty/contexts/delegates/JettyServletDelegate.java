@@ -54,7 +54,7 @@ public class JettyServletDelegate
     private Log log;
 
     /**
-     * Create the delegate and configure the {@link org.mortbay.jetty.servlet.ServletHttpContext} of Jetty
+     * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty
      * that is the real context
      *
      * @param context sevlet context

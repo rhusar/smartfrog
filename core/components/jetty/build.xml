@@ -40,7 +40,8 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="true" />
+  <property name="system.tests" value="false" />
+  <!-- <property name="system.tests" value="true" /> -->
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
