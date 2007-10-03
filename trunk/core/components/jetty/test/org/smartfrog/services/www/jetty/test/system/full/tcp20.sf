@@ -24,6 +24,7 @@
 sfConfig extends Compound {
 
   server1 extends TempDirServer {
+    maxThreads 20;
     listenerPort 8010;
   }
 

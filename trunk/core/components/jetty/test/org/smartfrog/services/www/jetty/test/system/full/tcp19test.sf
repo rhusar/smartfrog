@@ -28,22 +28,17 @@ tcp19 extends JettyHttpServer {
       port 5050;
 }
 
-waitForTcp19 extends FailingWaitFor {
-    condition extends LivenessPage {
-      port tcp19:port;
-    }
-    interval waitForInterval;
-    timeout waitForTimeout;
-  }
 
-sfConfig extends DeploySequence {
+sfConfig extends JettyTestCompound {
 
 	action extends tcp19;
 
 	
 
   tests extends Sequence {
-     wait extends waitForTcp19 ;
+     wait extends waitForPage {
+      port tcp19:port;
+      }
    }
 
 }

@@ -3,13 +3,8 @@ package org.smartfrog.services.www.jetty.test.system;
 /**
  *
  */
-public class JettyWarTest extends WebappTestBase {
+public class JettyWarTest extends JettyTestBase {
 
-
-    /**
-     * location for files. {@value}
-     */
-    public static final String FILE_BASE = "/org/smartfrog/services/www/jetty/test/system/";
 
     public JettyWarTest(String name) {
         super(name);
@@ -17,12 +12,12 @@ public class JettyWarTest extends WebappTestBase {
 
 
     public void testWarDeployed() throws Throwable {
-        deployWebApp(FILE_BASE + "jetty-does-war.sf",
+        deployWebApp(SYSTEM_FILES + "jetty-does-war.sf",
                 "JettyDoesWar");
     }
 
     public void testNestedWar() throws Throwable {
-        deployWebApp(FILE_BASE + "nested-war.sf",
+        deployWebApp(SYSTEM_FILES + "nested-war.sf",
                 "nested-war");
     }
 

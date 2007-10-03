@@ -113,7 +113,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         context.setResourceBase(resourceBase);
         log.debug("context path =" + contextPath);
         context.setContextPath(contextPath);
-        context.addHandler(new ResourceHandler());
+        //BUGBUG: this causes Jetty to throw an exception, as the context already has a handler. Somehow
+        //context.addHandler(new ResourceHandler());
     }
 
     public String getAbsolutePath() {

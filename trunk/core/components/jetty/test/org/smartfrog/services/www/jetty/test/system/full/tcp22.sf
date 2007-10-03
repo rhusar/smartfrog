@@ -24,10 +24,7 @@
  * This is a good check of race conditions
  */
 sfConfig extends Compound {
-   adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-         listenerPort 8088; // mandatory
-   }
+
 
   server extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
