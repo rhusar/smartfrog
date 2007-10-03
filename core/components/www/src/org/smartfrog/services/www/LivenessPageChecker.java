@@ -197,7 +197,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogDeploymentException DOCUMENT ME!
      */
     protected void makeURL() throws SmartFrogDeploymentException {
-        StringBuffer target = new StringBuffer();
+        StringBuilder target = new StringBuilder();
         target.append(protocol);
         target.append("://");
         target.append(host);
@@ -234,7 +234,7 @@ public class LivenessPageChecker implements LivenessPage {
      * SmartFrogDeploymentException}. If the target URL is already defined, does
      * nothing.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException if the URL is bad
      *
      */
     public synchronized void onStart() throws SmartFrogDeploymentException {
@@ -250,7 +250,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * try and retrieve the liveness page.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException if the check fails
      *
      */
     public void onPing() throws SmartFrogLivenessException {
@@ -263,7 +263,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * check the page
      *
-     * @throws SmartFrogLivenessException
+     * @throws SmartFrogLivenessException if the check fails
      */
     public void checkPage() throws SmartFrogLivenessException {
         //set up the connection
@@ -323,7 +323,7 @@ public class LivenessPageChecker implements LivenessPage {
      * Log the error message and raise an exception.
      * The error text is also saved to {@link #errorMessage}
      * @param message message to report
-     * @throws SmartFrogLivenessException
+     * @throws SmartFrogLivenessException always
      */
     private void logAndRaise(String message) throws SmartFrogLivenessException {
         errorMessage = message;
@@ -334,10 +334,10 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * just a little something for subclassers out there
      *
-     * @param responseCode
-     * @param response
-     * @param body
-     * @throws SmartFrogLivenessException
+     * @param responseCode response http code
+     * @param response response line
+     * @param body body of the response
+     * @throws SmartFrogLivenessException if need be
      */
     private void postProcess(int responseCode, String response, String body) throws SmartFrogLivenessException {
     }
@@ -366,7 +366,7 @@ public class LivenessPageChecker implements LivenessPage {
      * from the connection, be it good text or error text. If something goes
      * wrong partway through a fetch, we return all that we had.
      *
-     * @param connection
+     * @param connection current connection
      * @return null if there was no input from either stream, or something went
      *         wrong with the read.
      */
@@ -425,7 +425,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * set this to track redirects
      *
-     * @param followRedirects
+     * @param followRedirects true to follow redirects
      */
     public void setFollowRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
@@ -452,7 +452,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * the page under the host to probe
      *
-     * @param page
+     * @param page page to fetch
      */
     public void setPage(String page) {
         this.page = page;
@@ -478,7 +478,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * the protocol; should be one of http or https
      *
-     * @param protocol
+     * @param protocol protocol, e,g http
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
@@ -496,7 +496,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * host to test
      *
-     * @param host
+     * @param host hostname or IP addr
      */
     public void setHost(String host) {
         this.host = host;
@@ -514,7 +514,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * set the port at the destination, if URL is not defined
      *
-     * @param port
+     * @param port port number
      */
     public void setPort(int port) {
         this.port = port;
@@ -615,29 +615,27 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * extract a query string from the parameters
      *
-     * @param params
+     * @param params vectore of parameters for the query
      */
     public void buildQueryString(Vector params) {
 
-        StringBuffer query = null;
+        StringBuilder query = null;
         if (params != null) {
-            Iterator it = params.iterator();
-            while (it.hasNext()) {
+            for (Object param : params) {
                 if (query != null) {
                     query.append('&');
                 } else {
-                    query = new StringBuffer();
+                    query = new StringBuilder();
                 }
-                Object o = (Object) it.next();
-                if (o instanceof Vector && ((Vector) o).size() > 1) {
-                    Vector nested = (Vector) o;
+                if (param instanceof Vector && ((Vector) param).size() > 1) {
+                    Vector nested = (Vector) param;
                     String name = nested.elementAt(0).toString();
                     String value = nested.elementAt(1).toString();
                     query.append(name);
                     query.append('=');
                     query.append(value);
                 } else {
-                    String term = o.toString();
+                    String term = param.toString();
                     query.append(term);
                 }
             }
@@ -653,15 +651,14 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * set the mime types of this component
      *
-     * @param mimeTypes
+     * @param mimeTypes vector of supported mime types
      */
     public void setMimeTypes(Vector mimeTypes) {
         if (mimeTypes == null || mimeTypes.size() == 0) {
             mimeTypeMap = null;
         } else {
-            Iterator it = mimeTypes.iterator();
-            while (it.hasNext()) {
-                String type = (it.next().toString()).intern();
+            for (Object mimeType : mimeTypes) {
+                String type = (mimeType.toString()).intern();
                 mimeTypeMap.put(type, type);
             }
         }
