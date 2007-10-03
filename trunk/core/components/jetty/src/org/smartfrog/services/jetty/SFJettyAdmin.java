@@ -132,10 +132,10 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
             constraints[0].setConstraint(constraint);
             constraints[0].setPathSpec("/");
             security.setConstraintMappings(constraints);
-            realmcontext.addServlet("/Debug/*",
-                    "org.mortbay.servlet.Debug").setDisplayName("Debug");
-            realmcontext.addServlet("/",
-                    "org.mortbay.servlet.AdminServlet").setDisplayName("Admin");
+            realmcontext.addServlet(
+                    "org.mortbay.servlet.Debug", "/Debug/*").setDisplayName("Debug");
+            realmcontext.addServlet(
+                    "org.mortbay.servlet.AdminServlet", "/").setDisplayName("Admin");
             realmcontext.setAttribute("org.mortbay.http.Server",
                     realmcontext.getServer());
             server.addLifeCycle(realmcontext);
