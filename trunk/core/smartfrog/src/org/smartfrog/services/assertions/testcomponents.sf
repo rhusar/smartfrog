@@ -116,8 +116,8 @@ TestCompound extends ActionCompound {
 
   //default to one minute
   undeployAfter 60000;
-  //no delay by default
-  testTimeout -1;
+  //default test delay
+  testTimeout 60000;
   //default to one minute
   startupTimeout 60000;
   //default to one minute
@@ -164,7 +164,7 @@ DeploySequence extends TestCompound {
           timeout waitForTimeout;
         }
 
-        testrun PARENT:PARENT:sequence;
+        testrun PARENT:PARENT:testrun;
 
     }
 }
