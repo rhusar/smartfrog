@@ -44,6 +44,13 @@ CoreJettySchema extends Schema {
     //could be a file or a directory
     //relative paths are resolved relative to jetty home
     logDir extends Optional;
+    //a vector of paths, which are strings in the app server.
+    //such as ["/jetty/images/*","/demo/images/*", "*.css"];
+    //needed if enableLogging=true
+    logIgnorePaths extends OptionalVector;
+    //timezone for logging events in
+    logTimezone  extends OptionalString;
+
     maxThreads extends Integer;
     minThreads extends Integer;
     maxIdleTime extends Integer;
@@ -72,7 +79,8 @@ CoreJettyServer extends ApplicationServer {
    logPattern "yyyy_mm_dd.request.log";
    logDir "log";
    logTimezone "GMT";
-   
+   logIgnorePaths [];
+
    //thread pool policy.
    maxThreads 8;
    minThreads 2;

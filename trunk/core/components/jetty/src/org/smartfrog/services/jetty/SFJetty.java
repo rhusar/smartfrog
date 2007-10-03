@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
  * A wrapper for a Jetty http server.
@@ -61,12 +62,6 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     /** The Http server */
     private Server server;
     private JettyToSFLifecycle serverBridge = new JettyToSFLifecycle("server", null);
-
-    /** flag to turn logging on. */
-    private boolean enableLogging = false;
-
-    private String logDir;
-    private String logPattern;
 
     /** log pattern. {@value} */
     public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
@@ -104,21 +99,23 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
             super.sfDeploy();
+            //create the server and store in in our bridge
             server = new Server();
             serverBridge = new JettyToSFLifecycle("server", server);
+            //create the pool
             BoundedThreadPool pool = new BoundedThreadPool();
             pool.setMaxThreads(sfResolve(ATTR_MAXTHREADS, 0, true));
             pool.setMinThreads(sfResolve(ATTR_MINTHREADS, 0, true));
             pool.setMaxIdleTimeMs(sfResolve(ATTR_MAXIDLETIME, 0, true));
             server.setThreadPool(pool);
+
+            //set the jetty helper up
             jettyHelper.cacheJettyServer(server);
             jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
             jettyHelper.cacheJettyHome(jettyhome);
-            enableLogging = sfResolve(ATTR_ENABLE_LOGGING, enableLogging, true);
 
-            if (enableLogging) {
-                logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyhome, null, true, null);
-                logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", false);
+            //now look at logging
+            if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
                 configureLogging();
             }
 
@@ -147,21 +144,28 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      */
     public void configureLogging() throws SmartFrogException {
         try {
-            if (enableLogging) {
-                NCSARequestLog requestlog = new NCSARequestLog();
-                requestlog.setFilename(logDir + File.separatorChar + logPattern);
-                //commented out as this is deprecated/ignored.
-                //requestlog.setBuffered(false);
-                requestlog.setRetainDays(90);
-                requestlog.setAppend(true);
-                requestlog.setExtended(true);
-                //todo: make options
-                requestlog.setLogTimeZone(sfResolve(ATTR_LOG_TZ, "", true));
-                String[] paths = {"/jetty/images/*",
-                        "/demo/images/*", "*.css"};
-                requestlog.setIgnorePaths(paths);
-                server.addLifeCycle(requestlog);
+            String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyhome, null, true, null);
+            String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
+
+            NCSARequestLog requestlog = new NCSARequestLog();
+            requestlog.setFilename(logDir + File.separatorChar + logPattern);
+            //commented out as this is deprecated/ignored.
+            requestlog.setRetainDays(90);
+            requestlog.setAppend(true);
+            requestlog.setExtended(true);
+            requestlog.setLogTimeZone(sfResolve(ATTR_LOG_TZ, "", true));
+            Vector pathV=null;
+            pathV=sfResolve(ATTR_LOGIGNOREPATHS,pathV,true);
+            String[] paths=new String[pathV.size()];
+            int counter=0;
+            for(Object path:pathV) {
+                String pathValue = path.toString();
+                paths[counter++]= pathValue;
+                sfLog().info("Ignoring path "+pathValue);
             }
+
+            requestlog.setIgnorePaths(paths);
+            server.addLifeCycle(requestlog);
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }

@@ -22,12 +22,29 @@
 
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
+
+tcp19 extends JettyHttpServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      port 5050;
+}
+
+waitForTcp19 extends FailingWaitFor {
+    condition extends LivenessPage {
+      port tcp19:port;
+    }
+    interval waitForInterval;
+    timeout waitForTimeout;
+  }
+
 sfConfig extends DeploySequence {
 
 	action extends tcp19;
+
 	
-	waitFor extends LivenessPage {
-		port tcp19:port;
-	}
+
+  tests extends Sequence {
+     wait extends waitForTcp19 ;
+   }
+
 }
 

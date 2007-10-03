@@ -56,6 +56,13 @@ public interface JettyIntf extends JavaWebApplicationServer {
 
     public static final String ATTR_LOGDIR="logDir";
 
+
+    /**
+     * log pattern.
+     * {@value}
+     */
+
+    public static final String ATTR_LOGIGNOREPATHS = "logIgnorePaths";
     /**
      * log pattern.
      * {@value}

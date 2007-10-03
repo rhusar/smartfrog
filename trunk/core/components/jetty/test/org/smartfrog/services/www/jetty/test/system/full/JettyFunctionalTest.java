@@ -39,6 +39,6 @@ public class JettyFunctionalTest extends JettyTestBase {
 	}
 
     public void testTcp19() throws Throwable {
-		expectSuccessfulTestRunOrSkip(FILES, "tcp19test");
+		expectSuccessfulTestRun(FILES, "tcp19test");
 	}
 }
