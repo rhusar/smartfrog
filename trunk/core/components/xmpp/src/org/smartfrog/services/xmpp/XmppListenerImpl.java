@@ -188,7 +188,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
             return;
         }
         Message message = (Message) packet;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(message.getFrom());
         buffer.append(": ");
         buffer.append(message.getBody());
