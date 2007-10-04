@@ -42,7 +42,7 @@ public class SFInputStream extends FilterInputStream {
      * executing the rmi call, so that it can be recovered while in the method
      * invocation.
      */
-    static ThreadLocal<SFSocket> currentSocket = new ThreadLocal<SFSocket>();
+    private static ThreadLocal<SFSocket> currentSocket = new ThreadLocal<SFSocket>();
 
     /** A socket associated with this input stream. */
     private SFSocket sfs;
