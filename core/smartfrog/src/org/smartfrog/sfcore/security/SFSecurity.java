@@ -221,9 +221,6 @@ public class SFSecurity {
      * @return Authenticated information about our peer.
      */
     public static String getPeerAuthenticatedSubjects() {
-        SFSocket inSocket = (SFSocket) SFInputStream.currentSocket.get();
-
-        return ((inSocket != null) ? inSocket.getPeerAuthenticatedSubjects()
-                                   : null);
+        return SFInputStream.getPeerAuthenticatedSubjects();
     }
 }
