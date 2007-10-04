@@ -42,10 +42,12 @@ public class SFInputStream extends FilterInputStream {
      * executing the rmi call, so that it can be recovered while in the method
      * invocation.
      */
-    static ThreadLocal currentSocket = new ThreadLocal();
+    static ThreadLocal<SFSocket> currentSocket = new ThreadLocal<SFSocket>();
 
     /** A socket associated with this input stream. */
     private SFSocket sfs;
+
+
 
     /**
      * Constructs SFInputStream with input stream and sockat.
@@ -57,6 +59,29 @@ public class SFInputStream extends FilterInputStream {
         super(in);
         this.sfs = sfs;
     }
+
+    /**
+     * Accessor to the current socket.
+     * @return the last socket used for IO, or null.
+     */
+    private static SFSocket getCurrentSocket() {
+        return currentSocket.get();
+    }
+
+    /**
+     * Used inside a method call invoked by the RMI Server to find out
+     * authenticated information of our peer that called this function
+     * remotely.
+     *
+     * @return Authenticated information about our peer.
+     */
+    public static String getPeerAuthenticatedSubjects() {
+        SFSocket inSocket = SFInputStream.getCurrentSocket();
+        return ((inSocket != null) ? inSocket.getPeerAuthenticatedSubjects()
+                : null);
+    }
+
+
 
     /**
      * Reads the next byte of data from this input stream. The value byte is
@@ -79,7 +104,7 @@ public class SFInputStream extends FilterInputStream {
      * @see java.io.FilterInputStream#in
      */
     public int read() throws IOException {
-        currentSocket.set((Object) sfs);
+        currentSocket.set(sfs);
 
         return super.read();
     }
@@ -106,7 +131,7 @@ public class SFInputStream extends FilterInputStream {
      * @see java.io.FilterInputStream#in
      */
     public int read(byte[] b, int off, int len) throws IOException {
-        currentSocket.set((Object) sfs);
+        currentSocket.set(sfs);
 
         return super.read(b, off, len);
     }
