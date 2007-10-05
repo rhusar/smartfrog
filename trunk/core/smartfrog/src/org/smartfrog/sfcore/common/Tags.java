@@ -17,7 +17,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @param tags a set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException;
 
@@ -28,7 +28,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @return the set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Set sfGetTags(Object name) throws SmartFrogContextException;
 
@@ -48,7 +48,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @param tag a tag to remove from the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     *
     */
    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException;
@@ -58,7 +58,7 @@ public interface Tags {
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfAddTags(Object name, Set tags) throws SmartFrogContextException;
@@ -68,7 +68,7 @@ public interface Tags {
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException;
@@ -79,7 +79,7 @@ public interface Tags {
     * @param name the name of the attribute
     * @return an iterator over the tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Iterator sfTags(Object name) throws SmartFrogContextException;
 
@@ -90,7 +90,7 @@ public interface Tags {
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+    * @throws SmartFrogContextException the attribute does not exist
     */
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException;
 }
