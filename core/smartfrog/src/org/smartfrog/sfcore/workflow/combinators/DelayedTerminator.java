@@ -46,7 +46,7 @@ public class DelayedTerminator implements Runnable {
     private volatile boolean normalTermination;
     private volatile boolean forcedShutdown;
     private String name;
-    public static final String TERMINATION_BY_DELAYED_TERMINATOR = "termination by delayed terminator";
+    public static final String TERMINATION_BY_DELAYED_TERMINATOR = "Termination by delayed terminator of ";
 
 
     /**
@@ -69,7 +69,7 @@ public class DelayedTerminator implements Runnable {
         primref = new WeakReference<Prim>(prim);
         this.log = log;
         if (description == null) {
-            this.description = "Terminate "
+            this.description = TERMINATION_BY_DELAYED_TERMINATOR
                     + new ComponentHelper(prim).completeNameSafe().toString()
                     + " after " + time + " milliseconds";
         } else {
@@ -190,7 +190,7 @@ public class DelayedTerminator implements Runnable {
         Reference ref = new ComponentHelper(target).completeNameSafe();
         TerminationRecord record = new TerminationRecord(
                 normalTermination ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                TERMINATION_BY_DELAYED_TERMINATOR,
+                description,
                 ref);
         return record;
     }

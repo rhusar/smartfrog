@@ -78,7 +78,7 @@ public class TestCompoundImpl extends ConditionCompound
      * The message of a forced shutdown. This is important, as we look for it when the component is terminated, and can
      * use its presence to infer that the helper thread did the work.
      */
-    public static final String FORCED_TERMINATION = "timed shutdown of test components";
+    public static final String FORCED_TERMINATION = "Timed shutdown of test components";
     public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
     public static final String EXIT_EXPECTED_STARTUP_EXCEPTION = "Exiting with expected exception thrown during startup";
     public static final String UNEXPECTED_STARTUP_EXCEPTION = "Unexpected message in an exception raised at startup time\n";
@@ -208,7 +208,7 @@ public class TestCompoundImpl extends ConditionCompound
             //the action is deployed
             //start the terminator
             actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
-                    FORCED_TERMINATION,
+                    FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
                     !expectTerminate);
             actionTerminator.start();
 
@@ -229,7 +229,7 @@ public class TestCompoundImpl extends ConditionCompound
             testsPrim = sfCreateNewChild(TESTS_RUNNING, tests, null);
             //the test terminator reports a termination as a failure
             testsTerminator = new DelayedTerminator(testsPrim, testTimeout, sfLog(),
-                    FORCED_TERMINATION,
+                    FORCED_TERMINATION+" after "+testTimeout+" milliseconds",
                     false);
             testsTerminator.start();
         }
