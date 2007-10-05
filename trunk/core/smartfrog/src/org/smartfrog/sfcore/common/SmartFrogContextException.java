@@ -96,4 +96,40 @@ public class SmartFrogContextException extends SmartFrogRuntimeException impleme
   public SmartFrogContextException(String message, Throwable cause, Prim sfObject) {
     super(message, cause, sfObject);
   }
+
+    /**
+     * To forward SmartFrog exceptions instead of chain them.
+     *
+     * @param thr throwable object to be forwarded
+     *
+     * @return SmartFrogException that is a SmartFrogContextException
+     */
+    public static SmartFrogException forward (Throwable thr){
+        if (thr instanceof SmartFrogContextException) {
+            return (SmartFrogContextException)thr;
+        } else {
+            return new SmartFrogContextException (thr);
+        }
+    }
+
+
+    /**
+     * To forward SmartFrog exceptions instead of chain them.
+     * If thr is an instance of SmartFrogContextException then the exception is returned
+     * without any modification, if not a new SmartFrogContextException is created
+     * with message as a paramenter
+     * @param message message
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogContextException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogContextException) {
+            if (message!=null){
+                ((SmartFrogContextException)thr).add("msg: ",message);
+            }
+            return (SmartFrogContextException)thr;
+        } else {
+            return new SmartFrogContextException(message, thr);
+        }
+    }
 }
