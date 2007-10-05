@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.xunit.serial.Statistics;
@@ -46,9 +46,9 @@ import java.net.InetAddress;
 public abstract class AbstractTestSuite extends ConditionCompound implements TestSuite {
 
 
-    private static final ThreadLocal<RunnerConfiguration> configurationContext =new ThreadLocal<RunnerConfiguration>();
+    private static ThreadLocal<RunnerConfiguration> configurationContext;
 
-    private static final ThreadLocal<Prim> testSuiteContext =new ThreadLocal<Prim>();
+    private static ThreadLocal<Prim> testSuiteContext;
     /**
      * Statistics about this test
      */
@@ -61,6 +61,10 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * assistance
      */
     protected ComponentHelper helper;
+    public static final String ERROR_OVERWRITING_CONTEXT = "Overwriting an existing thread-local configuration context.\n"
+        +"Multiple thread runners may be active in the same thread\n"
+        +"or the tests are themselves deploying tests.";
+    public static final String ERROR_OVERWRITING_SELF = "The component is overwriting its own configuration";
 
     protected AbstractTestSuite() throws RemoteException {
     }
@@ -112,6 +116,21 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
         setHostname(host.getHostName());
     }
 
+
+    /**
+     * Deregisters from all current registrations.
+     *
+     * @param status Termination  Record
+     */
+    @Override
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        //reset the state in this thread
+        getConfigurationContext().set(null);
+        resetTestSuiteContext();
+        super.sfTerminateWith(status);
+
+    }
+
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
@@ -122,34 +141,36 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     public void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException {
         boolean overwriting=false;
         boolean overwritingourselves=false;
-        synchronized(configurationContext) {
-            RunnerConfiguration current = configurationContext.get();
+        synchronized(getConfigurationContext()) {
+            RunnerConfiguration current = getConfigurationContext().get();
             if(current !=null && configuration!=null) {
                 overwriting=true;
                 overwritingourselves= current == configuration;
             }
-            configurationContext.set(configuration);
+            getConfigurationContext().set(configuration);
             //set or reset the test suite context
             if(configuration!=null) {
-                if (testSuiteContext.get() != null) {
+                if (getTestSuiteContext().get() != null) {
                     overwriting = true;
                 }
 
-                testSuiteContext.set(this);
+                getTestSuiteContext().set(this);
             } else {
-                testSuiteContext.set(null);
+                resetTestSuiteContext();
             }
         }
         if (overwriting) {
             //warn that something got overwritten. It is probably harmless, but can
             //cause interesting behaviour
-            sfLog().info("Overwriting an existing thread-local configuration context.\n"
-                +"Multiple thread runners may be active in the same thread\n"
-                +"or the tests are themselves deploying tests.");
+            sfLog().info(ERROR_OVERWRITING_CONTEXT);
             if(overwritingourselves) {
-                sfLog().info("The component is overwriting its own configuration");
+                sfLog().info(ERROR_OVERWRITING_SELF);
             }
         }
+    }
+
+    private void resetTestSuiteContext() {
+        getTestSuiteContext().set(null);
     }
 
 
@@ -158,7 +179,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return the configuration (may be null)
      */
     public static RunnerConfiguration getConfiguration() {
-        return configurationContext.get();
+        return getConfigurationContext().get();
     }
 
     /**
@@ -166,7 +187,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return the configuration (may be null)
      */
     public static Prim getTestSuite() {
-        return testSuiteContext.get();
+        return getTestSuiteContext().get();
     }
 
 
@@ -285,5 +306,27 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     protected void updateResultAttributes(boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
         getStats().updateResultAttributes(this, finished);
+    }
+
+    /**
+     * Get the current configuration; create it if needed
+     * @return the configuration context thread local
+     */
+    private static synchronized ThreadLocal<RunnerConfiguration> getConfigurationContext() {
+        if(configurationContext==null) {
+            configurationContext=new ThreadLocal<RunnerConfiguration>();
+        }
+        return configurationContext;
+    }
+
+    /**
+     * Get the current test suite context; create it if needed
+     * @return the test suite context thread local
+     */
+    private static synchronized ThreadLocal<Prim> getTestSuiteContext() {
+        if (testSuiteContext == null) {
+            testSuiteContext = new ThreadLocal<Prim>();
+        }
+        return testSuiteContext;
     }
 }
