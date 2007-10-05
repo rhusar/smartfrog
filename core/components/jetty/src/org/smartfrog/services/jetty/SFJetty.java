@@ -97,8 +97,8 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        try {
-            super.sfDeploy();
+        super.sfDeploy();
+        //try {
             //create the server and store in in our bridge
             server = new Server();
             serverBridge = new JettyToSFLifecycle("server", server);
@@ -118,10 +118,10 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
             if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
                 configureLogging();
             }
-
+/*
         } catch (Exception ex) {
             throw SmartFrogDeploymentException.forward(ex);
-        }
+        }*/
     }
 
 
