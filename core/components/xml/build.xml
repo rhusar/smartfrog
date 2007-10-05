@@ -150,6 +150,7 @@
       <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
         >
         <include name="testDocument.sf" />
+        <include name="deploy.sf" />
       </source>
     </sf-parse>
     <sf-parse quiet="${parse.quiet}">
