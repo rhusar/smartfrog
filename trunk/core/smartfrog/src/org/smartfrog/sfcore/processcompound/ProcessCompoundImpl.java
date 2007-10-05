@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.processcompound;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Collection;
@@ -43,7 +42,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.*;
 
 
@@ -79,7 +77,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     MessageKeys {
 
     /** A number used to generate a unique ID for registration */
-    public  static long registrationNumber = 0;
+    public static long registrationNumber = 0;
 
     /** Name of this processcompound. If one is present it is a subprocess. */
     protected String sfProcessName = null;
@@ -266,7 +264,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 }
             }
             //Clean any cached sfcompletename
-            this.sfParentageChanged();
+            sfParentageChanged();
             // Now go on with normal deployment
             try {
                 super.sfDeployWith(sfParent, sfContext);
@@ -299,12 +297,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * ProcessCompound is in the vector set and use that if so. If not tries to use the first one avaible
      * @param portObj Object
      * @return Object Reference to exported object
-     * @throws RemoteException
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogDeploymentException In case of any error while
+     *         exporting the component
      */
-    protected Object sfExport(Object portObj) throws RemoteException,
-        RemoteException, SmartFrogException {
+    protected Object sfExport(Object portObj) throws RemoteException, SmartFrogException {
         Object exportRef=null;
         int port = 0; //default value
         if ((portObj!=null)) {
@@ -336,7 +333,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     }
 
 
-
+    /**
+     * {@inheritDoc}
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogDeploymentException In case of any error while
+     *         registering the component
+     */
     protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
         //This is a ProcessCompound. Don't need to register
     }
@@ -366,8 +368,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         deployDefaultProcessDescriptions(this);
 
         // Add diagnostics report
-        if (Logger.processCompoundDiagReport){
-          sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT,sfDiagnosticsReport());
+        if (Logger.processCompoundDiagReport) {
+            sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, sfDiagnosticsReport());
         }
         if (sfLog().isDebugEnabled()&& Logger.logStackTrace) {
             sfLog().debug(sfDiagnosticsReport());
@@ -438,21 +440,21 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @param comp component that terminated
      */
     public void sfTerminatedWith(TerminationRecord rec, Prim comp) {
-      try {
-        sfRemoveAttribute(sfAttributeKeyFor(comp));
-      }
-      catch (RemoteException ex) {
-        //Logger.logQuietly(ex);
-        if (sfLog().isIgnoreEnabled()){
-          sfLog().ignore(ex);
+        try {
+            sfRemoveAttribute(sfAttributeKeyFor(comp));
         }
-      }
-      catch (SmartFrogRuntimeException ex) {
-          //Logger.logQuietly(ex);
-          if (sfLog().isIgnoreEnabled()){
-            sfLog().ignore(ex);
-          }
-      }
+        catch (RemoteException ex) {
+            //Logger.logQuietly(ex);
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(ex);
+            }
+        }
+        catch (SmartFrogRuntimeException ex) {
+            //Logger.logQuietly(ex);
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(ex);
+            }
+        }
     }
 
     /**
@@ -1117,7 +1119,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     //@todo document how new classpath works for subProcesses.
     protected void addProcessClassPath(Vector cmd, Object name, ComponentDescription cd) throws Exception {
         String res = null;
-        Boolean replaceClasspath=null;
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
         String sysPropertyKey =  "java.class.path";
@@ -1404,14 +1405,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     //Tags - Special case for rootProcess: rootProcess does not have tags.
 
-  /**
-    * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
-    * with each attribute.
-   * rooProcess does not do anything. rootProcess does not have tags.
-    *
-    * @param tags a set of tags
- * @throws SmartFrogException the attribute does not exist;
-    */
+    /**
+     * Set the TAGS for this component. TAGS are simply uninterpreted strings associated
+     * with each attribute.
+     * rooProcess does not do anything. rootProcess does not have tags.
+     *
+     * @param tags a set of tags
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException the attribute does not exist;
+     */
    public void sfSetTags(Set tags) throws RemoteException, SmartFrogRuntimeException {
        if (sfParent!=null) super.sfSetTags(tags);
    }
@@ -1422,7 +1424,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     * rooProcess returns null. rootProcess does not have tags.
     *
     * @return the set of tags
- * @throws SmartFrogException the attribute does not exist;
+    * @throws RemoteException network or RMI problems
+    * @throws SmartFrogRuntimeException the attribute does not exist;
     */
    public Set sfGetTags() throws RemoteException, SmartFrogRuntimeException {
        if (sfParent!=null) return super.sfGetTags();
@@ -1433,7 +1436,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *  rootProcess does not have tags.
      *
      * @param tag a tag to add to the set
-     * @throws SmartFrogException the attribute does not exist;
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException the attribute does not exist;
      */
     public void sfAddTag( String tag) throws RemoteException, SmartFrogRuntimeException {
         if (sfParent!=null) super.sfAddTag(tag);
@@ -1444,7 +1448,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * rootProcess does not have tags.
      *
      * @param tag a tag to remove from the set
-     * @throws SmartFrogException the attribute does not exist;
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException the attribute does not exist;
      *
      */
     public void sfRemoveTag( String tag) throws RemoteException, SmartFrogRuntimeException {
@@ -1455,7 +1460,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * add a tag to the tag set of this component
      *  rootProcess does not have tags.
      * @param tags  a set of tags to add to the set
-     * @throws SmartFrogException
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException
      *          the attribute does not exist;
      */
     public void sfAddTags( Set tags) throws RemoteException, SmartFrogRuntimeException {
@@ -1467,7 +1473,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *  rootProcess does not have tags.
      *
      * @param tags  a set of tags to remove from the set
-     * @throws SmartFrogException
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException
      *          the attribute does not exist;
      */
     public void sfRemoveTags( Set tags)  throws RemoteException, SmartFrogRuntimeException {
@@ -1480,7 +1487,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @param tag the tag to chack
      *
      * @return whether or not the attribute has that tag
-     * @throws SmartFrogException the attribute does not exist
+     * @throws RemoteException network or RMI problems
+     * @throws SmartFrogRuntimeException the attribute does not exist;
      */
     public boolean sfContainsTag(String tag) throws RemoteException, SmartFrogRuntimeException {
          if (sfParent!=null) return super.sfContainsTag(tag);
