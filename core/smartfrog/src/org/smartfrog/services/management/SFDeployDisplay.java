@@ -403,17 +403,17 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       StringBuffer msg = new StringBuffer();
       msg.append(
               "Useful commands: \n" +
-              "   print() pretty much same thing as System.out.println(); ex. 'print(help);'\n" +
-              "   show()  toggles on and off automatic display of the result of every line you type\n" +
-              "   source(), run() ? Read a bsh script into this interpreter, or run it in a new interpreter\n" +
-              "   frame() ? Display a GUI component in a Frame or JFrame.\n" +
-              "   load(), save() ? Load or save serializable objects to a file.\n" +
-              "   cd(), cat(), dir(), pwd(), etc. ? Unix?like shell commands\n" +
-              "   exec() ? Run a native application\n" +
-              "   javap() ? Print the methods and fields of an object, similar to the Java javap command.\n" +
-              "   setAccessibility() ? Turn on unrestricted access to private and protected components.\n" +
-              "   classBrowser() Open the class browser. \n" +
-              "   setNameCompletion() Turn on or off name completion in the console. \n");
+              "   print()              - Equivalent to System.out.println(); ex. 'print(help);'\n" +
+              "   show()              - Toggles on and off automatic display of the result of every line you type\n" +
+              "   source(), run()     - Read a bsh script into this interpreter, or run it in a new interpreter\n" +
+              "   frame()             - Display a GUI component in a Frame or JFrame.\n" +
+              "   load(), save()      - Load or save serializable objects to a file.\n" +
+              "   cd(), cat(), dir(), pwd(), etc. - Unix-like shell commands\n" +
+              "   exec()              - Run a native application\n" +
+              "   javap()             - Print the methods and fields of an object, similar to the Java javap command.\n" +
+              "   setAccessibility()  - Turn on unrestricted access to private and protected components.\n" +
+              "   classBrowser()      - Open the class browser. \n" +
+              "   setNameCompletion() - Turn on or off name completion in the console. \n");
 
       try {
         Class jConsoleClass = Class.forName("bsh.util.JConsole");
