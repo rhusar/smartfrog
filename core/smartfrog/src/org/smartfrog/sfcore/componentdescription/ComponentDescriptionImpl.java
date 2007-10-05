@@ -1422,8 +1422,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * associated with each attribute.
      * 
      * @return the set of tags
-     * @throws SmartFrogException
-     *             the attribute does not exist;
+     * @throws SmartFrogContextException the attribute does not exist;
      */
     public Set sfGetTags() throws SmartFrogContextException {
         try {
@@ -1452,7 +1451,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * add a tag to the tag set of this component
      *
      * @param tag  a tag to add to the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *          the attribute does not exist;
      */
     public void sfAddTag(String tag) throws SmartFrogContextException {
@@ -1477,7 +1476,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tag
      *            a tag to remove from the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
     public void sfRemoveTag(String tag) throws SmartFrogContextException {
@@ -1502,7 +1501,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tags
      *            a set of tags to add to the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
      public void sfAddTags(Set tags) throws SmartFrogContextException {
@@ -1527,7 +1526,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tags
      *            a set of tags to remove from the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
     public void sfRemoveTags(Set tags) throws SmartFrogContextException {
@@ -1553,7 +1552,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param tag
      *            the tag to chack
      * @return whether or not the attribute has that tag
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist
      */
     public boolean sfContainsTag(String tag) throws SmartFrogContextException {
