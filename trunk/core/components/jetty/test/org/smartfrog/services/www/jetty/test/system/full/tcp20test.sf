@@ -20,7 +20,7 @@
 //test components
 
 
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/full/tcp20.sf";
 
 
 

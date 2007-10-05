@@ -20,13 +20,8 @@
 //test components
 
 
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/full/tcp19.sf";
 
-
-tcp19 extends JettyHttpServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      port 5050;
-}
 
 
 sfConfig extends JettyTestCompound {

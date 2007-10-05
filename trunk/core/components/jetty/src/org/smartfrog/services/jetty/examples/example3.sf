@@ -18,8 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf";
-#include "org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
 
 /** 
  * This is an example of jetty components
