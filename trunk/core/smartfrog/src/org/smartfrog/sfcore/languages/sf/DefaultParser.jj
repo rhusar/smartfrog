@@ -65,6 +65,8 @@ public class DefaultParser {
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  static final String switchOp = "org.smartfrog.sfcore.languages.sf.functions.Switch";
+
   static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.ConstructFunction";
 
   static final String tbdOp = "org.smartfrog.sfcore.languages.sf.predicates.TBD";
@@ -260,6 +262,8 @@ TOKEN : /* reserved words */
  | <THEN: "THEN">
  | <ELSE: "ELSE">
  | <FI: "FI">
+ | <SWITCH: "SWITCH">
+ | <ENDSWITCH: "ENDSWITCH">
 
 }
 
@@ -560,6 +564,7 @@ Object SimpleValue() :
     | res=Basic()
     | res = Operator()
     | res = IfThenElse()
+    | res = Switch()
     ) { return res; }
 }
 
@@ -656,6 +661,33 @@ Object IfThenElse() :
     ifte.sfContext().put("else", e);
     return ifte;
     }
+}
+
+Object Switch() :
+{
+    SFComponentDescription bindings = SFParser.componentFactory("default");
+}
+{   {
+        bindings.sfContext().put("phase.function", functionPhaseClass);
+        bindings.sfContext().put("sfFunctionClass", switchOp);
+    }
+    <SWITCH> [<LBRACE> AttributesNoEOF(bindings) <RBRACE>]
+              CaseList(bindings)
+    <ENDSWITCH>
+    {
+        return bindings;
+    }
+}
+
+void CaseList(SFComponentDescription cases) :
+{
+    Object i,t;
+}
+{
+   <IF> i = SimpleValue() <THEN> t = SimpleValue() {
+      cases.sfContext().put("IF" + nextId, i);
+      cases.sfContext().put("THEN" + nextId++, t);
+   } [CaseList(cases)]
 }
 
 //
@@ -760,7 +792,7 @@ void BaseComponentLinkType(SFComponentDescription comp) :
 
 void BaseComponentAttributesType (SFComponentDescription comp) :
 {
-   SFComponentDescriptionImpl compType = new SFComponentDescriptionImpl(new Vector(), null, null, true);
+   SFComponentDescription compType = SFParser.componentFactory("default");
 }
 {
    <LBRACE> AttributesNoEOF(compType) <RBRACE>

@@ -124,6 +124,7 @@ public class SFAssertReference extends SFReference implements ReferencePhases {
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
 
+        comp.linkResolve();
         try {
             functionClass = (String) comp.sfResolveHere("sfFunctionClass");
         } catch (ClassCastException e) {
