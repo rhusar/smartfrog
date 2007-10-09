@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 public class ValueData implements Serializable {
     static  private Object  noMarshall   = "state could not be marshalled";
     static  private Object  noUnmarshall = "state could not be unmarshalled";
-    static  private LogSF   log          = new LogImplAsyncWrapper( LogFactory.getLog("org.smartfrom.services.anubis.locator.ValueData") );
+    static  private LogSF   log          = new LogImplAsyncWrapper( LogFactory.getLog(ValueData.class.getClass().toString()) );
             private boolean marshalled;
             private Object  value;
 

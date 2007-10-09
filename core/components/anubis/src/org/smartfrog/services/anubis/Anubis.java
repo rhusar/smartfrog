@@ -22,5 +22,5 @@ package org.smartfrog.services.anubis;
 
 
 public class Anubis {
-    static public String version = "Anubis 1.8";
+    static public String version = "Anubis 1.9";
 }

@@ -55,7 +55,7 @@ public class PartitionManager
     int                notifiedLeader    = UNDEFINED_LEADER;
     boolean            testable          = false;
     TestMgr            testManager       = null;
-    LogSF              log               = null;
+    LogSF              log               = new LogImplAsyncWrapper(sfLog());
     ActiveTimeQueue    timer = null;
     boolean            terminated        = false;
 
@@ -66,7 +66,6 @@ public class PartitionManager
     public void sfDeploy() throws SmartFrogException, RemoteException  {
         try {
             super.sfDeploy();
-            log               = new LogImplAsyncWrapper(this.sfGetApplicationLog());
             timer             = new ActiveTimeQueue();
             me                = Config.getIdentity(this, "identity");
             partitionProtocol = (PartitionProtocol)sfResolve("partitionProtocol");

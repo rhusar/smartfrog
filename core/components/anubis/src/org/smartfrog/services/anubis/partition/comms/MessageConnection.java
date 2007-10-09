@@ -57,7 +57,7 @@ public class MessageConnection
 
     private boolean                 ignoring          = false;
 
-    private LogSF                   log               = null;
+    private LogSF                   log               = LogFactory.getLog(this.getClass().toString());
 
 
     /**
@@ -77,7 +77,6 @@ public class MessageConnection
         super(hbp, can);
         me                = id;
         connectionSet     = cs;
-        log               = LogFactory.getLog(this.getClass().toString());
     }
 
     /**

@@ -86,12 +86,11 @@ public class LocalListeners {
 
     private Locator           locator         = null;
     private Integer           me              = null;
-    private LogSF             log             = null;
+    private LogSF             log             = LogFactory.getLog(this.getClass().toString());;
 
     public LocalListeners(Locator l, Integer id) {
         locator = l;
         me      = id;
-        log     = LogFactory.getLog(this.getClass().toString());
     }
 
 
