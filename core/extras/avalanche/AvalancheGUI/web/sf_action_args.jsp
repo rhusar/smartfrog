@@ -46,7 +46,7 @@ For more information: www.smartfrog.org
 		 "Invalid tiTLE \"" + title + "\"");
 	// dispatch back 
 	javax.servlet.RequestDispatcher dispatcher = 
-		request.getRequestDispatcher("SFActions.jsp"); 
+		request.getRequestDispatcher("sf_action.jsp"); 
 	dispatcher.forward(request, response);
 	return;
     }
@@ -66,7 +66,7 @@ For more information: www.smartfrog.org
     if((! state) || (m == null)) {
 	// Dispatch back 
 	javax.servlet.RequestDispatcher dispatcher =
-		 request.getRequestDispatcher("SFActions.jsp"); 
+		 request.getRequestDispatcher("sf_action.jsp"); 
 	dispatcher.forward(request, response);
 	return;
     }
@@ -92,7 +92,7 @@ setNextSubtitle("Action Arguments Page");
   <script>
     oneVoiceWritePageMenu("SFActionArgs","header",
       "Library Dependencies",
-  	"javascript:setLocation('SFActionLibs.jsp?title=<%=title%>')"
+  	"javascript:setLocation('sf_action_libs.jsp?title=<%=title%>')"
 //      "Configure Attributes",
   	//"nowhere"
     );
@@ -101,7 +101,7 @@ setNextSubtitle("Action Arguments Page");
 <%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
-<form action="SaveSFAction.jsp?pageAction=setActionArgs&&title=<%=title%>"
+<form action="sf_action_save.jsp?pageAction=setActionArgs&&title=<%=title%>"
 	method="post">
 
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="actionArgsTable">

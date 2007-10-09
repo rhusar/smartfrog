@@ -29,11 +29,15 @@
     SfConfigsType configs = settingsMgr.getSFConfigs();
 
     String pageAction = request.getParameter("pageAction");
-
     javax.servlet.RequestDispatcher dispatcher = null;
     String title = request.getParameter("title");
 
-    if (pageAction != null) {
+    boolean added = false; 
+
+     if( null == pageAction ) {
+	    // nothing to do 
+   // if (pageAction != null) {
+     } else{
         if (pageAction.equals("addAction")) {
             // if already exists its an error
             SfDescriptionType desc = null;
@@ -67,6 +71,7 @@
                         desc.setTitle(title);
 
                         settingsMgr.setSfConfigs(configs);
+			added = true;
                         /*SfDescriptionType[] descs1 = configs.getSfDescriptionArray();
                   String t = null;
                   for( int i=0;i<descs1.length;i++){
@@ -81,8 +86,10 @@
                 session.setAttribute("message",
                         "Action title \"" + title + "\" already exists");
             }
-
-            response.sendRedirect("sf_action.jsp?title=" + title);
+	 //  dispatcher = request.getRequestDispatcher("sf_action_args.jsp?title=" 
+	//	    	+ title);
+//	   dispatcher.forward(request, response);
+           // response.sendRedirect("sf_action_args.jsp?title=" + title);
         } else if (pageAction.equals("setActionArgs")) {
             SfDescriptionType desc = null;
             SfDescriptionType[] descs = configs.getSfDescriptionArray();
@@ -115,6 +122,7 @@
                                 request.getParameter("argument.defaultValue." + suf);
 
                         // set only if checked in the page
+			if(selectedArgs != null) {
                         for (int k = 0; k < selectedArgs.length; k++) {
                             if (selectedArgs[k].equals(argName)) {
                                 SfDescriptionType.Argument arg =
@@ -125,6 +133,7 @@
                                 arg.setDescription(description);
                             }
                         }
+			}
                     }
                 }
                 settingsMgr.setSfConfigs(configs);
@@ -132,7 +141,7 @@
                 session.setAttribute("message",
                         "Could not locate configuration for \"" + title + "\"");
             }
-            response.sendRedirect("sf_action.jsp");
+         //   response.sendRedirect("sf_action.jsp");
         } else if (pageAction.equals("delAction")) {
             String[] selectedTitles =
                     request.getParameterValues("selectedAction");
@@ -148,7 +157,7 @@
                 }
             }
             settingsMgr.setSfConfigs(configs);
-            response.sendRedirect("sf_action.jsp");
+       //     response.sendRedirect("sf_action.jsp");
         } else if (pageAction.equals("setActionLibs")) {
             SfDescriptionType desc = null;
             SfDescriptionType[] descs = configs.getSfDescriptionArray();
@@ -169,9 +178,27 @@
                 session.setAttribute("message", "Action \"" + title +
                         "\"not found");
             }
-            response.sendRedirect("sf_action.jsp");
+          //  response.sendRedirect("sf_action.jsp");
         }
-    } else {
-        response.sendRedirect("sf_action.jsp");
+
+	if( pageAction.equals("addAction") ){
+	    // forward to the next page
+	    if( added ) 
+		dispatcher =
+			request.getRequestDispatcher("sf_action_args.jsp?title=" 
+		    	+ title);
+	    else
+		dispatcher = request.getRequestDispatcher("sf_action.jsp");
+	}else if( pageAction.equals("setActionArgs") ){
+	    dispatcher = request.getRequestDispatcher("sf_action.jsp");
+	}
     }
+    
+    if( null == dispatcher ){
+	dispatcher = request.getRequestDispatcher("sf_action.jsp"); 
+    }
+    dispatcher.forward(request, response);
+  /*  } else {
+        response.sendRedirect("sf_action.jsp");
+    }*/
 %>

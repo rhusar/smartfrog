@@ -35,7 +35,9 @@ For more information: www.smartfrog.org
 
     String moduleId = request.getParameter("moduleId");
     String pageAction = request.getParameter("pageAction");
-
+    
+    javax.servlet.RequestDispatcher dispatcher = null ; 
+    
     if ( pageAction.equals("delMod")){
 	// find and delete modules.. 
 	String []modules = request.getParameterValues("selectedModule");
@@ -373,17 +375,38 @@ For more information: www.smartfrog.org
 	    }
 	}
 
+    }
     if( pageAction.equals("addMod") || pageAction.equals("delMod")) {
-	    response.sendRedirect("module_list.jsp");
+	    // forward to the next page
+	    dispatcher = request.getRequestDispatcher("module_list.jsp");
+	   // response.sendRedirect("module_list.jsp");
 	} else if( pageAction.equals("addModVer") || pageAction.equals("delModVer")) {
-	    response.sendRedirect("module_version_view.jsp?moduleId="+ moduleId);
+		// forward to the next page
+	   System.out.println("REDIRECTING"); 
+	    dispatcher =
+	        request.getRequestDispatcher("module_version_list.jsp?moduleId="
+			+ moduleId);
+	   // response.sendRedirect("module_version_list.jsp?moduleId="+ moduleId);
 	}else if( pageAction.equals("addDistro") || pageAction.equals("delDistro")) {
-        response.sendRedirect("module_version_view.jsp?moduleId="+ moduleId + "&version=" + request.getParameter("version"));
+		String version = request.getParameter("version");
+	    dispatcher = 
+	    	request.getRequestDispatcher("module_version_view.jsp?moduleId="
+	    	+ moduleId + "&&version=" + version);
+       // response.sendRedirect("module_version_view.jsp?moduleId="+ moduleId + "&version=" + request.getParameter("version"));
 	}else if(pageAction.equals("addAction") || pageAction.equals("delAction")) {
-        response.sendRedirect("module_distro_action.jsp?moduleId="+ moduleId + "&version=" + request.getParameter("version") + "&distroId="+ request.getParameter("distroId"));
+		String version = request.getParameter("version");
+	    String distroId = request.getParameter("distroId");
+	    dispatcher = 
+		request.getRequestDispatcher("module_distro_action.jsp?moduleId="
+			+ moduleId + "&&version="+version
+			+ "&&distroId="+distroId);
+     //   response.sendRedirect("module_distro_action.jsp?moduleId="+ moduleId + "&version=" + request.getParameter("version") + "&distroId="+ request.getParameter("distroId"));
 	} else {
-        response.sendRedirect("module_list.jsp");
+		dispatcher = request.getRequestDispatcher("module_list.jsp");
+      //  response.sendRedirect("module_list.jsp");
     }
-
+    if( null == dispatcher ){
+	    dispatcher = request.getRequestDispatcher("ListModules.jsp");
     }
+ dispatcher.forward(request, response);
 %>
