@@ -513,13 +513,16 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
-     * Use results + insternal state to decide if the test passed or not
+     * Use results + internal state to decide if the test passed or not
      *
      * @param record termination record
      * @throws SmartFrogRuntimeException SmartFrog errors
      * @throws RemoteException           network errors
      */
     protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
+        //work out the forced timeout info from the record
+        forcedTimeout=(actionTerminator!=null && actionTerminator.isForcedShutdown())
+                || (testsTerminator!=null && testsTerminator.isForcedShutdown());
         //send out a completion event
         sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
         setTestBlockAttributes(record, forcedTimeout);
