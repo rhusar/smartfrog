@@ -45,7 +45,7 @@ function toggle(divId) {
     }
 }   
 
-function submit(target){
+function sub(target){
     document.moduleListFrm.action = target ;
     document.moduleListFrm.submit();
 }
@@ -105,7 +105,7 @@ Module: <a href="module_view.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a>
 <script language="JavaScript" type="text/javascript">
 oneVoiceWritePageMenu("ModuleVersions","",
   "Delete selected",
-  	"javascript:submit('module_save.jsp?moduleId=<%=moduleId%>&&pageAction=delModVer')",
+  	"javascript:sub('module_save.jsp?moduleId=<%=moduleId%>&&pageAction=delModVer')",
   "Add",
   	"javascript:toggle('newVersion')"
 );

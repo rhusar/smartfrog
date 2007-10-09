@@ -118,7 +118,7 @@ For more information: www.smartfrog.org
         }
     }
 
-    function submit(target) {
+    function sub(target) {
         document.moduleListFrm.action = target;
         document.moduleListFrm.submit();
     }
@@ -160,7 +160,7 @@ oneVoiceWritePageMenu("DistroActions","",
                 "Add",
                 "javascript:toggle('newAction')",
                 "Delete",
-                "javascript:submit('module_save.jsp?pageAction=delAction&moduleId=<%=moduleId%>&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
+                "javascript:sub('module_save.jsp?pageAction=delAction&moduleId=<%=moduleId%>&version=<%=versionNumber%>&&distroId=<%=distroId %>')"
 )
 -->
 </script>

@@ -43,7 +43,7 @@ For more information: www.smartfrog.org
 	session.setAttribute("message", "Invalid TITLE \"" + title + "\"");
 	// dispatch back 
 	RequestDispatcher dispatcher = 
-		request.getRequestDispatcher("SFActions.jsp"); 
+		request.getRequestDispatcher("sf_action.jsp"); 
 	dispatcher.forward(request, response);
 	return;
     }
@@ -121,7 +121,7 @@ setNextSubtitle("Library Dependencies Page");
   <script language="javascript" type="text/javascript">
     oneVoiceWritePageMenu("SFActionLibs","header",
                             "Configure Attributes",
-  	                        "javascript:setLocation('SFActionArgs.jsp?title=<%=title%>')"
+  	                        "javascript:setLocation('sf_action_args.jsp?title=<%=title%>')"
     );
   </script>
 </div>
@@ -129,7 +129,7 @@ setNextSubtitle("Library Dependencies Page");
 <%@ include file="message.inc.jsp" %>
 
 <!-- Actual Body starts here -->
-<form action="SaveSFAction.jsp?pageAction=setActionLibs&&title=<%=title%>" method="post">
+<form action="sf_action_save.jsp?pageAction=setActionLibs&&title=<%=title%>" method="post">
 
 <table border="0" cellpadding="0" cellspacing="0" class="dataTable" id="jarTable">
   <thead>

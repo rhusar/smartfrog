@@ -18,11 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 */ %>
 <%@ page language="java" %>
-<%@ include file="header.inc.jsp" %>
+
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-
+<%@ include file="header.inc.jsp"%>
 <%
     String errMsg = null; 
     ModulesManager manager = factory.getModulesManager();

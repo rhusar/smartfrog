@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 %>
 
 <%
-    String session_message = (String)session.getAttribute("error_msg");
+    String session_message = (String)session.getAttribute("message");
     if(null != session_message && !session_message.trim().equals("")) {
 %>
 
@@ -39,7 +39,7 @@ For more information: www.smartfrog.org
 <center>
 
 <%
-	session.removeAttribute("error_msg");
+	session.removeAttribute("message");
     }
     
     session_message = (String)session.getAttribute("success_msg");

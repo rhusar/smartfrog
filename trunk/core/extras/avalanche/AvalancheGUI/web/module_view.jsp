@@ -48,7 +48,7 @@ function unSelectColor(div){
 	div.style.background = "#CCFFFF" ;
 }
 
-function submit(formId, target){
+function sub(formId, target){
 	var form = document.getElementById(formId);
 	form.action = target ;
 	form.submit();
@@ -111,7 +111,7 @@ setNextSubtitle("View Module Page");
       String strVersionNumber = versions[i].getNumber();
 %>
     <tr <%=rowClass %>>
-      <td class="medium"><a href="module_version_view.jsp?moduleId=Test&version=<%= strVersionNumber %>"><%= strVersionNumber %></a></td>
+      <td class="medium"><a href="module_version_view.jsp?moduleId=<%=moduleId %>&version=<%= strVersionNumber %>"><%= strVersionNumber %></a></td>
 <%
       DistributionType []distros = versions[i].getDistributionArray();
 	for (int j=0; j < distros.length; j++) {
@@ -141,7 +141,7 @@ setNextSubtitle("View Module Page");
 	  <span class="headerMenuItem">
 	     <!-- onMouseOver="selectColor(this)"
 	     onMouseOut="unSelectColor(this)"> -->
-	     <a href="javascript:submit('moduleListFrm<%=i %>','host_select.jsp?moduleId=<%=moduleId%>&version=<%= strVersionNumber %>&distroId=<%=dId%>&action=<%=title %>')"><%=actionName %></a>&nbsp;&nbsp;
+	     <a href="javascript:sub('moduleListFrm<%=i %>','host_select.jsp?moduleId=<%=moduleId%>&version=<%=strVersionNumber %>&distroId=<%=dId%>&action=<%=title %>')"><%=actionName %></a>&nbsp;&nbsp;
 	  </span>
 <%
 	    }

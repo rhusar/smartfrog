@@ -49,7 +49,7 @@ For more information: www.smartfrog.org
    }
  }   
 
-function submit(target){
+function sub(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
@@ -72,7 +72,7 @@ oneVoiceWritePageMenu("ModuleDistros","header");
 <br/><br/>
 <table id="hostListTable" class="dataTable" style="width: 300px; border-collapse: collapse;">
 <caption>
-Module: <a href="module_version.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="module_version.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>"><%=versionNumber %></a>
+Module: <a href="module_view.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> &gt;&gt; <a href="module_version_view.jsp?moduleId=<%=moduleId %>&version=<%=versionNumber %>"><%=versionNumber %></a>
 </caption>
     <tbody>
 	<tr> 
@@ -123,7 +123,7 @@ Module: <a href="module_version.jsp?moduleId=<%=moduleId %>"><%=moduleId %></a> 
 <script language="JavaScript" type="text/javascript">
 oneVoiceWritePageMenu("ModuleDistros","",
   "Delete selected",
-  	"javascript:submit('module_save.jsp?pageAction=delDistro&moduleId=<%=moduleId%>&version=<%=versionNumber%>')",
+  	"javascript:sub('module_save.jsp?pageAction=delDistro&moduleId=<%=moduleId%>&version=<%=versionNumber%>')",
   "Add",
   	"javascript:toggle('newDistro')"
 );

@@ -29,7 +29,7 @@ For more information: www.smartfrog.org
   	SettingsManager settingsMgr = factory.getSettingsManager();
   	SettingsType defSettings = settingsMgr.getDefaultSettings();
   	SfConfigsType configs = settingsMgr.getSFConfigs();  
-  	
+  System.out.println(configs.toString());	
   	if( null == manager ){
   		errMsg = "Error connecting to manager database" ;
   		throw new Exception ( "Error connecting to manager database" );
@@ -49,7 +49,7 @@ function toggle(divId) {
     }
 }  
 
-function submit(formId, target){
+function sub(formId, target){
     var form = document.getElementById(formId);
     form.action = target ;
     form.submit();
@@ -93,7 +93,7 @@ setNextSubtitle("Supported Actions Page");
 	name="selectedAction" value="<%=descs[i].getTitle()%>"></input>
       </td>
       <td>
-	<a href="SFActionArgs.jsp?title=<%=descs[i].getTitle()%>">
+	<a href="sf_action_args.jsp?title=<%=descs[i].getTitle()%>">
 	  <%=descs[i].getTitle()%>
 	</a>
       </td>
@@ -109,7 +109,7 @@ setNextSubtitle("Supported Actions Page");
     <div align="center" style="width: 95%;">
         <script>
             oneVoiceWritePageMenu("SFActions", "footer",
-                    "Delete Selected Actions", "javascript:submit('actionListFrm','SaveSFAction.jsp?pageAction=delAction')",
+                    "Delete Selected Actions", "javascript:sub('actionListFrm','sf_action_save.jsp?pageAction=delAction')",
                     "Add an Action", "javascript:toggle('newActionDiv')"
                     );
         </script>

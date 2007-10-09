@@ -110,8 +110,8 @@ For more information: www.smartfrog.org
         alertMsg += " Are you sure you want to continue?";
 
         if (confirm(alertMsg)) {
-            document.hostListFrm.action = "module_save.jsp?pageAction=delMod";
-            document.hostListFrm.submit();
+            document.moduleListFrm.action = "module_save.jsp?pageAction=delMod";
+            document.moduleListFrm.submit();
         }
     }
 
