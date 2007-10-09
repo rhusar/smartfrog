@@ -52,12 +52,11 @@ abstract public class AnubisListener {
     private   String          name;
     private   Map             values           = new HashMap();
     private   long            mostRecentChange = -1;
-    protected LogSF           log;
+    protected LogSF           log              = LogFactory.getLog(this.getClass().toString());;
     protected ActiveTimeQueue timers;
 
     public AnubisListener(String n) {
         name = n;
-        log  = LogFactory.getLog(this.getClass().toString());
     }
 
     public synchronized void newValue(ProviderInstance i) {

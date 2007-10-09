@@ -82,8 +82,8 @@ public class SPLocatorImpl
     private Pinger           pinger;
     private ActiveTimeQueue  timers;
     private long             maxTransDelay;
-    private LogSF            syncLog;
-    private LogSF            asyncLog;
+    private LogSF            syncLog        = sfLog();
+    private LogSF            asyncLog       = new LogImplAsyncWrapper( syncLog );;
 
 
     /****************************************************/
@@ -99,9 +99,6 @@ public class SPLocatorImpl
     public void sfDeploy() throws SmartFrogException, RemoteException  {
         try {
             super.sfDeploy();
-
-            syncLog = this.sfGetApplicationLog();
-            asyncLog = new LogImplAsyncWrapper( syncLog );
 
             reference = sfCompleteName();
             long period = Config.getLong(this, "heartbeatInterval");

@@ -81,7 +81,7 @@ public class LocalProviders {
     private Locator           locator           = null;
     private Integer           me                = null;
 
-    private LogSF             log               = null;
+    private LogSF             log               = LogFactory.getLog(this.getClass().toString());
 
 
     /**
@@ -93,7 +93,6 @@ public class LocalProviders {
     public LocalProviders(Locator l, Integer id) {
         locator = l;
         me      = id;
-        log     = LogFactory.getLog(this.getClass().toString());
     }
 
 

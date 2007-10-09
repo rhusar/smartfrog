@@ -66,7 +66,7 @@ public class Locator
     private long               maxTransDelay;
     private InstanceGenerator  instanceGenerator = new InstanceGenerator();
     private Random             random;
-    private LogSF              log;
+    private LogSF              log               = sfLog();
 
     private StabilityQueue     stabilityQueue    = new StabilityQueue() {
         public void doit(View v, int l) { partitionNotificationImpl(v, l); }
@@ -83,8 +83,6 @@ public class Locator
     public void sfDeploy() throws SmartFrogException, RemoteException  {
         try {
             super.sfDeploy();
-
-            log               = sfGetApplicationLog();
 
             partition         = (Partition)sfResolve("partitionManager");
             myId              = (Identity)Config.getIdentity((Prim)partition, "identity");

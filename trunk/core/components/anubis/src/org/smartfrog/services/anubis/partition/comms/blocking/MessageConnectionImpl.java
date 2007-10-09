@@ -50,7 +50,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     private WireSecurity            wireSecurity      = null;
     private long                    sendCount         = 0;
     private long                    receiveCount      = 0;
-    private LogSF                   log               = null;
+    private LogSF                   log               = LogFactory.getLog(this.getClass().toString());
 
     /**
      * for testing purposes - can set to ignoring incoming messages
@@ -64,7 +64,6 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
         messageConnection = mc;
         wireSecurity = sec;
         setPriority(MAX_PRIORITY);
-        log = LogFactory.getLog(this.getClass().toString());
     }
 
     public MessageConnectionImpl(Identity id, SocketChannel channel, MessageConnectionServer mcs, ConnectionSet cs, WireSecurity sec) {
@@ -74,7 +73,6 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
         connectionSet = cs;
         wireSecurity = sec;
         setPriority(MAX_PRIORITY);
-        log = LogFactory.getLog(this.getClass().toString());
     }
 
     

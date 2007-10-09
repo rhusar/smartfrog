@@ -72,7 +72,7 @@ public class GlobalRegisterImpl {
     private SetMap           listenersByNode = new SetMap();
 
     private DebugFrame       debug           = null;
-    private LogSF            log             = null;
+    private LogSF            log             = LogFactory.getLog(this.getClass().toString());
 
 
     /**
@@ -83,7 +83,6 @@ public class GlobalRegisterImpl {
     public GlobalRegisterImpl(Identity id, Locator locator) {
         this.me             = id.id;
         this.locator        = locator;
-        log                 = LogFactory.getLog(this.getClass().toString());
     }
 
     /**

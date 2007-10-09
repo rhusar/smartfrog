@@ -93,7 +93,8 @@ public class ConnectionSet extends CompoundImpl
     private IOConnectionServer      connectionServer = null;
     private IntervalExec            intervalExec     = null;
     private LeaderMgr               leaderMgr        = null;
-    private LogSF                   log              = null;
+    private LogSF                   log              = new LogImplAsyncWrapper(sfLog());
+
 
     /**
      * Connection information
@@ -146,8 +147,6 @@ public class ConnectionSet extends CompoundImpl
     public void sfDeploy() throws RemoteException, SmartFrogException {
         super.sfDeploy();
         try {
-            log = new LogImplAsyncWrapper(LogFactory.getLog(this.getClass().
-                toString()));
             me = Config.getIdentity(this, "identity");
             boolean isPreferredLeaderNode = ((Boolean)sfResolve("preferred", Boolean.FALSE, false)).booleanValue();
             partitionProtocol = (PartitionProtocol) sfResolve( "partitionProtocol");

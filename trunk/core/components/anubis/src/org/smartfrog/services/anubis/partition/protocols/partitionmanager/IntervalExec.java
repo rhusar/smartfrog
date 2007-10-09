@@ -45,11 +45,10 @@ public class IntervalExec extends Thread {
 
     private TestMgr        testManager   = null;
     private boolean        testable      = false;
-    private LogSF          log;
+    private LogSF          log           = new LogImplAsyncWrapper( LogFactory.getLog(this.getClass().toString()) );
 
     public IntervalExec(Identity id, ConnectionSet cs, long i) throws Exception {
         super("Anubis: Interval Executive");
-        log           = new LogImplAsyncWrapper( LogFactory.getLog(this.getClass().toString()) );
         me            = id;
         connectionSet = cs;
         interval      = i;
