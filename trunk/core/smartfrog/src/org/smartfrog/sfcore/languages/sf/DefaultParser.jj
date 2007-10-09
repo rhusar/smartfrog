@@ -545,7 +545,7 @@ Object Value() :
 {
     (
     res=Component()
-    | res=SimpleValue() <SEMICOLON>
+    | res=SimpleValue() //<SEMICOLON>
     | <SEMICOLON>
     ) { return res; }
 }
@@ -562,7 +562,7 @@ Object SimpleValue() :
     (
     res=ReferenceNoEOF()
     | res=Basic()
-    | res = Operator()
+    | (<OPSTART> (res = Component() | res = Operator()) <OPEND>)
     | res = IfThenElse()
     | res = Switch()
     ) { return res; }
@@ -580,7 +580,6 @@ Object Operator() :
     String operator = "";
 }
 {
-    <OPSTART>
     ((<NOT> {operator = notOp; arity = 1;} a = SimpleValue() )
      |
      (a = SimpleValue() {v.add(a);}) [
@@ -603,7 +602,6 @@ Object Operator() :
      )
       ]
     )
-    <OPEND>
     {
     if (operator.equals("")) {
         res = a;
@@ -686,7 +684,13 @@ void CaseList(SFComponentDescription cases) :
 {
    <IF> i = SimpleValue() <THEN> t = SimpleValue() {
       cases.sfContext().put("IF" + nextId, i);
+      if (i instanceof SFComponentDescription) {
+            ((SFComponentDescription)i).setParent((SFComponentDescription)cases);
+      }
       cases.sfContext().put("THEN" + nextId++, t);
+      if (t instanceof SFComponentDescription) {
+            ((SFComponentDescription)t).setParent((SFComponentDescription)cases);
+      }
    } [CaseList(cases)]
 }
 
@@ -743,10 +747,9 @@ void BaseComponent(SFComponentDescription comp) :
 {
 }
 { (
-  <SEMICOLON>
-  | (<NULL> (BaseComponentRest(comp) | <SEMICOLON>))
-  | (BaseComponentLinkType(comp) (BaseComponentRest(comp)  | <SEMICOLON>))
-  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)]) // for backward compat...
+    (<NULL> [BaseComponentRest(comp)])
+  | (BaseComponentLinkType(comp) [BaseComponentRest(comp)])
+  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)])
   )
   {    // fix the case when the extends is only of a single {...} as assumptions have been made that
        // type resolution is not required in this case - true before multiple extends!
@@ -777,8 +780,8 @@ void BaseComponent(SFComponentDescription comp) :
 {
 }
 {
-  (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) (BaseComponentRest(comp)  | <SEMICOLON>))
-  | (BaseComponentAttributesType(comp)) // for backward compat...
+    (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) [BaseComponentRest(comp)])
+    | (BaseComponentAttributesType(comp)) // for backward compat...
 }
 
 void BaseComponentLinkType(SFComponentDescription comp) :
