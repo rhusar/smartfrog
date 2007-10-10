@@ -24,19 +24,6 @@
 
 
 
-tcp20 extends Compound {
-
-  server1 extends TempDirServer {
-    maxThreads 20;
-    listenerPort 8010;
-  }
-
-  server2 extends TempDirServer {
-    listenerPort 8011;
-  }
-
-
-}
 
   
 sfConfig extends JettyTestCompound {
@@ -47,10 +34,10 @@ sfConfig extends JettyTestCompound {
 
   tests extends Sequence {
      wait extends waitForPage {
-       port tcp20:server1:listenerPort;
+       port tcp20:server1:port;
      }
      wait2 extends waitForPage {
-       port tcp20:server2:listenerPort;  
+       port tcp20:server2:port;
      }
    }
 

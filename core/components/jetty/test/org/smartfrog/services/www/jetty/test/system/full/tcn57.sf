@@ -27,8 +27,8 @@ sfConfig extends Compound {
       jettyhome ROOT:jetty_home; // mandatory
    }
    
- list1 extends JettyListener {
-    listenerPort 8014;
+ list1 extends JettySocketConnector {
+    port test.jetty.port.1;
     server LAZY PARENT:server1:jettyHome;
   }
 }

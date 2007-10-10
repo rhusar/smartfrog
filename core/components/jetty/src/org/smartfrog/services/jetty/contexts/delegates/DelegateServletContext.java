@@ -21,10 +21,9 @@ package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.MimeTypes;
-import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
@@ -65,7 +64,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         return (Context)getContext();
     }
 
-    public DelegateServletContext(SFJetty server, Context context) {
+    public DelegateServletContext(JettyImpl server, Context context) {
         super(server, context);
     }
 

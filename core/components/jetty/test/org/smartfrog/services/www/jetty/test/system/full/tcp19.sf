@@ -22,7 +22,7 @@
 
 tcp19 extends JettyHttpServer {
       jettyhome ROOT:jetty_home; // mandatory
-      port 5050;
+      port test.jetty.port.1;
 }
 
 

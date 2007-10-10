@@ -26,15 +26,16 @@ sfConfig extends Compound {
       jettyhome ROOT:jetty_home; // mandatory
 
 
-      listener extends JettyListener {
-            listenerPort 8017;
-            //serverHost "localhost";
-            server LAZY PARENT;
-      }
    }
 
+    listener extends JettySocketConnector {
+          port test.jetty.port.1;
+          //serverHost "localhost";
+          server LAZY PARENT:server;
+    }
+
     root extends Root {
-        server LAZY server1;
+        server LAZY server;
     }
 
     ping extends LivenessPage {

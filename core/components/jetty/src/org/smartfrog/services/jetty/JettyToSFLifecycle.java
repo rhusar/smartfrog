@@ -33,18 +33,27 @@ import java.rmi.RemoteException;
  *
  */
 
-public class JettyToSFLifecycle implements Liveness {
+public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
 
     private String name;
-    private LifeCycle jettyComponent;
+    private T lifecycle;
     /** Error string raised in liveness checks. {@value} */
     public static final String LIVENESS_ERROR_NOT_STARTED = " is not active";
     public static final String LIVENESS_ERROR_NOT_RUNNING = "is not running";
     public static final String LIVENESS_ERROR_FAILED = " has failed";
 
-    public JettyToSFLifecycle(String name, LifeCycle jettyComponent) {
+    public JettyToSFLifecycle(String name, T lifecycle) {
         this.name = name;
-        this.jettyComponent = jettyComponent;
+        this.lifecycle = lifecycle;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public T getLifecycle() {
+        return lifecycle;
     }
 
     /**
@@ -55,32 +64,50 @@ public class JettyToSFLifecycle implements Liveness {
      * @throws RemoteException            network trouble
      */
     public synchronized void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        if (jettyComponent == null) {
+        if (lifecycle == null) {
             throw new SmartFrogLivenessException(name+LIVENESS_ERROR_NOT_STARTED);
         }
-        if (jettyComponent.isFailed()) {
+        if (lifecycle.isFailed()) {
             throw new SmartFrogLivenessException(name +LIVENESS_ERROR_FAILED);
         }
-        if (!jettyComponent.isRunning()) {
+        if (!lifecycle.isRunning()) {
             throw new SmartFrogLivenessException(name +LIVENESS_ERROR_NOT_RUNNING);
         }
     }
 
+    /**
+     * Stop the component; throw anything you want, as we expect this
+     * to be caught and logged in the termination logic
+     * @throws Exception anything that went wrong
+     */
     public synchronized void stop() throws Exception {
-        if(jettyComponent!=null) {
-            jettyComponent.stop();
-            jettyComponent=null;
+        if(lifecycle !=null) {
+            lifecycle.stop();
+            lifecycle =null;
         }
     }
 
+    /**
+     * Start the server
+     * @throws SmartFrogException if the component failed to start
+     */
     public synchronized void start() throws SmartFrogException {
         try {
-            if(jettyComponent!=null) {
-                jettyComponent.start();
+            if(lifecycle !=null) {
+                lifecycle.start();
             }
         } catch (Exception e) {
             throw SmartFrogException.forward(e);
         }
     }
 
+
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return the name and the string value of the embedded lifecycle
+     */
+    public String toString() {
+        return name+":"+lifecycle.toString();
+    }
 }

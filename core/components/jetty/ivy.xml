@@ -62,10 +62,6 @@
         rev="latest.integration"
         conf="test->default"/>
 
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master;redist->default"/>
 
     <!--
     Core Jetty libraries
@@ -98,6 +94,21 @@
         name="core"
         rev="${org.eclipse.jdt.core.version}"
         conf="jsp->master"/>
+
+
+    <!--extra Jetty libraries-->
+    <dependency org="javax.servlet"
+        name="servlet-api"
+        rev="${servletapi.version}"
+        conf="compile->master;redist->default"/>
+<!--
+
+    <dependency org="org.slf4j"
+        name="slf4j-jcl"
+        rev="${slf4j.version}"
+        conf="redist->default"/>
+-->
+
     <dependency org="commons-logging"
         name="commons-logging"
         rev="${commons-logging.version}"

@@ -12,13 +12,13 @@ public class JettyWarTest extends JettyTestBase {
 
 
     public void testWarDeployed() throws Throwable {
-        deployWebApp(SYSTEM_FILES + "jetty-does-war.sf",
-                "JettyDoesWar");
+        deployWebApp(SYSTEM_FILES + "testWarDeployed.sf",
+                "testWarDeployed");
     }
 
     public void testNestedWar() throws Throwable {
-        deployWebApp(SYSTEM_FILES + "nested-war.sf",
-                "nested-war");
+        deployWebApp(SYSTEM_FILES + "testNestedWar.sf",
+                "testNestedWar");
     }
 
 

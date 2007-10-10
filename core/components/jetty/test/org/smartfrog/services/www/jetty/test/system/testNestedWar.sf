@@ -22,27 +22,54 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/servers/testwar.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
 sfConfig extends Compound {
+    sfSyncTerminate true;
 
   //this is set in the test run
     testwar extends TestWar;
 
+    port test.jetty.port.1;
+    home test.jetty.home;
 
-    server extends LocalJettyServer;
+   /*
+    this is the jetty server itself
+    */
+   server extends CoreJettyServer {
+
+      jettyhome PARENT:home;
+
+      port PARENT:port;
+
+
+   }
 
     deployedWar extends WebApplication {
-        server LAZY PARENT:server:jettyServer;
-        filename LAZY testwar:absolutePath;
-        contextPath "testwar";
+          server LAZY PARENT:server;
+          filename LAZY testwar:absolutePath;
+          contextPath "testwar";
     }
 
-    ping extends LivenessPage {
-            host LAZY server:listener:ipaddr;
-            port server:port;
-            page LAZY deployedWar:absolutePath;
-            checkFrequency 1;
-            followRedirects true;
+
+    listener extends JettySocketConnector {
+        server LAZY PARENT:server;
     }
+
+
+    //this is here because without it, ping doesnt get the lazy information from
+    //the webapp in time
+    //ping LAZY server:ping;
+
+    //there's a bit of a race condition here; no files are
+
+    ping extends LivenessPage {
+        host LAZY server:listener:ipaddr;
+        port PARENT:port;
+        page PARENT:deployedWar:contextPath;
+        checkFrequency 1;
+        followRedirects true;
+    }
+
 
 }
