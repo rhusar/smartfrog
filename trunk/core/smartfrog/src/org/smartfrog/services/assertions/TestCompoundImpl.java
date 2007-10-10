@@ -520,9 +520,13 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws RemoteException           network errors
      */
     protected void endTestRun(TerminationRecord record) throws SmartFrogRuntimeException, RemoteException {
-        //work out the forced timeout info from the record
-        forcedTimeout=(actionTerminator!=null && actionTerminator.isForcedShutdown())
-                || (testsTerminator!=null && testsTerminator.isForcedShutdown());
+        //work out the forced timeout info from the terminators
+        //its only a forced timeout if the action was expected to terminate itself anyway
+        boolean actionForcedTimeout = expectTerminate && actionTerminator != null && actionTerminator.isForcedShutdown();
+        //any timeout of the tests is an error
+        boolean testForcedTimeout = testsTerminator != null && testsTerminator.isForcedShutdown();
+        //a forced timeout of action or tests => forced timeout of components
+        forcedTimeout= actionForcedTimeout || testForcedTimeout;
         //send out a completion event
         sendEvent(new TestCompletedEvent(this, isSucceeded(), forcedTimeout, isSkipped(), record, description));
         setTestBlockAttributes(record, forcedTimeout);
