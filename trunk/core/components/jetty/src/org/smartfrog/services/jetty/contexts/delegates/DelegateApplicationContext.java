@@ -20,8 +20,9 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.jetty.servlet.Context;
-import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -41,7 +42,7 @@ public abstract class DelegateApplicationContext
      * @param server jetty sever
      * @param context context
      */
-    protected DelegateApplicationContext(SFJetty server, Context context) {
+    protected DelegateApplicationContext(JettyImpl server, Context context) {
         this.server = server;
         this.context = context;
     }
@@ -52,7 +53,7 @@ public abstract class DelegateApplicationContext
     /**
      * the server
      */
-    private SFJetty server;
+    private JettyImpl server;
 
     /**
      * The actual context
@@ -65,7 +66,7 @@ public abstract class DelegateApplicationContext
      *
      * @return the server
      */
-    public SFJetty getServer() {
+    public JettyImpl getServer() {
         return server;
     }
 
@@ -105,9 +106,9 @@ public abstract class DelegateApplicationContext
      */
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
-            getServer().getServer().addLifeCycle(getContext());
+            getServer().getServer().addHandler(context);
             try {
-                getContext().start();
+                context.start();
             } catch (RemoteException ex) {
                 throw ex;
             } catch (Exception ex) {

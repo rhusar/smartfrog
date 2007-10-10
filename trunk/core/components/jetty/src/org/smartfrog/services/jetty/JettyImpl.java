@@ -22,6 +22,10 @@ package org.smartfrog.services.jetty;
 
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.RequestLogHandler;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.thread.BoundedThreadPool;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
@@ -29,13 +33,11 @@ import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationCon
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
@@ -48,12 +50,12 @@ import java.util.Vector;
  * @author Ritu Sabharwal
  */
 
-public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
+public class JettyImpl extends PrimImpl implements JettyIntf {
 
     private final Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
 
     /** Jetty home path */
-    private String jettyhome;
+    private String jettyHome;
 
 
     /** A jetty helper */
@@ -61,7 +63,7 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     /** The Http server */
     private Server server;
-    private JettyToSFLifecycle serverBridge = new JettyToSFLifecycle("server", null);
+    private JettyToSFLifecycle<Server> serverBridge = new JettyToSFLifecycle<Server>(SERVER, null);
 
     /** log pattern. {@value} */
     public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
@@ -70,6 +72,7 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     /** Error string raised when EARs are deployed {@value} */
     public static final String ERROR_EAR_UNSUPPORTED = "Jetty does not support EAR files";
+    private static final String SERVER = "server";
 
 
     /**
@@ -78,7 +81,7 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
      * @throws RemoteException In case of network/rmi error
      */
 
-    public SFJetty() throws RemoteException {
+    public JettyImpl() throws RemoteException {
     }
 
     /**
@@ -91,37 +94,54 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
     }
 
     /**
-     * Deploy the SFJetty component and publish the information
+     * Configure and deploy the Jetty component
+     *
+     * There's a good example at {@link http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html}
+     * on how to set Jetty up to match the base configuration; what we have here is not that dissimilar, only
+     * configurable via .sf files.
      *
      * @throws SmartFrogException In case of error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        //try {
-            //create the server and store in in our bridge
-            server = new Server();
-            serverBridge = new JettyToSFLifecycle("server", server);
-            //create the pool
-            BoundedThreadPool pool = new BoundedThreadPool();
-            pool.setMaxThreads(sfResolve(ATTR_MAXTHREADS, 0, true));
-            pool.setMinThreads(sfResolve(ATTR_MINTHREADS, 0, true));
-            pool.setMaxIdleTimeMs(sfResolve(ATTR_MAXIDLETIME, 0, true));
-            server.setThreadPool(pool);
+        //create the server and store in in our bridge
+        server = new Server();
+        serverBridge = new JettyToSFLifecycle<Server>(SERVER, server);
+        server.setStopAtShutdown(sfResolve(ATTR_STOP_AT_SHUTDOWN, false, true));
 
-            //set the jetty helper up
-            jettyHelper.cacheJettyServer(server);
-            jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
-            jettyHelper.cacheJettyHome(jettyhome);
+        //create the pool
+        BoundedThreadPool pool = new BoundedThreadPool();
+        pool.setMaxThreads(sfResolve(ATTR_MAXTHREADS, 0, true));
+        pool.setMinThreads(sfResolve(ATTR_MINTHREADS, 0, true));
+        pool.setMaxIdleTimeMs(sfResolve(ATTR_MAXIDLETIME, 0, true));
+        server.setThreadPool(pool);
 
-            //now look at logging
-            if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
-                configureLogging();
-            }
-/*
-        } catch (Exception ex) {
-            throw SmartFrogDeploymentException.forward(ex);
-        }*/
+        //tune the response policy
+        server.setSendServerVersion(sfResolve(ATTR_SEND_SERVER_VERSION, false, true));
+        server.setSendDateHeader(sfResolve(ATTR_SEND_DATE_HEADER, false, true));
+
+        //turn on the handlers
+        //after this, a call to setHandler appends a new handler
+        HandlerCollection collection = new HandlerCollection();
+        server.setHandler(collection);
+
+
+        //set the jetty helper up
+        jettyHelper.cacheJettyServer(server);
+        jettyHome = sfResolve(jettyhomeRef, jettyHome, true);
+        jettyHelper.cacheJettyHome(jettyHome);
+
+
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        server.addHandler(contexts);
+        server.addHandler(new DefaultHandler());
+
+        //now look at logging
+        if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
+            configureLogging();
+        }
+
     }
 
 
@@ -135,43 +155,55 @@ public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
             RemoteException {
         super.sfStart();
         serverBridge.start();
+/*
+        try {
+            serverBridge.getLifecycle().join();
+        } catch (InterruptedException e) {
+            throw SmartFrogException.forward("Failed to start "+serverBridge,e);
+        }
+*/
     }
+
+
 
     /**
      * Configure the http server
      *
      * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
      */
-    public void configureLogging() throws SmartFrogException {
-        try {
-            String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyhome, null, true, null);
-            String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
+    public void configureLogging() throws SmartFrogException, RemoteException {
+        String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyHome, null, true, null);
+        String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
 
-            NCSARequestLog requestlog = new NCSARequestLog();
-            requestlog.setFilename(logDir + File.separatorChar + logPattern);
-            //commented out as this is deprecated/ignored.
-            requestlog.setRetainDays(90);
-            requestlog.setAppend(true);
-            requestlog.setExtended(true);
-            requestlog.setLogTimeZone(sfResolve(ATTR_LOG_TZ, "", true));
-            Vector pathV=null;
-            pathV=sfResolve(ATTR_LOGIGNOREPATHS,pathV,true);
-            String[] paths=new String[pathV.size()];
-            int counter=0;
-            for(Object path:pathV) {
-                String pathValue = path.toString();
-                paths[counter++]= pathValue;
-                sfLog().info("Ignoring path "+pathValue);
-            }
-
-            requestlog.setIgnorePaths(paths);
-            server.addLifeCycle(requestlog);
-        } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
+        NCSARequestLog requestlog = new NCSARequestLog();
+        requestlog.setFilename(logDir + File.separatorChar + logPattern);
+        //commented out as this is deprecated/ignored.
+        requestlog.setRetainDays(sfResolve(ATTR_LOG_KEEP_DAYS,0,true));
+        requestlog.setAppend(sfResolve(ATTR_LOG_APPEND, false, true));
+        requestlog.setExtended(sfResolve(ATTR_LOG_APPEND, false, true));
+        requestlog.setLogTimeZone(sfResolve(ATTR_LOG_TZ, "", true));
+        Vector pathV = null;
+        pathV = sfResolve(ATTR_LOGIGNOREPATHS, pathV, true);
+        String[] paths = new String[pathV.size()];
+        int counter = 0;
+        for (Object path : pathV) {
+            String pathValue = path.toString();
+            paths[counter++] = pathValue;
+            sfLog().info("Ignoring path " + pathValue);
         }
+
+        requestlog.setIgnorePaths(paths);
+        //bind the log to the server by way of a handler
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        requestLogHandler.setRequestLog(requestlog);
+        server.addHandler(requestLogHandler);
     }
 
-    /** Termination phase Shut down the server, logging any errors that happen on the way */
+    /**
+     * Termination phase.
+     * Shut down the server, logging any errors that happen on the way
+     * */
     public synchronized void sfTerminateWith(TerminationRecord status) {
 
         try {

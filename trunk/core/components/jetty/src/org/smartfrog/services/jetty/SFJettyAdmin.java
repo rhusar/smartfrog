@@ -40,7 +40,7 @@ import java.rmi.RemoteException;
 /**
  * A wrapper for a Jetty HTTP server for admin configurations
  *
- * @TODO Revisit this and try and reimplement from SF itself. Its a good use case of the servlet mappings
+ * *Revisit this and try and reimplement from SF itself. Its a good use case of the servlet mappings*
  *
  * @author Ritu Sabharwal
  */

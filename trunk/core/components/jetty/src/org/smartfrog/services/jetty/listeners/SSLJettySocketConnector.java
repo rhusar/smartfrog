@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
+package org.smartfrog.services.jetty.listeners;
 
-/** 
- * jetty server with nothing inside
+/**
+ * Created 08-Oct-2007 15:33:55
  */
 
-sfConfig extends Compound {
 
-    
-   server1 extends CoreJettyServer {
-      jettyhome test.jetty.home;
-   }
+public interface SSLJettySocketConnector extends JettySocketConnector {
+
+    String ATTR_KEYSTORE="keystore";
+    String ATTR_KEYSTORETYPE = "keystoreType";
+    String ATTR_PASSWORD="passwordProvider";
+    String ATTR_PROTOCOL="protocol";
 }
-

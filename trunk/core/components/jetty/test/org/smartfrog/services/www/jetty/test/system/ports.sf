@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,18 +18,23 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/webapplication.sf"
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
-sfConfig extends Compound {
 
-    ping extends LivenessPage {
-            host "no-such-host";
-            port test.jetty.port.1;
-            page "/";
-            checkFrequency 1;
-    }
+/**
+ * Specify the jetty home path here
+ */
+test.jetty.home PROPERTY test.jetty.home;
+jetty_home test.jetty.home;
 
-}
+test.jetty.port.1 5050;
+test.jetty.port.2 5051;
+
+
+//hard coded hostname,
+hostname "127.0.0.1";
+
+resourcebase LAZY PROPERTY java.io.tmpdir;
+
+waitForTimeout 10000;
+//interval in ms between checks
+waitForInterval 200;

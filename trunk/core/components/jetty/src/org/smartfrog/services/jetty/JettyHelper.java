@@ -140,8 +140,8 @@ public class JettyHelper extends WebApplicationHelper {
      * locate jettyhome
      *
      * @return jetty home or null if it is not there
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
      */
     public String findJettyHome() throws SmartFrogException, RemoteException {
         assert serverComponent != null;
@@ -156,9 +156,9 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * save jetty home for retrieval
      *
-     * @param jettyhome
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @param jettyhome jetty home property
+     * @throws SmartFrogRuntimeException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
      */
     public void cacheJettyHome(String jettyhome)
             throws SmartFrogRuntimeException, RemoteException {
@@ -171,8 +171,8 @@ public class JettyHelper extends WebApplicationHelper {
      * @param mandatory set this to true if you want an exception if there is no
      *                  context
      * @return context, or null if there is not one found
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
      */
     public Context getServletContext(boolean mandatory)
             throws SmartFrogException, RemoteException {
@@ -194,9 +194,7 @@ public class JettyHelper extends WebApplicationHelper {
         return jettyContext;
     }
 
-    /**
-     * find whatever ancestor is a servlet context
-     */
+
     /**
      * Find the servlet context.
      * This is done by resolving the owner and looking for its server attribute
@@ -210,37 +208,38 @@ public class JettyHelper extends WebApplicationHelper {
 
 
     /**
-     * add a listener to the server
+     * add a Connector to the server
      *
-     * @param listener a listener
+     * @param connector a listener
      */
-    public void addListener(Connector listener) {
-        httpServer.addConnector(listener);
+    public void addConnector(Connector connector) {
+        httpServer.addConnector(connector);
+        
     }
 
     /**
-     * add a listener, then start it
+     * add a Connector, then start it
      *
-     * @param listener a listener
-     * @throws SmartFrogException failue to start the listener
+     * @param connector a Connector
+     * @throws SmartFrogException failue to start the Connector
      */
-    public void addAndStartListener(Connector listener)
+    public void addAndStartConnector(Connector connector)
             throws SmartFrogException {
-        addListener(listener);
+        addConnector(connector);
         try {
-            listener.start();
+            connector.start();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
     }
 
     /**
-     * remove a listener
-     * @param listener a listener
+     * remove a Connector
+     * @param connector a Connector
      */
-    public void removeListener(Connector listener) {
+    public void removeConnector(Connector connector) {
         if (httpServer != null) {
-            httpServer.removeConnector(listener);
+            httpServer.removeConnector(connector);
         }
     }
 
@@ -277,23 +276,23 @@ public class JettyHelper extends WebApplicationHelper {
     /**
      * terminate a listener; log trouble but continue
      *
-     * @param listener a listener
+     * @param connector a listener
      */
-    public synchronized void terminateListener(Connector listener) {
-        if (listener != null) {
+    public synchronized void terminateConnector(Connector connector) {
+        if (connector != null) {
             try {
-                listener.stop();
+                connector.stop();
             } catch (InterruptedException ex) {
                 if (getLogger().isErrorEnabled()) {
-                    getLogger().error(" Interrupted on listener termination ",
+                    getLogger().error(" Interrupted on connector termination ",
                             ex);
                 }
             } catch (Exception npe) {
                     getLogger().error(
-                            " Ignoring caught during Jetty teardown",
+                            " Ignoring caught during connector teardown",
                             npe);
             }
-            removeListener(listener);
+            removeConnector(connector);
         }
     }
 

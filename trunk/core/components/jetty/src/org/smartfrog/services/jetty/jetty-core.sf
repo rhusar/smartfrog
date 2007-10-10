@@ -34,6 +34,8 @@
 /**
  * schema for the base jetty server extends
  * base webserver schema
+
+
  */
 CoreJettySchema extends Schema {
     jettyhome extends String;
@@ -51,10 +53,30 @@ CoreJettySchema extends Schema {
     //timezone for logging events in
     logTimezone  extends OptionalString;
 
+    /**
+     * should log data be appended?
+     */
+
+    logAppend extends OptionalBoolean;
+
+    /**
+     * days to keep for log data.
+     */
+
+    logKeepDays extends OptionalInteger;
+
+    /**
+     * is the log extended?
+     */
+
+    logExtended  extends OptionalBoolean;
+
+    maxIdleTime extends Integer;
     maxThreads extends Integer;
     minThreads extends Integer;
-    maxIdleTime extends Integer;
-
+    sendDateHeader extends Boolean;
+    sendServerVersion extends Boolean;
+    stopAtShutdown extends Boolean;
 }
 
 /**
@@ -63,10 +85,9 @@ CoreJettySchema extends Schema {
  * will be deployed.
  */
 CoreJettyServer extends ApplicationServer {
-   sfClass "org.smartfrog.services.jetty.SFJetty";
+   sfClass "org.smartfrog.services.jetty.JettyImpl";
    coreJettySchema extends CoreJettySchema;
    serverHost "localhost";
-   port 8080;
 
    //deployment information
    supportsEAR false;
@@ -74,17 +95,30 @@ CoreJettyServer extends ApplicationServer {
    supportsServletContext true;
 
 
-   //logging is optional. Once turned on, the pattern and logdir are mandatory
+   //logging is optional. Once turned on, the other log details become mandatory
    enableLogging false;
-   logPattern "yyyy_mm_dd.request.log";
+   logAppend true;
    logDir "log";
-   logTimezone "GMT";
+   logExtended true;
+   logKeepDays 7;
    logIgnorePaths [];
+   logTimezone "GMT";
+   logPattern "yyyy_mm_dd.request.log";
 
    //thread pool policy.
+   maxIdleTime 10000;
    maxThreads 8;
    minThreads 4;
-   maxIdleTime 10000;
+
+   //should the date header be sent in a response?
+   sendDateHeader true;
+   //should the server version be sent in a response?
+   sendServerVersion true;
+
+   //termination policy. If this is false, the server outlives the smartfrog component,
+   //which is not normally encouraged.
+   stopAtShutdown true;
+
 }
 
 
@@ -100,15 +134,55 @@ JettyHandler extends ServletContextComponent {
 /**
  * listeners listen on ports
  */
-JettyListenerSchema extends Schema {
-    listenerPort extends Integer;
-    serverHost extends OptionalString;
-    serverName extends OptionalString;
+
+JettySocketConnector extends ApplicationServerContext {
+    sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
+    jettySocketConnectorSchema extends Schema {
+      port extends Integer;
+      host extends OptionalString;
+      name extends OptionalString;
+      maxIdleTime extends Integer;
+          /**
+           * number of threads to accept requests
+           */
+      threads extends Integer;
+
+    }
+    maxIdleTime CoreJettyServer:maxIdleTime;
+    //Jetty likes a match between the number of acceptors and the number of threads
+    threads CoreJettyServer:minThreads;
+    port 8080;
+    host "localhost";
 }
 
-JettyListener extends ApplicationServerContext {
-    sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
-    jettyListenerSchema extends JettyListenerSchema;
+
+/**
+ * here for backwards compatibility; connects up the port and host to the old definitions
+ */
+JettyListener extends JettySocketConnector {
+  serverHost TBD;
+  listenerPort JettySocketConnector:port;
+  port listenerPort;
+  host serverHost;
+}
+
+ /**
+  * SSL Support. A password provider is used for password support
+  */
+JettySSLSocketConnector extends JettySocketConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpll";
+    port 443;
+    jettySSLSocketConnectorSchema extends Schema {
+       //path/reference to a keystore
+      keystore extends FilenameType;
+      keystoreType extends String;
+       //the password provider
+      passwordProvider extends Compulsory;
+      protocol extends String;
+    }
+    keystoreType "JKS";
+    protocol "TLS";
+
 }
 
 

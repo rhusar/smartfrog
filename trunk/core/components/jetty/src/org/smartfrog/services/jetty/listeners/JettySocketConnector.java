@@ -24,5 +24,16 @@ package org.smartfrog.services.jetty.listeners;
  */
 
 
-public interface SocketListenerIntf extends Listener {
+public interface JettySocketConnector extends JettyConnector {
+
+    /**
+     * Max time (millis) to wait for a socket
+     */
+    String ATTR_MAX_IDLE_TIME="maxIdleTime";
+
+    /**
+     * number of threads to accept requests
+     */
+    String ATTR_THREADS ="threads";
+
 }

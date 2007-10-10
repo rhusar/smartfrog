@@ -21,38 +21,16 @@
 
 
 
-sfConfig extends Compound {
+tcp20 extends Compound {
 
   server1 extends TempDirServer {
-    maxThreads 20;
-    listenerPort 8010;
+    server:maxThreads 20;
+    port test.jetty.port.1;
   }
 
   server2 extends TempDirServer {
-    listenerPort 8011;
+    port test.jetty.port.2;
   }
-/*
-  server1 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
 
-      contexts extends JettySampleContexts;
-
-      list1 extends JettyListener {
-            listenerPort 8010;
-            //serverHost "localhost";
-            server LAZY PARENT;
-      }
-   }
-
-   server2 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      serverHost "localhost"; //mandatory
-      contexts extends JettySampleContexts;
-      list2 extends JettyListener {
-            listenerPort 8011;
-            //serverHost "localhost";
-            server LAZY PARENT;
-      }
-   }
-   */
 }
+sfConfig extends tcp20;

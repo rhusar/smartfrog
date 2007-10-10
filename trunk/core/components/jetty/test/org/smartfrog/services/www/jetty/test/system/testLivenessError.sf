@@ -22,13 +22,16 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/servers/testwar.sf"
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
 sfConfig extends Compound {
 
   //this is set in the test run
     testwar extends TestWar;
 
-    server extends LocalJettyServer;
+    server extends LocalJettyServer {
+      port test.jetty.port.1;
+    }
 
     deployedWar extends WebApplication {
         server LAZY PARENT:server:jettyServer;

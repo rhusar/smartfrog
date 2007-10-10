@@ -56,8 +56,7 @@ DeployServerOnJetty extends Compound {
     }
 
 
-    listener extends JettyListener {
-        listenerPort port;
+    listener extends JettySocketConnector {
         server LAZY jettyServer;
     }
     

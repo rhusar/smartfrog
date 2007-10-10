@@ -22,15 +22,8 @@
 
 sfConfig extends Compound {
 
-
-
-  server2 extends CoreJettyServer {
+  server extends CoreJettyServer {
       port 8082;
 
-      list2 extends JettyListener {
-            sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
-            listenerPort 8010;
-            server LAZY PARENT;
-      }
    }
 }

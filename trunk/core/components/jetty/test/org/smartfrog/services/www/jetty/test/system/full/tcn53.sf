@@ -26,11 +26,11 @@ sfConfig extends Compound {
    server1 extends FullJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
 
-      directPortListener:serverHost "no-hostname"; 
+      directPortListener:host "no-hostname";
    }
 
-    list1 extends JettyListener {
-        listenerPort 8012;
+    list1 extends JettySocketConnector {
+        port 8012;
         //serverHost "localhost";
         server LAZY PARENT:server;
     }

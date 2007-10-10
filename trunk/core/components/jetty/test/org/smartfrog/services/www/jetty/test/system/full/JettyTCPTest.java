@@ -93,7 +93,7 @@ public class JettyTCPTest
                 EXCEPTION_DEPLOYMENT,
                 "unnamed component",
                 EXCEPTION_RESOLUTION,
-                "non-optional attribute 'jettyhome' is missing");
+                "jettyhome");
     }
 
     public void testCaseTCN56() throws Exception {

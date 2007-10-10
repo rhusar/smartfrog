@@ -23,7 +23,7 @@ package org.smartfrog.services.jetty.contexts.delegates;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -47,10 +47,10 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
     private boolean requestId = false;
 
 
-    private WebAppContext application = new WebAppContext();
+    private WebAppContext application;
 
 
-    public DelegateWebApplicationContext(SFJetty server, Prim declaration) {
+    public DelegateWebApplicationContext(JettyImpl server, Prim declaration) {
         super(server, null);
     }
 
@@ -85,16 +85,21 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         contextPath = declaration.sfResolve(contextPathRef,
                 (String) null,
                 true);
-        String absolutePath = contextPath;
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
+        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
+
+        application = new WebAppContext(webApp,contextPath);
         application.setContextPath(contextPath);
         application.setWar(webApp);
+
+        
         ServletHandler servlethandler = application.getServletHandler();
 /*      TODO: turn this on if needed
         AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
         */
+
+
         setContext(application);
     }
 

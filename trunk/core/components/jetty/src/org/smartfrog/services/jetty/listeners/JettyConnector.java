@@ -29,28 +29,19 @@ import java.rmi.RemoteException;
  * @author Ritu Sabharwal
  */
 
-public interface Listener extends Remote {
+public interface JettyConnector extends Remote {
     /**
      * attribute name: {@value}
      */
-    String LISTENER_PORT = "listenerPort";
+    String LISTENER_PORT = "port";
     /**
      * attribute name: {@value}
      */
-    String SERVER_HOST = "serverHost";
+    String SERVER_HOST = "host";
 
     /**
      * attribute name: {@value}
      */
-    String SERVER_NAME = "serverName";
+    String SERVER_NAME = "name";
 
-    /**
-	 * Add the listener to the http server
-     * @param listenerPort port to listen on
-     * @param serverHost hostname
-     * @throws SmartFrogException other errors
-     * @throws RemoteException In case of network/rmi error
-     */
-    public void addlistener(int listenerPort, String serverHost) throws
-            SmartFrogException, RemoteException;
 }
