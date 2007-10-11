@@ -53,6 +53,14 @@ public class Version {
      * Used to determine the maximum core version compatible with this instance*/
     final static String ATR_MAX_CORE_VERSION = "majorRelease";
 
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSVERSION = "buildOSVersion";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSNAME = "buildOSName";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_JAVAVENDOR = "buildJavaVendor";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_JAVAVERSION = "buildJavaVersion";
 
     // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     private static String name=        "SmartFrog";
@@ -66,6 +74,12 @@ public class Version {
     private static String maxCoreVersion = null;
 
     private static String buildDate= "buildDate";
+
+    private static String buildOSName ="@buildOSName@";
+    private static String buildOSVersion = "@buildOSVersion@";
+    private static String buildJavaVersion = "@buildJavaVersion@";
+    private static String buildJavaVendor = "@buildJavaVendor@";
+
 
     // Don't change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
@@ -93,6 +107,10 @@ public class Version {
             minCoreVersion = classComponentDescription.sfResolve(ATR_MIN_CORE_VERSION, minCoreVersion , false);
             maxCoreVersion = classComponentDescription.sfResolve(ATR_MAX_CORE_VERSION, maxCoreVersion , false);
             buildDate = classComponentDescription.sfResolve(ATR_BUILD_DATE, buildDate , false);
+            buildOSName = classComponentDescription.sfResolve(ATR_BUILD_OSNAME, buildDate , false);
+            buildOSVersion = classComponentDescription.sfResolve(ATR_BUILD_OSVERSION, buildDate , false);
+            buildJavaVersion = classComponentDescription.sfResolve(ATR_BUILD_JAVAVERSION, buildDate , false);
+            buildJavaVendor = classComponentDescription.sfResolve(ATR_BUILD_JAVAVENDOR, buildDate , false);
             initialized=true;
 
         } catch (Exception ex) {

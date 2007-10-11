@@ -247,6 +247,7 @@
 	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
 	  <entry key="sf.build.os.name" value="${os.name}"/>
 	  <entry key="sf.build.os.version" value="${os.version}"/>
+	  	  
     </propertyfile>
     <property file="${sf.version.file}"/>
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
@@ -262,6 +263,11 @@
         <replacefilter token="@build@" value="${sf.build}"/>
         <replacefilter token="@status@" value="${sf.status}"/>
         <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+		
+		<replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
+		<replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
+		<replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
+		<replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
