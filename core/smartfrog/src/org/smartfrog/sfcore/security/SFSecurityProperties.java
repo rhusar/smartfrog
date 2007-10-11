@@ -36,31 +36,30 @@ public class SFSecurityProperties {
     /** Base property name for all the SF security related properties.
      * @value  org.smartfrog.sfcore.security.
      * */
-    public static final String propBaseSecurity = SmartFrogCoreProperty.propBase +
-        "sfcore.security.";
+    public static final String propBaseSecurity = SmartFrogCoreProperty.propBase +  "sfcore.security.";
 
     /** Property name to activate SF security features .*/
     public static final String propSecurityOn = propBaseSecurity + "activate";
+
+    /** Property name to activate SF security features . {@value}*/
+    public static final String propSecureResourcesOff = propBaseSecurity + "secureResourcesOff";    
 
     /**
      * Property name to describe the URL, relative file path or resource inside
      * a jar file of the main SF security properties file.
      */
-    public static final String propPropertiesFileName = propBaseSecurity +
-        "propFile";
+    public static final String propPropertiesFileName = propBaseSecurity + "propFile";
 
     /**
      * Property name to describe the URL, relative file path or resource inside
      * a jar file of the key store resource.
      */
-    public static final String propKeyStoreName = propBaseSecurity +
-        "keyStoreName";
+    public static final String propKeyStoreName = propBaseSecurity + "keyStoreName";
 
     /**
      * Property name that describes the password needed to unlock the key store.
      */
-    public static final String propKeyStorePasswd = propBaseSecurity +
-        "keyStorePassword";
+    public static final String propKeyStorePasswd = propBaseSecurity + "keyStorePassword";
 
     /** If set to true it will turn on security trace messages. */
     public static final String propDebug = propBaseSecurity + "debug";
@@ -104,8 +103,7 @@ public class SFSecurityProperties {
     static void readSecurityProperties() {
         InputStream is = null;
         try {
-            propertiesFileName = System.getProperty(propPropertiesFileName,
-                    propertiesFileName);
+            propertiesFileName = System.getProperty(propPropertiesFileName, propertiesFileName);
 
             // At this point there is NO security, so we don't have integrity
             // check of this file... (we rely on the OS).

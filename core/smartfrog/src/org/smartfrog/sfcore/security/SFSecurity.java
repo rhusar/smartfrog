@@ -46,6 +46,9 @@ public class SFSecurity {
     /** A flag that states whether SF security checks are active. */
     private static boolean securityOn = false;
 
+    /** A flag that states whether SF security checks for resources are active. */
+    private static boolean secureResourcesOff = false;
+
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
     /** A RMIServerSocketFactory used when security is ff */
@@ -113,7 +116,7 @@ public class SFSecurity {
                           we have to be *very* careful on what RMIClientSocketFactory
                           classes are available in our codebase...*/
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
-
+                    secureResourcesOff = Boolean.getBoolean(SFSecurityProperties.propSecureResourcesOff);
                     securityOn = true;
                 } else {
                     //System.setSecurityManager(new DummySecurityManager());
@@ -164,6 +167,16 @@ public class SFSecurity {
      */
     synchronized public static boolean isSecurityOn() {
         return securityOn;
+    }
+
+    /**
+     * Returns whether the SF security checks for resources are active or not. This can only
+     * be changed once at initialization time for security reasons and does not apply to classes.
+     *
+     * @return whether the SF security is active.
+     */
+    synchronized public static boolean isSecureResourcesOff (){
+        return secureResourcesOff;
     }
 
     /**
