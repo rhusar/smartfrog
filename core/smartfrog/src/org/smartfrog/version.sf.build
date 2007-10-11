@@ -27,5 +27,9 @@ Version extends DATA {
   status "@status@"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP";
   buildDate "@buildDate@";
+  buildOSName "@buildOSName@";
+  buildOSVersion "@buildOSVersion@";
+  buildJavaVersion "@buildJavaVersion@";
+  buildJavaVendor "@buildJavaVendor@";
 }
 
