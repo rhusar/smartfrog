@@ -125,6 +125,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { LIVENESS_SEND_FAILURE , "Liveness Send Failure when calling {1}"},
         { COMPONENT_TERMINATED, "Component Terminated"},
         { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
+        { WARN_SECURE_RESOURCES_OFF, "SmartFrog security is active BUT resources can be loaded without restrictions. This should be a secure node"},    
         { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
         { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, fouund a {0}"},
         { CANNOT_LINK_TO_PREDICATE, "Attribute {1} is a link to a predicate. Predicates should be extended and not linked to: in component {0}"},

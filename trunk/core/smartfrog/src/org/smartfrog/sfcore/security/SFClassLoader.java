@@ -292,7 +292,21 @@ public class SFClassLoader {
         CodeSource cs = new CodeSource(con.getURL(), certs);
         Policy pc = Policy.getPolicy();
         PermissionCollection perms = ((pc == null) ? null : pc.getPermissions(cs));
-        quickReject(new ProtectionDomain(cs, perms));
+
+        ProtectionDomain pd = new ProtectionDomain(cs, perms);
+        try {
+            quickReject(pd);
+        } catch (SecurityException e) {
+            // Special case where we relax the loading of resources, normally descriptions from the local filesystem
+            Boolean secureResourcesOn = !SFSecurity.isSecureResourcesOff();
+            if (secureResourcesOn) {                
+              throw e;
+            } else {
+                if (debug != null) {
+                  debug.println("WARNING!!:quickReject:  " + "access check failed for " + pd +" but secureResoucesOff is "+ !secureResourcesOn);
+                }
+            }
+        }
 
         // No security exception, continues...
         return in;

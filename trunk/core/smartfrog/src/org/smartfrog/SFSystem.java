@@ -681,6 +681,10 @@ public class SFSystem implements MessageKeys {
             if (sfLog().isWarnEnabled()) {
                 sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
             }
+        } else {
+            if (SFSecurity.isSecureResourcesOff()){
+                sfLog().warn(MessageUtil.formatMessage(WARN_SECURE_RESOURCES_OFF));
+            }
         }
         // if this property is set then a security manager is created, here we provide debug information about it.
         String secPro = System.getProperty(SmartFrogCoreProperty.codebase);
