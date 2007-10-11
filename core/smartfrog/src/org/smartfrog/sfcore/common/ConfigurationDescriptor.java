@@ -591,7 +591,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *            ex. foo
      *            ex. "HOST localhost:foo"
      *            ex. 'HOST localhost:foo'
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD, DUMP
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
@@ -737,7 +737,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      *      - name: name where to apply ACTION
      *            ex. "foo"
      *            ex. "HOST localhost:foo"
-     *      - action: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD
+     *      - action: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, UPDATE, LOAD, DUMP
      *      - descriptionURL: description used by ACTION
      *            ex. "/home/sf/foo.sf"
      *            ex. "c:\sf\foo.sf"

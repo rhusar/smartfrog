@@ -95,7 +95,8 @@ public class SFSystem implements MessageKeys {
     /**
      * root process. Will be null after termination.
      */
-    private ProcessCompound rootProcess;
+    private ProcessCompound rootProcess = null;
+    
     public static final String HEADLESS_MODE_MESSAGE = "Running in headless mode";
 
     /**
@@ -283,7 +284,8 @@ public class SFSystem implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo(){
-        sfLog().out(Version.versionString()+System.getProperty("line.separator")+Version.copyright());
+        String lineS = System.getProperty("line.separator");
+        sfLog().out(lineS+Version.versionString()+lineS+Version.copyright()+lineS);
     }
 
     /**
@@ -409,19 +411,22 @@ public class SFSystem implements MessageKeys {
             exitWith("Failed to initialize SmartFrog", ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
-        setRootProcess(null);
-
+        //SmartFrog version info
         showVersionInfo();
+        logInitStatus();
 
+        //read command line options
         OptionSet opts = new OptionSet(args);
+
+        //engage headless mode
+        maybeGoHeadless(opts);
 
         maybeShowDiagnostics(opts);
 
         if (opts.errorString != null) {
             exitWith(opts.errorString, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
-        //engage headless mode
-        maybeGoHeadless(opts);
+
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors,opts.terminateOnDeploymentFailure));
         } catch (SmartFrogException sfex) {
@@ -482,6 +487,15 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+    public void logInitStatus() {
+        //SmartFrog security warning messages
+        logSecurityStatus();
+        //Notify special properties status
+        Logger.logStatus();
+        //SmartFrog network status checks
+        logNetworkStatus();
+    }
+
     protected void exitWithException(Exception sfex, int errorcode) {
         if (Logger.logStackTrace){
             printStackTrace(sfex);
@@ -512,12 +526,14 @@ public class SFSystem implements MessageKeys {
         }
     }
 
-    private void maybeGoNoExitCodeOptionSet(OptionSet opts) {
-        if (opts.headless) {
-            sfLog().info(HEADLESS_MODE_MESSAGE);
-            System.setProperty("java.awt.headless", "true");
-        }
-    }
+
+//  Was this used? - Julio - if not, then remove.
+//    private void maybeGoNoExitCodeOptionSet(OptionSet opts) {
+//        if (opts.headless) {
+//            sfLog().info(HEADLESS_MODE_MESSAGE);
+//            System.setProperty("java.awt.headless", "true");
+//        }
+//    }
 
     /**
      * Prints StackTrace
@@ -606,6 +622,7 @@ public class SFSystem implements MessageKeys {
     /**
      * initialise the system.  Turn security on, read properties from an ini file
      * and then look at stack tracing.
+     * To print init status messages call {@link org.smartfrog.SFSystem#logInitStatus()} after.
      * This method is idempotent and synchronised; you can only init the system once.
      * @throws SmartFrogException
      * @throws SFGeneralSecurityException
@@ -618,26 +635,31 @@ public class SFSystem implements MessageKeys {
             // Read init properties
             readPropertiesFromIniFile();
             sfLog();
-            notifySecurityStatus();
 
-            // Init logging properties
+            // Init special static properties
             Logger.init();
-
-            //Test local networking: checks localhost NIC
-            if (Logger.testNetwork) {
-                StringBuffer result = new StringBuffer();
-                boolean failed = Diagnostics.doReportLocalNetwork(result);
-                if (failed) {
-                   if (sfLog().isWarnEnabled()) { sfLog().warn(result.toString()); }
-                } else {
-                    if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
-                }
-            }
+            //Notifies any possible problem with security init.
+            checkSecurityStatus();
             alreadySystemInit = true;
         }
     }
 
-    public static void notifySecurityStatus() throws SFGeneralSecurityException {
+    private static void logNetworkStatus() {//Test local networking: checks localhost NIC
+        if (Logger.testNetwork) {
+            StringBuffer result = new StringBuffer();
+            boolean failed = Diagnostics.doReportLocalNetwork(result);
+            if (failed) {
+               if (sfLog().isWarnEnabled()) { sfLog().warn(result.toString()); }
+            } else {
+                if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
+            }
+        }
+    }
+
+    /**
+     * Throws exception if secury is required and not enabled.
+     */
+    public static void checkSecurityStatus() throws SFGeneralSecurityException {
         // Notify status of Security
         if (!SFSecurity.isSecurityOn()){
             String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
@@ -646,12 +668,21 @@ public class SFSystem implements MessageKeys {
                 //we need security, but it is not enabled
                 throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
             }
+        }
+    }
+
+    /**
+     * Prints messages about security status
+     * @throws SFGeneralSecurityException
+     */
+    public static void logSecurityStatus() {
+        // Notify warning message about Security status
+        if (!SFSecurity.isSecurityOn()){
             if (sfLog().isWarnEnabled()) {
                 sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
             }
-
         }
-        // if this property is set the a sec manager is created
+        // if this property is set then a security manager is created, here we provide debug information about it.
         String secPro = System.getProperty(SmartFrogCoreProperty.codebase);
         if  (secPro!=null ) {
             if (sfLog().isDebugEnabled()) sfLog().debug("Using java security policy: "+secPro);

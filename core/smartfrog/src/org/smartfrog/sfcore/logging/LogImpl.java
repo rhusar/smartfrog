@@ -317,7 +317,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
             localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
-            if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass().toString());
+            if (localLog.isTraceEnabled()) localLog.trace("Logger registered: "+ localLog.getClass().toString());
         } else if (configurationClass instanceof Vector) {
             String className = null;
             ComponentDescription loggerConfiguration = null;
@@ -334,8 +334,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                     } else {
                         register("localLog"+i, logger);
                     }
-                    if (isDebugEnabled()) {
-                        debug("Logger registered: "+logger.getClass().toString());
+                    if (isTraceEnabled()) {
+                        trace("Logger registered: "+logger.getClass().toString());
                     }
                 } catch (Exception ex) {
                    if (i ==0) {

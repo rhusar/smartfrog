@@ -100,7 +100,11 @@ public class Logger implements MessageKeys {
         } catch (Exception ex){
             if (SFSystem.sfLog().isErrorEnabled()) { SFSystem.sfLog().error(ex); }
         }
+        
+        initialized = true;
+    }
 
+    public static void logStatus() {
         if (logStackTrace&&(SFSystem.sfLog().isWarnEnabled())) {
               SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
         }
@@ -108,8 +112,6 @@ public class Logger implements MessageKeys {
         if (logLiveness && (SFSystem.sfLog().isWarnEnabled())) {
           SFSystem.sfLog().warn(MessageUtil.formatMessage(MSG_WARNING_LIVENESS_ENABLED));
         }
-
-        initialized = true;
     }
 
     /**
