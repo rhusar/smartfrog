@@ -297,10 +297,10 @@ public final class Diagnostics {
         header(out, "Locale information");
         doReportLocale(out);
 
+        doReportPrim(out, prim);
+
         header(out, "Thread Dump");
         doReportThreadDump(out);
-
-        doReportPrim(out, prim);
 
         header(out, "System properties");
         doReportSystemProperties(out);
@@ -540,6 +540,13 @@ public final class Diagnostics {
       nameP =System.getProperty(SmartFrogCoreProperty.codebase);
       if ((nameP!=null)&& !nameP.equals("")){
         out.append("* SF codebase:     ");out.append(nameP);out.append("\n");
+      }
+
+      nameP =System.getProperty("java.awt.headless");
+      if ((nameP!=null)&& !nameP.equals("")){
+        out.append("* Headless:        true");out.append("\n");
+      } else {
+        out.append("* Headless:        false");out.append("\n");  
       }
 
 

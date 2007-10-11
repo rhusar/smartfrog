@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.util.Vector;
+import java.util.Arrays;
 
 import org.smartfrog.Version;
 import java.io.LineNumberReader;
@@ -147,8 +148,10 @@ public class OptionSet {
      * @param args arguments to create from
      */
     public OptionSet(String[] args) {
-        int i = 0;
-
+        int i = 0;        
+        if (SFSystem.sfLog().isDebugEnabled()) {
+           SFSystem.sfLog().debug("Command Line args: "+ Arrays.toString(args));
+        }
         while ((i < args.length) && (errorString == null)) {
             try {
                 String currentArg = args[i];
