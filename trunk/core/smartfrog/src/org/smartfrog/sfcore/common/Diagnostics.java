@@ -55,6 +55,7 @@ import java.util.*;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -532,10 +533,6 @@ public final class Diagnostics {
       if ( nameP!=null){
         out.append("* SF process name: ");out.append(nameP);out.append("\n");
       }
-      nameP =System.getProperty("java.security.policy");
-      if ( nameP!=null){
-        out.append("* Java security policy:     ");out.append(nameP);out.append("\n");
-      }
 
       nameP =System.getProperty(SmartFrogCoreProperty.codebase);
       if ((nameP!=null)&& !nameP.equals("")){
@@ -549,6 +546,18 @@ public final class Diagnostics {
         out.append("* Headless:        false");out.append("\n");  
       }
 
+      if ( SFSecurity.isSecurityOn()){
+        out.append("* SmartFrog Security: ON\n");
+      } else {
+         out.append("* SmartFrog Security: OFF\n");
+      }
+      if ( SFSecurity.isSecureResourcesOff()){
+        out.append("* Secure Resources:  OFF\n");
+      }
+      nameP =System.getProperty("java.security.policy");
+      if ( nameP!=null){
+        out.append("* Java security policy:     ");out.append(nameP);out.append("\n");
+      }
 
     }
 
