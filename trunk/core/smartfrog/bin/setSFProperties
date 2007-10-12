@@ -10,6 +10,9 @@
 # Uncomment to enable Security
 #export SFSECURITY_ON=ENABLED
 
+# Uncomment to load local descriptions when security is on 
+# export SFSECURERESOURCES_OFF=ENABLED
+
 # To define a user classpath, use variable SFUSERCLASSPATH
 # export SFUSERCLASSPATH=.
 
