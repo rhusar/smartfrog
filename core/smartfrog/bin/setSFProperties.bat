@@ -10,6 +10,10 @@ rem set SFDYNAMICCLASSLOADING_ON=ENABLED
 rem Uncomment to enable Security
 rem set SFSECURITY_ON=ENABLED
 
+rem Uncomment to load local descriptions when security is on 
+rem set SFSECURERESOURCES_OFF=ENABLED
+
+
 rem To define a user classpath, use variable SFUSERCLASSPATH
 rem set SFUSERCLASSPATH=.
 
