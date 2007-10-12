@@ -26,10 +26,15 @@ Version extends DATA {
   build "@build@"; // odd numbers are development versions
   status "@status@"; //alpha, beta, (stable), rc (release candidate)
   copyright "@copyright@";
+  
   buildDate "@buildDate@";
   buildOSName "@buildOSName@";
   buildOSVersion "@buildOSVersion@";
   buildJavaVersion "@buildJavaVersion@";
   buildJavaVendor "@buildJavaVendor@";
+  
+  svnComment "SVN data is only valid for an official release because it tracks the revision for 'sf-build-version.properties'";
+  svnLastChangedDate "@svnLastChangedDate@";
+  svnRevision "@svnRevision@"; 
 }
 

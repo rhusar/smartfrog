@@ -247,6 +247,9 @@
 	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
 	  <entry key="sf.build.os.name" value="${os.name}"/>
 	  <entry key="sf.build.os.version" value="${os.version}"/>
+	  
+	  <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
+	  <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
 	  	  
     </propertyfile>
     <property file="${sf.version.file}"/>
@@ -269,6 +272,10 @@
 		<replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
 		<replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
 		<replacefilter token="@copyright@" value="${Name.Company}"/>
+		
+		<replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
+		<replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
+		
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
