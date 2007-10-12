@@ -1,0 +1,39 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+if [ -z $1 ] ; then
+echo "Insufficent arguments to use sfRun"
+echo "Usage: sfRun URL [-e]"
+exit 69
+fi 
+if [ $1 == "-?" ];then
+echo "Usage: sfRun URL [-e]"
+exit 0
+fi 
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
+
+. "$SFHOME/bin/setSFProperties"
+
+#if test "$SFDEFAULTSF"; then
+#	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+#fi
+
+#java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
+
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+else 
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+fi
+

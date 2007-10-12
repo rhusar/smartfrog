@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+    xmlns:sfi="http://smartfrog.org/types/2006/01/"
+    xmlns:fun="http://smartfrog.org/services/cdl/demo/fun">
+
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/demo/fun.cdl"/>
+  <cdl:import location="classpath:/org/smartfrog/services/cddlm/cdl/demo/components.cdl"/>
+
+
+  <cdl:configuration>
+    <message>test message</message>
+
+    <echo cdl:extends="demo:echo">
+      <demo:message cdl:refroot="message" cdl:ref="/"/>
+      <demo:gui>true</demo:gui>
+      <sfProcessHost sfi:type="trimmed" cdl:ref="host"/>
+    </echo>
+
+  </cdl:configuration>
+
+  <cdl:system>
+
+    <server>localhost</server>
+    <laptop>laptop</laptop>
+
+    <dialog cdl:extends="echo" >
+      <host cdl:ref="/host" />
+    </dialog>
+
+    <dialog cdl:extends="echo">
+      <host cdl:ref="/server"/>
+    </dialog>
+
+    <sound cdl:extends="fun:Sound">
+      <sfProcessHost sfi:type="trimmed" cdl:ref="/laptop"/>
+      <filename >c:\music.wav</filename>
+      <loops >8</loops>
+    </sound>
+
+
+  </cdl:system>
+</cdl:cdl>

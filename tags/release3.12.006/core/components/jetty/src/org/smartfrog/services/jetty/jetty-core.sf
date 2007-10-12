@@ -1,0 +1,189 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/www/webapplication.sf"
+
+/**
+ * this defines the core of jetty
+ */
+
+
+/*
+ * The jetty components consist of
+ * Listeners for incoming requests
+*/
+
+
+/**
+ * schema for the base jetty server extends
+ * base webserver schema
+
+
+ */
+CoreJettySchema extends Schema {
+    jettyhome extends String;
+    enableLogging extends Boolean;
+    serverHost extends String;
+    //log pattern
+    logPattern extends String;
+    //could be a file or a directory
+    //relative paths are resolved relative to jetty home
+    logDir extends Optional;
+    //a vector of paths, which are strings in the app server.
+    //such as ["/jetty/images/*","/demo/images/*", "*.css"];
+    //needed if enableLogging=true
+    logIgnorePaths extends OptionalVector;
+    //timezone for logging events in
+    logTimezone  extends OptionalString;
+
+    /**
+     * should log data be appended?
+     */
+
+    logAppend extends OptionalBoolean;
+
+    /**
+     * days to keep for log data.
+     */
+
+    logKeepDays extends OptionalInteger;
+
+    /**
+     * is the log extended?
+     */
+
+    logExtended  extends OptionalBoolean;
+
+    maxIdleTime extends Integer;
+    maxThreads extends Integer;
+    minThreads extends Integer;
+    sendDateHeader extends Boolean;
+    sendServerVersion extends Boolean;
+    stopAtShutdown extends Boolean;
+}
+
+/**
+ * this is jetty with no running listeners or contexts.
+ * It is implemented as a compound; you can add anything underneath it and they
+ * will be deployed.
+ */
+CoreJettyServer extends ApplicationServer {
+   sfClass "org.smartfrog.services.jetty.JettyImpl";
+   coreJettySchema extends CoreJettySchema;
+   serverHost "localhost";
+
+   //deployment information
+   supportsEAR false;
+   supportsWAR true;
+   supportsServletContext true;
+
+
+   //logging is optional. Once turned on, the other log details become mandatory
+   enableLogging false;
+   logAppend true;
+   logDir "log";
+   logExtended true;
+   logKeepDays 7;
+   logIgnorePaths [];
+   logTimezone "GMT";
+   logPattern "yyyy_mm_dd.request.log";
+
+   //thread pool policy.
+   maxIdleTime 10000;
+   maxThreads 8;
+   minThreads 4;
+
+   //should the date header be sent in a response?
+   sendDateHeader true;
+   //should the server version be sent in a response?
+   sendServerVersion true;
+
+   //termination policy. If this is false, the server outlives the smartfrog component,
+   //which is not normally encouraged.
+   stopAtShutdown true;
+
+}
+
+
+
+/**
+ * jetty handlers handle requests within a servlet.
+ * as such, a context attribute is mandatory
+ */
+JettyHandler extends ServletContextComponent {
+}
+
+
+/**
+ * listeners listen on ports
+ */
+
+JettySocketConnector extends ApplicationServerContext {
+    sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
+    jettySocketConnectorSchema extends Schema {
+      port extends Integer;
+      host extends OptionalString;
+      name extends OptionalString;
+      maxIdleTime extends Integer;
+          /**
+           * number of threads to accept requests
+           */
+      threads extends Integer;
+
+    }
+    maxIdleTime CoreJettyServer:maxIdleTime;
+    //Jetty likes a match between the number of acceptors and the number of threads
+    threads CoreJettyServer:minThreads;
+    port 8080;
+    host "localhost";
+}
+
+
+/**
+ * here for backwards compatibility; connects up the port and host to the old definitions
+ */
+JettyListener extends JettySocketConnector {
+  serverHost TBD;
+  listenerPort JettySocketConnector:port;
+  port listenerPort;
+  host serverHost;
+}
+
+ /**
+  * SSL Support. A password provider is used for password support
+  */
+JettySSLSocketConnector extends JettySocketConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpll";
+    port 443;
+    jettySSLSocketConnectorSchema extends Schema {
+       //path/reference to a keystore
+      keystore extends FilenameType;
+      keystoreType extends String;
+       //the password provider
+      passwordProvider extends Compulsory;
+      protocol extends String;
+    }
+    keystoreType "JKS";
+    protocol "TLS";
+
+}
+
+
+

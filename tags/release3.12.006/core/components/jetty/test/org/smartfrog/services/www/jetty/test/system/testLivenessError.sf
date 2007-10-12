@@ -1,0 +1,50 @@
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/www/webapplication.sf"
+#include "/org/smartfrog/services/www/servers/testwar.sf"
+#include "/org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+
+sfConfig extends Compound {
+
+  //this is set in the test run
+    testwar extends TestWar;
+
+    server extends LocalJettyServer {
+      port test.jetty.port.1;
+    }
+
+    deployedWar extends WebApplication {
+        server LAZY PARENT:server:jettyServer;
+        filename LAZY testwar:absolutePath;
+        contextPath "testwar";
+    }
+
+    ping extends LivenessPage {
+            host LAZY server:listener:ipaddr;
+            port server:port;
+            page "testwar/error";
+            checkFrequency 1;
+            queries [["status",419]];
+    }
+
+}

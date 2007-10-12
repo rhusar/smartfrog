@@ -1,0 +1,10 @@
+build
+dist
+build.properties
+setup.properties
+*.jpx
+*.ipr
+*.iml
+*.iws
+.classpath
+.project

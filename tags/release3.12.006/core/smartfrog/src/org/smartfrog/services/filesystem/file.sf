@@ -1,0 +1,105 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
+/**
+ * platform independent file
+ * set the name and optionally the dir; get the absolute path in a
+ * platform independent manner
+ *
+ * The mustXXX attributes are characteristics of the files which must always hold
+ */
+
+
+FileSchema extends FileUsingComponentSchema {
+
+    //name of a file
+    filename extends OptionalFilenameType;
+
+
+
+    //file must always exist
+    mustExist extends OptionalBoolean;
+    //the process must have read access
+    mustRead  extends OptionalBoolean;
+    //the file must be writeable
+    mustWrite  extends OptionalBoolean;
+    //test for being a file during liveness checks
+    mustBeFile   extends OptionalBoolean;
+
+    //test for being a file during deployment
+    mustBeDir  extends OptionalBoolean;
+
+    //flag to say when to test
+    testOnStartup extends  OptionalBoolean;
+
+    //flag to say when to test
+    testOnLiveness extends  OptionalBoolean;
+
+
+    /* attributes added at deploy time
+    exists: Boolean
+    absolutePath: String
+    uri: String
+    isFile
+    isDirectory
+    isHidden
+    timestamp: long
+    length: long
+    isEmpty: bool
+
+    */
+
+}
+
+File extends WorkflowPrim {
+    fileSchema extends FileSchema;
+    sfClass "org.smartfrog.services.filesystem.FileImpl";
+    testOnStartup false;
+    testOnLiveness true;
+}
+
+/**
+ * A file or directory that must exist at startup
+ */
+
+FileOrDirMustExist extends File {
+  testOnStartup true;
+  testOnLiveness false;
+  mustExist true;
+}
+
+
+/**
+ * A file that must exist at startup
+ */
+DirMustExist extends FileOrDirMustExist {
+  mustBeDir true;
+}
+
+
+/**
+ * A directory that must exist at startup
+ */
+
+FileMustExist  extends FileOrDirMustExist {
+  mustBeFile true;
+}
+
