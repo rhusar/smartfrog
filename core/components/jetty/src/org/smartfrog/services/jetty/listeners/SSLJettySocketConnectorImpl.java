@@ -21,6 +21,7 @@ package org.smartfrog.services.jetty.listeners;
 
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
+import org.mortbay.jetty.Connector;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -47,7 +48,7 @@ public class SSLJettySocketConnectorImpl extends JettySocketConnectorImpl implem
      * @return an {@link SslSocketConnector} instance
      */
     @Override
-    protected SocketConnector createConnector() throws SmartFrogException, RemoteException {
+    protected Connector createConnector() throws SmartFrogException, RemoteException {
         SslSocketConnector ssl = new SslSocketConnector();
         String keystore = FileSystem.lookupAbsolutePath(this, ATTR_KEYSTORE, null, null, true, null);
         String keystoreType = sfResolve(ATTR_KEYSTORETYPE, "", true);

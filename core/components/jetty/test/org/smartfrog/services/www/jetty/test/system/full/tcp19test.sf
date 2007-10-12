@@ -29,10 +29,12 @@ sfConfig extends JettyTestCompound {
 	action extends tcp19;
 
 	
-
+ //we dont care which number comes back, only that we get a number
   tests extends Sequence {
      wait extends waitForPage {
       port tcp19:port;
+      condition:maximumResponseCode 404;
+      condition:minimumResponseCode 200;
       }
    }
 

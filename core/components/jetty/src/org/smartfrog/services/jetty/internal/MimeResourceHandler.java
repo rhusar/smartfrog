@@ -17,32 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.jetty.internal;
 
-
+import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.MimeTypes;
 
 /**
- * Specify the jetty home path here
+ *
+ * Created 12-Oct-2007 16:14:35
+ *
  */
-test.jetty.home PROPERTY test.jetty.home;
-jetty_home test.jetty.home;
 
-test.jetty.port.1 5050;
-test.jetty.port.2 5051;
+public class MimeResourceHandler extends ResourceHandler {
 
 
-//hard coded hostname,
-hostname "127.0.0.1";
+    public MimeResourceHandler() {
+    }
 
-resourcebase LAZY PROPERTY java.io.tmpdir;
+    public MimeTypes getMimeTypes() {
+     //   return super._mimeTypes;
+        return null;
+    }
 
-test.timeout 10000;
-
-test.waitForTimeout 5000;
-
-waitForTimeout test.waitForTimeout;
-//interval in ms between checks
-waitForInterval 200;
-
-test.liveness.delay 1000;
-
-test.testwar.war PROPERTY test.testwar.war;
+}

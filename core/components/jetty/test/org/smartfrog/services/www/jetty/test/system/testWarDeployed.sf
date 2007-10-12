@@ -18,31 +18,24 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/webapplication.sf"
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/www/servers/testwar.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
 
-sfConfig extends Compound {
-
-  //this is set in the test run
-    testwar extends TestWar;
+sfConfig extends TestWarServer {
 
 
-    server extends LocalJettyServer;
+    sleep extends Delay {
 
-    deployedWar extends WebApplication {
-        server LAZY PARENT:server:server;
-        filename LAZY testwar:absolutePath;
-        contextPath "testwar";
-    }
+      //short pause
+      delay test.liveness.delay ;
 
-    ping extends LivenessPage {
-        host LAZY server:listener:ipaddr;
-        port server:port;
-        page LAZY deployedWar:absolutePath;
-        checkFrequency 1;
-        followRedirects true;
+      action extends LivenessPage {
+          enabled false;
+          host LAZY server:listener:ipaddr;
+          port server:port;
+          page LAZY deployedWar:absolutePath;
+          checkFrequency 1;
+          followRedirects true;
+      }
     }
 
 }

@@ -88,6 +88,20 @@ public class JettyToSFLifecycle<T extends LifeCycle> implements Liveness {
     }
 
     /**
+     * Stop the component by calling {@link #stop()}
+     * any exceptions are caught and forwarded as SmartFrogExceptions
+     *
+     * @throws SmartFrogException anything that went wrong
+     */
+    public synchronized void wrappedStop() throws SmartFrogException {
+        try {
+            stop();
+        } catch (Exception e) {
+            throw SmartFrogException.forward("When stopping "+name,e);
+        }
+    }
+
+    /**
      * Start the server
      * @throws SmartFrogException if the component failed to start
      */

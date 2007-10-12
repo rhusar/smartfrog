@@ -21,14 +21,21 @@ package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.MimeTypes;
+import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHandler;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.JettyImpl;
+import org.smartfrog.services.jetty.JettyToSFLifecycle;
+import org.smartfrog.services.jetty.internal.ExtendedServletHandler;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
@@ -47,7 +54,6 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
     private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     private Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
-    private Reference classPathRef = new Reference(ATTR_CLASSPATH);
     private String contextPath;
     private String resourceBase;
     private String absolutePath;
@@ -55,13 +61,16 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * a log
      */
     private Log log;
+    private ResourceHandler resources;
+    private HandlerCollection handlerSet;
+    private JettyToSFLifecycle<HandlerCollection> handlerLifecycle;
 
     /**
      * Get the context cast to a servlet context
      * @return the servlet context of jetty
      */
     public final Context getServletContext() {
-        return (Context)getContext();
+        return getContext();
     }
 
     public DelegateServletContext(JettyImpl server, Context context) {
@@ -80,8 +89,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
         log = LogFactory.getOwnerLog(declaration);
         JettyHelper jettyHelper = new JettyHelper(declaration);
-        Context context = new Context();
-        setContext(context);
+
+
+
         jettyHelper.setServerComponent(getServer());
         String jettyhome = jettyHelper.findJettyHome();
         //context path attribute
@@ -97,23 +107,78 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         if (!new File(resourceBase).exists()) {
             resourceBase = jettyhome.concat(resourceBase);
         }
-        //classpath stuff.
-        //REVISIT: what does this bring to the table?
-/*        String classPath = declaration.sfResolve(classPathRef, (String) null, false);
-        if (classPath != null) {
-            if (!new File(classPath).exists()) {
-                classPath = jettyhome+classPath;
-            }
-            log.info("Jetty classpath="+classPath);
-            context.setClassPath(classPath);
-        }*/
+
+        //to get resources seen before the other bits of the tree, we patch the handlerSet.
+        Context context = new Context(null,null,null, new ExtendedServletHandler(), null);
+        setContext(context);
+
+        handlerSet = new HandlerCollection();
+
+        resources = new ResourceHandler();
+        resources.setResourceBase(resourceBase);
+
         //configure the context
-        log.debug("Jetty resource base ="+resourceBase);
-        context.setResourceBase(resourceBase);
-        log.debug("context path =" + contextPath);
         context.setContextPath(contextPath);
-        //BUGBUG: this causes Jetty to throw an exception, as the context already has a handler. Somehow
-        //context.addHandler(new ResourceHandler());
+        context.setResourceBase(resourceBase);
+        log.info("Deploying "+contextPath+" from "+resourceBase);
+
+        //add the resources
+        handlerSet.addHandler(resources);
+        //then patch in the servlet context *afterwards*
+        handlerSet.addHandler(getContext());
+        handlerLifecycle=new JettyToSFLifecycle<HandlerCollection>("handlers",handlerSet);
+    }
+
+
+    /**
+     * start: deploy this context
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    public void start() throws SmartFrogException, RemoteException {
+        if (handlerSet != null) {
+            ContextHandlerCollection contextHandler = getServerContextHandler();
+            if (contextHandler == null) {
+                throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
+            }
+            contextHandler.addHandler(handlerSet);
+            handlerLifecycle.start();
+        }
+    }
+
+
+    /**
+     * undeploy a context. If the server is already stopped, this the undeployment is skipped without an error. The
+     * context field is set to null, to tell the system to skip this in future.
+     *
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    public void terminate() throws RemoteException, SmartFrogException {
+        if (handlerLifecycle != null) {
+            try {
+                handlerLifecycle.wrappedStop();
+                ContextHandlerCollection handlers = getServerContextHandler();
+                if (handlers != null) {
+                    handlers.removeHandler(handlerSet);
+                } else {
+                    //do nothing, the server is not alive any more
+                }
+//            } catch (IllegalStateException ex) {
+//              throw SmartFrogException.forward(ex);
+            } finally {
+                context = null;
+                handlerSet = null;
+                handlerLifecycle=null;
+            }
+        }
+    }
+
+    public HandlerCollection getHandlers() {
+        return (HandlerCollection) getContext().getHandler();
     }
 
     public String getAbsolutePath() {
@@ -126,6 +191,16 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
     public String getContextPath() {
         return contextPath;
+    }
+
+
+    protected HandlerCollection getHandlerSet() {
+        return handlerSet;
+    }
+
+
+    protected ResourceHandler getResources() {
+        return resources;
     }
 
     /**
@@ -184,8 +259,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     public void addHandler(Handler handler) throws SmartFrogException,
             RemoteException {
-        Context context = getServletContext();
-        context.addHandler(handler);
+        getHandlers().addHandler(handler);
     }
 
     /**
@@ -203,9 +277,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         } catch (Exception ignore) {
             log.info(ignore);
         }
-        //TODO: remove the handler?
-        Context context = getServletContext();
-        //context.removeHandler(handler);
+        //remove the handler
+        getHandlers().removeHandler(handler);
 
     }
 

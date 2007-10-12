@@ -20,12 +20,13 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 import java.rmi.RemoteException;
 
@@ -58,7 +59,7 @@ public abstract class DelegateApplicationContext
     /**
      * The actual context
      */
-    private Context context;
+    protected Context context;
 
 
     /**
@@ -106,7 +107,11 @@ public abstract class DelegateApplicationContext
      */
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
-            getServer().getServer().addHandler(context);
+            ContextHandlerCollection contextHandler = getServerContextHandler();
+            if(contextHandler==null) {
+                throw new SmartFrogLifecycleException("Cannot start "+this+" as the server is not yet deployed");
+            }
+            contextHandler.addHandler(context);
             try {
                 context.start();
             } catch (RemoteException ex) {
@@ -117,12 +122,25 @@ public abstract class DelegateApplicationContext
         }
     }
 
+    protected Server getJettyServer() {
+        return getServer().getServer();
+    }
+
+    protected ContextHandlerCollection getServerContextHandler() {
+
+        Server httpServer = getJettyServer();
+        if(httpServer==null) {
+            return null;
+        }
+        return (ContextHandlerCollection) httpServer.getChildHandlerByClass(ContextHandlerCollection.class);
+    }
+
     /**
-     * liveness check
-     *
-     * @throws SmartFrogLivenessException In case of liveness failure
-     * @throws RemoteException    In case of network/rmi error
-     */
+    * liveness check
+    *
+    * @throws SmartFrogLivenessException In case of liveness failure
+    * @throws RemoteException    In case of network/rmi error
+    */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (context == null) {
             throw new SmartFrogLivenessException(ERROR_NULL_CONTEXT);
@@ -145,9 +163,9 @@ public abstract class DelegateApplicationContext
     public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
-                Server httpServer = getServer().getServer();
-                if (httpServer != null) {
-                    httpServer.removeLifeCycle(context);
+                ContextHandlerCollection handlers= getServerContextHandler();
+                if (handlers != null) {
+                    handlers.removeHandler(context);
                 } else {
                     //do nothing, the server is not alive any more
                 }

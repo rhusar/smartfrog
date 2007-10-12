@@ -106,8 +106,8 @@ CoreJettyServer extends ApplicationServer {
    logPattern "yyyy_mm_dd.request.log";
 
    //thread pool policy.
-   maxIdleTime 10000;
-   maxThreads 8;
+   maxIdleTime 100;
+   maxThreads 32;
    minThreads 4;
 
    //should the date header be sent in a response?
@@ -135,9 +135,8 @@ JettyHandler extends ServletContextComponent {
  * listeners listen on ports
  */
 
-JettySocketConnector extends ApplicationServerContext {
-    sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
-    jettySocketConnectorSchema extends Schema {
+AbstractConnector extends ApplicationServerContext {
+    connectorSchema extends Schema {
       port extends Integer;
       host extends OptionalString;
       name extends OptionalString;
@@ -148,11 +147,28 @@ JettySocketConnector extends ApplicationServerContext {
       threads extends Integer;
 
     }
+
     maxIdleTime CoreJettyServer:maxIdleTime;
-    //Jetty likes a match between the number of acceptors and the number of threads
-    threads CoreJettyServer:minThreads;
     port 8080;
     host "localhost";
+}
+
+/**
+ * a connector that opens a socket and listens to it. Each open socket consumes one thread.
+ */
+
+JettySocketConnector extends AbstractConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.JettySocketConnectorImpl";
+    jettySocketConnectorSchema extends Schema {
+          /**
+           * number of threads to accept requests
+           */
+      threads extends Integer;
+
+    }
+    //Jetty likes a match between the number of acceptors and the number of threads
+    //threads CoreJettyServer:minThreads;
+    threads 2;
 }
 
 
@@ -182,8 +198,14 @@ JettySSLSocketConnector extends JettySocketConnector {
     }
     keystoreType "JKS";
     protocol "TLS";
-
 }
 
 
 
+/**
+ * This connector uses Java's NIO APIs to handle incoming requests more efficently
+ */
+
+JettySelectChannelConnector extends AbstractConnector {
+    sfClass "org.smartfrog.services.jetty.listeners.SelectChannelConnectorImpl";
+}

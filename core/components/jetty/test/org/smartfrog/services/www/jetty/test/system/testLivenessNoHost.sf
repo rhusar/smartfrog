@@ -18,18 +18,15 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/webapplication.sf"
-#include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
 sfConfig extends Compound {
 
     ping extends LivenessPage {
-            host "no-such-host";
-            port test.jetty.port.1;
-            page "/";
-            checkFrequency 1;
+        host "no-such-host";
+        port test.jetty.port.1;
+        page "/";
+        checkFrequency 1;
     }
 
 }

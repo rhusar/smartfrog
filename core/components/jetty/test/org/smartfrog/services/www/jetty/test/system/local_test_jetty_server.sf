@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+#include "/org/smartfrog/services/www/webapplication.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
 
 LocalJettyServer extends Compound {
 
-    
+    sfSyncTerminate true;
     port test.jetty.port.1;
     jettyhome test.jetty.home;
 
@@ -44,5 +46,13 @@ LocalJettyServer extends Compound {
       port PARENT:port;
     }
 
+    sleep extends Delay {
+
+      //short pause
+      delay test.liveness.delay ;
+
+      action extends Compound {
+      }
+    }
 }
 

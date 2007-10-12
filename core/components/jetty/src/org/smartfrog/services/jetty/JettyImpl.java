@@ -22,6 +22,7 @@ package org.smartfrog.services.jetty;
 
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
@@ -96,10 +97,10 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
     /**
      * Configure and deploy the Jetty component
      *
-     * There's a good example at {@link http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html}
+     * There's a good example on the mortbay site
      * on how to set Jetty up to match the base configuration; what we have here is not that dissimilar, only
      * configurable via .sf files.
-     *
+     * @see  <a href="http://jetty.mortbay.org/xref/org/mortbay/jetty/example/LikeJettyXml.html">Example</a>
      * @throws SmartFrogException In case of error while deploying
      * @throws RemoteException    In case of network/rmi error
      */
@@ -121,11 +122,6 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         server.setSendServerVersion(sfResolve(ATTR_SEND_SERVER_VERSION, false, true));
         server.setSendDateHeader(sfResolve(ATTR_SEND_DATE_HEADER, false, true));
 
-        //turn on the handlers
-        //after this, a call to setHandler appends a new handler
-        HandlerCollection collection = new HandlerCollection();
-        server.setHandler(collection);
-
 
         //set the jetty helper up
         jettyHelper.cacheJettyServer(server);
@@ -133,15 +129,25 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         jettyHelper.cacheJettyHome(jettyHome);
 
 
+        //this holds all the server contexts
         ContextHandlerCollection contexts = new ContextHandlerCollection();
-        server.addHandler(contexts);
-        server.addHandler(new DefaultHandler());
 
-        //now look at logging
+        //now look at logging; add one if needed
+        RequestLogHandler logHandler=null;
         if (sfResolve(ATTR_ENABLE_LOGGING, false, true)) {
-            configureLogging();
+            logHandler = configureLogging();
         }
 
+        //the 404 handler has to come after the contexts
+        DefaultHandler raise404 = new DefaultHandler();
+
+        Handler[] handlerArray;
+        if(logHandler!=null) {
+            handlerArray=new Handler[] {contexts, raise404,logHandler};
+        } else {
+            handlerArray = new Handler[]{contexts, raise404};
+        }
+        server.setHandlers(handlerArray);
     }
 
 
@@ -167,12 +173,13 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
 
 
     /**
-     * Configure the http server
+     * Create a log handler...this is not bound to the server yet
      *
      * @throws SmartFrogException In case of error while starting
      * @throws RemoteException    In case of network/rmi error
+     * @return the log handler
      */
-    public void configureLogging() throws SmartFrogException, RemoteException {
+    public RequestLogHandler configureLogging() throws SmartFrogException, RemoteException {
         String logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyHome, null, true, null);
         String logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", true);
 
@@ -197,7 +204,7 @@ public class JettyImpl extends PrimImpl implements JettyIntf {
         //bind the log to the server by way of a handler
         RequestLogHandler requestLogHandler = new RequestLogHandler();
         requestLogHandler.setRequestLog(requestlog);
-        server.addHandler(requestLogHandler);
+        return requestLogHandler;
     }
 
     /**

@@ -17,32 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.jetty.internal;
 
+import org.mortbay.jetty.servlet.ServletHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * Specify the jetty home path here
+ *
+ * Created 12-Oct-2007 16:30:04
+ *
  */
-test.jetty.home PROPERTY test.jetty.home;
-jetty_home test.jetty.home;
 
-test.jetty.port.1 5050;
-test.jetty.port.2 5051;
+public class ExtendedServletHandler extends ServletHandler {
 
 
-//hard coded hostname,
-hostname "127.0.0.1";
-
-resourcebase LAZY PROPERTY java.io.tmpdir;
-
-test.timeout 10000;
-
-test.waitForTimeout 5000;
-
-waitForTimeout test.waitForTimeout;
-//interval in ms between checks
-waitForInterval 200;
-
-test.liveness.delay 1000;
-
-test.testwar.war PROPERTY test.testwar.war;
+    /* ------------------------------------------------------------ */
+    protected void notFound(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //this is a  no-op!
+        //super.notFound(request, response);
+    }
+}
