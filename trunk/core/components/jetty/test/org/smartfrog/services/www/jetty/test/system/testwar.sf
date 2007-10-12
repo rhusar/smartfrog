@@ -30,6 +30,45 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/www/servers/testwar.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/filesystem/file.sf"
+
+  //the war file must be present
+    TestWar extends FileMustExist {
+      filename PROPERTY test.testwar.war;
+    }
+
+
+
+TestWarServer extends LocalJettyServer {
+
+    testwar extends TestWar;
+
+    deployedWar extends WebApplication {
+        server LAZY PARENT:server;
+        filename LAZY testwar:absolutePath;
+        contextPath "testwar";
+    }
+}
+
+
+
+sfConfig extends TestWarServer {
+
+
+sleep extends Delay {
+
+      //short pause
+      delay test.liveness.delay;
+
+    //normally you'd use the broken up attributes, but here we test the full URL
+      action extends LivenessPage {
+        host LAZY server:listener:ipaddr;
+        port server:port;
+        page "testwar/error";
+        checkFrequency 1;
+        queries [["status",419]];
+      }
+    }
 
 

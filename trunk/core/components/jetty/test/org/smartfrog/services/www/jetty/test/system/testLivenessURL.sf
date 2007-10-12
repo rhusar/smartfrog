@@ -18,39 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/webapplication.sf"
-#include "/org/smartfrog/services/www/servers/testwar.sf"
-#include "/org/smartfrog/services/jetty/components.sf";
+
 #include "/org/smartfrog/services/www/jetty/test/system/testwar.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
-sfConfig extends Compound {
 
-    testwar extends TestWar;
+sfConfig extends LocalJettyServer {
 
-    port test.jetty.port.1;
-    home test.jetty.home ;
+    sleep extends Delay {
 
-   /*
-    this is the jetty server itself
-    */
-   server extends CoreJettyServer {
-
-      jettyhome PARENT:home;
-
-      port PARENT:port;
-
-    }
-
-    listener extends JettySocketConnector {
-        server LAZY PARENT:server;
-    }
+      //short pause
+      delay test.liveness.delay;
 
     //normally you'd use the broken up attributes, but here we test the full URL
-    ping extends LivenessPage {
+      action extends LivenessPage {
         url ( "http://localhost:/" ++ test.jetty.port.1 ++ "/");
         minimumResponseCode 404;
         maximumResponseCode 404;
+      }
     }
-
 }

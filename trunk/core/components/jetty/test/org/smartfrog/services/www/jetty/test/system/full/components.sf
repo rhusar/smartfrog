@@ -55,9 +55,9 @@ TempDirServer extends Compound {
     server LAZY PARENT:server;
   }
 
-   tempDir extends TempDirWithCleanup {
-     prefix "jetty";
-   }
+  tempDir extends TempDirWithCleanup {
+    prefix "jetty";
+  }
 
   tempDirServletContext extends TempDirServletContext {
     resourceBase LAZY tempDir:absolutePath;
@@ -83,6 +83,6 @@ waitForPage extends FailingWaitFor {
 
 JettyTestCompound extends TestCompound {
 
-  testTimeout 20000;
+  testTimeout test.timeout;
 
 }

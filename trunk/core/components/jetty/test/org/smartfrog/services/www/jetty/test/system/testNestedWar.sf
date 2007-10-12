@@ -18,11 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/webapplication.sf"
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/www/servers/testwar.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/testwar.sf"
 
 sfConfig extends Compound {
     sfSyncTerminate true;
@@ -46,9 +42,9 @@ sfConfig extends Compound {
    }
 
     deployedWar extends WebApplication {
-          server LAZY PARENT:server;
-          filename LAZY testwar:absolutePath;
-          contextPath "testwar";
+        server LAZY PARENT:server;
+        filename LAZY testwar:absolutePath;
+        contextPath "testwar";
     }
 
 
