@@ -1,14 +1,30 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.reference.*;
+import java.util.Iterator;
+
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.LinkResolutionState;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.ApplyReference;
+import org.smartfrog.sfcore.reference.Function;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.security.SFClassLoader;
-
-import java.util.Iterator;
 
 /**
  * Representation of ApplyReference for the SF Language
@@ -123,6 +139,17 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         } catch (ClassCastException e) {
             throw new SmartFrogFunctionResolutionException("function class is not a string", e);
         }
+        
+        if (functionClass == null) {
+            throw new SmartFrogFunctionResolutionException("unknown function class ");
+        }
+        
+        Function function;
+        try {
+            function = (Function) SFClassLoader.forName(functionClass).newInstance();
+        } catch (Exception e) {
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create function class " + functionClass + " with data " + forFunction, e);
+        }
 
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
@@ -138,33 +165,45 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
                    isLazy = true;
                 }
 
-                if (value != null) {
-                    try {
-                        comp.sfReplaceAttribute(name, value);
-                        forFunction.sfAddAttribute(name, value);
-                    } catch (SmartFrogContextException e) {
-                        //shouldn't happen
-                    } catch (SmartFrogRuntimeException e) {
-                        //shouldn't happen
-                    }
+                //If a Constraint and a FreeVar or goal pred, we do not seek to replace the value of attribute in comp
+                try { 
+                	if (value==null || 
+                			function instanceof Constraint && (value instanceof FreeVar || comp.sfContainsTag(name, "sfConstraint"))) continue; //round for
+                } catch (Exception e){}
+                	
+                try {
+                	LinkResolutionState.setConstraintsShouldUndo(true);
+                    comp.sfReplaceAttribute(name, value);
+                    LinkResolutionState.setConstraintsShouldUndo(false);
+                    forFunction.sfAddAttribute(name, value);
+                    forFunction.sfAddTags(name, comp.sfGetTags(name));     
+                } catch (SmartFrogContextException e) {
+                    //shouldn't happen
+                } catch (SmartFrogRuntimeException e) {
+                    //shouldn't happen
                 }
+                
             }
         }
 
-        if (functionClass == null) {
-            throw new SmartFrogFunctionResolutionException("unknown function class ");
-        }
-
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
-
-       
+        
         try {
-            Function function = (Function) SFClassLoader.forName(functionClass).newInstance();
+            
+            //We set the originating context in the copy context as we want changes to persist immediately if it is a Constraint
+            //This is a minimal impact solution, but should be reworked...
+            if (function instanceof Constraint) forFunction.setOriginatingContext(comp.sfContext());
+            
             result = function.doit(forFunction, null, rr);
+            
+            //If Constraint, the result is the component description...
+            if (function instanceof Constraint) result = comp; 
+            
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Exception e) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
-
         return result;
     }
 
@@ -177,6 +216,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
      * @throws SmartFrogResolutionException if reference failed to resolve
      */
     // This is never called (needed for completeness). At runtime ApplyReference is called.
+    // Why is it not a stub?
     public Object resolve(RemoteReferenceResolver rr, int index)
             throws SmartFrogResolutionException {
         //take a new context...

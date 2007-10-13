@@ -32,8 +32,8 @@ import java.io.Serializable;
  *
  * @see Copying
  */
-public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
-    /**
+public interface Context extends Tags, PrettyPrinting, Copying, Serializable {	
+	/**
      * Returns true if the context contains value.
      * Deprecated: replaced by sfContainsValue()
      * @param value object to check
@@ -62,6 +62,20 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
 
     /**
+     * Gets the index into orderedKeys of the given key
+     *
+     * @return key index, or -1 if not extant
+     */
+    public int getKeyIndex(Object key);
+
+    /**
+     * Gets the index into orderedKeys of the given value
+     *
+     * @return value index, or -1 if not extant
+     */
+    public int getValIndex(Object value);
+   
+    /**
      * Returns object stored under given key, null if not found.
      *
      * @param key to look up
@@ -69,6 +83,27 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * @return object under key if found, null otherwise
      */
     public Object get(Object key);
+
+ 
+    /**
+     * Returns key corresponding to given index in ordered list of keys, null if not found.
+     *
+     * @param key idx to look up
+     *
+     * @return key object if found, null otherwise
+     */
+    public Object getKey(int idx);
+
+    
+    /**
+     * Returns object stored under given index in ordered list of keys, null if not found.
+     *
+     * @param key to look up
+     *
+     * @return object under key if found, null otherwise
+     */
+    public Object getVal(int idx);
+
 
     /**
      * Returns true if the context is empty.
@@ -269,5 +304,15 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      */
     public Object sfResolveAttribute (Object name) throws SmartFrogContextException;
 
+
+    /**
+     * Sets the originating context.  Used in constraint solving.
+     */
+    public void setOriginatingContext(Context originatingContext);
+    
+    /**
+     * Gets the originating context.  Used in constraint solving.
+     */
+    public Context getOriginatingContext();
 
 }

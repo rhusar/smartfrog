@@ -77,14 +77,4 @@ public interface ComponentResolver {
     * @throws  SmartFrogResolutionException failed to deploy resolve
     */
    public void linkResolve() throws SmartFrogResolutionException;
-
-
-   /**
-    *  Internal recursive method for doing the actual link resolution.
-    *
-    * @param  resState  resolution state
-    *
-    * @throws  SmartFrogResolutionException failed to deploy resolve
-    */
-   public void doLinkResolve(ResolutionState resState) throws SmartFrogResolutionException;
 }

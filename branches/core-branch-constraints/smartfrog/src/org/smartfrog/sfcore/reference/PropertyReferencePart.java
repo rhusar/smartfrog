@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -98,6 +99,8 @@ public class PropertyReferencePart extends ReferencePart {
             if (v==null)
                 throw SmartFrogResolutionException.notFound (r,null);
             return v;
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
         }
@@ -122,6 +125,8 @@ public class PropertyReferencePart extends ReferencePart {
             if (v==null)
                 throw SmartFrogResolutionException.notFound (r,null);
           return v;
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Throwable ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward (ex.toString(),r,ex);
         }

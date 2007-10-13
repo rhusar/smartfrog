@@ -20,22 +20,22 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.prim;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.Set;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.io.IOException;
+import java.util.Vector;
 
-import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -52,13 +52,14 @@ import org.smartfrog.sfcore.common.SmartFrogUpdateException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.AssertReference;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.AssertReference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
@@ -186,6 +187,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                if ((sfLog!=null) && sfLog().isTraceEnabled()) {
                    sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
+           } catch (SmartFrogConstraintBacktrackError sfcbe){
+           	throw sfcbe;
            } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
         } catch (SmartFrogContextException ex) {
@@ -248,6 +251,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
              }
              return null;
           }
+       } catch (SmartFrogConstraintBacktrackError sfcbe){
+       	   throw sfcbe;
        } catch (Exception e) {
           if (mandatory) {
              throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
@@ -344,6 +349,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (java.lang.StackOverflowError st){
             throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
                st.toString() +". Possible cause: cyclic reference",null,st,this);
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Throwable thr){
              throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
               null,null,thr,this);

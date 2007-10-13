@@ -20,15 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.reference;
 
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
-
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.io.IOException;
+
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  * Implements the most basic of reference parts. This reference part knows how
@@ -229,6 +230,8 @@ public class HereReferencePart extends ReferencePart {
             // Else forward on to result
             return forwardReference(result, r, index + 1);
 
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }

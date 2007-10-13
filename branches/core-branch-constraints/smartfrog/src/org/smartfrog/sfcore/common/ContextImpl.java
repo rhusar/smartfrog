@@ -20,8 +20,19 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 
 /**
@@ -41,7 +52,24 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public ContextImpl() {
     }
+ 
+    /**
+     * Sets the originating context.  Used in constraint solving.
+     */
+    public void setOriginatingContext(Context originatingContext) {
+    	this.originatingContext= originatingContext;
+    }
 
+    /**
+     * Gets the originating context.  Used in constraint solving.
+     */
+    public Context getOriginatingContext() {
+    	return originatingContext;
+    }
+
+    
+    private Context originatingContext;
+    
     /**
      * Constructs a context with initial capacity and a load trigger for
      * expansion.
@@ -700,6 +728,8 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     public Object remove(Object key) {
         Object r = super.remove(key);
         attributeTags.remove(key);
+        
+        if (LinkResolutionState.getConstraintsPossible()) LinkResolutionState.getLRS().addUndo(LinkResolutionState.g_LRSUndo_PUT, this, key, r);
         return r;
     }
 
@@ -719,6 +749,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         Object key = orderedKeys.remove(index);
         Object value = super.remove(index);
         attributeTags.remove(key);
+        
         return value;
     }
 
@@ -739,7 +770,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
            attributeTags.put(key2, attributeTags.get(key1));
            attributeTags.remove(key1);
         }
-
         return key1;
     }
 
@@ -822,5 +852,20 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         result = 37 * result + super.hashCode();
         return result;
     }
-
+    
+    /**
+     * Add an object to the hashtable.
+     *
+     * @param key key for association
+     * @param value value for hashtable
+     *
+     * @return previous value for key or null if none
+     */
+    public Object put(Object key, Object value) {
+    	Object oldValue = super.put(key, value);
+    	
+    	if (LinkResolutionState.getConstraintsShouldUndo()) LinkResolutionState.getLRS().addUndo(LinkResolutionState.g_LRSUndo_PUT, this, key, oldValue);
+        return oldValue;
+    }
+        
 }

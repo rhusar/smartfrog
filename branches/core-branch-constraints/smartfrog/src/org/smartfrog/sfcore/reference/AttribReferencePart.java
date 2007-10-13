@@ -20,10 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.reference;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-
 import java.util.Vector;
+
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -122,7 +123,7 @@ public class AttribReferencePart extends HereReferencePart {
             } else if (result instanceof Vector) {
                 result = sfResolveVector(rr, (Vector)result);
             }
-        } catch (SmartFrogResolutionException ex) {
+        }  catch (SmartFrogResolutionException ex) {
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(r.toString(),ex);
         }
 
@@ -185,6 +186,8 @@ public class AttribReferencePart extends HereReferencePart {
             // Else forward on to result
             return forwardReference(result, r, index + 1);
 
+        } catch (SmartFrogConstraintBacktrackError sfcbe){
+        	throw sfcbe;
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }

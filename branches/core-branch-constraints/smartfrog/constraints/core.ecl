@@ -1,3 +1,23 @@
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %STATE SCOPING
 
@@ -277,9 +297,82 @@ incr_cnt(Cnt) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Description hierarchy state
 
-%1
+%%%
+%sftojava/1: Sends ToJava to Java side
+%%%
+sftojava(ToJava) :-
+        write_exdr(eclipse_to_java, ToJava),
+        flush(eclipse_to_java). 
 
+%%%
+%sffromjava/0: Receives Resp from Java side, converts to a term and
+% calls it
+%%%
+sffromjava :- 
+        read_exdr(java_to_eclipse, Resp),
+        term_string(Solve, Resp),
+        call(Solve).
+
+%%%
+%sfstop/0: Indicates a successful evaluation of constraints in description.
+%%%
+sfstop.
+
+%%%
+%sfsolve/5: Solve the latest aggergated goal pertaining to a single Constraint
+%%%
+sfsolve(Attrs, Values, Index, CIndex, Solve) :-
+        hash_create(Binds),
+        hash_set(Binds, sf_evalidx, Index),
+        sfsolve_populate_hash(Binds, Attrs, Values, Pref, CIndex),
+        sfsolve_preprocess(Binds, Attrs, Solve, SolveP1),
+        append(Pref, SolveP1, SolveP),
+        convert_tuple_list(SolveT, SolveP),
+        call(SolveT),  
+        sftojava(sfdonegoal),
+        sffromjava. 
+   
+%%%
+%sfsolve_populate_hash/5: Populates hash table Binds with attributes
+% and values. Also adds a suspend goal for unbound variables to the
+% front of the constraint goal. This will force a sync with Java side
+% whenever a variable is bound.
+%%%
+sfsolve_populate_hash(_, [], [], [], _).
+sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref, CIndex) :-
+        sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1, CIndex), 
+        (var(Val) ->
+            Pref2=[suspend(sfsolve_var_sync(Binds, Attr, Val, CIndex), 1, Val->inst)];
+            Pref2=[]),
+        append(Pref2, Pref1, Pref),
+        hash_set(Binds, Attr, Val).
+
+%%%
+%sfsolve_preprocess/4: Preprocess goal string. Converts all references
+% to attributes (stored in Binds) to vars.
+%%%
+sfsolve_preprocess(_,_,[],[]).
+sfsolve_preprocess(Binds, Attrs, [HG|TG], [HGOut|TGOut]):-
+        (var(HG) -> HGOut=HG;
+        (HG=..[F] -> (hash_get(Binds, F, HGOut) -> true; HGOut=HG);
+         HG=..[F|Args], sfsolve_preprocess(Binds, Attrs, Args, Args1),
+                HGOut=..[F|Args1])),
+    sfsolve_preprocess(Binds, Attrs, TG, TGOut).
+
+%%%
+%sfsolve_var_sync/4: Synchronises variable binding (inc. in
+% backtracking) with Java side 
+%%%
+sfsolve_var_sync(Binds, Attr, Val, CIndex):-
+       hash_get(Binds, sf_evalidx, Index),
+       Index1 is Index + 1,
+       hash_set(Binds, sf_evalidx, Index1),
+       sftojava(sfset(Index, Attr, Val, CIndex)).
+
+
+%%Need to reduce these as appropriate: 12/10/07
 :-dynamic sfuser_back/1.
+:-dynamic sfuser_desc/3.
 :-dynamic sfuser_refs/1.
 
 sfget((SFBinds, Cxt), Attr, Val) :- 
@@ -292,7 +385,7 @@ sfuser((SFBinds, Cxt), Attr, Val) :-
         sfop(SFBinds, Cxt, sfset, Attr, Val).
 
 sfuser(SFBinds):-
-        assert(sfuser_back(0    )),
+        assert(sfuser_back(0)),
         write_exdr(eclipse_to_java, sfuser),
         flush(eclipse_to_java), 
         read_exdr(java_to_eclipse, ValOut),        
@@ -311,25 +404,25 @@ sfuser_wkr(SFBinds, range(Refs)) :-
 sfuser_wkr(SFBinds, set(Ref, ValIn)) :-
         atom_string(RefA, Ref),
         hash_get(SFBinds, RefA, Val),
-        sfuser_unify(SFBinds, Val,ValIn),
+        sfuser_unify(SFBinds, Ref,Val,ValIn),
         sfuser_back(N),
-        sfuser_msg(SFBinds, set(N, noback)).
+        sfuser_msg(SFBinds, set(N,Ref,ValIn,"noback")).
 
 sfuser_wkr(_, back):-
         fail.
 
-sfuser_unify(_, Val, Val2):-
+sfuser_unify(_, Ref, Val, Val2):-
         retract(sfuser_back(N)), N1 is N+1,
-        assert(sfuser_back(N1)),         
+        assert(sfuser_back(N1)),
+        assert(sfuser_desc(N1,Ref,Val2)),
         Val=Val2.
 
-sfuser_unify(SFBinds, _, _):-
+sfuser_unify(SFBinds, _, _, _):-
         retract(sfuser_back(N)), N1 is N-1,
         assert(sfuser_back(N1)), 
-        write_exdr(eclipse_to_java, set(N1, back)),
-        flush(eclipse_to_java), 
-        read_exdr(java_to_eclipse, ValOut),        
-        sfuser_wkr(SFBinds, ValOut).
+        retract(sfuser_desc(N,_,_)),
+        (N1>0 -> sfuser_desc(N1, Ref, Val);true),
+        sfuser_msg(SFBinds, set(N1,Ref,Val,"back")).
 
 sfuser_msg(SFBinds, CDOp):-
         write_exdr(eclipse_to_java, CDOp), 

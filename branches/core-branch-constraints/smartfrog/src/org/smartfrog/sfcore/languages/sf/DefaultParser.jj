@@ -14,7 +14,7 @@ import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
-
+import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -261,6 +261,7 @@ TOKEN : /* reserved words */
  | <ELSE: "ELSE">
  | <FI: "FI">
 
+ | <VAR: "VAR" ("/" (<DIGIT>)+ )? >
 }
 
 TOKEN :
@@ -546,8 +547,13 @@ Object Value() :
     ) { return res; }
 }
 
-
-
+Object Var() :
+{
+   Token res = null;
+}
+{
+   res = <VAR> { return new FreeVar(res.image);}
+}
 
 
 Object SimpleValue() :
@@ -880,6 +886,7 @@ Object Primitive() :
       <VECTOREND>)
    | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
    | <TBD> {res = new SFTBDReference();}
+   | res=Var()
   ) { return res; }
 }
 

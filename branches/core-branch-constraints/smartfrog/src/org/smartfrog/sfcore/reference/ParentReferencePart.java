@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.reference;
 
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -104,15 +105,17 @@ public class ParentReferencePart extends ReferencePart {
      * @throws SmartFrogResolutionException if failed to resolve reference
      */
     public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
-        throws SmartFrogResolutionException {
-        try {
-            if (rr.sfResolveParent() == null) {
-                throw SmartFrogResolutionException.notFound(r, null);
-            }
-
-            return forwardReference(rr.sfResolveParent(), r, index + 1);
-        } catch (Exception ex){
-            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
+    throws SmartFrogResolutionException {
+    try {
+        if (rr.sfResolveParent() == null) {
+            throw SmartFrogResolutionException.notFound(r, null);
         }
+
+        return forwardReference(rr.sfResolveParent(), r, index + 1);
+    } catch (SmartFrogConstraintBacktrackError sfcbe){
+    	throw sfcbe;
+    } catch (Exception ex){
+        throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
     }
+}
 }

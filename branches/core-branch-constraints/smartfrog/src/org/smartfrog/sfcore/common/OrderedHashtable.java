@@ -314,4 +314,49 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
         return ret;
     }
+  
+    /**
+     * Gets the index into orderedKeys of the given key
+     *
+     * @return key index, or -1 if not extant
+     */
+    public int getKeyIndex(Object key){
+    	for (int i=0; i<orderedKeys.size();i++){
+    		if (key.equals(orderedKeys.get(i))) return i;
+    	}
+    	return -1;
+    }
+
+    /**
+     * Gets the index into orderedKeys of the given value
+     *
+     * @return value index, or -1 if not extant
+     */
+    public int getValIndex(Object value){
+    	for (int i=0; i<orderedKeys.size();i++){
+    		Object key = orderedKeys.get(i);
+    		if (value.equals(get(key))) return i;
+    	}
+    	return -1;
+    }
+    
+    /**
+     * Returns the key at index idx in orderedKeys
+     *
+     * @return key for given index, or null if index not valid
+     */
+    public Object getKey(int idx){
+    	return orderedKeys.get(idx);
+    }  
+
+    /**
+     * Returns the value at index idx in orderedKeys
+     *
+     * @return value for given key index, or null if index not valid
+     */
+    public Object getVal(int idx){
+    	Object key = getKey(idx);
+        if (key!=null) return get(key);
+        else return null;
+    }  
 }

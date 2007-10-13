@@ -104,6 +104,7 @@
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
     <pathelement path="./lib/ProActive.jar"/>
+    <pathelement path="./lib/eclipse.jar"/>
   </path>
 
   <!-- =================================================================== -->
@@ -295,7 +296,6 @@
   <target name="createParser" depends="init">
     <!-- Javacc the parser files - both sf and csf -->
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}"/>
   </target>
 
   <!-- =================================================================== -->
@@ -413,6 +413,7 @@
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
         <include name="**/*.gif"/>
+        <include name="**/*.png"/>
       </fileset>
     </copy>
   </target>
