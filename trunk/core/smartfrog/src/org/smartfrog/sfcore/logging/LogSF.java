@@ -38,20 +38,6 @@ public interface LogSF extends Log, LogMessage, LogLevel {
     final static String ATR_LOGGER_CLASS = "loggerClass";
 
     /**
-     * <p> Set logging level. </p>
-     *
-     * @param currentLogLevel new logging level
-     */
-    public void setLevel(int currentLogLevel);
-
-    /**
-     * Get logging level.
-     @return the logging level
-     */
-    public int getLevel();
-
-
-    /**
      * Get log name.
      * @return the log name
      */
