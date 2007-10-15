@@ -57,7 +57,8 @@ public  class LogFactory {
     /**
      * Get a log for an object.
      * Prim and ComponentDescription will use sfCompletename
-     * An unkwon object uses its class name.
+     * An unknown object uses its class name, unless it is actually a class, in which
+     * case the name of the class it represents will be used.
      * @param obj (Prim, ComponentDescription, object.)
      * @return a new log.
      * @throws SmartFrogLogException when something went wrong with getting a log
@@ -67,11 +68,13 @@ public  class LogFactory {
         LogSF log=null;
         try {
             if (obj instanceof Prim) {
-               getLog(obj);
+               getLog((Prim)obj);
             } else if (obj instanceof ComponentDescription){
                getLog((ComponentDescription)obj);
+            } else if (obj instanceof Class) {
+                getLog((Class)obj);
             } else {
-               getLog(obj.getClass().toString());
+               getLog(obj.getClass());
             }
         } catch (Exception e){
             throw (SmartFrogLogException)SmartFrogLogException.forward(e);
