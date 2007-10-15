@@ -22,6 +22,7 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.PlatformHelper;
@@ -506,6 +507,29 @@ public class FileSystem {
         return new URL("file://" + path);
     }
 
+
+    /**
+     * Assert that a file exists
+     * @param path path to look for
+     * @param fileOnly true if only a simple file is allowed
+     * @param minSize minimum size to accept if the target is a file
+     * @throws SmartFrogLivenessException if the file is not found, of the wrong type, or too small
+     */
+    public static void requireFileToExist(String path, boolean fileOnly, int minSize) throws SmartFrogLivenessException {
+        File target = new File(path);
+        if (!target.exists()) {
+            throw new SmartFrogLivenessException("Not found: " + path);
+        }
+        if (target.isFile()) {
+            if (minSize > 0 && target.length() < minSize) {
+                throw new SmartFrogLivenessException("Too short: " + path + "\n"
+                        + "Minimum size: " + minSize + "\n"
+                        + "Actual size: " + target.length());
+            }
+        } else if (fileOnly) {
+            throw new SmartFrogLivenessException("Not a file: " + path);
+        }
+    }
 
     // Contributed by Sanjay Dahiya
 
