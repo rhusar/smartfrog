@@ -59,7 +59,9 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
             RemoteException {
         super.sfStart();
         touch();
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"TouchFile "+getFile().getAbsolutePath()+", "+age,this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "TouchFile "+getFile().getAbsolutePath()+", "+age,
+                sfCompleteNameSafe(),null);
     }
 
     /**
