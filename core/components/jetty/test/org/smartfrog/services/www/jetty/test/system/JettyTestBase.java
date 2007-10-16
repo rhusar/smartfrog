@@ -35,6 +35,7 @@ package org.smartfrog.services.www.jetty.test.system;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.test.TestHelper;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.util.Properties;
 
@@ -114,9 +115,19 @@ public abstract class JettyTestBase extends DeployingTestBase {
     public void deployWebApp(String resource, String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
-        Prim liveness = (Prim) getApplication().sfResolve("ping");
+        Prim liveness = getApplication().sfResolve("ping",(Prim)null,true);
         for (int i = 0; i < 100; i++) {
             liveness.sfPing(null);
+        }
+    }
+
+    protected void expectLivenessFailure(String packagebase, String target) throws Throwable {
+        try {
+            deployWebApp(packagebase + target + ".sf",
+                    target);
+            fail("expected a liveness exception");
+        } catch (SmartFrogLivenessException liveness) {
+            //success
         }
     }
 }

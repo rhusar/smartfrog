@@ -36,11 +36,8 @@ import java.net.URLConnection;
 
 
 /**
- * JUnit test class for test cases related to "jetty" component This test suite
- * needs jetty to be fully installed somewhere, and the jetty home location
- * passed down to the program. This can be done by <ol> <li>setting the system
- * property jetty.home</li> <li>setting the system property
- * runtime.jetty.home</li> </ol>
+ * JUnit test class for some of the test cases related to the "jetty" component.
+ *
  */
 public class JettyTCPTest
         extends JettyTestBase {
@@ -49,8 +46,6 @@ public class JettyTCPTest
     public JettyTCPTest(String s) {
         super(s);
     }
-
-
 
 
     public void testCaseTCPJettyCore() throws Throwable {
@@ -99,10 +94,10 @@ public class JettyTCPTest
     public void testCaseTCN56() throws Exception {
         deployExpectingException(FULL_FILES + "tcn56.sf",
                 "tcn56",
+                EXCEPTION_LIFECYCLE,
+                null,
                 EXCEPTION_DEPLOYMENT,
-                "unnamed component",
-                EXCEPTION_RESOLUTION,
-                "error in schema: non-optional attribute 'listenerPort' is missing");
+                "Port value out of range");
     }
 
     public void testCaseTCN57() throws Exception {

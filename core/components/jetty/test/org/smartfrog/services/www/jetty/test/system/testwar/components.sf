@@ -33,14 +33,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
 #include "/org/smartfrog/services/filesystem/file.sf"
 
-  //the war file must be present
-    TestWar extends FileMustExist {
-      filename PROPERTY test.testwar.war;
-    }
+//the war file must be present
+  TestWar extends FileMustExist {
+    filename PROPERTY test.testwar.war;
+  }
 
 
-
-TestWarServer extends LocalJettyServer {
+  TestWarServer extends LocalJettyServer {
 
     testwar extends TestWar;
 
@@ -49,7 +48,7 @@ TestWarServer extends LocalJettyServer {
         filename LAZY testwar:absolutePath;
         contextPath "testwar";
     }
-}
+  }
 
 
 
@@ -71,4 +70,5 @@ sleep extends Delay {
       }
     }
 
+}
 

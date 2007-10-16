@@ -92,8 +92,8 @@ public abstract class DelegateApplicationContext
     /**
      * Do nothing in our deploy operation
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public void deploy() throws SmartFrogException, RemoteException {
 

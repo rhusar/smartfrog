@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.www.jetty.test.system;
 
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 /**
+ * Test that the liveness page raises errors when the remote site is not reachabler
  */
 public class LivenessTest extends JettyTestBase {
 
@@ -30,22 +30,9 @@ public class LivenessTest extends JettyTestBase {
         super(name);
     }
 
-    public void testLivenessError() throws Throwable {
-        expectLivenessFailure("testLivenessError");
-    }
-
-    protected void expectLivenessFailure(String target) throws Throwable {
-        try {
-            deployWebApp(SYSTEM_FILES + target + ".sf",
-                    target);
-            fail("expected a liveness exception");
-        } catch (SmartFrogLivenessException liveness) {
-            //success
-        }
-    }
 
     public void testLivenessNoHost() throws Throwable {
-        expectLivenessFailure("testLivenessNoHost");
+        expectLivenessFailure(SYSTEM_FILES, "testLivenessNoHost");
     }
 
     public void testLivenessURL() throws Throwable {

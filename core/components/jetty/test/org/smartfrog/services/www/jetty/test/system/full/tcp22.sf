@@ -26,21 +26,19 @@
 sfConfig extends Compound {
 
 
-  server extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-
-
-
-   }
-   listener extends JettySocketConnector {
-      port test.jetty.port.1;
-      //serverHost "localhost";
-      server LAZY PARENT:server;
+    server extends CoreJettyServer {
+        jettyhome ROOT:jetty_home; // mandatory
     }
 
-       root extends Root {
-         server LAZY PARENT:server;
-       }
+    listener extends JettySocketConnector {
+        port test.jetty.port.1;
+        //serverHost "localhost";
+        server LAZY PARENT:server;
+    }
+
+    war extends FilesystemWar {
+        server LAZY PARENT:server;
+    }
 
     ping extends LivenessPage {
         host LAZY server:listener:ipaddr;

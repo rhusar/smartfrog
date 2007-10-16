@@ -21,22 +21,43 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
 
+/**
+ * deploy into a new process
+ */
 
-sfConfig extends Compound {
+tcp27 extends Compound {
+
    sfProcessHost ROOT:hostname;
 
-   server extends HttpServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      serverHost ROOT:hostname; //mandatory
+  //deploy the server
+    server extends LocalJettyServer {
+        
     }
-  root extends RootWAR {
-      server LAZY PARENT:server;
-  }
 
-  context extends JettyServletContext {
-     contextPath "/test";
-     resourceBase (ROOT:resourcebase);
-     server LAZY PARENT;
-  }
+    war extends FilesystemWar {
+       server LAZY PARENT:server:server;
+    }
+
+    context extends FilesystemWarAsServletContext {
+       contextPath "/test";
+       server LAZY PARENT:server:server;
+    }
+
+}
+
+
+
+sfConfig extends JettyTestCompound {
+
+	action extends tcp27;
+
+
+
+    tests extends Sequence {
+        wait extends waitForPage {
+            port tcp27:server:port;
+            page tcp27:context:contextPath;
+        }
+    }
 
 }

@@ -26,8 +26,10 @@ sfConfig extends Compound {
       jettyhome test.jetty.home ; 
    }
 
-    list1 extends JettySocketConnector {
+
+    negativePort extends JettySocketConnector {
         server LAZY PARENT:server;
+        port -43;
     }
 }
 

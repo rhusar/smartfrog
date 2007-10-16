@@ -25,7 +25,7 @@ sfConfig extends Compound {
       //serverHost "localhost"; //mandatory
     }
 
-    root extends Root {
+    war extends FilesystemWar {
       server LAZY PARENT:server;
     }
 

@@ -28,18 +28,17 @@
   
 sfConfig extends JettyTestCompound {
 
-	action extends tcp20;
+    action extends tcp20;
 
-	
 
-  tests extends Sequence {
-     wait extends waitForPage {
-       port tcp20:server1:port;
-     }
-     wait2 extends waitForPage {
-       port tcp20:server2:port;
-     }
-   }
+    tests extends Sequence {
+        wait extends waitForPage {
+            port tcp20:server1:port;
+        }
+        wait2 extends waitForPage {
+            port tcp20:server2:port;
+        }
+    }
 
 }
 
