@@ -21,6 +21,8 @@ package org.smartfrog.services.www.context;
 
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.JavaWebApplication;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -38,11 +40,26 @@ public class WebApplicationImpl extends ApplicationServerContextImpl implements 
      * It is called during sfDeploy, after we have bound to a server
      *
      * @return the context
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException  In case of network/rmi error
+     * @throws SmartFrogException error while deploying
      */
     protected ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException {
+
         return getServer().deployWebApplication(this);
     }
 
+
+
+    /**
+     * Check the target file exists
+     *
+     * @throws SmartFrogException error while validating
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    protected void validateDuringStartup()
+            throws SmartFrogException, RemoteException {
+        String filename = FileUsingComponentImpl.bind(this, true, null);
+        FileSystem.requireFileToExist(filename,false,0);
+    }
 }

@@ -21,15 +21,21 @@ package org.smartfrog.services.www.context;
 
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
 /**
- * A WAR File
+ * An EAR File
  */
 public class EarApplicationImpl extends ApplicationServerContextImpl implements JavaEnterpriseApplication {
 
+    /**
+     * constructor
+     * @throws RemoteException from the superclass
+     */
     public EarApplicationImpl() throws RemoteException {
     }
 
@@ -46,4 +52,16 @@ public class EarApplicationImpl extends ApplicationServerContextImpl implements 
         return getServer().deployEnterpriseApplication(this);
     }
 
+    /**
+     * Check the target file exists
+     *
+     * @throws SmartFrogException error while validating
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    protected void validateDuringStartup()
+            throws SmartFrogException, RemoteException {
+        String filename = FileUsingComponentImpl.bind(this, true, null);
+        FileSystem.requireFileToExist(filename, false, 0);
+    }
 }

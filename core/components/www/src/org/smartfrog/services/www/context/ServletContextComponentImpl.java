@@ -38,10 +38,15 @@ public abstract class ServletContextComponentImpl extends PrimImpl implements Se
      */
     private ServletContextIntf servletContext = null;
 
-    public ServletContextComponentImpl() throws RemoteException {
+    protected ServletContextComponentImpl() throws RemoteException {
     }
 
 
+    /**
+     * bind to the server
+     * @throws SmartFrogResolutionException missing/bad attribute
+     * @throws RemoteException In case of network/rmi error
+     */
     protected void bindToContext() throws SmartFrogResolutionException, RemoteException {
         servletContext = (ServletContextIntf) sfResolve(ATTR_SERVLET_CONTEXT,
                 servletContext,

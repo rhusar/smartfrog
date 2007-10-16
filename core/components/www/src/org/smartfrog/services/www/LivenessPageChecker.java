@@ -17,6 +17,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
@@ -118,11 +119,11 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * create a new liveness page
      *
-     * @param protocol
-     * @param host
-     * @param port
-     * @param page
-     * @throws RemoteException
+     * @param protocol protocol http or https
+     * @param host hostname/ip address
+     * @param port port to use
+     * @param page page on the web site
+     * @throws RemoteException for RMI/Networking problems
      */
     public LivenessPageChecker(
         String protocol,
@@ -167,7 +168,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * bind to the owner, includes log setup
      *
-     * @param owner
+     * @param owner owner class
      */
     private void bind(Prim owner) throws SmartFrogLogException {
         if(owner!=null) {
@@ -179,7 +180,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * bind to a url string
      *
-     * @param target
+     * @param target URL to bind to
      * @throws SmartFrogDeploymentException if the url generated a {@link
      *                                      MalformedURLException}
      */

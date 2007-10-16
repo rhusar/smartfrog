@@ -30,12 +30,21 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import java.rmi.RemoteException;
 
 /**
- * This implements a servlet
+ * This component adds a servlet declaration to the servlet context,
+ * removing it when terminated.
  */
 public class ServletComponentImpl extends ServletContextComponentImpl
         implements ServletComponent {
+
+    /**
+     * our delegate
+     */
     private ServletContextComponentDelegate delegate;
 
+    /**
+     * constructor
+     * @throws RemoteException from the superclass
+     */
     public ServletComponentImpl() throws RemoteException {
     }
 
@@ -101,10 +110,10 @@ public class ServletComponentImpl extends ServletContextComponentImpl
         if (delegate != null) {
             try {
                 delegate.terminate();
-            } catch (RemoteException e) {
+            } catch (RemoteException ignored) {
                 //swallowed
 
-            } catch (SmartFrogException e) {
+            } catch (SmartFrogException ignored) {
                 //swallowed
             }
         }
