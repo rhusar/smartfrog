@@ -51,8 +51,8 @@ public interface ServletContextIntf extends ApplicationServerContext {
      *
      * @param extension extension to map (no '.')
      * @param mimeType  mimetype to generate
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException;
 
@@ -62,8 +62,8 @@ public interface ServletContextIntf extends ApplicationServerContext {
      *
      * @param extension extension to unmap
      * @return true if the unmapping was successful
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException;
 
@@ -72,8 +72,8 @@ public interface ServletContextIntf extends ApplicationServerContext {
      *
      * @param servletDeclaration component declaring the servlet
      * @return the delegate that implements the servlet binding
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException;
 

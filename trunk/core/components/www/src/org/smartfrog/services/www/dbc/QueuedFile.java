@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * A queued file
  */
 public class QueuedFile {
 
@@ -19,6 +20,11 @@ public class QueuedFile {
     private volatile SmartFrogException fault;
 
 
+    /**
+     * Construct and target
+     * @param source
+     * @param dest
+     */
     public QueuedFile(File source, File dest) {
         this.source = source;
         this.dest = dest;
@@ -33,6 +39,10 @@ public class QueuedFile {
         return dest;
     }
 
+    /**
+     * Is the file processed?
+     * @return
+     */
     public boolean isProcessed() {
         return processed;
     }

@@ -76,10 +76,10 @@ public interface JavaWebApplicationServer extends Remote {
     /**
      * Deploy an EAR file
      *
-     * @param enterpriseApplication
+     * @param enterpriseApplication component representing the EAR
      * @return an entry referring to the application
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
             throws RemoteException, SmartFrogException;

@@ -28,8 +28,17 @@ import java.rmi.Remote;
  * Component to look for hosts
  */
 public interface HostExists extends Remote {
+    /**
+     * {@value}
+     */
     String ATTR_HOSTNAME="hostname";
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_ON_STARTUP="checkOnStartup";
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_ON_LIVENESS="checkOnLiveness";
 
     /**

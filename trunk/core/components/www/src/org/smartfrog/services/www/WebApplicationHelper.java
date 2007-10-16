@@ -41,12 +41,12 @@ public class WebApplicationHelper extends ComponentHelper {
      * Concatenate two paths together, inserting a '/' if needed, and ensuring
      * that there is no '//' at the join.
      *
-     * @param path1
-     * @param path2
+     * @param path1 first path
+     * @param path2 secpnd path
      * @return concatenated paths
      */
     public static String concatPaths(String path1, String path2) {
-        StringBuffer buffer = new StringBuffer(path1.length() +
+        StringBuilder buffer = new StringBuilder(path1.length() +
                 path2.length() +
                 1);
         boolean endsWithSlash = path1.endsWith("/");
@@ -76,7 +76,7 @@ public class WebApplicationHelper extends ComponentHelper {
     }
 
     /**
-     * strip any trailing * from a path and give the base bit up to where that
+     * strip any trailing '*' from a path and give the base bit up to where that
      * began.
      *
      * @param path path to tidy up

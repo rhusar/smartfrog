@@ -275,7 +275,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
         try {
             livenessPage.onPing();
             return true;
-        } catch (SmartFrogLivenessException e) {
+        } catch (SmartFrogLivenessException  ignored) {
             return false;
         }
     }
