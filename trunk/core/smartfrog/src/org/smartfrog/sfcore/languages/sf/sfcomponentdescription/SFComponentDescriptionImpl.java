@@ -802,6 +802,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
+        if (v instanceof SFComponentDescriptionImpl) {
+           return ((SFComponentDescriptionImpl)v).sfAsComponentDescription(); // parent should be null...!
+        }
        /*
         if (v instanceof ComponentDescription) {
             throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDescription. ComponentDescription cannot be used; use SFComponentDescription. Context: " +
