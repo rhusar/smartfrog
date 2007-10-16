@@ -25,15 +25,16 @@ import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHandler;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.jetty.JettyToSFLifecycle;
 import org.smartfrog.services.jetty.internal.ExtendedServletHandler;
+import org.smartfrog.services.jetty.internal.ExtendedSecurityHandler;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.Log;
@@ -41,7 +42,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -57,6 +57,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     private String contextPath;
     private String resourceBase;
     private String absolutePath;
+    private Prim owner;
     /**
      * a log
      */
@@ -87,46 +88,18 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws RemoteException network problems
      */
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
+        owner = declaration;
         log = LogFactory.getOwnerLog(declaration);
         JettyHelper jettyHelper = new JettyHelper(declaration);
 
-
-
         jettyHelper.setServerComponent(getServer());
-        String jettyhome = jettyHelper.findJettyHome();
         //context path attribute
         contextPath = declaration.sfResolve(contextPathRef, (String)null, true);
-        resourceBase = declaration.sfResolve(resourceBaseRef, (String) null, true);
         absolutePath = WebApplicationHelper.deregexpPath(contextPath);
         declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         //hostnames
         String address = jettyHelper.getIpAddress();
         declaration.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
-
-        //resource base is absolute or relative to jettyhome
-        if (!new File(resourceBase).exists()) {
-            resourceBase = jettyhome.concat(resourceBase);
-        }
-
-        //to get resources seen before the other bits of the tree, we patch the handlerSet.
-        Context context = new Context(null,null,null, new ExtendedServletHandler(), null);
-        setContext(context);
-
-        handlerSet = new HandlerCollection();
-
-        resources = new ResourceHandler();
-        resources.setResourceBase(resourceBase);
-
-        //configure the context
-        context.setContextPath(contextPath);
-        context.setResourceBase(resourceBase);
-        log.info("Deploying "+contextPath+" from "+resourceBase);
-
-        //add the resources
-        handlerSet.addHandler(resources);
-        //then patch in the servlet context *afterwards*
-        handlerSet.addHandler(getContext());
-        handlerLifecycle=new JettyToSFLifecycle<HandlerCollection>("handlers",handlerSet);
     }
 
 
@@ -138,14 +111,49 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     @Override
     public void start() throws SmartFrogException, RemoteException {
-        if (handlerSet != null) {
-            ContextHandlerCollection contextHandler = getServerContextHandler();
-            if (contextHandler == null) {
-                throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
-            }
-            contextHandler.addHandler(handlerSet);
-            handlerLifecycle.start();
+        resourceBase = FileSystem.lookupAbsolutePath(owner, resourceBaseRef, null, null, true, null);
+        FileSystem.requireFileToExist(resourceBase, false, 0);
+/*
+        resourceBase = declaration.sfResolve(resourceBaseRef, (String) null, true);
+        //resource base is absolute or relative to jettyhome
+        if (!new File(resourceBase).exists()) {
+            resourceBase = jettyhome.concat(resourceBase);
         }
+*/
+
+        //to get resources seen before the other bits of the tree, we patch the handlerSet.
+        Context context = new Context(
+                null,                           //parent
+                null,                           //sessions
+                new ExtendedSecurityHandler(),  //security; can be null
+                new ExtendedServletHandler(),   //servlets
+                null); //error handler
+        setContext(context);
+
+        handlerSet = new HandlerCollection();
+
+        resources = new ResourceHandler();
+        resources.setResourceBase(resourceBase);
+
+        //configure the context
+        context.setContextPath(contextPath);
+        context.setResourceBase(resourceBase);
+        log.info("Deploying " + contextPath + " from " + resourceBase);
+
+        //add the resources
+        handlerSet.addHandler(resources);
+        //then patch in the servlet context *afterwards*
+        handlerSet.addHandler(getContext());
+        handlerLifecycle = new JettyToSFLifecycle<HandlerCollection>("handlers", handlerSet);
+
+
+        ContextHandlerCollection contextHandler = getServerContextHandler();
+        if (contextHandler == null) {
+            throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
+        }
+        log.info("Starting Jetty servlet context");
+        contextHandler.addHandler(handlerSet);
+        handlerLifecycle.start();
     }
 
 
@@ -160,6 +168,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     public void terminate() throws RemoteException, SmartFrogException {
         if (handlerLifecycle != null) {
             try {
+                log.info("Terminating Jetty servlet context");
                 handlerLifecycle.wrappedStop();
                 ContextHandlerCollection handlers = getServerContextHandler();
                 if (handlers != null) {

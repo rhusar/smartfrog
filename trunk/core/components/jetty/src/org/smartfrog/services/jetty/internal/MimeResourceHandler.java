@@ -21,15 +21,19 @@ package org.smartfrog.services.jetty.internal;
 
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.MimeTypes;
+import org.mortbay.resource.Resource;
+import org.mortbay.io.Buffer;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * Created 12-Oct-2007 16:14:35
- *
+ * Trying to fix JETTY-442 by subclassing; no joy.
  */
 
 public class MimeResourceHandler extends ResourceHandler {
 
+    private MimeTypes _mimeTypes = new MimeTypes();
 
     public MimeResourceHandler() {
     }
@@ -39,4 +43,8 @@ public class MimeResourceHandler extends ResourceHandler {
         return null;
     }
 
+
+    public MimeTypes get_mimeTypes() {
+        return _mimeTypes;
+    }
 }

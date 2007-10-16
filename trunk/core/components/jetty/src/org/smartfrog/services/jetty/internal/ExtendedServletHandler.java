@@ -20,6 +20,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jetty.internal;
 
 import org.mortbay.jetty.servlet.ServletHandler;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,9 +38,23 @@ import java.io.IOException;
 public class ExtendedServletHandler extends ServletHandler {
 
 
-    /* ------------------------------------------------------------ */
+    public ExtendedServletHandler() {
+
+    }
+
+    /**
+     * Override the parent by discarding the error
+     * @param request in
+     * @param response out
+     * @throws IOException
+     */
+    @Override
     protected void notFound(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //this is a  no-op!
-        //super.notFound(request, response);
+        try {
+            Log log = LogFactory.getLog(this);
+            log.info("Ignoring "+request.getContextPath());
+        } catch (SmartFrogLogException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
 sfConfig extends TestWarServer {
 
@@ -35,9 +35,13 @@ sleep extends Delay {
         port server:port;
         page "testwar/error";
         checkFrequency 1;
-        queries [["status",419]];
+        errorCode 419;
+        queries [["status",errorCode]];
+        maximumResponseCode errorCode;
+        minimumResponseCode errorCode;
       }
     }
 
+ping sleep:action;
 
 }

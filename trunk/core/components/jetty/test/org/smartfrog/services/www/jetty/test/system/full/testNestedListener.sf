@@ -22,11 +22,9 @@
 
 sfConfig extends Compound {
 
-  server extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-
-
-   }
+    server extends CoreJettyServer {
+        jettyhome ROOT:jetty_home; // mandatory
+    }
 
     listener extends JettySocketConnector {
           port test.jetty.port.1;
@@ -34,7 +32,7 @@ sfConfig extends Compound {
           server LAZY PARENT:server;
     }
 
-    root extends Root {
+    root extends FilesystemWar {
         server LAZY server;
     }
 

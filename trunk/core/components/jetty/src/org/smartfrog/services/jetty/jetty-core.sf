@@ -115,9 +115,10 @@ CoreJettyServer extends ApplicationServer {
    //should the server version be sent in a response?
    sendServerVersion true;
 
-   //termination policy. If this is false, the server outlives the smartfrog component,
-   //which is not normally encouraged.
-   stopAtShutdown true;
+   //set this to add a flag to shut the server down cleanly
+   //during app termination. Not normally needed, as SmartFrog
+   //has its own shutdown, and hard crashes don't call any hooks
+   stopAtShutdown false;
 
 }
 
@@ -166,8 +167,6 @@ JettySocketConnector extends AbstractConnector {
       threads extends Integer;
 
     }
-    //Jetty likes a match between the number of acceptors and the number of threads
-    //threads CoreJettyServer:minThreads;
     threads 2;
 }
 

@@ -33,7 +33,7 @@ test.jetty.port.2 5051;
 //hard coded hostname,
 hostname "127.0.0.1";
 
-resourcebase LAZY PROPERTY java.io.tmpdir;
+test.tempdir LAZY PROPERTY java.io.tmpdir;
 
 test.timeout 10000;
 
@@ -46,3 +46,5 @@ waitForInterval 200;
 test.liveness.delay 1000;
 
 test.testwar.war PROPERTY test.testwar.war;
+
+test.demo.webapp PROPERTY test.demo.webapp;

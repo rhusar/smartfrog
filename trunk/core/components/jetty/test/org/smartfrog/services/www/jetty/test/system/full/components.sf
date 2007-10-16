@@ -18,71 +18,9 @@
 
  */
 
-#include "/org/smartfrog/components.sf";
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/filesystem/components.sf";
-#include "/org/smartfrog/services/assertions/components.sf"
-
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
 
 
 
-/*
-  * serves up the entire temp directory
-*/
-TempDirServletContext extends JettyServletContext {
- contextPath "/";
- resourceBase LAZY PROPERTY java.io.tmpdir;
-}
 
-
-/*
-* A jetty server that serves up the temp directory jetty under java.io.tmpdir
-*/
-TempDirServer extends Compound {
-
-
-  sfSyncTerminate true;
-  port TBD;
-
-  server extends CoreJettyServer {
-    jettyhome ROOT:jetty_home;
-  }
-
-  listener extends JettySocketConnector {
-    port PARENT:port;
-    server LAZY PARENT:server;
-  }
-
-  tempDir extends TempDirWithCleanup {
-    prefix "jetty";
-  }
-
-  tempDirServletContext extends TempDirServletContext {
-    resourceBase LAZY tempDir:absolutePath;
-    server LAZY PARENT:server;
-  }
-}
-
-
-Root extends RootWAR {
- contextPath "/";
- filename ((ROOT:jetty_home) ++ "/demo/webapps/root");
-}
-
-
-waitForPage extends FailingWaitFor {
-  port TBD;
-    condition extends LivenessPage {
-      port PARENT:port;
-    }
-    interval waitForInterval;
-    timeout waitForTimeout;
-  }
-
-JettyTestCompound extends TestCompound {
-
-  testTimeout test.timeout;
-
-}

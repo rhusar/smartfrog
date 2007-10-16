@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,22 +17,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.jetty.internal;
+
+import org.mortbay.jetty.security.SecurityHandler;
+
+/**
+ *
+ * Created 15-Oct-2007 12:01:51
+ *
+ */
+
+public class ExtendedSecurityHandler extends SecurityHandler {
 
 
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-
-sfConfig extends LocalJettyServer {
-
-    sleep extends Delay {
-
-      //short pause
-      delay test.liveness.delay;
-
-    //normally you'd use the broken up attributes, but here we test the full URL
-      action extends LivenessPage {
-        url ( "http://localhost:/" ++ test.jetty.port.1 ++ "/");
-        minimumResponseCode 404;
-        maximumResponseCode 404;
-      }
-    }
 }

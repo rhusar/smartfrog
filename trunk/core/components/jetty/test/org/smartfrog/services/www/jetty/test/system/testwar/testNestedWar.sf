@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
 sfConfig extends Compound {
     sfSyncTerminate true;
@@ -50,6 +50,7 @@ sfConfig extends Compound {
 
     listener extends JettySocketConnector {
         server LAZY PARENT:server;
+        port PARENT:port;
     }
 
 

@@ -48,4 +48,8 @@ public class JettyFunctionalTest extends JettyTestBase {
     public void testTcp20() throws Throwable {
         expectSuccessfulTestRun(FULL_FILES, "tcp20test");
     }
+
+    public void testTcp27() throws Throwable {
+        expectSuccessfulTestRun(FULL_FILES, "tcp27");
+    }
 }
