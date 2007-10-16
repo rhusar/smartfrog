@@ -65,16 +65,16 @@ public  class LogFactory {
      */
     public static synchronized LogSF getLog(Object obj) throws SmartFrogLogException
     {
-        LogSF log=null;
+        LogSF log;
         try {
             if (obj instanceof Prim) {
-               getLog((Prim)obj);
-            } else if (obj instanceof ComponentDescription){
-               getLog((ComponentDescription)obj);
+                log = getLog((Prim) obj);
+            } else if (obj instanceof ComponentDescription) {
+                log = getLog((ComponentDescription) obj);
             } else if (obj instanceof Class) {
-                getLog((Class)obj);
+                log = getLog((Class) obj);
             } else {
-               getLog(obj.getClass());
+                log = getLog(obj.getClass());
             }
         } catch (Exception e){
             throw (SmartFrogLogException)SmartFrogLogException.forward(e);
