@@ -228,7 +228,7 @@ IvyLibrary extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy/cache";
+        filename ".ivy2/cache";
     }
 
     /**
