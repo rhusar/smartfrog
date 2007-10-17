@@ -298,6 +298,13 @@ incr_cnt(Cnt) :-
 %Description hierarchy state
 
 %%%
+%solve/0: Solve an sfConfig hierarchy
+%%%
+sfsolve :- hash_create(Binds), 
+           hash_set(Binds, sf_evalidx, 0),         
+           sffromjava(Binds).
+
+%%%
 %sftojava/1: Sends ToJava to Java side
 %%%
 sftojava(ToJava) :-
@@ -305,47 +312,64 @@ sftojava(ToJava) :-
         flush(eclipse_to_java). 
 
 %%%
-%sffromjava/0: Receives Resp from Java side, converts to a term and
+%sffromjava/1: Receives Resp from Java side, converts to a term and
 % calls it
 %%%
-sffromjava :- 
+sffromjava(Binds) :- 
         read_exdr(java_to_eclipse, Resp),
         term_string(Solve, Resp),
-        call(Solve).
+        sfsolve_process(Solve, Binds).
 
-%%%
-%sfstop/0: Indicates a successful evaluation of constraints in description.
-%%%
-sfstop.
-
-%%%
-%sfsolve/5: Solve the latest aggergated goal pertaining to a single Constraint
-%%%
-sfsolve(Attrs, Values, Index, CIndex, Solve) :-
-        hash_create(Binds),
-        hash_set(Binds, sf_evalidx, Index),
-        sfsolve_populate_hash(Binds, Attrs, Values, Pref, CIndex),
+sfsolve_process(sfstop, _).
+sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve), Binds) :-
+        hash_set(Binds, sf_evalcidx, CIndex),
+        %writeln(("1", Attrs, Values, CIndex, Solve)), flush(stdout),
+        %writeln("hellohello"), flush(stdout),
+        sfsolve_populate_hash(Binds, Attrs, Values, Pref),
+        %writeln(("2", Binds)), flush(stdout),
+        sfsolve_suspend_goals(Binds, Pref, Pref1),
         sfsolve_preprocess(Binds, Attrs, Solve, SolveP1),
-        append(Pref, SolveP1, SolveP),
+        append(Pref1, SolveP1, SolveP),
         convert_tuple_list(SolveT, SolveP),
-        call(SolveT),  
+        %writeln(("converted",SolveT)), flush(stdout),
+        call(SolveT),
+        %writeln("sfdonegoal"), flush(stdout),
         sftojava(sfdonegoal),
-        sffromjava. 
+        sffromjava(Binds). 
    
+sfsolve_suspend_goals(_,[],[]).
+sfsolve_suspend_goals(Binds, [(RefCI, RefAttr)|Rem], [Susp|TSusp]):-      
+        sfsolve_suspend_goals(Binds, Rem, TSusp),
+        hash_get(Binds, (RefCI, RefAttr), (Val,_)),
+        Susp=suspend(sfsolve_var_sync(Binds, (RefCI, RefAttr), Val), 1, Val->inst).
+        %writeln(("Susp:", Susp)), flush(stdout).
+
 %%%
 %sfsolve_populate_hash/5: Populates hash table Binds with attributes
 % and values. Also adds a suspend goal for unbound variables to the
 % front of the constraint goal. This will force a sync with Java side
 % whenever a variable is bound.
 %%%
-sfsolve_populate_hash(_, [], [], [], _).
-sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref, CIndex) :-
-        sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1, CIndex), 
-        (var(Val) ->
-            Pref2=[suspend(sfsolve_var_sync(Binds, Attr, Val, CIndex), 1, Val->inst)];
-            Pref2=[]),
-        append(Pref2, Pref1, Pref),
-        hash_set(Binds, Attr, Val).
+sfsolve_populate_hash(_, [], [], []).
+sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
+        %writeln(("3",Attr, Val)), flush(stdout),
+        sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1),
+        hash_get(Binds, sf_evalcidx, CIndex),
+        %writeln(CIndex), flush(stdout),
+        (var(Val) -> Pref2=[(CIndex, Attr)], 
+                     hash_set(Binds, (CIndex, Attr), (Val,[]));
+        (Val = sfref(RefCI, RefAttr) ->
+            hash_get(Binds, (RefCI, RefAttr), (RefVal, Refs)),
+            hash_set(Binds, (CIndex, Attr), (RefVal, [])),
+            hash_set(Binds, (RefCI, RefAttr), (RefVal, [(CIndex, Attr)
+                                                       | Refs])),
+            Pref2=[];
+            %(member((RefCI, RefAttr), Pref1) -> Pref2=[]; 
+            %                                    Pref2=[(RefCI, RefAttr)]);
+        hash_set(Binds, (CIndex, Attr), (Val, [])),     
+        (term_variables(Val, []) -> Pref2=[];
+                                    Pref2=[(CIndex, Attr)]))),
+        append(Pref2, Pref1, Pref).
 
 %%%
 %sfsolve_preprocess/4: Preprocess goal string. Converts all references
@@ -353,8 +377,10 @@ sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref, CIndex) :-
 %%%
 sfsolve_preprocess(_,_,[],[]).
 sfsolve_preprocess(Binds, Attrs, [HG|TG], [HGOut|TGOut]):-
+        %writeln(HG), flush(stdout),
+        hash_get(Binds, sf_evalcidx, CIndex),
         (var(HG) -> HGOut=HG;
-        (HG=..[F] -> (hash_get(Binds, F, HGOut) -> true; HGOut=HG);
+        (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut, _)) -> true; HGOut=HG);
          HG=..[F|Args], sfsolve_preprocess(Binds, Attrs, Args, Args1),
                 HGOut=..[F|Args1])),
     sfsolve_preprocess(Binds, Attrs, TG, TGOut).
@@ -363,11 +389,15 @@ sfsolve_preprocess(Binds, Attrs, [HG|TG], [HGOut|TGOut]):-
 %sfsolve_var_sync/4: Synchronises variable binding (inc. in
 % backtracking) with Java side 
 %%%
-sfsolve_var_sync(Binds, Attr, Val, CIndex):-
+sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
+       hash_get(Binds, sf_evalcidx, CIndex),
+       %writeln(("here", (RefCI, RefAttr), Val, CIndex)), flush(stdout),
        hash_get(Binds, sf_evalidx, Index),
        Index1 is Index + 1,
        hash_set(Binds, sf_evalidx, Index1),
-       sftojava(sfset(Index, Attr, Val, CIndex)).
+       hash_get(Binds, (RefCI, RefAttr), (Val, Lists)),
+       %writeln(sfset(Index, Val, [(RefCI, RefAttr) | Lists], CIndex)), flush(stdout),
+       sftojava(sfset(Index, Val, [(RefCI, RefAttr) | Lists], CIndex)).       
 
 
 %%Need to reduce these as appropriate: 12/10/07

@@ -32,7 +32,6 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         this.comp = comp;
     }
 
-
     /**
      * Returns a copy of the reference, by cloning itself and the function part
      *

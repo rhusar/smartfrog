@@ -608,21 +608,22 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                if (lrsr==null) {
             	   //Reset whether constraints are relevant
             	   LinkResolutionState.resetConstraintRelevance();
-            	   
             	   //Do a visit to every cd removing constraint annotations...
                    try {
                 	   visit(new CDVisitor(){
                 		   public void actOn(ComponentDescription node, java.util.Stack path){
                 			   try {
-	                			   Object functionClass = node.sfResolveHere("sfFunctionClass");
-	                               if (functionClass!=null && functionClass.equals("org.smartfrog.sfcore.languages.sf.functions.Constraint")){
+                				   Object functionClass = node.sfResolveHere("sfFunctionClass");
+	                               if (functionClass!=null && functionClass.equals("done")){
 	                            	   node.sfContext().remove("sfFunctionClass");
 	                            	   Enumeration attr_enum = node.sfContext().keys();
 	                            	   Vector attr_keys = new Vector();
 	                            	   while (attr_enum.hasMoreElements()){
 	                            		   Object _key = attr_enum.nextElement();
 	                            		   try {
-	                            			   if (node.sfContext().sfContainsTag(_key, "sfConstraint")) attr_keys.add(_key);
+	                            			   if (node.sfContext().sfContainsTag(_key, "sfConstraint")) {
+	                            				   attr_keys.add(_key);
+	                            			   }
 	                            		   }catch (SmartFrogContextException e){}
 	                            	   }
 	                            	   Iterator attr_iter = attr_keys.iterator();
@@ -632,6 +633,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                 		 }
                 	   }, true);
                    } catch (Exception e){} 
+                   System.out.println(this.toString());
             	   return;               
                }
                continue; //around while...
@@ -690,6 +692,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            //Next up for attribute index...
            LinkResolutionState.getLRS().incIdx();  //increase attr index...           
        }
+       
    }
    
    /**

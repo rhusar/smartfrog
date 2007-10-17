@@ -729,7 +729,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         Object r = super.remove(key);
         attributeTags.remove(key);
         
-        if (LinkResolutionState.getConstraintsPossible()) LinkResolutionState.getLRS().addUndo(LinkResolutionState.g_LRSUndo_PUT, this, key, r);
+        if (LinkResolutionState.getConstraintsPossible()) LinkResolutionState.getLRS().addUndo(this, key, r);
         return r;
     }
 
@@ -864,7 +864,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     public Object put(Object key, Object value) {
     	Object oldValue = super.put(key, value);
     	
-    	if (LinkResolutionState.getConstraintsShouldUndo()) LinkResolutionState.getLRS().addUndo(LinkResolutionState.g_LRSUndo_PUT, this, key, oldValue);
+    	if (LinkResolutionState.getConstraintsShouldUndo()) LinkResolutionState.getLRS().addUndo(this, key, oldValue);
         return oldValue;
     }
         

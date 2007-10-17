@@ -140,6 +140,8 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             throw new SmartFrogFunctionResolutionException("function class is not a string", e);
         }
         
+        if (functionClass.equals("done")) return comp; //done already
+        
         if (functionClass == null) {
             throw new SmartFrogFunctionResolutionException("unknown function class ");
         }
@@ -165,11 +167,7 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
                    isLazy = true;
                 }
 
-                //If a Constraint and a FreeVar or goal pred, we do not seek to replace the value of attribute in comp
-                try { 
-                	if (value==null || 
-                			function instanceof Constraint && (value instanceof FreeVar || comp.sfContainsTag(name, "sfConstraint"))) continue; //round for
-                } catch (Exception e){}
+                if (value==null) continue;
                 	
                 try {
                 	LinkResolutionState.setConstraintsShouldUndo(true);
