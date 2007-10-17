@@ -518,16 +518,16 @@ public class FileSystem {
     public static void requireFileToExist(String path, boolean fileOnly, int minSize) throws SmartFrogLivenessException {
         File target = new File(path);
         if (!target.exists()) {
-            throw new SmartFrogLivenessException("Not found: " + path);
+            throw new SmartFrogLivenessException("File not found: \"" + path+"\"");
         }
         if (target.isFile()) {
             if (minSize > 0 && target.length() < minSize) {
-                throw new SmartFrogLivenessException("Too short: " + path + "\n"
+                throw new SmartFrogLivenessException("Too short: \"" + path + "\"\n"
                         + "Minimum size: " + minSize + "\n"
                         + "Actual size: " + target.length());
             }
         } else if (fileOnly) {
-            throw new SmartFrogLivenessException("Not a file: " + path);
+            throw new SmartFrogLivenessException("Not a file: \"" + path + "\"");
         }
     }
 
