@@ -1,9 +1,0 @@
-sfConfig extends {
-   attr1;
-   attr2;
-   attr3 extends {
-     attr1;
-     attr2;
-   }
-}#cons#sos\#
-
