@@ -1,0 +1,112 @@
+2007/09/27 01:54:36:078 BST [WARN ][main] SFCORE_LOG - Log 'SFCORE_LOG' , values [class,level,codebase]: org.smartfrog.sfcore.logging.LogToFileImpl, 3, null
+using Class ComponentDescription:
+{null}
+, and using Component ComponentDescription:
+{null} ** org.smartfrog.SFSystem.sfLog(SFSystem.java:623) ** 
+2007/09/27 01:54:36:078 BST [WARN ][main] SFCORE_LOG - Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile) ** org.smartfrog.SFSystem.sfLog(SFSystem.java:623) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/logging/logimpl.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver]
+    cause: SmartFrogResolutionException:: Unable to construct constraint solver
+       cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver>
+        SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/logging/logimpl.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver], cause: SmartFrogResolutionException:: Unable to construct constraint solver,    cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:920)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:882)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:860)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1239)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1196)
+	at org.smartfrog.sfcore.logging.LogImpl.<init>(LogImpl.java:244)
+	at org.smartfrog.sfcore.logging.LogImpl.<init>(LogImpl.java:215)
+	at org.smartfrog.sfcore.logging.LogImpl.<init>(LogImpl.java:206)
+	at org.smartfrog.sfcore.logging.LogFactory.getLog(LogFactory.java:121)
+	at org.smartfrog.sfcore.logging.LogFactory.sfGetProcessLog(LogFactory.java:188)
+	at org.smartfrog.SFSystem.sfLog(SFSystem.java:623)
+	at org.smartfrog.sfcore.common.Logger.init(Logger.java:101)
+	at org.smartfrog.SFParse.main(SFParse.java:263)
+Caused by: SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:40)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.constraintsResolve(SFComponentDescriptionImpl.java:612)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:921)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:917)
+	... 12 more
+Caused by: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:35)
+	... 15 more
+
+2007/09/27 01:54:36:078 BST [ERROR][main] SFCORE_LOG - SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/common/logger.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver], cause: SmartFrogResolutionException:: Unable to construct constraint solver,    cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver ** org.smartfrog.sfcore.logging.LogImpl.error(LogImpl.java:845) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/common/logger.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver]
+    cause: SmartFrogResolutionException:: Unable to construct constraint solver
+       cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver>
+        SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/common/logger.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver], cause: SmartFrogResolutionException:: Unable to construct constraint solver,    cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:920)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:882)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:860)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1239)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1196)
+	at org.smartfrog.sfcore.common.Logger.init(Logger.java:92)
+	at org.smartfrog.SFParse.main(SFParse.java:263)
+Caused by: SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:40)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.constraintsResolve(SFComponentDescriptionImpl.java:612)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:921)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:917)
+	... 6 more
+Caused by: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:35)
+	... 9 more
+
+2007/09/27 01:54:36:078 BST [WARN ][main] SFCORE_LOG - Warning: stack trace logging enabled ** org.smartfrog.sfcore.logging.LogImpl.warn(LogImpl.java:806) ** 
+2007/09/27 01:54:36:093 BST [WARN ][main] SFCORE_LOG - Error during init of class org.smartfrog.Version ** org.smartfrog.sfcore.logging.LogImpl.warn(LogImpl.java:819) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver]
+    cause: SmartFrogResolutionException:: Unable to construct constraint solver
+       cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver>
+        SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver], cause: SmartFrogResolutionException:: Unable to construct constraint solver,    cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:920)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:882)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:860)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1239)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1196)
+	at org.smartfrog.Version.init(Version.java:84)
+	at org.smartfrog.Version.<init>(Version.java:77)
+	at org.smartfrog.Version.versionString(Version.java:110)
+	at org.smartfrog.SFParse.showVersionInfo(SFParse.java:324)
+	at org.smartfrog.SFParse.main(SFParse.java:269)
+Caused by: SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:40)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.constraintsResolve(SFComponentDescriptionImpl.java:612)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:921)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:917)
+	... 9 more
+Caused by: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:35)
+	... 12 more
+
+
+Parser - SmartFrog 3.4.17 (buildDate)
+2007/09/27 01:54:36:093 BST [WARN ][main] SFCORE_LOG - Error during init of class org.smartfrog.Version ** org.smartfrog.sfcore.logging.LogImpl.warn(LogImpl.java:819) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver]
+    cause: SmartFrogResolutionException:: Unable to construct constraint solver
+       cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver>
+        SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver], cause: SmartFrogResolutionException:: Unable to construct constraint solver,    cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:920)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:882)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:860)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1239)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.getClassComponentDescription(ComponentDescriptionImpl.java:1196)
+	at org.smartfrog.Version.init(Version.java:84)
+	at org.smartfrog.Version.<init>(Version.java:77)
+	at org.smartfrog.Version.copyright(Version.java:173)
+	at org.smartfrog.SFParse.showVersionInfo(SFParse.java:325)
+	at org.smartfrog.SFParse.main(SFParse.java:269)
+Caused by: SmartFrogResolutionException:: Unable to construct constraint solver, cause: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:40)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.constraintsResolve(SFComponentDescriptionImpl.java:612)
+	at org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.sfResolvePhases(SFComponentDescriptionImpl.java:921)
+	at org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl.sfComponentDescription(ComponentDescriptionImpl.java:917)
+	... 9 more
+Caused by: java.lang.ClassCastException: org.smartfrog.sfcore.languages.csf.constraints.NullSolver cannot be cast to org.smartfrog.sfcore.languages.sf.constraints.CoreSolver
+	at org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.solveConstraints(CoreSolver.java:35)
+	... 12 more
+
+(C) Copyright 1998-2006 HP Development Company, LP
+ 
+ERROR 'user.sf': 
+SmartFrogParseException:: Unable to locate URL "user.sf"
+    Reason: URL may be incorrect or resource is missing
+
+Error detected. Check report.
+SFParse: FAILED
