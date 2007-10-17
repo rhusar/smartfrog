@@ -20,7 +20,7 @@ public  class LogFactory {
     /**
      * hashtable of loggers
      */
-    protected static Hashtable loggers       = new Hashtable();
+    protected static Hashtable<String, LogSF> loggers      = new Hashtable<String, LogSF>();
 
     /**
      * Protected constructor that is not available for public use.
@@ -39,7 +39,8 @@ public  class LogFactory {
         try {
             final Reference completeName = prim.sfCompleteName();
             //look for a log
-            log = (LogSF)loggers.get(completeName);
+            final String name = completeName.toString();
+            log = loggers.get(name);
             //if found, return it
             if (log!=null) {
                 return log;
@@ -47,7 +48,7 @@ public  class LogFactory {
             //else create a new one
             log = new LogImpl (completeName.toString());
             //and remember it
-            loggers.put(prim, log);
+            loggers.put(name, log);
         } catch (RemoteException e){
             throw (SmartFrogLogException)SmartFrogLogException.forward(e);
         }
@@ -94,15 +95,16 @@ public  class LogFactory {
         try {
             final Reference completeName = cd.sfCompleteName();
             //look for a log
-            log = (LogSF)loggers.get(completeName);
+            final String name = completeName.toString();
+            log = loggers.get(name);
             //if found, return it
             if (log!=null) {
                 return log;
             }
             //else create a new one
-            log = new LogImpl (completeName.toString());
+            log = new LogImpl(name);
             //and remember it
-            loggers.put(cd, log);
+            loggers.put(name, log);
         } catch (Exception e){
             throw (SmartFrogLogException)SmartFrogLogException.forward(e);
         }
@@ -117,11 +119,11 @@ public  class LogFactory {
      */
     public static synchronized LogSF getLog(String name)
     {
-        LogSF log  = (LogSF)loggers.get(name);
+        LogSF log  = loggers.get(name);
         if (log!=null) {
             return log;
         }
-        log = (LogSF)(new LogImpl(name));
+        log = new LogImpl(name);
         loggers.put(name, log);
         if ((log!=null)&&log.isTraceEnabled()) log.trace("New log created: "+ name);
         return log;
@@ -188,11 +190,28 @@ public  class LogFactory {
      * @return Logger implementing LogSF and Log
      */
     public static LogSF sfGetProcessLog() {
-       LogSF sflog =  getLog (SmartFrogCoreKeys.SF_CORE_LOG);
-       if ((sflog!=null)&&sflog.isTraceEnabled()) sflog.trace("getProcessLog()");
-       /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
+        LogSF sflog = _internal_getCoreLog();
+        _internal_trace("getProcessLog()");
+        /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
        ComponentDescriptionImpl.initLog(sflog);
        return sflog;
+    }
+
+    /**
+     * This is only for tracing problems with log setup, because the logging doesnt always exist yet
+     * @param message message to trace
+     * @return the core logger
+     */
+    private static void _internal_trace(String message) {
+        LogSF sflog = _internal_getCoreLog();
+        if ((sflog != null) && sflog.isTraceEnabled()) {
+            sflog.trace(message);
+        }
+    }
+
+    private static LogSF _internal_getCoreLog() {
+        LogSF sflog = getLog(SmartFrogCoreKeys.SF_CORE_LOG);
+        return sflog;
     }
 
 
@@ -205,7 +224,7 @@ public  class LogFactory {
      */
     private static void registerWithCore(String name, LogSF log) throws SmartFrogLogException {
         try {
-            LogSF coreLog = getLog(SmartFrogCoreKeys.SF_CORE_LOG);
+            LogSF coreLog = _internal_getCoreLog();
             if(!(coreLog instanceof LogRegistration )) {
                 throw new SmartFrogLogException("Core log does not implement LogRegistration");
             }
@@ -236,7 +255,11 @@ public  class LogFactory {
     public static Log getOwnerLog(final Prim owner, final Class clazz) {
         Log log=null;
         try {
-            log= ((PrimImpl)owner).sfGetApplicationLog();
+            if(owner instanceof PrimImpl) {
+                log= ((PrimImpl)owner).sfGetApplicationLog();
+            } else {
+                _internal_trace("Cannot get the owner log of a remote reference "+owner);
+            }
         } catch (SmartFrogException ignored) {
 
         } catch (RemoteException ignored) {
