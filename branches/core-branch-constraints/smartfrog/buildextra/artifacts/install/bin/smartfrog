@@ -1,0 +1,38 @@
+#! /bin/sh
+if ! test "$SFHOME"; then export SFHOME=$PWD; fi
+
+
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
+
+. "$SFHOME/bin/setSFProperties"
+
+#sort cmd line args into JVMARGS or CLASSARGS.
+#JVMARGS are declared using -J token
+#e.g. -J "-Djava.library.path=/libs -Xmx400M"
+#e.g. -J -Djava.library.path=/libs -J -Xmx400M
+while [ $# -ge 1 ]; do
+    case $1 in
+    -J | -j) shift
+        JVMARGS="$JVMARGS $1"
+        ;;
+    *) CLASSARGS="$CLASSARGS $1"
+        ;;
+    esac
+    shift
+done
+
+
+#java $SFCMDPARAMETERS org.smartfrog.SFSystem $*
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        CMDLINE="java $JVMARGS $SFCMDPARAMETERS $SFDEFAULTINI $SFCODEBASE org.smartfrog.SFSystem $CLASSARGS"
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        CMDLINE="java $JVMARGS $SFCMDPARAMETERS $SFDEFAULTINI $SFSECURITY org.smartfrog.SFSystem $CLASSARGS"
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        CMDLINE="java $JVMARGS $SFCMDPARAMETERS $SFDEFAULTINI $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem $CLASSARGS"
+else
+        CMDLINE="java $JVMARGS $SFCMDPARAMETERS $SFDEFAULTINI org.smartfrog.SFSystem $CLASSARGS"
+fi
+#echo $CMDLINE
+$CMDLINE

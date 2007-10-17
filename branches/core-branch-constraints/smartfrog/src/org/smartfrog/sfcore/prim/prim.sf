@@ -1,0 +1,90 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * Includes the definition of schemas.
+ */
+
+OptionalIntegerVector extends OptionalInteger {
+    class ["java.lang.Integer","java.util.Vector"];
+}
+
+
+//Schema
+PrimSchema extends Schema {
+    sfAssertionPhase "static";
+    
+    sfClass extends String {binding "eager"; description "class that implements component"; } //It is mandatory but check is done at runtime
+    sfCodeBase extends String {binding "eager"; description "codebase used during dynamic classloading"; }
+    sfDeployerClass extends OptionalString {description "deployer class";}
+    sfExport extends OptionalBoolean {description "decides if a component is remotely exported";}
+    sfExportPort extends OptionalIntegerVector {description "port used to export the component. O means use anonymous port. A vector means set of valid ports";}
+    sfLivenessDelay extends OptionalLong {description "how often to send liveness in seconds";}
+    sfLivenessFactor extends OptionalInteger {description "how many multiples of the liveness delay to wait till a failure is sent";}
+    sfLog extends OptionalString {description "defines a name for the log used by this component";}
+    sfProcessName extends Optional {description "name of the processCompound where the component has to be deployed"; }
+    sfProcessComponentName extends OptionalString {description "name to register component in local processCompound"; }
+    sfProcessHost extends Optional {description "host (String/InetAddress) where the component has to be deployed";
+                                    class ["java.lang.String","java.net.InetAddress"]; }
+}
+
+/** Defines the basic primitive components.
+ * Unless liveness values are set here (or in the
+ * the descriptions) the values from the processcompound.sf
+ * are used */
+sfCodeBase "default";
+
+//Prim with any schema
+Prim extends NULL {
+    sfPrimSchema extends PrimSchema;
+
+    sfCodeBase PARENT:ATTRIB sfCodeBase;
+//  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
+//  sfExport true;  // Export remote interface?
+//  sfExportPort 0; //Use anonymous port for export.
+//  sfLivenessDelay 0;
+//  sfLivenessFactor 2;
+//  sfLog "name"; //optional attribute to define a log name for a component.
+}
+
+UpdatablePrim extends Prim {
+     sfUpdatable true;
+}
+
+/**
+ * This is a component that can be asked to terminate itself after doing its work
+ * Such components fit in to workflows easily.
+ * Usually components that support these attributes default to not being self-terminating,
+ * though that may vary on a case by case basis.
+ */
+WorkflowPrimSchema extends Schema {
+  sfShouldTerminate extends OptionalBoolean {
+    description "true if a component should terminate after doing its 'work'";
+  }
+  sfShouldTerminateQuietly extends OptionalBoolean {
+    description "true if a component should terminate quietly after doing its 'work'";
+  }
+  sfShouldDetach  extends OptionalBoolean {
+    description "true if a component should detach after doing its 'work'";
+  }
+}
+WorkflowPrim extends Prim {
+  workflowPrimSchema extends WorkflowPrimSchema;
+}
