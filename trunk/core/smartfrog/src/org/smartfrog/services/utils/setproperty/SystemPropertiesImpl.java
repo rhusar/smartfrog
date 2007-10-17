@@ -54,10 +54,11 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     /**
      * This is a very early deploy phases
-     * @param parent
-     * @param cxt
-     * @throws SmartFrogDeploymentException
-     * @throws RemoteException
+     * @param parent parent
+     * @param cxt context
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
+
      */
     public synchronized void sfDeployWith(Prim parent, Context cxt)
             throws SmartFrogDeploymentException, RemoteException {
@@ -97,10 +98,8 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * started and if there is a parent the deployed component is added to the
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
      */
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
@@ -118,9 +117,8 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -159,16 +157,14 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     /**
      * load the properties in
-     *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
      */
     private void loadProperties()
             throws SmartFrogException, RemoteException {
         Vector propVector = null;
         proplist = new Properties();
 
-//        propVector = sfResolve(ATTR_PROPERTIES, propVector, true);
         try {
             propVector =((Vector) sfContext.sfResolveAttribute(ATTR_PROPERTIES));
         } catch (SmartFrogContextException e) {
@@ -177,8 +173,6 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             }
             throw e;
         }
-
-
 
         if (propVector != null) {
             for (Enumeration en = propVector.elements();
@@ -194,8 +188,8 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     /**
      * load in the property list and set it
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
      */
     private void loadAndSetProperties() throws SmartFrogException,
             RemoteException {
@@ -226,9 +220,8 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      *
      * @param name  name of the property
      * @param value value of the property
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  -may wrap a security exception
-     * @throws java.rmi.RemoteException
+     * @throws SmartFrogException may wrap a security exception
+     * @throws RemoteException network trouble
      */
     public void setProperty(String name, String value)
             throws SmartFrogException, RemoteException {
@@ -244,10 +237,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     /**
      * Unset a property in this JVM
      * Not supported on java1.4
-     * @param name
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  -may wrap a security exception
-     * @throws java.rmi.RemoteException
+     * @param name name of the property
+     * @throws SmartFrogException may wrap a security exception
+     * @throws RemoteException network trouble
      */
     public void unsetProperty(String name)
             throws SmartFrogException, RemoteException {

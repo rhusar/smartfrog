@@ -34,8 +34,7 @@ import java.rmi.RemoteException;
 
 
 /**
- * Service Resource Manager that mediates between FF and Utility Resource
- * Manager.
+ *  Component to set properties very early on.
  */
 public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetProperty {
 
@@ -59,9 +58,10 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      * @throws SmartFrogDeploymentException In case of error while deployment
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
+    public synchronized void sfDeployWith(Prim parent, Context cxt)
+            throws SmartFrogDeploymentException, RemoteException {
         try {
-            log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+            log = sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
             // Mandatory attributes.
             try {
                 name = (String) cxt.sfResolveAttribute(ATR_NAME);
@@ -110,14 +110,12 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      * components in the compound context. Any failure will cause the compound
      * to terminate
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failed to start compound
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
                 "set "+name+" to "+finalValue, null, null);
-
     }
 }
