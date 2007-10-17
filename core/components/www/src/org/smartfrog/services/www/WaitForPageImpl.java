@@ -38,7 +38,8 @@ public class WaitForPageImpl extends LivenessPageComponent
 
     /** thread to do the work */
     private SmartFrogThread worker;
-    public static final String ERROR_WAIT_FOR_TIMEOUT = "Timeout waiting for a page to go live: \n";
+
+    public static final String ERROR_WAIT_FOR_TIMEOUT = "Timeout waiting for the web page: \n";
 
     public WaitForPageImpl() throws RemoteException {
     }
