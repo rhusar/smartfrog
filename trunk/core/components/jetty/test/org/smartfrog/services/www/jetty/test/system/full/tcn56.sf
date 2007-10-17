@@ -21,6 +21,8 @@
 
 
 sfConfig extends Compound {
+    //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
    server extends CoreJettyServer {
       jettyhome test.jetty.home ; 

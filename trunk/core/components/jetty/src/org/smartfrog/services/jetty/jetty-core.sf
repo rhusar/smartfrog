@@ -19,6 +19,8 @@
  */
 
 #include "/org/smartfrog/services/www/webapplication.sf"
+//logging
+#include "/org/smartfrog/services/jetty/log/components.sf"
 
 /**
  * this defines the core of jetty
@@ -31,16 +33,11 @@
 */
 
 
-/**
- * schema for the base jetty server extends
- * base webserver schema
-
-
- */
 CoreJettySchema extends Schema {
     jettyhome extends String;
+    host extends String;
+
     enableLogging extends Boolean;
-    serverHost extends String;
     //log pattern
     logPattern extends String;
     //could be a file or a directory
@@ -87,7 +84,7 @@ CoreJettySchema extends Schema {
 CoreJettyServer extends ApplicationServer {
    sfClass "org.smartfrog.services.jetty.JettyImpl";
    coreJettySchema extends CoreJettySchema;
-   serverHost "localhost";
+   host "localhost";
 
    //deployment information
    supportsEAR false;

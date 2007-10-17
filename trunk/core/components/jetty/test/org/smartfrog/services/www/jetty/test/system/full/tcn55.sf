@@ -21,9 +21,10 @@
 
 
 sfConfig extends Compound {
+    //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
   server extends CoreJettyServer {
-      port 8082;
-
+      port test.jetty.port.1 ;
    }
 }

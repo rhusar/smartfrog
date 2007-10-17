@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/filesystem/textfile.sf"
 
+/**
+ * this creates an HTMLPage
+ */
 
-#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
-
-
-testErrorPage extends TestWarDeployed  {
-
-    contextPath tests:wait:contextPath;
-
-    tests extends Sequence {
-        wait extends waitForPage {
-            port PARENT:PARENT:action:port;
-            contextPath "/errors";
-            page (  contextPath ++ "/error");
-            checkFrequency 1;
-            errorCode 419;
-            queries [["status",errorCode]];
-            maximumResponseCode errorCode;
-            minimumResponseCode errorCode;
-        }
-    }
-
+HtmlFile extends TextFileUtf8 {
+    title "HTML Page";
+    body title;
+    _header ( "<head><title>" ++ title ++ "</title></head>\n");
+    _body ("<body>\n" ++ body ++ "\n</body>\n");
+    _html ( "<html>\n" ++ _header ++ _body ++ "\n</html>\n");
+    text _html;
 }
 
-sfConfig extends testErrorPage;
+IndexPage extends HtmlFile {
+    filename "index.html";
+    title "Index Page";
+}
+

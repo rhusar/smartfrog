@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,46 +18,25 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
 
-
-/**
- * deploy into a new process
- */
-
-tcp27 extends Compound {
-
-   sfProcessHost ROOT:hostname;
-
-  //deploy the server
-    server extends LocalJettyServer {
-        
-    }
-
-    war extends FilesystemWar {
-       server LAZY PARENT:server:server;
-    }
-
-    context extends FilesystemWarAsServletContext {
-       contextPath "/test";
-       server LAZY PARENT:server:server;
-    }
-
-}
-
+#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
 
 sfConfig extends JettyTestCompound {
 
-	action extends tcp27;
+
+	action extends LocalJettyServer;
 
 
-
+    //we dont care which number comes back, only that we get a number
     tests extends Sequence {
         wait extends waitForPage {
-            port tcp27:server:port;
-            page tcp27:context:contextPath;
+            url ( "http://localhost:" ++ test.jetty.port.1 ++ "/");
+            maximumResponseCode 404;
+            minimumResponseCode 200;
         }
     }
 
 }
+
+

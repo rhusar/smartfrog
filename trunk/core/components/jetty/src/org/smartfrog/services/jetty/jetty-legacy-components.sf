@@ -45,3 +45,194 @@ JettyWebApplication extends WebApplication {
  */
 JettyServlet extends Servlet {
 }
+
+/*==========================================
+  declare jetty contexts
+===========================================*/
+
+/**
+ * assume we always get deployed into a parent that is an app server
+ */
+JettySampleContexts extends Compound {
+  server TBD;
+
+  jettyDemo extends JettyDemo {
+   server LAZY PARENT:server;
+  }
+
+  jettyExamples extends JettyExamples {
+   server LAZY PARENT:server;
+  }
+
+  jettyJavadoc extends JettyJavadoc {
+   server LAZY PARENT:server;
+  }
+  jettyCGIBIN extends JettyCGIBIN {
+   server LAZY PARENT:server;
+  }
+}
+
+JettyExampleWar extends WebApplication {
+ server LAZY PARENT:server;
+}
+
+RootWAR extends JettyExampleWar {
+ contextPath "/";
+ filename "demo/webapps/root";
+}
+
+JettyDemo extends JettyExampleWar {
+ contextPath "/jetty";
+ filename "demo/webapps/jetty";
+}
+
+JettyExamples extends JettyExampleWar {
+ contextPath "/examples";
+ filename "demo/webapps/examples";
+ requestId true; //optional
+}
+
+JettyServletContexts extends ServletContext {
+ server LAZY PARENT:server;
+ contextPath "/demo";
+ resourceBase "/demo/docroot";
+ classpath "demo/servlets";
+ handlers extends Handlers {
+  context LAZY PARENT;
+  }
+ servlets extends BuiltInServlets {
+  context LAZY PARENT;
+  }
+}
+
+JettyJavadoc extends ServletContext {
+ contextPath "/javadoc";
+ resourceBase "javadoc";
+}
+
+JettyCGIBIN extends ServletContext {
+ contextPath "/cgi-bin";
+ resourceBase "cgi-bin";
+
+ servlets extends CGIservlet {
+   //server LAZY PARENT:server;
+   context LAZY PARENT;
+ }
+}
+
+
+/*==========================================
+  declare handlers
+===========================================*/
+
+Handlers extends Compound {
+ context TBD;
+ Handler2 extends JettyHTAccessHandler {
+  context LAZY PARENT:context;
+ }
+}
+
+
+JettyHTAccessHandler extends JettyHandler {
+ sfClass "org.smartfrog.services.jetty.contexts.handlers.HTAccess";
+ accessFile ".htaccess";
+}
+
+
+/*==========================================
+  declare servlets
+===========================================*/
+
+BuiltInServlets extends Compound {
+ context TBD;
+
+ invoker extends InvokerServlet {
+  context LAZY PARENT:context;
+ }
+ dump extends DumpServlet{
+  context LAZY PARENT:context;
+ }
+ session extends SessionServlet{
+  context LAZY PARENT:context;
+ }
+ dispatch extends DispatchServlet{
+  context LAZY PARENT:context;
+ }
+ jsp extends JSPServlet{
+  context LAZY PARENT:context;
+ }
+ src extends SrcDefaultServlet{
+  context LAZY PARENT:context;
+ }
+}
+
+ThirdPartyServlets extends Compound {
+ context TBD;
+
+ jsp extends JSPServlet{
+  context LAZY PARENT:context;
+ }
+}
+InvokerServlet extends Servlet {
+ name "Invoker";
+ pathSpec "/servlet/*";
+ className "org.mortbay.jetty.servlet.Invoker";
+}
+
+DumpServlet extends Servlet {
+ name "Dump";
+ pathSpec "/dump/*:*.DUMP";
+ className "org.mortbay.servlet.Dump";
+ initParams [["InitParam","Value"]];
+}
+
+SessionServlet extends Servlet {
+ name "Session";
+ pathSpec "/session/*";
+ className "org.mortbay.servlet.SessionDump";
+}
+
+DispatchServlet extends Servlet {
+ name "Dispatch";
+ pathSpec "/dispatch/*";
+ className "org.mortbay.servlet.RequestDispatchTest";
+}
+
+JSPServlet extends Servlet {
+ name "JSP";
+ pathSpec "*.jsp";
+ className "org.apache.jasper.servlet.JspServlet";
+}
+
+SrcDefaultServlet extends Servlet {
+ name "SrcDefault";
+ pathSpec "/src/*";
+ className "org.mortbay.jetty.servlet.Default";
+ initParams [["dirAllowed","true"]];
+}
+
+CGIservlet extends Servlet {
+ name "Common Gateway Interface";
+ pathSpec "/";
+ className "org.mortbay.servlet.CGI";
+ initParams [["Path","/bin:/usr/bin:/usr/local/bin"]];
+}
+
+/*==========================================
+  declare listeners
+===========================================*/
+/**
+ * this listens on a direct port
+ */
+DirectPortListener extends JettySocketConnector {
+  port LAZY server:port;
+}
+
+Listeners extends Compound {
+  server TBD;
+
+  directListener extends DirectPortListener {
+    server LAZY PARENT:server;
+  }
+}
+

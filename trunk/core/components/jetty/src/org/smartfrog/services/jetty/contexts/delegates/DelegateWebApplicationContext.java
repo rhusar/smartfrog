@@ -29,6 +29,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -48,13 +50,14 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
 
 
     private WebAppContext application;
-
+    /**
+     * a log
+     */
+    private Log log;
 
     public DelegateWebApplicationContext(JettyImpl server, Prim declaration) {
         super(server, null);
-    }
-
-    public DelegateWebApplicationContext() {
+        log = LogFactory.getOwnerLog(declaration);
     }
 
     /**
@@ -85,11 +88,16 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         contextPath = declaration.sfResolve(contextPathRef,
                 (String) null,
                 true);
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
 
+        if(!contextPath.startsWith("/")) {
+            log.warn("Fixing up the context path "+contextPath+" by adding a leading \"/\"");
+            contextPath="/"+contextPath;
+        }
+
+        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
         application = new WebAppContext(webApp,contextPath);
-        application.setContextPath(contextPath);
-        application.setWar(webApp);
+        //application.setContextPath(contextPath);
+        //application.setWar(webApp);
 
         
         ServletHandler servlethandler = application.getServletHandler();

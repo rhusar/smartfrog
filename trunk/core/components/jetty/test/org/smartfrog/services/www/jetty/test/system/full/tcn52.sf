@@ -27,8 +27,10 @@
 
 sfConfig extends Compound {
 
-   server1 extends CoreJettyServer {
-      jettyhome LAZY PROPERTY java.io.tmpdir;
+   listener extends JettySocketConnector {
+     server LAZY PARENT;
+     port test.jetty.port.1;
    }
+
 }
 
