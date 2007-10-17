@@ -16,18 +16,24 @@ public class JettyWarTest extends JettyTestBase {
 
 
     public void testWarDeployed() throws Throwable {
-        deployWebApp(FILES + "testWarDeployed.sf",
-                "testWarDeployed");
+        expectSuccessfulTestRun(FILES, "testWarDeployed");
     }
 
-    public void testNestedWar() throws Throwable {
-        deployWebApp(FILES + "testNestedWar.sf",
-                "testNestedWar");
+
+    public void testContextPathFixup() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testContextPathFixup");
+    }
+
+    public void testWarAtRoot() throws Throwable {
+        expectSuccessfulTestRun(FILES,"testWarAtRoot");
     }
 
     public void testErrorPage() throws Throwable {
-        expectLivenessFailure(FILES, "testErrorPage");
+        expectSuccessfulTestRun(FILES, "testErrorPage");
     }
 
 
+    public void testTcp27testFilesystemWar() throws Throwable {
+        expectSuccessfulTestRun(FILES, "tcp27testFilesystemWar");
+    }
 }

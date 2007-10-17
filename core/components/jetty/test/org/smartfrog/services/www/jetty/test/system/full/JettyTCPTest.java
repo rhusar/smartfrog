@@ -23,6 +23,7 @@ package org.smartfrog.services.www.jetty.test.system.full;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
+import org.smartfrog.services.jetty.JettyIntf;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.BufferedReader;
@@ -54,13 +55,13 @@ public class JettyTCPTest
         assertNotNull(application);
     }
 
-    public void NotestCaseTCN52() throws Exception {
+    public void testCaseTCN52() throws Exception {
         deployExpectingException(FULL_FILES + "tcn52.sf",
                 "tcn52",
                 EXCEPTION_LIFECYCLE,
                 "sfStart",
                 EXCEPTION_DEPLOYMENT,
-                "Illegal ClassType");
+                JettyIntf.ATTR_JETTY_SERVER);
     }
 
 
@@ -105,76 +106,10 @@ public class JettyTCPTest
                 "tcn57",
                 EXCEPTION_LIFECYCLE,
                 "unnamed component");
-
-/*
-                                 EXCEPTION_RESOLUTION,
-                                 "error in schema: wrong class found for attribute 'server', expected: java.lang.String");
-*/
     }
 
-    public void NotestCaseTCP19() throws Throwable {
-        application = deployExpectingSuccess(FULL_FILES + "tcp19.sf", "tcp19");
-        int port = 0;
-        String host = application.sfResolve("serverHost",
-                (String) null,
-                true);
-        port = application.sfResolve("port", port, true);
-        URL url = new URL("http", host, port, ROOT_DOC);
-        HttpURLConnection connection = null;
-        int errorcode = 0;
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            errorcode = connection.getResponseCode();
-        } catch (FileNotFoundException e) {
-            //if this is a 404 error, we have succeeded.
-        	if(connection!=null) {
-        		errorcode = connection.getResponseCode();
-        	}
-        } catch (ConnectException e  ) {
-        	fail("Connection refused to "+url.toString());
-        }
-        assertEquals("Expected a 404 response from " + url + " but got " + errorcode,
-                HttpURLConnection.HTTP_NOT_FOUND, errorcode);
-    }
 
-    public void NotestCaseTCP20() throws Throwable {
-        application = deployExpectingSuccess(FULL_FILES + "tcp20.sf", "tcp20");
-        Prim server1 = (Prim) application.sfResolveHere("server1");
-        Prim server2 = (Prim) application.sfResolveHere("server2");
-        String hostname1 = server1.sfResolve("serverHost", (String) null, true);
-        Prim listener1 = (Prim) server1.sfResolveHere("listener");
-        int port1 = listener1.sfResolve("listenerPort", 0, true);
-        String hostname2 = server2.sfResolve("serverHost", (String) null, true);
-        Prim listener2 = (Prim) server2.sfResolveHere("listener");
-        int port2 = listener2.sfResolve("listenerPort", 0, true);
-        URL url1 = new URL("http", hostname1, port1, ROOT_DOC);
-        URLConnection urlConnection1 = url1.openConnection();
-        URL url2 = new URL("http", hostname2, port2, ROOT_DOC);
-        URLConnection urlConnection2 = url2.openConnection();
 
-        BufferedReader in1 = null;
-        BufferedReader in2 = null;
-
-        try {
-            in1 = new BufferedReader(
-                    new InputStreamReader(
-                            urlConnection1.getInputStream()));
-            in2 = new BufferedReader(
-                    new InputStreamReader(
-                            urlConnection2.getInputStream()));
-            String inputLine1;
-            String inputLine2 = null;
-
-            while ((inputLine1 = in1.readLine()) != null && (inputLine2 = in2.readLine()) != null)
-            {
-                assertEquals(inputLine1, inputLine2);
-            }
-        } finally {
-            FileSystem.close(in1);
-            FileSystem.close(in2);
-        }
-    }
 
     public void testCaseTCP21() throws Throwable {
         application = deployExpectingSuccess(FULL_FILES + "tcp21.sf", "tcp21");
@@ -196,23 +131,4 @@ public class JettyTCPTest
                 jettyfile.isDirectory());
     }
 
-    public void testCaseTCP22() throws Throwable {
-        application = deployExpectingSuccess(FULL_FILES + "tcp22.sf", "tcp22");
-/*
-        assertNotNull(application);
-        Prim server = (Prim) application.sfResolve("adminServer");
-        String host = server.sfResolve("httpserverHost",
-                (String) null,
-                true);
-        int port = server.sfResolve("listenerPort", 0, true);
-        URL url = new URL("http", host, port, "/");
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        String expectedmessage = "Unauthorized";
-        String actualmessage = urlConnection.getResponseMessage();
-        int expectedcode = 401;
-        int actualcode = urlConnection.getResponseCode();
-        assertEquals(expectedmessage, actualmessage);
-        assertEquals(expectedcode, actualcode);
-*/
-    }
 }

@@ -66,40 +66,45 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     private HandlerCollection handlerSet;
     private JettyToSFLifecycle<HandlerCollection> handlerLifecycle;
 
+
+    /**
+     * Constructor
+     * @param server server that is creating this
+     * @param context the context
+     * @param declaration the servlet declaration
+     */
+    public DelegateServletContext(JettyImpl server, Context context, Prim declaration) {
+        super(server, context);
+        owner = declaration;
+        log = LogFactory.getOwnerLog(declaration);
+    }
+
     /**
      * Get the context cast to a servlet context
+     *
      * @return the servlet context of jetty
      */
     public final Context getServletContext() {
         return getContext();
     }
 
-    public DelegateServletContext(JettyImpl server, Context context) {
-        super(server, context);
-    }
-
-    public DelegateServletContext() {
-    }
-
     /**
      * do all deployment short of starting the thing
-     * @param declaration the description to deploy
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
-        owner = declaration;
-        log = LogFactory.getOwnerLog(declaration);
-        JettyHelper jettyHelper = new JettyHelper(declaration);
+    public void deploy() throws SmartFrogException, RemoteException {
+        super.deploy();
+        JettyHelper jettyHelper = new JettyHelper(owner);
 
         jettyHelper.setServerComponent(getServer());
         //context path attribute
-        contextPath = declaration.sfResolve(contextPathRef, (String)null, true);
+        contextPath = owner.sfResolve(contextPathRef, (String)null, true);
         absolutePath = WebApplicationHelper.deregexpPath(contextPath);
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
+        owner.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         //hostnames
         String address = jettyHelper.getIpAddress();
-        declaration.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
+        owner.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
     }
 
 
@@ -111,15 +116,9 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     @Override
     public void start() throws SmartFrogException, RemoteException {
+        super.start();
         resourceBase = FileSystem.lookupAbsolutePath(owner, resourceBaseRef, null, null, true, null);
         FileSystem.requireFileToExist(resourceBase, false, 0);
-/*
-        resourceBase = declaration.sfResolve(resourceBaseRef, (String) null, true);
-        //resource base is absolute or relative to jettyhome
-        if (!new File(resourceBase).exists()) {
-            resourceBase = jettyhome.concat(resourceBase);
-        }
-*/
 
         //to get resources seen before the other bits of the tree, we patch the handlerSet.
         Context context = new Context(

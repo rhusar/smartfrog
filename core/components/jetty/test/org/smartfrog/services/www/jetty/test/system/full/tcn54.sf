@@ -21,23 +21,26 @@
 
 
 sfConfig extends Compound {
-   adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-         port 8081; // mandatory
-   }
 
-      list2 extends JettySocketConnector {
-            sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
-            port 8010;
-            host "localhost";
-            server LAZY server2;
-      }
+    //integrate logging with smartfrog
+    logging extends IntegrateJettyLogging;
 
-   server2 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      host "localhost"; //mandatory
-      port 8082;
+    adminServer extends HttpServerAdmin {
+        httpserverHost "localhost"; // mandatory
+        port 8081; // mandatory
+    }
 
-   }
+    list2 extends JettySocketConnector {
+        sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
+        port 8010;
+        host "localhost";
+        server LAZY server2;
+    }
+
+    server2 extends CoreJettyServer {
+        jettyhome ROOT:jetty_home; // mandatory
+        host "localhost"; //mandatory
+        port 8082;
+    }
 }
 

@@ -18,15 +18,10 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
-sfConfig extends Compound {
 
-    ping extends LivenessPage {
-        host "no-such-host";
-        port test.jetty.port.1;
-        page "/";
-        checkFrequency 1;
-    }
-
+sfConfig extends TestWarDeployed {
+    contextPath "missingForwardSlash";
 }
+

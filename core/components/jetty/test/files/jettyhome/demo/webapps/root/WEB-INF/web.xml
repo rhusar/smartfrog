@@ -3,33 +3,12 @@
 <web-app>
   <display-name>Jetty Demo Root</display-name>
 
-<!--  <servlet>
-    <servlet-name>Dump</servlet-name>
-    <servlet-class>org.mortbay.servlet.Dump</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
 
-  <servlet>
-    <servlet-name>Dispatch</servlet-name>
-    <servlet-class>org.mortbay.servlet.RequestDispatchTest</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>Dump</servlet-name>
-    <url-pattern>/dump/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Dump</servlet-name>
-    <url-pattern>*.dump</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>Dispatch</servlet-name>
-    <url-pattern>/dispatch/*</url-pattern>
-  </servlet-mapping>-->
-
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
 </web-app>
 
 

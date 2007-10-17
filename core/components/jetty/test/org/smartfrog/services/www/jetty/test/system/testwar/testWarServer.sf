@@ -18,27 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-
 #include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
+sfConfig extends TestWarServer;
 
-testErrorPage extends TestWarDeployed  {
-
-    contextPath tests:wait:contextPath;
-
-    tests extends Sequence {
-        wait extends waitForPage {
-            port PARENT:PARENT:action:port;
-            contextPath "/errors";
-            page (  contextPath ++ "/error");
-            checkFrequency 1;
-            errorCode 419;
-            queries [["status",errorCode]];
-            maximumResponseCode errorCode;
-            minimumResponseCode errorCode;
-        }
-    }
-
-}
-
-sfConfig extends testErrorPage;

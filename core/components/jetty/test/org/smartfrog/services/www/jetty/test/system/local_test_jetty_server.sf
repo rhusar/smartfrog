@@ -27,6 +27,9 @@ LocalJettyServer extends Compound {
     port test.jetty.port.1;
     jettyhome test.jetty.home;
 
+    //integrate logging with smartfrog
+    logging extends IntegrateJettyLogging;
+
    /*
     this is the jetty server itself
     */

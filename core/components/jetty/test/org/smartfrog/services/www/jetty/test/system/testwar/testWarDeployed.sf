@@ -20,24 +20,6 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/www/jetty/test/system/testwar/components.sf"
 
-sfConfig extends TestWarServer {
 
+sfConfig extends TestWarDeployed;
 
-    sleep extends Delay {
-
-      //short pause
-      delay test.liveness.delay ;
-
-      action extends LivenessPage {
-          enabled false;
-          host LAZY server:listener:ipaddr;
-          port server:port;
-          page LAZY deployedWar:absolutePath;
-          checkFrequency 1;
-          followRedirects true;
-      }
-    }
-
-    ping sleep:action;
-    
-}

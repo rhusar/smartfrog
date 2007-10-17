@@ -17,7 +17,9 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www.jetty.test.system;
+package org.smartfrog.services.www.jetty.test.system.full;
+
+import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
 
 
 /**
@@ -30,14 +32,12 @@ public class LivenessTest extends JettyTestBase {
         super(name);
     }
 
-
     public void testLivenessNoHost() throws Throwable {
-        expectLivenessFailure(SYSTEM_FILES, "testLivenessNoHost");
+        expectLivenessFailure(FULL_FILES, "testLivenessNoHost");
     }
 
     public void testLivenessURL() throws Throwable {
-        deployWebApp(SYSTEM_FILES + "testLivenessURL" + ".sf",
-                "testLivenessURL");
+        expectSuccessfulTestRun(FULL_FILES,"testLivenessURL");
     }
 
 }

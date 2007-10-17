@@ -22,6 +22,8 @@
 
 
 sfConfig extends Compound {
+    //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
    server1 extends FullJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
