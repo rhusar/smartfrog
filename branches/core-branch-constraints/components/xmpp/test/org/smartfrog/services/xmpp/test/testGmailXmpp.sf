@@ -1,3 +1,0 @@
-#include "/org/smartfrog/services/xmpp/test/components.sf"
-
-sfConfig extends testGmailXmpp;
