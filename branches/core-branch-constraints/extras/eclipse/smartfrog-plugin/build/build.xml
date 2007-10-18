@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: expandtab shiftwidth=4 softtabstop=4
+-->
+<project name="eclipse-plugin" default="build" basedir=".">
+
+<!-- ==================================================================
+    Load common properties, shared among sub-projects.
+======================================================================= -->
+
+    <property file="../build/build.properties"/>
+
+<!-- ==================================================================
+======================================================================= -->
+
+    <property environment="env"/>
+
+    <!-- Sub-project directories -->
+    <property name="bin.plugin.dir" value="../smartfrog-plugin-project"/>
+    <property name="doc.plugin.dir" value="../smartfrog-plugin-doc"/>
+    <property name="test.plugin.dir" value="../smartfrog-plugin-test"/>
+    <property name="feature.package.dir" value="../feature"/>
+
+    <!-- Local directories -->
+    <property name="build.dir" value="build_area"/>
+    <property name="temp.zip.folder.name" value="temp.zip.folder"/>
+    <property name="temp.zip.folder" value="${build.dir}/${temp.zip.folder.name}"/>
+    <property name="temp.tar.folder.name" value="temp.tar.folder"/>
+    <property name="temp.tar.folder" value="${build.dir}/${temp.tar.folder.name}"/>
+    <property name="work.folder.name" value="work.folder"/>
+    <property name="work.folder" value="${build.dir}/${work.folder.name}"/>
+    <property name="build.results.folder" value="${build.artifacts.dir.name}"/>
+    <property name="installdocs.dir" value="${basedir}/../extdocs"/>
+    <property name="install.doc.name" value="installationNotes.pdf"/>
+    <property name="install.doc" value="${installdocs.dir}/${install.doc.name}"/>
+
+    <!-- Miscellaneous -->
+    <property name="anttask.inheritAll" value="false"/>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++ -->
+
+<!-- ==================================================================
+    Task initialization, environment setup, environment verification.
+======================================================================= -->
+
+    <target name="init"
+        unless="init.done"
+        depends="set.eclipse.home">
+
+        <property name="init.done" value="yes"/>
+
+        <tstamp>
+            <format property="NOW.FORMATTED" pattern="EEEE, MMM d, yyyy, HH:mm:ss"/>
+            <format property="BUILDID" pattern="yyyyMMddHHmmss"/>
+        </tstamp>
+
+        <echo message="Main Starting ${NOW.FORMATTED}, build ${BUILDID}"/>
+        <echo message="Ant command line: ${env.ANT_CMD_LINE_ARGS}"/>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.results.folder}"/>
+
+    </target>
+
+    <target name="refresh" if="eclipse.running">
+        <eclipse.refreshLocal resource="." depth="infinite"/>
+    </target>
+
+<!-- ==================================================================
+    Cleanup
+======================================================================= -->
+
+    <target name="clean"
+        description="Delete artifacts directory">
+
+        <delete dir="${build.dir}" quiet="yes"/>
+        <delete dir="${build.results.folder}" quiet="yes"/>
+
+        <antcall target="refresh"/>
+    </target>
+
+    <target name="real.clean" depends="clean"/>
+
+<!-- ==================================================================
+    Utilities
+======================================================================= -->
+
+    <target name="build.subproject"
+        depends="init,build.subproject.without.eclipse.running,build.subproject.with.eclipse.running"/>
+
+    <target name="build.subproject.without.eclipse.running"
+        depends="init"
+        unless="eclipse.running">
+
+        <!-- Be sure to duplicate any changes made here to target
+             build.subproject.with.eclipse.running! -->
+
+        <ant dir="${subproject.basedir}"
+            target="${target}"
+            inheritAll="${anttask.inheritAll}">
+
+            <property name="artifacts.dir" value="${build.artifacts.dir}"/>
+            <property name="BUILDID" value="${BUILDID}"/>
+            <property name="eclipse.home" value="${eclipse.home}"/>
+        </ant>
+    </target>
+
+    <target name="build.subproject.with.eclipse.running"
+        depends="init"
+        if="eclipse.running">
+
+        <echo message="Sub-build starting in Eclipse environment."/>
+
+        <!-- Be sure to duplicate any changes made here to target
+             build.subproject.without.eclipse.running! -->
+
+        <ant dir="${subproject.basedir}"
+            target="${target}"
+            inheritAll="${anttask.inheritAll}">
+
+            <property name="artifacts.dir" value="${build.artifacts.dir}"/>
+            <property name="BUILDID" value="${BUILDID}"/>
+            <property name="eclipse.home" value="${eclipse.home}"/>
+
+            <!-- Only set eclipse.running if Eclipse is really running. ;-) -->
+            <property name="eclipse.running" value="${eclipse.running}"/>
+        </ant>
+    </target>
+
+    <target name="set.eclipse.home"
+        depends="set.eclipse.home.from.env,set.eclipse.home.default"/>
+
+    <target name="set.eclipse.home.from.env"
+        if="env.ECLIPSE_HOME"
+        unless="eclipse.home">
+
+        <property name="eclipse.home" value="${env.ECLIPSE_HOME}"/>
+    </target>
+
+    <target name="set.eclipse.home.default"
+        unless="eclipse.home">
+        <property name="eclipse.home" value="../../.."/>
+    </target>
+
+<!-- ==================================================================
+    Build sub-projects.
+======================================================================= -->
+
+    <target name="build.bin.plugin"
+        description="Build SmartFrog-bin-plugin. Uses 'rebuild' target of SmartFrog-bin-plugin/build.xml file."
+
+        unless="build.bin.plugin.done">
+
+        <property name="build.bin.plugin.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${bin.plugin.dir}"/>
+            <param name="target" value="rebuild"/>
+        </antcall>
+    </target>
+    
+    <target name="compile.bin.plugin"
+        description="Compile SmartFrog-bin-plugin. Uses 'compile' target of SmartFrog-bin-plugin/build.xml file."
+        depends="build.xmen"
+        unless="compile.bin.plugin.done">
+
+        <property name="compile.bin.plugin.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${bin.plugin.dir}"/>
+            <param name="target" value="compile"/>
+        </antcall>
+    </target>
+    
+    <target name="test"
+        description="Test SmartFrog-test-plugin. Uses target test.bin.plugin of this build.xml."
+        depends="test.bin.plugin"
+        unless="test.done">
+    </target>
+
+    <target name="test.bin.plugin"
+        description="Test SmartFrog-test-plugin. Uses 'test' target of SmartFrog-test-plugin/build.xml file."
+        depends="build.xmen, build.bin.plugin"
+        unless="test.bin.plugin.done">
+
+        <property name="test.bin.plugin.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${test.plugin.dir}"/>
+            <param name="target" value="test"/>
+        </antcall>
+    </target>
+    
+    <target name="build.test.plugin"
+    	description="Build SmartFrog-test-plugin. Uses 'rebuild' target of SmartFrog-test-plugin/build.xml file."
+        depends="build.bin.plugin"
+        unless="build.test.plugin.done">
+
+        <property name="build.test.plugin.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${test.plugin.dir}"/>
+            <param name="target" value="rebuild"/>
+        </antcall>
+    </target>
+
+    <target name="build.doc.plugin"
+    	description="Build SmartFrog-doc-plugin. Uses 'rebuild' target of SmartFrog-doc-plugin/build.xml file."
+        unless="build.doc.plugin.done">
+
+        <property name="build.doc.plugin.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${doc.plugin.dir}"/>
+            <param name="target" value="rebuild"/>
+        </antcall>
+    </target>
+
+    <target name="build.xmen"
+    	description="Build org.xmen. Uses 'test.and.rebuild' target of org.xmen/build.xml file."
+        unless="build.xmen.done">
+
+        <property name="build.xmen.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${xmen.dir}"/>
+            <param name="target" value="test.and.rebuild"/>
+        </antcall>
+    </target>
+    
+    <target name="build.feature.package"
+    	description="Build feature package. Uses 'rebuild' target of feature/build.xml file."
+        unless="build.feature.package.done"
+        depends="build.bin.plugin,build.doc.plugin">
+
+        <property name="build.feature.package.done" value="yes"/>
+
+        <antcall target="build.subproject">
+            <param name="subproject.basedir" value="${feature.package.dir}"/>
+            <param name="target" value="rebuild"/>
+        </antcall>
+    </target>
+
+<!-- ==================================================================
+    Build composite plugin distribution zip.
+======================================================================= -->
+    <target name="custom.build.dist.zip">
+      
+    </target>
+
+    <target name="build.plugin.dist.zip"
+        description="Create distribution zip of plugins and install doc"
+        depends="build.bin.plugin,build.doc.plugin">
+
+        <delete dir="${temp.zip.folder}"/>
+        <mkdir dir="${temp.zip.folder}"/>
+        <delete dir="${temp.tar.folder}"/>
+        <mkdir dir="${temp.tar.folder}"/>
+
+        <!-- Copy the binary, doc and xmen plugin zips -->
+        <copy todir="${temp.zip.folder}">
+            <fileset dir="${build.results.folder}">
+                <include name="${bin.plugin.zip.name}"/>
+                <include name="${doc.plugin.zip.name}"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${temp.tar.folder}">
+            <fileset dir="${build.results.folder}">
+                <include name="${bin.plugin.tar.name}"/>
+                <include name="${doc.plugin.tar.name}"/>
+            </fileset>
+        </copy>
+        
+
+        
+        <!-- Perform any custom setup work -->
+        <antcall target="custom.build.dist.zip">
+            <param name="target.dir" value="${temp.zip.folder}"/>
+        </antcall>
+        <antcall target="custom.build.dist.zip">
+            <param name="target.dir" value="${temp.tar.folder}"/>
+        </antcall>
+
+
+        <!-- Zip it up! -->
+        <zip zipfile="${build.results.folder}/${plugin.distribution.zip.name}"
+            basedir="${temp.zip.folder}" filesonly="true"/>
+
+        <tar tarfile="${build.results.folder}/${plugin.distribution.tar.name}"
+            basedir="${temp.tar.folder}"/>
+
+        <delete dir="${temp.zip.folder}"/>
+        <delete dir="${temp.tar.folder}"/>
+        <antcall target="refresh"/>
+    </target>
+
+<!-- ==================================================================
+    Do "production" build
+======================================================================= -->
+
+    <target name="build"
+        description="Create production build artifacts"
+        depends="clean,init,build.bin.plugin, build.doc.plugin, build.plugin.dist.zip"/>
+        
+    <target name="compile.and.test"
+        description="Compile and PDE Junit test subprojects"
+        depends="clean,init,test.bin.plugin"/>
+
+    <target name="compile"
+        description="Compile subprojects"
+        depends="clean,init,build.bin.plugin"/>
+
+<!-- ==================================================================
+    Publishing stuff.
+======================================================================= -->
+
+    <target name="verify.pub.dir"
+        unless="pub.dir">
+        <fail>
+    ****************************************************************
+    pub.dir Ant property not specified!
+    ****************************************************************
+        </fail>
+    </target>
+
+    <target name="pub.clean"
+    	description="Clean publish directory."
+        unless="pub.clean.done"
+        depends="verify.pub.dir">
+
+        <property name="pub.clean.done" value="true"/>
+
+        <delete includeEmptyDirs="true" quiet="true">
+            <fileset dir="${pub.dir}"/>
+        </delete>
+    </target>
+
+    <target name="pub.file"
+        depends="verify.pub.dir">
+
+        <copy file="${from.file}" tofile="${pub.dir}/${to.file}"/>
+    </target>
+    
+
+
+    <target name="custom.publish"
+		description="Copy install doc to publish directory.">
+   <!--     <copy todir="${pub.dir}">
+            <fileset dir="${installdocs.dir}">
+                <include name="${install.doc.name}"/>
+            </fileset>
+        </copy>
+       -->
+    </target>
+
+    <target name="publish"
+        depends="init,verify.pub.dir,pub.clean"
+        description="Publish build artifacts">
+
+        <copy todir="${pub.dir}">
+            <fileset dir="${build.results.folder}">
+                <include name="**"/>
+                <exclude name="*xmen*"/>
+            </fileset>
+        </copy>
+
+        <antcall target="custom.publish"/>
+    </target>
+
+</project>
