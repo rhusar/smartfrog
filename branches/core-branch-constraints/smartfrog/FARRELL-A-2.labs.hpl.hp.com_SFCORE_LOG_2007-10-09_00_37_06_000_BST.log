@@ -1,0 +1,35 @@
+2007/10/09 00:37:06:000 BST [WARN ][main] SFCORE_LOG - Log 'SFCORE_LOG' , values [class,level,codebase]: org.smartfrog.sfcore.logging.LogToFileImpl, 3, null
+using Class ComponentDescription:
+{null}
+, and using Component ComponentDescription:
+{null} ** org.smartfrog.sfcore.processcompound.SFProcess.<clinit>(SFProcess.java:64) ** 
+2007/10/09 00:37:06:000 BST [WARN ][main] SFCORE_LOG - Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile) ** org.smartfrog.sfcore.processcompound.SFProcess.<clinit>(SFProcess.java:64) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/logging/logimpl.sf'. Parser error while resolving phases [SmartFrogResolutionException:: function, cause: java.lang.NullPointerException]
+    cause: SmartFrogResolutionException:: function
+       cause: java.lang.NullPointerException>
+        
+2007/10/09 00:37:06:000 BST [WARN ][main] SFCORE_LOG - Log 'SFCORE_LOG' , values [class,level,codebase]: org.smartfrog.sfcore.logging.LogToFileImpl, 3, null
+using Class ComponentDescription:
+{null}
+, and using Component ComponentDescription:
+{null} ** org.smartfrog.SFSystem.sfLog(SFSystem.java:623) ** 
+2007/10/09 00:37:06:000 BST [WARN ][main] SFCORE_LOG - Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile) ** org.smartfrog.SFSystem.sfLog(SFSystem.java:623) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/sfcore/logging/logimpl.sf'. Parser error while resolving phases [SmartFrogResolutionException:: function, cause: java.lang.NullPointerException]
+    cause: SmartFrogResolutionException:: function
+       cause: java.lang.NullPointerException>
+        
+2007/10/09 00:37:06:031 BST [WARN ][main] SFCORE_LOG - Error during init of class org.smartfrog.Version ** org.smartfrog.sfcore.logging.LogImpl.warn(LogImpl.java:819) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: function, cause: java.lang.NullPointerException]
+    cause: SmartFrogResolutionException:: function
+       cause: java.lang.NullPointerException>
+        
+
+Parser - SmartFrog 3.4.17 (buildDate)
+2007/10/09 00:37:06:031 BST [WARN ][main] SFCORE_LOG - Error during init of class org.smartfrog.Version ** org.smartfrog.sfcore.logging.LogImpl.warn(LogImpl.java:819) **  <SmartFrogResolutionException:: Error during parsing of 'org/smartfrog/version.sf'. Parser error while resolving phases [SmartFrogResolutionException:: function, cause: java.lang.NullPointerException]
+    cause: SmartFrogResolutionException:: function
+       cause: java.lang.NullPointerException>
+        
+(C) Copyright 1998-2006 HP Development Company, LP
+ 
+ERROR 'test2.sf': 
+SmartFrogResolutionException:: function, cause: java.lang.NullPointerException
+
+Error detected. Check report.
+SFParse: FAILED
