@@ -1,0 +1,62 @@
+/** (C) Copyright Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "org/smartfrog/services/ant/types.sf"
+#include "org/smartfrog/services/ant/tasks.sf"
+Ant extends WorkflowPrim {
+
+
+    antSchema extends Schema {
+        //log level, one of "debug", "info", "error", "warn"
+        logLevel extends OptionalString;
+
+        //list of [name,value] pairs defining ant properties
+        properties extends OptionalVector;
+
+        //basedir is the name of a directory to use
+        basedir extends Optional;
+
+        //path to task declarations
+        tasksResource extends String;
+
+        //path to type declarations
+        typesResource extends String;
+
+        //this is just here to say leave the runtime alone.
+        //it is for lazy references to ant properties
+        runtime extends OptionalCD;
+    }
+
+   /**
+    * Mandatory attribute: the class for component description
+    */
+   sfClass "org.smartfrog.services.ant.AntImpl";
+
+   logLevel "info";
+   tasksResource "/org/apache/tools/ant/taskdefs/defaults.properties";
+   typesResource "/org/apache/tools/ant/types/defaults.properties";
+   asynch false;
+
+
+}
+

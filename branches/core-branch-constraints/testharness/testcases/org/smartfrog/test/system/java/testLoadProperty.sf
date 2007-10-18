@@ -1,0 +1,63 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+
+ResourceProperty extends Compound {
+
+    sfSyncTerminate true;
+
+    test1 extends LoadPropertyFile {
+      resource "/org/smartfrog/test/system/java/test1.properties";
+    }
+
+    assertProp1 extends Assert {
+      equalsString1 "prop1";
+      equalsString2 LAZY test1:prop1;
+    }
+
+    assertProp2 extends Assert {
+      equalsString1 "prop2";
+      equalsString2 LAZY test1:prop2;
+    }
+
+   assertProp3 extends Assert {
+      equalsString1 "prop3";
+      equalsString2 LAZY test1:prop.three;
+    }
+
+/*
+  does not work, because, well, because
+    assertProp4 extends Assert {
+      equalsString1 "prop4";
+      equalsString2 LAZY test1:ATTRIB "4";
+    }
+*/
+
+
+}
+
+
+sfConfig extends ResourceProperty {
+
+
+
+}

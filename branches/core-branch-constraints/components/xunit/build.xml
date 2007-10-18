@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<project name="xunit" default="default">
+
+  <!--
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    The xunit project is the base test runner for the other test frameworks. It does
+    not implement any specific test harness, but contains the logging/reporting components
+    and the interfaces that the test components must implement.
+
+    It is based on code that originated in the junit component, but which was moved here
+    to remove dependencies on junit3.8.x in the codebase, so that further components
+    could be built that use junit4 and TestNG.
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <!--java 1.5-->
+  <property name="javac.java.version" value="1.5" />
+
+  <!-- override point -->
+  <property file="build.properties"/>
+
+
+  <property name="root.dir" location="../.."/>
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+  <property name="default.ini" location="test/files/default.ini"/>
+  <property name="default.sf" location="test/files/default.sf"/>
+
+<!--
+ <target name="dist-tests" depends="package,package-tests"
+    description="create a distribution including SF tests">
+
+  </target>
+-->
+
+  
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="init,dist,init-codebase"
+    description="parse the deployment descriptor">
+    <property name="parse.quiet" value="true"/>
+    <sf-parse quiet="${parse.quiet}">
+      <classpath path="${target.jar}:${test.jar}"/>
+      <sysproperty key="org.smartfrog.codebase"
+        value="${codebase}"/>
+      <!-- source files -->
+      <source file="test/org/smartfrog/services/sfunit/test/system/example.sf" />
+    </sf-parse>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+  </target>
+
+
+
+
+</project>

@@ -1,0 +1,5 @@
+#Error Message:
+#Unable to locate IP address of the host:llocalhost
+#java.net.UnknownHostException: llocalhost
+ 
+$SFHOME/bin/sfStart llocalhost ex1 Some Url
