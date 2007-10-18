@@ -136,6 +136,7 @@ public class BootStrap {
                 }
 
                 ArgumentType argType = h.getArguments();
+		if (null != argType) {
                 ArgumentType.Argument[] args = argType.getArgumentArray();
 
                 String avalancheInstallationDirectory = null;
@@ -148,6 +149,7 @@ public class BootStrap {
                         avalancheInstallationDirectory = arg.getValue();
                     }
                 }
+		}
 
                 String os = h.getPlatformSelector().getOs();
 
