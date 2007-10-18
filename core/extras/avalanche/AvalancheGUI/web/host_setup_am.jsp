@@ -99,12 +99,29 @@ For more information: www.smartfrog.org
 	   d5.setAttribute('name', 'defaultAccessMode');
 	   col4.appendChild(d5);
 
+	   var col5 = document.createElement("td");
+    	   col5.setAttribute("class", "medium");
+
+    	   var a = document.createElement("input");
+           a.setAttribute("type", "button");
+           a.setAttribute("value", "Remove");
+           a.setAttribute("class", "default");
+           a.setAttribute("onclick", "deleteRow(this.parentNode.parentNode.rowIndex)");
+
+           col5.appendChild(a);
+
 	   newRow.appendChild(col1);
 	   newRow.appendChild(col2);  
 	   newRow.appendChild(col3);  
 	   newRow.appendChild(col4);  
+	   newRow.appendChild(col5); 
 	   table.getElementsByTagName("tbody")[0].appendChild(newRow);
  }
+
+function deleteRow(rowIdx){
+    var table = document.getElementById('accessModeTable');
+    table.deleteRow(rowIdx);
+}
 
 setNextSubtitle("Host Access Modes Page");
     -->
@@ -127,6 +144,7 @@ setNextSubtitle("Host Access Modes Page");
 	    <td class="medium">User Name</td>
 	    <td class="medium">Password</td>
 	    <td class="medium">Default</td>
+	    <td class="medium">Remove</td>
 	</tr>	
 </thead>
 <tbody>
@@ -162,11 +180,12 @@ setNextSubtitle("Host Access Modes Page");
 <%
 			// TODO : FIXME defaultModeName not set for new modes
 			if(mode.getIsDefault()){ %>
-				<p><input type="radio" value="<%=modeName%>" name="defaultAccessMode" checked="true" /></p>
+				<p><input type="radio" value="set" name="defaultAccessMode" checked="true" /></p>
 <% } else { %>
-				<input type="radio" value="<%=modeName%>" name="defaultAccessMode"/>
+				<input type="radio" value="unset" name="defaultAccessMode"/>
 <% } %>
 		</td>
+		<td class="medium" style="width:20px;"><input type="button" value="Remove" class="default" onclick="deleteRow(this.parentNode.parentNode.rowIndex)"></td>
 	</tr>
 
 <%

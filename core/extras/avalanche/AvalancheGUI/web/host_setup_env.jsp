@@ -82,9 +82,26 @@ function addRowInTable(table)
     d3.setAttribute('name', 'argument.value.' + idx);
     col2.appendChild(d3);
 
+    var col3 = document.createElement("td");
+    col3.setAttribute("class", "medium");
+
+    var a = document.createElement("input");
+    a.setAttribute("type", "button");
+    a.setAttribute("value", "Remove");
+    a.setAttribute("class", "default");
+    a.setAttribute("onclick", "deleteRow(this.parentNode.parentNode.rowIndex)");
+
+    col3.appendChild(a);
+
     newRow.appendChild(col1);
     newRow.appendChild(col2);  
+    newRow.appendChild(col3);  
     table.getElementsByTagName("tbody")[0].appendChild(newRow);
+}
+
+function deleteRow(rowIdx){
+    var table = document.getElementById('argumentTable');
+    table.deleteRow(rowIdx);
 }
 
 setNextSubtitle("Host Properties Page");
@@ -110,6 +127,7 @@ setNextSubtitle("Host Properties Page");
     <tr>
 	<td class="medium"> Property </td>
 	<td class="medium"> Value </td>
+	<td class="medium"> Remove </td>
     </tr>	
 </thead>
 
@@ -142,6 +160,7 @@ setNextSubtitle("Host Properties Page");
 	<input name="<%=("argument.value." + i)%>" type="text"
 		value="<%=value%>">
     </td>
+    <td class="medium" style="width:20px;"><input type="button" value="Remove" class="default" onclick="deleteRow(this.parentNode.parentNode.rowIndex)"></td>
 </tr>
 
 <%

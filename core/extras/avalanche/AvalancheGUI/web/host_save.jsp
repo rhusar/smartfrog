@@ -96,7 +96,7 @@ For more information: www.smartfrog.org
 
                         String defaultAccessMode =
                                 request.getParameter("defaultAccessMode");
-
+			
                         while (params.hasMoreElements()) {
                             String param = (String) params.nextElement();
                             String s = "mode.userName.";
@@ -113,6 +113,7 @@ For more information: www.smartfrog.org
                                 mode.setType(type);
                                 mode.setUser(userName);
                                 mode.setPassword(password);
+				 
                                 //if( defaultAccessMode != null &&
                                 //type.equals(defaultAccessMode) ){
                                 // FIXME: Bad patch, just set last one default first time,
@@ -130,8 +131,8 @@ For more information: www.smartfrog.org
                         // overwrite existing hosts
                         java.util.Enumeration params = request.getParameterNames();
 
-                        String defaultAccessMode =
-                                request.getParameter("defaultTransferMode");
+                      // String defaultAccessMode =
+                        //        request.getParameter("defaultTransferMode");
 
                         while (params.hasMoreElements()) {
                             String param = (String) params.nextElement();

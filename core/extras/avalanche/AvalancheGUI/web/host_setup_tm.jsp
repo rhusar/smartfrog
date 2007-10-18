@@ -99,11 +99,28 @@ function addRowInTable(table)
     d5.setAttribute('name', 'defaultAccessMode');
     col4.appendChild(d5);
 
+    var col5 = document.createElement("td");
+    col5.setAttribute("class", "medium");
+
+    var a = document.createElement("input");
+    a.setAttribute("type", "button");
+    a.setAttribute("value", "Remove");
+    a.setAttribute("class", "default");
+    a.setAttribute("onclick", "deleteRow(this.parentNode.parentNode.rowIndex)");
+
+    col5.appendChild(a);
+
     newRow.appendChild(col1);
     newRow.appendChild(col2);  
     newRow.appendChild(col3);  
-    newRow.appendChild(col4);  
+    newRow.appendChild(col4); 
+    newRow.appendChild(col5); 
     table.getElementsByTagName("tbody")[0].appendChild(newRow);
+}
+
+function deleteRow(rowIdx){
+    var table = document.getElementById('transferModeTable');
+    table.deleteRow(rowIdx);
 }
 
 setNextSubtitle("Host Transfer Modes Page");
@@ -126,6 +143,7 @@ setNextSubtitle("Host Transfer Modes Page");
 	<td class="medium"> User Name </td>
 	<td class="medium"> Password </td>
 	<td class="medium"> Default </td>
+	<td class="medium"> Remove </td>
     </tr>	
 <%
     HostType.TransferModes transferModes = host.getTransferModes();
@@ -171,6 +189,7 @@ setNextSubtitle("Host Transfer Modes Page");
 	    }
 %>
 	</td>
+	<td class="medium" style="width:20px;"><input type="button" value="Remove" class="default" onclick="deleteRow(this.parentNode.parentNode.rowIndex)"></td>
     </tr>
 
 <%
