@@ -1,9 +1,0 @@
-sfConfig extends {
-   [sfConsUser] attr1;
-   [sfConsUser] attr2;
-   attr3 extends {
-     [sfConsUser] attr1;
-     [sfConsUser] attr2;
-   }
-}#cons#sos\#
-
