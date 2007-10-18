@@ -1,8 +1,0 @@
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\1239887113.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\834287166.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\3453129690.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\2860732436.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\586024075.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\1067094681.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\21462043.index
-C:\constraints\smartfrog\.metadata\.plugins\org.eclipse.jdt.core\405941794.index
