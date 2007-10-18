@@ -1,0 +1,35 @@
+sfConfig extends {
+   x extends { 
+      el elements:x;
+      list theList;
+      [sfConstraint] -- "member(el, list)"; 
+   }
+   y extends { 
+      el elements:y;
+      list theList;
+      [sfConstraint] -- "member(el, list)"; 
+   }
+   z extends { 
+      el elements:z;
+      list theList;
+      [sfConstraint] -- "member(el, list)"; 
+   }
+
+   elements extends {
+      x VAR; 
+      y VAR; 
+      z VAR;
+      [sfConstraint] -- "alldifferent([x,y,z])";
+   }   
+
+   theList genList:theList; 
+
+   genList extends {
+      theList ["one", VAR, "three", VAR];
+      aList [VAR, "two", VAR, "four"];       
+
+      [sfConstraint] -- "theList = aList"; 
+   }
+}
+
+

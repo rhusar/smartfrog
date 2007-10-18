@@ -1,0 +1,70 @@
+
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/sfcore/workflow/components.sf"
+
+#include "org/smartfrog/examples/dynamicwebserver/gui/progresspanel/components.sf"
+
+//----------------------------------
+// Simulate the entire workflow, generating the correct events
+// then delaying termination to hold the display up for a while
+// This whole workflow is useful for demos..
+//----------------------------------
+
+myDelay extends DoNothing {
+  time 2000; //delay
+}
+
+SimulatedApacheInstallScript extends Sequence {
+    name "apache";
+
+        e1 extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":1:4: Step 1");
+        }
+
+        -- extends myDelay;
+
+        e2 extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":2:4: Step 2");
+        }
+
+        -- extends myDelay;
+
+        e3 extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":3:4: Step 3");
+        }
+
+        -- extends myDelay;
+
+        e4 extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":4:4: Step4. Final.");
+        }
+
+        -- extends myDelay;
+
+        e5 extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":5:4: Apache installed");
+        }
+
+        delayTermination extends DoNothing {
+            time 2000;
+        }
+}
+
+sfConfig extends Compound {
+    //Printer 
+    eventPrinter extends DisplayProgress {
+        terminationType "none";
+        nameDisplay "apache installation progress";
+        heightDisplay  200;
+        widthDisplay   520;
+    }
+    //Install process...
+    workflow extends SimulatedApacheInstallScript {
+            sendTo:printer LAZY eventPrinter;
+    }
+}

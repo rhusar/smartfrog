@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<project name="kernel-documentation" default="default" basedir=".">
+
+
+  <!--
+  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+
+  <description>
+    This build file runs forrest to create the documentation
+
+  </description>
+
+  <!-- =================================================================== -->
+  <!--  Generate Forrest Documentation									   -->
+  <!-- =================================================================== -->
+
+
+  <property environment="env"/>
+  <fail unless="env.FORREST_HOME">
+    FORREST_HOME is not defined.
+    To create the documentation, you need Forrest 1.5.x on your system, and
+    the environment variable FORREST_HOME set up to point to it.
+  </fail>
+  <property name="forrest.home" location="${env.FORREST_HOME}"/>
+  <property name="SFHOME" location="."/>
+  <property name="ExtrasHOME" location="${SFHOME}/../extras"/>
+  <property name="dist.doc.dir" location="${SFHOME}/dist/docs"/>
+
+  <import file="${env.FORREST_HOME}/main/forrest.build.xml"/>
+  <import file="${env.FORREST_HOME}/main/forrest.antproxy.xml"/>
+
+  <target name="init">
+    <echo level="verbose">Created forrest project template</echo>
+    <!--property name="comp.home"  location="${smartfrog.components.dir}"/-->
+    <property name="xdocs.skin.dir" location="${SFHOME}/src/documentation/content/xdocs"/>
+    <property name="xdocs.dir" location="${SFHOME}/src/documentation/content/xdocs/smartfrogdoc"/>
+    <property name="xdocs.examples.dir" location="${SFHOME}/src/documentation/content/xdocs/smartfrogdoc/examples"/>
+    <property name="skin.dir" location="forrest_skin"/>
+
+
+  </target>
+
+  <target name="copy-properties" depends="init">
+    <copy todir="${SFHOME}" overwrite="true"
+        file="${skin.dir}/forrest.properties"/>
+  </target>
+
+
+  <target name="seedforrest" depends="seed" description="Creates forrest project template">
+    <echo>Created forrest project template</echo>
+  </target>
+
+  <target name="prepare-docs" depends="seedforrest,copy-properties , init">
+    <mkdir dir="${xdocs.dir}"/>
+
+    <copy todir="${xdocs.dir}">
+      <fileset dir="${skin.dir}">
+        <include name="SFCore.xml"/>
+        <include name="service.xml"/>
+        <include name="extras.xml"/>
+        <include name="examples.xml"/>
+        <include name="jdocs_index.xml"/>
+        <include name="copyright.*"/>
+        <include name="lpgl.*"/>
+        <include name="anttasks.xml"/>
+        <include name="overview_html_39c627ce.gif"/>
+
+      </fileset>
+      <fileset dir="${SFHOME}/dist/docs">
+        <include name="**/*"/>
+      </fileset>
+
+
+    </copy>
+
+    <copy todir="${xdocs.skin.dir}" overwrite="true">
+      <fileset dir="${skin.dir}">
+        <include name="index.xml"/>
+        <include name="site.xml"/>
+        <include name="tabs.xml"/>
+      </fileset>
+    </copy>
+
+
+    <copy todir="${SFHOME}/src/documentation" overwrite="true"
+        file="${skin.dir}/skinconf.xml">
+    </copy>
+
+    <copy todir="${xdocs.skin.dir}/images">
+      <fileset dir="${skin.dir}">
+        <include name="sf.*"/>
+        <include name="frog.*"/>
+        <include name="sourceforge.*"/>
+      </fileset>
+    </copy>
+
+    <echo level="verbose">${SFHOME}</echo>
+
+    <copy todir="${xdocs.dir}">
+      <fileset dir="${ExtrasHOME}/sfDebugger/doc">
+        <include name="sfDebugger_readme.*"/>
+      </fileset>
+      <fileset dir="${ExtrasHOME}/eclipse/smartfrog-plugin/shared/docs">
+        <include name="Readme.*"/>
+        <include name="images/**"/>
+        <exclude name="**/SVN"/>
+      </fileset>
+      <fileset dir="${ExtrasHOME}/sfgui/docs">
+        <include name="SFGuiManual.*"/>
+      </fileset>
+    </copy>
+
+
+  </target>
+
+
+  <target name="generate-site" depends="prepare-docs">
+    <!--antcall target="site"/-->
+    <exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest.bat" os="Windows 2000, Windows_NT, Windows XP">
+      <arg value="site"/>
+      <arg value="-Dforrest.jvmargs\=true"/>
+      <arg value="-Djava.awt.headless\=true"/>
+
+    </exec>
+    <exec dir="${SFHOME}" executable="${env.FORREST_HOME}/bin/forrest" os="Linux">
+      <arg value="-Dforrest.jvmargs=-Djava.awt.headless=true"/>
+      <arg value="site"/>
+
+    </exec>
+  </target>
+
+
+  <target name="copy-forrest-docs" depends="generate-site">
+    <copy todir="${dist.doc.dir}">
+      <fileset dir="${SFHOME}/build/site">
+        <include name="**/*"/>
+        <exclude name="samples/*.*"/>
+        <exclude name="smartfrogdoc/jdocs/index.html"/>
+        <exclude name="smartfrogdoc/build.html"/>
+        <exclude name="test1.html"/>
+        <exclude name="test2.html"/>
+        <exclude name="hello.pdf"/>
+        <exclude name="linkmap.*"/>
+      </fileset>
+
+
+    </copy>
+    <copy todir="${SFHOME}/dist/docs/smartfrogdoc/">
+      <fileset dir="${SFHOME}/dist/docs">
+        <include name="jdocs/**"/>
+      </fileset>
+      <fileset dir="${SFHOME}/dist/docs">
+        <include name="build.html"/>
+      </fileset>
+      <fileset dir="${SFHOME}/forrest_skin">
+        <include name="overview_html_39c627ce.gif"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <target name="docs" depends="clean, copy-forrest-docs" description="Document Generation">
+  </target>
+
+  <target name="clean" description="Clean Generated Documents">
+    <delete dir="${SFHOME}/src/documentation"/>
+  </target>
+
+  <target name="default" depends="docs" description="Document Generation">
+  </target>
+
+</project>
