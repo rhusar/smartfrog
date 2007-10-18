@@ -29,7 +29,6 @@ For more information: www.smartfrog.org
   	SettingsManager settingsMgr = factory.getSettingsManager();
   	SettingsType defSettings = settingsMgr.getDefaultSettings();
   	SfConfigsType configs = settingsMgr.getSFConfigs();  
-  System.out.println(configs.toString());	
   	if( null == manager ){
   		errMsg = "Error connecting to manager database" ;
   		throw new Exception ( "Error connecting to manager database" );
