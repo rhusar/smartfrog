@@ -133,7 +133,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * our security policy
      */
-    protected SecurityPolicy securityPolicy;
+    protected SecurityPolicy securityPolicy=new SecurityPolicy();
 
 
     /**
@@ -598,7 +598,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             securityHolder.applySecuritySettings(this);
         } else {
             //use the default or simpler settings
-            securityPolicy.applySecurityPolicy(this,smartfrog);
+           // securityPolicy.applySecurityPolicy(this,smartfrog);
         }
 
         //last minute logging
