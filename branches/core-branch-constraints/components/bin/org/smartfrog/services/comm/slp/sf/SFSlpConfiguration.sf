@@ -1,0 +1,48 @@
+/*
+ Service Location Protocol - SmartFrog components.
+ Copyright (C) 2004 Glenn Hisdal <ghisdal(a)c2i.net>
+ 
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+ This library was originally developed by Glenn Hisdal at the 
+ European Organisation for Nuclear Research (CERN) in Spring 2004. 
+ The work was part of his master thesis project at the Norwegian 
+ University of Science and Technology (NTNU).
+ 
+ For more information: http://home.c2i.net/ghisdal/slp.html 
+ */
+ 
+SFSlpConfiguration extends {
+    slp_config_mc_max 15000; // 15 seconds maximum wait for multicast req.
+    slp_config_rnd_wait 1000; // 1 second
+    slp_config_retry 2000; // 2 seconds
+    slp_config_retry_max 15000; // 15 seconds. maximum wait for unicast req.
+    slp_config_da_beat 10800000; // 3 hours
+    slp_config_da_find 900000; // 900 seconds
+    slp_config_daAddresses ""; // comma-separated list of ip-addresses/hostnames of DAs
+    slp_config_scope_list "default"; // comma-separated list of scope names.
+    slp_config_mtu 1400; // mtu for slp messages
+    slp_config_port 1427; // default slp port (used for requests)
+    slp_config_locale "en"; // locale to use for the agent
+    slp_config_mc_addr "239.255.255.253"; // multicast address to use for slp.
+    slp_config_interface ""; // IP-address of the network interface to use with SLP.
+    slp_config_debug "false"; // turn debug output on/off
+    slp_config_log_errors "false"; // turn on/off logging of errors
+    slp_config_log_msg "false"; // turn on/off logging of sent/received messages
+    slp_config_logfile "SLP_LOG"; // name of log file (or SmartFrog log)
+	  slp_config_sflog "true"; // Enable SmartFrog logging.
+	
+}
+

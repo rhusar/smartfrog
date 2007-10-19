@@ -1,0 +1,114 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/www/webapplication.sf"
+
+/**
+ * this defines the core of jetty
+ */
+
+
+/*
+ * The jetty components consist of
+ * Listeners for incoming requests
+*/
+
+
+/**
+ * schema for the base jetty server extends
+ * base webserver schema
+ */
+CoreJettySchema extends Schema {
+    jettyhome extends String;
+    enableLogging extends Boolean;
+    serverHost extends String;
+    //log pattern
+    logPattern extends String;
+    //could be a file or a directory
+    //relative paths are resolved relative to jetty home
+    logDir extends Optional;
+}
+
+/**
+ * this is jetty with no running listeners or contexts.
+ * It is implemented as a compound; you can add anything underneath it and they
+ * will be deployed.
+ */
+CoreJettyServer extends ApplicationServer {
+   sfClass "org.smartfrog.services.jetty.SFJetty";
+   coreJettySchema extends CoreJettySchema;
+   serverHost "localhost";
+   port 8080;
+
+   //deployment information
+   supportsEAR false;
+   supportsWAR true;
+   supportsServletContext true;
+
+
+   //logging is optional. Once turned on, the pattern and logdir are mandatory
+   enableLogging false;
+   logPattern "yyyy_mm_dd.request.log";
+   logDir "log";
+}
+
+
+/**
+ * this is the admin channel for jetty
+ */
+JettyAdminSchema extends Schema {
+    listenerPort extends Integer;
+    httpserverHost extends String;
+    contextPath extends String;
+}
+
+HttpServerAdmin extends Prim {
+    sfClass "org.smartfrog.services.jetty.SFJettyAdmin";
+    listenerPort 8081;         // the port on which the http server listens
+    httpserverHost "localhost";
+    contextPath "/";
+}
+
+
+
+/**
+ * jetty handlers handle requests within a servlet.
+ * as such, a context attribute is mandatory
+ */
+JettyHandler extends ServletContextComponent {
+}
+
+
+/**
+ * listeners listen on ports
+ */
+JettyListenerSchema extends Schema {
+    listenerPort extends Integer;
+    serverHost extends OptionalString;
+    serverName extends OptionalString;
+}
+
+JettyListener extends ApplicationServerContext {
+    sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+    jettyListenerSchema extends JettyListenerSchema;
+}
+
+
+

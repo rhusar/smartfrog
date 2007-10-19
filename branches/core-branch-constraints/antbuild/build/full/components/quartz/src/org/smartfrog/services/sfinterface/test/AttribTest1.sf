@@ -1,0 +1,44 @@
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+
+package "org.mypackage";
+
+WSCoreInstallation extends Sequence {
+	tarFilename "ws-core-4.0.0-src.tar.gz";
+	outputDirectory "";
+
+	globusLoc "";
+	buildFilepath "ws-core-4.0.0/build.xml";
+	tomcatLoc "jakarta-tomcat-5.0.28";
+
+		step1 extends {
+			tarFile ATTRIB tarFilename;
+			outputDir ATTRIB outputDirectory;
+		}
+
+		step2 extends {
+			globusLocation ATTRIB globusLoc;
+			buildFile ATTRIB buildFilepath;
+		}
+
+		step3 extends {
+			globusLocation ATTRIB globusLoc;
+			tomcatDir ATTRIB tomcatLoc;
+			target "deployTomcat";
+		}
+}
+
+sfConfig extends Sequence{
+        mypakage package;
+	    srcFile "";
+
+		download extends {
+			 localFile ATTRIB srcFile ;
+		}
+
+		gt4setup extends WSCoreInstallation{
+			tarFilename ATTRIB srcFile ;
+
+		}
+}
+

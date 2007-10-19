@@ -1,0 +1,79 @@
+
+/* This should be added by the testharness and it is common to all tests. */
+sfConfig extends sfConfig1 {
+
+  // host0 is the "root" known by the scheduler to stop sfConfig...
+  host0 "ebnt171.india.hp.com";
+  // all the virtual nodes used by the examples ...
+  host1 "lx97120.india.hp.com";
+  host2 "lx97120.india.hp.com";
+  host3 "lx97120.india.hp.com";
+  host4 "lx97120.india.hp.com";
+  host5 "lx97120.india.hp.com";
+  host6 "lx97120.india.hp.com";
+  host7 "lx97120.india.hp.com";
+  host8 "lx97120.india.hp.com";
+  host9 "lx97120.india.hp.com";
+  host10 "lx97120.india.hp.com";
+  host11 "lx97120.india.hp.com";
+  host12 "lx97120.india.hp.com";
+  host13 "lx97120.india.hp.com";
+  host14 "lx97120.india.hp.com";
+  host15 "lx97120.india.hp.com";
+  host16 "lx97120.india.hp.com";
+  host17 "lx97120.india.hp.com";
+  host18 "lx97120.india.hp.com";
+  host19 "lx97120.india.hp.com";
+  host20 "lx97120.india.hp.com";
+  host21 "lx97120.india.hp.com";
+  host22 "lx97120.india.hp.com";
+  host23 "lx97120.india.hp.com";
+  host24 "lx97120.india.hp.com";
+  host25 "lx97120.india.hp.com";
+  host26 "lx97120.india.hp.com";
+  host27 "lx97120.india.hp.com";
+  host28 "lx97120.india.hp.com";
+  host29 "lx97120.india.hp.com";
+  host30 "lx97120.india.hp.com";
+  host31 "ebnt171.india.hp.com";
+  host32 "ebnt171.india.hp.com";
+  host33 "ebnt171.india.hp.com";
+  host34 "ebnt171.india.hp.com";
+  host35 "ebnt171.india.hp.com";
+  host36 "ebnt171.india.hp.com";
+  host37 "ebnt171.india.hp.com";
+  host38 "ebnt171.india.hp.com";
+  host39 "ebnt171.india.hp.com";
+  host40 "ebnt171.india.hp.com";
+  host41 "ebnt171.india.hp.com";
+  host42 "ebnt171.india.hp.com";
+  host43 "ebnt171.india.hp.com";
+  host44 "ebnt171.india.hp.com";
+  host45 "ebnt171.india.hp.com";
+  host46 "ebnt171.india.hp.com";
+  host47 "ebnt171.india.hp.com";
+  host48 "ebnt171.india.hp.com";
+  host49 "ebnt171.india.hp.com";
+  host50 "ebnt171.india.hp.com";
+  host51 "ebnt171.india.hp.com";
+  host52 "ebnt171.india.hp.com";
+  host53 "ebnt171.india.hp.com";
+  host54 "ebnt171.india.hp.com";
+  host55 "ebnt171.india.hp.com";
+  host56 "ebnt171.india.hp.com";
+  host57 "ebnt171.india.hp.com";
+  host58 "ebnt171.india.hp.com";
+  host59 "ebnt171.india.hp.com";
+  host60 "ebnt171.india.hp.com";
+  host61 "ebnt171.india.hp.com";
+  host62 "ebnt171.india.hp.com";
+  host63 "ebnt171.india.hp.com";
+        
+  /* Testharness daemons use the normal port(3800). This example should ALWAYS 
+     use this port instead... */
+  port 3801;
+  // deploy the sfConfig in the "root"
+  sfProcessHost ATTRIB host0;
+  numMatches 5;
+  intervalGen 10;
+}

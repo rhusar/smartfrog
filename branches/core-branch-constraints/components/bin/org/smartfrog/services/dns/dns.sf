@@ -1,0 +1,88 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/services/dns/dnsData.sf"
+#include "org/smartfrog/services/dns/dnsView.sf"
+#include "org/smartfrog/services/dns/dnsZone.sf"
+#include "org/smartfrog/services/dns/dnsBinding.sf"
+#include "org/smartfrog/services/dns/dnsSubnet.sf"
+#include "org/smartfrog/services/dns/dnsService.sf"
+#include "org/smartfrog/services/dns/dnsNamed.sf"
+#include "org/smartfrog/services/dns/dnsDefault.sf"
+
+
+/*
+ * description of template for the DNS manager component
+ */
+DNSManager extends Compound  {
+   // START "NEED to FILL IN"  ATTRIBUTES
+
+    /** An IP address to access the DNS server default view.*/
+    ipAddress PARENT:ATTRIB ipAddress;
+
+    /* A vector of strings of ip addressess linked to network
+       interfaces associated to this view. */
+    interfacesAddress PARENT:ATTRIB interfacesAddress;
+
+    /* An absolute  zone name for direct look-ups that we master.*/
+    zone PARENT:ATTRIB zone;
+
+    /* An absolute zone name for reverse look-ups that we master. */
+    reverseZone PARENT:ATTRIB reverseZone;
+
+    // END "NEED to FILL IN" ATTRIBUTES
+
+    sfClass "org.smartfrog.services.dns.DNSManagerImpl";
+
+    /* Register with process compound with a standard name. */
+    sfProcessComponentName "dnsManager";
+
+    /* A reference to a DNS server. */
+    named extends DNSBindLinkedNamed;
+
+
+   /* The host name that will appear in the NS records as 
+       master of the zones. If it is given an IP address it does
+       a reverse look-up. If that look-up fails it keeps the IP
+       address  string */
+    nameServerHostName "localhost"; // replace by real host name...
+
+     /* A directory where all the  (live) config info should be. */
+    configDir "/usr/tmp/named";
+
+    /* The name of the default view. */
+    viewName "view1";
+   
+    /* Other DNS servers we forward queries that we cannot 
+       resolve locally. If this is set we will also set the
+       "forward only" mode, so we don't try to contact root DNS
+       servers.*/
+    forwarders []; // Don't forward or contact root DNS servers
+
+ 
+    data extends LAZY  DefaultConfig {
+        /* It picks from above ipAddress, configDir, forwarders, 
+           interfacesAddress,
+           nameServerHostName, zone and reverseZone*/ 
+
+    }
+
+}
+

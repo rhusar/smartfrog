@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="org.smartfrog.tools.doc" default="build" basedir=".">
+
+<!-- ==================================================================
+    Load common properties, shared among sub-projects.
+======================================================================= -->
+
+    <property file="../build/build.properties"/>
+
+<!-- ==================================================================
+    Plugin-specific targets and properties
+======================================================================= -->
+
+    <property name="doc.plugin" value="${doc.plugin.name}"/>
+
+    <property name="doc.version" value="${doc.plugin.version}"/>
+
+    <property environment="env"/>
+
+    <!-- Project directories -->
+    <property name="build.dir" value="build"/>
+
+    <property name="temp.folder.name" value="temp.folder"/>
+    <property name="temp.folder" value="${build.dir}/${temp.folder.name}"/>
+    <property name="work.folder.name" value="work.folder"/>
+    <property name="work.folder" value="${build.dir}/${work.folder.name}"/>
+    <property name="build.result.name" value="artifacts"/>
+    <property name="build.result.folder" value="${build.dir}/${build.result.name}"/>
+
+    <!-- Doc plugin properties -->
+    <property name="doc.full.name" value="${doc.plugin.external.name}"/>
+    <property name="doc.plugin.zip" value="${doc.plugin.zip.name}"/>
+    <property name="doc.plugin.zip.root.name" value="${doc.full.name}"/>
+    <property name="doc.plugin.tar" value="${doc.plugin.tar.name}"/>
+    <property name="doc.plugin.tar.root.name" value="${doc.full.name}"/>
+    <property name="doc.plugin.guts.dir" value="doc"/>
+
+    <!-- Miscellaneous properties -->
+    <property name="buildid.template.file" value="${buildid.template}"/>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++ -->
+
+    <target name="custom.gather.doc.resources">
+        <!-- Called from gather.doc.resources -->
+
+    </target>
+
+<!-- ==================================================================
+    Task initialization, environment setup, environment verification.
+======================================================================= -->
+
+    <target name="init"
+        unless="init.done">
+
+        <property name="init.done" value="yes"/>
+
+        <tstamp>
+            <format property="NOW.FORMATTED" pattern="EEEE, MMM d, yyyy, HH:mm:ss"/>
+            <format property="BUILDID" pattern="yyyyMMddHHmmss"/>
+        </tstamp>
+
+        <echo message="Starting Doc Plugin ${NOW.FORMATTED}."/>
+        <echo message="Ant command line: ${env.ANT_CMD_LINE_ARGS}"/>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.result.folder}"/>
+
+    </target>
+
+<!-- ==================================================================
+    Utilities
+======================================================================= -->
+
+    <target name="copy.buildid.file">
+        <copy todir="${plugin.dest}"
+            file="${buildid.template.file}">
+            <filterset>
+                <filter token="PLUGINNAME" value="${plugin.name}"/>
+                <filter token="BUILDID" value="${BUILDID}"/>
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="refresh" if="eclipse.running">
+        <eclipse.refreshLocal resource="." depth="infinite"/>
+    </target>
+
+<!-- ==================================================================
+    Cleanup
+======================================================================= -->
+
+    <target name="clean"
+        description="--> delete build area">
+
+        <delete dir="${build.dir}" quiet="yes"/>
+        <antcall target="refresh"/>
+    </target>
+
+    <target name="real.clean"
+        depends="clean"/>
+
+<!-- ==================================================================
+    Doc plugin installation zip.
+======================================================================= -->
+
+    <target name="zip.doc.plugin.guts"
+        unless="doc.plugin.open.filesystem">
+
+      <!--  <zip zipfile="${plugin.dest}/doc.zip">
+            <zipfileset dir="${plugin.dest}/${doc.plugin.guts.dir}"
+                prefix="${doc.plugin.guts.dir}" />
+        </zip>
+
+        <delete dir="${plugin.dest}/${doc.plugin.guts.dir}" quiet="yes" />
+	-->
+    </target>
+
+    <target name="gather.doc.resources" depends="init">
+        <mkdir dir="${temp.folder}/${doc.plugin.zip.root.name}"/>
+        <mkdir dir="${temp.folder}/${doc.plugin.tar.root.name}"/>
+
+        <copy todir="${temp.folder}/${doc.plugin.zip.root.name}">
+            <fileset dir="${basedir}">
+                <exclude name=".*"/>
+                <exclude name="${build.dir}/**"/>
+            </fileset>
+            <fileset dir="${license.files.dir}"/>
+    </copy>
+
+    <copy todir="${temp.folder}/${doc.plugin.tar.root.name}">
+            <fileset dir="${basedir}">
+                <exclude name=".*"/>
+                <exclude name="${build.dir}/**"/>
+            </fileset>
+            <fileset dir="${license.files.dir}"/>
+        </copy>
+
+        <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.zip.root.name}"/>
+            <param name="plugin.name" value="${doc.full.name}"/>
+    </antcall>
+
+    <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.tar.root.name}"/>
+            <param name="plugin.name" value="${doc.full.name}"/>
+        </antcall>
+
+        <antcall target="zip.doc.plugin.guts">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.zip.root.name}"/>
+    </antcall>
+
+     <antcall target="zip.doc.plugin.guts">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.tar.root.name}"/>
+        </antcall>
+    </target>
+
+    <target name="build.doc.plugin.zip"
+        description="--> create doc plugin installation zip files"
+        depends="gather.doc.resources">
+
+        <zip zipfile="${build.result.folder}/${doc.plugin.zip}"
+		basedir="${temp.folder}" filesonly="true"/>
+
+	<tar tarfile="${build.result.folder}/${doc.plugin.tar}"
+            basedir="${temp.folder}"/>
+
+        <delete dir="${temp.folder}"/>
+        <antcall target="refresh"/>
+    </target>
+
+<!-- ==================================================================
+    Do "production" build
+======================================================================= -->
+
+    <target name="copy.build.artifacts"
+        if="artifacts.dir">
+
+        <copy todir="${artifacts.dir}">
+            <fileset dir="${build.result.folder}"/>
+        </copy>
+
+    </target>
+
+    <target name="build"
+        description="--> create production build artifacts"
+        depends="build.doc.plugin.zip">
+
+        <antcall target="copy.build.artifacts"/>
+    </target>
+
+    <target name="rebuild"
+        description="--> clean, then create build artifacts"
+        depends="real.clean,build"/>
+
+</project>

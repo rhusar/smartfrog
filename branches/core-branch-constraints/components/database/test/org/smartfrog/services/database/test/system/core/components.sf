@@ -1,0 +1,62 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+/*
+ components to set up database testing
+ */
+
+#include "/org/smartfrog/services/database/core/components.sf"
+#include "/org/smartfrog/services/database/core/operations.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/delay.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
+
+
+ BlockForJdbcConnection extends FailingWaitFor {
+  database TBD;
+  condition extends IsJdbcConnectionOpen {
+    database LAZY PARENT:database;
+  }
+   interval 200;
+   timeout 2000;
+  }
+
+
+
+ /**
+  * Create an events table with various attributes
+  * this is an implicit test of multi-line SQL.
+  */
+ CreateEventsTable extends Transaction {
+    sqlCommands [
+    ##CREATE TABLE events (
+      EVENT_ID varchar(64) not null,
+      EVENT_NAME varchar(255) not null,
+      EVENT_DATE timestamp not null,
+      EVENT_VERSION integer,
+      EVENT_LASTMODIFIED timestamp,
+      EVENT_TEXT varchar(8192),
+      primary key (EVENT_ID));
+      #
+    ];
+  }
+

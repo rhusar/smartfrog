@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
+  xmlns:api="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  > 
+
+  <!--
+  xmlns:jsdl="http://www.gridforum.org/JSDL"
+  xmlns:wsbf=
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+  -->
+  <!-- ============================================================= -->
+  <wsdl:documentation>
+
+    This is the WSDL Describing the service API for the public deployment
+    services of a CDDLM Basic Services runtime. 
+    
+    It binds the XSD types described in the deployment API types document
+    to a service endpoint.
+    
+    2004-07-30
+    This is an initial draft for the first demonstration-grade prototypes. 
+    It may change completely in future. 
+
+
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+
+  </wsdl:documentation>
+     
+  <!-- ============================================================= -->
+  <!-- BEGIN IMPORTS -->
+  <!-- ============================================================= -->
+  <!--
+
+<import
+  namespace="urn:cddlm/xml/0.1"
+  schemaLocation="cddlm.xsd"/>
+  -->
+
+  <!-- import the types -->
+  <wsdl:import
+    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11"
+    location="deployAPIschema.xsd"/>
+
+  <!--
+    <import
+      namespace="http://www.gridforum.org/JSDL"
+      schemaLocation="jsdl.xsd"/>
+
+    -->
+
+  <!-- ============================================================= -->
+  <!-- END IMPORTS -->
+  <!-- ============================================================= -->
+    
+  <!-- ============================================================= -->
+  <!-- begin WSDL types -->
+  <!-- ============================================================= -->
+  <wsdl:types>
+
+
+    <!-- ============================================================= -->
+    <!-- end WSDL types -->
+    <!-- ============================================================= -->
+
+  </wsdl:types>
+
+  <!-- ============================================================= -->
+  <!-- begin WSDL message types-->
+  <!-- ============================================================= -->
+
+  <wsdl:message name="createRequest">
+    <wsdl:part element="types:createRequest" name="createRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="createResponse">
+    <wsdl:part element="types:createResponse" name="createResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="runRequest">
+    <wsdl:part element="types:runRequest" name="runRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="runResponse">
+    <wsdl:part element="types:runResponse" name="runResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="terminateRequest">
+    <wsdl:part element="types:terminateRequest" name="terminateRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="terminateResponse">
+    <wsdl:part element="types:terminateResponse" name="terminateResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="serverStatusRequest">
+    <wsdl:part element="types:serverStatusRequest" name="serverStatusRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="serverStatusResponse">
+    <wsdl:part element="types:serverStatusResponse" name="serverStatusResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="applicationStatusRequest">
+    <wsdl:part element="types:applicationStatusRequest" name="applicationStatusRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="applicationStatusResponse">
+    <wsdl:part element="types:applicationStatusResponse" name="applicationStatusResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="lookupApplicationRequest">
+    <wsdl:part element="types:lookupApplicationRequest" name="lookupApplicationRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="lookupApplicationResponse">
+    <wsdl:part element="types:lookupApplicationResponse" name="lookupApplicationResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="listApplicationsRequest">
+    <wsdl:part element="types:listApplicationsRequest" name="listApplicationsRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="listApplicationsResponse">
+    <wsdl:part element="types:listApplicationsResponse" name="listApplicationsResponse"/>
+  </wsdl:message>
+
+  <wsdl:message name="setNotificationRequest">
+    <wsdl:part element="types:setNotificationRequest" name="setNotificationRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="setNotificationResponse">
+    <wsdl:part element="types:setNotificationResponse" name="setNotificationResponse"/>
+  </wsdl:message>
+
+  <!-- ============================================================= -->
+  <!-- begin WSDL operations -->
+  <!-- ============================================================= -->
+
+  <wsdl:portType name="DeploymentEndpoint">
+
+    <!-- deploy -->
+    <wsdl:operation name="create">
+      <wsdl:input message="api:createRequest" name="createRequest"/>
+      <wsdl:output message="api:createResponse" name="createResponse"/>
+    </wsdl:operation>
+
+    <!-- start an application -->
+    <wsdl:operation name="run">
+      <wsdl:input message="api:runRequest" name="runRequest"/>
+      <wsdl:output message="api:runResponse" name="runResponse"/>
+    </wsdl:operation>
+
+    <!-- terminate -->
+    <wsdl:operation name="terminate">
+      <wsdl:input message="api:terminateRequest" name="terminateRequest"/>
+      <wsdl:output message="api:terminateResponse" name="terminateResponse"/>
+    </wsdl:operation>
+
+    <!--  server status -->
+    <wsdl:operation name="serverStatus">
+      <wsdl:input message="api:serverStatusRequest" name="serverStatusRequest"/>
+      <wsdl:output message="api:serverStatusResponse" name="serverStatusResponse"/>
+    </wsdl:operation>
+
+    <!--  application status -->
+    <wsdl:operation name="applicationStatus">
+      <wsdl:input message="api:applicationStatusRequest" name="applicationStatusRequest"/>
+      <wsdl:output message="api:applicationStatusResponse" name="applicationStatusResponse"/>
+    </wsdl:operation>
+
+
+
+    <!--  lookup application -->
+    <wsdl:operation name="lookupApplication">
+      <wsdl:input message="api:lookupApplicationRequest" name="lookupApplicationRequest"/>
+      <wsdl:output message="api:lookupApplicationResponse" name="lookupApplicationResponse"/>
+    </wsdl:operation>
+
+    <!--  list applications -->
+    <wsdl:operation name="listApplications">
+      <wsdl:input message="api:listApplicationsRequest" name="listApplicationsRequest"/>
+      <wsdl:output message="api:listApplicationsResponse" name="listApplicationsResponse"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="setNotification">
+      <wsdl:input message="api:setNotificationRequest" name="setNotificationRequest"/>
+      <wsdl:output message="api:setNotificationResponse" name="setNotificationResponse"/>
+    </wsdl:operation>
+
+  </wsdl:portType>
+ 
+ 
+  <!-- ============================================================= -->
+  <!-- Bind WSDL to doc/lit SOAP1.2 -->
+  <!-- ============================================================= -->
+
+  <wsdl:binding name="cddlmSoapBinding" type="api:DeploymentEndpoint">
+    <wsdlsoap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <!-- deploy -->
+    <wsdl:operation name="create">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="createRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="run">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="runRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="runResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="terminate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="terminateRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="terminateResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="serverStatus">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="serverStatusRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="serverStatusResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+
+    <wsdl:operation name="applicationStatus">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="applicationStatusRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="applicationStatusResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+
+    <wsdl:operation name="lookupApplication">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="lookupApplicationRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="lookupApplicationResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="listApplications">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="listApplicationsRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listApplicationsResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="setNotification">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="setNotificationRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="setNotificationResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+ 
+  <!-- ============================================================= -->
+  <!-- begin WSDL service declaration -->
+  <!-- this is just a sample declaration; the real location of the service -->
+  <!-- has to be determined through other means -->
+  <!-- it is for testing only -->
+  <!-- ============================================================= -->
+
+
+  <wsdl:service name="CDDLMDeploymentService">
+    <wsdl:documentation>
+      This is a sample CDDLM deployment service, and is only for testing
+    </wsdl:documentation>
+    <wsdl:port binding="api:cddlmSoapBinding" name="cddlm">
+      <wsdlsoap:address location="http://127.0.0.1:5050/axis/services/cddlm"/>
+    </wsdl:port>
+  </wsdl:service>
+
+ 
+  <!-- ============================================================= -->
+  <!-- end WSDL definitions-->
+  <!-- ============================================================= -->
+
+</wsdl:definitions>

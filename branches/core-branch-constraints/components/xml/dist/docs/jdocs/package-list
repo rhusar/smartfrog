@@ -1,0 +1,7 @@
+org
+org.smartfrog.services.xml.impl
+org.smartfrog.services.xml.impl.codecs
+org.smartfrog.services.xml.interfaces
+org.smartfrog.services.xml.java5
+org.smartfrog.services.xml.java5.iterators
+org.smartfrog.services.xml.utils

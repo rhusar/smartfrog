@@ -1,0 +1,27 @@
+<!-- This POM file is authored by the SmartFrog project. 
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+   Created 2007-09-27 01:46 by anfarr
+  -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-dns</artifactId>
+  <packaging>jar</packaging>
+  <version>3.12.001dev</version>
+  <description>DNS component</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sfServices</artifactId>
+      <version>3.12.001dev</version>
+    </dependency>
+    <dependency>
+      <groupId>dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+  </dependencies>
+</project>
