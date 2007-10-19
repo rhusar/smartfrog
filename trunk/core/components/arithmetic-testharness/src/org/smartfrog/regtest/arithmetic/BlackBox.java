@@ -39,7 +39,7 @@ import org.smartfrog.sfcore.compound.*;
 import org.smartfrog.sfcore.parser.*;
 
 public class BlackBox extends NetElemImpl implements Remote {
-  public BlackBox() throws java.rmi.RemoteException {
+  public BlackBox() throws RemoteException {
   }
 
   protected int evaluate(String from, int value) {

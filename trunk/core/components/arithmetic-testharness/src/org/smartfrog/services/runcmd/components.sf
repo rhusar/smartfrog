@@ -30,7 +30,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 #include "/org/smartfrog/components.sf"
-#include "org/smartfrog/services/os/runshell/components.sf"
+#include "/org/smartfrog/services/os/runshell/components.sf"
 
 RunCommand extends RunShellScripts {
   sfClass "org.smartfrog.services.runcmd.RunCommandImpl";
