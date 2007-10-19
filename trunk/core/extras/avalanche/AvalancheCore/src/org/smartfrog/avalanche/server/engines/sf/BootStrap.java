@@ -136,20 +136,20 @@ public class BootStrap {
                 }
 
                 ArgumentType argType = h.getArguments();
-		if (null != argType) {
-                ArgumentType.Argument[] args = argType.getArgumentArray();
-
                 String avalancheInstallationDirectory = null;
                 String javaHomeDirectory = null;
-                for (ArgumentType.Argument arg : args) {
-                    if (arg.getName().equals("JAVA_HOME")) {
-                        javaHomeDirectory = arg.getValue();
-                    }
-                    if (arg.getName().equals("AVALANCHE_HOME")) {
-                        avalancheInstallationDirectory = arg.getValue();
+                if (null != argType) {
+                    ArgumentType.Argument[] args = argType.getArgumentArray();
+
+                    for (ArgumentType.Argument arg : args) {
+                        if (arg.getName().equals("JAVA_HOME")) {
+                            javaHomeDirectory = arg.getValue();
+                        }
+                        if (arg.getName().equals("AVALANCHE_HOME")) {
+                            avalancheInstallationDirectory = arg.getValue();
+                        }
                     }
                 }
-		}
 
                 String os = h.getPlatformSelector().getOs();
 
