@@ -60,9 +60,8 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException  error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -73,8 +72,7 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws SmartFrogException
-     *                                  failure while starting
+     * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,

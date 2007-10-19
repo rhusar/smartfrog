@@ -430,7 +430,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * inject test context into a test
      *
      * @param test    test to run
-     * @param context to inject if teh test is injectable
+     * @param context to inject if the test is injectable
      */
     private void injectTestContext(Test test, HashMap<String, Object> context) {
         if (test instanceof TestContextInjector) {

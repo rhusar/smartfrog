@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.services.xunit.log.TestListenerLog;
@@ -95,7 +96,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     /**
      * thread to run the tests
      */
-    private Thread worker = null;
+    private SmartFrogThread worker = null;
 
     /**
      * keeper of statistics
@@ -120,11 +121,11 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         helper = new ComponentHelper(this);
     }
 
-    private synchronized Thread getWorker() {
+    private synchronized SmartFrogThread getWorker() {
         return worker;
     }
 
-    private synchronized void setWorker(Thread worker) {
+    private synchronized void setWorker(SmartFrogThread worker) {
         this.worker = worker;
     }
 
@@ -255,7 +256,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         if (getWorker() != null) {
             throw new SmartFrogException(ERROR_TESTS_IN_PROGRESS);
         }
-        Thread thread = new Thread(this);
+        SmartFrogThread thread = new SmartFrogThread(this);
         thread.setName("tester");
         thread.setPriority(threadPriority);
         log.info("Starting new tester at priority " + threadPriority);

@@ -44,7 +44,7 @@ public class TestLogImpl extends AbstractTestLog implements TestLog {
     /**
      * Add an entry to the buffer
      *
-     * @param entry
+     * @param entry entry to log
      */
     public void log(LogEntry entry) {
         logEntries.add(entry);

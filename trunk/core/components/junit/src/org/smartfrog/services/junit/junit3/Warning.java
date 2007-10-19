@@ -53,7 +53,6 @@ public class Warning extends TestCase {
     public Warning(String name, String message) {
         super(name);
         thrown=new AssertionFailedError(message);
-
     }
 
 

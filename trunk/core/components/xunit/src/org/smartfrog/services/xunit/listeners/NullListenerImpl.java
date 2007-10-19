@@ -28,6 +28,9 @@ import java.rmi.RemoteException;
 
 /**
  * Dump all listened to events into the void.
+ * <p>
+ * The factory returns the same instance of the class every time, the null listener itself,
+ * which discards all events
  */
 
 public class NullListenerImpl extends AbstractListenerImpl implements TestListenerFactory {

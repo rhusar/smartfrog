@@ -54,7 +54,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     /**
      * Run through every factory and create a listener from each one, adding each
      * returned instance to the listener factory.
-     * @param factories
+     * @param factories a list of listener factories
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host

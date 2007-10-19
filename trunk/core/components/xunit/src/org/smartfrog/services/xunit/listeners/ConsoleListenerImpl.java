@@ -46,6 +46,10 @@ public class ConsoleListenerImpl extends PrimImpl
 
     private PrintStream outputstream = System.out;
 
+    /**
+     * create an instance of the console listener
+     * @throws RemoteException network problems
+     */
     public ConsoleListenerImpl() throws RemoteException {
     }
 

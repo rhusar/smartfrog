@@ -206,13 +206,22 @@ public class OneHostHtmlListener extends OneHostXMLListener {
     /**
      * create a division; escape the text
      *
-     * @param style
-     * @param text
+     * @param style style of the division
+     * @param text text to write
      */
     protected String div(String style, String text) {
         return div(style,null, text, true);
     }
 
+    /**
+     * create a division; escape the text
+     *
+     * @param style style of the division
+     * @param attrs optional list of attributes
+     * @param text text to write
+     * @param escape does the next need escaping
+     * @return the division
+     */
     protected String div(String style, String attrs,String text,boolean escape) {
         String attributes = style(style);
         if(attrs!=null) {
@@ -221,6 +230,11 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         return element("div", attributes, text, escape);
     }
 
+    /**
+     * Create a style attribute
+     * @param style style name
+     * @return a string of the form class="style"
+     */
     protected String style(String style) {
         return attr("class", style);
     }
