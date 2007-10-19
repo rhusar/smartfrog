@@ -236,7 +236,8 @@
     <!-- check for its presence; break the build if missing -->
     <fail unless="sf.build.version">
 
-SmartFrog distribution not found. Please create the SmartFrog distribution first.
+SmartFrog distribution not found for ${ant.project.name}.
+Please create the SmartFrog distribution first.
 Alternatively, make sure that this project is configured to locate the distribution
 correctly.
 

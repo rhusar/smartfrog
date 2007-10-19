@@ -32,6 +32,8 @@
   <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"/>
   <property name="system.tests" value="true" />
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
