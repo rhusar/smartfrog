@@ -1,9 +1,0 @@
-org.smartfrog.services.sfunit
-org.smartfrog.services.xunit.base
-org.smartfrog.services.xunit.listeners
-org.smartfrog.services.xunit.listeners.html
-org.smartfrog.services.xunit.listeners.xml
-org.smartfrog.services.xunit.log
-org.smartfrog.services.xunit.serial
-org.smartfrog.services.xunit.timeouts
-org.smartfrog.services.xunit.utils

@@ -1,9 +1,0 @@
-#include "/org/smartfrog/services/slp/slplocator.sf"
-#include "/org/smartfrog/services/slp/daLauncher.sf"
-#include "/org/smartfrog/services/slp/slpadvertiser.sf"
-#include "/org/smartfrog/services/slp/primAdvertiser.sf"
-#include "/org/smartfrog/services/slp/processCompoundAdvertiser.sf"
-#include "/org/smartfrog/services/slp/slpResultsCollector.sf";
-#include "/org/smartfrog/services/slp/primResultsCollector.sf";
-#include "/org/smartfrog/services/slp/resultsCollector.sf";
-#include "/org/smartfrog/services/slp/onResults.sf"

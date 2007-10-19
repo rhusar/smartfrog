@@ -1,5 +1,0 @@
-org.smartfrog.services.jetty
-org.smartfrog.services.jetty.contexts
-org.smartfrog.services.jetty.contexts.delegates
-org.smartfrog.services.jetty.contexts.handlers
-org.smartfrog.services.jetty.listeners
