@@ -1,9 +1,0 @@
-testcases/org/smartfrog/test/system/workflow/conditional/testFailingWaitFor.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testOneIf.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testOneWaitFor.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testParseConditionFile.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testPassingIf.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testPassingWaitFor.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testRunningForPass.sf
-testcases/org/smartfrog/test/system/workflow/conditional/testWaitForRunning.sf
-testcases/org/smartfrog/test/system/workflow/conditional/components.sf
