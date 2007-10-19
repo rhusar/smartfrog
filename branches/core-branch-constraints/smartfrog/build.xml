@@ -334,9 +334,8 @@
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="createParser" depends="init">
-    <!-- Javacc the parser files - both sf and csf -->
+    <!-- Javacc the parser files - sf -->
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}"/>
   </target>
 
   <!-- =================================================================== -->
