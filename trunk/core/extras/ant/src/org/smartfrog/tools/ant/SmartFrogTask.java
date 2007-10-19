@@ -29,6 +29,7 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.Resource;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -129,11 +130,15 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     protected File iniFile;
 
-    protected File securityFile;
+    /**
+     * our security policy
+     */
+    protected SecurityPolicy securityPolicy;
+
 
     /**
-     * our JVM
-     */
+    * our JVM
+    */
     protected Java smartfrog;
 
     /**
@@ -332,6 +337,17 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
+     * set a security definition. The last one to set it, wins.
+     *
+     * @param policy security element
+     */
+    public void addSecurityPolicy(SecurityPolicy policy) {
+        securityPolicy=policy;
+
+    }
+
+
+    /**
      * set a reference to the security types
      *
      * @param securityRef security data
@@ -347,6 +363,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     public void addSecurity(Security security) {
         securityHolder.addSecurity(security);
+
     }
 
     /**
@@ -577,7 +594,12 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //delayed setting only when the flag is true reduces the need to flip the bit
         propagateSpawnIncompatibleSettings();
         //do any security configurations we need
-        securityHolder.applySecuritySettings(this);
+        if(securityHolder.isDefined()) {
+            securityHolder.applySecuritySettings(this);
+        } else {
+            //use the default or simpler settings
+            securityPolicy.applySecurityPolicy(this,smartfrog);
+        }
 
         //last minute logging
         if(isDebug()) {
@@ -589,6 +611,9 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         if (isSpawn()) {
             //when spawning output gets lost, so we print something here
             log(MESSAGE_SPAWNED_DAEMON);
+        } else {
+            //clean up the security policy now
+            securityPolicy.cleanup();
         }
         //else, let's post-analyse the deployment
         switch (err) {
@@ -689,8 +714,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * check no host;
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          if a host is defined
+     * @throws BuildException if a host is defined
      */
     protected void verifyHostUndefined() {
         if (host != null && host.length() > 0) {
@@ -723,8 +747,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * verify that the host is defined; assert if it is not set
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          if a host is undefined
+     * @throws BuildException if a host is undefined
      */
     protected void verifyHostDefined() {
         if (getHost() == null) {
@@ -733,7 +756,11 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
 
+    /**
+     * Bind to the local host
+     */
     protected void bindToLocalhost() {
         setHost(LOCALHOST);
     }
+
 }
