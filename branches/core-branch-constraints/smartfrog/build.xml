@@ -118,6 +118,7 @@
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
     <!-- <pathelement path="./lib/ProActive.jar"/>-->
+    <pathelement path="./lib/eclipse.jar"/>
   </path>
   <!-- to get the classpath in a printable form -->
   <pathconvert pathsep="${line.separator}|   |-- "  
