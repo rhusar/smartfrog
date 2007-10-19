@@ -26,6 +26,7 @@ import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.resources.JavaResource;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ProjectComponent;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.io.File;
@@ -135,6 +136,7 @@ public class SecurityPolicy {
             settings.setFile(securityFile);
             settings.setKey("java.security.policy=");
             process.addSysproperty(settings);
+            owner.log("Security policy file: "+securityFile, Project.MSG_VERBOSE);
         } catch (IOException e) {
             throw new BuildException(e);
         }
