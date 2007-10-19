@@ -62,7 +62,7 @@ AnubisDefaultParameters extends Compound {
     }
     contactAddress extends ConnectionAddress {
         host       "localhost";
-        port       1966;
+        port       0;
     }
     heartbeatGroup extends MulticastAddress {
         host       "233.1.2.30";
@@ -80,6 +80,10 @@ AnubisDefaultParameters extends Compound {
 
     preferred                false;
     testable                 true;
+    testAddress extends ConnectionAddress {
+        host       "localhost";
+        port       0;
+    }
 
 }
 

@@ -69,7 +69,7 @@ public class MessageConnectionServer
      * @throws Exception - if problems with creating the server socket
      */
      public MessageConnectionServer(ConnectionAddress address, Identity id, ConnectionSet cs, WireSecurity sec) throws Exception {
-        super("Anubis: Connection Server", address.ipaddress.getHostName());// , address.port);
+        super("Anubis: Connection Server", address.ipaddress.getHostName(), address.port);
         me            = id;
         connectionSet = cs;
         wireSecurity = sec;

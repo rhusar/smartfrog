@@ -55,10 +55,11 @@ public class TestMgr extends CompoundImpl implements Compound {
     private static final long STATSRATE         = 5;
     private long              statsInterval     = STATSRATE * 1000; // adjusts with heartbeat timing
     private long              lastStats         = 0;
+    private boolean           testable          = true;
 
-    public TestMgr(String host, PartitionManager partitionManager) throws IOException, Exception {
+    public TestMgr(String host, int port, PartitionManager partitionManager) throws IOException, Exception {
         this.partitionManager = partitionManager;
-        connectionServer = new TestServer(this, host);
+        connectionServer = new TestServer(this, host, port);
     }
 
 
@@ -68,11 +69,16 @@ public class TestMgr extends CompoundImpl implements Compound {
 
     public void sfDeploy() throws RemoteException, SmartFrogException {
         super.sfDeploy();
+        
+        testable = sfResolve("testable", true, false);
+        if( !testable ) {
+            return;
+        }
+        
         try {
             ConnectionAddress ca = ((ConnectionAddressData)sfResolve("contactAddress")).getConnectionAddress();
-            connectionServer = new TestServer(this, ca.ipaddress.getHostName());
-            partitionManager = (PartitionManager) sfResolveWithParser(
-                "partitionManager");
+            connectionServer = new TestServer(this, ca.ipaddress.getHostName(), ca.port);
+            partitionManager = (PartitionManager) sfResolveWithParser("partitionManager");
         }
         catch (Exception ex) {
             throw new SmartFrogException(ex);
@@ -81,13 +87,21 @@ public class TestMgr extends CompoundImpl implements Compound {
 
     public void sfStart() throws RemoteException, SmartFrogException {
         super.sfStart();
+        
+        if( !testable ) {
+            sfDetachAndTerminate(TerminationRecord.normal(sfCompleteNameSafe()));
+            return;
+        }
+        
         connectionSet = (ConnectionSet)sfResolveWithParser("ATTRIB connectionSet");
         connectionSet.registerTestManager(this);
         start();
     }
 
     public void sfTerminateWith(TerminationRecord status) {
-        stop();
+        if( testable ) {
+            stop();
+        }
         super.sfTerminateWith(status);
     }
 
