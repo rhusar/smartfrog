@@ -39,12 +39,13 @@ public class InstanceHandlerImpl extends AlpineHandlerImpl implements NonRemotab
      * Get the factory that can provide message handlers
      *
      * @return a factory
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException if desired
+     * @throws RemoteException on networking problems
      *
      */
     public MessageHandlerFactory createFactory() throws SmartFrogException, RemoteException {
         String classname = resolveClassname();
-        return new InstanceHandlerFactory(this.getClass().getClassLoader(), classname);
+        return new InstanceHandlerFactory(getClass().getClassLoader(), classname);
     }
 
 }

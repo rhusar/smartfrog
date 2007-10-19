@@ -42,12 +42,6 @@ public class ServletBase extends HttpServlet {
     public static Log getLog() {
         return log;
     }
-    
-    /**
-     * our initialize routine; subclasses should call this if they override it
-     */
-    public void init() throws javax.servlet.ServletException {
-    }
 
 
     /**

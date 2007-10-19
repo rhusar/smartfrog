@@ -63,8 +63,8 @@ AlpineServerOnJetty extends Compound {
     }
 
 
-    listener extends JettyListener {
-        listenerPort port;
+    listener extends JettySocketConnector {
+        port PARENT:port;
         //serverHost host;
         server LAZY jettyServer;
     }

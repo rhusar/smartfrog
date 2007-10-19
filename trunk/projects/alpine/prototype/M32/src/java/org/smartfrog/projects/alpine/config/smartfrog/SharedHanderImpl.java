@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
+ * A handler that is shared across multiple threads/requests simultaneously
  * created 02-May-2006 13:57:20
  */
 
@@ -40,8 +41,8 @@ public class SharedHanderImpl extends AlpineHandlerImpl implements NonRemotableH
      * Get the factory that can provide message handlers
      *
      * @return
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *
+     * @throws SmartFrogException if desired
+     * @throws RemoteException on networking problems
      */
     public MessageHandlerFactory createFactory() throws SmartFrogException, RemoteException {
         String classname = resolveClassname();
