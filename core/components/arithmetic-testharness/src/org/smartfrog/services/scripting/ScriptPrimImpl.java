@@ -54,7 +54,9 @@ public class ScriptPrimImpl
   /** The location of the code */
   private String sfScriptCodeBase = "";
 
-  /** Standard RMI constructor */
+  /** Standard RMI constructor
+   * @throws RemoteException network problems
+   * */
   public ScriptPrimImpl() throws RemoteException {
     super();
   }
@@ -63,7 +65,8 @@ public class ScriptPrimImpl
    * Bind an object to a name in the beanshell interpreter.
    * @param name the name you want the object to be called in the interpreter
    * @param obj the object you want to register in the interpreter.
-   */
+   * @throws RemoteException network problems
+   * @throws SmartFrogException other problems   */
   public synchronized void setRemote(String name, Object obj) throws
       SmartFrogException, RemoteException {
     try {
@@ -78,8 +81,9 @@ public class ScriptPrimImpl
    * Evaluate the String as a beanshell script.
    * The string is handed off to the internal interpreter object
    * @param script the script as a string.
-   * @throws Exception if the execution of the script fails.
-   */
+   * @return  null the execution of the script fails.
+   * @throws RemoteException network problems
+   * @throws SmartFrogException other problems   */
   public synchronized Object eval(String script) throws SmartFrogException,
       RemoteException {
     try {

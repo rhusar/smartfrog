@@ -35,14 +35,16 @@ public interface RemoteScriptPrim
   /**
    * Evaluate the String as a beanshell script
    * @param script the script as a string.
-   * @throws Exception if the execution of the script fails.
-   */
+   * @throws RemoteException network problems
+   * @throws SmartFrogException other problems   */
   public Object eval(String script) throws SmartFrogException, RemoteException;
 
   /**
    * Bind an object to a name in the beanshell interpreter.
    * @param name the name you want the object to be called in the interpreter
    * @param obj the object you want to register in the interpreter.
+   * @throws RemoteException network problems
+   * @throws SmartFrogException other problems
    */
   public void setRemote(String name, Object obj) throws SmartFrogException,
       RemoteException;
