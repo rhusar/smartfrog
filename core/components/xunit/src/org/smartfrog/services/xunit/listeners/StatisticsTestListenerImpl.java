@@ -56,6 +56,9 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
         return this;
     }
 
+    /**
+     * The statistics
+     */
     private Statistics stats=new Statistics();
 
 

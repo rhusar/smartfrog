@@ -28,8 +28,21 @@ import java.util.HashMap;
 
 
 public interface TestContextInjector {
+
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_PRIM = "prim";
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_LISTENER = "listener";
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_PROPERTIES = "properties";
 
     /**

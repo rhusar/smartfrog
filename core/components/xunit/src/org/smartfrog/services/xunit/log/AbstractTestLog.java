@@ -39,17 +39,12 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
 
 
     /**
-     * implement this with the log entry handling logic
-     * @param entry
-     */
-    public abstract void log(LogEntry entry) throws RemoteException;
-
-    /**
      * Log something at a level
      *
      * @param level  level to log at, {@link org.smartfrog.sfcore.logging.LogLevel}
      * @param text   message text
      * @param thrown 0ptional thrown fault
+     * @throws RemoteException in case of remote/network error
      */
     public void log(int level, String text, Throwable thrown) throws RemoteException {
         log(createLogEntry(level, text, thrown));
@@ -61,72 +56,55 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * @param text
      * @param thrown
      * @return a new log entry
+     * @throws RemoteException in case of remote/network error
      */
     protected LogEntry createLogEntry(int level, String text, Throwable thrown) {
         return new LogEntry(level, text, thrown);
     }
 
     /**
-     * <p> Is debug logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than debug. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isDebugEnabled() throws RemoteException {
         return true;
     }
 
     /**
-     * <p> Is error logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than error. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isErrorEnabled() throws RemoteException {
         return true;
     }
 
     /**
-     * <p> Is fatal logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than fatal. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isFatalEnabled() throws RemoteException {
         return true;
     }
 
     /**
-     * <p> Is info logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than info. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isInfoEnabled() throws RemoteException {
         return true;
     }
 
     /**
-     * <p> Is trace logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than trace. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isTraceEnabled() throws RemoteException {
         return true;
     }
 
     /**
-     * <p> Is warning logging currently enabled? </p>
-     * <p/>
-     * <p> Call this method to prevent having to perform expensive operations
-     * (for example, <code>String</code> concatenation)
-     * when the log level is more than warn. </p>
+     * Always return true for this test
+     * @throws RemoteException in case of remote/network error
      */
     public boolean isWarnEnabled() throws RemoteException {
         return true;
@@ -136,6 +114,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with trace log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void trace(Object message) throws RemoteException {
         trace(message, null);
@@ -146,6 +125,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void trace(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_TRACE, message.toString(), t);
@@ -155,6 +135,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with debug log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void debug(Object message) throws RemoteException {
         debug(message, null);
@@ -165,6 +146,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void debug(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_DEBUG, message.toString(), t);
@@ -175,6 +157,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with info log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void info(Object message) throws RemoteException {
         info(message, null);
@@ -185,6 +168,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void info(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_INFO, message.toString(), t);
@@ -195,6 +179,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with warn log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void warn(Object message) throws RemoteException {
         warn(message, null);
@@ -205,6 +190,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void warn(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_WARN, message.toString(), t);
@@ -214,6 +200,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with error log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void error(Object message) throws RemoteException {
         error(message, null);
@@ -224,6 +211,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void error(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_ERROR, message.toString(), t);
@@ -234,6 +222,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      * <p> Log a message with fatal log level. </p>
      *
      * @param message log this message
+     * @throws RemoteException in case of remote/network error
      */
     public void fatal(Object message) throws RemoteException {
         fatal(message, null);
@@ -244,6 +233,7 @@ public abstract class AbstractTestLog extends PrimImpl implements LogRemote, Log
      *
      * @param message log this message
      * @param t       log this cause
+     * @throws RemoteException in case of remote/network error
      */
     public void fatal(Object message, Throwable t) throws RemoteException {
         log(LogLevel.LOG_LEVEL_FATAL, message.toString(), t);

@@ -26,61 +26,75 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This is the public testrunner interface
- * created 15-Apr-2004 11:51:44
+ * This is the public testrunner interface created 15-Apr-2004 11:51:44
  */
 
 
-public interface TestRunner extends Remote , TestResultAttributes
- {
+public interface TestRunner extends Remote, TestResultAttributes {
 
     /**
      * should deploy fail if there is an error?
+     * <p/>
+     * {@value}
      */
     String ATTR_FAILONERROR = "failOnError";
 
-     /**
-      * name of the keepgoing attr
-      */
-     String ATTR_KEEPGOING = "keepGoing";
-
-     /**
-      * name of the listener
-      */
-     String ATTR_LISTENER = "listener";
-
-     /**
-     * boolean: run tests on startup
+    /**
+     * name of the keepgoing attr.
+     * <p/>
+     * {@value}
      */
-    String ATTR_RUN_TESTS_ON_STARTUP="runTests";
+    String ATTR_KEEPGOING = "keepGoing";
 
-     /**
-      * Name of a single test to run
-      */
-    String ATTR_SINGLE_TEST="singleTest";
+    /**
+     * reference to the listener.
+     * <p/>
+     * {@value}
+     */
+    String ATTR_LISTENER = "listener";
 
-     /**
-      * the test log
-      */
-     String ATTR_TESTLOG = "testLog";
+    /**
+     * boolean: run tests on startup.
+     * <p/>
+     * {@value}
+     */
+    String ATTR_RUN_TESTS_ON_STARTUP = "runTests";
 
-     /**
-      * thread priority; 1 to 9
-      */
-     String ATTR_THREAD_PRIORITY = "threadPriority";
+    /**
+     * Name of a single test to run.
+     * <p/>
+     * {@value}
+     */
+    String ATTR_SINGLE_TEST = "singleTest";
+
+    /**
+     * the test log <p/> {@value}
+     * <p/>
+     * {@value}
+     */
+    String ATTR_TESTLOG = "testLog";
+
+    /**
+     * thread priority; 1 to 9.
+     * <p/> {@value}
+     */
+    String ATTR_THREAD_PRIORITY = "threadPriority";
 
 
-     /**
-      * time in seconds that a single test can take
-      */
-    String ATTR_TIMEOUT_SECONDS="timeout";
+    /**
+     * time in seconds that a single test can take.
+     * <p/>
+     * {@value}
+     */
+    String ATTR_TIMEOUT_SECONDS = "timeout";
 
 
-     /**
-      * Get the listener factory
-      * @return the factory
-      * @throws RemoteException
-      */
+    /**
+     * Get the listener factory
+     *
+     * @return the factory
+     * @throws RemoteException network problems
+     */
 
 
     TestListenerFactory getListenerFactory() throws RemoteException;
@@ -89,22 +103,25 @@ public interface TestRunner extends Remote , TestResultAttributes
 
     /**
      * run the test
+     *
      * @return true if the tests were started
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     boolean startTests() throws RemoteException, SmartFrogException;
 
     /**
      * Get test execution statistics
+     *
      * @return stats
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     Statistics getStatistics() throws RemoteException;
 
-     /**
-      * test for being finished
-      * @return true if we have finished
-      * @throws RemoteException
-      */
+    /**
+     * test for being finished
+     *
+     * @return true if we have finished
+     * @throws RemoteException network problems
+     */
     boolean isFinished() throws RemoteException;
 }

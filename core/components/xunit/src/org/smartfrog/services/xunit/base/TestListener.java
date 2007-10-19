@@ -42,7 +42,8 @@ public interface TestListener extends LogListener {
      * end this test suite. After calling this, caller should discard
      * all references; they may no longer be valid.
      * <i>No further methods may be called</i>
-     *
+     * @throws RemoteException network problems
+     * @throws SmartFrogException other problems
      */
     void endSuite()
             throws RemoteException, SmartFrogException;

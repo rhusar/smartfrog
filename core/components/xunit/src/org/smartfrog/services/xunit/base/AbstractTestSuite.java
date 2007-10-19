@@ -61,9 +61,20 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * assistance
      */
     protected ComponentHelper helper;
+
+    /**
+     * Error Text
+     * </p>
+     * {@value}
+     */
     public static final String ERROR_OVERWRITING_CONTEXT = "Overwriting an existing thread-local configuration context.\n"
         +"Multiple thread runners may be active in the same thread\n"
         +"or the tests are themselves deploying tests.";
+    /**
+     * Error Text
+     * </p>
+     * {@value}
+     */
     public static final String ERROR_OVERWRITING_SELF = "The component is overwriting its own configuration";
 
     protected AbstractTestSuite() throws RemoteException {

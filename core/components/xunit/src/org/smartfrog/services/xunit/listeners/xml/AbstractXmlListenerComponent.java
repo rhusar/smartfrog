@@ -58,10 +58,13 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * add a mapping of suite to file
+     * add a mapping of suite to file.
+     * </p>
+     * If the suitename is already registered, a warning is output, but the method still continues.
      *
-     * @param suitename
-     * @param xmlFilename
+     * @param hostname hostname (ignored in the base class)
+     * @param suitename suite to use
+     * @param xmlFilename the XML filename being created
      */
     protected synchronized void addMapping(String hostname,String suitename, String xmlFilename) {
         if (getMapping(suitename) != null) {
@@ -88,7 +91,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param hostname host name
      * @param suitename test suite
      * @return name of output file, or null for no match
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException network problems
      */
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException {
@@ -99,8 +102,8 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * work out the output dir
      *
      * @return the dir that output is in
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if it is not specified
-     * @throws java.rmi.RemoteException
+     * @throws SmartFrogResolutionException if it is not specified
+     * @throws RemoteException network problems
      */
     protected String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
@@ -119,9 +122,8 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException network problems
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -133,9 +135,8 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException network problems
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -221,7 +222,15 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * create a listener for a single host.
+     * Something for implementations to implement to create a listener for a single host.
+     *
+     * @param hostname hostname
+     * @param destFile destination file
+     * @param processname name of the process
+     * @param suitename name of the suite
+     * @param start timestamp the tests started
+     * @return a new XML listener
+     * @throws IOException if the file cannot be created
      */
     protected abstract OneHostXMLListener createNewSingleHostListener(String hostname,
                                                                       File destFile,

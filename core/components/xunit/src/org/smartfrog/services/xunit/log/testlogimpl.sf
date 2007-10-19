@@ -18,8 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-//#include "/org/smartfrog/predicates.sf"
-
+/**
+ * This is a log.
+ * <p>
+ * Logging is very low-level in SmartFrog, so nothing is imported here
+ */
 TestLogImpl extends {
 
    loggerClass "org.smartfrog.services.xunit.log.TestLogImpl";

@@ -29,15 +29,39 @@ import java.io.Serializable;
 
 public final class LogEntry implements Serializable, Cloneable {
 
+    /**
+     * extra log key for stdout
+     */
     public static final int LOG_LEVEL_STDOUT = -1;
+
+    /**
+     * extra log key for stderr
+     */
     public static final int LOG_LEVEL_STDERR = -2;
+
+    /**
+     * timestamp
+     * @serial
+     */
 
     public long timestamp = System.currentTimeMillis();
 
+    /**
+     * Log level
+     * @serial
+     */
     public int level;
 
+    /**
+     * Log text
+     * @serial
+     */
     public String text;
 
+    /**
+     * Any exception that got thrown
+     * @serial
+     */
     public ThrowableTraceInfo thrown;
 
     /**
@@ -47,10 +71,19 @@ public final class LogEntry implements Serializable, Cloneable {
      */
     private String hostname;
 
-        
+
+    /**
+     * Create an empty entry
+     */
     public LogEntry() {
     }
 
+    /**
+     * Create an entry
+     * @param level log level
+     * @param text text
+     * @param thrown optional exception, whose contents are serialized
+     */
     public LogEntry(int level, String text, Throwable thrown) {
         this.level = level;
         this.text = text;
@@ -59,31 +92,44 @@ public final class LogEntry implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Create a log entry
+     * @param level log level
+     * @param text text
+     * @param thrown optional exception, whose contents are serialized
+     */
     public LogEntry(int level, String text, ThrowableTraceInfo thrown) {
         this.level = level;
         this.text = text;
         this.thrown = thrown;
     }
 
+    /**
+     * Create a log entry
+     * @param level log level
+     * @param text text
+     */
     public LogEntry(int level, String text) {
-        this.level = level;
-        this.text = text;
+        this(level,text,(ThrowableTraceInfo)null);
     }
 
+    /**
+     * Create a log entry from another entry
+     */
     public LogEntry(LogEntry that) {
-        this.level = that.level;
-        this.text = that.text;
-        this.timestamp = that.timestamp;
-        this.hostname = that.hostname;
+        level = that.level;
+        text = that.text;
+        timestamp = that.timestamp;
+        hostname = that.hostname;
         if (that.thrown != null) {
-            this.thrown = new ThrowableTraceInfo(that.thrown);
+            thrown = new ThrowableTraceInfo(that.thrown);
         }
     }
 
     /**
      * Returns a string representation of the object.
      *
-     * @return a string representation of the object.
+     * @return the value of the text field
      */
     public String toString() {
         return text;

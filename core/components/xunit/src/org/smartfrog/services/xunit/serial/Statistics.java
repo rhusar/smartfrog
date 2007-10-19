@@ -132,19 +132,28 @@ public final class Statistics implements Serializable, Cloneable {
         add(that);
     }
 
+    /**
+     * Increment an outcome by a specific count
+     * @param outcome outcome name
+     * @param count number to increment
+     */
     public synchronized void increment(String outcome,int count) {
         int value = getOutcome(outcome);
         value += count;
         outcomes.put(outcome, new Integer(value));
     }
 
+    /**
+     * Increment an outcome by 1
+     * @param outcome outcome name
+     */
     public void increment(String outcome) {
         increment(outcome, 1);
     }
 
     /**
      * Get the count for a specific outcome
-     * @param outcome
+     * @param outcome outcome name
      * @return the count or 0 for no events of that outcome found.
      */
     public int getOutcome(String outcome) {
@@ -213,6 +222,10 @@ public final class Statistics implements Serializable, Cloneable {
         addLoggedMessages(1);
     }
 
+    /**
+     * Get the number of logged messages
+     * @return
+     */
     public int getLoggedMessages() {
         return loggedMessages;
     }
@@ -249,6 +262,10 @@ public final class Statistics implements Serializable, Cloneable {
     }
 
 
+    /**
+     * String operator gives the summary statistics
+     * @return
+     */
     public String toString() {
         String s = "Statistics: testsRun=" + testsRun
                 + " errors=" + errors
@@ -259,15 +276,13 @@ public final class Statistics implements Serializable, Cloneable {
     }
 
     /**
-     * {@inheritDoc}
-     *
+     * Cloning copies the statistics
+     * and the hashmap of events.
      */
     public Object clone() {
         try {
             Statistics that = (Statistics)super.clone();
-            //there shouldn't be any need to deep clone the hash map, because
-            //the keys and values are both immutable. When an outcome is updated,
-            //a new value is assigned.
+            outcomes=new HashMap<String, Integer>(that.outcomes);
             return that;
         } catch (CloneNotSupportedException e) {
             //not possible except by a subclass, and, being final,

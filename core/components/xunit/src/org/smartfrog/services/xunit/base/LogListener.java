@@ -25,6 +25,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
+ * Interface for anything listening to log events
  * created 18-May-2006 15:40:02
  */
 

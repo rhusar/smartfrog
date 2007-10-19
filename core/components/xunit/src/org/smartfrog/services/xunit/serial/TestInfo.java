@@ -36,6 +36,7 @@ public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * session info to use when forwarding
+     * @serial
      */
     private String sessionID;
 
@@ -51,6 +52,11 @@ public final class TestInfo implements Serializable, Cloneable {
      * @serial
      */
     private String description;
+
+    /**
+     * A URL to give the test; such as a link back to a defect.
+     */
+    private String url;
 
     /**
      * A list of tags to file the test
@@ -275,6 +281,15 @@ public final class TestInfo implements Serializable, Cloneable {
         this.ipaddr = ipaddr;
     }
 
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     /**
      * test for a fault being contained;
      *
@@ -291,15 +306,13 @@ public final class TestInfo implements Serializable, Cloneable {
      * @throws CloneNotSupportedException
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Object clone() throws CloneNotSupportedException {
         TestInfo cloned = (TestInfo) super.clone();
         if (fault != null) {
             cloned.fault = (ThrowableTraceInfo) cloned.fault.clone();
         }
-        cloned.tags=(ArrayList<String>) tags.clone();
-        cloned.messages=(ArrayList<LogEntry>) messages.clone();
-
+        cloned.tags = new ArrayList<String>(tags);
+        cloned.messages=new ArrayList<LogEntry>(messages);
         return cloned;
     }
 
