@@ -31,6 +31,10 @@ import java.io.OutputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 
 /**
  *
@@ -48,20 +52,21 @@ public class ResourceHelper {
     }
 
     public void saveResourceToFile(Resource resource,File target) {
-        InputStream source=null;
-        OutputStream dest=null;
+        BufferedReader reader = null;
+        BufferedWriter dest=null;
         try {
-            source = new BufferedInputStream(resource.getInputStream());
-            dest = new BufferedOutputStream(new FileOutputStream(target));
-            int data ;
-            while((data = source.read())>=0) {
-                dest.write(data);
+            InputStream inputStream = resource.getInputStream();
+            if(inputStream==null) {
+                throw new BuildException("Resource has no input stream "+resource);
             }
-
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String policy = FileUtils.safeReadFully(reader);
+            dest = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target)));
+            dest.write(policy);
         } catch (IOException e) {
             throw new BuildException(e);
         } finally {
-            FileUtils.close(source);
+            FileUtils.close(reader);
             FileUtils.close(dest);
         }
     }
