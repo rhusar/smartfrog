@@ -35,10 +35,11 @@
 
 
   <property name="root.dir" location="../.."/>
-  <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
 
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
+  
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
 </project>
