@@ -31,8 +31,8 @@ public class TestServer extends ConnectionServer implements ConnectionFactory {
 
     private TestMgr testManager;
 
-    public TestServer(TestMgr testManager, String host) throws IOException {
-        super("Anubis: PMConsole connection server", host);
+    public TestServer(TestMgr testManager, String host, int port) throws IOException {
+        super("Anubis: PMConsole connection server", host, port);
         this.testManager = testManager;
         setConnectionFactory(this);
     }

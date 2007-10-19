@@ -88,7 +88,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
 	try{
 	    server = ServerSocketChannel.open();
 	    server.configureBlocking(false);
-            server.socket().bind(new InetSocketAddress(address.ipaddress, 0));
+            server.socket().bind(new InetSocketAddress(address.ipaddress, address.port));
             connAdd = new ConnectionAddress(server.socket().getInetAddress(), server.socket().getLocalPort());
             if( debug && asyncLog.isTraceEnabled() )
                 asyncLog.trace("MNS: server bound to: "+connAdd.ipaddress.getHostName()+" - "+connAdd.port);

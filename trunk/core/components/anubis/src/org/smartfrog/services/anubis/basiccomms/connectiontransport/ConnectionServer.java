@@ -113,9 +113,13 @@ public class ConnectionServer extends Thread {
 
         try {
 
+            if( log.isDebugEnabled() ) {
+                log.debug("Binding blocking connection server to port: " + port);
+            }
+            
             listenSocket = ServerSocketChannel.open();
             listenSocket.configureBlocking(true);
-            listenSocket.socket().bind(new InetSocketAddress(inetAddress, 0));
+            listenSocket.socket().bind(new InetSocketAddress(inetAddress, port));
 
         } catch(IOException ioex) {
 

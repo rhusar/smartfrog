@@ -89,6 +89,7 @@ TestMgr extends Compound {
     sfClass            "org.smartfrog.services.anubis.partition.test.node.TestMgr";
     contactAddress     TBD;
     partitionManager   TBD;
+    testable           ATTRIB anubisParameters:testable;
 }
 
 
@@ -107,7 +108,7 @@ AnubisPartitionManager extends PartitionManager {
     }
 
     testMgr extends TestMgr {
-        contactAddress            PARENT:ATTRIB anubisParameters:contactAddress;
+        contactAddress            PARENT:ATTRIB anubisParameters:testAddress;
         partitionManager     LAZY PARENT:ATTRIB partitionManager;
     }
 }
