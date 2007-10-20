@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="release" default="default"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+    xmlns:iz="http://www.izforge.com/">
+
+  <description>
+    This build file aggregates artifacts from other projects to cut a release.
+
+  </description>
+
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <!--we disable Ivy to let us use a copy of izpack in the lib dir-->
+  <!--<property name="ivy.enabled" value="true"/>-->
+
+  <!-- override point -->
+  <property file="build.properties"/>
+
+
+  <property name="root.dir" location=".."/>
+
+
+  <property name="jarfile.suffix" value="-resources"/>
+  <property name="jarfile.extension" value="jar"/>
+  <property name="project.name" value="sf-${ant.project.name}"/>
+  <property name="artifact.name" value="${project.name}"/>
+  <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}"/>
+  <property name="trace.enabled" value="true"/>
+  <property name="ivy.artifact.retrieve.pattern"
+      value="[conf]/[artifact]-[revision].[ext]"/>
+
+  <!-- override this to get a different release, such as a hard coded version.
+  Doing that
+  -->
+  <property name="ivy.smartfrog.version" value="latest.integration" />
+
+  <!-- Import common stuff -->
+  <import file="../common.xml"/>
+
+  <!-- main distribution target-->
+  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack,release-kernel,package-source" />
+
+
+  <target name="init" depends="common.init">
+    <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
+    <!--presetdef for a copy with expansion of all properties in scope-->
+
+
+    <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
+    <property name="kernel.dir" location="../smartfrog"/>
+    <newdir name="release.dir" location="${build.dir}/releases" />
+    <property name="ssh.trust" value="true" />
+    <newdir  name="tmp.dir" location="${build.dir}/tmp" />
+    <newdir  name="upload.dir" location="${build.dir}/upload" />
+
+    <property name="server.dir"
+        location="metadata/servers/" />
+
+  </target>
+
+  <target name="default" depends="published"/>
+
+  <target name="published" depends="ivy-report,dist"/>
+
+  <!--
+  <target name="declare-izpack" depends="ivy-resolve">
+    <ivy:cachepath pathid="izpack.classpath" conf="izpack" />
+    <taskdef name="izpack" classpathref="izpack.classpath"
+        uri="http://www.izforge.com/"
+        classname="com.izforge.izpack.ant.IzPackTask"/>
+  </target>
+  -->
+  <target name="declare-izpack" depends="init">
+    <taskdef name="izpack"
+        uri="http://www.izforge.com/"
+        classname="com.izforge.izpack.ant.IzPackTask">
+      <classpath>
+        <fileset dir="lib">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </taskdef>
+  </target>
+
+  <target name="prepare-resources" depends="init">
+    <copy todir="${build.dir}/res">
+      <fileset dir="src/res" includes="*"/>
+    </copy>
+  </target>
+
+  <target name="prepare-executables" depends="ivy-retrieve">
+    <property name="sf-core-install.zip"
+        location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
+  </target>
+
+  <target name="locate-core-install" depends="ivy-properties">
+    <property name="sf-core-install.zip"
+        location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
+  </target>
+
+  <target name="expand-izpack" depends="init">
+    <expandingcopy todir="${build.dir}" >
+      <fileset file="izpack/smartfrog-install.xml"/>
+    </expandingcopy>
+    <property name="izpack.xml" location="${build.dir}/smartfrog-install.xml"/>
+  </target>
+
+  <target name="validate-izpack" depends="expand-izpack">
+    <loadfile srcFile="izpack/doctype.txt" property="doctype.txt"/>
+    <copy file="${izpack.xml}" tofile="build/izpack-dtd.xml" overwrite="true">
+      <filterset begintoken="&lt;--@" endtoken="@--&gt;">
+        <filter token="DOCTYPE-INSERT-POINT" value="${doctype.txt}"/>
+      </filterset>
+    </copy>
+    <xmlvalidate file="build/izpack-dtd.xml" warn="false"/>
+  </target>
+
+
+  <target name="ready-to-izpack"
+      depends="declare-izpack,prepare-resources,prepare-executables,packaged,expand-izpack"/>
+
+  <target name="izpack" depends="ready-to-izpack">
+    <iz:izpack input="${build.dir}/smartfrog-install.xml"
+        output="${izpack.jar}"
+        installerType="standard"
+        basedir="${build.dir}"/>
+  </target>
+
+  <target name="ready-to-run" depends="izpack"/>
+
+  <target name="run" depends="ready-to-run,run-no-rebuild">
+  </target>
+
+  <target name="run-no-rebuild" depends="init">
+    <java jar="${izpack.jar}" fork="true">
+      <sysproperty key="TRACE" value="${trace.enabled}"/>
+    </java>
+  </target>
+
+  <target name="unzip" depends="izpack">
+    <newdir name="unzip.dir" location="${build.dir}/unzip"/>
+    <unzip src="${izpack.jar}" dest="${unzip.dir}"/>
+  </target>
+
+  <!-- hit the switches that declare which bits of the build-->
+  <target name="init-automated-exec" depends="init">
+    <property name="build.install.dir" location="${build.dir}/smartfrog"/>
+    <property name="core.selected" value="true"/>
+    <property name="minimal.selected" value="true"/>
+    <property name="full.selected" value="true"/>
+    <property name="ant.selected" value="true"/>
+    <property name="anubis.selected" value="true"/>
+    <property name="database.selected" value="true"/>
+    <property name="jmx.selected" value="true"/>
+    <property name="logging.selected" value="true"/>
+    <property name="networking.selected" value="true"/>
+    <property name="quartz.selected" value="true"/>
+    <property name="scripting.selected" value="true"/>
+    <property name="xunit.selected" value="true"/>
+    <property name="junit.selected" value="true"/>
+    <property name="www.selected" value="true"/>
+    <property name="xml.selected" value="true"/>
+    <property name="xmpp.selected" value="true"/>
+    <!--
+        <property name=".selected" value="true" />
+    -->
+  </target>
+
+  <target name="copy-automated-template" depends="init-automated-exec">
+    <property name="automated.xml" location="${dist.bin.dir}/automated.xml"/>
+    <expandingcopy tofile="${automated.xml}" overwrite="true">
+      <fileset file="izpack/auto-install-template.xml"/>
+    </expandingcopy>
+  </target>
+
+  <target name="automated-exec" depends="ready-to-run,copy-automated-template">
+    <java jar="${izpack.jar}" fork="true">
+      <sysproperty key="TRACE" value="${trace.enabled}"/>
+      <arg value="${automated.xml}"/>
+    </java>
+  </target>
+
+  <target name="exec-version" depends="automated-exec">
+    <condition property="script"
+        value=".bat" else="">
+      <os family="dos"/>
+    </condition>
+    <exec executable="${build.install.dir}/bin/sfVersion${script}">
+      <env key="SFHOME" value="${build.install.dir}"/>
+    </exec>
+    <exec executable="${build.install.dir}/bin/sfDiag${script}">
+      <env key="SFHOME" value="${build.install.dir}"/>
+    </exec>
+  </target>
+
+
+  <!-- ============================================================================================= -->
+
+  <target name="package-source" depends="init,ivy-resolve">
+    <property name="source.zip" location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip" />
+
+    <copy tofile="${source.zip}"
+        file="${ivy.lib.dir}/package-antbuild-source/sf-antbuild-src-${smartfrog.version}.zip" />
+  </target>
+
+  <!-- ============================================================================================= -->
+
+
+  <!--
+    Building an RPM is tricky. Here are some links that are useful
+      http://www.rpm.org/
+      http://www.rpm.org/max-rpm/
+      http://www-128.ibm.com/developerworks/linux/library/l-rpm3.html?dwzone=linux
+      http://www.ibm.com/developerworks/library/l-rpm1/
+      http://www.ibm.com/developerworks/library/l-rpm2/
+
+    JPackage and layout rules:
+      http://www.jpackage.org/develdocs.php
+      http://www.pathname.com/fhs/  rules for app/dir layout
+
+    Presentations:
+    http://www-uxsup.csx.cam.ac.uk/talks/rpmbuild/rpmbuild.pdf
+    http://www.gurulabs.com/GURULABS-RPM-LAB/GURULABS-RPM-GUIDE-v1.0.PDF
+
+  -->
+
+  <target name="check-rpm" depends="init">
+    <condition property="has.rpm.tools">
+      <and>
+        <os family="unix"/>
+        <available file="rpmbuild" filepath="${env.PATH}"/>
+        <not>
+          <isset property="rpm.disabled"/>
+        </not>
+      </and>
+    </condition>
+    <echo level="verbose">
+      has.rpm.tools=${has.rpm.tools}
+    </echo>
+  </target>
+
+  <target name="init-rpm" depends="check-rpm,ivy-properties">
+
+    <property name="rpm.metadata.dir" location="metadata/rpm"/>
+    <loadproperties srcFile="${rpm.metadata.dir}/rpm.properties"/>
+    
+    <newdir name="build.rpm.dir" location="${build.dir}/rpm" />
+
+    <newdir name="rpm.root.dir" location="${build.rpm.dir}/root/" />
+
+    <newdir name="build.rpm.metadata.dir"
+        location="${build.rpm.dir}/metadata" />
+    <newdir name="rpm.image.dir"
+        location="${build.rpm.dir}/rpm" />
+    <newdir name="rpm.SOURCES"
+        location="${rpm.image.dir}/SOURCES" />
+    <newdir name="rpm.SRPMS"
+        location="${rpm.image.dir}/SRPMS" />
+    <newdir name="rpm.SPECS"
+        location="${rpm.image.dir}/SPECS" />
+    <newdir name="rpm.BUILD"
+        location="${rpm.image.dir}/BUILD" />
+    <newdir name="rpm.RPMS"
+        location="${rpm.image.dir}/RPMS" />
+    <newdir name="rpm.noarch"
+        location="${rpm.RPMS}/noarch" />
+    <property name="smartfrog.rpmfiles.tar"
+      location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
+    <property name="smartfrog.rpmfiles.tar.gz"
+        location="${smartfrog.rpmfiles.tar}.gz"/>
+    <property name="rpm.suffix"
+        value="${smartfrog.version}-${rpm.release.version}.noarch.rpm" />
+    <property name="target.rpm.shortname"
+        value="smartfrog-${rpm.suffix}" />
+    <property name="target.rpm"
+        location="${dist.rpm.dir}/${target.rpm.shortname}" />
+    <property name="demo.rpm"
+        location="${dist.rpm.dir}/smartfrog-demo-${rpm.suffix}" />
+    <property name="daemon.rpm"
+        location="${dist.rpm.dir}/smartfrog-daemon-${rpm.suffix}" />
+    <property name="anubis.rpm"
+        location="${dist.rpm.dir}/smartfrog-anubis-${rpm.suffix}" />
+    <property name="logging.rpm"
+      location="${dist.rpm.dir}/smartfrog-logging-${rpm.suffix}" />
+    <property name="rpms.tar"
+        location="${dist.rpm.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar" />
+    <property name="rpms.tar.gz"
+      location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.gz" />
+
+    <macrodef name="rpmpackage">
+      <attribute name="package"/>
+      <sequential >
+        <copy todir="${rpm.lib.dir}" >
+          <fileset file="${ivy.lib.dir}/package-@{package}/*.jar" />
+        </copy>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="copy-rpm-specs" depends="init-rpm">
+    <expandingcopy todir="${rpm.SPECS}" >
+      <fileset dir="${rpm.metadata.dir}" includes="**/*.spec"/>
+    </expandingcopy>
+  </target>
+
+  <!--
+  this is a a wierd target as it patches the macros file rpmmacros with the
+  location of the output. With ant-contrib's try/finally tasks we could
+  copy and restore this -provided only one build per user was live.
+  As it is, unless you set the rpm.skip.macros property, your
+  ~/.rpmmacros file gets trashed by Ant.
+
+  Notes
+   * the specfile attr is the name of the spec file under SPECS; it is not a full path to the file
+   * - is not allowed in the version number
+  -->
+  <target name="rpmmacros" unless="rpm.skip.macros" depends="init-rpm">
+    <echo file="${user.home}/.rpmmacros" >
+#GENERATED by rpmmacros task in ${basedir} 
+%_topdir ${build.rpm.dir}
+    </echo>
+  </target>
+
+
+
+  <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm"/>
+
+  <target name="rpm" depends="gzip-rpm"/>
+
+  <target name="build-rpm" depends="ready-to-rpm"
+      if="has.rpm.tools"
+      description="create an RPM file of the core smartfrog libraries">
+    <rpm
+        specFile="smartfrog.spec"
+        topDir="${rpm.image.dir}"
+        cleanBuildDir="true"
+        failOnError="true"/>
+    <copy todir="${dist.rpm.dir}">
+      <fileset dir="${rpm.noarch}" includes="*.rpm" />
+    </copy>
+  </target>
+
+  <target name="expand-core" depends="init-rpm,prepare-executables">
+    <newdir name="core.install.dir"
+      location="${rpm.root.dir}/${rpm.install.dir}" />
+    <unzip src="${sf-core-install.zip}"
+      dest="${core.install.dir}" />
+    <property name="rpm.lib.dir" location="${core.install.dir}/lib" />
+  </target>
+
+  <target name="copy-scripts" depends="init-rpm" >
+    <expandingcopy todir="${rpm.root.dir}" >
+      <fileset dir="scripts" includes="**/*" />
+    </expandingcopy>
+    <property name="profile.d" location="${rpm.root.dir}/etc/profile.d" />
+    <property name="init.d" location="${rpm.root.dir}/etc/init.d" />
+  </target>
+
+  <target name="rpm-components"
+      if="has.rpm.tools"
+      depends="expand-core">
+    <rpmpackage package="anubis" />
+    <rpmpackage package="logging" />
+  </target>
+
+
+  <target name="prepare-binary-rpm"
+      if="has.rpm.tools"
+      depends="copy-scripts,expand-core,rpm-components" >
+    <expandingcopy todir="${build.rpm.dir}/root/" >
+      <fileset dir="scripts" includes="**/*" />
+    </expandingcopy>
+    <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
+      <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
+    </sf-tar>
+    <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}" />
+  </target>
+
+  <!--copy rpms, but do not create them-->
+  <target name="copy-rpms"
+      if="has.rpm.tools"
+      depends="init-rpm">
+    <copy todir="${upload.dir}" flatten="true">
+      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+    </copy>
+  </target>
+
+  <target name="gzip-rpm"
+      depends="build-rpm"
+      if="has.rpm.tools"
+      description="create a gzip containing all the rpms">
+    <tar destfile="${rpms.tar}">
+      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+    </tar>
+    <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}" />
+  </target>
+
+
+  <!-- this tests the scripts, on linux only, of course-->
+  <target name="test-scripts" depends="test-sh,test-csh">
+
+  </target>
+
+  <target name="test-sh" depends="copy-scripts">
+    <exec executable="sh" failonerror="true">
+      <arg value="--verbose" />
+      <arg file="${profile.d}/smartfrog.sh"/>
+    </exec>
+  </target>
+
+  <target name="test-csh" depends="copy-scripts">
+
+    <exec executable="csh" failonerror="true">
+      <arg value="-v" />
+      <arg file="${profile.d}/smartfrog.csh"/>
+    </exec>
+  </target>
+
+
+  <target name="expand-rpm-debian" depends="rpm,copy-rpms"
+      description="expand the rpm on a debian system, but do not install it">
+    <newdir name="rpm.expanded.dir" location="${build.rpm.dir}/expanded" />
+    <exec executable="/usr/bin/alien" failonerror="true"
+       dir="${rpm.expanded.dir}" >
+      <arg value="--generate"/>
+      <arg value="--scripts"/>
+      <arg file="${target.rpm}"/>
+    </exec>
+    <echo> RPM expanded into ${rpm.expanded.dir}</echo>
+  </target>
+
+  <target name="install-rpm-rhat" depends="rpm,copy-rpms"
+      description="install the rpm on a RedHat system">
+    <echo> installing RPM ${target.rpm}</echo>
+    <exec executable="rpm" failonerror="true" >
+      <arg value="--upgrade"/>
+      <arg value="--vv"/>
+      <arg file="${target.rpm}"/>
+    </exec>
+    <echo> installed RPM ${target.rpm}</echo>
+  </target>
+
+
+  <target name="ready-to-package-maven-artifacts" depends="init-maven-artifacts"/>
+
+  <target name="init-maven-artifacts" depends="m2-init">
+    <property name="maven.zip.filename"
+        value="smartfrog-maven-artifacts-${smartfrog.version}.zip" />
+    <property name="maven.zip"
+        location="${dist.dir}/${maven.zip.filename}" />
+    <property name="maven.zip.sha1" location="${maven.zip}.sha1" />
+  </target>
+
+  <target name="package-maven-artifacts" depends="ready-to-package-maven-artifacts">
+    <zip destfile="${maven.zip}" duplicate="fail">
+      <zipfileset prefix="org/smartfrog" dir="${m2.publish.repository}/org/smartfrog/">
+        <!--core and tasks-->
+        <include name="smartfrog/${smartfrog.version}/*"/>
+        <include name="sfExamples/${smartfrog.version}/*"/>
+        <include name="sfServices/${smartfrog.version}/*"/>
+        <include name="sf-tasks/${smartfrog.version}/*"/>
+        <!-- testharness for 3rd parties to test their code-->
+        <include name="sf-testharness/${smartfrog.version}/*"/>
+
+        <!--components-->
+        <include name="sf-ant/${smartfrog.version}/*"/>
+        <include name="sf-anubis/${smartfrog.version}/*"/>
+        <include name="sf-database/${smartfrog.version}/*"/>
+        <include name="sf-dns/${smartfrog.version}/*"/>
+        <include name="sf-emailer/${smartfrog.version}/*"/>
+        <include name="sf-jmx/${smartfrog.version}/*"/>
+        <include name="sf-loggingservices/${smartfrog.version}/*"/>
+        <include name="sf-quartz/${smartfrog.version}/*"/>
+        <include name="sf-net/${smartfrog.version}/*"/>
+        <include name="sf-scripting/${smartfrog.version}/*"/>
+        <include name="sf-ssh/${smartfrog.version}/*"/>
+        <include name="sf-xml/${smartfrog.version}/*"/>
+        <!--testing-->
+        <include name="sf-xunit/${smartfrog.version}/*"/>
+        <include name="sf-junit/${smartfrog.version}/*"/>
+        <!--web bits-->
+        <include name="sf-www/${smartfrog.version}/*"/>
+        <include name="sf-tomcat/${smartfrog.version}/*"/>
+        <include name="sf-jetty/${smartfrog.version}/*"/>
+        <include name="sf-xmpp/${smartfrog.version}/*"/>
+      </zipfileset>
+
+    </zip>
+  </target>
+
+
+  <target name="expand-maven-artifacts" depends="package-maven-artifacts" >
+    <property name="expanded.maven.dir" location="${build.dir}/m2/repository" />
+    <mkdir dir="${expanded.maven.dir}" />
+    <unzip src="${maven.zip}" dest="${expanded.maven.dir}"/>
+    <echo>Maven artifacts expanded into ${expanded.maven.dir}</echo>
+  </target>
+
+  <target name="maven-artifacts" depends="expand-maven-artifacts" />
+
+
+  <target name="upload-maven-artifacts" depends="init-maven-artifacts,upload-init">
+    <fail>
+      <condition>
+        <not> <available file="${maven.zip}" /></not>
+      </condition>
+      No Maven artifacts found in ${maven.zip}
+    </fail>
+    <ssh-remote command="mkdir -p ${ssh.maven.dir}"/>
+    <property name="ssh.maven.path"
+        value="${ssh.user}@${ssh.server}:${ssh.maven.dir}" />
+    <scp remoteToDir="${ssh.maven.path}"
+        passphrase="${ssh.passphrase}"
+        keyfile="${ssh.keyfile}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}" >
+      <fileset file="${maven.zip}" />
+    </scp>
+    <ssh-remote command="unzip ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
+    <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
+    <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
+  </target>
+
+  <!--
+    this target calls the kernel's release process to create some release artifacts
+    that we can then redistribute. It is here because core/smartfrog's build process is somewhat standalone
+  -->
+
+  <target name="release-kernel" depends="init"
+      description="delegate to the core/smartfrog/buildRelease.xml">
+
+    <ant dir="${kernel.dir}"
+      antfile="buildRelease.xml"
+      inheritall="false"
+      inheritrefs="false"
+      target="release"
+      >
+        <property name="release.dir" location="${release.dir}" />
+      </ant>
+  </target>
+
+  <!-- targets below derived from ch07 examples of AiA -->
+  <target name="check-scp">
+    <fail>
+      SCP support not found; the scp task needs
+      1. ant-jsch.jar
+      2. jsch.jar from
+      http://www.jcraft.com/jsch/
+      <condition>
+        <not>
+          <typefound name="scp"/>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+
+   <target name="check-ftp" >
+    <fail>
+      FTP not present: get commons-net from
+      http://jakarta.apache.org/commons/net/
+      <condition>
+        <not><typefound name="ftp" /></not>
+      </condition>
+    </fail>
+  </target>
+
+
+  <target name="load-server-settings" depends="init">
+    <fail unless="server">
+      Failed.
+      Set the "server" property to the name of a server
+      whose connection settings are in a property file under
+      ${server.dir}.
+    </fail>
+    <property name="ssh.propfile"
+        location="${server.dir}/${server}.properties" />
+    <loadproperties srcfile="${ssh.propfile}" />
+    <echo>
+      SCP target is ${ssh.server}
+      User is ${ssh.user}
+      trust=${ssh.trust}
+      keyfile=${ssh.keyfile}
+    </echo>
+    <presetdef name="ssh-remote">
+      <sshexec host="${ssh.server}"
+          username="${ssh.user}"
+          passphrase="${ssh.passphrase}"
+          trust="${ssh.trust}"
+          timeout="6000000"
+          keyfile="${ssh.keyfile}"
+          />
+    </presetdef>
+  </target>
+
+  <target name="ready-to-upload-rpms"
+      depends="copy-rpms">
+
+  </target>
+
+
+  <!--iniitialise the upload process by copying all the relevant artifacts and creating
+  the upload fileset-->
+  <target name="upload-init"
+      depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-install">
+
+    <copy todir="${upload.dir}" flatten="true">
+      <fileset file="${izpack.jar}" />
+    </copy>
+    <copy todir="${upload.dir}" >
+      <fileset dir="${release.dir}" includes="*.zip,*.gz" />
+    </copy>
+    <fileset id="upload.fileset" dir="${upload.dir}">
+      <include name="*.jar"/>
+      <include name="*.zip"/>
+      <include name="*.gz"/>
+    </fileset>
+  </target>
+
+  <target name="ssh-test" depends="ssh-ls" >
+    <echo >ssh appears to be working</echo>
+  </target>
+  <target name="ssh-ls" depends="load-server-settings" >
+    <ssh-remote command="ls"/>
+  </target>
+
+  <target name="scp-upload" depends="upload-init" if="ssh.enabled">
+
+    <ssh-remote command="mkdir -p ${ssh.dir}"/>
+    <property name="ssh.path"
+        value="${ssh.user}@${ssh.server}:${ssh.dir}" />
+    <scp remoteToDir="${ssh.path}"
+        passphrase="${ssh.passphrase}"
+        keyfile="${ssh.keyfile}"
+        trust="${ssh.trust}"
+        verbose="${ssh.verbose}" >
+      <fileset refid="upload.fileset"/>
+    </scp>
+    <ssh-remote command="chmod a+r ${ssh.dir}/*"/>
+  </target>
+
+  <target name="ftp-upload" depends="upload-init" if="ftp.enabled">
+    <echo>FTP target is ${ftp.server}</echo>
+    <ftp server="${ftp.server}"
+        userid="${ftp.user}"
+        password="${ftp.password}"
+        action="mkdir"
+        remotedir="${ftp.dir}"/>
+    <ftp server="${ftp.server}"
+        userid="${ftp.user}"
+        password="${ftp.password}"
+        action="put"
+        verbose="true"
+        remotedir="${ftp.dir}">
+      <fileset refid="upload.fileset"/>
+    </ftp>
+  </target>
+
+  <target name="can-upload"
+      depends="load-server-settings,check-ftp,check-scp" />
+
+  <target name="dist-upload" depends="can-upload,dist,scp-upload,ftp-upload"
+        description="create the release artifacts and then upload"/>
+
+  <target name="upload" depends="upload-no-rebuild"
+      description="upload; set server property to choose the destination"/>
+
+  <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
+      description="upload the existing artifacts"/>
+
+  <target name="checksums" depends="ready-to-upload-rpms">
+
+  </target>
+
+  <!--
+        ====================================================
+            RPM uploads
+        ====================================================
+  -->
+
+  <target name="rpm-upload-init" depends="check-scp,init,ready-to-upload-rpms">
+    <fail unless="rpm.server">
+      Failed.
+      Set the "rpm.server" property to the name of a server
+      whose connection settings are in a property file under
+      ${server.dir}.
+    </fail>
+    <property name="rpm.propfile"
+        location="${server.dir}/rpm.${rpm.server}.properties" />
+    <loadproperties srcfile="${rpm.propfile}" />
+    <echo>SCP target is ${rpm.server} at ${rpm.ssh.server}</echo>
+    <property name="ssh.command.timeout" value="60000" />
+    <property name="ssh.rpm.command.timeout" value="600000" />
+    <presetdef name="rpmssh">
+      <sshexec host="${rpm.ssh.server}"
+          username="${rpm.ssh.user}"
+          passphrase="${rpm.ssh.passphrase}"
+          trust="${rpm.ssh.trust}"
+          keyfile="${rpm.ssh.keyfile}"
+          timeout="${ssh.command.timeout}"
+          />
+    </presetdef>
+    <presetdef name="rootssh">
+      <rpmssh
+          username="root"
+          timeout="${ssh.rpm.command.timeout}"
+          />
+    </presetdef>
+    <macrodef name="validate-rpm-result">
+      <attribute name="result" />
+      <sequential >
+        <echo>
+          @{result}
+        </echo>
+        <fail>
+          <condition >
+            <contains
+                string="@{result}"
+                substring="does not exist"/>
+          </condition>
+          The rpm contains files belonging to an unknown user.
+        </fail>
+      </sequential>
+    </macrodef>
+
+    <fileset id="rpm.upload.fileset" dir="${upload.dir}">
+      <include name="*.rpm"/>
+    </fileset>
+    <!--override this to -vv for extra diagnostics -->
+    <property name="rpm.verbosity" value ="-v" />
+    <!--this is the full rpm destination-->
+    <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}" />
+    <!--list of rpms-->
+    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-anubis smartfrog-logging" />
+
+    <echo >
+      remote server is ${rpm.ssh.server}
+      remote directory is ${rpm.full.ssh.dir}
+      rpms to install: ${rpms.list}
+    </echo>
+  </target>
+
+  <target name="rpm-upload" depends="rpm-upload-init" >
+    <rpmssh command="rm -rf ${rpm.full.ssh.dir}/" failonerror="false"/>
+    <rpmssh command="mkdir -p ${rpm.full.ssh.dir}"/>
+    <property name="rpm.ssh.path"
+        value="${rpm.ssh.user}@${rpm.ssh.server}:${rpm.full.ssh.dir}" />
+    <scp remoteToDir="${rpm.ssh.path}"
+        passphrase="${rpm.ssh.passphrase}"
+        keyfile="${rpm.ssh.keyfile}"
+        trust="${rpm.ssh.trust}"
+        verbose="${rpm.ssh.verbose}" >
+      <fileset refid="rpm.upload.fileset"/>
+    </scp>
+  </target>
+
+  <target name="rpm-remote-install-core" depends="rpm-upload" >
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
+        outputProperty="rpm.result.core"/>
+    <validate-rpm-result result="${rpm.result.core}" />
+  </target>
+
+  <target name="rpm-remote-install-daemon" depends="rpm-upload" >
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
+        outputProperty="rpm.result.daemon"/>
+    <validate-rpm-result result="${rpm.result.daemon}" />
+  </target>
+
+  <target name="rpm-remote-install-demo" depends="rpm-upload" >
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm"
+        outputProperty="rpm.result.demo"/>
+    <validate-rpm-result result="${rpm.result.demo}" />
+  </target>
+
+  <target name="rpm-remote-install-all" depends="rpm-upload" >
+    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-*.rpm"
+        outputProperty="rpm.result.all"/>
+    <validate-rpm-result result="${rpm.result.all}" />
+  </target>
+
+
+  <target name="rpm-ready-to-remote-install" depends="rpm-remote-uninstall"/>
+
+
+  <target name="rpm-remote-install" depends="rpm-remote-install-all"
+      description="install the RPMs to the remote server">
+  </target>
+
+  <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init" >
+    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"/>
+  </target>
+
+  <target name="rpm-remote-uninstall" depends="rpm-upload-init"
+      description="A forced uninstall of the RPMs, no dependency checking">
+    <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list}"
+        failonerror="false"/>
+  </target>
+
+  <target name="rpm-remote-test" depends="rpm-remote-version,
+    rpm-remote-uninstall-strict"
+      description="install, verify and uninstall the RPMs to a remote target"/>
+
+  <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install" >
+    <rpmssh command="sfVersion"
+        outputProperty="rpm.test.results"/>
+    <echo>${rpm.test.results}</echo>
+    <fail>
+      <condition>
+        <not>
+          <contains string="${rpm.test.results}" substring="${smartfrog.version}"/>
+        </not>
+      </condition> 
+      Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
+      the installed smartfrog is not what we just built and pushed up.
+    </fail>
+  </target>
+
+<!--  <target name="rpm-remote-daemon" depends="rpm-remote-install-daemon" >
+    <rpmssh command="sfVersion"
+        outputProperty="rpm.daemon.results"/>
+    <echo>${rpm.test.results}</echo>
+    <fail>
+      <condition>
+        <not>
+          <contains string="${rpm.test.results}" substring="${smartfrog.version}" />
+        </not>
+      </condition>
+      Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
+      the installed smartfrog is not what we just built and pushed up.
+    </fail>
+  </target>-->
+
+
+  <!--
+        ====================================================
+            Subversion tagging
+        ====================================================
+  -->
+  <target name="svn-init" depends="init">
+    <property name="svn.tag" value="release${smartfrog.version}" />
+    <echo>SVN tag="${svn.tag}"</echo>
+    <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/" />
+    <property name="svn.branch.url" value="${svn.url}tags/${svn.tag}" />
+  </target>
+
+  <!--
+  Usage: ant svn-tag -Dsvn.tag=3.11.001beta -Dsvn.revision=HEAD
+  Issue a command like
+    svn copy https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/trunk -r 4328 \
+           https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release-1.0 \
+      -m "release3.11.001beta"
+
+  -->
+
+  <target name="svn-revision-check" depends="svn-init">
+    <fail unless="svn.revision">
+      The property svn.revision must be set to define which revision to use
+    </fail>
+
+  </target>
+
+  <target name="svn-tag" depends="svn-init"
+  description="Tag a version of the SVN repository; set svn.revision to the specific revision required">
+    <property name="release.manager" value="${user.name} "/>
+    <property name="svn.message"
+        value="release ${svn.tag} (${smartfrog.version}) from revision ${svn.revision} on ${build.date} by ${release.manager}" />
+    <echo>SVN message="${svn.message}"</echo>
+    <echo>issuing SVN command</echo>
+    <exec failonerror="true"
+        executable="svn">
+      <arg value="copy"/>
+      <arg value="-r"/>
+      <arg value="${svn.revision}"/>
+      <arg value="${svn.url}/trunk"/>
+      <arg value="${svn.branch.url}"/>
+      <arg value="-m" />
+      <arg value="${svn.message}"/>
+    </exec>
+    <echo>Tag URL: ${svn.branch.url}</echo>
+  </target>
+
+<!--
+Usage ant svn-deletetag -Dsvn.tag=3.11.001beta
+svn delete  https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/something \
+             -m "Removing unwanted tag."
+-->
+  <target name="svn-deletetag" depends="svn-init"
+    description="remove an unwanted tag; set svn.tag to the specific tag name">
+    <property name="svn.delete.message"
+      value="removing revision ${svn.tag} on ${build.date} by ${user.name}" />
+    <echo>issuing SVN command</echo>
+    <exec failonerror="true"
+        executable="svn">
+      <arg value="delete"/>
+      <arg value="${svn.branch.url}"/>
+      <arg value="-m" />
+      <arg value="${svn.delete.message}"/>
+    </exec>
+  </target>
+
+  <!--
+  Create the release notes for this release
+  -->
+  <target name="create-release-notes" depends="svn-revision-check"
+      description="
+      Create the release notes for this release.
+      Requires:
+      * svn-revision set for the revision number
+      * smartfrog.version set for the release version
+      "
+      >
+    <property name="announcements.dir" location="doc/announcements" />
+    <property name="target.announcement" location="${announcements.dir}/release_${smartfrog.version}.txt" />
+    <property name="target.announcement.html" location="${announcements.dir}/release_${smartfrog.version}.html" />
+
+    <expandingcopy tofile="${target.announcement}" >
+      <fileset file="${announcements.dir}/release-template.txt"/>
+    </expandingcopy>
+    <expandingcopy tofile="${target.announcement.html}" >
+      <fileset file="${announcements.dir}/release-template.html"/>
+    </expandingcopy>
+    <echo>
+      created announcement files:
+      ${target.announcement}
+      ${target.announcement.html}
+    </echo>
+  </target>
+
+</project>
