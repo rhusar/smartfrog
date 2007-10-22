@@ -109,7 +109,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         boolean asynch = false;
-        if ( (sfResolve(ATR_ASYNCH, asynch , asynch))) {
+        if ( (sfResolve(ATTR_ASYNCH, asynch , asynch))) {
             worker = new SmartFrogThread(this);
             worker.start();
         } else {
