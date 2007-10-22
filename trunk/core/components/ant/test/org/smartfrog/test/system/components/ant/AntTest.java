@@ -23,9 +23,10 @@ package org.smartfrog.test.system.components.ant;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.ant.Ant;
 
 /**
- * JUnit test class for test cases related to "emailer" component
+ * JUnit test class for test cases related to Ant
  */
 public class AntTest
     extends SmartFrogTestBase {
@@ -36,11 +37,19 @@ public class AntTest
         super(s);
     }
 
-    public void testCaseANT() throws Throwable {
+    public void testProperties() throws Throwable {
         
-	    Prim applicationANT = deployExpectingSuccess(FILES+"ant.sf", "tcANT");
-	    assertNotNull(applicationANT);
-	    
+	    application = deployExpectingSuccess(FILES+"testProperties.sf", "tcANT");
+        Ant ant=(Ant) application;
+        Prim runtime=application.sfResolve(Ant.ATTR_RUNTIME,(Prim)null,true);
+        String message = runtime.sfResolve("sfhome", "", true);
+        assertTrue("missing text from "+message,message.contains("SFHOME is"));
+        message = runtime.sfResolve("pathtext", "", true);
+        assertTrue("missing text from " + message, message.contains("path="));
+        assertFalse("unexpanded text in " + message, message.contains("${path}"));
+        assertFalse("unexpanded text in " + message, message.contains("${env."));
+
+
     }
 }
 

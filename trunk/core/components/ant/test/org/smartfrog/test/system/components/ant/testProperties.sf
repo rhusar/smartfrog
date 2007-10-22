@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/ant/components.sf"
 
 
-sfConfig extends Ant {
+TestProperties extends Ant {
   echoTask extends echo {
     message "hello world!";
   }
@@ -30,9 +30,36 @@ sfConfig extends Ant {
     message "--------------------------------";
   }
 
+  setProperty extends property {
+    name "sfhome";
+    value "SFHOME is <${env.SFHOME}>";
+  }
+
   echoSFHOMETask extends echo {
-    message "SFHOME is ${env.SFHOME}";
+    message "${sfhome}";
    }
+
+  setPath1 extends property {
+    name "env.PATH";
+    value "${env.Path}";
+  }
+
+  setPath2 extends property {
+    name "path";
+    value "${env.PATH}";
+  }
+
+  setPath3 extends property {
+    name "pathtext";
+    value "path=${path}";
+  }
+
+  echoPath extends echo {
+    message "${pathtext}";
+   }
+
 }
 
+sfConfig extends TestProperties {
 
+}
