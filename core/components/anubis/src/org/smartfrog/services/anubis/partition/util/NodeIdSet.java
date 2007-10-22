@@ -156,12 +156,16 @@ public class NodeIdSet implements Serializable, Cloneable, WireSizes {
      */
     public boolean flip(int i){
         boolean flipOk = false;
-        if (i < this.size()){
+        if (i >= this.size()){
+            // resize
+            storage = this.createByteArray(i+1, storage);
+        }
+//        if (i < this.size()){
             int byteNbr = i / 8;
             byte pos = (byte)(i % 8);
             storage[byteNbr] = (byte)(storage[byteNbr] ^ (1 << pos));
             flipOk = true;
-        }
+//        } 
         return flipOk;
     }
 
