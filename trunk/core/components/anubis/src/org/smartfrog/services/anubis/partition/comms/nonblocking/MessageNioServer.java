@@ -420,7 +420,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
     public void initiateConnection(Identity id, MessageConnection con, HeartbeatMsg hb) {
         NonBlockingConnectionInitiator initiator = null;
         try {
-            initiator = new NonBlockingConnectionInitiator(con, hb);
+            initiator = new NonBlockingConnectionInitiator(con, hb, wireSecurity);
         } catch (Exception ex) {
             if (asyncLog.isWarnEnabled())
                 asyncLog.warn(ex);

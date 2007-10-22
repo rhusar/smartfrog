@@ -21,9 +21,11 @@ package org.smartfrog.services.anubis.partition.comms.nonblocking;
 
 import java.io.IOException;
 
+import org.smartfrog.services.anubis.partition.comms.IOConnection;
 import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import org.smartfrog.services.anubis.partition.wire.WireFormException;
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
+import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 
@@ -31,19 +33,29 @@ public class NonBlockingConnectionInitiator {
 
     private MessageConnection connection = null;
     private HeartbeatMsg heartbeat = null;
+    private WireSecurity wireSecurity = null;
     private LogSF  log       = LogFactory.getLog(this.getClass().toString());
 
-    public NonBlockingConnectionInitiator(MessageConnection con, HeartbeatMsg hb) throws IOException,
+    public NonBlockingConnectionInitiator(MessageConnection con, HeartbeatMsg hb, WireSecurity sec) throws IOException,
         WireFormException {
         connection = con;
         heartbeat = hb;
+        wireSecurity = sec;
     }
 
 
     public void finishNioConnect(MessageNioHandler impl) {
 
         if ( (impl.isReadyForWriting()) && (impl.connected())) {
-            impl.send(heartbeat);
+            try {
+                heartbeat.setOrder(IOConnection.INITIAL_MSG_ORDER);
+                impl.send( wireSecurity.toWireForm(heartbeat) );
+            } catch (WireFormException e) {
+                if( log.isErrorEnabled() ) {
+                    log.error("MCI: failed to marshall timed message: " + heartbeat, e);
+                }
+                return;
+            }
         }
         else {
             if( log.isErrorEnabled() )

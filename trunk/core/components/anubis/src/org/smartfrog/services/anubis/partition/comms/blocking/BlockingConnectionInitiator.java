@@ -23,29 +23,35 @@ import org.smartfrog.services.anubis.partition.protocols.partitionmanager.Connec
 import org.smartfrog.services.anubis.partition.wire.msg.HeartbeatMsg;
 import org.smartfrog.services.anubis.partition.wire.security.WireSecurity;
 import org.smartfrog.services.anubis.partition.util.Identity;
+import org.smartfrog.services.anubis.partition.comms.IOConnection;
 import org.smartfrog.services.anubis.partition.comms.MessageConnection;
 import java.io.IOException;
 import org.smartfrog.services.anubis.partition.wire.WireFormException;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 public class BlockingConnectionInitiator
     extends Thread {
-
+    
     private Identity me = null;
     private ConnectionSet connectionSet = null;
     private MessageConnection connection = null;
     private HeartbeatMsg heartbeat = null;
     private WireSecurity wireSecurity = null;
+    private LogSF log = LogFactory.getLog(this.getClass().toString());
 
     public BlockingConnectionInitiator(Identity id,
                                        MessageConnection con,
                                        ConnectionSet cset,
-                                       HeartbeatMsg hb) throws IOException,
+                                       HeartbeatMsg hb,
+                                       WireSecurity sec) throws IOException,
         WireFormException {
         super();
         me = id;
         connection = con;
         connectionSet = cset;
         heartbeat = hb;
+        wireSecurity = sec;
     }
 
     /**
@@ -54,7 +60,7 @@ public class BlockingConnectionInitiator
      * connections is an asynchronous task.
      */
     public void run() {
-
+        
         MessageConnectionImpl impl = new MessageConnectionImpl(
                 me, connectionSet, connection.getSenderAddress(), connection, wireSecurity);
 
@@ -62,10 +68,26 @@ public class BlockingConnectionInitiator
          * If the attempt to establish a connection failed we just give up. In
          * time the MessageConnection will time out.
          */
-        if( !impl.connected() )
+        if( !impl.connected() ) {
+            if( log.isDebugEnabled() ) {
+                log.debug("Blocking connection initiator failed to establish a connection");
+            }
             return;
+        }
 
-        impl.send(heartbeat);
+        /**
+         * Set the order to be the initial message and 
+         * send with security
+         */
+        try {
+            heartbeat.setOrder(IOConnection.INITIAL_MSG_ORDER);
+            impl.send( wireSecurity.toWireForm(heartbeat) );
+        } catch (WireFormException e) {
+            if( log.isErrorEnabled() ) {
+                log.error(me + " failed to marshall timed message: " + heartbeat, e);
+            }
+            return;
+        }
 
         /**
          * If the implementation is successfully assigned then start its thread

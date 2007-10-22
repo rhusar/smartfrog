@@ -48,8 +48,8 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     private ConnectionSet           connectionSet     = null;
     private boolean                 announceTerm      = true;
     private WireSecurity            wireSecurity      = null;
-    private long                    sendCount         = 0;
-    private long                    receiveCount      = 0;
+    private long                    sendCount         = INITIAL_MSG_ORDER;
+    private long                    receiveCount      = INITIAL_MSG_ORDER;
     private LogSF                   log               = LogFactory.getLog(this.getClass().toString());
 
     /**
@@ -128,12 +128,16 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
             }
             shutdown();
             return;
-        }
+        } 
         
-
+        /**
+         * handle the message. We do not increment the order for the 
+         * initial heartbeat message opening a new connection.
+         */
         if( messageConnection == null ) {
             initialMsg(tm);
         } else {
+            receiveCount++;
             messageConnection.deliver(tm);
         }
     }
