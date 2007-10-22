@@ -27,6 +27,7 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -132,21 +133,20 @@ public class AntProject {
      * load properties from a [[name,value]] list and set them in an ant project
      * @param attribute attribute to bind to
      * @return a property list, which may have zero elements
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     */
+     * @throws SmartFrogResolutionException if the vector of properties isnt  a list of pairs
+     * @throws RemoteException In case of Remote/network error
+     *  */
     private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
         Vector propList=owner.sfResolve(Ant.ATTR_PROPERTIES,(Vector)null,false);
         if(propList!=null) {
-            Iterator propertyListIt=propList.iterator();
-            while (propertyListIt.hasNext()) {
-                Vector entry = (Vector) propertyListIt.next();
-                if(entry.size()!=2) {
-                    throw new SmartFrogResolutionException("Property entry of the wrong size"+entry);
+            for (Object aPropList : propList) {
+                Vector entry = (Vector) aPropList;
+                if (entry.size() != 2) {
+                    throw new SmartFrogResolutionException("Property entry of the wrong size" + entry);
                 }
-                String name=entry.get(0).toString();
+                String name = entry.get(0).toString();
                 String value = entry.get(1).toString();
-                project.setUserProperty(name,value);
+                project.setUserProperty(name, value);
             }
         }
     }
@@ -169,41 +169,54 @@ public class AntProject {
 
     public Object getElement(String name, ComponentDescription cd) throws Exception {
         String attribute = null;
-        String elementType = ((ComponentDescription) cd).sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
+        String elementType = cd.sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
         Object newElement = createElement(null, null, elementType);
         if (newElement != null) {
             ((DataType) newElement).setProject(project);
-            return getElement(newElement, (String) attribute, (ComponentDescription) cd);
+            return getElement(newElement, attribute, cd);
         }
         return newElement;
     }
 
 
-    Object getElement(Object task, String name, ComponentDescription cd) throws SmartFrogResolutionException,
+    /**
+     * Recursive construction of an element from a CD
+     * @param task task the base element/task
+     * @param name elem
+     * @param cd component description to work off
+     * @return a new element of indeterminate type
+     * @throws SmartFrogResolutionException attribute resolution problems
+     * @throws IllegalAccessException forbidden methods
+     * @throws InvocationTargetException problems invoking the method (with something else nested)
+     * @throws ClassNotFoundException no matching class
+     * @throws InstantiationException unable to create the element
+     * @throws NoSuchMethodException missing methods
+     */
+    private Object getElement(Object task, String name, ComponentDescription cd) throws SmartFrogResolutionException,
             IllegalAccessException, InvocationTargetException, ClassNotFoundException, InstantiationException,
             NoSuchMethodException {
         //System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
-        java.lang.reflect.Method[] methods = task.getClass().getMethods();
+        Method[] methods = task.getClass().getMethods();
         String attribute = null;
         Object value = null;
         Iterator a = cd.sfAttributes();
         for (Iterator v = cd.sfValues(); v.hasNext();) {
             attribute = (String) a.next();
             value = v.next();
-            if (value instanceof org.smartfrog.sfcore.componentdescription.ComponentDescription) {
+            if (value instanceof ComponentDescription) {
                 //Create an inner element
                 String elementType = ((ComponentDescription) value).sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
                 Object newElement = createElement(task, methods, elementType);
                 if (newElement != null) {
-                    getElement(newElement, (String) attribute, (ComponentDescription) value);
+                    getElement(newElement, attribute, (ComponentDescription) value);
                 }
             } else {
                 // add attribute but relsove first if it is a reference.
-                if ((value instanceof Reference)&&(owner!=null)){
+                if ((value instanceof Reference) && (owner != null)) {
                     try {
-                        value = owner.sfResolve((Reference)value);
+                        value = owner.sfResolve((Reference) value);
                     } catch (Exception ex) {
-                        log.error("Failed to resolve reference value for "+attribute+" in "+name+" task",ex);
+                        log.error("Failed to resolve reference value for " + attribute + " in " + name + " task", ex);
                     }
                 }
                 setAttribute(task, methods, attribute, value);
@@ -245,7 +258,7 @@ public class AntProject {
                     value = convType((String) value, ptypes[0]);
                 }
                 ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
-                method.invoke(task, new Object[]{value});
+                method.invoke(task, value);
                 //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
                 return;
             }
@@ -278,11 +291,12 @@ public class AntProject {
                 method = methods[e++];
                 mName = method.getName();
                 ////System.out.println("            Method - "+mName);
-                if (mName.equalsIgnoreCase("create" + elementType)) {
+                final String lowerName = mName.toLowerCase(Locale.ENGLISH);
+                if (lowerName.equals("create" + elementType)) {
                     //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
-                    return method.invoke(task, new Object[]{});
-                } else if (mName.equalsIgnoreCase("add" + elementType) || mName
-                        .equalsIgnoreCase("addConfigured" + elementType)) {
+                    return method.invoke(task);
+                } else if (lowerName.equals("add" + elementType)
+                        || lowerName.equals("addConfigured" + elementType)) {
                     Class[] ptypes = method.getParameterTypes();
                     if (ptypes.length == 1) {
                         Object[] args = new Object[]{ptypes[0].newInstance()};
@@ -474,7 +488,6 @@ public class AntProject {
         if (clazz == null) {
             throw new SmartFrogResolutionException("no such task: " + taskname);
         }
-        //Task tobj = (Task)Class.forName(clazz).newInstance();
         Task tobj = (Task) clazz.newInstance();
         tobj.setProject(project);
         tobj.setTaskName(tname);

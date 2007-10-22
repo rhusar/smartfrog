@@ -29,9 +29,11 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  */
@@ -39,7 +41,8 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     private AntProject antProject;
     private AntRuntime runtime;
     private SmartFrogException caughtException;
-    private boolean exitAntNow=false;
+    private volatile boolean exitAntNow=false;
+    private SmartFrogThread worker;
 
 
     /**
@@ -62,18 +65,15 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
         antProject = new AntProject(this, log);
         runtime = new AntRuntime(this);
         sfReplaceAttribute(ATTR_RUNTIME, runtime);
-
-        sfLog().info("end sfDeploy");
-
     }
 
 
     private void executeNestedAntTasks() throws RemoteException, SmartFrogException {
         Object attribute = null;
         Object value = null;
-        Iterator a = this.sfAttributes();
+        Iterator a = sfAttributes();
         try {
-            for (Iterator i = this.sfValues(); i.hasNext() && !exitAntNow;) {
+            for (Iterator i = sfValues(); i.hasNext() && !exitAntNow;) {
                 attribute = a.next();
                 value = i.next();
                 if (value instanceof ComponentDescription) {
@@ -86,9 +86,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
                         } else {
                             //System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
                         }
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         Throwable thr = ex;
-                        if (thr instanceof java.lang.reflect.InvocationTargetException) {
+                        if (thr instanceof InvocationTargetException) {
                             thr = ex.getCause();
                         }
                         throw SmartFrogException.forward("Error executing: " + attribute, thr);
@@ -109,8 +109,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         boolean asynch = false;
-        if ( ((boolean) sfResolve(ATR_ASYNCH, asynch , asynch))) {
-           new Thread(this).run();
+        if ( (sfResolve(ATR_ASYNCH, asynch , asynch))) {
+            worker = new SmartFrogThread(this);
+            worker.start();
         } else {
             exec();
         }
@@ -134,7 +135,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
 
     /**
      * Get a property from ant.
-     * @param name
+     * @param name the ant property
      * @return the property; or null for no match or no ant
      */
     public synchronized String getAntProperty(String name) {
@@ -196,29 +197,18 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     }
 
     /**
-     * Liveness call in to check if this component is still alive. This method
-     * can be overriden to check other state of a component. An example is
-     * Compound where all children of the compound are checked. This basic
-     * check updates the liveness count if the ping came from its parent.
-     * Otherwise (if source non-null) the liveness count is decreased by the
-     * sfLivenessFactor attribute. If the count ever reaches 0 liveness
-     * failure on tha parent has occurred and sfLivenessFailure is called with
-     * source this, and target parent. Note: the sfLivenessCount must be
-     * decreased AFTER doing the test to correctly count the number of ping
-     * opportunities that remain before invoking sfLivenessFailure. If done
-     * before then the number of missing pings is reduced by one. E.g. if
-     * sfLivenessFactor is 1 then a sfPing from the parent sets
-     * sfLivenessCount to 1. The sfPing from a non-parent would reduce the
-     * count to 0 and immediately fail.
+     * Liveness call in to check if this component is still alive.
+     *
+     * As well as passing the call up to the parent, any caught exception from the Ant run
+     * will trigger a liveness failure.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(caughtException!=null) {
+        if (caughtException != null) {
             throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(caughtException);
         }
     }

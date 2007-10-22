@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  *
+ * This is a logger that bridges from the Ant logs to SmartFrog.
  * Created 26-Sep-2007 15:18:19
  *
  */
