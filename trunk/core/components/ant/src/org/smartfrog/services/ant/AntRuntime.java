@@ -45,16 +45,15 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
 
 
     /**
-     * Find an attribute in this context.
+     * Find an attribute in this context by looking up the specific Ant property
      *
      * @param name attribute key to resolve
      * @return resolved attribute
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *                                  failed to find attribute
+     * @throws SmartFrogResolutionException failed to find attribute
      */
     public Object sfResolveHere(Object name) throws SmartFrogResolutionException {
 
-        if(owner !=null) {
+        if (owner != null) {
             final String value = owner.getAntProperty(name.toString());
             if (value != null) {
                 return value;
@@ -65,18 +64,18 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
 
     /**
      * set static properties from a terminated project
-     * @param properties
-     * @throws SmartFrogRuntimeException
-     * @throws RemoteException
+     * @param properties hashtable of properties (type (string,string))
+     * @throws SmartFrogRuntimeException when name or value are null, or injection failed
+     * @throws RemoteException In case of Remote/network error
      */
     public void setStaticProperties(Hashtable properties) throws SmartFrogRuntimeException, RemoteException {
-        if ((owner!=null)&&(properties !=null)) {
+        if ((owner != null) && (properties != null)) {
             Enumeration keys = properties.keys();
             while (keys.hasMoreElements()) {
                 String key = (String) keys.nextElement();
                 if (key != null) {
                     String value = (String) properties.get(key);
-                    if (value!=null) {
+                    if (value != null) {
                         owner.sfReplaceAttribute(key, value);
                     }
                 }
