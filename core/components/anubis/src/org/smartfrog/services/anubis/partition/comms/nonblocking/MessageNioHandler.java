@@ -73,6 +73,8 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
     private boolean open = false;
     private boolean sendingDoneOK = false;
     private WireSecurity wireSecurity = null;
+    private long                    sendCount         = INITIAL_MSG_ORDER;
+    private long                    receiveCount      = INITIAL_MSG_ORDER;
 
     private RxQueue rxQueue = null;
 
@@ -374,21 +376,27 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
     }
 
 
+        
     // blocking write method: calls the above asynchronous one and this object needs to register itself as
-    // a SendingListener
-    
+    // a SendingListener   
     public synchronized void send(TimedMsg tm){ 
         
         byte[] bytesToSend = null;
         try {
+            tm.setOrder(sendCount);
+            sendCount++;
             bytesToSend = wireSecurity.toWireForm(tm);
         } catch (Exception ex) {
             if( log.isErrorEnabled() )
                 log.error(me + " failed to marshall timed message: " + tm + " - not sent", ex);
             return;
         }
-   
         
+        send(bytesToSend);
+    }
+   
+    // only called directly from NonBlockingConnectionInitiator
+    public synchronized void send(byte[] bytesToSend) {
         
 	if( debug && log.isTraceEnabled() )
 	    log.trace("MNH: sendObject withOUT listener is being called");
@@ -472,10 +480,22 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
         
         TimedMsg tm = (TimedMsg)msg;
         
-
+        if( tm.getOrder() != receiveCount ) {
+            if( log.isErrorEnabled() ) {
+                log.error(me + "connection transport has delivered a message out of order - shutting down");
+            }
+            shutdown();
+            return;
+        } 
+        
+        /**
+         * handle the message. We do not increment the order for the 
+         * initial heartbeat message opening a new connection.
+         */
         if( messageConnection == null ) {
             initialMsg(tm);
         } else {
+            receiveCount++;
             messageConnection.deliver(tm);
         }
 

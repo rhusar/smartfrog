@@ -122,7 +122,7 @@ public class TimedMsg extends WireMsg implements Timed, Sender {
      * @return String
      */
     public String toString() {
-        return "[" + time + ", " + (addressUnmarshalled ? sender.toString() : "SENDER_ADDRESS_MARSHALLED") + ", " + address + "]";
+        return "[" + time + ", " + order + ", "  + (addressUnmarshalled ? sender.toString() : "SENDER_ADDRESS_MARSHALLED") + ", " + address + "]";
     }
 
     private void addressFromWire() {

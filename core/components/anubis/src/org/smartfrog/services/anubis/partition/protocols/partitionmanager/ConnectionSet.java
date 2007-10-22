@@ -164,6 +164,7 @@ public class ConnectionSet extends CompoundImpl
             ConnectionAddress connectionAddress = ((ConnectionAddressData)sfResolve("contactAddress")).getConnectionAddress();
             IOConnectionServerFactory factory = (IOConnectionServerFactory)sfResolve("connectionServerFactory");
             connectionServer = (IOConnectionServer)factory.create(connectionAddress, me, this);
+            
 
             SelfConnection self = new SelfConnection(me, connectionView, connectionServer.getAddress(), isPreferredLeaderNode);
 

@@ -24,6 +24,8 @@ import org.smartfrog.services.anubis.partition.wire.msg.TimedMsg;
 
 
 public interface IOConnection {
+    
+    public static int INITIAL_MSG_ORDER = 0;
 
     public void terminate();
     public void silent();

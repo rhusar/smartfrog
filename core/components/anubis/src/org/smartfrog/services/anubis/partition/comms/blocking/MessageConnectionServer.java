@@ -130,8 +130,7 @@ public class MessageConnectionServer
     public void initiateConnection(Identity id, MessageConnection con, HeartbeatMsg hb) {
         BlockingConnectionInitiator initiator = null;
         try {
-            initiator = new BlockingConnectionInitiator(id, con, connectionSet,
-                hb);
+            initiator = new BlockingConnectionInitiator(id, con, connectionSet, hb, wireSecurity);
         } catch (Exception ex) {
             if( log.isErrorEnabled() )
                 log.error("Error initiating a blocking connection", ex);

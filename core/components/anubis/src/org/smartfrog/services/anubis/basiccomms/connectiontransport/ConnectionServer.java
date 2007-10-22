@@ -122,6 +122,10 @@ public class ConnectionServer extends Thread {
             listenSocket.socket().bind(new InetSocketAddress(inetAddress, port));
 
         } catch(IOException ioex) {
+            
+            if( log.isDebugEnabled() ) {
+                log.debug("Failed to create server socket: ", ioex);
+            }
 
            listenSocket = null;
            open  = false;
