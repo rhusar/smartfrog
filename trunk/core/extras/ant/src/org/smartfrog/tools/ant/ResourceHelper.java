@@ -27,9 +27,6 @@ import org.apache.tools.ant.types.Resource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -37,7 +34,8 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 
 /**
- *
+ * Class to help with resources
+ * <p/>
  * Created 19-Oct-2007 16:11:10
  *
  */
@@ -47,10 +45,20 @@ public class ResourceHelper {
     protected ProjectComponent owner;
 
 
+    /**
+     * construct with information about a file
+     * @param owner owning component (For logging etc)
+     */
     public ResourceHelper(ProjectComponent owner) {
         this.owner = owner;
     }
 
+    /**
+     * Save an Ant resource to a file
+     * @param resource resource instance
+     * @param target target file
+     * @throws BuildException if the resource doesn't provide an input stream, or on any IO Exception.
+     */
     public void saveResourceToFile(Resource resource,File target) {
         BufferedReader reader = null;
         BufferedWriter dest=null;
@@ -60,7 +68,7 @@ public class ResourceHelper {
                 throw new BuildException("Resource has no input stream "+resource);
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
-            String policy = FileUtils.safeReadFully(reader);
+            String policy = FileUtils.readFully(reader);
             dest = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target)));
             dest.write(policy);
         } catch (IOException e) {
