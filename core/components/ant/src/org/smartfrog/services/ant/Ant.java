@@ -78,7 +78,7 @@ public interface Ant extends Remote {
      * </p>
      * Value {@value}.
      * */
-   final static String ATR_ASYNCH = "asynch";
+    String ATTR_ASYNCH = "asynch";
 
     String ATTR_TASKS_RESOURCE = "tasksResource";
 
