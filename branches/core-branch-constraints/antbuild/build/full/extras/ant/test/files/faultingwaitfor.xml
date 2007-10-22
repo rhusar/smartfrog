@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="parse" default="teardown">
+
+  <description>
+    Tests for the parse.
+
+    command line invocation
+    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib -f faultingwaitfor.xml testTimeout
+
+    ant -lib ../../build/dist/lib/ -lib ../../../../smartfrog/dist/lib/ -f faultingwaitfor.xml testTimeout
+
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib
+    ../../../../smartfrog/dist/lib/smartfrog.jar -lib
+    ../../../../smartfrog/dist/lib/sfExamples.jar -f deploy.xml testResource
+  </description>
+  <import file="test-common.xml"/>
+
+  <target name="testSuccess">
+    <sf-faultingwaitfor maxwait="2" >
+      <equals arg1="a" arg2="a" />
+    </sf-faultingwaitfor>
+  </target>
+
+  <target name="testTimeout">
+    <sf-faultingwaitfor maxwait="2" >
+      <equals arg1="a" arg2="b"/>
+    </sf-faultingwaitfor>
+  </target>
+
+  <target name="testTimeoutMessage">
+    <sf-faultingwaitfor maxwait="2" message="equality failed">
+      <equals arg1="a" arg2="b"/>
+    </sf-faultingwaitfor>
+  </target>
+
+</project>

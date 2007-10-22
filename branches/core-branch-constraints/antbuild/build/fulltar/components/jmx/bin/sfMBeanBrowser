@@ -1,0 +1,6 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+
+for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+
+java com.hp.sfServices.jmx.mbeanbrowser.MBeanBrowser $1 $2 $3 $4 $5 $6 $7 $8

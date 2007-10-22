@@ -1,0 +1,34 @@
+#!/bin/bash
+# ./secSetupRelease <release_zip> <CAdir> <host1dir> <host2dir> ....
+export TOP=$PWD
+export REL=$1
+shift
+export RELNAME=$1
+shift
+export CADIR=$1
+shift
+#first is the CA
+mkdir $TOP/$CADIR
+#cp $TOP/$REL $TOP/$CADIR
+cd $TOP/$CADIR
+jar xvf $TOP/$REL
+cd $RELNAME/dist
+ant initCA
+ant signJars
+ant newDaemon
+cd private
+mv host* host1
+cd $TOP/$CADIR
+jar cvf $TOP/all.jar *
+cd $TOP
+
+for x in $@;
+ do 
+    mkdir $x
+    cd $x
+    jar xvf $TOP/all.jar
+#cleanup the test
+    cd $TOP
+ done
+
+
