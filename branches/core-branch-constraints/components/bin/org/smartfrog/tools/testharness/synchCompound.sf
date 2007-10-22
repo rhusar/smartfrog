@@ -1,0 +1,9 @@
+
+
+SynchCompound extends Compound {
+  sfClass "org.smartfrog.tools.testharness.SynchCompoundImpl";       
+  // terminateTag - scheduler tag to allow termination
+  //terminateTag "default";
+  // oracle used to synchronize termination.
+  scheduler LAZY ATTRIB globalScheduler;
+}

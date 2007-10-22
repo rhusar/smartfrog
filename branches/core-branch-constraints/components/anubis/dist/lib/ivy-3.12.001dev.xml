@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-anubis" revision="3.12.001dev" status="integration" publication="20070927014519">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+        Anubis fault-tolerant tuple space
+        Created 16-Nov-2006
+    </description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+<configurations defaultconfmapping="default">
+  <conf name="default" extends="master,runtime" description="default configuration contains artifacts and runtime dependencies"/>
+  <conf name="build" visibility="private" description="artifacts needed to build the application"/>
+  <conf name="compile" visibility="private" description="artifacts needed to compile the application"/>
+  <conf name="daemon" visibility="private" description="the classpath needed to run smartfrog daemons"/>
+  <conf name="test" extends="default,compile" description="the classpath needed to run tests"/>
+  <conf name="master" description="contains the artifact but no dependencies"/>
+  <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+  <conf name="runtime" description="runtime but not the artifact" extends="redist"/>
+  <conf name="documentation" description="all documentation artifacts"/>
+</configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+    <artifact name="sf-anubis-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-anubis-documentation" conf="documentation" ext="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog" name="smartfrog" changing="true" rev="3.12.003dev" conf="compile->services;runtime->services;daemon->services"/>
+    <dependency org="org.smartfrog" name="sf-tasks" changing="true" rev="3.12.003dev" conf="build->default"/>
+  </dependencies>
+</ivy-module>

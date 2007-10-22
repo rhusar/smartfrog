@@ -1,0 +1,180 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+/*
+ components to set up hsqldb testing
+ */
+
+#include "/org/smartfrog/services/database/test/system/core/components.sf";
+#include "/org/smartfrog/services/database/mysql/components.sf";
+#include "/org/smartfrog/services/database/mysql/operations.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+
+Settings extends {
+   db "diary";
+   testUser "testUser";
+   testPass "secret";
+   undeployTimeout 5000;
+   //how long should we give mysql before giving up?
+   mysql_startup_delay 10000;
+   mysql_startup_timeout 20000;
+   poll_interval 200;
+
+ }
+
+
+
+ Mysqld extends mysqldaemon {
+/*
+  shouldTerminate false;
+  terminateOnFailure false;
+*/
+  skip-innodb true;
+  skip-grant-tables true;
+  skip-networking false;
+  logLevel 5;
+  //socketpath Settings:socketpath;
+}
+
+ DiaryBinding extends MysqlTargetedBinding {
+   host "localhost";
+   database Settings:db;
+ }
+
+ TestUserBinding extends DiaryBinding {
+   username Settings:testUser;
+   password Settings:testPass;
+ }
+
+
+/**
+ * this component can test for sockets existing
+ */
+  AssertSocketExists extends FileOrDirMustExist {
+    filename Mysqld:socketpath;
+  }
+
+  Datadir extends TempDirWithCleanup {
+     prefix "mysql";
+  }
+
+  InstallDatabase  extends Compound {
+
+
+  //  setup extends Sequence {
+    //create the data directory on demand
+    datadir extends Datadir;
+
+    /**
+     Install Mysql into the target directory.
+     This is a prerequisite to more complex tests.
+     */
+    install extends mysql_install_db {
+      datadir LAZY PARENT:datadir:absolutePath;
+      //basedir datadir;
+    }
+
+  }
+
+  DatabaseAndBinding extends InstallDatabase {
+
+
+    //deploy mysql
+    mysqld extends Mysqld {
+      datadir LAZY PARENT:datadir:absolutePath;
+      basedir datadir;
+    }
+
+
+  //lazy reference to mysql daemon
+  //  mysqld LAZY setup:mysqld;
+
+  //this is the mysql binding
+  binding extends MysqlBinding;
+
+  diary extends DiaryBinding;
+  }
+
+
+
+  BlockForMysqlConnection extends BlockForJdbcConnection {
+    interval Settings:poll_interval;
+    timeout Settings:mysql_startup_timeout;
+  }
+
+  BlockForMysqlLive extends BlockForMysqlConnection {
+    condition extends IsMysqlLive {
+      database LAZY PARENT:database;
+    }
+  }
+
+
+  CreateDiaryDatabase extends CreateDatabase {
+    name Settings:db;
+  }
+
+ /**
+ drop the diary database and do not complain
+ about SQL errors (i.e. if it is missing)
+ */
+  DropDiaryDatabase extends DropDatabase {
+    name Settings:db;
+    failOnSqlError false;
+  }
+
+  CreateAndDropDiaryDatabase extends CreateAndDropDatabase {
+    name Settings:db;
+  }
+
+
+/**
+ * this component
+ */
+MysqlTest extends TestCompound {
+
+    description "test compound for mysql tests";
+
+  //autoshutdown
+    undeployAfter Settings:undeployTimeout;
+
+    //skip the test if a database is live
+  /*  condition extends Not {
+        condition extends IsMysqlLive {
+          database LAZY PARENT:ATTRIB database;
+        }
+    }*/
+
+    sfShouldTerminate false;
+
+    action extends DatabaseAndBinding ;
+
+    database LAZY action:binding;
+
+    tests extends Sequence {
+    }
+
+ }
+
+
+sfConfig extends DatabaseAndBinding {
+
+}

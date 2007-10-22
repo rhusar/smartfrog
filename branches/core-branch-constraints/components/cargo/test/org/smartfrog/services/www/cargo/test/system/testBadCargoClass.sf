@@ -1,0 +1,19 @@
+
+#include "org/smartfrog/services/www/cargo/components.sf"
+
+/**
+test deploy something with classes that are not valid
+ */
+
+CargoServerExtension extends CargoServer {
+ port 8080;
+ logging "low";
+ configurationClass "org.codehaus.cargo.container.badConfigurationClass";
+ containerClass "org.codehaus.cargo.container.badContainerClass";
+ home LAZY PROPERTY java.io.tmpdir;
+}
+
+sfConfig extends Compound {
+    cse extends CargoServerExtension;
+
+}

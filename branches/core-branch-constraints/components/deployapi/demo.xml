@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project name="demo" 
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:m2="antlib:org.apache.maven.artifact.ant"
+  xmlns:core="http://smartfrog.org/build/core"
+  xmlns:demo="http://smartfrog.org/deployapi/demo"
+  >
+  <property name="root.dir" location="../.."/>
+  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
+  <property name="xml.dir" location="${antbuild.dir}/xml"/>
+  
+  
+  <!-- Import common stuff -->
+  <import file="${xml.dir}/dist.xml"/>
+  
+<target name="init-demo" depends="init,declare-classpaths">
+  <property name="demo.sf.file" location="test/files/demo.sf" />
+  <property name="demo.uri" value="http://smartfrog.org/deployapi/demo" />
+  <path id="demo.classpath">
+    <path refid="run.classpath"/>
+  </path>
+  
+  <property name="demo.host" value="localhost" />
+  <property name="demo.port" value="8081" />
+  <property name="demo.protocol" value="http" />
+  <property name="demo.url"
+    value="${demo.protocol}://${demo.host}:${demo.port}/services/Portal/" />
+  <echo level="verbose">Portal URL=${demo.url}</echo>
+  
+
+  <presetdef name="java" uri="${demo.uri}" >
+   <core:java classpathref="demo.classpath" 
+    timeout="60000"/>
+  </presetdef>
+
+  <macrodef name="deploy" uri="${demo.uri}" 
+    backtrace="false">
+    <attribute name="file" />
+    <sequential>
+      <echo>deploying file @{file}</echo>
+      <demo:java
+        taskname="deploy"
+        classname="org.smartfrog.services.deployapi.axis2.client.Deploy">
+        <arg value="-url:${demo.url}" />
+        <arg file="@{file}" />
+      </demo:java>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="terminate" uri="${demo.uri}" 
+    backtrace="false">
+    <attribute name="system" />
+    <sequential>
+      <echo>terminating system @{system}</echo>
+      <demo:java
+        taskname="deploy"
+        classname="org.smartfrog.services.deployapi.axis2.client.Terminate">
+        <arg value="-url:${system}" />
+      </demo:java>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="status" uri="${demo.uri}" 
+    backtrace="false">
+    <sequential>
+      <demo:java
+        taskname="status"
+        classname="org.smartfrog.services.deployapi.axis2.client.Status">
+        <arg value="-url:${demo.url}" />
+      </demo:java>
+    </sequential>
+  </macrodef>  
+</target>
+
+<target name="demo-status" depends="init-demo">
+  <demo:status />
+</target>
+
+<target name="demo-deploy" depends="init-demo">
+  <demo:deploy file="${demo.sf.file}"/>
+</target>
+
+<target name="demo-terminate" depends="init-demo">
+  <fail unless="system">property "system" is not set to a system url</fail>
+  <demo:terminate system="${system}"/>
+</target>
+
+</project>
