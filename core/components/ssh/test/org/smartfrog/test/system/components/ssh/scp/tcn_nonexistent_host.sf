@@ -18,20 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/scp.sf"
-/**
- * Sample of Scp usage.
- *
- */
-sfConfig extends ScpSessionAuthPass {
+#include "/org/smartfrog/test/system/components/ssh/scp/components.sf"
 
-        SCP:host "ebnt171.india.hp.com";
-        SCP:username "kumar";
-        SCP:passwordFile "password.txt";
-        SCP:localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
-        SCP:remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
-
-
-}
+sfConfig tcn_nonexistent_hostTest;

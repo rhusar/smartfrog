@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,9 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/test/system/components/ssh/scp/components.sf"
+
 /**
  * Sample of Scp usage.
  *

@@ -18,5 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-//password support has moved.
-#include "/org/smartfrog/services/passwords/components.sf"
+#include "/org/smartfrog/test/system/components/ssh/scp/components.sf"
+
+/**
+ * Sample of Scp usage.
+ *
+ */
+sfConfig extends tcn89 ;
+

@@ -18,21 +18,12 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/sshExec.sf"
+#include "/org/smartfrog/test/system/components/ssh/sshexec/components.sf"
 /**
- *
+ * commands is missing
  *
  */
 
-  // commands is mising
-  sfConfig extends SSHSessionAuthPass {
-
-          SSHCmdExec:host "ebnt171.india.hp.com";
-          SSHCmdExec:username "kumar";
-          PasswordProvider:passwordFile "password.txt";
-       //   SSHCmdExec:commands ["mkdir Sep15", "mkdir sep15"];
-
-  }
+  //
+  sfConfig extends Tcn93;
 

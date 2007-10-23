@@ -19,12 +19,7 @@
  */
 package org.smartfrog.services.ssh;
 
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.passwords.PasswordProvider;
 
 import java.rmi.RemoteException;
 
@@ -36,8 +31,6 @@ import java.rmi.RemoteException;
  *         see http://www.jcraft.com/jsch/
  */
 public class SSHExecAuthPassImpl extends SSHExecImpl {
-    private String password;
-    private Reference pwdProviderRef = new Reference("passwordProvider");
 
     /**
      * Constructs SSHExecImpl object.
@@ -50,20 +43,16 @@ public class SSHExecAuthPassImpl extends SSHExecImpl {
      * ----------------SmartFrog Life Cycle Methods Begin--------------------
      */
 
-    public void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        userInfo.setPassword(password);
-    }
 
     /**
      * ----------------SmartFrog Life Cycle Methods End ---------------------
      */
-
+/*
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
         super.readSFAttributes();
         PasswordProvider pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         password = pwdProvider.getPassword();
-    }
+    }*/
 
     /**
      * Opens a SSH session.
@@ -72,15 +61,15 @@ public class SSHExecAuthPassImpl extends SSHExecImpl {
      * @throws JSchException if unable to open SSH session
      * @see com.jcraft.jsch.Session
      */
-    protected Session openSession() throws JSchException {
-        JSch jsch = new JSch();
+/*    protected Session openSession() throws JSchException {
+        JSch jsch = createJschInstance();
         Session session = jsch.getSession(userInfo.getName(), host, port);
         session.setUserInfo(userInfo);
         session.setPassword(password);
         log.info("Connecting to " + host + " at Port:" + port);
         session.connect();
         return session;
-    }
+    }*/
 
 }
 

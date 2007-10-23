@@ -29,10 +29,10 @@ For more information: www.smartfrog.org
 
 
 sfConfig extends SSHSessionAuthPass {
-         SSHCmdExec:host "ebnt171.india.hp.com";
-         SSHCmdExec:username "root";
-         PasswordProvider:passwordFile "D:\\cvs\\forge\\node1.txt";
-         SSHCmdExec:commands ["mkdir one", "mkdir two"];
+     host "ebnt171.india.hp.com";
+     username "root";
+     passwordFile "D:\\cvs\\forge\\node1.txt";
+     commands ["mkdir one", "mkdir two"];
 	 SSHCmdExec:logFile "sshlog.txt";
 
 }

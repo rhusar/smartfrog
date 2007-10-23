@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
+import org.smartfrog.sfcore.logging.LogSF;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-
-import org.smartfrog.sfcore.logging.Log;
 
 /**
  * Abstract parent class for ScpTo and ScpFrom.
@@ -31,21 +31,25 @@ import org.smartfrog.sfcore.logging.Log;
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
-public abstract class AbsScp {
+public abstract class AbstractScpOperation {
 
     protected final byte LINE_FEED = 0x0a;
     protected final int BUFFER_SIZE = 1024;
-    protected Log log;
-    
+    protected LogSF log;
+
+    protected boolean haltOperation=false;
+
     /**
-     * Constucts AbsScp.
-     */
-    public AbsScp(Log parentLog) {
-        this.log = parentLog;
+    * Constucts an instance.
+     * @param log log a log of the owner
+    */
+    protected AbstractScpOperation(LogSF log) {
+        this.log = log;
     }
     /**
      * Write acknowlegement by writing char '0' to output stream of the channel.
-     * @throws IOException if unable to write 
+     * @param out stream to write to.
+     * @throws IOException if unable to write
      */
     protected void writeAck(OutputStream out) throws IOException {
         byte[] buf = new byte[1];
@@ -53,11 +57,19 @@ public abstract class AbsScp {
         out.write(buf);
         out.flush();
     }
-    
+
     /**
-     * Reads server response from channel's input stream. 
-     * @throws IOException if response is an error
+     * halt the operation
      */
+    public synchronized void haltOperation() {
+        haltOperation=true;
+    }
+
+    /**
+    * Reads server response from channel's input stream.
+    * @param in stream to read from
+    * @throws IOException if response is an error
+    */
     protected void checkAck(InputStream in)throws IOException {
         int svrRsp = in.read();
 
@@ -89,15 +101,6 @@ public abstract class AbsScp {
             }
         }
     }
-    /**
-     * Logs debug message
-     * @param msg debug message
-     
-    protected void logDebugMsg(String msg) {
-        if (log.isDebugEnabled()) {
-            log.debug(msg);
-        }
-    }
-    */
+
 }
 

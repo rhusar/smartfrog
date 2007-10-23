@@ -19,27 +19,25 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * SmartFrog Interface for SCP component. Used to upload/download files 
  * to/from a remote machine securely over SSH.
  * @author Ashish Awasthi
  */
-public interface IScp extends Prim {
-    //SmartFrog attributes names
-    public static String HOST = "host";
-    public static String PORT = "port";
-    public static String USER = "username";
-    public static String KEYFILE = "keyfile";
-    public static String PASSWORD = "password";
-    public static String TIMEOUT = "timeout";
-    public static String TERMINATE = "shouldTerminate";
-    public static String TRUST_ALL_CERTIFICATES = "trustAllCertificates";
-    public static String KNOWN_HOSTS = "knownHosts";
-    public static String LOG_FILE = "logFile";
-    public static String LOCAL_FILES = "localFiles";
-    public static String REMOTE_FILES = "remoteFiles";
-    public static String TRANSFER_TYPE = "transferType";
+public interface ScpComponent extends SSHComponent {
+
+    /**
+     * {@value}
+     */
+    String LOCAL_FILES = "localFiles";
+    /**
+     * {@value}
+     */
+    String REMOTE_FILES = "remoteFiles";
+    /**
+     * {@value}
+     */
+    String TRANSFER_TYPE = "transferType";
 }
 

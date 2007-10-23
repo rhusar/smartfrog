@@ -19,22 +19,21 @@
  */
 package org.smartfrog.services.ssh;
 
-import java.util.Vector;
-import java.rmi.RemoteException;
-
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.JSch;
-
+import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.services.passwords.PasswordProvider;
+
+import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
  * SmartFrog component to upload/download files to/from a remote machine over
@@ -43,7 +42,7 @@ import org.smartfrog.services.passwords.PasswordProvider;
  * @author Ashish Awasthi
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  */
-public class ScpAuthPubKeyImpl extends PrimImpl implements IScp {
+public class ScpAuthPubKeyImpl extends PrimImpl implements ScpComponent {
 
     /** Time out message. */
     private static final String TIMEOUT_MESSAGE = "SSH connection timed out";
@@ -71,7 +70,7 @@ public class ScpAuthPubKeyImpl extends PrimImpl implements IScp {
      */
     private UserInfoImpl userInfo;
     /** SmartFrog Reference to Password Provider. */
-    private Reference pwdProviderRef = new Reference("passwordProvider");
+    private Reference pwdProviderRef = new Reference(SSHComponent.ATTR_PASSWORD_PROVIDER);
     /** Reference to password provider. */
     private PasswordProvider pwdProvider;
     /** Trust all certs or not, Default is true */
@@ -85,7 +84,7 @@ public class ScpAuthPubKeyImpl extends PrimImpl implements IScp {
      */
     private Session session = null;
     /** SmartFrog Logger. */
-    private Log log;
+    private LogSF log;
     private final String GET = "get";
     private final String PUT = "put";
     /** Type of transfer. "get": download, "put": upload */
@@ -112,10 +111,10 @@ public class ScpAuthPubKeyImpl extends PrimImpl implements IScp {
     public synchronized void sfDeploy() throws SmartFrogException,
         RemoteException {
         super.sfDeploy();
-        log = sfGetApplicationLog();
+        log = sfLog();
         assert log != null;
         readSFAttributes();
-        userInfo = new UserInfoImpl(trustAllCerts);
+        userInfo = new UserInfoImpl(sfLog(), trustAllCerts);
         userInfo.setName(userName);
         log.info("User Name: " + userName);
         userInfo.setPassphrase(passphrase);
@@ -195,18 +194,18 @@ public class ScpAuthPubKeyImpl extends PrimImpl implements IScp {
      */
     private void readSFAttributes() throws SmartFrogException, RemoteException {
         // Mandatory attributes
-        host = sfResolve(HOST, host, true);
-        userName = sfResolve(USER, userName, true);
-        keyFile = sfResolve(KEYFILE, keyFile, true);
+        host = sfResolve(ATTR_HOST, host, true);
+        userName = sfResolve(ATTR_USER, userName, true);
+        keyFile = sfResolve(ATTR_KEYFILE, keyFile, true);
         pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         passphrase = pwdProvider.getPassword();
         remoteFileList = sfResolve(REMOTE_FILES, remoteFileList, true);
         localFileList = sfResolve(LOCAL_FILES, localFileList, true);
 
         //optional attributes
-        port = sfResolve(PORT, port, false);
-        timeout = sfResolve(TIMEOUT, timeout, false);
-        shouldTerminate = sfResolve(TERMINATE, shouldTerminate, false);
+        port = sfResolve(ATTR_PORT, port, false);
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, false);
+        shouldTerminate = sfResolve(ATTR_SHOULD_TERMINATE, shouldTerminate, false);
         transferType = sfResolve(TRANSFER_TYPE, transferType, false);
         log.info("Transfer Type :=" + transferType);
 

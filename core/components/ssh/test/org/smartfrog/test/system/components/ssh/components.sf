@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/scp.sf"
-/**
- * Sample of Scp usage.
- *
- */
-sfConfig extends Compound {
-    scp1 extends ScpSessionAuthPass {
-        host "ebnt171.india.hp.com";
-        userId "kumar";
-        passwordFile "c:\\cvs\\forge\\password.txt";
-        localFiles ["c:\\cvs\\forge\\vimrc_bak.txt", "c:\\cvs\\forge\\anatomy.pdf"];
-        remoteFiles ["/home/kumar/tmp/ssh/vimrc_bak.txt", "/home/kumar/tmp/ssh/anatomy.pdf"];
-        transferType "put";
-    }
-}
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/ssh/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"

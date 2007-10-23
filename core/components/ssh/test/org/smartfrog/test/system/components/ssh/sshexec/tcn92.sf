@@ -18,20 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/test/system/components/ssh/sshexec/components.sf"
 /**
- * Sample of Scp usage.
+ * user name is missing
  *
  */
-sfConfig extends Compound {
-    scp1 extends ScpSessionAuthPass {
-        host "ebnt171.india.hp.com";
-      userId "xxx";
-       passwordFile "c:\\cvs\\forge\\password.txt";
-        localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
-        remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
-        transferType "put";
-    }
-}
+
+  //
+
+ sfConfig extends  Tcn92;
+

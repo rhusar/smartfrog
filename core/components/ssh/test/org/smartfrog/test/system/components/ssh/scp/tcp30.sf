@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,20 +18,17 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/test/system/components/ssh/scp/components.sf"
+
 /**
- * Sample of Scp usage.
+ *
  *
  */
-// username is  mising
-sfConfig extends ScpSessionAuthPass {
-
-        SCP:host "ebnt171.india.hp.com";
-        SCP:passwordFile "password.txt";
-        SCP:localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
-        SCP:remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
-        SCP:transferType "put";
-        }
-
+sfConfig extends Compound {
+    sshSessionInstance1 extends SSHSessionAuthPass {
+        host "ebnt171.india.hp.com";
+        userId "kumar";
+        passwordFile "c:\\cvs\\forge\\password.txt";
+        commands ["mkdir Sep15", "mkdir sep15"];
+    }
+}
