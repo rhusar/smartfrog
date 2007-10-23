@@ -256,10 +256,6 @@ java.class.path=
 </target>
 
 <target name="init-common" depends="bind-to-smartfrog">
-
-
-
-
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
@@ -476,7 +472,7 @@ java.class.path=
     override the pattern property to set more
      -->
    <property name="copy.useful.files.pattern"
-       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif"/>
+       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif,**/*.policy"/>
    <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
