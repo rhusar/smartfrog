@@ -28,13 +28,6 @@ For more information: www.smartfrog.org
 Introduction
 ============
 The build script for SmartFrog Ant component.
-To run the build script ant 1.6.5 must be installed
-and ant executable should be in the system path.
-
-Installing the build tools
-==========================
-Please go though the installation guide and install ant 1.6.5 or later.
-Reference URL:http://ant.apache.org
 
 </description>
 
