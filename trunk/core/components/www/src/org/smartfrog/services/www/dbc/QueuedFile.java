@@ -22,8 +22,8 @@ public class QueuedFile {
 
     /**
      * Construct and target
-     * @param source
-     * @param dest
+     * @param source source file
+     * @param dest destination file
      */
     public QueuedFile(File source, File dest) {
         this.source = source;
@@ -41,7 +41,7 @@ public class QueuedFile {
 
     /**
      * Is the file processed?
-     * @return
+     * @return true if the processing is complete
      */
     public boolean isProcessed() {
         return processed;
