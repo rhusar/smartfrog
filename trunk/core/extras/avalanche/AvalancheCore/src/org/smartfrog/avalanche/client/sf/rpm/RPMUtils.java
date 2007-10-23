@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
 
 /**
  * @author sandya
@@ -91,42 +92,52 @@ public class RPMUtils {
 	 */
 	public boolean InstallPackage(String rpmPackage, String installOptions)
 			throws IOException {
-		Process p = null;
 		String line;
-		boolean error = false;
 
-		File rpmFile = new File(rpmPackage);
-		if (!rpmFile.exists()) {
-			log.error("The file " + rpmPackage + " does not exist.");
-			return false;
-		}
-		if (!rpmFile.isFile()) {
-			log.error(rpmPackage + " is not a file");
-			return false;
-		}
-		
-		/*
+        File rpmFile = new File(rpmPackage);
+        if (!rpmFile.exists()) {
+            log.error("The file " + rpmPackage + " does not exist.");
+            return false;
+        }
+        if (!rpmFile.isFile()) {
+            log.error(rpmPackage + " is not a file");
+            return false;
+        }
+
+        /*
 		// Get the file extension to check if it is .rpm file
 		String fileName = rpmFile.getName();
         String extn = null;
         int whereExtn = fileName.lastIndexOf('.');
         if ( 0 < whereExtn && whereExtn <= fileName.length()-2)
                 extn = fileName.substring(whereExtn+1);
-        
+
         if (!extn.equals("rpm")) {
         	log.error("The file " + rpmPackage + " is not RPM file.");
         	return false;
-        }
+        }a
         */
 
         String command = "rpm -i ";
-		if (installOptions != null)
-			command = "rpm -i " + installOptions;
-		
-		String cmd = command + " " + rpmPackage;		
-		
-		p = rt.exec(cmd);
-		BufferedReader cmdError= null;
+        if (installOptions != null) {
+            command = "rpm -i " + installOptions;
+        }
+
+        String cmd = command + " " + rpmPackage;
+        boolean error = executeRpmCommand(cmd);
+        if (!error) {
+            log.info("The RPM package " + rpmPackage + " is successfully installed.");
+        }
+        return !error;
+
+	}
+
+    private boolean executeRpmCommand(String cmd) throws IOException {
+        String line;
+        boolean error = false;
+        Process p = null;
+        p = rt.exec(cmd);
+        BufferedReader cmdError = null;
         try {
             cmdError = new BufferedReader(new InputStreamReader(p
                     .getErrorStream()));
@@ -137,36 +148,29 @@ public class RPMUtils {
         } finally {
             FileSystem.close(cmdError);
         }
-		if (error)
-			return false;
-		
-		BufferedReader cmdOutput = null;
-        cmdOutput=new BufferedReader(new InputStreamReader(p
-				.getInputStream()));
-        try {
-            while ((line = cmdOutput.readLine()) != null) {
-                error = true;
-                log.error(line);
-            }
-        } finally {
-            FileSystem.close(cmdOutput);
-        }
-
+        BufferedReader cmdOutput = null;
         if (!error) {
-			log.info("The RPM package " + rpmPackage + " is successfully installed.");
-			return true;
-		}
-		else
-			return false;		
-	}
-	
-	/*
-	 * Un-installs the RPM package with out any erase-options
-	 * @param packageName - RPM package name to be un-installed
-	 * @return boolean - returns true if package is un-installed 
-	 * 						successfully else returns false
-	 * @throws IOException if i/o error occurs
-	 */
+            try {
+                cmdOutput = new BufferedReader(new InputStreamReader(p
+                        .getInputStream()));
+                while ((line = cmdOutput.readLine()) != null) {
+                    error = true;
+                    log.error(line);
+                }
+            } finally {
+                FileSystem.close(cmdOutput);
+            }
+        }
+        return error;
+    }
+
+    /*
+      * Un-installs the RPM package with out any erase-options
+      * @param packageName - RPM package name to be un-installed
+      * @return boolean - returns true if package is un-installed
+      * 						successfully else returns false
+      * @throws IOException if i/o error occurs
+      */
 	public boolean UninstallPackage(String packageName) throws IOException {
 		String eraseOptions = "";
 		
@@ -191,19 +195,12 @@ public class RPMUtils {
 			command = "rpm -e " + eraseOptions + packageName;
 		else
 			command = "rpm -e " + packageName;
-		
-		
-		p = rt.exec(command);
-		BufferedReader cmdError = new BufferedReader(new InputStreamReader(p
-				.getErrorStream()));
-		while ((line = cmdError.readLine()) != null) {
-			log.error(line);
-			return false;
-		}
-		cmdError.close();			
-				
-		log.info("The RPM package " + packageName + " is successfully un-installed");
-		return true;		
+
+        boolean result = executeRpmCommand(command);
+        if(result) {
+		    log.info("The RPM package " + packageName + " is successfully un-installed");
+        }
+        return result;
 	}
 	
 	/*
@@ -239,12 +236,11 @@ public class RPMUtils {
 				
 		File rpmFile = new File(rpmPackage);
 		if (!rpmFile.exists()) {
-			log.error("The file " + rpmPackage + " does not exist.");
-			return false;
+            throw new FileNotFoundException("No such file "+rpmFile);
 		}
-		if (!rpmFile.isFile()) {
-			log.error(rpmPackage + " is not a file");
-			return false;
+
+        if (!rpmFile.isFile()) {
+            throw new FileNotFoundException("Not an RPM file " + rpmFile);
 		}
 		
 		/*
@@ -266,28 +262,8 @@ public class RPMUtils {
 			command = "rpm -U " + upgradeOptions;
 		
 		String cmd = command + rpmPackage;		
-		
-		p = rt.exec(cmd);
-		BufferedReader cmdError = new BufferedReader(new InputStreamReader(p
-				.getErrorStream()));
-		while ((line = cmdError.readLine()) != null) {
-			error = true;
-			log.error(line);			
-		}
-		cmdError.close();
-		
-		if (error)
-			return false;
-		
-		BufferedReader cmdOutput = new BufferedReader(new InputStreamReader(p
-				.getInputStream()));
-		while ((line = cmdOutput.readLine()) != null) {
-			error = true;
-			log.error(line);
-		}
-			
-		cmdOutput.close();		
-		
+		error=executeRpmCommand(cmd);
+
 		if (!error) {
 			log.info("The RPM package " + rpmPackage + " is successfully upgraded");
 			return true;
