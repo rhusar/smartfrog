@@ -466,7 +466,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * was a component description, then its prim parent is reset.
      *
      * @throws SmartFrogRuntimeException when name or value are null, or injection failed
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
