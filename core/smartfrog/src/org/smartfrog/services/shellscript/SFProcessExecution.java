@@ -97,6 +97,7 @@ public interface SFProcessExecution extends SFExecution {
 
     /**
      * Restarts the process
+     * @throws SmartFrogException if the restart fails
      */
     public void restart() throws SmartFrogException ;
 
