@@ -95,6 +95,11 @@ public interface ScriptResults {
    */
   public Integer getExitCode() throws SmartFrogException;
 
+    /**
+     * Get any exception from the invocation
+     * @return
+     * @throws SmartFrogException
+     */
   public InvocationTargetException getException() throws SmartFrogException;
 
   /**
