@@ -224,7 +224,7 @@ public final class Statistics implements Serializable, Cloneable {
 
     /**
      * Get the number of logged messages
-     * @return
+     * @return the number of logged messages
      */
     public int getLoggedMessages() {
         return loggedMessages;
@@ -264,7 +264,7 @@ public final class Statistics implements Serializable, Cloneable {
 
     /**
      * String operator gives the summary statistics
-     * @return
+     * @return a summary of the test run
      */
     public String toString() {
         String s = "Statistics: testsRun=" + testsRun
