@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.UserInfo;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  *  Implements UserInfo interface required by Jsch.
@@ -35,13 +36,11 @@ public class UserInfoImpl implements UserInfo {
     private String password = null;
     private String passphrase = null;
     private boolean trustAllCertificates = false;
+    private LogSF log;
 
-    public UserInfoImpl() {
-        super();
-    }
 
-    public UserInfoImpl(boolean trustAllCertificates) {
-        super();
+    public UserInfoImpl(LogSF log, boolean trustAllCertificates) {
+        this.log=log;
         this.trustAllCertificates = trustAllCertificates;
     }
 
@@ -153,5 +152,25 @@ public class UserInfoImpl implements UserInfo {
      * @see com.jcraft.jsch.UserInfo#showMessage(String)
      */
     public void showMessage(String message) {
+        log.info(message);
+    }
+
+
+    /**
+     * Returns a string representation of the object. In general, the <code>toString</code> method returns a string that
+     * "textually represents" this object. The result should be a concise but informative representation that is easy
+     * for a person to read. It is recommended that all subclasses override this method. <p> The <code>toString</code>
+     * method for class <code>Object</code> returns a string consisting of the name of the class of which the object is
+     * an instance, the at-sign character `<code>@</code>', and the unsigned hexadecimal representation of the hash code
+     * of the object. In other words, this method returns a string equal to the value of: <blockquote>
+     * <pre>
+     * getClass().getName() + '@' + Integer.toHexString(hashCode())
+     * </pre></blockquote>
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "user "+ name +" trustsEveryone:"+trustAllCertificates+" uses "
+                +(password==null?"public key":"password");
     }
 }

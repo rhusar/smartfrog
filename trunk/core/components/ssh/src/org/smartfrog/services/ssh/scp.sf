@@ -18,8 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
+#include "/org/smartfrog/services/ssh/sshcomponent.sf"
 
 /**
  * SmartFrog Scp component can be used in workflows to send and retrieve 
@@ -27,50 +26,77 @@ For more information: www.smartfrog.org
  */
 
 
- ScpSchema extends SshSchema {
-   	localFiles extends Vector;
-    remoteFiles extends Vector;
- 	transferType extends String;
- }
-
- ScpSchemaAuthPubKey extends ScpSchema {
-	  keyfile extends String;  	
-  }
-
-BaseScpSessionAuthPass extends SshCompound {
-
-    /*---------------------------Optional Parameters -----------------------*/
-
-    /*---------------------Component's Definition --------------------------*/ 
- 
-    PasswordProvider TBD;
-
-    SCP extends Prim {
-      sfClass "org.smartfrog.services.ssh.ScpAuthPassImpl";
-      scpSchema extends ScpSchema;
-
-      timeout PARENT:ATTRIB timeout;
-      port PARENT:ATTRIB port;
-      shouldTerminate PARENT:ATTRIB shouldTerminate;
-        // reference to password provider
-      passwordProvider LAZY PARENT:PasswordProvider;
-        /* ========================================================
-         * Optional attributes 
-         *=========================================================
-         */
-         // two possible values are "get" and "put" 
-       // transferType PARENT:ATTRIB transferType;
-
-
+    ScpSchema extends SSHComponentSchema  {
+        localFiles extends Vector;
+        remoteFiles extends Vector;
+        transferType extends String;
     }
-}
+
+
+
+    /**
+     * This is the basic Scp Operation
+     */
+    ScpOperation extends SSHComponent {
+        sfClass "org.smartfrog.services.ssh.ScpComponentImpl";
+        sshSchema extends ScpSchema;
+
+        //get files from the remote server
+        get_files "GET";
+        //put files to the remote server
+        put_files "PUT";
+
+        transferType get_files;
+    }
+
+    /**
+     * Switch to the public/private keypair
+     */
+    ScpOperationWithPrivateKey extends ScpOperation {
+        authentication SSHComponent:authenticate_key;
+    }
+
+    /**
+     * a compound with a nested SCP operation, and a placeholder
+     * for a password provider
+     */
+    ScpSessionAuthPass extends SshCompound {
+
+
+        PasswordProvider TBD;
+        localFiles TBD;
+        remoteFiles TBD;
+        transferType ScpOperation:get_files;
+
+        SCP extends ScpOperation {
+
+            host PARENT:ATTRIB host;
+
+            username PARENT:ATTRIB username;
+
+            // reference to password provider
+            passwordProvider LAZY PARENT:PasswordProvider;
+
+            port PARENT:ATTRIB port;
+
+            // Required if used in workflows like Sequence etc
+            shouldTerminate PARENT:ATTRIB shouldTerminate;
+               // timeout for command execution
+            timeout PARENT:ATTRIB timeout;
+
+            transferType PARENT:ATTRIB transferType;
+            localFiles PARENT:ATTRIB localFiles;
+            remoteFiles PARENT:ATTRIB remoteFiles;
+
+        }
+    }
 
 /**
  * this scp session uses a file password relative to the
  * current directory of the process
  */
 
-ScpSessionAuthPass extends BaseScpSessionAuthPass {
+ScpSessionFilePassword extends ScpSessionAuthPass {
 
     PasswordProvider extends FilePassword {
     }
@@ -79,39 +105,25 @@ ScpSessionAuthPass extends BaseScpSessionAuthPass {
 /**
  * This SCP session uses an inline password
  */
-ScpSessionInlinePassword extends BaseScpSessionAuthPass {
+ScpSessionInlinePassword extends ScpSessionAuthPass {
     password TBD;
     PasswordProvider extends InlinePassword {
         password LAZY PARENT:ATTRIB password;
     }
 }
 
+/**
+ * To switch to public key operation, we need a public key and a keyfile
+ */
 
-ScpSessionAuthPubKey extends SshCompound {
-
-    /*---------------------------Optional Parameters -----------------------*/
-
-    /*---------------------Component's Definition --------------------------*/ 
- 
-    PasswordProvider extends FilePassword {
-        //passwordFile PARENT:ATTRIB passwordFile;
-    }
-
-    SCP extends Prim {
-      sfClass "org.smartfrog.services.ssh.ScpAuthPubKeyImpl";
-      scpSchema extends ScpSchemaAuthPubKey;
-      timeout PARENT:ATTRIB timeout;
-      port PARENT:ATTRIB port;
-      shouldTerminate PARENT:ATTRIB shouldTerminate;
-        // reference to password provider
-      passwordProvider LAZY PARENT:PasswordProvider;
-        /* ========================================================
-         * Optional attributes 
-         *=========================================================
-         */
-         // two possible values are "get" and "put" 
-       // transferType PARENT:ATTRIB transferType;
-
-      shouldTerminate PARENT:ATTRIB shouldTerminate;
-    }
+ScpSessionPublicKey extends ScpSessionAuthPass {
+    keyFile TBD;
+    SCP:authentication SSHComponent:authenticate_key;
+    SCP:keyFile keyFile;
 }
+
+
+ScpSessionAuthPubKey extends ScpSessionPublicKey ;
+
+
+

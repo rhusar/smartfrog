@@ -1,0 +1,54 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/test/system/components/ssh/components.sf"
+
+  // Host is mising
+PasswordSshExec extends SSHSessionInlinePassword {
+    password "secret";
+    host "localhost";
+    username "smartfrog";
+ }
+
+
+Tcn91 extends SSHSessionInlinePassword {
+    description "no host";
+    password "secret";
+    username "smartfrog";
+    commands ["mkdir Sep15", "mkdir sep15"];
+ }
+
+Tcn92 extends SSHSessionInlinePassword {
+    description "user name is missing";
+    password "secret";
+    host "localhost";
+    commands ["mkdir Sep15", "mkdir sep15"];
+ }
+
+Tcn93 extends PasswordSshExec {
+    description "commands is missing";
+}
+
+Tcn94 extends SSHSessionPasswordFile {
+    description "missing password file";
+    passwordFile "this-file-does-not-exist-probably-0a1b2c3d.txt";
+    username "smartfrog";
+    host "localhost";
+    commands [];
+ }

@@ -19,25 +19,22 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.EOFException;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.rmi.RemoteException;
-
-import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.UserInfo;
+import org.smartfrog.sfcore.logging.LogSF;
 
-import org.smartfrog.sfcore.logging.Log;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Class to copy securely from a remote machine. 
@@ -45,24 +42,30 @@ import org.smartfrog.sfcore.logging.Log;
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
-public class ScpFrom extends AbsScp {
+public class ScpFrom extends AbstractScpOperation {
 
     /**
      * Constucts ScpFrom using log object.
+     * @param sfLog log
      */
-    public ScpFrom(Log sfLog) {
+    public ScpFrom(LogSF sfLog) {
         super(sfLog);
     }
     /**
      * Downloads files from a remote machine.
+     * @param session current session
      * @param remoteFiles vector of remote file names
      * @param localFiles vector of corresponding local file names
      * @throws IOException in case not able to transfer files
+     * @throws JSchException for JSCH problems.
      */
     public void doCopy (Session session, Vector remoteFiles,Vector localFiles)
                                  throws IOException, JSchException {
         String cmdPrefix = "scp -f ";
         for (int index = 0; index < remoteFiles.size(); index++) {
+            if (haltOperation) {
+                throw new InterruptedIOException();
+            }
             Channel channel = null;
             try {
                 String localFile = (String) localFiles.elementAt(index);
@@ -83,19 +86,23 @@ public class ScpFrom extends AbsScp {
             }
         }
     }
+    
     /**
      * Copies file from the remote host.
      * @param in Input Stream of the channel
-     * @param in Output Stream of the channel
+     * @param out Output Stream of the channel
+     * @param lFile local file
+     * @throws IOException for errors on the server, or in writing the file. An InterruptedIOException is thrown
+     * if the operation was halted.
      */
     private void doScpFrom(InputStream in, OutputStream out, 
                         String lFile) throws IOException {
         assert lFile != null;
         File localFile = new File (lFile);
-        while (true) {
+        while (!haltOperation) {
             ByteArrayOutputStream arr = new ByteArrayOutputStream();
             // read server response from input stream
-            while (true) {
+            while (!haltOperation) {
                 int read = in.read();
                 if (read < 0) {
                     return;
@@ -104,6 +111,9 @@ public class ScpFrom extends AbsScp {
                     break;
                 }
                 arr.write(read);
+            }
+            if(haltOperation) {
+                throw new InterruptedIOException();
             }
             String serverResponse = arr.toString();
             log.info(serverResponse);
@@ -129,6 +139,12 @@ public class ScpFrom extends AbsScp {
     }
     /**
      * Reads remote file from stream and writes to local file.
+     * <p/>
+     * After the operation, both the out and in streams are left open.
+     * @param localFile destination
+     * @param filesize size of file to read
+     * @param out output stream of the communications
+     * @param in input stream (which is used as the source)
      * @throws IOException if unable to read file or server reponse is an error
      */
     private void getFile(File localFile,

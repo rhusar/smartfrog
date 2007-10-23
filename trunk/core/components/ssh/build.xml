@@ -32,21 +32,16 @@ For more information: www.smartfrog.org
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
-  
+  <property name="is.component" value="true"  />
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
 
-  <property name="is.component" value="true"  />
 
-<!--    <property name="ssh.lib.dir" location="lib" description=
-                        "place to put third party libraries"/> -->
-
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
-  
 
 
 </project>

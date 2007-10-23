@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,5 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/sshExec.sf"
-/**
- *
- *
- */
- // Host is mising
- sfConfig extends SSHSessionAuthPass {
-
-         SSHCmdExec:host "ebnt171.india.hp.com";
-         SSHCmdExec:username "kumar";
-         PasswordProvider:passwordFile "nonexistent.file/password.txt";
-         SSHCmdExec:commands ["mkdir Sep15", "mkdir sep15"];
-
- }
-
+#include "/org/smartfrog/services/ssh/scp.sf"
+#include "/org/smartfrog/services/ssh/sshexec.sf"

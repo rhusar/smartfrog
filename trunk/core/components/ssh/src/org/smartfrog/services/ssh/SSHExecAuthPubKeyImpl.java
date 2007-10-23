@@ -19,13 +19,7 @@
  */
 package org.smartfrog.services.ssh;
 
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.passwords.PasswordProvider;
 
 import java.rmi.RemoteException;
 //import org.smartfrog.services.ssh.FilePasswordProvider;
@@ -38,48 +32,17 @@ import java.rmi.RemoteException;
  *         see http://www.jcraft.com/jsch/
  */
 public class SSHExecAuthPubKeyImpl extends SSHExecImpl {
-    private String passphrase;
-    private String keyFile;
-    private Reference pwdProviderRef = new Reference("passwordProvider");
 
     /**
      * Constructs SSHExecImpl object.
+     * @throws RemoteException    in case of network/emi error
      */
     public SSHExecAuthPubKeyImpl() throws RemoteException {
         super();
     }
 
-    /**----------------SmartFrog Life Cycle Methods Begin--------------------*/
 
-    /**
-     * Reads SmartFrog attributes and deploys SSHExecImpl component.
-     *
-     * @throws SmartFrogException in case of error in deploying or reading the
-     *                            attributes
-     * @throws RemoteException    in case of network/emi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException,
-                                               RemoteException {
-        super.sfDeploy();
-        userInfo.setPassphrase(passphrase);
-    }
 
-    /**----------------SmartFrog Life Cycle Methods End ---------------------*/
-
-    /**
-     * Reads SmartFrog attributes.
-     *
-     * @throws SmartFrogResolutionException if failed to read any
-     *                                      attribute or a mandatory attribute is not defined.
-     * @throws RemoteException              in case of network/rmi error
-     */
-    protected void readSFAttributes() throws SmartFrogException, RemoteException {
-        super.readSFAttributes();
-        // Mandatory attributes
-        keyFile = sfResolve(KEYFILE, keyFile, true);
-        PasswordProvider pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
-        passphrase = pwdProvider.getPassword();
-    }
 
     /**
      * Opens a SSH session.
@@ -88,14 +51,14 @@ public class SSHExecAuthPubKeyImpl extends SSHExecImpl {
      * @throws JSchException if unable to open SSH session
      * @see com.jcraft.jsch.Session
      */
-    protected Session openSession() throws JSchException {
-        JSch jsch = new JSch();
-        jsch.addIdentity(keyFile);
-        Session session = jsch.getSession(userInfo.getName(), host, port);
-        session.setUserInfo(userInfo);
+/*    protected Session openSession() throws JSchException {
+        JSch jsch = createJschInstance();
+        Session newsession = jsch.getSession(userInfo.getName(), host, port);
+        newsession.setUserInfo(userInfo);
         log.info("Connecting to " + host + " at Port:" + port);
-        session.connect();
-        return session;
-    }
+        newsession.connect();
+        return newsession;
+    }*/
+
 }
 

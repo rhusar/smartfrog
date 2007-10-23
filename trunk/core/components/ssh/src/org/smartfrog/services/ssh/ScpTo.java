@@ -19,20 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.util.Vector;
-import java.rmi.RemoteException;
-
-import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.smartfrog.sfcore.logging.LogSF;
 
-import org.smartfrog.sfcore.logging.Log;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.util.Vector;
 
 /**
  * Class to upload files to a remote host over SSH Session.
@@ -40,16 +39,18 @@ import org.smartfrog.sfcore.logging.Log;
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
-public class ScpTo extends AbsScp {
+public class ScpTo extends AbstractScpOperation {
 
     /**
      * Constucts ScpTo using log object.
+     * @param sfLog log to use
      */
-    public ScpTo(Log sfLog) {
+    public ScpTo(LogSF sfLog) {
         super(sfLog);
     }
     /**
      * Uploads files to a remote machine.
+     * @param session to use
      * @param remoteFiles vector of remote file names
      * @param localFiles vector of corresponding local file names
      * @throws IOException in case not able to transfer files
@@ -58,6 +59,9 @@ public class ScpTo extends AbsScp {
            Vector localFiles) throws IOException, JSchException {
         String cmdPrefix = "scp -t ";
         for (int index = 0; index < remoteFiles.size(); index++) {
+            if (haltOperation) {
+                throw new InterruptedIOException();
+            }
             Channel channel = null;
             try {
                 String localFile = (String) localFiles.elementAt(index);
@@ -82,7 +86,7 @@ public class ScpTo extends AbsScp {
     /**
      * Use scp to copy file to the remote host.
      * @param in Input Stream of the channel
-     * @param in Output Stream of the channel
+     * @param out Output Stream of the channel
      * @param lFile local file name
      */
     private void doScpTo(InputStream in, OutputStream out, 
@@ -117,12 +121,15 @@ public class ScpTo extends AbsScp {
         try {
             byte[] buf=new byte[BUFFER_SIZE];
             log.info ("Sending "+ file.getName() + " of size: "+ file.length());
-            while(true) {
+            while(!haltOperation) {
                 int bytesRead = fis.read(buf, 0, buf.length);
                 if(bytesRead <= 0) {
                     break;
                 }
                 out.write(buf, 0, bytesRead); 
+            }
+            if (haltOperation) {
+                throw new InterruptedIOException();
             }
             out.flush();
             writeAck(out);

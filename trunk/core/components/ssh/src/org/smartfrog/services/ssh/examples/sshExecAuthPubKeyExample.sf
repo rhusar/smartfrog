@@ -29,11 +29,11 @@ For more information: www.smartfrog.org
 
 
 sfConfig extends SSHSessionAuthPubKey {
-         SSHCmdExec:host "ebnt171.india.hp.com";
-         SSHCmdExec:username "root";
-         SSHCmdExec:keyfile "D:\\rsa";
-         PasswordProvider:passwordFile "D:\\cvs\\forge\\passphrase.txt";
-         SSHCmdExec:commands ["mkdir one", "mkdir two"];
+     host "ebnt171.india.hp.com";
+     username "root";
+     keyfile "D:\\rsa";
+     PasswordProvider:passwordFile "D:\\cvs\\forge\\passphrase.txt";
+     commands ["mkdir one", "mkdir two"];
 	 SSHCmdExec:logFile "sshlog.txt";
 
 }

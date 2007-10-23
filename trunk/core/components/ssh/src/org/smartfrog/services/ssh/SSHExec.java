@@ -19,24 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * SmartFrog component to executes a command on a remote machine over ssh.
  * @author Ashish Awasthi
  */
-public interface SSHExec extends Prim {
-    //SmartFrog attributes names
-    public static String HOST = "host";
-    public static String PORT = "port";
-    public static String USER = "username";
-    public static String KEYFILE = "keyfile";
-    public static String COMMANDS = "commands";
-    public static String TIMEOUT = "timeout";
-    public static String FAIL_ON_ERROR = "failOnError";
-    public static String TERMINATE = "shouldTerminate";
-    public static String TRUST_ALL_CERTIFICATES = "trustAllCertificates";
-    public static String KNOWN_HOSTS = "knownHosts";
-    public static String LOG_FILE = "logFile";
+public interface SSHExec extends SSHComponent {
+    public static String ATTR_COMMANDS = "commands";
 }
 
