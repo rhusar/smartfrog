@@ -20,6 +20,9 @@
 package org.smartfrog.sfcore.utils;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+
+import java.rmi.RemoteException;
 
 /**
  * This thread represents the base class for threads run under SmartFrog.
@@ -193,6 +196,29 @@ public class SmartFrogThread extends Thread {
         return SmartFrogException.forward(thrown);
     }
 
+    /**
+     * Handle pings by rethrowing any caught exception. There is special handling for
+     * {@link InterruptedException}, as it is often raised when stopping a thread. It may not be
+     * an error for that to have happened.
+     * @param rethrowInterruptedExceptions should an InterruptedException be wrapped as a liveness failure.
+     * @throws SmartFrogLivenessException containing any wrapped exception
+     * @throws RemoteException if a remote exception was caught
+     */
+    public void ping(boolean rethrowInterruptedExceptions) throws SmartFrogLivenessException, RemoteException {
+        Throwable t = getThrown();
+        if (t == null) {
+            //no fault
+            return;
+        }
+        if (t instanceof RemoteException) {
+            throw (RemoteException) t;
+        }
+        if (t instanceof InterruptedException && !rethrowInterruptedExceptions) {
+            //ignore the interruption. Sometimes this is useful
+            return;
+        }
+        throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(t);
+    }
 
     /**
      * Runs the {@link #execute()} method, catching any exception it throws and
