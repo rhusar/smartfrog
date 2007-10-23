@@ -46,7 +46,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
 // Inner class that implements futures ---
 
-  public class ScriptResultsImpl implements ScriptResults, Serializable {
+  public static class ScriptResultsImpl implements ScriptResults, Serializable {
 
       protected boolean resultReady = false;
 
@@ -57,42 +57,54 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       /** Verbose script results output */
       protected boolean verbose = false;
 
-      List stdOut = null;
-      List stdErr = null;
+      private List<String> stdOut = null;
+      private List<String> stdErr = null;
+      private LogSF log;
+      public static final String ERROR_RESULTS_NOT_READY = "Accessor should not be called before results are ready.";
+
+      public ScriptResultsImpl(LogSF log) {
+          this.log=log;
+          stdOut = Collections.synchronizedList(new ArrayList<String>());
+          stdErr = Collections.synchronizedList(new ArrayList<String>());
+      }
 
       public List getStderr() throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return stdErr;
+          checkResultsReady();
+          return stdErr;
       }
 
       public List getStdout()  throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return stdOut;
+          checkResultsReady();
+          return stdOut;
       }
 
       public Integer getExitCode()  throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return code;
+          checkResultsReady();
+          return code;
       }
 
       public synchronized InvocationTargetException getException()  throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return exception;
+          checkResultsReady();
+          return exception;
       }
 
       public String tailStderr(int num)  throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return tail(stdErr, num);
+          checkResultsReady();
+          return tail(stdErr, num);
+      }
+
+      private void checkResultsReady() throws SmartFrogException {
+          if (!resultReady) throw new SmartFrogException(ERROR_RESULTS_NOT_READY);
       }
 
       public String tailStdout(int num)  throws SmartFrogException {
-        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
-        return tail(stdOut, num);
+          checkResultsReady();
+          return tail(stdOut, num);
       }
 
-      private String tail(List list, int num) {
-        StringBuffer res = new StringBuffer("");
-        List copy = new Vector(list);
+      private String tail(List<String> list, int num) {
+        StringBuilder res = new StringBuilder("");
+        List<String> copy = new Vector<String>(list);
         int end = copy.size();
         int start = copy.size() - num;
         if (start < 0) start = 0;
@@ -103,10 +115,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
         return res.toString();
       }
 
-      public ScriptResultsImpl() {
-        stdOut = Collections.synchronizedList(new ArrayList());
-        stdErr = Collections.synchronizedList(new ArrayList());
-      }
 
       public boolean resultsReady() {
           return resultReady;
@@ -143,7 +151,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
      public synchronized void waitFor(long timeout) throws SmartFrogException {
         try {
-          if (resultReady)return;
+          if (resultReady) {
+              return;
+          }
 
           if (timeout != 0) {
             if (timeout == -1) {
@@ -162,12 +172,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           // Will throw , InterruptedException, InvocationTargetException
           throw SmartFrogException.forward(exception);
         }
-        if (!resultReady) throw new SmartFrogException("Time out reached before results ready.");
+        if (!resultReady) {
+            throw new SmartFrogException("Time out reached before results ready.");
+        }
     }
 
 
       public synchronized void ready(final Integer result) {
-        this.code = result;
+        code = result;
         resultReady = true;
         notifyAll();
       }
@@ -186,14 +198,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       private ComponentDescription asComponentDescription() {
         ComponentDescription cd = new ComponentDescriptionImpl(null, new ContextImpl(), false);
         try {
-          cd.sfAddAttribute("resultReady", new Boolean (resultReady));
+          cd.sfAddAttribute("resultReady", Boolean.valueOf(resultReady));
           if (code!=null) cd.sfAddAttribute("code", code);
           if (stdErr!=null) cd.sfAddAttribute("stdErr", stdErr);
           if (stdOut!=null) cd.sfAddAttribute("stdOut", stdOut);
           if (exception != null) cd.sfAddAttribute("exception", exception);
         }
         catch (SmartFrogRuntimeException ex) {
-          if (sfLog().isErrorEnabled()) sfLog().error(ex);
+          if (log.isErrorEnabled()) log.error(ex);
         }
         return cd;
       }
@@ -211,7 +223,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
   private  RunProcess runProcess = null;
 
-  private ScriptResults results = null;
+  private ScriptResultsImpl results = null;
 
   private static String TYPE_DONE ="done";
   private static String TYPE_NEXT_CMD ="next_cmd";
@@ -248,7 +260,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           cmd.setFilterErrListener(this, null);
       }
       runProcess = new RunProcessImpl(name, cmd, prim);
-      results = new ScriptResultsImpl();
+      results = new ScriptResultsImpl(sfLog());
       ((RunProcessImpl)runProcess).start();
       runProcess.waitForReady(200);
   }
@@ -259,7 +271,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
 
   /**
-   * Runs an echo commnad unless cmd.echoCommand is null.
+   * Runs an echo command unless cmd.echoCommand is null.
    * @param text String Echoed string.
    * @return String, null if echoCommnand is null.
    */
@@ -268,7 +280,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
     String echoMark = "ScriptExecEcho - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
 
-    if (cmd.getExitErrorCommand()!=null) echoMark = echoMark + " Exit code#: "+cmd.getExitErrorCommand();
+    if (cmd.getExitErrorCommand()!=null) {
+        echoMark = echoMark + " Exit code#: "+cmd.getExitErrorCommand();
+    }
 
     runProcess.execCommand(cmd.getEchoCommand()+" "+ echoMark);
     return echoMark;
@@ -318,7 +332,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(String command, ScriptLock scriptLock, boolean verbose) throws SmartFrogException {
-    if (this.lock!=scriptLock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
+    if (this.lock!=scriptLock) {
+        throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
+    }
     //Close results blocking
     closeResults(command, true, -1);
     ScriptResults res =  results;
@@ -430,7 +446,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(List commands, ScriptLock scriptLock, boolean verbose) throws  SmartFrogException {
-    if (this.lock!=scriptLock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
+    if (this.lock!=scriptLock) {
+        throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
+    }
     // Loop through using extra echo to mark end of command and a lock to continue.
 
     //Close results blocking
@@ -466,25 +484,25 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   public synchronized ScriptLock lockShell(long timeout) throws
       SmartFrogException {
     // throws InterruptedException
-    try {
-      if (timeout == 0) { // don't wait
-        acquire_without_blocking();
-      } else if (timeout == -1) { // wait forever
-        while (!acquire_without_blocking()) {
-          wait(Long.MAX_VALUE);
-        }
-      } else { // wait  timeout
-        if (!acquire_without_blocking()) {
-          wait(timeout);
-          if (!acquire_without_blocking()) {
-            throw new SmartFrogException("Timeout waiting to lock Shell");
+      try {
+          if (timeout == 0) { // don't wait
+              acquire_without_blocking();
+          } else if (timeout == -1) { // wait forever
+              while (!acquire_without_blocking()) {
+                  wait(Long.MAX_VALUE);
+              }
+          } else { // wait  timeout
+              if (!acquire_without_blocking()) {
+                  wait(timeout);
+                  if (!acquire_without_blocking()) {
+                      throw new SmartFrogException("Timeout waiting to lock Shell");
+                  }
+              }
           }
-        }
+          return lock;
+      } catch (InterruptedException iex) {
+          throw SmartFrogException.forward(iex);
       }
-      return lock;
-    } catch (InterruptedException iex) {
-      throw SmartFrogException.forward(iex);
-    }
   }
 
   // Lock.
@@ -510,7 +528,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *
    * @param scriptLock the lock object received from the lockShell
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the l0ck
+   *   not currently holding the lock
    // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
@@ -526,77 +544,91 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
   //Filter listener interface implementation
 
-  public void line (String line, String filterName){
-      if (filterName.indexOf("out")!=-1){
-        ((ScriptResultsImpl)results).stdOut.add(line);
-        if (((ScriptResultsImpl)results).verbose) {sfLog().out(line);}
-      } else {
-        ((ScriptResultsImpl)results).stdErr.add(line);
-        if (((ScriptResultsImpl)results).verbose) {sfLog().err(line);}
-      }
-      if (sfLog().isTraceEnabled()){
-          sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
-      }
-  }
-
-  public synchronized void found( String line, int filterIndex, String filterName){
-    if (sfLog().isDebugEnabled()) {
-       sfLog().debug("FOUND LINE "+line+", "+filterIndex+", "+filterName);
-    }
-    if (filterIndex == 0) {
-      //Finished
-      if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_DONE+" "+name)!=-1) return; // This is the echo command itself, ignore
-
-      //What do we do if err continues producing output?, should we wait forever?
-       Integer exitCode = new Integer(-999999);
-       int index = line.indexOf("Exit code#:"); // 11 chars
-       if (index!=-1){
-        try {
-          exitCode = new Integer(line.substring(index+ 12).trim());
-        } catch (NumberFormatException ex) {
-          if (sfLog().isWarnEnabled()) { sfLog().warn(ex);}
+    public void line(String line, String filterName) {
+        if (filterName.indexOf("out") != -1) {
+            results.stdOut.add(line);
+            if (results.verbose) {
+                sfLog().out(line);
+            }
+        } else {
+            results.stdErr.add(line);
+            if (results.verbose) {
+                sfLog().err(line);
+            }
         }
-       }
-       //remove the ScriptExecEcho output from stdout...
-       int last = ((ScriptResultsImpl)results).stdOut.lastIndexOf(line);
-       ((ScriptResultsImpl)results).stdOut.remove(last);
-       createNewScriptResults(exitCode);
-    } else if (filterIndex==1){
-      //Next command will follow
-       if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_NEXT_CMD+" "+name)!=-1) return; // This is the echo command itself, ignore
-      //((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
-      //((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
-       //System.out.println("\n -- GO NEXT Command -- "+line);
-    } else {
-      if (sfLog().isWarnEnabled()) sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+        if (sfLog().isTraceEnabled()) {
+            sfLog().trace("LINE " + line + ", " + filterName + ", "
+                    + filterName.indexOf("out") + ", "
+                    + filterName.indexOf("err"));
+        }
     }
-  }
 
-  /**
-   * Finishes present ScriptResult and creates a new one.
-   * @return ScriptResults finished ScriptResult.
-   */
-  private ScriptResults createNewScriptResults(Integer exitCode) {
-    ScriptResults finishedResults = results;
-    results = new ScriptResultsImpl();
-    ((ScriptResultsImpl)finishedResults).ready(exitCode);
-    return finishedResults;
-  }
+    public synchronized void found(String line, int filterIndex, String filterName) {
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("FOUND LINE " + line + ", " + filterIndex + ", " + filterName);
+        }
+        if (filterIndex == 0) {
+            //Finished
+            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_DONE + " " + name) != -1) {
+                return; // This is the echo command itself, ignore
+            }
 
-  /**
-   * This method should be used to log Core messages
-   * @return Logger implementing LogSF and Log
-   */
-  public LogSF sfLog() {
-     if (sflog!=null)
-       return sflog;
-     else {
-      try {
-        return LogFactory.getLog(name);
-      } catch (Exception ex) {
-        return LogFactory.sfGetProcessLog();
-      }
-     }
+            //What do we do if err continues producing output?, should we wait forever?
+            Integer exitCode = new Integer(-999999);
+            int index = line.indexOf("Exit code#:"); // 11 chars
+            if (index != -1) {
+                try {
+                    exitCode = new Integer(line.substring(index + 12).trim());
+                } catch (NumberFormatException ex) {
+                    if (sfLog().isWarnEnabled()) {
+                        sfLog().warn(ex);
+                    }
+                }
+            }
+            //remove the ScriptExecEcho output from stdout...
+            int last = results.stdOut.lastIndexOf(line);
+            results.stdOut.remove(last);
+            createNewScriptResults(exitCode);
+        } else if (filterIndex == 1) {
+            //Next command will follow
+            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_NEXT_CMD + " " + name) != -1)
+                return; // This is the echo command itself, ignore
+            //((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
+            //((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
+            //System.out.println("\n -- GO NEXT Command -- "+line);
+        } else {
+            if (sfLog().isWarnEnabled())
+                sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+        }
+    }
+
+    /**
+     * Finishes present ScriptResult and creates a new one.
+     * @param exitCode the exit code
+     * @return ScriptResults finished ScriptResult.
+     */
+    private synchronized ScriptResults createNewScriptResults(Integer exitCode) {
+        ScriptResultsImpl finishedResults = results;
+        results = new ScriptResultsImpl(sfLog());
+        finishedResults.ready(exitCode);
+        return finishedResults;
+    }
+
+    /**
+     * This method should be used to log Core messages
+     *
+     * @return Logger implementing LogSF and Log
+     */
+    public LogSF sfLog() {
+        if (sflog != null)
+            return sflog;
+        else {
+            try {
+                return LogFactory.getLog(name);
+            } catch (Exception ex) {
+                return LogFactory.sfGetProcessLog();
+            }
+        }
     }
 
 }
