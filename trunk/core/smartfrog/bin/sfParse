@@ -12,11 +12,11 @@ fi
 
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFParse "$@"
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
         java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFParse "$@"
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFParse "$@"
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFParse "$@"
 fi

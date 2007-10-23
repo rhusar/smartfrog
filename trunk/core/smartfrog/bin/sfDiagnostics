@@ -18,11 +18,11 @@ fi
 if [ -z $2 ]; then
     COMPONENT="rootProcess";
 else
-	if test "$USERNAMEPREFIX_ON"; then
-		COMPONENT="`whoami`_$2";
-	else
-		COMPONENT="$2";
-	fi
+    if test "$USERNAMEPREFIX_ON"; then
+        COMPONENT="`whoami`_$2";
+    else
+        COMPONENT="$2";
+    fi
 fi    
 
 if [ -z $3 ]; then
@@ -37,11 +37,11 @@ fi
 ACTION=DIAGNOSTICS
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
         java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a \"$COMPONENT\":$ACTION:::$1:$PROCESS -e
 fi

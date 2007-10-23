@@ -27,17 +27,17 @@ fi
 #java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
 
 if test "$USERNAMEPREFIX_ON"; then
-	APPNAME="`whoami`_$2";
+    APPNAME="`whoami`_$2";
 else
-	APPNAME="$2";
+    APPNAME="$2";
 fi
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
         java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: -e
 fi
