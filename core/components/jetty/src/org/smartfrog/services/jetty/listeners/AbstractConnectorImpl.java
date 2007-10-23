@@ -44,9 +44,17 @@ public abstract class AbstractConnectorImpl extends PrimImpl {
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
 
+    /**
+     * protected constructor for subclasses
+     * @throws RemoteException if the superclass raises it.
+     */
     protected AbstractConnectorImpl() throws RemoteException {
     }
 
+    /**
+     * Get the connector
+     * @return
+     */
     public Connector getConnector() {
         return connector;
     }
@@ -68,10 +76,12 @@ public abstract class AbstractConnectorImpl extends PrimImpl {
     }
 
     /**
-     * Termination phase
+     * Termination phase. Any connector is terminated
+     * @param status exit record.
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         jettyHelper.terminateConnector(connector);
+        connector=null;
         super.sfTerminateWith(status);
     }
 
@@ -109,10 +119,10 @@ public abstract class AbstractConnectorImpl extends PrimImpl {
     }
 
     /**
-     * Set the max idle time of this connector to that of {@link #ATTR_MAX_IDLE_TIME}
-     * @param connector
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * Set the max idle time of this connector to that of {@link JettySocketConnector#ATTR_MAX_IDLE_TIME}
+     * @param connector connector to adjust
+     * @throws SmartFrogResolutionException failure to resolve the value
+     * @throws RemoteException In case of network/rmi error
      */
     protected void setMaxIdleTime(Connector connector) throws SmartFrogResolutionException, RemoteException {
         connector.setMaxIdleTime(sfResolve(JettySocketConnector.ATTR_MAX_IDLE_TIME, 0, true));
