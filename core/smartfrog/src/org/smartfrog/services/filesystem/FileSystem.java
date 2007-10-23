@@ -318,6 +318,9 @@ public class FileSystem {
             } catch (SmartFrogResolutionException e) {
                 //no attribute? ask for it by name
                 path = fileComponent.getAbsolutePath();
+                if(path==null) {
+                    throw new SmartFrogResolutionException("File component is returning a null path", fileAsPrim);
+                }
             }
         } else if (pathSource instanceof String) {
             //string: convert that into an absolute path
