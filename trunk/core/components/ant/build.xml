@@ -42,7 +42,8 @@ Reference URL:http://ant.apache.org
   <property file="build.properties" />
   <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"  />
-  <property name="system.tests" value="true"/>
+<!--  <property name="system.tests" value="true"/>-->
+  <property name="system.tests" value="false"/>
   <property name="root.dir" location="../../"  />
   <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
