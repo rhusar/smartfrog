@@ -21,19 +21,19 @@ fi
 . "$SFHOME/bin/setSFProperties"
 
 #if test "$SFDEFAULTSF"; then
-#	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+#   export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
 #fi
 
 #java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
 
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
         java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
 else 
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
 fi
 
