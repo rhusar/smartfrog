@@ -89,11 +89,13 @@ component configuration parameters, and a runtime environment which
 activates and manages the components to deliver and maintain running systems.
 SmartFrog and its components are implemented in Java.
 
-This RPM installs smartfrog into %{basedir} and adds scripts to /etc/profile.d
-and /etc/sysconfig so that SmartFrog is available on the command line.
+This RPM installs smartfrog into %{basedir} 
+and adds scripts to /etc/profile.d and /etc/sysconfig 
+so that SmartFrog is available on the command line.
 
-In this RPM SmartFrog is configured to log to files /var/log/smartfrog_*.log with logLevel=3 (INFO)
-using LogToFileImpl. The GUI is turned off.
+In this RPM SmartFrog is configured to log to files 
+    /var/log/smartfrog_*.log
+with logLevel=3 (INFO)u sing LogToFileImpl. The GUI is turned off.
 
 
 
@@ -221,15 +223,7 @@ cp -dpr . $RPM_BUILD_ROOT
 
 #after installing create a log directory that is world writeable, so that people running the init.d
 #daemon by hand don't need to be root (SFOS-173)
-mkdir -p %{logdir}
-chmod a+wx %{logdir}
-chgrp ${rpm.groupname} %{logdir}
-chown ${rpm.username} %{logdir}
 
-mkdir -p %{linkdir}
-chmod a+rx %{linkdir}
-chgrp ${rpm.groupname} %{linkdir}
-chown ${rpm.username} %{linkdir}
 #just in case the files are there
 rm -f %{linkdir}/smartfrog.jar
 rm -f %{linkdir}/sfExamples.jar
@@ -278,8 +272,10 @@ rm -rf $RPM_BUILD_ROOT
 #Bin directory and beneath
 %attr(755, ${rpm.username},${rpm.groupname}) %dir %{bindir}
 #these are config files that should be protected
-%config %{bindir}/default.ini
-%config %{bindir}/default.sf
+#see http://www-uxsup.csx.cam.ac.uk/~jw35/docs/rpm_config.html for info on this
+#option
+%config(noreplace) %{bindir}/default.ini
+%config(noreplace) %{bindir}/default.sf
 
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/smartfrog
 %attr(755, ${rpm.username},${rpm.groupname}) %{bindir}/setSFDefaultProperties
@@ -328,18 +324,21 @@ rm -rf $RPM_BUILD_ROOT
 %{libdir}/sfServices-${smartfrog.version}.jar
 
 #the links directory is created empty
-%{basedir}/links
+%attr(755, ${rpm.username},${rpm.groupname}) %{basedir}/links
 
 #other directories
 %{basedir}/testCA
 %{basedir}/private
 %{basedir}/signedLib
-#the log output
-${rpm.log.dir}
+
+#the log output directory
+#this is world writeable, so that anyone can run SmartFrog
+%attr(777, ${rpm.username},${rpm.groupname}) ${rpm.log.dir}
 
 #and the shell scripts, which belong to root
-%attr(755, root,root) /etc/profile.d/smartfrog.sh
-%attr(755, root,root) /etc/profile.d/smartfrog.csh
+#these are not executable, because they are meant to be sourced
+%attr(0644, root,root) /etc/profile.d/smartfrog.sh
+%attr(0644, root,root) /etc/profile.d/smartfrog.csh
 %attr(755, root,root) ${rpm.etc.dir}
 
 #%doc # add docs here
@@ -448,6 +447,8 @@ fi
 
 %changelog
 # to get the date, run:   date +"%a %b %d %Y"
+* Wed Oct 24 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.008-1.el4
+- use RHEL-specific distribution tags
 * Mon Sep 17 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
 - all cleanup is skipped during upgrades, so that rpm --upgrade should now work properly.
 - link removal is moved to the pre-uninstall phase, so that chkconfig and install_initd have the
