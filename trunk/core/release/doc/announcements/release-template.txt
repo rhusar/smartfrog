@@ -109,4 +109,24 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+There have been some changes to the RPM packaging, so rpmlint raises no errors and
+less warnings. Specifically
+ -the .el4 suffix indicates the RPMs are compatible with RedHat Enterprise Linux 4
+ -the symbolic links from /opt/smartfrog/links to versionned artifacts are now managed
+  by the rpm tools, instead of created and deleted by custom scripts.
+ -the permissions on some files have been tightened.
 
+The migration of the Jetty components to Jetty 6 is now complete. Jetty HTTP/HTTPS
+servers can be deployed, and web application and servlet contexts deployed atop them.
+Jetty 6 security is higher than before, with two consequences
+ -it is no longer possible to export a directory tree, and have jetty create index pages.
+  Explicit index.html pages are required. Otherwise, a 403 forbidden or 404 not-found
+  response is generated
+ -Web applications must explicitly list their welcome files in a section of web.xml.
+  Consult the servlet documentation for the specifics of this.
+In our own testing, it is these security changes which create the appearance that Jetty
+is not deploying web applications. It is deploying them, only more securely than before.
+
+The SSH components have moved up to Jsch-0.1.31, and rewritten significant internally
+ -all implementation classes share the same base class and template descriptor
+ -authentication policy (key or password) is now controlled via an attribute, authentication.
