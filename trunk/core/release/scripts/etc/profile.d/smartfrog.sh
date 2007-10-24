@@ -1,4 +1,3 @@
-#!/bin/sh
 # This file contains environment variables needed by the Smartfrog Daemon
 
 export SFHOME="${rpm.install.dir}"
