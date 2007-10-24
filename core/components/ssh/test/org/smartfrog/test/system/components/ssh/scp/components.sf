@@ -115,3 +115,14 @@ tcn_nonexistent_hostTest extends ExpectDeployFailure {
     exceptions ["LifecycleException","java.net.UnknownHostException" ];
 
 }
+
+
+tcn_mismatched_file_list extends ExpectDeployFailure {
+
+    action extends FullScpSession {
+        remoteFiles ["/tmp/1.txt","/tmp/1.txt","/tmp/1.txt"];
+    }
+
+    exceptions ["LifecycleException","Mismatch" ];
+
+}

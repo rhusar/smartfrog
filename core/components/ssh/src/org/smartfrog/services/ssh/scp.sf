@@ -79,9 +79,6 @@ For more information: www.smartfrog.org
 
             port PARENT:ATTRIB port;
 
-            // Required if used in workflows like Sequence etc
-            shouldTerminate PARENT:ATTRIB shouldTerminate;
-               // timeout for command execution
             timeout PARENT:ATTRIB timeout;
 
             transferType PARENT:ATTRIB transferType;

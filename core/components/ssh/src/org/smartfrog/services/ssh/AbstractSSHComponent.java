@@ -79,7 +79,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
     }
 
     /**
-     * Read in the auth policy of this component; save the values to apply later.
+     * Read in the common attributes of SSH components: authentication parameters, username, workflow, etc.
      *
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
