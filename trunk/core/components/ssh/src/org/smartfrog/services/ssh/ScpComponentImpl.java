@@ -67,6 +67,11 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * The worker thread is here
      */
     private ScpWorkerThread worker;
+    public static final String ERROR_OUTPUT_IS_A_DIRECTORY = "output file bound to a directory: ";
+    public static final String ERROR_MISSING_FILE_TO_UPLOAD = "Missing file to upload: ";
+    public static final String ERROR_NOT_A_NORMAL_FILE = "Not a normal file:";
+    public static final String INFO_NO_FILES_TO_PROCESS = "No files to process";
+    public static final String ERROR_FILE_COUNT_MISMATCH = "Mismatch between the number of elements in the local file list (";
 
     /**
      * Constructs an instance  object.
@@ -100,7 +105,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
         super.sfStart();
         readFileLists();
         if (localFileList.size() == 0) {
-            log.info("No files to process");
+            log.info(INFO_NO_FILES_TO_PROCESS);
         } else {
             //now that we are starting up, check the files.
             if (getFiles) {
@@ -108,7 +113,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                 for (String entry : localFileList) {
                     File file = new File(entry);
                     if (file.exists() && file.isDirectory()) {
-                        throw new SmartFrogLifecycleException("output file bound to a directory: " + file);
+                        throw new SmartFrogLifecycleException(ERROR_OUTPUT_IS_A_DIRECTORY + file);
                     }
                 }
 
@@ -116,10 +121,10 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                 for (String entry : localFileList) {
                     File file = new File(entry);
                     if (!file.exists()) {
-                        throw new SmartFrogLifecycleException("Missing file to upload: " + file);
+                        throw new SmartFrogLifecycleException(ERROR_MISSING_FILE_TO_UPLOAD + file);
                     }
                     if (!file.isFile()) {
-                        throw new SmartFrogLifecycleException("Not a normal file:" + file);
+                        throw new SmartFrogLifecycleException(ERROR_NOT_A_NORMAL_FILE + file);
                     }
                 }
             }
@@ -195,7 +200,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
         int remoteFileCount = remoteFileList.size();
 
         if (fileCount != remoteFileCount) {
-            throw new SmartFrogLifecycleException("Mismatch between the number of elements in the local file list ("
+            throw new SmartFrogLifecycleException(ERROR_FILE_COUNT_MISMATCH
                     + fileCount + ") and the remote list (" + remoteFileCount + ")");
         }
 
@@ -213,8 +218,10 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
 
         private AbstractScpOperation operation;
 
-        public void haltOperation() {
-
+        public synchronized void haltOperation() {
+            if(operation!=null) {
+                operation.haltOperation();
+            }
         }
 
         /**
@@ -254,6 +261,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                     } else {
                         throw new SmartFrogLifecycleException(e);
                     }
+                } finally {
+                    operation=null;
                 }
             } catch (Throwable thrown) {
                 TerminationRecord record = TerminationRecord.abnormal("SCP failed",sfCompleteNameSafe(),thrown);

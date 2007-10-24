@@ -54,9 +54,8 @@ SSHComponent extends WorkflowPrim {
       */
 SshCompound extends Compound {
     port 22;
+    //timeout is in milliseconds
     timeout 0;
-    shouldTerminate sfShouldTerminate;
-    sfShouldTerminate true;
     failOnError true;
     trustAllCertificates true;
 }

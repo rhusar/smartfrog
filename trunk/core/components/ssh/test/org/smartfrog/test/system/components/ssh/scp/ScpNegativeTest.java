@@ -96,4 +96,7 @@ public class ScpNegativeTest
         expectSuccessfulTestRunOrSkip(FILES , "tcn_nonexistent_host.sf");
     }
 
+    public void testtcn_mismatched_file_listTest() throws Throwable {
+        expectSuccessfulTestRun(FILES, "tcn_mismatched_file_list.sf");
+    }
 }
