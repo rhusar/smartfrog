@@ -218,6 +218,7 @@ TOKEN : /* reserved words */
  | <IPROPERTY: "IPROPERTY">
  | <ENVPROPERTY: "ENVPROPERTY">
  | <IENVPROPERTY: "IENVPROPERTY">
+ | <CONST: "CONSTANT">
  | <LAZY: "LAZY">
  | <LBRACE: "{">
  | <LBRACKET: "[">
@@ -859,6 +860,7 @@ void ReferencePart(SFReference ref) :
   | (<IPROPERTY> id=Name() { ref.addElement(ReferencePart.iproperty(id.image));})
   | (<ENVPROPERTY> id=Name() { ref.addElement(ReferencePart.envproperty(id.image));})
   | (<IENVPROPERTY> id=Name() { ref.addElement(ReferencePart.ienvproperty(id.image));})
+  | (<CONST> id=Name() {ref.addElement(ReferencePart.constant(id.image));})
   | (<HOST> (id=Name() { ref.addElement(ReferencePart.host(id.image));}))
   | (<PROCESS> { ref.addElement(ReferencePart.process());})
   | (id=<WORD> { if (ref.size() == 0) // id in first position - treat as an attrib, not a here

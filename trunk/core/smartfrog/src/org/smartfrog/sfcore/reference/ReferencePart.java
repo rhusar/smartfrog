@@ -128,6 +128,18 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
     public static ReferencePart iproperty(Object s) {
         return new IPropertyReferencePart(s);
     }
+
+   /**
+     * Creates an const reference part which resolves to a constant.
+     *
+     * @param s id of attribute
+     *
+     * @return reference part
+     */
+    public static ReferencePart constant(String s) {
+        return new ConstantReferencePart(s);
+    }
+
     /**
      * Creates a reference part which resolves to a host's root process
      * compound component.
