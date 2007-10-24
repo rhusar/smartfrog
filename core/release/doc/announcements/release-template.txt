@@ -109,12 +109,26 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+There have been various bug fixes, to Anubis and other parts of the system.
+
+SFOS-506 new reference type: CONSTANT
+ There is a new reference type which can extract the value of a static field in a Java
+ class. This is useful for extracting text strings from existing code:
+    ExpectedText CONSTANT "org.smartfrog.example.Test.ErrorText";
+ In this example, ExpectedText is set to the string constant ErrorText in the
+ class org.smartfrog.example.Text. The type of the resolved reference is that
+ of the static object -there is no restriction simply to strings.
+
+SFOS-512  	 rpmlint gives warnings and errors
+
 There have been some changes to the RPM packaging, so rpmlint raises no errors and
 less warnings. Specifically
  -the .el4 suffix indicates the RPMs are compatible with RedHat Enterprise Linux 4
  -the symbolic links from /opt/smartfrog/links to versionned artifacts are now managed
   by the rpm tools, instead of created and deleted by custom scripts.
  -the permissions on some files have been tightened.
+
+SFOS-357: Move Jetty support up to Jetty 6 (ongoing)
 
 The migration of the Jetty components to Jetty 6 is now complete. Jetty HTTP/HTTPS
 servers can be deployed, and web application and servlet contexts deployed atop them.
@@ -129,4 +143,10 @@ is not deploying web applications. It is deploying them, only more securely than
 
 The SSH components have moved up to Jsch-0.1.31, and rewritten significant internally
  -all implementation classes share the same base class and template descriptor
- -authentication policy (key or password) is now controlled via an attribute, authentication.
+ -authentication policy (key or password) is now controlled via an attribute, "authentication".
+ -the components use the standard workflow attributes to control their termination policy.
+ -all the configuration options are checked before a connection is attempted. This
+  finds problems early, rather than late
+ -private key files for scp and sshexec, and the list of local files for scp, are now enhanced to
+  take references to components implementing the FileIntf interface, as well as simple strings.
+  This makes it easier to use components as sources of files.
