@@ -121,6 +121,7 @@
     <m:newdir name="build.rpm.dir" location="${build.dir}/rpm"/>
 
     <m:newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
+    <m:newdir name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.install.dir}/links"/>
 
     <m:newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata"/>
@@ -163,8 +164,30 @@
         </copy>
       </sequential>
     </macrodef>
+    
+    <!-- macro to create a symlink on Unix for the RPM.
+      The artifact is verified as living in the reparented filesystem, 
+      but the symlinks is set to point to the destination relative to root.
+      This is because tar does not fix links up during the packaging.
+    -->
+    <macrodef name="ln">
+      <attribute name="artifact" />
+      <attribute name="version" />
+      <sequential>
+        <fail>
+         <condition>
+          <not><available file="${rpm.lib.dir}/@{artifact}-@{version}.jar" /></not>
+         </condition>
+         Missing destination artifact: ${rpm.lib.dir}/@{artifact}-@{version}.jar
+        </fail>
+        <exec executable="ln" failonerror="true">
+          <arg value="-sf"/>
+          <arg value="${rpm.install.dir}/lib/@{artifact}-@{version}.jar"/>
+          <arg value="${rpm.link.dir}/@{artifact}.jar"/>
+        </exec>
+      </sequential>
+    </macrodef>
   </target>
-
   <target name="copy-rpm-specs" depends="init-rpm">
     <m:expandingcopy todir="${rpm.SPECS}">
       <fileset dir="${rpm.metadata.dir}" includes="**/*.spec"/>
@@ -209,16 +232,26 @@
     <rpmpackage package="${rpm.module.name}"/>
   </target>
 
+  
+  <!-- override point: create custom symlinks -->
+  <target name="rpm-symlinks" depends="rpm-components" >
+  </target>
+  
   <!-- override point -->
-  <target name="rpm-extras" depends="rpm-components" />
+  <target name="rpm-extras" depends="rpm-components,rpm-symlinks" />
 
   <!--
   The tar is passed to rpm to create the artifacts
   -->
   <target name="prepare-rpm" depends="copy-rpm-specs,rpm-extras">
-    <m:tar destfile="${rpmfiles.tar}">
-      <fileset dir="${build.rpm.dir}/root/" includes="**/*"/>
-    </m:tar>
+    <!-- to publish more than just opt content, override this -->
+    <property name="rpm.tar.bundles" value="opt" />
+    <exec executable="tar" failonerror="true" 
+      dir="${build.rpm.dir}/root/">
+      <arg value="cvvf"/>
+      <arg file="${rpmfiles.tar}"/>
+      <arg line="${rpm.tar.bundles}"/>
+    </exec>
     <gzip src="${rpmfiles.tar}" destfile="${rpmfiles.tar.gz}"/>
   </target>
 
