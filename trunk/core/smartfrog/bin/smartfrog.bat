@@ -16,22 +16,25 @@ rem JVMARGS are declared using -J token
 rem e.g. -J "-Djava.library.path=/libs -Xmx400M"
 rem e.g. -J "-Djava.library.path=/libs" -J -Xmx400M
 rem (JVMARGS are appended to SFCMDPARAMETERS)
-SET CLASSARGS=
-:start
-IF /I "%1"=="-J" GOTO readJARG 
-SET CLASSARGS=%CLASSARGS% %1
-GOTO test
+rem SET CLASSARGS=
+rem :start
+rem IF /I "%1"=="-J" GOTO readJARG 
+rem SET CLASSARGS=%CLASSARGS% %1
+rem GOTO test
 
-:readJARG
-SHIFT
-SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
+rem :readJARG
+rem SHIFT
+rem SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
 
-:test
-SHIFT
-IF NOT "%1"=="" GOTO start
+rem :test
+rem SHIFT
 
-:end
+rem IF NOT "%1"==" GOTO start
 
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %CLASSARGS%
+rem  :end
+
+rem  %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %CLASSARGS%
+
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 endlocal
