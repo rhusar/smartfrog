@@ -89,13 +89,14 @@ component configuration parameters, and a runtime environment which
 activates and manages the components to deliver and maintain running systems.
 SmartFrog and its components are implemented in Java.
 
-This RPM installs smartfrog into %{basedir} 
-and adds scripts to /etc/profile.d and /etc/sysconfig 
+This RPM installs smartfrog into 
+ %{basedir} 
+It also adds scripts to /etc/profile.d and /etc/sysconfig 
 so that SmartFrog is available on the command line.
 
 In this RPM SmartFrog is configured to log to files 
     /var/log/smartfrog_*.log
-with logLevel=3 (INFO)u sing LogToFileImpl. The GUI is turned off.
+with logLevel=3 (INFO) using LogToFileImpl. The GUI is turned off.
 
 
 
@@ -221,17 +222,6 @@ cp -dpr . $RPM_BUILD_ROOT
 
 %post 
 
-#after installing create a log directory that is world writeable, so that people running the init.d
-#daemon by hand don't need to be root (SFOS-173)
-
-#just in case the files are there
-rm -f %{linkdir}/smartfrog.jar
-rm -f %{linkdir}/sfExamples.jar
-rm -f %{linkdir}/sfServices.jar
-#set up the new symlinks
-ln -s %{libdir}/smartfrog-${smartfrog.version}.jar %{linkdir}/smartfrog.jar
-ln -s %{libdir}/sfExamples-${smartfrog.version}.jar %{linkdir}/sfExamples.jar
-ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
 
 
 
@@ -239,13 +229,12 @@ ln -s %{libdir}/sfServices-${smartfrog.version}.jar %{linkdir}/sfServices.jar
 #about to uninstall, but all the files are already present
 #%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
 
-%postun
-if [ "$1" = "0" ] ; then
-    #at uninstall time, we delete all logs
-    rm -rf %{logdir}
-    #and the links
-    rm -rf %{linkdir}
-fi
+#%postun
+#at uninstall time, we delete 
+#the links
+#if [ "$1" = "0" ] ; then
+
+#fi
 
 # -----------------------------------------------------------------------------
 
@@ -317,14 +306,19 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, ${rpm.username},${rpm.groupname}) %{binsecurity}/sfVersion
 %{binsecurity}/*.bat
 
-#now the files in the lib directory...use ant library versions to include version numbers
+#now the files in the lib directory...use ant library versions to 
+#include version numbers
 %dir %{libdir}
 %{libdir}/smartfrog-${smartfrog.version}.jar
 %{libdir}/sfExamples-${smartfrog.version}.jar
 %{libdir}/sfServices-${smartfrog.version}.jar
 
-#the links directory is created empty
-%attr(755, ${rpm.username},${rpm.groupname}) %{basedir}/links
+#the links directory 
+%attr(755, ${rpm.username},${rpm.groupname}) %dir %{basedir}/links
+%{linkdir}/smartfrog.jar
+%{linkdir}/sfExamples.jar
+%{linkdir}/sfServices.jar
+
 
 #other directories
 %{basedir}/testCA
@@ -414,14 +408,8 @@ fi
 %files anubis
 
 %{libdir}/sf-anubis-${smartfrog.version}.jar
+%{linkdir}/sf-anubis.jar
 
-%post anubis
-ln -sf %{libdir}/sf-anubis-${smartfrog.version}.jar %{linkdir}/sf-anubis.jar
-
-%postun anubis
-if [ "$1" = "0" ] ; then
-    rm -f %{linkdir}/sf-anubis.jar
-fi 
 
 %files logging
 
@@ -429,18 +417,9 @@ fi
 %{libdir}/commons-logging-${commons-logging.version}.jar
 %{libdir}/log4j-${log4j.version}.jar
 
-%post logging
-ln -sf %{libdir}/sf-loggingservices-${smartfrog.version}.jar %{linkdir}/sf-loggingservices.jar
-ln -sf %{libdir}/commons-logging-${commons-logging.version}.jar %{linkdir}/commons-logging.jar
-ln -sf %{libdir}/log4j-${log4j.version}.jar  %{linkdir}/log4j.version.jar
-
-%postun logging
-
-if [ "$1" = "0" ] ; then
-    rm -f %{linkdir}/sf-loggingservices.jar
-    rm -f %{linkdir}/commons-logging.jar
-    rm -f %{linkdir}/log4j.jar
-fi 
+%{linkdir}/sf-loggingservices.jar
+%{linkdir}/commons-logging.jar
+%{linkdir}/log4j.jar
 
 
 # -----------------------------------------------------------------------------
@@ -449,6 +428,8 @@ fi
 # to get the date, run:   date +"%a %b %d %Y"
 * Wed Oct 24 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.008-1.el4
 - use RHEL-specific distribution tags
+- change permissions on profile.d scripts
+- set up symbolic links using rpmbuild instead of custom post install scripts.
 * Mon Sep 17 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
 - all cleanup is skipped during upgrades, so that rpm --upgrade should now work properly.
 - link removal is moved to the pre-uninstall phase, so that chkconfig and install_initd have the

@@ -365,18 +365,69 @@
     <rpmpackage package="logging" />
   </target>
 
+  <!-- create the link dir and its symlinks -->
+  <target name="create-link-dir" if="has.rpm.tools"
+    depends="copy-scripts,rpm-components">
+    <property name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.install.dir}/links" />
+    <mkdir dir="${rpm.link.dir}" />
+    <!-- macro to create a symlink on Unix for the RPM.
+      The artifact is verified as living in the reparented filesystem, 
+      but the symlinks is set to point to the destination relative to root.
+      This is because tar does not fix links up during the packaging.
+    -->
+    <macrodef name="ln">
+      <attribute name="artifact" />
+      <attribute name="version" />
+      <sequential>
+        <fail>
+         <condition>
+          <not><available file="${rpm.lib.dir}/@{artifact}-@{version}.jar" /></not>
+         </condition>
+         Missing destination artifact: ${rpm.lib.dir}/@{artifact}-@{version}.jar
+        </fail>
+        <exec executable="ln" failonerror="true">
+          <arg value="-sf"/>
+          <arg value="${rpm.install.dir}/lib/@{artifact}-@{version}.jar"/>
+          <arg value="${rpm.link.dir}/@{artifact}.jar"/>
+        </exec>
+      </sequential>
+    </macrodef>
+    <ln artifact="smartfrog" version="${smartfrog.version}" />
+    <ln artifact="sfExamples" version="${smartfrog.version}" />
+    <ln artifact="sfServices" version="${smartfrog.version}" />
+    <!-- anubis -->
+    <ln artifact="sf-anubis" version="${smartfrog.version}" />
+    <ln artifact="sf-loggingservices" version="${smartfrog.version}" />
+    <ln artifact="commons-logging" version="${commons-logging.version}" />
+    <ln artifact="log4j" version="${log4j.version}" />
+  </target>
 
   <target name="prepare-binary-rpm"
       if="has.rpm.tools"
-      depends="copy-scripts,expand-core,rpm-components" >
+      depends="copy-scripts,rpm-components,create-link-dir" >
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
     <mkdir dir="${build.rpm.dir}/root${rpm.install.dir}/links" />
     <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}" />
+    <exec executable="tar" failonerror="true" 
+      dir="${build.rpm.dir}/root/">
+      <arg value="cvvf"/>
+      <arg file="${smartfrog.rpmfiles.tar}"/>
+      <arg value="etc"/>
+      <arg value="opt"/>
+      <arg value="var"/>
+    </exec>
+<!-- 
     <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
       <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
     </sf-tar>
+ -->
+   <!-- now we have a sanity check -->
+    <loadresource property="homepage">
+      <tarentry archive="${smartfrog.rpmfiles.tar}"
+        name="etc/sysconfig/smartfrog"/>
+    </loadresource>
     <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}" />
   </target>
 
@@ -854,6 +905,8 @@
 rpm -qf ${rpm.install.dir}/bin ;
 rpm -qf ${rpm.install.dir}/lib ;
 rpm -qf ${rpm.install.dir}/links ;
+rpm -qf ${rpm.install.dir}/links/smartfrog.jar;
+rpm -qf ${rpm.install.dir}/links/sfServices.jar;
 rpm -qf ${rpm.install.dir}/bin/security ;
 rpm -qf ${rpm.install.dir}/bin/metadata ;
 rpm -qf ${rpm.log.dir} ;
