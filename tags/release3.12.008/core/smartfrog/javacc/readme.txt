@@ -1,0 +1,1 @@
+Install JavaCC in this directory to make changes in SmartFrog language grammar.

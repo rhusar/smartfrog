@@ -1,0 +1,17 @@
+#
+# Environment Variables for Smartfrog startup
+#
+
+# Home Directory
+SFHOME=${rpm.install.dir}
+export SFHOME
+
+#
+# The following settings run to the virtual desktop for root
+#
+if [[ $$HOME == "" ]]
+then
+	HOME=/root
+fi
+
+export HOME

@@ -1,0 +1,130 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/test/system/components/ssh/components.sf"
+
+
+ScpSession extends ScpSessionInlinePassword {
+    password "secret";
+}
+
+
+
+FullScpSession extends ScpSession {
+
+    tempFile extends TempFileWithCleanup {
+        suffix "txt";
+    }
+
+    username LAZY PROPERTY user.name;
+    password  "secret";
+    host "localhost";
+    localFiles [LAZY tempFile];
+    remoteFiles ["/tmp/1.txt"];
+    transferType "get";
+
+
+}
+
+tcn83 extends ScpSessionFilePassword {
+    description "Password file is missing"
+    host "nohost.example.com";
+    username "kumar";
+
+   //PasswordProvider:passwordFile "password.txt";
+    localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
+    remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
+    transferType "get";
+}
+
+// Host file is mising
+tcn84 extends ScpSession {
+    description "hostname is missing";
+    username "kumar";
+    localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
+    remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
+
+}
+
+tcn85 extends ScpSessionAuthPass {
+    host "ebnt171.india.hp.com";
+    userId "xxx";
+    passwordFile "c:\\cvs\\forge\\password.txt";
+    localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
+    remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
+    transferType "get";
+}
+
+tcn86 extends ScpSessionInlinePassword {
+    description "username is  missing";
+    password  "secret";
+    host "ebnt171.india.hp.com";
+    localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
+    remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
+    transferType "get";
+}
+
+tcn87 extends ScpSessionAuthPass {
+    description "localfiles are missing";
+    host "ebnt171.india.hp.com";
+    username "kumar";
+    passwordFile "password.txt";
+
+    remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
+    transferType "get";
+}
+
+tcn88 extends ScpSession {
+    description "remote files are missing";
+    SCP:host "ebnt171.india.hp.com";
+    SCP:username "kumar";
+    SCP:passwordFile "password.txt";
+    SCP:localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
+    SCP:transferType "get";
+}
+
+tcn89 extends FullScpSession  {
+    description "unsupported transfer type";
+    transferType "POST";
+}
+
+tcn_nonexistent_host extends FullScpSession  {
+    host "nohost.example.com";
+}
+
+tcn_nonexistent_hostTest extends ExpectDeployFailure {
+
+    action extends tcn_nonexistent_host;
+
+    exceptions ["LifecycleException","java.net.UnknownHostException" ];
+
+}
+
+
+tcn_mismatched_file_list extends ExpectDeployFailure {
+
+    action extends FullScpSession {
+        remoteFiles ["/tmp/1.txt","/tmp/1.txt","/tmp/1.txt"];
+    }
+
+    //exceptions ["LifecycleException","Mismatch" ];
+    exceptions ["LifecycleException",
+        CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH" ];
+
+}

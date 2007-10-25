@@ -1,0 +1,75 @@
+<project name="security" default="init-security">
+
+  <import file="state.xml" />
+  <!-- this is only a demo. For real use use
+  <input> task
+  and/or
+  an external property file
+  <property name="password" value="secret" />
+
+  -->
+
+  <target name="init-security" depends="initialized">
+    <property name="keystore.dir" location="${user.home}/.secret"/>
+    <mkdir dir="${keystore.dir}"/>
+    <chmod file="${keystore.dir}" perm="700"/>
+    <property name="keystore" location="${keystore.dir}/local.keystore"/>
+    <property file="${keystore.dir}/keystore.properties"/>
+    <property name="keystore.alias" value="code.signer"/>
+  </target>
+
+  <target name="get-password" depends="init-security">
+    <input addproperty="keystore.password">password for keystore:</input>
+    <echo level="verbose">password = ${password}</echo>
+  </target>
+
+  <target name="create-signing-key" depends="get-password">
+    <genkey
+        alias="${keystore.alias}"
+        keystore="${keystore}"
+        storepass="${keystore.password}"
+        validity="366"
+        >
+      <dname>
+        <param name="CN" value="autosigner"/>
+        <param name="OU" value="SmartFrog"/>
+        <param name="O" value="Hewlett-Packard laboratories"/>
+        <param name="C" value="EU"/>
+      </dname>
+    </genkey>
+  </target>
+
+  <target name="delete-keystore" depends="init-security">
+    <delete file="${keystore}"/>
+  </target>
+
+
+  <target name="check-keystore" depends="get-password">
+    <fail message="no keystore ${keystore}, run create-signing-key ">
+      <condition>
+        <not>
+          <available file="${keystore}"/>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+
+  <!--
+  the <sign> presetdef lets you sign any jar; alias and keystore
+  is all set up
+  -->
+  <target name="declare-signing-macros" depends="check-keystore" >
+    <presetdef name="sign" uri="http://antbook.org/d1/ext">
+      <signjar
+          alias="${keystore.alias}"
+          keystore="${keystore}"
+          storepass="${keystore.password}"
+          />
+    </presetdef>
+  </target>
+
+  <target name="ready-to-sign-files" depends="declare-signing-macros" />
+
+
+</project>
