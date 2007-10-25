@@ -32,7 +32,7 @@ sfConfig extends SSHSessionAuthPubKey {
      host "ebnt171.india.hp.com";
      username "root";
      keyfile "D:\\rsa";
-     PasswordProvider:passwordFile "D:\\cvs\\forge\\passphrase.txt";
+     passwordProvider:passwordFile "D:\\cvs\\forge\\passphrase.txt";
      commands ["mkdir one", "mkdir two"];
 	 SSHCmdExec:logFile "sshlog.txt";
 

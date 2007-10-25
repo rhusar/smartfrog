@@ -31,7 +31,7 @@ sfConfig extends ScpSessionAuthPass {
 
         SCP:host "ebnt171.india.hp.com";
         SCP:username "root";
-        PasswordProvider:passwordFile "D:\\cvs\\forge\\node1.txt";
+        passwordProvider:passwordFile "D:\\cvs\\forge\\node1.txt";
         SCP:localFiles ["D:\\temp\\one.txt", "D:\\temp\\two.txt"];
         SCP:remoteFiles ["/root/one.txt", "/root/two.txt"];
         SCP:transferType "put";

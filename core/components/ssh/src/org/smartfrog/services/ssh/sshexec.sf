@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 
 
 /**
- * the base component has no password policy
+ * the base component uses passwords for authentication.
  */
  SSHExec extends SSHComponent {
     sfClass "org.smartfrog.services.ssh.SSHExecImpl";
@@ -48,10 +48,9 @@ For more information: www.smartfrog.org
 
  BaseSshSessionAuthPass extends SshCompound {
 
-    PasswordProvider TBD;
     port SSHExec:port;
     timeout SSHExec:timeout;
-	
+
     SSHCmdExec extends SSHExec {
 
         host PARENT:ATTRIB host;
@@ -59,7 +58,7 @@ For more information: www.smartfrog.org
         username PARENT:ATTRIB username;
         
         // reference to password provider
-        passwordProvider LAZY PARENT:PasswordProvider;
+        passwordProvider LAZY PARENT:passwordProvider;
 
            // timeout for command execution
         timeout PARENT:ATTRIB timeout;
@@ -69,7 +68,7 @@ For more information: www.smartfrog.org
         failOnError PARENT:ATTRIB failOnError;
    }
 
-    PasswordProvider extends FilePassword {
+    passwordProvider extends FilePassword {
     }
 }
 
@@ -78,18 +77,18 @@ For more information: www.smartfrog.org
   */
 SSHSessionPasswordFile extends BaseSshSessionAuthPass {
     passwordFile TBD;
-    PasswordProvider:passwordFile PARENT:ATTRIB passwordFile;
+    passwordProvider:passwordFile PARENT:ATTRIB passwordFile;
 }
 
 /**
  * this compound uses an inline password provider
   */
 SSHSessionInlinePassword extends BaseSshSessionAuthPass {
-	password TBD;
+    password TBD;
 
-	PasswordProvider extends InlinePassword {
-		password LAZY PARENT:ATTRIB password;
-	}
+    passwordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
+    }
 }
 
 

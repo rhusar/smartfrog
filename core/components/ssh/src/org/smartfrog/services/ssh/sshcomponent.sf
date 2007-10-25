@@ -25,30 +25,51 @@ For more information: www.smartfrog.org
  this is the base schema for SSH and SCP operations
  */
 SSHComponentSchema extends Schema {
+    //authentication policy, one of "password" or "key"
+    authentication extends String;
+
+    //host to connect to
     host extends String;
+
+    //should failures be reported
     failOnError extends OptionalBoolean;
+
+    //for key authentication, the file containing the private key
     keyFile extends  OptionalFilenameType;
+
+    //a list of known hosts; hosts to trust
     knownHosts extends OptionalVector;
+
+    //a reference to a password provider
     passwordProvider extends Compulsory;
+
+    //port to connect to
     port extends Integer;
-    timeout extends Long;
+
+    //timeout in milliseconds
+    timeout extends Integer;
+
+    //should all certificates be trusted
     trustAllCertificates extends Boolean;
+
+    //the user name
     username extends String;
 }
 
 
 SSHComponent extends WorkflowPrim {
     sshSchema extends SSHComponentSchema ;
-    port 22;
-    timeout 0;
-    sfShouldTerminate true;
-    failOnError true;
-    trustAllCertificates true;
     authentication authenticate_password;
+    failOnError true;
+    port 22;
+    sfShouldTerminate true;
+    timeout 600000;
+    trustAllCertificates true;
     //authentication policies
     authenticate_password "password";
     authenticate_key "key";
 }
+
      /**
       * define the default values for all SSH compounds
       */
