@@ -32,8 +32,6 @@ For more information: www.smartfrog.org
         transferType extends String;
     }
 
-
-
     /**
      * This is the basic Scp Operation
      */
@@ -46,6 +44,7 @@ For more information: www.smartfrog.org
         //put files to the remote server
         put_files "PUT";
 
+        //default transfer is a get
         transferType get_files;
     }
 
@@ -63,7 +62,7 @@ For more information: www.smartfrog.org
     ScpSessionAuthPass extends SshCompound {
 
 
-        PasswordProvider TBD;
+        passwordProvider TBD;
         localFiles TBD;
         remoteFiles TBD;
         transferType ScpOperation:get_files;
@@ -75,7 +74,7 @@ For more information: www.smartfrog.org
             username PARENT:ATTRIB username;
 
             // reference to password provider
-            passwordProvider LAZY PARENT:PasswordProvider;
+            passwordProvider LAZY PARENT:passwordProvider;
 
             port PARENT:ATTRIB port;
 
@@ -95,7 +94,7 @@ For more information: www.smartfrog.org
 
 ScpSessionFilePassword extends ScpSessionAuthPass {
 
-    PasswordProvider extends FilePassword {
+    passwordProvider extends FilePassword {
     }
 }
 
@@ -104,7 +103,7 @@ ScpSessionFilePassword extends ScpSessionAuthPass {
  */
 ScpSessionInlinePassword extends ScpSessionAuthPass {
     password TBD;
-    PasswordProvider extends InlinePassword {
+    passwordProvider extends InlinePassword {
         password LAZY PARENT:ATTRIB password;
     }
 }
