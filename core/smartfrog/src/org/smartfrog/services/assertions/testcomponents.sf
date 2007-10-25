@@ -187,15 +187,15 @@ FailingTestCompound extends TestCompound {
 
   FailureCompoundSchema extends Schema {
 
-    exceptions extends OptionalVector {
-
-      description ##vector of tuples containing classname and error text substrings to match on,
+/*
+  vector of tuples containing classname and error text substrings to match on,
         all down the nested exception chain. e.g.
         [["SmartFrogResolutionException","unresolved reference"]];
         or
         [["",""],["NullPointerException",""];
-      #;
-    }
+*/
+    exceptions extends OptionalVector;
+
   }
 
   expectTerminate true;
