@@ -33,13 +33,6 @@ import java.rmi.RemoteException;
 public class BufferingListenerTest extends AbstractTestInfoTestBase {
 
 
-    /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
-     */
-    protected void setUp() throws Exception {
-    }
-
     public void testSuccess() throws Exception {
         BufferingListener buffer = createFactory();
         TestListener listener = buffer.listen(null,
@@ -58,8 +51,8 @@ public class BufferingListenerTest extends AbstractTestInfoTestBase {
         assertEquals(1, buffer.getEndCount());
         TestInfo ti2 = buffer.getEndInfo(0);
         assertEquals(ti.getName(), ti2.getName());
-        assertFalse(ti2.getStartTime() == 0);
-        assertFalse(ti2.getEndTime() == 0);
+        assertNotSame(0, ti2.getStartTime());
+        assertNotSame(0, ti2.getEndTime());
         assertTrue(buffer.testsWereSuccessful());
     }
 

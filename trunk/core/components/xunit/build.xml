@@ -35,22 +35,18 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <!--java 1.5-->
-  <property name="javac.java.version" value="1.5" />
 
   <!-- override point -->
   <property file="build.properties"/>
 
 
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
-
-  <echo message="==================================================================="/>
-  <echo message="= ${ant.project.name}"/>
-  <property name="default.ini" location="test/files/default.ini"/>
-  <property name="default.sf" location="test/files/default.sf"/>
 
 <!--
  <target name="dist-tests" depends="package,package-tests"
@@ -74,17 +70,5 @@
       <source file="test/org/smartfrog/services/sfunit/test/system/example.sf" />
     </sf-parse>
   </target>
-
-
-  <!-- ========================================================== -->
-  <!-- set up any properties for deployment -->
-  <!-- ========================================================== -->
-  <target name="init-deploy-properties" depends="init">
-    <property name="deploy.host" value="localhost"/>
-    <property name="application.name" value="${project.name}"/>
-  </target>
-
-
-
 
 </project>
