@@ -48,4 +48,7 @@
     <taskdef resource="testngtasks"
         classpathref="tests.run.classpath"/>
   </target>
+
+  <target name="ready-to-test" depends="common.ready-to-test,declare-testng-tasks" />
+  
 </project>

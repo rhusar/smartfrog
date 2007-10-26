@@ -23,13 +23,13 @@ import org.smartfrog.services.xunit.base.RunnerConfiguration;
 import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -134,10 +134,11 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         helper = new ComponentHelper(this);
 
         //deploy all children. but do not (yet) start them
-        Iterator iterator = getActions().sfAttributes();
+        Context children = getActions();
+        Iterator iterator = children.sfAttributes();
         while (iterator.hasNext()) {
             Object key = iterator.next();
-            ComponentDescription act = (ComponentDescription) actions.get(key);
+            ComponentDescription act = (ComponentDescription) children.get(key);
             sfDeployComponentDescription(key, this, act, null);
             if (sfLog().isDebugEnabled()) sfLog().debug("Creating " + key);
         }
@@ -150,13 +151,13 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             }
         }
 
-        //so here everything is deployed, ready to run.
+        //so here everything is started; the tests are ready to run.
     }
 
     /**
      * Run the tests.
      *
-     * This is done by running through every child in turn, and deploying it.
+     * This is done by running through every child test in turn, and deploying it.
      *
      * When it terminates, it is evaluated. No, that doesn't work. We need notification?
      *
@@ -185,7 +186,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         boolean successful = true;
 
-        final List<Prim> children = sfChildList();
+        List<Prim> children = sfChildList();
 		testChildren = new ArrayList<TestBlock>(children.size());
 
 
@@ -197,7 +198,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         }
         //now create the iterator.
         testChildrenIterator = testChildren.iterator();
-        deployNextChild();
+        //start by running the next child
+        runNextChildTest();
         return successful;
     }
 
@@ -242,7 +244,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @throws SmartFrogException smartfrog problems
      * @throws RemoteException network problems
      */
-    private boolean deployNextChild() throws SmartFrogException, RemoteException {
+    private boolean runNextChildTest() throws SmartFrogException, RemoteException {
         if (testChildrenIterator.hasNext()) {
             testOneChild(testChildrenIterator.next());
             return true;
@@ -294,15 +296,17 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             isFailed |= isFailed;
             //if we failed, we didn't succeed. Just to make sure :)
             succeeded &=!isFailed;
+            skipped |= isSkipped;
+
             //now, report things
             if(getConfiguration().getKeepGoing()) {
-                
+                //TODO:    
             }
             //after the eval, remove it from the graph
             try {
                 sfRemoveChild(comp);
                 //deploy the next child
-                boolean deployed = deployNextChild();
+                boolean deployed = runNextChildTest();
                 //signal false if we do not want to terminate
                 return !deployed;
             } catch (RemoteException e) {
