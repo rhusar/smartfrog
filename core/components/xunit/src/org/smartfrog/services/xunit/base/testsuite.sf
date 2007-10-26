@@ -32,9 +32,16 @@ TestSuiteSchema extends Schema {
     description extends OptionalString {
       description "Non-marked up text description";
     }
-    links extends OptionalVector {
+    links extends Vector {
       description "A list of URLs to link to";
     }
+    issues extends Vector {
+      description "A list of issues, such as defect IDs";
+    }
+    tags extends Vector {
+      description "Arbitrary tags for the tests";
+    }
+
 }
 
 
@@ -44,7 +51,9 @@ TestSuiteSchema extends Schema {
 TestSuite extends EventCompound {
     testSuiteSchema extends TestSuiteSchema;
     sfShouldTerminate false;
-
+    links [];
+    issues [];
+    tags [];
 }
 
 
