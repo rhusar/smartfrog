@@ -18,4 +18,4 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/ssh/scp.sf"
-#include "/org/smartfrog/services/ssh/sshexec.sf"
+#include "/org/smartfrog/services/ssh/sshexecute.sf"

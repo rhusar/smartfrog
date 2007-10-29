@@ -34,7 +34,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 /**
  * this is just here for backwards compatibility
  */
-#include "/org/smartfrog/services/ssh/sshexec.sf"
+#include "/org/smartfrog/services/ssh/sshexecute.sf"
 
 /**
  * this compound uses a file password provider
