@@ -18,9 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ssh/password.sf"
-#include "org/smartfrog/services/ssh/sshExec.sf"
+#include "/org/smartfrog/services/ssh/components.sf"
+
 
 /**
  *
