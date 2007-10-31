@@ -80,17 +80,17 @@ public class AntProject {
     private LogSF log;
     private Prim owner;
     private ComponentHelper helper;
+    private AntHelper antHelper;
 
     public AntProject(Prim owner, LogSF log) throws SmartFrogException, SmartFrogResolutionException,
             RemoteException {
-        this.log = log;
-        this.owner=owner;
         try {
-            validateAnt();
+            this.log = log;
+            this.owner=owner;
+            antHelper=new AntHelper(owner);
+            antHelper.validateAnt();
             log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
-            project = new Project();
-            project.setCoreLoader(null);
-            project.init();
+            project = antHelper.createNewProject();
             helper = new ComponentHelper(owner);
             String codebase = helper.getCodebase();
 
@@ -103,11 +103,7 @@ public class AntProject {
             level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
 
             //Register build listener
-            org.apache.tools.ant.DefaultLogger logger = new AntToSmartFrogLogger(log);
-            logger.setOutputPrintStream(System.out);
-            logger.setErrorPrintStream(System.err);
-            logger.setMessageOutputLevel(level);
-            project.addBuildListener(logger);
+            antHelper.listenToProject(project,level,log);
 
             // set this with a SmartFrog property
             String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",
@@ -148,19 +144,10 @@ public class AntProject {
      * @throws RemoteException In case of Remote/network error
      *  */
     private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
-        Vector propList=owner.sfResolve(Ant.ATTR_PROPERTIES,(Vector)null,false);
-        if(propList!=null) {
-            for (Object aPropList : propList) {
-                Vector entry = (Vector) aPropList;
-                if (entry.size() != 2) {
-                    throw new SmartFrogResolutionException("Property entry of the wrong size" + entry);
-                }
-                String name = entry.get(0).toString();
-                String value = entry.get(1).toString();
-                project.setUserProperty(name, value);
-            }
-        }
+        Vector propList=owner.sfResolve(attribute,(Vector)null,false);
+        antHelper.setUserProperties(project, propList);
     }
+
 
     public Project getProject() {
         return project;
@@ -495,13 +482,6 @@ public class AntProject {
         }
     }
 
-
-    private void validateAnt() throws SmartFrogDeploymentException {
-        if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
-            throw new SmartFrogDeploymentException(
-                    "Cannot initialize Ant. WARNING: Perhaps ant.jar is not in CLASSPATH ...");
-        }
-    }
 
     public void setenv(String key, String value) {
         project.setProperty(Ant.ENV_PREFIX+"." + key, value);
