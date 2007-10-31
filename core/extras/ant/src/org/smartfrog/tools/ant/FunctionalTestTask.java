@@ -74,7 +74,7 @@ public class FunctionalTestTask extends Task {
     private int timeout;
     private int shutdownTime=10;
     private TaskHelper helper = new TaskHelper(this);
-    public static final String MESSAGE_NO_JUNIT = "No tests defined";
+    public static final String MESSAGE_NO_TESTS = "No tests defined";
     public static final String EXCEPTION_CAUGHT_ON_CLEANUP = "Exception caught on cleanup:";
     public static final String MESSAGE_FORCED_SHUTDOWN_OF_APPLICATION = "Forced shutdown of application";
 
@@ -91,10 +91,10 @@ public class FunctionalTestTask extends Task {
      * Define a sequence of operations to run at startup. After running these,
      * the teardown sequence will be called to tear down the system.
      *
-     * @param setupSequence
+     * @param setupSequence setup operations
      */
     public void addSetup(Sequential setupSequence) {
-        this.setup = setupSequence;
+        setup = setupSequence;
     }
 
     public Sequential getTeardown() {
@@ -107,10 +107,10 @@ public class FunctionalTestTask extends Task {
      * @param teardownSequence teardown sequence
      */
     public void addTeardown(Sequential teardownSequence) {
-        if (this.teardown != null) {
+        if (teardown != null) {
             log("Overriding previous definition of <teardown>");
         }
-        this.teardown = teardownSequence;
+        teardown = teardownSequence;
     }
 
 
@@ -125,10 +125,10 @@ public class FunctionalTestTask extends Task {
      * @param app application sequence
      */
     public void addApplication(Sequential app) {
-        if(this.application!=null) {
-            log("Overriding previous definition of <test>");
+        if(application!=null) {
+            log("Overriding previous definition of <application>");
         }
-        this.application = app;
+        application = app;
     }
 
     /**
@@ -163,7 +163,7 @@ public class FunctionalTestTask extends Task {
     }
 
     /**
-     * Declare a list of junit tasks
+     * Declare a list of test tasks
      *
      * @param sequence a test sequence
      */
@@ -191,9 +191,7 @@ public class FunctionalTestTask extends Task {
         if (probe != null) {
             totalTimeout += probe.getMaxWait();
         }
-        parallel = new Parallel();
-        helper.bindTask(parallel);
-        parallel.setFailOnAny(true);
+
 
         Parallel applicationParallel = new Parallel();
         helper.bindTask(applicationParallel);
@@ -204,6 +202,11 @@ public class FunctionalTestTask extends Task {
         if (application != null) {
             applicationParallel.addTask(application);
         }
+
+        //now set up the rest of the workflow
+        parallel = new Parallel();
+        helper.bindTask(parallel);
+        parallel.setFailOnAny(true);
         int timeoutMillis = totalTimeout * 1000;
         if (totalTimeout > 0) {
             parallel.setTimeout(timeoutMillis);
@@ -218,7 +221,7 @@ public class FunctionalTestTask extends Task {
         if (test != null) {
             testRun.addTask(test);
         } else {
-            log(MESSAGE_NO_JUNIT);
+            log(MESSAGE_NO_TESTS);
         }
         parallel.addTask(testRun);
 
@@ -277,7 +280,8 @@ public class FunctionalTestTask extends Task {
                 //copy any
                 testFault = applicationFault;
             } else {
-                log(EXCEPTION_CAUGHT_ON_CLEANUP + applicationFault.toString(),
+                log("Application Exception:"+ applicationFault.toString(),
+                        applicationFault,
                         Project.MSG_ERR);
             }
         }
@@ -287,8 +291,9 @@ public class FunctionalTestTask extends Task {
             if (testFault == null) {
                 testFault = teardownFault;
             } else {
-                //dont let the cleanup exception get in the way of any other failure
+                //don't let the cleanup exception get in the way of any other failure
                 log(EXCEPTION_CAUGHT_ON_CLEANUP + teardownFault.toString(),
+                        teardownFault,
                         Project.MSG_ERR);
             }
         }
@@ -306,7 +311,7 @@ public class FunctionalTestTask extends Task {
     private static class BackgroundTask implements Runnable {
         private Task task;
 
-        private BuildException exception;
+        private volatile BuildException exception;
         private Thread thread;
 
         BackgroundTask(Task task) {
@@ -359,7 +364,6 @@ public class FunctionalTestTask extends Task {
                     notifyAll();
                 }
             }
-
         }
     }
 }
