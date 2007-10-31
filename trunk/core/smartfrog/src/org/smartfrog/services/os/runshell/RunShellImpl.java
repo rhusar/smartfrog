@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.logging.Log;
 
 import java.io.DataOutputStream;
@@ -64,7 +65,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** String name for shell command. */
     private String shellCommand = null;
     /** Set of shell command attributes. */
-    private Vector shellCommandAtt = new Vector();
+    private Vector<String> shellCommandAtt = new Vector();
     /** strign name for exit command. */
     private String exitCmd = "exit 0";
     /** Flag indicating exit command. */
@@ -91,7 +92,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     //optional
     /** Set of commands. */
-    private Vector cmds = null;
+    private Vector<String> cmds = null;
 
     // Process Data
     /** Runtime. */
@@ -194,9 +195,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     private void execute() throws IOException, SmartFrogRuntimeException {
         //Create subProcess
         File workDirFile = new File(workDir);
-        String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
+        Vector<String> commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
         if (log.isDebugEnabled()) {
-            fullShellCommand = arrayToString(commands, "  '", "'\n");
+            fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
             StringBuffer buffer=new StringBuffer();
             buffer.append("Running in dir ");
             buffer.append(workDirFile);
@@ -204,12 +205,13 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             buffer.append(fullShellCommand);
             log.debug(buffer);
         }
-        if(commands.length==0) {
+        if(commands.isEmpty()) {
             throw new SmartFrogRuntimeException(ERROR_NO_COMMAND,this);
         }
-        fullShellCommand = arrayToString(commands, " '", "' ");
+        fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
+        String[] cmdArray=commands.toArray(null);
         subProcess = runtime.exec(
-                commands,
+                cmdArray,
                 envProp,
                 workDirFile);
         dos = new DataOutputStream(subProcess.getOutputStream());
@@ -560,13 +562,13 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @throws SmartFrogResolutionException if an attribute is missing
      * @throws RemoteException on network problems
      */
-    private Vector readShellAttributes() throws SmartFrogResolutionException, RemoteException {
-        Vector shellCommandAttrs = new Vector();
+    private Vector<String> readShellAttributes() throws SmartFrogResolutionException, RemoteException {
+        Vector<String> shellCommandAttrs = new Vector<String>();
         Object key;
         String auxString;
 
         //read in an argument list
-        Vector arguments=sfResolve(varShellArguments,(Vector)null,true);
+        Vector arguments=sfResolve(varShellArguments, shellCommandAttrs,true);
         if(arguments!=null) {
             shellCommandAttrs.addAll(arguments);
         }
@@ -576,20 +578,20 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
             if (key instanceof String) {
                 try {
-                    if (((String) key).startsWith(varShellCommand + "Att")) {
-                        if (((String) key).endsWith("b")) {
+                    String keyName = (String) key;
+                    if (keyName.startsWith(varShellCommand + "Att")) {
+                        if (keyName.endsWith("b")) {
                             // To concatenate two parameters
                             // for parameters like ATTa=ATTb
                             //shellCommandAtt = shellCommandAtt + "" +
                 //sfResolve((String)key);
                 //former code when shellCommandAtt was a String
                             auxString = shellCommandAttrs.lastElement() +
-                                (sfResolve((String) key)).toString();
+                                (sfResolve(keyName)).toString();
                             shellCommandAttrs.remove(shellCommandAttrs.size() - 1);
                             shellCommandAttrs.add(auxString);
                         } else {
-                            shellCommandAttrs.add((sfResolve((String) key)).
-                        toString());
+                            shellCommandAttrs.add((sfResolve(keyName)).toString());
                         }
                     }
                 } catch (Exception ex) {
@@ -617,76 +619,45 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *@param  attributes  attributes
      *@return             textual representation of command
      */
-    private String[] createCmd(String[] cmdGeneral, String cmdStr,
-        Vector attributes) {
-        String[] cmd = null;
+    private Vector<String> createCmd(String[] cmdGeneral, String cmdStr,
+        Vector<String> attributes) {
+        Vector<String> cmd = null;
 
-            if (attributes == null) {
-                attributes = new Vector();
-                attributes.add("");
-            }
-
-            int additionalParam = 3;
-
-            int i = 0;
-            cmd = new String[attributes.size() + additionalParam];
-
-            //Cleaning empty args in the array
-            for (int a = 0; a < cmdGeneral.length; a++) {
-                if (!isEmptyArg(cmdGeneral[a])) {
-                    cmd[i++] = cmdGeneral[a];
-                }
-            }
-
-            if (!isEmptyArg(cmdStr)) {
-                cmd[i++] = cmdStr;
-            }
-
-            if (!attributes.isEmpty()) {
-                attributes.trimToSize();
-
-                Iterator iter = attributes.iterator();
-
-                while (iter.hasNext()) {
-                    String temp = (String) iter.next();
-
-                    if (!isEmptyArg(temp)) {
-                        cmd[i++] = temp;
-                    }
-                }
-
-                //end envProp
-            }
-
-            //Cleaning end empty args
-            String[] result = new String[i];
-
-            System.arraycopy(cmd, 0, result, 0, i);
-
-            cmd = result;
-
-        return cmd;
-    }
-
-    /**
-     *  Converts array to string
-     *
-     * @param  array  array
-     * @param prefix prefix before every element
-     * @param suffix suffix after every element
-     * @return        array converted to string
-     */
-    private String arrayToString(String[] array, String prefix, String suffix) {
-        int i = 0;
-        StringBuffer stringB = new StringBuffer();
-
-        while (i < array.length) {
-            stringB.append(prefix);
-            stringB.append(array[i++]);
-            stringB.append(suffix);
+        if (attributes == null) {
+            attributes = new Vector<String>();
+            attributes.add("");
         }
 
-        return stringB.toString();
+        int additionalParam = 3;
+
+        cmd = new Vector<String>(attributes.size() + additionalParam);
+
+        //Cleaning empty args in the array
+        for (int a = 0; a < cmdGeneral.length; a++) {
+            if (!isEmptyArg(cmdGeneral[a])) {
+                cmd.add(cmdGeneral[a]);
+            }
+        }
+
+        if (!isEmptyArg(cmdStr)) {
+            cmd.add(cmdStr);
+        }
+
+        if (!attributes.isEmpty()) {
+            attributes.trimToSize();
+
+            Iterator iter = attributes.iterator();
+
+            for (Object attribute : attributes) {
+                String attr = (String) attribute;
+                if (!isEmptyArg(attr)) {
+                    cmd.add(attr);
+                }
+            }
+
+            //end envProp
+        }
+        return cmd;
     }
 
     /**

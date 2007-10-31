@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.Iterator;
 
 /**
  *
@@ -133,5 +134,29 @@ public final class ListUtils {
             list.add(buffer.toString());
         }
         return list;
+    }
+
+    /**
+     *
+     * turn a vector of strings into a space separated list
+     * @param source source vector
+     * @param prefix
+     *@param separator separator string
+     * @param ending ending string @return String string list.
+     */
+    public static String stringify(Vector source, String prefix, String separator, String ending) {
+        StringBuilder buffer = new StringBuilder();
+        Iterator uris = source.iterator();
+        while (uris.hasNext()) {
+            buffer.append(prefix);
+            String uri = uris.next().toString();
+            buffer.append(uri);
+            if(uris.hasNext()) {
+                buffer.append(separator);
+            } else {
+                buffer.append(ending);
+            }
+        }
+        return buffer.toString();
     }
 }
