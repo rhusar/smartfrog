@@ -24,6 +24,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,7 +57,7 @@ public class ScpTo extends AbstractScpOperation {
      * @throws IOException in case not able to transfer files
      */
     public void doCopy (Session session, Vector remoteFiles, 
-           Vector localFiles) throws IOException, JSchException {
+           Vector<File> localFiles) throws IOException, JSchException {
         String cmdPrefix = "scp -t ";
         for (int index = 0; index < remoteFiles.size(); index++) {
             if (haltOperation) {
@@ -64,7 +65,7 @@ public class ScpTo extends AbstractScpOperation {
             }
             Channel channel = null;
             try {
-                String localFile = (String) localFiles.elementAt(index);
+                File localFile = localFiles.elementAt(index);
                 String remoteFile = (String) remoteFiles.elementAt(index);
                 channel = session.openChannel("exec");
                 String command = cmdPrefix + remoteFile.trim();
@@ -87,15 +88,12 @@ public class ScpTo extends AbstractScpOperation {
      * Use scp to copy file to the remote host.
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
-     * @param lFile local file name
+     * @param localFile local file name
      */
     private void doScpTo(InputStream in, OutputStream out, 
-                            String lFile) throws IOException {
-        assert lFile != null;
-        File localFile = new File (lFile);
+                            File localFile) throws IOException {
         int fileSize = (int) localFile.length();
-	String lFilePart = lFile.substring(
-			lFile.lastIndexOf(File.separatorChar)+1);
+        String lFilePart=localFile.getName();
         StringBuffer cmdBuff = new StringBuffer("C0644")
                                     .append(" ")
                                     .append(fileSize)
@@ -113,7 +111,13 @@ public class ScpTo extends AbstractScpOperation {
     }
     /**
      * Writes file content to output stream of the ssh channel.
-     * @throws IOException in case of any error while writing 
+     * The {@link #haltOperation} attribute is checked during the operation,
+     * so that the operation can be interrupted -in which case a
+     * @throws IOException in case of any error while writing
+     * @throws InterruptedIOException if the operation was halted
+     * @param file file to send
+     * @param in input stream for acknowledgements
+     * @param out output stream outpu stream
      */
     private void sendFile (File file, InputStream in, OutputStream out)
                                  throws IOException {
@@ -135,9 +139,7 @@ public class ScpTo extends AbstractScpOperation {
             writeAck(out);
             checkAck(in);
         } finally {
-            if (fis != null) {
-                fis.close();
-            }
+            FileSystem.close(fis);
         }
     }
 }
