@@ -158,7 +158,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
     /**
      * Create an instance of a class using the empty constructor
      *
-     * @param clazz
+     * @param clazz class to load
      * @return an instance
      * @throws SmartFrogException if something went wrong
      * @throws RemoteException    for network trouble
@@ -189,8 +189,8 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
     /**
      * Load a class using the classloader of a nominated component
      *
-     * @param owner
-     * @param classname
+     * @param owner owner component
+     * @param classname name of the class to load
      * @return the class
      * @throws RemoteException    for network trouble
      * @throws SmartFrogException if the loading failed; in which case a nested ClassNotFoundException will exist.
