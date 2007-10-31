@@ -185,56 +185,6 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         }
     }
 
-
-    /**
-     * take a vector of name value pairs like [["a",true],["b",3]] and create something like
-     * ["a=true","b=3"] with configurable prefix, joiner and suffix strings
-     * @param source list source
-     * @param prefix prefix for every element
-     * @param joiner string to use between each pair
-     * @param suffix any suffix to use at the end
-     * @return a merged/flattened array or null if an empty list came in
-     * @throws SmartFrogInitException if the list is the wrong width
-     */
-    private Vector<String> flatten(List source,String prefix,String joiner,String suffix) throws SmartFrogInitException {
-        if(source==null) {
-            return null;
-        }
-        if(prefix==null) {
-            prefix="";
-        }
-        if(joiner==null) {
-            joiner="";
-        }
-        if(suffix==null) {
-            suffix="";
-        }
-        Vector<String> results=new Vector<String>(source.size());
-        for(Object element:source) {
-            if(!(element instanceof List)) {
-                throw new SmartFrogInitException("Not a list: "+element); 
-            }
-            List subvector= (List) element;
-            int subsize = subvector.size();
-            if(subsize==0) {
-                //empty sublist; skip
-                continue;
-            }
-            if(subsize !=2) {
-                throw new SmartFrogInitException("Wrong number of list elements in sublist "+subvector);
-            }
-            Iterator subit=subvector.iterator();
-            String key = (String) subit.next();
-            //take any value and stringify it -we dont care about its underlying type
-            Object valueObj=subit.next();
-            String value;
-            value=valueObj.toString();
-            String entry=prefix+key+joiner+value+suffix;
-            results.add(entry);
-        }
-        return results;
-    }
-
     /**
      * recursive support for classpaths, lets us cross reference more easily.
      * @param mandatory is this path mandatory
