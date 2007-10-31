@@ -22,10 +22,10 @@ package org.smartfrog.services.ant;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
@@ -40,7 +40,7 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
 
 
     public AntRuntime(AntImpl project) throws RemoteException {
-        this.owner = project;
+        owner = project;
     }
 
 
@@ -70,15 +70,24 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      */
     public void setStaticProperties(Hashtable properties) throws SmartFrogRuntimeException, RemoteException {
         if ((owner != null) && (properties != null)) {
-            Enumeration keys = properties.keys();
-            while (keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
-                if (key != null) {
-                    String value = (String) properties.get(key);
-                    if (value != null) {
-                        owner.sfReplaceAttribute(key, value);
-                    }
-                }
+            propagateAntProperties(owner,properties);
+        }
+    }
+
+    /**
+     * Set the static attributes of a component to those of an Ant project
+     * @param component component
+     * @param properties properties to set
+     * @throws SmartFrogRuntimeException on failure to replace an attribute
+     * @throws RemoteException network problems
+     */
+    public static void propagateAntProperties(Prim component,Hashtable properties)
+            throws SmartFrogRuntimeException, RemoteException {
+        Hashtable<String, String> props=properties;
+        for(String property: props.keySet()) {
+            String value= props.get(property);
+            if(value!=null) {
+                component.sfReplaceAttribute(property, value);
             }
         }
     }

@@ -21,8 +21,10 @@
 package org.smartfrog.services.ant;
 
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -76,22 +78,42 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
             for (Iterator i = sfValues(); i.hasNext() && !exitAntNow;) {
                 attribute = a.next();
                 value = i.next();
+                String attributeName = (String) attribute;
+                String message = "Error executing: " + attributeName;
                 if (value instanceof ComponentDescription) {
                     try {
-                        if (((ComponentDescription) value).sfContainsAttribute(ATTR_TASK_NAME)) {
-                            Task task = antProject.getTask((String) attribute, (ComponentDescription) value);
-                            task.execute();
-                        } else if (((ComponentDescription) value).sfContainsAttribute(ATTR_ANT_ELEMENT)) {
-                            Object element = antProject.getElement((String) attribute, (ComponentDescription) value);
-                        } else {
-                            //System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
+                        try {
+                            if (((ComponentDescription) value).sfContainsAttribute(ATTR_TASK_NAME)) {
+                                Task task = antProject.getTask(attributeName, (ComponentDescription) value);
+                                task.execute();
+                            } else if (((ComponentDescription) value).sfContainsAttribute(ATTR_ANT_ELEMENT)) {
+                                Object element = antProject.getElement(attributeName, (ComponentDescription) value);
+                            } else {
+                                //System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
+                            }
+                        } catch (SmartFrogResolutionException e) {
+                            throw e;
+                        } catch (IllegalAccessException e) {
+                            throw SmartFrogException.forward(message, e);
+                        } catch (InstantiationException e) {
+                            throw SmartFrogException.forward(message, e);
+                        } catch (NoSuchMethodException e) {
+                            throw SmartFrogException.forward(message, e);
+                        } catch (InvocationTargetException e) {
+                            throw new SmartFrogAntBuildException(e);
+                        } catch (ClassNotFoundException e) {
+                            throw SmartFrogException.forward(message, e);
+                        } catch (SmartFrogAntBuildException e) {
+                            throw e;
+                        } catch (BuildException e) {
+                            throw new SmartFrogAntBuildException(e);
                         }
                     } catch (Throwable ex) {
                         Throwable thr = ex;
                         if (thr instanceof InvocationTargetException) {
                             thr = ex.getCause();
                         }
-                        throw SmartFrogException.forward("Error executing: " + attribute, thr);
+                        throw SmartFrogException.forward(message, thr);
                     }
                 }
             }

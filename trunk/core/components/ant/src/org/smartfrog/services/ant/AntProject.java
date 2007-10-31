@@ -22,12 +22,15 @@ package org.smartfrog.services.ant;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -44,6 +47,8 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 /*
  * Some code derived from article by Pankaj Kumar (pankaj_kumar at hp.com):
@@ -74,47 +79,53 @@ public class AntProject {
     private Properties types = null;
     private LogSF log;
     private Prim owner;
+    private ComponentHelper helper;
 
-    public AntProject(Prim owner, LogSF log) throws SmartFrogDeploymentException, SmartFrogResolutionException,
+    public AntProject(Prim owner, LogSF log) throws SmartFrogException, SmartFrogResolutionException,
             RemoteException {
         this.log = log;
         this.owner=owner;
-        validateAnt();
-        log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
-        project = new Project();
-        project.setCoreLoader(null);
-        project.init();
+        try {
+            validateAnt();
+            log.debug("Ant version: " + org.apache.tools.ant.Main.getAntVersion());
+            project = new Project();
+            project.setCoreLoader(null);
+            project.init();
+            helper = new ComponentHelper(owner);
+            String codebase = helper.getCodebase();
 
+            String logLevel=owner.sfResolve(Ant.ATTR_LOG_LEVEL,Ant.ATTR_LOG_LEVEL_INFO,false);
+            int level = Project.MSG_INFO;
+            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
+            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
+            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);
+            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
+            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
 
-        String logLevel=owner.sfResolve(Ant.ATTR_LOG_LEVEL,Ant.ATTR_LOG_LEVEL_INFO,false);
-        int level = Project.MSG_INFO;
-        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
-        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
-        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);
-        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
-        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
+            //Register build listener
+            org.apache.tools.ant.DefaultLogger logger = new AntToSmartFrogLogger(log);
+            logger.setOutputPrintStream(System.out);
+            logger.setErrorPrintStream(System.err);
+            logger.setMessageOutputLevel(level);
+            project.addBuildListener(logger);
 
-        //Register build listener TODO replace this with our own listener
-        org.apache.tools.ant.DefaultLogger logger = new AntToSmartFrogLogger(log);
-        logger.setOutputPrintStream(System.out);
-        logger.setErrorPrintStream(System.err);
-        logger.setMessageOutputLevel(level);
-        project.addBuildListener(logger);
+            // set this with a SmartFrog property
+            String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",
+                    new File("."),false,null);
+            project.setBaseDir(new File(basedirpath));
+            tasks = loadNamedPropertyResource(Ant.ATTR_TASKS_RESOURCE);
+            types = loadNamedPropertyResource(Ant.ATTR_TYPES_RESOURCE);
 
-        // set this with a SmartFrog property
-        String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",
-                new File("."),false,null);
-        project.setBaseDir(new File(basedirpath));
-        tasks = loadNamedPropertyResource(Ant.ATTR_TASKS_RESOURCE);
-        types = loadNamedPropertyResource(Ant.ATTR_TYPES_RESOURCE);
+            setUserProperties(Ant.ATTR_PROPERTIES,project);
 
-        setUserProperties(Ant.ATTR_PROPERTIES,project);
-
-        // Set environment.
-        org.apache.tools.ant.taskdefs.Property env_prop = new org.apache.tools.ant.taskdefs.Property();
-        env_prop.setProject(project);
-        env_prop.setEnvironment(Ant.ENV_PREFIX);
-        env_prop.execute();
+            // Set environment.
+            Property env_prop = new Property();
+            env_prop.setProject(project);
+            env_prop.setEnvironment(Ant.ENV_PREFIX);
+            env_prop.execute();
+        } catch (BuildException e) {
+            throw SmartFrogAntBuildException.forward(e);
+        }
     }
 
     private Properties loadNamedPropertyResource(String attribute) throws SmartFrogResolutionException, RemoteException {
@@ -132,8 +143,8 @@ public class AntProject {
     /**
      * load properties from a [[name,value]] list and set them in an ant project
      * @param attribute attribute to bind to
-     * @return a property list, which may have zero elements
-     * @throws SmartFrogResolutionException if the vector of properties isnt  a list of pairs
+     * @param project project to configure
+     * @throws SmartFrogResolutionException if the vector of properties isn't a list of pairs
      * @throws RemoteException In case of Remote/network error
      *  */
     private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
@@ -167,7 +178,9 @@ public class AntProject {
         return sought.equals(value)?mapping:current;
     }
 
-    public Object getElement(String name, ComponentDescription cd) throws Exception {
+    public Object getElement(String name, ComponentDescription cd) 
+            throws SmartFrogResolutionException, ClassNotFoundException,
+            SmartFrogAntBuildException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         String attribute = null;
         String elementType = cd.sfResolve(Ant.ATTR_ANT_ELEMENT, attribute, false);
         Object newElement = createElement(null, null, elementType);
@@ -191,10 +204,11 @@ public class AntProject {
      * @throws ClassNotFoundException no matching class
      * @throws InstantiationException unable to create the element
      * @throws NoSuchMethodException missing methods
+     * @throws SmartFrogAntBuildException a BuildException was raised in the Ant methods
      */
-    private Object getElement(Object task, String name, ComponentDescription cd) throws SmartFrogResolutionException,
-            IllegalAccessException, InvocationTargetException, ClassNotFoundException, InstantiationException,
-            NoSuchMethodException {
+    private Object getElement(Object task, String name, ComponentDescription cd) throws SmartFrogAntBuildException,
+            IllegalAccessException, ClassNotFoundException, InstantiationException,
+            NoSuchMethodException, SmartFrogResolutionException {
         //System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
         Method[] methods = task.getClass().getMethods();
         String attribute = null;
@@ -225,10 +239,24 @@ public class AntProject {
         return task;
     }
 
+    /**
+     * Set an attribute
+     * @param task task
+     * @param methods list of methods
+     * @param attribute attribute to set
+     * @param value value to set
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws ClassNotFoundException
+     * @throws SmartFrogAntBuildException a BuildException was raised in the Ant methods
+     */
     private void setAttribute(Object task, Method[] methods, String attribute, Object value) throws
-            InstantiationException, InvocationTargetException,
+            InstantiationException,
             IllegalAccessException, IllegalArgumentException, SecurityException,
-            NoSuchMethodException, ClassNotFoundException {
+            NoSuchMethodException, ClassNotFoundException, SmartFrogAntBuildException {
         if ((attribute.equals(Ant.ATTR_ANT_ELEMENT)) || (attribute.equals(Ant.ATTR_TASK_NAME))) {
             //skip our declaration elements
             return;
@@ -248,19 +276,25 @@ public class AntProject {
                     throw new IllegalArgumentException("no such attribute to be added: " + attribute);
                 }
 
-                if ((value instanceof String) && (!(((isTextAttribute && isAddTextMethod))))) {
-                    // Conversion for ${xxx} is not done in setText or addText
-                    String oldValue = (String) value;
-                    value = project.replaceProperties((String) value);
+                try {
+                    if ((value instanceof String) && (!(((isTextAttribute && isAddTextMethod))))) {
+                        // Conversion for ${xxx} is not done in setText or addText
+                        String oldValue = (String) value;
+                        value = project.replaceProperties(oldValue);
+                    }
+                    // May need for type conversion
+                    if (!ptypes[0].equals(value.getClass())) {
+                        value = convType((String) value, ptypes[0]);
+                    }
+                    ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
+                    method.invoke(task, value);
+                    //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
+                    return;
+                } catch (BuildException e) {
+                    throw new SmartFrogAntBuildException(e);
+                } catch (InvocationTargetException e) {
+                    throw new SmartFrogAntBuildException(e);
                 }
-                // May need for type conversion
-                if (!ptypes[0].equals(value.getClass())) {
-                    value = convType((String) value, ptypes[0]);
-                }
-                ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
-                method.invoke(task, value);
-                //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
-                return;
             }
         }
         throw new IllegalArgumentException("no such attribute: " + attribute);
@@ -278,34 +312,40 @@ public class AntProject {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
-     * TODO: internationalise the equalsIgnoreCase calls
+     * @throws SmartFrogAntBuildException a BuildException was raised in the Ant methods
      */
     private Object createElement(Object task, java.lang.reflect.Method[] methods, String elementType) throws
-            InstantiationException, InvocationTargetException,
-            IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+            InstantiationException,
+            IllegalArgumentException, IllegalAccessException, ClassNotFoundException, SmartFrogAntBuildException {
         Method method = null;
         String mName = null;
-        if (methods != null) {
-            //System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
-            for (int e = 0; e < methods.length;) {
-                method = methods[e++];
-                mName = method.getName();
-                ////System.out.println("            Method - "+mName);
-                final String lowerName = mName.toLowerCase(Locale.ENGLISH);
-                if (lowerName.equals("create" + elementType)) {
-                    //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
-                    return method.invoke(task);
-                } else if (lowerName.equals("add" + elementType)
-                        || lowerName.equals("addConfigured" + elementType)) {
-                    Class[] ptypes = method.getParameterTypes();
-                    if (ptypes.length == 1) {
-                        Object[] args = new Object[]{ptypes[0].newInstance()};
-                        //System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
-                        method.invoke(task, args);
-                        return args[0];
+        try {
+            if (methods != null) {
+                //System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
+                for (int e = 0; e < methods.length;) {
+                    method = methods[e++];
+                    mName = method.getName();
+                    ////System.out.println("            Method - "+mName);
+                    final String lowerName = mName.toLowerCase(Locale.ENGLISH);
+                    if (lowerName.equals("create" + elementType)) {
+                        //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
+                        return method.invoke(task);
+                    } else if (lowerName.equals("add" + elementType)
+                            || lowerName.equals("addConfigured" + elementType)) {
+                        Class[] ptypes = method.getParameterTypes();
+                        if (ptypes.length == 1) {
+                            Object[] args = new Object[]{ptypes[0].newInstance()};
+                            //System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
+                            method.invoke(task, args);
+                            return args[0];
+                        }
                     }
                 }
             }
+        } catch (BuildException e) {
+            throw new SmartFrogAntBuildException(e);
+        } catch (InvocationTargetException e) {
+            throw new SmartFrogAntBuildException(e);
         }
         // If a method to create element is not found, then try finding the element class and create a new instance
         //TODO: project.createDataType(); or  project.getDataTypeDefinitions();
@@ -378,7 +418,7 @@ public class AntProject {
 
 
     Object convType(String arg, Class type) throws NoSuchMethodException, SecurityException, IllegalArgumentException,
-            IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+            IllegalAccessException, InstantiationException, ClassNotFoundException, SmartFrogAntBuildException {
         //System.out.println("          = ContType: "+ arg +", "+type);
         if (type.isPrimitive()) {
             final String typename = type.toString();
@@ -449,8 +489,8 @@ public class AntProject {
                     project.setProjectReference(attribute);
                 }
                 return attribute;
-            } catch (InstantiationException ie) {
-                throw ie;
+            } catch (InvocationTargetException e) {
+                throw new SmartFrogAntBuildException(e);
             }
         }
     }
@@ -478,9 +518,21 @@ public class AntProject {
     }
 
 
-    //Create task
+    /**
+     * create a task
+     * @param tname
+     * @param cd
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws ClassNotFoundException
+     * @throws SmartFrogAntBuildException a BuildException was raised in the Ant methods
+     */
     Task getTask(String tname, ComponentDescription cd) throws SmartFrogResolutionException, IllegalAccessException,
-            InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+            InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, SmartFrogAntBuildException {
         String taskname = cd.sfResolve(Ant.ATTR_TASK_NAME, tname, false);
         //      String clazz = tasks.getProperty(taskname);
         Class clazz = ((Class) (project.getTaskDefinitions().get(taskname)));
