@@ -37,7 +37,7 @@ public abstract class AbstractScpOperation {
     protected final int BUFFER_SIZE = 1024;
     protected LogSF log;
 
-    protected boolean haltOperation=false;
+    protected volatile boolean haltOperation=false;
 
     /**
     * Constucts an instance.

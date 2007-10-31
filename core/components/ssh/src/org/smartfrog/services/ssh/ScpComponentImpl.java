@@ -61,7 +61,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     /**
      * Vector of local file names
      */
-    private Vector<String> localFileList = null;
+    private Vector<File> localFiles = null;
 
     /**
      * The worker thread is here
@@ -104,22 +104,20 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
 
         super.sfStart();
         readFileLists();
-        if (localFileList.size() == 0) {
+        if (localFiles.size() == 0) {
             log.info(INFO_NO_FILES_TO_PROCESS);
         } else {
             //now that we are starting up, check the files.
             if (getFiles) {
                 //verify that the remote file list is not empty
-                for (String entry : localFileList) {
-                    File file = new File(entry);
+                for (File file : localFiles) {
                     if (file.exists() && file.isDirectory()) {
                         throw new SmartFrogLifecycleException(ERROR_OUTPUT_IS_A_DIRECTORY + file);
                     }
                 }
 
             } else {
-                for (String entry : localFileList) {
-                    File file = new File(entry);
+                for (File file : localFiles) {
                     if (!file.exists()) {
                         throw new SmartFrogLifecycleException(ERROR_MISSING_FILE_TO_UPLOAD + file);
                     }
@@ -203,12 +201,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             throw new SmartFrogLifecycleException(ERROR_FILE_COUNT_MISMATCH
                     + fileCount + ") and the remote list (" + remoteFileCount + ")");
         }
-
-        localFileList = new Vector<String>(fileCount);
-        for (Object entry : locals) {
-            String path = FileSystem.convertToAbsolutePath(entry, null, null, this, localsRef);
-            localFileList.add(path);
-        }
+        localFiles = FileSystem.resolveFileList(locals,null,this,localsRef);
     }
 
     /**
@@ -234,7 +227,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
         public void run() {
             try {
                 try {
-                    if(localFileList.size()>0) {
+                    if(localFiles.size()>0) {
                         // open ssh session
                         logDebugMsg("Getting SSH Session");
                         setSession(openSession());
@@ -242,12 +235,12 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                             log.info("Going to start scp to download files");
                             ScpFrom scpFrom = new ScpFrom(log);
                             operation=scpFrom;
-                            scpFrom.doCopy(getSession(), remoteFileList, localFileList);
+                            scpFrom.doCopy(getSession(), remoteFileList, localFiles);
                         } else {
                             log.info("Going to start scp to upload files");
                             ScpTo scpTo = new ScpTo(log);
                             operation=scpTo;
-                            scpTo.doCopy(getSession(), remoteFileList, localFileList);
+                            scpTo.doCopy(getSession(), remoteFileList, localFiles);
                         }
                     } else {
                         log.info("Skipping scp operation: no files");

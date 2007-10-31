@@ -24,6 +24,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -59,7 +60,7 @@ public class ScpFrom extends AbstractScpOperation {
      * @throws IOException in case not able to transfer files
      * @throws JSchException for JSCH problems.
      */
-    public void doCopy (Session session, Vector remoteFiles,Vector localFiles)
+    public void doCopy (Session session, Vector remoteFiles,Vector<File> localFiles)
                                  throws IOException, JSchException {
         String cmdPrefix = "scp -f ";
         for (int index = 0; index < remoteFiles.size(); index++) {
@@ -68,7 +69,7 @@ public class ScpFrom extends AbstractScpOperation {
             }
             Channel channel = null;
             try {
-                String localFile = (String) localFiles.elementAt(index);
+                File localFile = localFiles.elementAt(index);
                 String remoteFile = (String) remoteFiles.elementAt(index);
                 channel = session.openChannel("exec");
                 String command = cmdPrefix + remoteFile;
@@ -91,14 +92,12 @@ public class ScpFrom extends AbstractScpOperation {
      * Copies file from the remote host.
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
-     * @param lFile local file
+     * @param localFile local file
      * @throws IOException for errors on the server, or in writing the file. An InterruptedIOException is thrown
      * if the operation was halted.
      */
     private void doScpFrom(InputStream in, OutputStream out, 
-                        String lFile) throws IOException {
-        assert lFile != null;
-        File localFile = new File (lFile);
+                        File localFile) throws IOException {
         while (!haltOperation) {
             ByteArrayOutputStream arr = new ByteArrayOutputStream();
             // read server response from input stream
@@ -169,10 +168,7 @@ public class ScpFrom extends AbstractScpOperation {
                 }
             }
         } finally {
-            if (fos != null) {
-                fos.flush();
-                fos.close();
-            }
+            FileSystem.close(fos);
         }
     }
 }
