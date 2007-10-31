@@ -435,11 +435,37 @@ public class FileSystem {
      * @param component source component
      * @param attribute the attribute the list came from
      * @return the list of files
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws RemoteException for network problems
+     * @throws SmartFrogResolutionException if an element cannot be converted to a path
      */
-    public static Vector<File> resolveFileList(Vector fileReferences, File baseDir, Prim component, Reference attribute) throws SmartFrogResolutionException, RemoteException {
+    public static Vector<File> resolveFileList(Vector fileReferences, File baseDir, Prim component, Reference attribute)
+            throws SmartFrogResolutionException, RemoteException {
         Vector<File> results=new Vector<File>(fileReferences.capacity());
+        for (Object entry : fileReferences) {
+            String path = FileSystem.convertToAbsolutePath(entry, baseDir, null, component, attribute);
+            results.add(new File(path));
+        }
+        return results;
+    }
+
+
+    /**
+     * Take a list of strings or file references and resolve it to a list of absolute files
+     * @param component source component
+     * @param attribute the attribute for the list
+     * @param baseDir base directory
+     * @param mandatory is the attribute required
+     * @return the list of files or null if the list was absent and mandatory==false
+     * @throws RemoteException for network problems
+     * @throws SmartFrogResolutionException if an element cannot be converted to a path
+     */
+    public static Vector<File> resolveFileList(Prim component, Reference attribute, File baseDir, boolean mandatory)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector fileReferences=component.sfResolve(attribute,(Vector)null, mandatory);
+        if(fileReferences==null) {
+            return null;
+        }
+        Vector<File> results = new Vector<File>(fileReferences.capacity());
         for (Object entry : fileReferences) {
             String path = FileSystem.convertToAbsolutePath(entry, baseDir, null, component, attribute);
             results.add(new File(path));
