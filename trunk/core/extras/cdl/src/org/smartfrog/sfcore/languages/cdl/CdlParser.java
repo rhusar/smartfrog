@@ -24,7 +24,7 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;
 import org.smartfrog.services.xml.utils.ParserHelper;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.DomToXom;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ExtendedNodeFactory;

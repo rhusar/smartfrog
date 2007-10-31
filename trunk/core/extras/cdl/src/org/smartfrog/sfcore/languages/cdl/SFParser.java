@@ -19,17 +19,13 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.components.CdlComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.StreamParser;
 import org.smartfrog.sfcore.parser.StreamLanguageParser;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.InputStream;
 import java.io.Reader;

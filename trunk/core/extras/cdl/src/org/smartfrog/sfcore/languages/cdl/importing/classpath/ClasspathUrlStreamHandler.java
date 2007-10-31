@@ -19,7 +19,7 @@
  */
 package org.smartfrog.sfcore.languages.cdl.importing.classpath;
 
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 
 import java.net.URLStreamHandler;
 import java.net.URLConnection;
