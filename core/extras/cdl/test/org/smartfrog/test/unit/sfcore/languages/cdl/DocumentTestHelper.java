@@ -25,7 +25,7 @@ import nu.xom.Element;
 import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;

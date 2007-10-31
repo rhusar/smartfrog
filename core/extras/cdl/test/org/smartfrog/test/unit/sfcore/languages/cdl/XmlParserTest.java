@@ -20,7 +20,7 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import org.smartfrog.services.xml.utils.ParserHelper;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlConstants;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.xml.sax.ErrorHandler;

@@ -20,7 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 import nu.xom.ParsingException;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.Import;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;

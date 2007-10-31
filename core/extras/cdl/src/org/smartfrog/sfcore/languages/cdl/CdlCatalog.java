@@ -21,7 +21,7 @@ package org.smartfrog.sfcore.languages.cdl;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import static org.ggf.cddlm.generated.api.CddlmConstants.*;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlConstants;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.xml.sax.SAXNotRecognizedException;
