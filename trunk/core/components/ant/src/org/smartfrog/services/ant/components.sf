@@ -19,10 +19,12 @@ For more information: www.smartfrog.org
 */
 
 
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
-#include "org/smartfrog/services/ant/types.sf"
-#include "org/smartfrog/services/ant/tasks.sf"
+#include "/org/smartfrog/services/ant/types.sf"
+#include "/org/smartfrog/services/ant/tasks.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
 Ant extends WorkflowPrim {
 
 
@@ -57,6 +59,53 @@ Ant extends WorkflowPrim {
    typesResource "/org/apache/tools/ant/types/defaults.properties";
    asynch false;
 
-
 }
 
+/**
+ * This component runs Ant on the build files in the target directories.
+ * This build does not run ant.bat, ant.sh or ant.pl; it runs Ant in the nominated
+ * SmartFrog process. To avoid memory leaks from Ant tasks (e.g. Javac,Ivy), run
+ * the build in a new process.
+ * 1. Every build is sequential.
+ * 2. a failure halts the run with the BuildException mapped to a SmartFrogException.
+ * 3. you can specify zero or more targets to run
+ * 4. logging is routed directly to the SmartFrog log.
+ * 5. execution is always asynchronous after the component starts.
+ * 6. As there is no separate JVM, all options such as memory, xml parser, etc, are inherited from SmartFrog.
+ */
+AntBuild extends WorkflowPrim {
+
+
+    antSchema extends Schema {
+        //log level, one of "debug", "info", "error", "warn"
+        logLevel extends OptionalString;
+
+        //list of [name,value] pairs defining ant properties
+        properties extends OptionalVector;
+
+        //list of targets to run. If empty, the default target is executed
+        targets extends OptionalVector;
+
+
+        //this is an optional base directory. If it exists, then
+        //it is used as the base directory for the antfile, and for
+        //any directories in the directories list.
+        basedir extends OptionalFilenameType;
+
+        //the name of an ant file. If relative, it is resolved
+
+        antfile extends FilenameType;
+
+
+        //a list of directories. Will be resolved relative to basedir, when
+        //relative resolution is required.
+        directories extends OptionalFilenameList;
+
+    }
+
+   /**
+    * Mandatory attribute: the class for component description
+    */
+   sfClass "org.smartfrog.services.ant.AntBuildImpl";
+
+}
