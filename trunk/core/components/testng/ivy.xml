@@ -4,7 +4,7 @@
   <info organisation="org.smartfrog" module="sf-testng">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>Components to deploy TestNG JUnit 3.8.x components remotely</description>
+    <description>Components to deploy TestNG components remotely</description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
@@ -56,10 +56,10 @@
         name="sf-xunit" changing="true"
         rev="latest.integration"
         conf="compile->master;runtime->default"/>
-    <dependency org="junit"
+<!--    <dependency org="junit"
         name="junit"
         rev="${junit.version}"
-        conf="compile->default;redist->default"/>
+        conf="compile->default;redist->default"/>-->
     <dependency org="testng"
         name="testng"
         rev="${testng.version}"
