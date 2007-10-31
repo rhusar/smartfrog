@@ -22,6 +22,7 @@ package org.smartfrog.services.xml.utils;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.smartfrog.sfcore.utils.ResourceLoader;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
