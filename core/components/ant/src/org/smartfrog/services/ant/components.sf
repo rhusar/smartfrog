@@ -78,7 +78,7 @@ AntBuild extends WorkflowPrim {
 
     antSchema extends Schema {
         //log level, one of "debug", "info", "error", "warn"
-        logLevel extends OptionalString;
+        //logLevel extends OptionalString;
 
         //list of [name,value] pairs defining ant properties
         properties extends OptionalVector;
@@ -92,9 +92,12 @@ AntBuild extends WorkflowPrim {
         //any directories in the directories list.
         basedir extends OptionalFilenameType;
 
-        //the name of an ant file. If relative, it is resolved
+        //the name of an ant file to be resolved in every directory
 
-        antfile extends FilenameType;
+        buildfile extends String;
+
+        //the name of a generic ant file. Overrides the value of buildfile
+        genericantfile extends FilenameType;
 
 
         //a list of directories. Will be resolved relative to basedir, when
@@ -103,9 +106,9 @@ AntBuild extends WorkflowPrim {
 
     }
 
-   /**
-    * Mandatory attribute: the class for component description
-    */
-   sfClass "org.smartfrog.services.ant.AntBuildImpl";
+    sfClass "org.smartfrog.services.ant.AntBuildImpl";
+
+    //defaults to build.xml
+    buildfile "build.xml";
 
 }
