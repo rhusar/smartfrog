@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -130,7 +131,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         useCodebase = sfResolve(ATTR_USECODEBASE, false, false);
         if(useCodebase) {
             String codebase= helper.getCodebase();
-            Vector elements=RunJavaUtils.crack(codebase);
+            Vector elements= ListUtils.crack(codebase);
             uriClasspathList.addAll(elements);
         }
 

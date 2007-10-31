@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.PlatformHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -69,7 +70,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
         setupLog();
         boolean debugEnabled = log.isDebugEnabled();
-        Vector args=new Vector();
+        Vector<String> args=new Vector<String>();
         //get classname and classpath and verify that one is defined
         String classname=null;
         String jar=null;
@@ -77,12 +78,12 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         jar= platform.convertFilename(sfResolve(ATTR_JARFILE, jar, false));
 
         Vector environment = sfResolve(ATTR_ENVIRONMENT, (Vector) null, true);
-        Vector flatEnv = flatten(environment, null, "=", null);
+        Vector<String> env = ListUtils.join(environment, null, "=", null, false);
 
         Vector jvmArgs=sfResolve(ATTR_JVM_ARGS,(Vector)null,true);
 
         Vector sysProperties=sfResolve(ATTR_SYSPROPERTIES, (Vector) null, true);
-        Vector flatSysProperties = flatten(sysProperties, "-D", "=", "");
+        Vector<String> flatSysProperties = ListUtils.join(sysProperties, "-D", "=", "",false);
         boolean assertions=sfResolve(ATTR_ASSERTIONS,false,true);
         boolean sysAssertions = sfResolve(ATTR_SYSTEMASSERTIONS, false, true);
         Vector arguments=sfResolve(ATTR_ARGUMENTS, (Vector) null, true);
@@ -90,7 +91,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
         //now set up the JVM arguments, starting with system properties
         addArgs(args, flatSysProperties);
-        //and other JVM argumetns
+        //and other JVM arguments
         addArgs(args, jvmArgs);
 
         //assertions
@@ -145,8 +146,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
 
         //now patch our attributes, ready for our parent class
-        if(flatEnv!=null) {
-            sfReplaceAttribute(varEnvProp, flatEnv);
+        if(env!=null) {
+            sfReplaceAttribute(varEnvProp, env);
         }
 
         if (varShellArguments != null) {
@@ -193,9 +194,9 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @param joiner string to use between each pair
      * @param suffix any suffix to use at the end
      * @return a merged/flattened array or null if an empty list came in
-     * @throws SmartFrogInitException
+     * @throws SmartFrogInitException if the list is the wrong width
      */
-    private Vector flatten(List source,String prefix,String joiner,String suffix) throws SmartFrogInitException {
+    private Vector<String> flatten(List source,String prefix,String joiner,String suffix) throws SmartFrogInitException {
         if(source==null) {
             return null;
         }
@@ -208,10 +209,12 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         if(suffix==null) {
             suffix="";
         }
-        Vector results=new Vector(source.size());
-        Iterator it=source.listIterator();
-        while (it.hasNext()) {
-            Vector subvector= (Vector) it.next();
+        Vector<String> results=new Vector<String>(source.size());
+        for(Object element:source) {
+            if(!(element instanceof List)) {
+                throw new SmartFrogInitException("Not a list: "+element); 
+            }
+            List subvector= (List) element;
             int subsize = subvector.size();
             if(subsize==0) {
                 //empty sublist; skip
@@ -251,7 +254,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
     /**
      * build the endorsed dirs system
-     * @return
+     * @return a list of endorsed directories
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
