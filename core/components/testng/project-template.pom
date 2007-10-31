@@ -8,10 +8,10 @@
   -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartfrog</groupId>
-  <artifactId>sf-junit</artifactId>
+  <artifactId>sf-testng</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description>Components to deploy ${junit.version} components remotely</description>
+  <description>Components to run testng tests on remote systems</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>
@@ -19,14 +19,9 @@
       <version>${smartfrog.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.smartfrog</groupId>
-      <artifactId>sf-xml</artifactId>
-      <version>${smartfrog.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
     </dependency>
   </dependencies>
 </project>
