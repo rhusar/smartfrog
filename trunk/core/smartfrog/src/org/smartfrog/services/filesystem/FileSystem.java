@@ -51,6 +51,7 @@ import java.util.ListIterator;
 import java.util.List;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Filesystem operations
@@ -425,6 +426,25 @@ public class FileSystem {
                 null,
                 mandatory,
                 null);
+    }
+
+    /**
+     * Take a list of strings or file references and resolve it to a list of absolute files
+     * @param fileReferences source list
+     * @param baseDir base directory
+     * @param component source component
+     * @param attribute the attribute the list came from
+     * @return the list of files
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public static Vector<File> resolveFileList(Vector fileReferences, File baseDir, Prim component, Reference attribute) throws SmartFrogResolutionException, RemoteException {
+        Vector<File> results=new Vector<File>(fileReferences.capacity());
+        for (Object entry : fileReferences) {
+            String path = FileSystem.convertToAbsolutePath(entry, baseDir, null, component, attribute);
+            results.add(new File(path));
+        }
+        return results;
     }
 
     /**
