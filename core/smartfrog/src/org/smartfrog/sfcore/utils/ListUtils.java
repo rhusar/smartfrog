@@ -94,4 +94,44 @@ public final class ListUtils {
         }
         return results;
     }
+
+    /**
+     * split a list of string values into separate elements of a vector.
+     * dumb simple parsing
+     * @param uriList string list separated by whitespace
+     * @return the string cracked; may be empty for no interesting content
+     */
+    public static Vector<String> crack(final String uriList) {
+        Vector<String> list=new Vector<String>();
+        if (uriList == null) {
+            return list;
+        }
+        StringBuffer buffer;
+        int length = uriList.length();
+        buffer = new StringBuffer(length);
+        for (int index = 0; index < length; index++) {
+            char c = uriList.charAt(index);
+            if (!Character.isWhitespace(c)) {
+                //common case, just another character
+                buffer.append(c);
+            } else {
+                //end of line, extra spaces at beginning or end, etc.
+                if (buffer.length() == 0) {
+                    //nothing in the buffer yet, this is leading
+                    //whitespace, so ignore it
+                    continue;
+                }
+                //make a uri from the buffer
+                String uri = buffer.toString();
+                //append to the list
+                list.add(uri);
+                buffer = new StringBuffer(length);
+            }
+        }
+        //and the end of the run, if we have a non zero list, add that
+        if (buffer.length() != 0) {
+            list.add(buffer.toString());
+        }
+        return list;
+    }
 }
