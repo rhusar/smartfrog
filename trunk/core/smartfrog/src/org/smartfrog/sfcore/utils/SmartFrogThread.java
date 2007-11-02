@@ -27,6 +27,19 @@ import java.rmi.RemoteException;
 /**
  * This thread represents the base class for threads run under SmartFrog.
  * It contains extra methods for behaviour we want across all our threads.
+ * <p>
+ *
+ * <ol>
+ * <li>A notification is raised after the work is done, on whichever object is the <code>notifyObject</code>.
+ * By default, this is the thread itself, though other values may be provided in a constructor.
+ * </li>
+ * </li>Any throwable thrown in the {@link #execute()} method is caught and can be retrieved with the
+ * {@link #getThrown()} method.
+ * </li>
+ * </ol>
+ * To use these features, do not overrride the {@link #run()} method. Override  {@link #execute()} or pass
+ * in a Runnable to the constructor.
+ * provided as a notifyObject
  * created 13-Feb-2007 10:39:41
  * */
 
@@ -35,6 +48,8 @@ public class SmartFrogThread extends Thread {
 
     private Throwable thrown;
     private Runnable runnable;
+    private Object notifyObject;
+    private volatile boolean finished;
 
 
     /**
@@ -42,6 +57,28 @@ public class SmartFrogThread extends Thread {
      * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread() {
+        this(null,(Object)null);
+    }
+
+
+    /**
+     * Allocates a new <code>SmartFrogThread</code> object.
+     * @param notifyObject to notify afterwards. If null, "this" is used
+     *
+     * @see     #Thread(ThreadGroup,Runnable,String)
+     */
+    public SmartFrogThread(Object notifyObject) {
+        init(null,notifyObject);
+    }
+
+    /**
+     * Allocates a new <code>SmartFrogThread</code> object.
+     * @param   target   the object whose <code>run</code> method is called.
+     * @param notifyObject to notify afterwards. If null, "this" is used
+     * @see     #Thread(ThreadGroup,Runnable,String)
+     */
+    public SmartFrogThread(Runnable target, Object notifyObject) {
+        init(target, notifyObject);
     }
 
     /**
@@ -51,16 +88,9 @@ public class SmartFrogThread extends Thread {
      * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(Runnable target) {
-        init(target);
+        init(target, null);
     }
 
-    /**
-     * Internal initialization
-     * @param target what we want to run
-     */
-    private void init(Runnable target) {
-        runnable = target;
-    }
 
     /**
      * Create a thread
@@ -71,7 +101,7 @@ public class SmartFrogThread extends Thread {
      */
     public SmartFrogThread(ThreadGroup group, Runnable target) {
         super(group,(Runnable) null);
-        init(target);
+        init(target, null);
     }
 
     /**
@@ -81,18 +111,7 @@ public class SmartFrogThread extends Thread {
      */
     public SmartFrogThread(String name) {
         super(name);
-    }
-
-    /**
-     * Create a thread
-     *
-     * @param group the thread group.
-     * @param name  the name of the new thread.
-     * @throws SecurityException if the current thread cannot create a thread in the specified thread group.
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
-     */
-    public SmartFrogThread(ThreadGroup group, String name) {
-        super(group, name);
+        init(null, null);
     }
 
     /**
@@ -104,42 +123,26 @@ public class SmartFrogThread extends Thread {
      */
     public SmartFrogThread(Runnable target, String name) {
         super((Runnable) null, name);
-        init(target);
+        init(target, null);
     }
 
     /**
-     * Create a thread
-     *
-     * @param group  the thread group.
-     * @param target the object whose <code>run</code> method is called.
-     * @param name   the name of the new thread.
-     * @throws SecurityException if the current thread cannot create a thread in the specified thread group or cannot
-     *                           override the context class loader methods.
-     * @see Runnable#run()
-     * @see Thread#run()
-     * @see Thread#setDaemon(boolean)
-     * @see Thread#setPriority(int)
-     * @see ThreadGroup#checkAccess()
-     * @see SecurityManager#checkAccess
+     * Internal initialization
+     * @param target what we want to run
+     * @param notify object to notify after the run.
+     * If null, it is set to <code>this</code>
      */
-    public SmartFrogThread(ThreadGroup group, Runnable target, String name) {
-        super(group, null, name);
-        init(target);
+    private void init(Runnable target, Object notify) {
+        runnable = target;
+        notifyObject = notify != null ? notify : this;
     }
 
-    /**
-     * Create a thread
-     *
-     * @param group     the thread group.
-     * @param target    the object whose <code>run</code> method is called.
-     * @param name      the name of the new thread.
-     * @param stackSize the desired stack size for the new thread, or zero to indicate that this parameter is to be
-     *                  ignored.
-     * @throws SecurityException if the current thread cannot create a thread in the specified thread group.
+     /**
+     * Get the object that end of run notifications will be raised on.
+     * @return the notify object. It is 'this' by default
      */
-    public SmartFrogThread(ThreadGroup group, Runnable target, String name, long stackSize) {
-        super(group, null, name, stackSize);
-        init(target);
+    public synchronized Object getNotifyObject() {
+        return notifyObject;
     }
 
     /**
@@ -174,6 +177,15 @@ public class SmartFrogThread extends Thread {
      */
     public boolean isThrown() {
         return getThrown()!=null;
+    }
+
+
+    /**
+     * Get the (volatile) finished flag
+     * @return true if the component is finished.
+     */
+    public boolean isFinished() {
+        return finished;
     }
 
     /**
@@ -222,13 +234,21 @@ public class SmartFrogThread extends Thread {
 
     /**
      * Runs the {@link #execute()} method, catching any exception it throws and
-     * storing it away for safe keeping
+     * storing it away for safe keeping After the run, the notify object
+     * is notified
      */
     public void run() {
         try {
             execute();
         } catch (Throwable throwable) {
             setThrown(throwable);
+        } finally {
+            synchronized(notifyObject) {
+                //set the finished bit
+                finished=true;
+                //notify any waiters
+                notifyObject.notifyAll();
+            }
         }
     }
 
@@ -242,5 +262,21 @@ public class SmartFrogThread extends Thread {
         if (runnable != null) {
             runnable.run();
         }
+    }
+
+
+    /**
+     * Block on the notify object and so wait until the thread is finished.
+     * @param timeout timeout in milliseconds
+     * @throws InterruptedException if the execution was interrupted
+     * @return true if we are now finished
+     */
+    public boolean waitForNotification(long timeout) throws InterruptedException {
+        synchronized (notifyObject) {
+            if(!finished) {
+                notifyObject.wait(timeout);
+            }
+        }
+        return finished;
     }
 }
