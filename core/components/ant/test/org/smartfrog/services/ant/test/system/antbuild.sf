@@ -20,18 +20,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/ant/test/system/components.sf"
 
 
-sfConfig extends Compound {
 
-  value "17"
 
-  ant extends Ant {
-
-    -- extends property {
-      name "propertyname";
-      value LAZY PARENT:value;
-    }
-
-   }
-
-  
-}

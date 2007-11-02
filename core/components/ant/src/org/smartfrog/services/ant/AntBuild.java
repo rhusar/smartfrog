@@ -23,36 +23,10 @@ import java.rmi.Remote;
 
 /**
  *
- * Created 31-Oct-2007 14:23:52
+ * interface for an ant build
  *
  */
 
-/*
-    antSchema extends Schema {
-
-        //list of [name,value] pairs defining ant properties
-        properties extends OptionalVector;
-
-        //list of targets to run. If empty, the default target is executed
-        targets extends OptionalVector;
-
-
-        //this is an optional base directory. If it exists, then
-        //it is used as the base directory for the antfile, and for
-        //any directories in the directories list.
-        basedir extends OptionalFilenameType;
-
-        //the name of an ant file. If relative, it is resolved
-
-        buildfile extends FilenameType;
-
-
-        //a list of directories. Will be resolved relative to basedir, when
-        //relative resolution is required.
-        directories extends OptionalFilenameList;
-
-    }
- */
 public interface AntBuild extends Remote {
 
     /**
@@ -86,5 +60,23 @@ public interface AntBuild extends Remote {
      */
     String ATTR_GENERICANTFILE = "genericantfile";
 
+    /**
+     * SmartFrog attribute {@value}
+     */
+    String ATTR_KEEPGOINGACROSSFILES = "keepGoingAcrossFiles";
 
+    /**
+     * SmartFrog attribute {@value}
+     */
+    String ATTR_KEEPGOINGINSINGLEBUILD = "keepGoingInSingleBuild";
+
+    /**
+     * SmartFrog attribute {@value}
+     */
+    String ATTR_SHUTDOWNTIMEOUT = "shutdownTimeout";
+
+    /**
+     * SmartFrog attribute {@value}
+     */
+    String ATTR_SKIPUNIMPLEMENTEDTARGETS="skipUnimplementedTargets";
 }
