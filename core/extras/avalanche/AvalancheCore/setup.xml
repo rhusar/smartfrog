@@ -205,7 +205,7 @@
     <copy file="boot/smartfrog/dist/lib/commons-logging.properties" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
     <copy file="boot/smartfrog/dist/lib/log4j.properties" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
     <copy file="boot/smartfrog/dist/lib/log4j.xml" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-    <copy file="lib/smackx.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
+    <!--copy file="lib/smackx.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/-->
 
     <copy todir="${avalanche.home}/temp/smartfrog/dist/lib" >
       <fileset dir="${dist.dependencies.dir}" >
@@ -310,11 +310,23 @@
 	<fail unless="tomcat.home">Tomcat home is not set. Set property tomcat.home in setup.properties file.</fail>
 
     <mkdir dir="${tomcat.home}/webapps/AvalancheGUI" />
+    <mkdir dir="${tomcat.home}/webapps/AvalancheGUI/web" />
 		<mkdir dir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib"/>
 		<!-- COPY UI files to Tomcat-->
-		<copy todir="${tomcat.home}/webapps/AvalancheGUI">
-      			<fileset dir="${avalanche.root}/AvalancheGUI/web"/>
+		<copy todir="${tomcat.home}/webapps/AvalancheGUI/web">
+			<fileset dir="${avalanche.root}/AvalancheGUI/web"/>
 		</copy>
+
+		<delete dir="${tomcat.home}/webapps/AvalancheGUI/web/WEB-INF"/>
+
+		<copy file="${tomcat.home}/webapps/AvalancheGUI/web/Downloader.jsp" todir="${tomcat.home}/webapps/AvalancheGUI"/>
+		<delete file="${tomcat.home}/webapps/AvalancheGUI/web/Downloader.jsp"/>
+
+		
+		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF">
+			<fileset dir="${avalanche.root}/AvalancheGUI/web/WEB-INF"/>
+		</copy>
+
 		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
 			<fileset dir="${smartfrog.home}/dist/lib" includes="*.jar"/>
