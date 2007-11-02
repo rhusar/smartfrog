@@ -30,6 +30,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     static ProcessCompound sfDaemon = null;
     private static String iniFile = null;
     private static String sfDefault = null;
+    private static String sfDefaultSecurity = null;
     private boolean SFDYNAMICCLASSLOADING_ON = false;
     private String dyClassLoading_codebase = "";
     private static final String fileSeparator = File.separator;
@@ -73,6 +74,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     // contacts a running daemon or starts a new one
     private ProcessCompound getSFDaemon() throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
         try {  // there is a Daemon  running in local system
+            setSFDaemonEnv();
             sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
         } catch (ConnectException cEx) {  // there is no Daemon  running in local system
             setSFDaemonEnv();
@@ -86,6 +88,8 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName", "rootProcess");
         System.setProperty("org.smartfrog.iniFile", iniFile);
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault", sfDefault);
+        System.setProperty("java.security.policy", sfDefaultSecurity);
+        System.setSecurityManager(new SecurityManager());
         // smartfrog dist jar files.
         File[] sfBaseJars = (new File(distPath)).listFiles(new FilenameFilter() {
             public boolean accept(File f, String s) {
@@ -298,6 +302,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         distPath = homePath + fileSeparator + "lib" + fileSeparator;
         iniFile = homePath + fileSeparator + "bin" + fileSeparator + "default.ini";
         sfDefault = homePath + fileSeparator + "bin" + fileSeparator + "default.sf";
+        sfDefaultSecurity = homePath + fileSeparator + "private" + fileSeparator + "sf.no.security.policy";
     }
 
 
