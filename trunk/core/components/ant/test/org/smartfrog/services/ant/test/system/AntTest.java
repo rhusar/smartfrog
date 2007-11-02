@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.test.system.components.ant;
+package org.smartfrog.services.ant.test.system;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
@@ -31,7 +31,7 @@ import org.smartfrog.services.ant.Ant;
 public class AntTest
     extends SmartFrogTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/components/ant/";
+    private static final String FILES = "/org/smartfrog/services/ant/test/system/";
 
     public AntTest(String s) {
         super(s);

@@ -27,14 +27,11 @@ import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +79,7 @@ public class AntProject {
     private ComponentHelper helper;
     private AntHelper antHelper;
 
-    public AntProject(Prim owner, LogSF log) throws SmartFrogException, SmartFrogResolutionException,
+    public AntProject(Prim owner, LogSF log) throws SmartFrogException,
             RemoteException {
         try {
             this.log = log;
@@ -95,12 +92,7 @@ public class AntProject {
             String codebase = helper.getCodebase();
 
             String logLevel=owner.sfResolve(Ant.ATTR_LOG_LEVEL,Ant.ATTR_LOG_LEVEL_INFO,false);
-            int level = Project.MSG_INFO;
-            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
-            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
-            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);
-            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
-            level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
+            int level=antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
 
             //Register build listener
             antHelper.listenToProject(project,level,log);
@@ -144,7 +136,7 @@ public class AntProject {
      * @throws RemoteException In case of Remote/network error
      *  */
     private void setUserProperties(String attribute,Project project) throws SmartFrogResolutionException, RemoteException {
-        Vector propList=owner.sfResolve(attribute,(Vector)null,false);
+        Vector<Vector<String>> propList=ListUtils.resolveStringTupleList(owner,new Reference(attribute),true);
         antHelper.setUserProperties(project, propList);
     }
 
@@ -153,19 +145,7 @@ public class AntProject {
         return project;
     }
 
-    /**
-     * try and turn the value passed in to a log level
-     * @param current current log level (==default)
-     * @param value string value to check
-     * @param sought string to look for
-     * @param mapping the new level to return
-     * @return mapping iff sought==value; else current.
-     */
-    private static int extractLogLevel(int current,String value,String sought,int mapping) {
-        return sought.equals(value)?mapping:current;
-    }
-
-    public Object getElement(String name, ComponentDescription cd) 
+    public Object getElement(String name, ComponentDescription cd)
             throws SmartFrogResolutionException, ClassNotFoundException,
             SmartFrogAntBuildException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         String attribute = null;
@@ -187,7 +167,6 @@ public class AntProject {
      * @return a new element of indeterminate type
      * @throws SmartFrogResolutionException attribute resolution problems
      * @throws IllegalAccessException forbidden methods
-     * @throws InvocationTargetException problems invoking the method (with something else nested)
      * @throws ClassNotFoundException no matching class
      * @throws InstantiationException unable to create the element
      * @throws NoSuchMethodException missing methods
@@ -353,6 +332,8 @@ public class AntProject {
                 return obj;
                 //TODO: improve error messages
             }
+        } catch (BuildException e) {
+            throw new SmartFrogAntBuildException(e);
         } catch (Exception ex1) {
             log.error("cound ot create a datatype ",ex1);
             String taskName = "noTask";

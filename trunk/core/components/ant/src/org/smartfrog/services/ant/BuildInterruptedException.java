@@ -17,21 +17,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/ant/test/system/components.sf"
+package org.smartfrog.services.ant;
+
+import org.apache.tools.ant.BuildException;
+
+/**
+ *
+ * Created 02-Nov-2007 13:00:18
+ *
+ */
+
+public class BuildInterruptedException extends BuildException {
 
 
-sfConfig extends Compound {
-
-  value "17"
-
-  ant extends Ant {
-
-    -- extends property {
-      name "propertyname";
-      value LAZY PARENT:value;
+    /**
+     * Constructs a build exception with no descriptive information.
+     */
+    public BuildInterruptedException() {
     }
 
-   }
-
-  
+    /**
+     * Constructs an exception with the given descriptive message.
+     *
+     * @param message A description of or information about the exception.
+     *            Should not be <code>null</code>.
+     */
+    public BuildInterruptedException(String message) {
+        super(message);
+    }
 }

@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
+import org.apache.tools.ant.ExitStatusException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -38,6 +39,8 @@ import java.lang.reflect.InvocationTargetException;
 public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
 
     private Location location = Location.UNKNOWN_LOCATION;
+    private int exitStatus;
+    private boolean hasExitStatus;
 
     /**
      * Constructs a SmartFrogRuntimeException with message.
@@ -108,11 +111,16 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
     public SmartFrogAntBuildException(BuildException source) {
         super(source.getMessage(),source);
         //inherit the location
-        extractLocation(source);
+        bind(source);
     }
 
-    private void extractLocation(BuildException source) {
+    private void bind(BuildException source) {
         location=source.getLocation();
+        if(source instanceof ExitStatusException) {
+            ExitStatusException ese=(ExitStatusException) source;
+            exitStatus=ese.getStatus();
+            hasExitStatus=true;
+        }
     }
 
 
@@ -126,7 +134,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
                 te.getCause() != null ?te.getCause(): te);
         Throwable rootCause = te.getCause();
         if(rootCause != null && rootCause instanceof BuildException) {
-            extractLocation((BuildException)rootCause);
+            bind((BuildException)rootCause);
         }
     }
 
@@ -138,14 +146,31 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
         return location;
     }
 
+
+    /**
+     * If initiated from an exit status exception, this will include the exit code
+     * @return
+     */
+    public int getExitStatus() {
+        return exitStatus;
+    }
+
+    /**
+     * Test for the class having an exit status
+     * @return true if the exit status value was provided by an ExitStatusException.
+     */
+    public boolean hasExitStatus() {
+        return hasExitStatus;
+    }
+
     /**
      * To forward SmartFrog exceptions instead of chain them.
      *
      * @param thr throwable object to be forwarded
      *
-     * @return SmartFrogException that is a SmartFrogRuntimeException
+     * @return SmartFrogException that is a SmartFrogAntBuildException
      */
-    public static SmartFrogException forward(Throwable thr) {
+    public static SmartFrogAntBuildException forward(Throwable thr) {
         if (thr instanceof SmartFrogAntBuildException) {
             return (SmartFrogAntBuildException) thr;
         }
@@ -162,7 +187,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
      * @param thr throwable object to be forwarded
      * @return Throwable that is a SmartFrogAntBuildException
      */
-    public static SmartFrogException forward(String message, Throwable thr) {
+    public static SmartFrogAntBuildException forward(String message, Throwable thr) {
         if (thr instanceof SmartFrogAntBuildException) {
             if (message != null) {
                 ((SmartFrogAntBuildException) thr).add("msg: ", message);

@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/ant/test/system/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/services/ant/components.sf"
 
 
-sfConfig extends Compound {
+/**
+ * A test that expects a build exception
+ */
+ExpectBuildException extends ExpectDeployFailure {
 
-  value "17"
+    exceptions [["SmartFrogAntBuildException",""];
 
-  ant extends Ant {
-
-    -- extends property {
-      name "propertyname";
-      value LAZY PARENT:value;
-    }
-
-   }
-
-  
 }

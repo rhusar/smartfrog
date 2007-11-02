@@ -17,21 +17,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/ant/test/system/components.sf"
+package org.smartfrog.services.ant.test.system;
 
+import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.ant.Ant;
+import org.smartfrog.sfcore.prim.Prim;
 
-sfConfig extends Compound {
+/**
+ * JUnit test class for test cases related to Ant
+ */
+public class AntBuildTest
+        extends SmartFrogTestBase {
 
-  value "17"
+    private static final String FILES = "/org/smartfrog/services/ant/test/system/";
 
-  ant extends Ant {
-
-    -- extends property {
-      name "propertyname";
-      value LAZY PARENT:value;
+    public AntBuildTest(String s) {
+        super(s);
     }
 
-   }
+    public void testProperties() throws Throwable {
 
-  
+
+
+    }
 }

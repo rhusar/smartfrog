@@ -1,22 +1,22 @@
 /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 package org.smartfrog.services.ant;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -25,12 +25,24 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ExitStatusException;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.MagicNames;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.Executor;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Stack;
+import java.util.Hashtable;
 import java.io.File;
 
 /**
@@ -41,17 +53,33 @@ import java.io.File;
 
 public class AntBuildImpl extends PrimImpl implements AntBuild {
 
-    public static final String ERROR_NO_DIRS = "no build directories specified: one of "+ATTR_BASEDIR+" or "+ATTR_DIRECTORIES+" must be set";
+    public static final String ERROR_NO_DIRS = "no build directories specified: one of " + ATTR_BASEDIR + " or " + ATTR_DIRECTORIES + " must be set";
+    public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
+    public static final String BUILD_SUCCESSFUL = "Build successful";
+    public static final String BUILD_FAILED = "Build failed ";
 
-    private Project rootProject = null;
+    private ComponentHelper helper;
+    private AntHelper antHelper;
+
     private File baseDir;
-
     private String buildfile;
     private File genericantfile;
     private Vector<File> directories;
     private Vector targets;
     private AntThread workerAnt;
-    public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
+    private Vector propertyTuples;
+    private String logLevel;
+    private boolean keepGoingInSingleBuild;
+    private boolean keepGoingAcrossFiles;
+    private int shutdownTimeout;
+    private boolean skipUnimplementedTargets;
+
+    private Stack<BuildPlan> buildqueue;
+    private List<BuildPlan> results;
+    public static final String ERROR_NO_DIRECTORY = "No directory: ";
+    public static final String ERROR_NOT_A_DIRECTORY = "Not a directory: ";
+    private Properties properties;
+    public static final String ERROR_SHUTDOWN_TIMEOUT = "Ant thread did not shut down in the time allocated: ";
 
     //private File
 
@@ -67,6 +95,11 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+
+        helper = new ComponentHelper(this);
+        antHelper = new AntHelper(this);
+        antHelper.validateAnt();
+
         baseDir = FileSystem.lookupAbsoluteFile(this, ATTR_BASEDIR, null, null, false, null);
         directories = FileSystem.resolveFileList(this, new Reference(ATTR_DIRECTORIES), baseDir, false);
         if (directories == null) {
@@ -79,50 +112,348 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         }
         genericantfile = FileSystem.lookupAbsoluteFile(this, ATTR_GENERICANTFILE, null, null, false, null);
         //you need a build file if there is no generic ant file.
-        if(genericantfile == null) {
+        if (genericantfile == null) {
             buildfile = sfResolve(ATTR_BUILDFILE, buildfile, true);
-        }
-        targets = sfResolve(ATTR_TARGETS,targets,true);
-
-
-        //do some validation.
-        for(File dir:directories) {
-            if(!dir.exists()) {
-                throw new SmartFrogDeploymentException("No directory: "+dir);
-            }
-            if (!dir.isDirectory()) {
-                throw new SmartFrogDeploymentException("Not a directory: " + dir);
-            }
-            File build=new File(dir,buildfile);
-            if(!build.exists()) {
-                throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + build);
-            }
-        }
-
-        if(genericantfile!=null && !genericantfile.exists()) {
+        } else if (!genericantfile.exists()) {
             throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + genericantfile);
         }
-        workerAnt=new AntThread();
+
+        targets = sfResolve(ATTR_TARGETS, targets, true);
+
+        //set up properties
+        propertyTuples = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
+        //convert the list
+        properties = ListUtils.convertToProperties(propertyTuples);
+        logLevel = sfResolve(Ant.ATTR_LOG_LEVEL, Ant.ATTR_LOG_LEVEL_INFO, false);
+        keepGoingInSingleBuild = sfResolve(ATTR_KEEPGOINGINSINGLEBUILD, keepGoingInSingleBuild, true);
+        keepGoingAcrossFiles = sfResolve(ATTR_KEEPGOINGACROSSFILES, keepGoingInSingleBuild, true);
+        skipUnimplementedTargets = sfResolve(ATTR_SKIPUNIMPLEMENTEDTARGETS, false, true);
+        shutdownTimeout = sfResolve(ATTR_SHUTDOWNTIMEOUT, shutdownTimeout, true);
+
+        //now create the queue of files to build
+        buildqueue = new Stack<BuildPlan>();
+        results = new ArrayList<BuildPlan>(directories.size());
+        for (File dir : directories) {
+            //validate the directory
+            if (!dir.exists()) {
+                throw new SmartFrogDeploymentException(ERROR_NO_DIRECTORY + dir);
+            }
+            if (!dir.isDirectory()) {
+                throw new SmartFrogDeploymentException(ERROR_NOT_A_DIRECTORY + dir);
+            }
+            BuildPlan plan = new BuildPlan();
+            plan.basedir = dir;
+            if (genericantfile != null) {
+                plan.buildFile = genericantfile;
+            } else {
+                plan.buildFile = new File(dir, buildfile);
+            }
+            if (!plan.buildFile.exists()) {
+                throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + plan.buildFile);
+            }
+            buildqueue.add(plan);
+        }
+
         //to get here. all is well.
+        workerAnt = new AntThread();
         workerAnt.start();
     }
 
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Shut down the ant build
      * @param status termination status
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
+        if(workerAnt!=null) {
+            if(!workerAnt.halt(shutdownTimeout)) {
+                sfLog().error(ERROR_SHUTDOWN_TIMEOUT +shutdownTimeout+"ms");
+            }
+        }
         super.sfTerminateWith(status);
     }
 
+
+    /**
+     * This is our build plan, what we want to build for a specific target.
+     */
+    private static class BuildPlan {
+        String name;
+        long started, duration;
+        File buildFile;
+        File basedir;
+        Throwable exception;
+        int exitStatus;
+    }
+
+
+    /**
+     * This thread knows how to build a queue of projects
+     */
     private class AntThread extends SmartFrogThread {
+
+
+        public volatile boolean halted;
+        private InterruptableExecutor executor = new InterruptableExecutor(skipUnimplementedTargets);
+
+        /**
+         * Halt for a given period of time.
+         * @param timeout timeout in milliseconds
+         * @return true if the build halted in that time
+         */
+        public boolean halt(long timeout) {
+            halted = true;
+            //stop the executor too
+            executor.halt();
+            try {
+                boolean finished = waitForNotification(timeout);
+                if (finished) {
+                    return true;
+                }
+            } catch (InterruptedException e) {
+                //interrupted!
+                return true;
+            }
+            //not interrupted, not finished. not good.
+            return false;
+        }
+
 
         /**
          * do the work
          */
         public void execute() throws Throwable {
+            Throwable result=null;
+            int errors=0;
+            while (!buildqueue.empty() && !halted) {
+                BuildPlan plan = buildqueue.pop();
+                runOneBuildPlan(plan);
+                results.add(plan);
+                if (plan.exception != null) {
+                    result=plan.exception;
+                    errors++;
+                    if(!keepGoingAcrossFiles) {
+                        //exit the loop here
+                        break;
+                    }
+                }
+            }
+            TerminationRecord tr;
+            if(result==null) {
+                tr=TerminationRecord.normal(BUILD_SUCCESSFUL, sfCompleteNameSafe());
+            } else {
+                tr = TerminationRecord.abnormal(BUILD_FAILED +"error count="+errors, sfCompleteNameSafe(),result);
+            }
+            helper.targetForWorkflowTermination(tr);
+        }
+
+
+        /**
+         * Run one build plan and put the results back in the plan.
+         * Any build that throws an error other than a successful exit is logged
+         * as an error.
+         * @param plan plan to run
+         * @return true if the build worked
+         */
+        boolean runOneBuildPlan(BuildPlan plan) {
+            plan.started=System.currentTimeMillis();
+            try {
+                innerBuild(plan);
+            } catch (RemoteException e) {
+                plan.exception = e;
+            } catch (SmartFrogAntBuildException e) {
+                if (e.hasExitStatus()) {
+                    plan.exitStatus = e.getExitStatus();
+                    if (e.getExitStatus() != 0) {
+                        plan.exception = e;
+                    }
+                } else {
+                    plan.exception = e;
+                }
+            }
+            long finished=System.currentTimeMillis();
+            plan.duration=finished-plan.started;
+            sfLog().info("Build duration of "+plan.buildFile+" "+plan.duration/1000.0+"s");
+            return plan.exception==null;
+        }
+
+        /**
+         * run one build file
+         * @param plan the plan
+         * @throws SmartFrogAntBuildException if the build fails
+         * @throws RemoteException for network problems
+         */
+        void innerBuild(BuildPlan plan) throws SmartFrogAntBuildException, RemoteException {
+
+            try {
+                File buildFile=plan.buildFile;
+                File basedir=plan.basedir;
+                Project project = antHelper.createNewProject();
+
+                //set up log levels
+                int level = antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
+
+                //Register build listener
+                antHelper.listenToProject(project, level, sfLog());
+                //set the properties
+                antHelper.addUserProperties(project, properties);
+                project.setKeepGoingMode(keepGoingInSingleBuild);
+                project.setUserProperty(MagicNames.ANT_FILE,
+                        buildFile.getAbsolutePath());
+                project.setExecutor(executor);
+
+                //it's not clear what to do when there is a basedir in the project itself.
+                //<subant> and <ant> behave differently here.
+                project.setBaseDir(basedir);
+
+                //first build event
+                //tell the world the build began
+                project.fireBuildStarted();
+                //the rest of the work is surrounded by a try/catch purely to ensure that
+                //the loggers and listeners are notified at the end
+                Throwable thrown = null;
+                try {
+                    ProjectHelper.configureProject(project, buildFile);
+                    plan.name=project.getName();
+                    String defaultTarget = project.getDefaultTarget();
+                    if (targets.size() == 0) {
+                        if (defaultTarget != null) {
+                            sfLog().info("default target of " + buildFile + " is " + defaultTarget);
+                            targets.addElement(defaultTarget);
+                        } else {
+                            //no default target. This is not an error, you could just have simple script
+                            sfLog().info("no default target in " + buildFile);
+                        }
+                    }
+                    //here the project is set up, so run it
+                    project.executeTargets(targets);
+                } catch (RuntimeException e) {
+                    thrown = e;
+                    throw e;
+                } catch (Error e) {
+                    thrown = e;
+                    throw e;
+                } finally {
+                    project.fireBuildFinished(thrown);
+                }
+
+
+            } catch (ExitStatusException ese) {
+                //raised in a <fail> operation.
+                int status = ese.getStatus();
+                if (status != 0) {
+                    throw new SmartFrogAntBuildException(ese);
+                } else {
+                    sfLog().debug("Build exited successfully");
+                }
+            } catch (BuildException e) {
+                throw new SmartFrogAntBuildException(e);
+            }
+        }
+
+    }
+
+    /**
+     * This is a special executor that can interrupt the build between targets
+     */
+    private static class InterruptableExecutor implements Executor {
+
+        private volatile boolean halted;
+        private boolean skipMissingTargets;
+
+
+        /**
+         * Create an instance; pass in its policy w.r.t. missing targets
+         * @param skipMissingTargets
+         */
+        InterruptableExecutor(boolean skipMissingTargets) {
+            this.skipMissingTargets = skipMissingTargets;
+        }
+
+        /**
+         * is the build halted?
+         * @return true if the build has been halted
+         */
+        public boolean isHalted() {
+            return halted;
+        }
+
+        /**
+         * Trigger a halt
+         */
+        public void halt() {
+            halted = true;
+        }
+
+        /** {@inheritDoc}. */
+        public void executeTargets(Project project, String[] targetNames) throws BuildException {
+            BuildException thrown = null;
+            for (String target : targetNames) {
+                if (isHalted()) {
+                    throw new BuildInterruptedException("Interrupted in " + project.getName() + "." + target);
+                }
+                try {
+                    if(skipMissingTargets
+                            && project.getTargets().get(target)==null) {
+                        project.log("Skipping missing target "+target,Project.MSG_WARN);
+                    } else {
+                        project.executeTarget(target);
+                }
+                } catch (BuildException e) {
+                    if (project.isKeepGoingMode()) {
+                        thrown = thrown == null ? e: thrown;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+            //throw the first build exception we hit (and not the last)
+            if (thrown != null) {
+                throw thrown;
+            }
+        }
+
+        /** {@inheritDoc}. */
+        public Executor getSubProjectExecutor() {
+            return new InterruptableSubProjectExecutor(this);
+        }
+    }
+
+
+    /**
+     * This is for sub projects; it reads the interrupted state from its parent
+     * Note that we currently don't do anything useful with that information,
+     * as project is in charge of ordering execution. Note also that the subant task
+     * does its own scheduling.
+     * <p/>
+     * All that means, it's not that easy to interrupt a running build cleanly. We'd need
+     * to extend Ant to do it.
+     */
+    private static class InterruptableSubProjectExecutor implements Executor {
+        private InterruptableExecutor parent;
+
+        InterruptableSubProjectExecutor(InterruptableExecutor parent) {
+            this.parent = parent;
+        }
+
+        /**
+         * is the build halted?
+         * @return true if the build has been halted
+         */
+        public boolean isHalted() {
+            return parent.isHalted();
+        }
+
+        /** {@inheritDoc}. */
+        public void executeTargets(Project project, String[] targetNames)
+                throws BuildException {
+            project.executeSortedTargets(
+                    project.topoSort(targetNames, project.getTargets(), false));
+        }
+
+        /** {@inheritDoc}. */
+        public Executor getSubProjectExecutor() {
+            return this;
         }
     }
 }

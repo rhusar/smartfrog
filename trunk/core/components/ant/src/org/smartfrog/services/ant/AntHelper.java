@@ -24,9 +24,14 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.BuildLogger;
 
 import java.util.Vector;
+import java.util.Properties;
 
 /**
  *
@@ -43,11 +48,15 @@ public class AntHelper {
         this.owner = owner;
     }
 
-    public Project createNewProject() {
-        Project project = new Project();
-        project.setCoreLoader(null);
-        project.init();
-        return project;
+    public Project createNewProject() throws SmartFrogAntBuildException {
+        try {
+            Project project = new Project();
+            project.setCoreLoader(null);
+            project.init();
+            return project;
+        } catch (BuildException e) {
+            throw new SmartFrogAntBuildException(e);
+        }
     }
 
     /**
@@ -59,27 +68,32 @@ public class AntHelper {
      */
     public void listenToProject(Project project, int level, LogSF log) {
         //Register build listener
-        org.apache.tools.ant.DefaultLogger logger = new AntToSmartFrogLogger(log);
+        BuildLogger logger = new AntToSmartFrogLogger(log);
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
         logger.setMessageOutputLevel(level);
         project.addBuildListener(logger);
     }
 
-
     public void setUserProperties(Project project, Vector propList) throws SmartFrogResolutionException {
         if (propList != null) {
-            for (Object aPropList : propList) {
-                Vector entry = (Vector) aPropList;
-                if (entry.size() != 2) {
-                    throw new SmartFrogResolutionException("Property entry of the wrong size" + entry);
-                }
-                String name = entry.get(0).toString();
-                String value = entry.get(1).toString();
-                project.setUserProperty(name, value);
-            }
+            Properties props= ListUtils.convertToProperties(propList);
+            addUserProperties(project,props);
         }
     }
+
+    /**
+     * Add the properties to a project's user properties, those that are inherited all the way down.
+     * @param project project
+     * @param props properties
+     */
+    public void addUserProperties(Project project,Properties props) {
+        for(String name:props.stringPropertyNames()) {
+            project.setUserProperty(name, props.getProperty(name));
+        }
+    }
+
+
 
     public void validateAnt() throws SmartFrogDeploymentException {
         if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
@@ -88,4 +102,31 @@ public class AntHelper {
         }
     }
 
+    /**
+     * try and turn the value passed in to a log level
+     * @param current current log level (==default)
+     * @param value string value to check
+     * @param sought string to look for
+     * @param mapping the new level to return
+     * @return mapping iff sought==value; else current.
+     */
+    private static int extractLogLevel(int current, String value, String sought, int mapping) {
+        return sought.equals(value) ? mapping : current;
+    }
+
+    /**
+     * Take the level string and turn it into a number for ant
+     * @param logLevel incoming log level
+     * @param initialLevel the initial log level
+     * @return the ant log level
+     */
+    public int extractLogLevel(String logLevel, int initialLevel) {
+        int level=initialLevel;
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_DEBUG, Project.MSG_DEBUG);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_VERBOSE, Project.MSG_VERBOSE);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_INFO, Project.MSG_INFO);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_WARN, Project.MSG_WARN);
+        level = extractLogLevel(level, logLevel, Ant.ATTR_LOG_LEVEL_ERROR, Project.MSG_ERR);
+        return level;
+    }
 }
