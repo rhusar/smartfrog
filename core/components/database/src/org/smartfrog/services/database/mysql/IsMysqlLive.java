@@ -53,18 +53,6 @@ public class IsMysqlLive extends ConnectionOpenCondition implements Condition {
     public IsMysqlLive() throws RemoteException {
     }
 
-
-    /**
-     * Evaluate the condition.
-     *
-     * @return true if it is successful, false if not
-     * @throws RemoteException    for network problems
-     * @throws SmartFrogException for any other problem
-     */
-    public boolean evaluate() throws RemoteException, SmartFrogException {
-        return super.evaluate();
-    }
-
     /**
      * Introspect to make a ping on the remote system. Any error during the ping is logged at debug level and
      * the method returns false. A successful ping is turned into success; there's no timing checks or anything
