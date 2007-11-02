@@ -38,38 +38,51 @@ public interface TestSuite extends TestResultAttributes, Conditional {
      * Non-marked up text description
      * {@value}
      */
-    public static final String ATTR_DESCRIPTION = "description";
+    public String ATTR_DESCRIPTION = "description";
 
     /**
      * A list of URLs to link to
      * {@value}
      */
-    public static final String ATTR_LINKS = "links";
+    public String ATTR_LINKS = "links";
 
     /**
      * {@value}
      */
-    public static final String ATTR_NAME = "name";
+    public String ATTR_NAME = "name";
 
     /**
      * list in name, value pairs [[name,value],[n2,v2]]
      * {@value}
      */
-    public static final String ATTR_SYSPROPS="properties";
+    public String ATTR_SYSPROPS="properties";
 
 
     /**
      * A list of text tags to describe the test suite
      * {@value}
      */
-    public static final String ATTR_TAGS = "tags";
+    public String ATTR_TAGS = "tags";
+
+    /**
+     * A list of URLs to track back on
+     * {@value}
+     */
+    public String ATTR_TRACKBACKS = "trackbacks";
+
+
+    /**
+     * A list of issues, such as defect IDs
+     * {@value}
+     */
+    public String ATTR_ISSUES = "issues";
 
     /**
      * The name of another test suite that must have succeeded
      * before this test runs. If this component failed to deploy or
      * succeed, then this test suite is skipped.
      */
-    public static final String ATTR_MUST_SUCCEED = "mustSucceed";
+    public String ATTR_MUST_SUCCEED = "mustSucceed";
 
     /**
      * bind to the configuration. A null parameter means 'stop binding'
