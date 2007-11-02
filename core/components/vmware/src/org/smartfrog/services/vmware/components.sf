@@ -35,8 +35,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 VMWareServerManager extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareServerManager";
-    copyImages ((LAZY PROPERTY smartfrog.home) ++ "/vmcopyimages");
-    masterImages ((LAZY PROPERTY smartfrog.home) ++ "/vmmasterimages");
+    copyImages ((ENVPROPERTY SFHOME) ++ "/vmcopyimages");
+    masterImages ((ENVPROPERTY SFHOME) ++ "/vmmasterimages");
+    //copyImages ((LAZY PROPERTY smartfrog.home) ++ "/vmcopyimages");
+    //masterImages ((LAZY PROPERTY smartfrog.home) ++ "/vmmasterimages");
 }
 
 VMWareMessageListener extends Prim {
