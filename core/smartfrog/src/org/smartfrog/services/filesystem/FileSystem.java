@@ -57,7 +57,7 @@ import java.util.Vector;
  * Filesystem operations
  */
 
-public class FileSystem {
+public final class FileSystem {
 
     /**
      * Error text when a looked up reference resolves to something that is not yet deployed. {@value}
