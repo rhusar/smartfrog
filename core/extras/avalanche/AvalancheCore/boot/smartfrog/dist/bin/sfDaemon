@@ -64,6 +64,6 @@ elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
         CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME $SFCODEBASE $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 else
-    CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
+    CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFDEFAULTSECURITY $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 fi
 $CMDLINE
