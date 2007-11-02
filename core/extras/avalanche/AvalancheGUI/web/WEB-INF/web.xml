@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 	<security-constraint>
     <web-resource-collection>
      <web-resource-name>A Protected Page</web-resource-name>
-     <url-pattern>/*</url-pattern>
+     <url-pattern>/web/*</url-pattern>
      <http-method>GET</http-method>
      <http-method>POST</http-method>
    </web-resource-collection>
@@ -33,9 +33,6 @@ For more information: www.smartfrog.org
    <auth-constraint>
      <role-name>admin</role-name>
    </auth-constraint>
-   <user-data-constraint>
-	<transport-guarantee>CONFIDENTIAL</transport-guarantee>
-   </user-data-constraint>
   </security-constraint>
 
   <login-config>
