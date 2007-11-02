@@ -24,7 +24,7 @@
   -->
 
   <description>
-     Build file for the www project.
+     Build file for the tomcat project.
      These files are the app server independent files, and cannot
      be deployed as is. so testing at this point is pretty minimal
   </description>
