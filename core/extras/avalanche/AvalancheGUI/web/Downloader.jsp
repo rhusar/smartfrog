@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 <%@ page import="java.io.*" %>
 
-<%@ include file="InitBeans.jsp" %>
+<%@ include file="web/InitBeans.jsp" %>
 <%
     String file = request.getParameter("filePath");
     File fname = new File(factory.getAvalancheHome() + File.separatorChar + "smartfrog" + File.separatorChar + "lib" + File.separatorChar + file);
