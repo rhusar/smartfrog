@@ -20,11 +20,16 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.utils;
 
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.Properties;
+import java.rmi.RemoteException;
 
 /**
  *
@@ -35,6 +40,8 @@ import java.util.Iterator;
 public final class ListUtils {
     public static final String EMPTY_LIST_ELEMENT = "Empty list element";
     public static final String ERROR_WRONG_WIDTH = "Wrong number of list elements in sublist ";
+    public static final String ERROR_NOT_A_LIST = "Not a list: ";
+    private static final String ERROR_WRONG_SIZE = "Property entry of the wrong size";
 
 
     private ListUtils() {
@@ -71,7 +78,7 @@ public final class ListUtils {
         Vector<String> results = new Vector<String>(source.size());
         for (Object element : source) {
             if (!(element instanceof List)) {
-                throw new SmartFrogInitException("Not a list: " + element);
+                throw new SmartFrogInitException(ERROR_NOT_A_LIST + element);
             }
             List subvector = (List) element;
             int subsize = subvector.size();
@@ -140,9 +147,10 @@ public final class ListUtils {
      *
      * turn a vector of strings into a space separated list
      * @param source source vector
-     * @param prefix
-     *@param separator separator string
-     * @param ending ending string @return String string list.
+     * @param prefix prefix to insert
+     * @param separator separator string
+     * @param ending ending string
+     * @return String string list.
      */
     public static String stringify(Vector source, String prefix, String separator, String ending) {
         StringBuilder buffer = new StringBuilder();
@@ -158,5 +166,67 @@ public final class ListUtils {
             }
         }
         return buffer.toString();
+    }
+
+    /**
+     * Convert a property list into a Java properties class
+     * @param tupleList a list of tuples (must not be null)
+     * @return a properties object containing name,value pairs.
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple
+     */
+    public static Properties convertToProperties(List tupleList) throws SmartFrogResolutionException {
+        Properties properties=new Properties();
+        if(tupleList!=null) {
+            for (Object element : tupleList) {
+                if(!(element instanceof Vector)) {
+                    throw new SmartFrogResolutionException(ERROR_NOT_A_LIST +element);
+                }
+                Vector entry = (Vector) element;
+                if (entry.size() != 2) {
+                    throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
+                }
+                String name = entry.get(0).toString();
+                String value = entry.get(1).toString();
+                properties.setProperty(name,value);
+            }
+        }
+        return properties;
+    }
+
+    /**
+     * Extract a string tuple list; verify the depth is 2.
+     * Everything is converted to strings in the process
+     * @param component component to resolve against
+     * @param ref a reference
+     * @param required whether the element is required or not
+     * @return the tuple list, or null if none was provided
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
+     * otherwise fails.
+     * @throws RemoteException network problems
+     */
+    public static Vector<Vector<String>> resolveStringTupleList(Prim component, Reference ref,boolean required)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector tupleList=null;
+        tupleList=component.sfResolve(ref, tupleList,required);
+        if(tupleList==null) {
+            return null;
+        }
+        Vector<Vector<String>> result=new Vector<Vector<String>>(tupleList.size());
+        for (Object element : tupleList) {
+            if (!(element instanceof Vector)) {
+                throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
+            }
+            Vector entry = (Vector) element;
+            if (entry.size() != 2) {
+                throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
+            }
+            Vector<String> newEntry=new Vector<String>(2);
+            String name = entry.get(0).toString();
+            String value = entry.get(1).toString();
+            newEntry.add(name);
+            newEntry.add(value);
+            result.add(newEntry);
+        }
+        return result;
     }
 }
