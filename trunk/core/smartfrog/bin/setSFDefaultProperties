@@ -36,6 +36,7 @@ if ! test "$SFDEFAULTSECURITY";then
 	export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager"
 fi
 
+
 if  test "$SFSERVERHOSTNAME";then
    export SFRMIHOSTNAME=-Djava.rmi.server.hostname="$SFSERVERHOSTNAME"
 fi  
