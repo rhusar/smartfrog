@@ -32,11 +32,14 @@ import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestStartedEvent;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
  * Runner of test children.
@@ -64,6 +67,7 @@ public class TestCompoundImpl extends ConditionCompound
     private String exitType;
     private String exitText;
     private String description;
+
     private volatile boolean finished = false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
@@ -82,6 +86,7 @@ public class TestCompoundImpl extends ConditionCompound
     public static final String TEST_FAILED_WRONG_STATUS = "Expected action to terminate with the status ";
     public static final String EXIT_EXPECTED_STARTUP_EXCEPTION = "Exiting with expected exception thrown during startup";
     public static final String UNEXPECTED_STARTUP_EXCEPTION = "Unexpected message in an exception raised at startup time\n";
+    private Vector<Vector<String>> exceptions;
 
     public TestCompoundImpl() throws RemoteException {
     }
@@ -109,6 +114,7 @@ public class TestCompoundImpl extends ConditionCompound
         exitText = sfResolve(ATTR_EXIT_TEXT, exitText, true);
         shouldTerminate = sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, true, true);
         description = sfResolve(ATTR_DESCRIPTION, description, false);
+        exceptions = ListUtils.resolveStringTupleList(this, new Reference(ATTR_EXCEPTIONS), true);
         sendEvent(new DeployedEvent(this));
     }
 

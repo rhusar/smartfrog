@@ -105,7 +105,14 @@ TestCompound extends ActionCompound {
 //        NOT IMPLEMENTED
       description "time in milliseconds between forced pings";
     }
-
+/*
+  vector of tuples containing classname and error text substrings to match on,
+        all down the nested exception chain. e.g.
+        [["SmartFrogResolutionException","unresolved reference"]];
+        or
+        [["",""],["NullPointerException",""];
+*/
+     exceptions extends Vector;
    }
   sfClass "org.smartfrog.services.assertions.TestCompoundImpl";
    //by default, this is a workflow component
@@ -128,7 +135,7 @@ TestCompound extends ActionCompound {
 
   exitType "normal";
   exitText "";
-
+  exceptions [];
   forcePing false;
 }
 
@@ -187,14 +194,7 @@ FailingTestCompound extends TestCompound {
 
   FailureCompoundSchema extends Schema {
 
-/*
-  vector of tuples containing classname and error text substrings to match on,
-        all down the nested exception chain. e.g.
-        [["SmartFrogResolutionException","unresolved reference"]];
-        or
-        [["",""],["NullPointerException",""];
-*/
-    exceptions extends OptionalVector;
+
 
   }
 
