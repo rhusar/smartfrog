@@ -2,7 +2,7 @@
 \#include "org/smartfrog/services/net/ftp.sf"
 \#include "org/smartfrog/services/net/telnet.sf"
 \#include "org/smartfrog/services/ssh/scp.sf"
-\#include "org/smartfrog/services/ssh/sshExec.sf"
+\#include "org/smartfrog/services/ssh/sshexecute.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
 #set( $avEventServer = "[XMPP Server address goes here.]" )
@@ -44,11 +44,11 @@ sfConfig extends Parallel {
             password "${daemon.password}";
 	    #if ($daemon.isLinux())
 		#if ($securityOn)
-            		SCP:localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
-            		SCP:remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
+            		localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
+            		remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
 		#else
-            		SCP:localFiles ["${daemon.localfile1}"];
-            		SCP:remoteFiles ["${daemon.installdir}/release.tar.gz"];
+            		localFiles ["${daemon.localfile1}"];
+            		remoteFiles ["${daemon.installdir}/release.tar.gz"];
 		#end
 	    #end
             SCP:transferType "put";
@@ -174,7 +174,7 @@ sfConfig extends Parallel {
 	    #end
 	}
 	#elseif ($daemon.isSsh())
-	b extends SSHSessionInlinePass {
+	b extends SSHSessionInlinePassword {
             SSHCmdExec:host "$daemon.host";
             SSHCmdExec:username "$daemon.user";
             password "$daemon.password";
