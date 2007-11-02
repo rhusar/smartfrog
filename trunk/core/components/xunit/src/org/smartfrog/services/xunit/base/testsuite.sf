@@ -35,6 +35,9 @@ TestSuiteSchema extends Schema {
     links extends Vector {
       description "A list of URLs to link to";
     }
+    trackbacks extends Vector {
+      description "A list of URLs to track back on ";
+    }
     issues extends Vector {
       description "A list of issues, such as defect IDs";
     }
@@ -54,6 +57,7 @@ TestSuite extends EventCompound {
     links [];
     issues [];
     tags [];
+    trackbacks [];
 }
 
 
