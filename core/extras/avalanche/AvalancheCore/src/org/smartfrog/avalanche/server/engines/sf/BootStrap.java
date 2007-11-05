@@ -88,6 +88,8 @@ public class BootStrap {
     public void ignite(String[] hosts) throws HostIgnitionException {
         try {
             HostManager hostManager = factory.getHostManager();
+	    String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
+
             String templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
             String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
             String outputFile = outDir + File.separator + this.strOptSeparator + "hostIgnition" + getDateTime() + ".sf";
@@ -199,7 +201,7 @@ public class BootStrap {
 
             // to read from listDaemons and write to data. all and then create a description
             log.info("TemplateGen Map : " + listDaemons);
-            TemplateGen.createTemplate(listDaemons, templateFile, outputFile, false, false, null, logFileDir);
+            TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, false, false, null, logFileDir, xmppServer);
 
             File of = new File(outputFile);
             if (!of.exists()) {
