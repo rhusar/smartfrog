@@ -5,7 +5,6 @@
 \#include "org/smartfrog/services/ssh/sshexecute.sf"
 \#include "org/smartfrog/sfcore/workflow/components.sf"
 
-#set( $avEventServer = "[XMPP Server address goes here.]" )
 
 sfConfig extends Parallel {
     asynchCreateChild true;
@@ -196,7 +195,7 @@ sfConfig extends Parallel {
 							 "mv ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
 							 "mv ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
-                        		 		 "export AVALANCHE_EVENT_SERVER=$avEventServer",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
  							 "export SFSECURITY_ON=ENABLED",
 				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
@@ -215,7 +214,7 @@ sfConfig extends Parallel {
 				 			 "mv ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
 				 			 "mv ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
-                        		 		 "export AVALANCHE_EVENT_SERVER=$avEventServer",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
  				 		 	 "export SFSECURITY_ON=ENABLED",
 						 	 "cd ${daemon.installdir}/${daemon.releasename}",
@@ -229,7 +228,7 @@ sfConfig extends Parallel {
 					 		 "tar -xf release.tar",
                         		 		 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
                         		 		 "export PATH=$SFHOME/bin:$PATH",
-                        		 		 "export AVALANCHE_EVENT_SERVER=$avEventServer",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
 					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 							 "nohup sfDaemon &"]; 
@@ -239,7 +238,7 @@ sfConfig extends Parallel {
 							 "gunzip -f release.tar.gz", 
 				        		 "tar -xf release.tar",
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
-                        		 		 "export AVALANCHE_EVENT_SERVER=$avEventServer",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
                                  			 "export PATH=$SFHOME/bin:$PATH",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 	                        			 "nohup sfDaemon &"];
