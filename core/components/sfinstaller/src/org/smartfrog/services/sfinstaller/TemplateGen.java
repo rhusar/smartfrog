@@ -82,6 +82,8 @@ public class TemplateGen {
      * Log directory for telnet/ssh sessions logs.
      */
     static String logDir = ".";
+    
+    static String avEventServer = null;
 
     /**
      * A collection of jar files for dynamic classloading.
@@ -289,6 +291,10 @@ public class TemplateGen {
         context.put("httpJars", httpJars);
         // context.put("Jars", Jars);
         context.put("logDir", logDir + System.getProperty("file.separator"));
+        
+	if(avEventServer != null){
+		context.put("avEventServer", avEventServer);
+	}
 
         file = new File(templateFileName);
         if (file.exists()) {
@@ -368,7 +374,7 @@ public class TemplateGen {
      * @param logdir               log directory
      * @throws Exception
      */
-    static public void createTemplate(ArrayList<Daemon> listDaemons, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir) throws Exception {
+    static public void createHostIgnitionTemplate(ArrayList<Daemon> listDaemons, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir, String avServer) throws Exception {
         try {
             ArrayList<String> dummy = new ArrayList<String>();
 
@@ -384,12 +390,14 @@ public class TemplateGen {
                 dummy.add("-s");
 
             logDir = logdir;
+	    avEventServer = avServer;
             createDescription(dummy.toArray(new String[4]), listDaemons, jars);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
+	    
     /**
      * Runs the TemplateGen and generates the description file.
      *
