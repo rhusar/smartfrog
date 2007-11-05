@@ -51,6 +51,7 @@ public class AvalancheContextListener implements ServletContextListener {
             String xmppServer = evt.getServletContext().getInitParameter("xmppServer");
             if( null != xmppServer){
             		setup.setXmppServer(xmppServer);
+			setup.getFactory().setAttribute(setup.getFactory().XMPP_SERVER_NAME, xmppServer);
             }
             String xmppServerPort = evt.getServletContext().getInitParameter("xmppServerPort");
             if( null != xmppServerPort ){
