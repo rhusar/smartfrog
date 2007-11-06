@@ -42,12 +42,25 @@ import java.util.Properties;
 public class AntHelper {
 
     private Prim owner;
+    /** {@value} */
+    public static final String ANT_PROJECT_CLASS = "/org/apache/tools/ant/Project.class";
+    /** {@value} */
+    public static final String ERROR_NO_ANT = "Cannot initialize Ant. WARNING: Perhaps ant.jar is not in the codebase";
 
 
+    /**
+     * create
+     * @param owner owning component
+     */
     public AntHelper(Prim owner) {
         this.owner = owner;
     }
 
+    /**
+     * Create a new project and initialise it
+     * @return a new project
+     * @throws SmartFrogAntBuildException if the project construction failed.
+     */
     public Project createNewProject() throws SmartFrogAntBuildException {
         try {
             Project project = new Project();
@@ -75,6 +88,12 @@ public class AntHelper {
         project.addBuildListener(logger);
     }
 
+    /**
+     * Set the user properties
+     * @param project ant project
+     * @param propList list of property tuples.
+     * @throws SmartFrogResolutionException
+     */
     public void setUserProperties(Project project, Vector propList) throws SmartFrogResolutionException {
         if (propList != null) {
             Properties props= ListUtils.convertToProperties(propList);
@@ -87,18 +106,21 @@ public class AntHelper {
      * @param project project
      * @param props properties
      */
-    public void addUserProperties(Project project,Properties props) {
-        for(String name:props.stringPropertyNames()) {
+    public void addUserProperties(Project project, Properties props) {
+        for(Object key:props.keySet()) {
+            String name=(String) key;
             project.setUserProperty(name, props.getProperty(name));
         }
     }
 
 
-
+    /**
+     * check that Ant is on the classpath
+     * @throws SmartFrogDeploymentException if it is not
+     */
     public void validateAnt() throws SmartFrogDeploymentException {
-        if (SFClassLoader.getResourceAsStream("/org/apache/tools/ant/Project.class") == null) {
-            throw new SmartFrogDeploymentException(
-                    "Cannot initialize Ant. WARNING: Perhaps ant.jar is not in CLASSPATH ...");
+        if (SFClassLoader.getResourceAsStream(ANT_PROJECT_CLASS) == null) {
+            throw new SmartFrogDeploymentException(ERROR_NO_ANT);
         }
     }
 
