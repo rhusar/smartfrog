@@ -21,11 +21,18 @@
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.Version;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 /**
  * Exit error codes.
  *
  */
 public final class ExitCodes {
+
+    /** Core Log  */
+    private LogSF sflog = null;
 
     /** Utility class */
     private ExitCodes() {
@@ -75,8 +82,22 @@ public final class ExitCodes {
      * @param code int
      */
     public static void exit(int code) {
+        try {
+            if (LogFactory.sfGetProcessLog().isDebugEnabled()) { LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code +", v."+ Version.versionStringforrelease()); }
+        } catch (Throwable thr) { /* ignore */ }
+
         System.exit(code);
     }
 
+    /**
+     *
+     * @return LogSF
+     */
+    public LogSF sfLog(){
+         if (sflog==null) {
+             sflog= LogFactory.sfGetProcessLog();
+         }
+         return sflog;
+    }
 
 }
