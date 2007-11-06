@@ -39,7 +39,7 @@ import java.util.Vector;
  * 16:04:14
  */
 
-public abstract class AbstractSSHComponent extends PrimImpl implements SSHComponent {
+public abstract class  AbstractSSHComponent extends PrimImpl implements SSHComponent {
 
     protected LogSF log;
     protected String passphrase;
@@ -168,7 +168,7 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
      *
      * @return SSH Session
      * @throws JSchException if unable to open SSH session
-     * @see com.jcraft.jsch.Session
+     * @see Session
      */
     protected Session openSession() throws JSchException {
         JSch jsch = createJschInstance();
@@ -196,11 +196,19 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
         return session;
     }
 
-    public Session getSession() {
+    /**
+     * Get the current session
+     * @return the session
+     */
+    public synchronized Session getSession() {
         return session;
     }
 
-    public void setSession(Session session) {
+    /**
+     * Set the current session
+     * @param session the new session, can be null
+     */
+    public synchronized void setSession(Session session) {
         this.session = session;
     }
 
@@ -212,7 +220,11 @@ public abstract class AbstractSSHComponent extends PrimImpl implements SSHCompon
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         super.sfTerminateWith(tr);
         if (getSession() != null) {
-            getSession().disconnect();
+            try {
+                getSession().disconnect();
+            } finally {
+                session=null;
+            }
         }
     }
 }
