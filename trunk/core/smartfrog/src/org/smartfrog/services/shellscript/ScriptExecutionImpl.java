@@ -353,8 +353,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(List commands, long timeout) throws SmartFrogException {
       return execute (commands,timeout,false);
@@ -370,8 +368,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
     ScriptLock lockedShell = lockShell(timeout);
@@ -390,8 +386,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
     ScriptLock scriptLock = lockShell(timeout);
@@ -408,8 +402,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(String command, long timeout) throws SmartFrogException {
     return execute (command,timeout,false);
@@ -424,8 +416,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param commands List
    * @param scriptLock ScriptLock
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(List commands, ScriptLock scriptLock) throws  SmartFrogException {
     return execute (commands,scriptLock,false);
@@ -442,8 +432,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param scriptLock ScriptLock
    * @param verbose script output
    * @return ScriptResults
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public ScriptResults execute(List commands, ScriptLock scriptLock, boolean verbose) throws  SmartFrogException {
     if (this.lock!=scriptLock) {
@@ -478,8 +466,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptLock
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public synchronized ScriptLock lockShell(long timeout) throws
       SmartFrogException {
@@ -529,8 +515,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param scriptLock the lock object received from the lockShell
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
-   // TODO:  Implement this org.smartfrog.services.shellscript.ScriptExecution
-   *   method
    */
   public synchronized void releaseShell(ScriptLock scriptLock) throws SmartFrogException {
     if (this.lock != scriptLock ) throw new SmartFrogException("LockOwnershipException");
