@@ -40,8 +40,8 @@ import java.rmi.RemoteException;
 public final class ListUtils {
     public static final String EMPTY_LIST_ELEMENT = "Empty list element";
     public static final String ERROR_WRONG_WIDTH = "Wrong number of list elements in sublist ";
-    public static final String ERROR_NOT_A_LIST = "Not a list: ";
-    private static final String ERROR_WRONG_SIZE = "Property entry of the wrong size";
+    public static final String ERROR_NOT_A_LIST = "not a list: ";
+    private static final String ERROR_WRONG_SIZE = " is the wrong size";
 
 
     private ListUtils() {
@@ -212,13 +212,15 @@ public final class ListUtils {
             return null;
         }
         Vector<Vector<String>> result=new Vector<Vector<String>>(tupleList.size());
+        int count=0;
         for (Object element : tupleList) {
+
             if (!(element instanceof Vector)) {
-                throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
+                throw new SmartFrogResolutionException("Element ["+count+"] is "+ERROR_NOT_A_LIST + element);
             }
             Vector entry = (Vector) element;
             if (entry.size() != 2) {
-                throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
+                throw new SmartFrogResolutionException("Element [" + count + "] is " +ERROR_WRONG_SIZE + entry);
             }
             Vector<String> newEntry=new Vector<String>(2);
             String name = entry.get(0).toString();
@@ -226,6 +228,7 @@ public final class ListUtils {
             newEntry.add(name);
             newEntry.add(value);
             result.add(newEntry);
+            
         }
         return result;
     }
