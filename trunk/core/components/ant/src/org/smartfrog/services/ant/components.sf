@@ -25,19 +25,39 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/ant/tasks.sf"
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-Ant extends WorkflowPrim {
+
+AntWorkflowComponent extends WorkflowPrim {
+  antComponentSchema extends Schema {
+    //list of [name,value] pairs defining ant properties
+    properties extends Vector;
+
+    //this is the name of a target to set the properties on
+    propertyTarget extends OptionalCD;
+    //log level, one of "debug", "info", "error", "warn"
+    logLevel extends String;
+
+
+
+    //this is an optional base directory. If it exists, then
+    //it is used as the base directory for the run.
+    //In AntBuild, it also sets the base dir for all (relative) directories
+    //in the directory list
+    basedir extends OptionalFilenameType;
+
+  }
+
+
+   LOG_INFO "info";
+   LOG_DEBUG "debug";
+   LOG_ERROR "error";
+   LOG_WARN "warn"
+   logLevel LOG_INFO;
+}
+
+Ant extends AntWorkflowComponent {
 
 
     antSchema extends Schema {
-        //log level, one of "debug", "info", "error", "warn"
-        logLevel extends String;
-
-        //list of [name,value] pairs defining ant properties
-        properties extends Vector;
-
-        //basedir is the name of a directory to use
-        basedir extends Optional;
-
         //path to task declarations
         tasksResource extends String;
 
@@ -48,7 +68,7 @@ Ant extends WorkflowPrim {
         //it is for lazy references to ant properties
         runtime extends OptionalCD;
 
-
+        asynch extends Boolean;
     }
 
    /**
@@ -56,16 +76,18 @@ Ant extends WorkflowPrim {
     */
    sfClass "org.smartfrog.services.ant.AntImpl";
 
-   LOG_INFO "info";
-   LOG_DEBUG "debug";
-   LOG_ERROR "error";
-   LOG_WARN "warn"
-   logLevel LOG_INFO;
    tasksResource "/org/apache/tools/ant/taskdefs/defaults.properties";
    typesResource "/org/apache/tools/ant/types/defaults.properties";
    asynch false;
    properties [];
+}
 
+/**
+ In a workflow run, the operation is asynchronous, and terminated afterwards
+ */
+AntWorkflowRun extends Ant {
+  sfShouldTerminate true;
+  asynch true;
 }
 
 /**
@@ -79,33 +101,24 @@ Ant extends WorkflowPrim {
  * 4. logging is routed directly to the SmartFrog log.
  * 5. execution is always asynchronous after the component starts.
  * 6. As there is no separate JVM, all options such as memory, xml parser, etc, are inherited from SmartFrog.
+ * 7. if antfile is set, it is a single build file to run in every directory in the directories list
+ *  -or in basedir,if that is set, or in the direcotory of antfile itself, if basedir is unset.
  */
-AntBuild extends WorkflowPrim {
+AntBuild extends AntWorkflowComponent {
 
 
     antSchema extends Schema {
-        //log level, one of "debug", "info", "error", "warn"
-        //logLevel extends OptionalString;
-
-        //list of [name,value] pairs defining ant properties
-        properties extends Vector;
-
         //list of targets to run. If empty, the default target is executed
         targets extends Vector;
 
 
-        //this is an optional base directory. If it exists, then
-        //it is used as the base directory for the antfile, and for
-        //any directories in the directories list.
-        basedir extends OptionalFilenameType;
 
-        //the name of an ant file to be resolved in every directory
-
-        buildfile extends String;
 
         //the name of a generic ant file. Overrides the value of buildfile
-        genericantfile extends FilenameType;
+        antfile extends OptionalFilenameType;
 
+        //the name of an ant file to be resolved in every directory
+        buildfile extends String;
 
         //a list of directories. Will be resolved relative to basedir, when
         //relative resolution is required.
@@ -129,6 +142,8 @@ AntBuild extends WorkflowPrim {
 
     //defaults to build.xml
     buildfile "build.xml";
+    //we are workflow by default
+    sfShouldTerminate true;
     keepGoingInSingleBuild false;
     keepGoingAcrossFiles false;
     shutdownTimeout 2000;
@@ -161,6 +176,6 @@ InlineBuildFile extends TextFile {
 TempBuildFile extends TempFileWithCleanup {
   prefix "build";
   suffix "xml";
-  encoding BuildFile:encoding;
-  text BuildFile:text;
+  encoding InlineBuildFile:encoding;
+  text InlineBuildFile:text;
 }

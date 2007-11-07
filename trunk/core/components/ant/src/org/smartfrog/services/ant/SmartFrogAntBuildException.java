@@ -41,6 +41,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
     private Location location = Location.UNKNOWN_LOCATION;
     private int exitStatus;
     private boolean hasExitStatus;
+    private boolean buildInterrupted;
 
     /**
      * Constructs a SmartFrogRuntimeException with message.
@@ -114,12 +115,19 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
         bind(source);
     }
 
+    /**
+     * Bind to a build exception; looking for specific subclasses and extracting
+     * more information in these situations.
+     * @param source source exception
+     */
     private void bind(BuildException source) {
         location=source.getLocation();
         if(source instanceof ExitStatusException) {
             ExitStatusException ese=(ExitStatusException) source;
             exitStatus=ese.getStatus();
             hasExitStatus=true;
+        } else if (source instanceof BuildInterruptedException) {
+            buildInterrupted=true;
         }
     }
 
@@ -161,6 +169,14 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
      */
     public boolean hasExitStatus() {
         return hasExitStatus;
+    }
+
+    /**
+     * Is the exception from the build being interrupted
+     * @return true if this exception was built from a BuildInterruptedEvent
+     */
+    public boolean isBuildInterrupted() {
+        return buildInterrupted;
     }
 
     /**

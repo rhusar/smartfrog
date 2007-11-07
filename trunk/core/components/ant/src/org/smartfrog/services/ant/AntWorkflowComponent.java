@@ -22,52 +22,46 @@ package org.smartfrog.services.ant;
 import java.rmi.Remote;
 
 /**
- *
- * interface for an ant build
- *
+ * Created 07-Nov-2007 14:11:59
  */
 
-public interface AntBuild extends AntWorkflowComponent {
 
-
+public interface AntWorkflowComponent extends Remote {
     /**
-     * SmartFrog attribute {@value}
+     * Smartfrog attribute: {@value}
      */
-    String ATTR_TARGETS = "targets";
-
+    String ATTR_PROPERTIES = "properties";
     /**
-     * SmartFrog attribute {@value}
+     * Smartfrog attribute: {@value}
      */
-    String ATTR_BUILDFILE = "buildfile";
-
+    String ATTR_BASEDIR = "basedir";
     /**
-     * SmartFrog attribute {@value}
+     * This is the attribute we use for the Ant property target</p>
+     * Value {@value}.
      */
-    String ATTR_DIRECTORIES = "directories";
-
-
+    String ATTR_PROPERTY_TARGET = "propertyTarget";
     /**
-     * SmartFrog attribute {@value}
+     * Smartfrog attribute: {@value}
      */
-    String ATTR_ANTFILE = "antfile";
-
+    String ATTR_LOG_LEVEL = "logLevel";
     /**
-     * SmartFrog attribute {@value}
+     * log level: {@value}
      */
-    String ATTR_KEEPGOINGACROSSFILES = "keepGoingAcrossFiles";
-
+    String ATTR_LOG_LEVEL_DEBUG="debug";
     /**
-     * SmartFrog attribute {@value}
+     * log level: {@value}
      */
-    String ATTR_KEEPGOINGINSINGLEBUILD = "keepGoingInSingleBuild";
-
+    String ATTR_LOG_LEVEL_VERBOSE = "verbose";
     /**
-     * SmartFrog attribute {@value}
+     * log level: {@value}
      */
-    String ATTR_SHUTDOWNTIMEOUT = "shutdownTimeout";
-
+    String ATTR_LOG_LEVEL_INFO = "info";
     /**
-     * SmartFrog attribute {@value}
+     * log level: {@value}
      */
-    String ATTR_SKIPUNIMPLEMENTEDTARGETS="skipUnimplementedTargets";
+    String ATTR_LOG_LEVEL_ERROR = "error";
+    /**
+     * log level: {@value}
+     */
+    String ATTR_LOG_LEVEL_WARN = "warn";
 }

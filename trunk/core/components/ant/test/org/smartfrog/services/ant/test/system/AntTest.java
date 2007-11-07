@@ -21,15 +21,15 @@
 
 package org.smartfrog.services.ant.test.system;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.ant.Ant;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  * JUnit test class for test cases related to Ant
  */
 public class AntTest
-    extends SmartFrogTestBase {
+    extends DeployingTestBase {
 
     private static final String FILES = "/org/smartfrog/services/ant/test/system/";
 
@@ -37,7 +37,7 @@ public class AntTest
         super(s);
     }
 
-    public void testProperties() throws Throwable {
+    public void NotestProperties() throws Throwable {
         
 	    application = deployExpectingSuccess(FILES+"testProperties.sf", "tcANT");
         Ant ant=(Ant) application;
@@ -50,6 +50,10 @@ public class AntTest
         assertFalse("unexpanded text in " + message, message.contains("${env."));
 
 
+    }
+
+    public void testProperties() throws Throwable {
+        expectSuccessfulTestRun(FILES,"testProperties");
     }
 }
 

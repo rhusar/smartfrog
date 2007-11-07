@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.Hashtable;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -42,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     private AntProject antProject;
     private AntRuntime runtime;
+    private Prim propertyTarget;
     private SmartFrogException caughtException;
     private volatile boolean exitAntNow=false;
     private SmartFrogThread worker;
@@ -70,6 +72,11 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     }
 
 
+    /**
+     * Iterate through all nested tasks and run them
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
     private void executeNestedAntTasks() throws RemoteException, SmartFrogException {
         Object attribute = null;
         Object value = null;
@@ -78,7 +85,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
             for (Iterator i = sfValues(); i.hasNext() && !exitAntNow;) {
                 attribute = a.next();
                 value = i.next();
-                String attributeName = (String) attribute;
+                String attributeName = attribute.toString();
                 String message = "Error executing: " + attributeName;
                 if (value instanceof ComponentDescription) {
                     try {
@@ -88,8 +95,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
                                 task.execute();
                             } else if (((ComponentDescription) value).sfContainsAttribute(ATTR_ANT_ELEMENT)) {
                                 Object element = antProject.getElement(attributeName, (ComponentDescription) value);
+                                sfLog().ignore("TODO: something with elements/datatypes"+ attributeName);
                             } else {
-                                //System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
+                                sfLog().debug("TODO: something with attribute: "+ attributeName+ " "+value+";");
                             }
                         } catch (SmartFrogResolutionException e) {
                             throw e;
@@ -112,6 +120,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
                         Throwable thr = ex;
                         if (thr instanceof InvocationTargetException) {
                             thr = ex.getCause();
+                            throw new SmartFrogAntBuildException(thr);
                         }
                         throw SmartFrogException.forward(message, thr);
                     }
@@ -119,7 +128,12 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
             }
         } finally {
             //set the static properties after we finish
-            runtime.setStaticProperties(antProject.getProject().getProperties());
+            Hashtable<String,String> results = antProject.getProject().getProperties();
+            runtime.setStaticProperties(results);
+            //copy them to any property target specified
+            if(propertyTarget!=null) {
+                AntRuntime.propagateAntProperties(propertyTarget,results);
+            }
         }
 
     }
@@ -130,6 +144,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        propertyTarget = sfResolve(ATTR_PROPERTY_TARGET, propertyTarget, false);
         boolean asynch = false;
         if ( (sfResolve(ATTR_ASYNCH, asynch , asynch))) {
             worker = new SmartFrogThread(this);
