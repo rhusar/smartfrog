@@ -24,4 +24,5 @@ Logger extends {
   // processCompoundDiagReport  false;
   // testNetwork true;
   //testURI [|"http://www.smartfrog.org"|];
+  testJarRepeat  [|"smartfrog-","sfServices","sfExamples","sf-anubis"|]
 }
