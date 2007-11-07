@@ -136,3 +136,31 @@ AntBuild extends WorkflowPrim {
     targets [];
     properties [];
 }
+
+/**
+ * A build file that must exist at deployment time
+ */
+ExistingBuildFile extends FileMustExist {
+
+}
+
+/**
+ * A build file that must be given a filename before deployment
+ */
+InlineBuildFile extends TextFile {
+  encoding "UTF-8";
+  text "<project></project>";
+}
+
+
+
+/**
+ * A Temporary Build file is created on demand, deleted afterwards.
+ */
+
+TempBuildFile extends TempFileWithCleanup {
+  prefix "build";
+  suffix "xml";
+  encoding BuildFile:encoding;
+  text BuildFile:text;
+}

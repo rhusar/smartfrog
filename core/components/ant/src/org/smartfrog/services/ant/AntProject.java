@@ -78,6 +78,7 @@ public class AntProject {
     private Prim owner;
     private ComponentHelper helper;
     private AntHelper antHelper;
+    private InterruptibleLogger interruptibleLogger;
 
     public AntProject(Prim owner, LogSF log) throws SmartFrogException,
             RemoteException {
@@ -95,7 +96,7 @@ public class AntProject {
             int level=antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
 
             //Register build listener
-            antHelper.listenToProject(project,level,log);
+            interruptibleLogger = antHelper.listenToProject(project,level,log);
 
             // set this with a SmartFrog property
             String basedirpath= FileSystem.lookupAbsolutePath(owner, Ant.ATTR_BASEDIR,".",

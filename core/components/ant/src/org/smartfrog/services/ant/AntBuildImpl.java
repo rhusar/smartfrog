@@ -168,6 +168,8 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         if(workerAnt!=null) {
             if(!workerAnt.halt(shutdownTimeout)) {
                 sfLog().error(ERROR_SHUTDOWN_TIMEOUT +shutdownTimeout+"ms");
+                workerAnt.interrupt();
+                workerAnt.stop();
             }
         }
         super.sfTerminateWith(status);
@@ -194,7 +196,14 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
 
         public volatile boolean halted;
+
         private InterruptableExecutor executor = new InterruptableExecutor(skipUnimplementedTargets);
+        private InterruptibleLogger interruptibleLogger;
+
+
+        private synchronized void setInterruptibleLogger(InterruptibleLogger interruptibleLogger) {
+            this.interruptibleLogger = interruptibleLogger;
+        }
 
         /**
          * Halt for a given period of time.
@@ -202,9 +211,15 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          * @return true if the build halted in that time
          */
         public boolean halt(long timeout) {
-            halted = true;
-            //stop the executor too
-            executor.halt();
+            //we are halted
+            synchronized (this) {
+                halted = true;
+                //stop the executor too
+                executor.halt();
+                if(interruptibleLogger!=null) {
+                    interruptibleLogger.halt();
+                }
+            }
             try {
                 boolean finished = waitForNotification(timeout);
                 if (finished) {
@@ -268,6 +283,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                         plan.exception = e;
                     }
                 } else {
+                    //its an abnormal failure, log it
                     plan.exception = e;
                 }
             }
@@ -294,7 +310,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 int level = antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
 
                 //Register build listener
-                antHelper.listenToProject(project, level, sfLog());
+                setInterruptibleLogger(antHelper.listenToProject(project, level, sfLog()));
                 //set the properties
                 antHelper.addUserProperties(project, properties);
                 project.setKeepGoingMode(keepGoingInSingleBuild);
@@ -336,8 +352,6 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 } finally {
                     project.fireBuildFinished(thrown);
                 }
-
-
             } catch (ExitStatusException ese) {
                 //raised in a <fail> operation.
                 int status = ese.getStatus();
@@ -347,6 +361,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     sfLog().debug("Build exited successfully");
                 }
             } catch (BuildException e) {
+                //any other event is wrapped without any parsing
                 throw new SmartFrogAntBuildException(e);
             }
         }
@@ -364,7 +379,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * Create an instance; pass in its policy w.r.t. missing targets
-         * @param skipMissingTargets
+         * @param skipMissingTargets should we skip missing targets
          */
         InterruptableExecutor(boolean skipMissingTargets) {
             this.skipMissingTargets = skipMissingTargets;
@@ -381,7 +396,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         /**
          * Trigger a halt
          */
-        public void halt() {
+        public synchronized void halt() {
             halted = true;
         }
 

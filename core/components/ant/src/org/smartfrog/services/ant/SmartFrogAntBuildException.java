@@ -149,7 +149,7 @@ public class SmartFrogAntBuildException extends SmartFrogRuntimeException {
 
     /**
      * If initiated from an exit status exception, this will include the exit code
-     * @return
+     * @return the exit status. This is only valid if {@link #hasExitStatus()} is true
      */
     public int getExitStatus() {
         return exitStatus;

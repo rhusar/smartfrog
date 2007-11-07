@@ -22,7 +22,9 @@ package org.smartfrog.services.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- *
+ * An exception to indicate that the build was halted; this can be raised inside Ant classes and will
+ * be processed as a BuildException.
+ * <p/>
  * Created 02-Nov-2007 13:00:18
  *
  */
