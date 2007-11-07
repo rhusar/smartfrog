@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.common.SFNull;
+
 
 /**
  * Version class provides version and copyright strings for SmartFrog System.
@@ -80,6 +80,10 @@ public class Version {
     private static String buildJavaVersion = "@buildJavaVersion@";
     private static String buildJavaVendor = "@buildJavaVendor@";
 
+    private static String versionString = name+" "+majorRelease+"."+minorRelease+"."+build+ status+" ("+buildDate+")";
+
+    private static String versionStringForRelease = name+" "+majorRelease+"."+minorRelease+"."+build + status+" ("+buildDate+")";
+
 
     // Don't change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
@@ -111,6 +115,15 @@ public class Version {
             buildOSVersion = classComponentDescription.sfResolve(ATR_BUILD_OSVERSION, buildDate , false);
             buildJavaVersion = classComponentDescription.sfResolve(ATR_BUILD_JAVAVERSION, buildDate , false);
             buildJavaVendor = classComponentDescription.sfResolve(ATR_BUILD_JAVAVENDOR, buildDate , false);
+
+            //new created
+            String newStatus=null;
+            if (!status.trim().equals("")){
+                newStatus=""+status;
+            } else newStatus="";
+            versionString = name+" "+majorRelease+"."+minorRelease+"."+build+newStatus+" ("+buildDate+")";
+            versionStringForRelease =  majorRelease+"."+minorRelease+"."+build+newStatus;
+
             initialized=true;
 
         } catch (Exception ex) {
@@ -126,11 +139,8 @@ public class Version {
     public static String versionString(){
         //init();
         if (!initialized) new Version();
-        String newStatus=null;
-        if (!status.trim().equals("")){
-            newStatus=""+status;
-        } else newStatus="";
-        return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus+" ("+buildDate+")";
+
+        return versionString;
     }
 
     /**
@@ -140,11 +150,8 @@ public class Version {
     public static String versionStringforrelease(){
         //init();
         if (!initialized) new Version();
-        String newStatus=null;
-        if (!status.trim().equals("")){
-            newStatus=""+status;
-        } else newStatus="";
-        return majorRelease+"."+minorRelease+"."+build+newStatus;
+
+        return versionStringForRelease;
     }
 
     /**

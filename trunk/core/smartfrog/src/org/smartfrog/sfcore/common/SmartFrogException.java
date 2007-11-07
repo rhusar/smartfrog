@@ -21,10 +21,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.util.Enumeration;
-import java.io.Serializable;
-
+import org.smartfrog.Version;
 import org.smartfrog.sfcore.prim.Prim;
+
+import java.io.Serializable;
+import java.util.Enumeration;
 
 /**
  * Root of all SmartFrog-generated exceptions. All the exceptions in SmartFrog
@@ -50,6 +51,9 @@ public class SmartFrogException extends Exception implements Serializable {
 
     /** Attribute name for primSFCompleteName in exceptioncontext. */
     public static final String PRIM_COMPLETE_NAME = "primSFCompleteName";
+
+    /** SmarFrog version that created the exception */
+    public static final String SFVERSION = Version.versionString();
 
     /**
      * Constructs a SmartFrogException with no message.
@@ -330,12 +334,16 @@ public class SmartFrogException extends Exception implements Serializable {
         } else {
             strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
+
+        strb.append ((nm+ SFVERSION ));
+
         strb.append ((((containsKey(DATA))) ? (nm+DATA+  ": "
                                                     + get(DATA)) : "" ));
         strb.append ((((containsKey(PRIM_COMPLETE_NAME))) ? (nm+PRIM_COMPLETE_NAME+
                                                   ": " + get(PRIM_COMPLETE_NAME)) : "" ));
         strb.append ((((containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT+
                                                   ": " + "included") : "" ));
+
         return strb.toString();
     }
 
