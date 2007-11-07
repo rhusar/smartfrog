@@ -192,8 +192,7 @@ public class AssertComponent extends PrimImpl implements Condition,Assert {
      * @throws SmartFrogException error in verification
      */
     public void checkAssertions()
-            throws RemoteException, SmartFrogException,
-            SmartFrogAssertionException {
+            throws RemoteException, SmartFrogException {
         String result=check();
         if(result!=null) {
             throw new SmartFrogAssertionException(createAssertionMessage(result));
@@ -330,8 +329,7 @@ public class AssertComponent extends PrimImpl implements Condition,Assert {
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *          component is terminated
+     * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException In case of network/rmi error
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
@@ -352,28 +350,13 @@ public class AssertComponent extends PrimImpl implements Condition,Assert {
         }
     }
 
-    /**
-     * Called after instantiation for deployment purposed. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     */
-    public synchronized void sfDeploy()
-            throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-    }
 
     /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
