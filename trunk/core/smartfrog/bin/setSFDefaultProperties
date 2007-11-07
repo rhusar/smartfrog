@@ -1,0 +1,42 @@
+#!/bin/sh
+
+
+# INFO
+# JVM ARGS are declared using -J token in the command line
+# e.g. -J "-Djava.library.path=/libs -Xmx400M"
+# e.g. -J "-Djava.library.path=/libs" -J -Xmx400M
+
+
+#------------------------------------------------------
+# SF ENV PROPERTIES  - Please edit with your preferences
+# ------------------------------------------------------
+
+# -- User libs directory --
+#export SFUSERHOME="$SFHOME/mylibs"
+
+#export SFUSERHOME=%SFHOME%\mylibs
+#export SFUSERHOME1=%SFHOME%\mylibs1
+#export SFUSERHOME2=%SFHOME%\mylibs2
+#export SFUSERHOME3=%SFHOME%\mylibs3
+#export SFUSERHOME4=%SFHOME%\mylibs4
+#export SFUSERCLASSPATH=%SFHOME%\myotheruserlibs
+
+# -- server hostname for multihomed machines
+#export SFSERVERHOSTNAME=127.0.0.1
+
+
+# -- default.ini and default.sf without security --
+if ! test "$SFDEFAULTINI";then 
+   export SFDEFAULTINI=-Dorg.smartfrog.iniFile="$SFHOME/bin/default.ini"
+fi
+if ! test "$SFDEFAULTSF";then     
+   export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
+fi
+if ! test "$SFDEFAULTSECURITY";then
+	export SFDEFAULTSECURITY="-Djava.security.policy==$SFHOME/private/sf.no.security.policy -Djava.security.manager"
+fi
+
+if  test "$SFSERVERHOSTNAME";then
+   export SFRMIHOSTNAME=-Djava.rmi.server.hostname="$SFSERVERHOSTNAME"
+fi  
+# -------------------End user properties---------------
