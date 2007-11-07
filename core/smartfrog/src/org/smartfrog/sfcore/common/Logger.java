@@ -167,7 +167,7 @@ public class Logger implements MessageKeys {
           repeats = checkRepeatedWords(word, codebase);
           if (repeats !=null) {
             if (message == null) message = new StringBuffer();
-            message.append(repeats);
+            message.append("  "+repeats);
           }
         }
         return message;
