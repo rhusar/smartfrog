@@ -52,6 +52,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -148,55 +150,86 @@ public final class Diagnostics {
       outPS.print(out);
     }
 
+
+    private static void doReportCommon(StringBuffer out) {
+        header(out, "Implementation Version");
+        out.append(org.smartfrog.Version.versionString());
+        out.append("\n");
+        out.append(org.smartfrog.Version.copyright());
+        out.append("\n");
+        out.append("Build date: ");
+        out.append(org.smartfrog.Version.buildDate());
+        out.append("\n");
+
+        header(out, "System properties summary");
+        doReportSummary(out);
+
+        header(out, "Temp dir");
+        doReportTempDir(out);
+
+        header(out, "Network");
+        doReportLocalNetwork(out);
+        out.append("\n");
+        doReportRemoteNetwork(out, Logger.testURI);
+        out.append("\n");
+
+
+        header(out, "ClassPath");
+        doReportClassPath(out);
+
+        header(out, "ClassPath repeats");
+        doReportClassPathRepeats(out);
+
+
+        header(out, "CodeBase");
+        doReportCodeBase(out);
+        
+        header(out, "CodeBase repeats");
+        doReportCodeBaseRepeats(out);
+
+        header(out, "Locale information");
+        doReportLocale(out);
+    }
+
+
+
     /**
-         * Print a report to the given StringBuffer.
-         * @param out the StringBuffer to print the report to.
-         * @param cd the SmartFrog component description where to extract info from.
-         * Derived from Ant Diagnostics class
-         */
-        public static void doReport(StringBuffer out, ComponentDescription cd) {
+     * Print a report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     * @param object prim/componentdescription the SmartFrog component where to extract info from.
+     * Derived from Ant Diagnostics class
+     */
+    public static void doReport(StringBuffer out, Object object) {
 
+        if (object instanceof Prim) {
+            out.append("\n------- SF diagnostics report -------");
+        } else if (object instanceof ComponentDescription) {
             out.append("\n------- SF CD diagnostics report -------");
-            header(out, "Implementation Version");
-            out.append(org.smartfrog.Version.versionString());
-            out.append("\n");
-            out.append(org.smartfrog.Version.copyright());
-            out.append("\n");
-            out.append("Build date: ");
-            out.append(org.smartfrog.Version.buildDate());
-            out.append("\n");
-
-            header(out, "System properties summary");
-            doReportSummary(out);
-
-            header(out, "Temp dir");
-            doReportTempDir(out);
-
-            header(out, "Network");
-            doReportLocalNetwork(out);
-            out.append("\n");
-            doReportRemoteNetwork(out,Logger.testURI);
-            out.append("\n");
-
-
-            header(out, "ClassPath");
-            doReportClassPath(out);
-
-            header(out, "CodeBase");
-            doReportClassPath(out);
-
-            header(out, "Locale information");
-            doReportLocale(out);
-
-            doReportCD(out, cd);
-
-            header(out, "System properties");
-            doReportSystemProperties(out);
-
-            header(out, org.smartfrog.Version.versionString());
-            out.append("\n");
-
+        } else {
+           out.append("\n------- SF (unknown) diagnostics report -------");
         }
+
+        doReportCommon(out);
+
+        if (object instanceof Prim) {
+            doReportPrim(out, (Prim) object);
+        } else if (object instanceof ComponentDescription) {
+            doReportCD(out, (ComponentDescription) object);
+        } else {
+            header (out, " WARNING: no SF object to report");
+        }
+
+        header(out, "System Thread Dump");
+        doReportThreadDump(out);
+
+        header(out, "System properties");
+        doReportSystemProperties(out);
+
+        header(out, org.smartfrog.Version.versionString() );
+        out.append("\n");
+
+    }
+
 
         /**
           * Report specific Prim information.
@@ -257,59 +290,6 @@ public final class Diagnostics {
           }
         }
 
-    /**
-     * Print a report to the given StringBuffer.
-     * @param out the StringBuffer to print the report to.
-     * @param prim the SmartFrog component where to extract info from.
-     * Derived from Ant Diagnostics class
-     */
-    public static void doReport(StringBuffer out, Prim prim) {
-
-        out.append("\n------- SF diagnostics report -------");
-
-        header(out, "Implementation Version");
-        out.append(org.smartfrog.Version.versionString());
-        out.append("\n");
-        out.append(org.smartfrog.Version.copyright());
-        out.append("\n");
-        out.append("Build date: ");
-        out.append(org.smartfrog.Version.buildDate());
-        out.append("\n");
-
-        header(out, "System properties summary");
-        doReportSummary(out);
-
-        header(out, "Temp dir");
-        doReportTempDir(out);
-
-        header(out, "Network");
-        doReportLocalNetwork(out);
-        out.append("\n");
-        doReportRemoteNetwork(out,Logger.testURI);
-        out.append("\n");
-
-        header(out, "ClassPath");
-        doReportClassPath(out);
-
-        header(out, "CodeBase");
-        doReportCodeBase(out);
-        out.append("\n");
-
-        header(out, "Locale information");
-        doReportLocale(out);
-
-        doReportPrim(out, prim);
-
-        header(out, "Thread Dump");
-        doReportThreadDump(out);
-
-        header(out, "System properties");
-        doReportSystemProperties(out);
-
-        header(out, org.smartfrog.Version.versionString() );
-        out.append("\n");
-
-    }
 
 
     /**
@@ -667,7 +647,7 @@ public final class Diagnostics {
       if (codebaseString!=null) {
           out.append(""+codebaseString.replace(System.getProperty("path.separator").charAt(0), '\n'));
       } else {
-         out.append(""+"Not defined, using default");
+         out.append(""+"Not defined, using default\n");
       }
     }
 
@@ -787,4 +767,34 @@ public final class Diagnostics {
                          + cal.get(Calendar.SECOND)) * 1000
                          + cal.get(Calendar.MILLISECOND)));out.append("\n");
     }
+
+   /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+   private static void doReportClassPathRepeats(StringBuffer out) {
+      String[] words = Logger.testJarRepeat;
+      String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
+      StringBuffer message = Logger.getRepeatsMessage(words, classpath);
+      if (message !=null) out.append(message.toString());
+      out.append("\n");
+   }
+
+   /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+   private static void doReportCodeBaseRepeats(StringBuffer out) {
+      String[] words = Logger.testJarRepeat;
+      StringBuffer message = null;
+      String codebaseproperty = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
+      if (codebaseproperty != null) {
+          String codebase[] = codebaseproperty.split(System.getProperty("path.separator"));
+          message =  Logger.getRepeatsMessage(words, codebase);
+          if (message !=null) out.append(message.toString());
+      }      
+      out.append("\n");
+   }
+
+
 }
