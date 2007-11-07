@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 
 public class AntToSmartFrogLogger extends DefaultLogger {
 
+
+
     private LogSF realLog;
 
     public AntToSmartFrogLogger(LogSF realLog) {
@@ -45,4 +47,6 @@ public class AntToSmartFrogLogger extends DefaultLogger {
     protected void log(String message) {
         realLog.info(message);
     }
+
+
 }

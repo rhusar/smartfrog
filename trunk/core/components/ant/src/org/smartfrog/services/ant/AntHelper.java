@@ -78,21 +78,24 @@ public class AntHelper {
      * @param project project
      * @param level ant log level
      * @param log smartfrog log
+     * @return a new interruptible logger, which contains an {@link AntToSmartFrogLogger}
      */
-    public void listenToProject(Project project, int level, LogSF log) {
+    public InterruptibleLogger listenToProject(Project project, int level, LogSF log) {
         //Register build listener
         BuildLogger logger = new AntToSmartFrogLogger(log);
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
         logger.setMessageOutputLevel(level);
-        project.addBuildListener(logger);
+        InterruptibleLogger irq=new InterruptibleLogger(logger);
+        project.addBuildListener(irq);
+        return irq;
     }
 
     /**
      * Set the user properties
      * @param project ant project
      * @param propList list of property tuples.
-     * @throws SmartFrogResolutionException
+     * @throws SmartFrogResolutionException if the list is the wrong shape
      */
     public void setUserProperties(Project project, Vector propList) throws SmartFrogResolutionException {
         if (propList != null) {
