@@ -83,7 +83,7 @@ public final class ExitCodes {
      */
     public static void exit(int code) {
         try {
-            if (LogFactory.sfGetProcessLog().isDebugEnabled()) { LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code +", v."+ Version.versionStringforrelease()); }
+            if (LogFactory.sfGetProcessLog().isDebugEnabled()) { LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code +", v"+ Version.versionStringforrelease()); }
         } catch (Throwable thr) { /* ignore */ }
 
         System.exit(code);
