@@ -68,7 +68,7 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      * @throws SmartFrogRuntimeException when name or value are null, or injection failed
      * @throws RemoteException In case of Remote/network error
      */
-    public void setStaticProperties(Hashtable properties) throws SmartFrogRuntimeException, RemoteException {
+    public void setStaticProperties(Hashtable<String,String> properties) throws SmartFrogRuntimeException, RemoteException {
         if ((owner != null) && (properties != null)) {
             propagateAntProperties(owner,properties);
         }
@@ -81,7 +81,7 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      * @throws SmartFrogRuntimeException on failure to replace an attribute
      * @throws RemoteException network problems
      */
-    public static void propagateAntProperties(Prim component,Hashtable properties)
+    public static void propagateAntProperties(Prim component,Hashtable<String, String> properties)
             throws SmartFrogRuntimeException, RemoteException {
         Hashtable<String, String> props=properties;
         for(String property: props.keySet()) {

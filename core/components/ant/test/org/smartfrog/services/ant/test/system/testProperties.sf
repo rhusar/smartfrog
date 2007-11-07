@@ -17,11 +17,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 **/
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ant/components.sf"
+#include "/org/smartfrog/services/ant/test/system/components.sf"
 
 
-TestProperties extends Ant {
+TestProperties extends AntWorkflowRun {
   echoTask extends echo {
     message "hello world!";
   }
@@ -35,10 +34,26 @@ TestProperties extends Ant {
     value "SFHOME is <${env.SFHOME}>";
   }
 
+
   echoSFHOMETask extends echo {
     message "${sfhome}";
    }
 
+  setCwdProperty extends property {
+    name "cwd";
+    location ".";
+  }
+
+  -- extends echo {
+    message "cwd=${cwd}";
+   }
+
+  testProperty extends property {
+    name "test.value";
+    value "47";
+  }
+
+  
   setPath1 extends property {
     name "env.PATH";
     value "${env.Path}";
@@ -60,6 +75,37 @@ TestProperties extends Ant {
 
 }
 
-sfConfig extends TestProperties {
+sfConfig extends ExpectBuildSuccess {
+
+  action extends Compound {
+  }
+
+  tests extends Sequence {
+    antRun extends TestProperties {
+      propertyTarget LAZY action;
+    }
+
+    sfHome extends AssertPropertySet {
+      propertyTarget LAZY action;
+      name "sfhome";
+    }
+
+
+    java.version extends sfHome {
+      name "java.version";
+    }
+
+    antHome extends sfHome {
+      name "ant.home";
+    }
+
+    test.property extends AssertPropertyEquals {
+      propertyTarget LAZY action;
+      name "test.value";
+      value TestProperties:testProperty:value;
+    }
+
+
+  }
 
 }

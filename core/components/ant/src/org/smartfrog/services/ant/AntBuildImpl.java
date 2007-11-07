@@ -21,9 +21,11 @@ package org.smartfrog.services.ant;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -42,7 +44,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.Hashtable;
 import java.io.File;
 
 /**
@@ -53,22 +54,23 @@ import java.io.File;
 
 public class AntBuildImpl extends PrimImpl implements AntBuild {
 
-    public static final String ERROR_NO_DIRS = "no build directories specified: one of " + ATTR_BASEDIR + " or " + ATTR_DIRECTORIES + " must be set";
+    public static final String ERROR_NO_DIRS = "no build directories specified: one of '" + ATTR_BASEDIR + "' or '"
+            + ATTR_DIRECTORIES + "' must be set, or "+ATTR_ANTFILE+" must point to a file";
     public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
     public static final String BUILD_SUCCESSFUL = "Build successful";
     public static final String BUILD_FAILED = "Build failed ";
 
     private ComponentHelper helper;
     private AntHelper antHelper;
-
+    private Prim propertyTarget;
     private File baseDir;
     private String buildfile;
-    private File genericantfile;
+    private File antfile;
     private Vector<File> directories;
     private Vector targets;
     private AntThread workerAnt;
     private Vector propertyTuples;
-    private String logLevel;
+    private int logLevel;
     private boolean keepGoingInSingleBuild;
     private boolean keepGoingAcrossFiles;
     private int shutdownTimeout;
@@ -81,7 +83,6 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
     private Properties properties;
     public static final String ERROR_SHUTDOWN_TIMEOUT = "Ant thread did not shut down in the time allocated: ";
 
-    //private File
 
     public AntBuildImpl() throws RemoteException {
     }
@@ -100,22 +101,30 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         antHelper = new AntHelper(this);
         antHelper.validateAnt();
 
+        antfile = FileSystem.lookupAbsoluteFile(this, ATTR_ANTFILE, null, null, false, null);
+        //you need a build file if there is no generic ant file.
+        if (antfile == null) {
+            buildfile = sfResolve(ATTR_BUILDFILE, buildfile, true);
+        } else if (!antfile.exists()) {
+            throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + antfile);
+        }
         baseDir = FileSystem.lookupAbsoluteFile(this, ATTR_BASEDIR, null, null, false, null);
         directories = FileSystem.resolveFileList(this, new Reference(ATTR_DIRECTORIES), baseDir, false);
-        if (directories == null) {
+        if (directories == null || directories.size()==0) {
+
+            //when there is no basedir, we get it from the parent dir
+            if(baseDir==null && antfile !=null) {
+                //infer it from the antfile
+                baseDir= antfile.getParentFile();
+            }
+            //if it is still null, trouble
             if (baseDir == null) {
                 throw new SmartFrogResolutionException(ERROR_NO_DIRS);
             } else {
+                //create a directories
                 directories = new Vector<File>(1);
                 directories.add(baseDir);
             }
-        }
-        genericantfile = FileSystem.lookupAbsoluteFile(this, ATTR_GENERICANTFILE, null, null, false, null);
-        //you need a build file if there is no generic ant file.
-        if (genericantfile == null) {
-            buildfile = sfResolve(ATTR_BUILDFILE, buildfile, true);
-        } else if (!genericantfile.exists()) {
-            throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + genericantfile);
         }
 
         targets = sfResolve(ATTR_TARGETS, targets, true);
@@ -124,12 +133,15 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         propertyTuples = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
         //convert the list
         properties = ListUtils.convertToProperties(propertyTuples);
-        logLevel = sfResolve(Ant.ATTR_LOG_LEVEL, Ant.ATTR_LOG_LEVEL_INFO, false);
+        String level = sfResolve(Ant.ATTR_LOG_LEVEL, Ant.ATTR_LOG_LEVEL_INFO, false);
+        //set up log levels
+        logLevel = antHelper.extractLogLevel(level, Project.MSG_INFO);
+
         keepGoingInSingleBuild = sfResolve(ATTR_KEEPGOINGINSINGLEBUILD, keepGoingInSingleBuild, true);
         keepGoingAcrossFiles = sfResolve(ATTR_KEEPGOINGACROSSFILES, keepGoingInSingleBuild, true);
         skipUnimplementedTargets = sfResolve(ATTR_SKIPUNIMPLEMENTEDTARGETS, false, true);
         shutdownTimeout = sfResolve(ATTR_SHUTDOWNTIMEOUT, shutdownTimeout, true);
-
+        propertyTarget = sfResolve(Ant.ATTR_PROPERTY_TARGET, propertyTarget, false);
         //now create the queue of files to build
         buildqueue = new Stack<BuildPlan>();
         results = new ArrayList<BuildPlan>(directories.size());
@@ -141,16 +153,18 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             if (!dir.isDirectory()) {
                 throw new SmartFrogDeploymentException(ERROR_NOT_A_DIRECTORY + dir);
             }
+            //create a build plan for this directory
             BuildPlan plan = new BuildPlan();
             plan.basedir = dir;
-            if (genericantfile != null) {
-                plan.buildFile = genericantfile;
+            if (antfile != null) {
+                plan.buildFile = antfile;
             } else {
                 plan.buildFile = new File(dir, buildfile);
             }
             if (!plan.buildFile.exists()) {
                 throw new SmartFrogDeploymentException(ERROR_MISSING_BUILD_FILE + plan.buildFile);
             }
+            sfLog().info(plan);
             buildqueue.add(plan);
         }
 
@@ -186,6 +200,16 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         File basedir;
         Throwable exception;
         int exitStatus;
+
+        /**
+         * Returns a string representation of the object.
+         * @return a string representation of the object.
+         */
+        public String toString() {
+            return "Building "+buildFile+" in "+basedir+"\n"
+                    + exception!=null?("Exited with "+exception):"";
+
+        }
     }
 
 
@@ -197,7 +221,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         public volatile boolean halted;
 
-        private InterruptableExecutor executor = new InterruptableExecutor(skipUnimplementedTargets);
+        private InterruptibleExecutor executor = new InterruptibleExecutor(skipUnimplementedTargets);
         private InterruptibleLogger interruptibleLogger;
 
 
@@ -306,14 +330,13 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 File basedir=plan.basedir;
                 Project project = antHelper.createNewProject();
 
-                //set up log levels
-                int level = antHelper.extractLogLevel(logLevel, Project.MSG_INFO);
 
                 //Register build listener
-                setInterruptibleLogger(antHelper.listenToProject(project, level, sfLog()));
+                setInterruptibleLogger(antHelper.listenToProject(project, logLevel, sfLog()));
                 //set the properties
                 antHelper.addUserProperties(project, properties);
                 project.setKeepGoingMode(keepGoingInSingleBuild);
+                //project.
                 project.setUserProperty(MagicNames.ANT_FILE,
                         buildFile.getAbsolutePath());
                 project.setExecutor(executor);
@@ -351,6 +374,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     throw e;
                 } finally {
                     project.fireBuildFinished(thrown);
+                    propagateProperties(project);
                 }
             } catch (ExitStatusException ese) {
                 //raised in a <fail> operation.
@@ -366,12 +390,32 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             }
         }
 
+        /**
+         * Propagate the ant properties to whatever is in {@link #propertyTarget}
+         * Any failure to set these is not treated as an error, we log at warn level and continue.
+         * why? So that a failure here does not hide underlying build problems. 
+         * @param project project to work with
+         */
+        private void propagateProperties(Project project) throws RemoteException {
+            if (propertyTarget != null) {
+                try {
+                    AntRuntime.propagateAntProperties(propertyTarget, project.getProperties());
+                } catch (SmartFrogRuntimeException e) {
+                    //we don't throw anything else here, log it and continue
+                    sfLog().warn("Failed to set Ant properties on the propertyTarget",e);
+                } catch (RemoteException e) {
+                    //we don't throw anything else here, log it and continue
+                    sfLog().warn("Failed to set Ant properties on the propertyTarget", e);
+                }
+            }
+        }
+
     }
 
     /**
      * This is a special executor that can interrupt the build between targets
      */
-    private static class InterruptableExecutor implements Executor {
+    private static class InterruptibleExecutor implements Executor {
 
         private volatile boolean halted;
         private boolean skipMissingTargets;
@@ -381,7 +425,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          * Create an instance; pass in its policy w.r.t. missing targets
          * @param skipMissingTargets should we skip missing targets
          */
-        InterruptableExecutor(boolean skipMissingTargets) {
+        InterruptibleExecutor(boolean skipMissingTargets) {
             this.skipMissingTargets = skipMissingTargets;
         }
 
@@ -445,9 +489,9 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
      * to extend Ant to do it.
      */
     private static class InterruptableSubProjectExecutor implements Executor {
-        private InterruptableExecutor parent;
+        private InterruptibleExecutor parent;
 
-        InterruptableSubProjectExecutor(InterruptableExecutor parent) {
+        InterruptableSubProjectExecutor(InterruptibleExecutor parent) {
             this.parent = parent;
         }
 

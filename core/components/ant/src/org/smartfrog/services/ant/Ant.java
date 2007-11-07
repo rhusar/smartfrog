@@ -20,13 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.ant;
 
-import java.rmi.Remote;
 
 /**
  * Defines the attributes for counter component.
  */
-public interface Ant extends Remote {
-
+public interface Ant extends AntWorkflowComponent {
 
     /**
      * Smartfrog attribute: {@value}
@@ -38,50 +36,20 @@ public interface Ant extends Remote {
     String ATTR_ANT_ELEMENT = "AntElement";
 
     /**
-     * Smartfrog attribute: {@value}
-     */
-    String ATTR_LOG_LEVEL = "logLevel";
-
-    /**
-     * log level: {@value}
-     */
-    String ATTR_LOG_LEVEL_DEBUG="debug";
-    /**
-     * log level: {@value}
-     */
-    String ATTR_LOG_LEVEL_VERBOSE = "verbose";
-    /**
-     * log level: {@value}
-     */
-    String ATTR_LOG_LEVEL_INFO = "info";
-    /**
-     * log level: {@value}
-     */
-    String ATTR_LOG_LEVEL_ERROR = "error";
-    /**
-     * log level: {@value}
-     */
-    String ATTR_LOG_LEVEL_WARN = "warn";
-
-    /**
-     * Smartfrog attribute: {@value}
-     */
-    String ATTR_PROPERTIES = "properties";
-
-    /**
-     * Smartfrog attribute: {@value}
-     */
-    String ATTR_BASEDIR = "basedir";
-
-    /**
      * Smartfrog attribute: run Ant task in separate thread. Default: false.
      * </p>
      * Value {@value}.
      * */
     String ATTR_ASYNCH = "asynch";
 
+    /**
+     * {@value}
+     */
     String ATTR_TASKS_RESOURCE = "tasksResource";
 
+    /**
+     * {@value}
+     */
     String ATTR_TYPES_RESOURCE = "typesResource";
 
     /**

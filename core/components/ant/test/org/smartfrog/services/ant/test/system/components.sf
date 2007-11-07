@@ -26,8 +26,36 @@ For more information: www.smartfrog.org
 /**
  * A test that expects a build exception
  */
-ExpectBuildException extends ExpectDeployFailure {
+ExpectBuildFailure extends ExpectDeployFailure {
 
-    exceptions [["SmartFrogAntBuildException",""];
+    exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_FAILED";
+    exceptions [["SmartFrogAntBuildException",""]];
 
 }
+
+
+ExpectBuildSuccess extends ExpectDeployFailure {
+    exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_SUCCESSFUL";
+}
+
+
+/**
+ * assert that a a property is set
+ */
+AssertPropertySet extends Assert {
+  sfShouldTerminate true;
+  propertyTarget TBD;
+  name TBD;
+  reference propertyTarget;
+  attribute name;
+}
+
+/**
+ * Assert that a a property is equal
+ */
+AssertPropertyEquals extends AssertPropertySet {
+  value TBD;
+  attributeEquals value;
+}
+
+
