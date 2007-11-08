@@ -112,7 +112,7 @@ tcn_nonexistent_hostTest extends ExpectDeployFailure {
 
     action extends tcn_nonexistent_host;
 
-    exceptions [["LifecycleException","java.net.UnknownHostException" ]];
+    //exceptions [["LifecycleException","java.net.UnknownHostException" ]];
 
 }
 
@@ -123,7 +123,7 @@ tcn_mismatched_file_list extends ExpectDeployFailure {
         remoteFiles ["/tmp/1.txt","/tmp/1.txt","/tmp/1.txt"];
     }
 
-    exceptions [["LifecycleException",
+ /*   exceptions [["LifecycleException",
         CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH" ]];
-
+*/
 }
