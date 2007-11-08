@@ -571,7 +571,7 @@
         verbose="${ssh.verbose}" >
       <fileset file="${maven.zip}" />
     </scp>
-    <ssh-remote command="unzip ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
+    <ssh-remote command="unzip -o ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
     <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
     <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
   </target>
