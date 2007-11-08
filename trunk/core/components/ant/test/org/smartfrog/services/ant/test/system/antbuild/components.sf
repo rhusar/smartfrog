@@ -82,6 +82,8 @@ testBuildFile extends BuildFileTest ;
 
 testProperties extends BuildFileTest {
 
+  description "test that properties are set on the results afterwards";
+
   tests:assertions extends Sequence {
     java.version extends AssertPropertySet {
       name "java.version";
@@ -101,3 +103,27 @@ testProperties extends BuildFileTest {
 }
 
 
+testPropertyPassdown extends BuildFileTest {
+
+  description "test that properties can be passed down";
+
+  tests:antbuild:properties [ ["p1","overwrite"],
+      ["new.prop","new.value"]];
+
+   tests:assertions extends Sequence {
+
+
+    test.property extends AssertPropertySet{
+      propertyTarget LAZY action;
+      name "p1";
+      value "overwrite";
+    }
+
+    test.property2 extends AssertPropertySet {
+      propertyTarget LAZY action;
+      name "new.prop";
+      value "new.value";
+    }
+
+  }
+}
