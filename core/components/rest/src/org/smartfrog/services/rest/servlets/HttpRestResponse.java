@@ -211,7 +211,7 @@ public class HttpRestResponse
 			}
 			else
 			{
-				ArrayList list = new ArrayList();
+				ArrayList<String> list = new ArrayList<String>();
 				list.add((String) oldValue);
 				list.add((String) value);
 
@@ -305,7 +305,7 @@ public class HttpRestResponse
 	public void reset()
 	{
 		contents = new byte[0];
-		headers = new HashMap();
+		headers = new HashMap<String, Object>();
 
 		status = 0;
 		statusMessage = "";
@@ -336,25 +336,23 @@ public class HttpRestResponse
 		if (contentType != null)
 			servletResponse.setContentType(contentType);
 
-		/* servlet 2.4+ only - re-enable when sf-www/sf-jetty are updated
         if (characterEncoding != null)
 			servletResponse.setCharacterEncoding(characterEncoding);
-		*/
 
 		if (locale != null)
 			servletResponse.setLocale(locale);
 
-		for (Iterator i = headers.keySet().iterator(); i.hasNext();)
+		for (String key: headers.keySet())
 		{
-			String key = (String) i.next();
 			Object val = headers.get(key);
 
 			if (val instanceof ArrayList)
 			{
 				ArrayList list = (ArrayList) val;
 
-				for (int j = 0; j < list.size(); j++)
-					servletResponse.addHeader(key, (String) list.get(j));
+                for (Object aList : list) {
+                    servletResponse.addHeader(key, (String) aList);
+                }
 			}
 			else
 			{
@@ -398,5 +396,5 @@ public class HttpRestResponse
 
 	private Locale locale;
 
-	private Map headers = new HashMap();
+	private Map<String,Object> headers = new HashMap<String, Object>();
 }
