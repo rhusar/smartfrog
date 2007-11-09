@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,9 @@ For more information: www.smartfrog.org
 */
 
 
-
-/**
- * Specify the jetty home path here
- */
-test.jetty.home PROPERTY test.jetty.home;
-jetty_home test.jetty.home;
-
-test.jetty.port.1 5050;
-test.jetty.port.2 5051;
-test.jetty.port.https 5053;
+#include "/org/smartfrog/services/www/jetty/test/system/functional/components.sf"
 
 
-//hard coded hostname,
-hostname "127.0.0.1";
+sfConfig extends TestNioConnector ;
 
-test.tempdir LAZY PROPERTY java.io.tmpdir;
 
-test.timeout 10000;
-
-test.waitForTimeout 5000;
-
-waitForTimeout test.waitForTimeout;
-//interval in ms between checks
-waitForInterval 200;
-
-test.liveness.delay 1000;
-
-test.testwar.war PROPERTY test.testwar.war;
-
-test.demo.webapp PROPERTY test.demo.webapp;

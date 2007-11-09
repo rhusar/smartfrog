@@ -17,23 +17,34 @@
  For more information: www.smartfrog.org
 
  */
-//#include "/org/smartfrog/services/www/jetty/test/system/full/components.sf";
-#include "/org/smartfrog/services/jetty/jetty-complete.sf";
-#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/functional/components.sf";
 
-sfConfig extends JettyHttpServer {
+/**
+ * This is currently not being tested
+ */
+
+sfConfig extends Compound {
     //integrate logging with smartfrog
     logging extends IntegrateJettyLogging;
-    port test.jetty.port.1;
 
-    jettyhome ROOT:jetty_home; // mandatory
+    server extends CoreJettyServer {
+        jettyhome ROOT:jetty_home; // mandatory
+    }
 
-    directPortListener:host "no-hostname";
+    listener extends JettySocketConnector {
+          port test.jetty.port.1;
+          //serverHost "localhost";
+          server LAZY PARENT:server;
+    }
 
-    list1 extends JettySocketConnector {
-        port test.jetty.port.2;
-        //serverHost "localhost";
-        server LAZY PARENT:server;
+    root extends FilesystemWar {
+        server LAZY server;
+    }
+
+    ping extends LivenessPage {
+        host LAZY server:listener:ipaddr;
+        port server:port;
+        page LAZY root:absolutePath;
+        checkFrequency 1;
     }
 }
-

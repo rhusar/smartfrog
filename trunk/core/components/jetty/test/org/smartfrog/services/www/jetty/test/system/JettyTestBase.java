@@ -40,7 +40,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import java.util.Properties;
 
 public abstract class JettyTestBase extends DeployingTestBase {
-    public static final String FULL_FILES = "org/smartfrog/services/www/jetty/test/system/full/";
+    public static final String FULL_FILES = "/org/smartfrog/services/www/jetty/test/system/full/";
     public static final String JETTY_HOME = "jetty.home";
     public static final String TEST_JETTY_HOME = "test." + JETTY_HOME;
     public static final String TEST_JASPER_FOUND = "test.jasper.found";
@@ -54,6 +54,7 @@ public abstract class JettyTestBase extends DeployingTestBase {
     private String proxyHost;
     private static final String HTTP_PROXY_PORT = "http.proxyPort";
     private String proxyPort;
+    public static final String FUNCTIONAL_FILES = "/org/smartfrog/services/www/jetty/test/system/functional/";
 
 
     public JettyTestBase(String name) {

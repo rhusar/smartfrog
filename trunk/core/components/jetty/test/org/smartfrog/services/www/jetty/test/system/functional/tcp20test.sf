@@ -17,37 +17,9 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.jetty.listeners;
-
-/**
- * Created 08-Oct-2007 15:33:55
- */
 
 
-public interface SSLJettySocketConnector extends JettySocketConnector {
+#include "/org/smartfrog/services/www/jetty/test/system/functional/components.sf";
 
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_KEYSTORE="keystore";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_KEYSTORETYPE = "keystoreType";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_PASSWORD="passwordProvider";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_PROTOCOL="protocol";
-}
+
+sfConfig extends tcp20test ;

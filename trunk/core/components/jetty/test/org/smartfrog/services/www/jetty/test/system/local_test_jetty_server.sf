@@ -48,3 +48,19 @@ LocalJettyServer extends Compound {
 
 }
 
+JettyOnNIO extends LocalJettyServer {
+  listener extends JettySelectChannelConnector {
+    server LAZY PARENT:server;
+  }
+}
+
+
+JettyHTTPS extends LocalJettyServer {
+  port test.jetty.port.https;
+
+  listener extends JettySSLSocketConnector {
+    port PARENT:port;
+    server LAZY PARENT:server;
+  };
+}
+

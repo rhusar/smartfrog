@@ -28,11 +28,15 @@ public interface JettySocketConnector extends JettyConnector {
 
     /**
      * Max time (millis) to wait for a socket
+     * <p/>
+     * {@value}
      */
     String ATTR_MAX_IDLE_TIME="maxIdleTime";
 
     /**
-     * number of threads to accept requests
+     * number of threads to accept requests.
+     * <p/>
+     * {@value}
      */
     String ATTR_THREADS ="threads";
 

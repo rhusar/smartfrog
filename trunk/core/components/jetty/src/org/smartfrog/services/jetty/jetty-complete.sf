@@ -51,7 +51,7 @@ JettyHttpServer extends Compound {
      enableLogging false;
      port PARENT:port;
      jettyhome PARENT:jettyhome;
-     }
+  }
 
    port 8080;
 

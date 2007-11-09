@@ -34,6 +34,6 @@ public class JettyWarTest extends JettyTestBase {
 
 
     public void testTcp27testFilesystemWar() throws Throwable {
-        expectSuccessfulTestRun(FILES, "tcp27testFilesystemWar");
+        expectSuccessfulTestRunOrSkip(FILES, "tcp27testFilesystemWar");
     }
 }
