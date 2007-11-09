@@ -28,3 +28,5 @@
 #include "/org/smartfrog/services/jetty/jetty-complete.sf"
 //legacy types
 #include "/org/smartfrog/services/jetty/jetty-legacy-components.sf"
+//security
+#include "/org/smartfrog/services/jetty/securityrealm.sf"

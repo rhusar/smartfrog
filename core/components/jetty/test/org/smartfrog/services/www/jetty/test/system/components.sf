@@ -26,7 +26,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf";
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/www/jetty/test/system/local_test_jetty_server.sf"
-
 #include "/org/smartfrog/services/www/jetty/test/system/htmlpage.sf"
 
 
@@ -104,6 +103,11 @@ waitForPage extends WaitForPage {
     checkOnLiveness true;
     checkFrequency waitForInterval;
     timeout waitForTimeout;
+}
+
+waitForAnyHttpResponse extends waitForPage {
+    maximumResponseCode 404;
+    minimumResponseCode 200;
 }
 
 /**

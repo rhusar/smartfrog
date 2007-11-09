@@ -31,7 +31,7 @@ import java.rmi.RemoteException;
  *
  */
 
-public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements JettySocketConnector{
+public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements JettySocketConnector {
 
 
 

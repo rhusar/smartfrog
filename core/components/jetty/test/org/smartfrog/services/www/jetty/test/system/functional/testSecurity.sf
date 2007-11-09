@@ -19,24 +19,9 @@ For more information: www.smartfrog.org
 */
 
 
-#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
+#include "/org/smartfrog/services/www/jetty/test/system/functional/components.sf"
 
 
-sfConfig extends JettyTestCompound {
-
-
-	action extends LocalJettyServer;
-
-
-    //we dont care which number comes back, only that we get a number
-    tests extends Sequence {
-        wait extends waitForPage {
-            url ( "http://localhost:" ++ test.jetty.port.1 ++ "/");
-            maximumResponseCode 404;
-            minimumResponseCode 200;
-        }
-    }
-
-}
+sfConfig extends TestSecurity ;
 
 

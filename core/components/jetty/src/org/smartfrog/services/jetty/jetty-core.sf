@@ -139,16 +139,11 @@ AbstractConnector extends ApplicationServerContext {
       host extends OptionalString;
       name extends OptionalString;
       maxIdleTime extends Integer;
-          /**
-           * number of threads to accept requests
-           */
-      threads extends Integer;
-
     }
 
     maxIdleTime CoreJettyServer:maxIdleTime;
     port 8080;
-    host "localhost";
+    host CoreJettyServer:host;
 }
 
 /**
@@ -204,4 +199,22 @@ JettySSLSocketConnector extends JettySocketConnector {
 
 JettySelectChannelConnector extends AbstractConnector {
     sfClass "org.smartfrog.services.jetty.listeners.SelectChannelConnectorImpl";
+}
+
+
+JettyHttpServer extends Compound {
+
+  port AbstractConnector:port;
+  host AbstractConnector:host;
+
+  connector extends JettySelectChannelConnector {
+    port PARENT:port;
+    host PARENT:host;
+  }
+
+  server extends CoreJettyServer {
+    host PARENT:host;
+  }
+
+
 }

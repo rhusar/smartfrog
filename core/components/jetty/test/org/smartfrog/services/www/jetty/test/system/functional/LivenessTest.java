@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,37 +17,27 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.jetty.listeners;
+package org.smartfrog.services.www.jetty.test.system.functional;
+
+import org.smartfrog.services.www.jetty.test.system.JettyTestBase;
+
 
 /**
- * Created 08-Oct-2007 15:33:55
+ * Test that the liveness page raises errors when the remote site is not reachabler
  */
+public class LivenessTest extends JettyTestBase {
 
 
-public interface SSLJettySocketConnector extends JettySocketConnector {
+    public LivenessTest(String name) {
+        super(name);
+    }
 
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_KEYSTORE="keystore";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_KEYSTORETYPE = "keystoreType";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_PASSWORD="passwordProvider";
-    /**
-     * Component Attribute
-     * <p/>
-     * value: {@value}
-     */
-    String ATTR_PROTOCOL="protocol";
+    public void testLivenessNoHost() throws Throwable {
+        expectLivenessFailure(FUNCTIONAL_FILES, "testLivenessNoHost");
+    }
+
+    public void testLivenessURL() throws Throwable {
+        expectSuccessfulTestRun(FUNCTIONAL_FILES,"testLivenessURL");
+    }
+
 }

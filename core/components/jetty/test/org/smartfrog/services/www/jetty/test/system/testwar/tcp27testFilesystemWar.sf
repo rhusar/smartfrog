@@ -18,11 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/jetty/test/system/full/tcp27filesystemWar.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/testwar/tcp27filesystemWar.sf";
 
 
 
 sfConfig extends JettyTestCompound {
+
+  condition extends IsPropertySet { property "run.failing.builds" ;}
 
 	action extends tcp27;
 
