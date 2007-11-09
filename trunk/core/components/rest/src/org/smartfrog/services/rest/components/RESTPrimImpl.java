@@ -44,7 +44,10 @@ import java.rmi.RemoteException;
  */
 public class RESTPrimImpl extends PrimImpl implements RESTPrim
 {
-	public RESTPrimImpl() throws RemoteException { super(); }
+
+    public static final String NOT_IMPLEMENTED = " not allowed on RestPrim!";
+
+    public RESTPrimImpl() throws RemoteException { super(); }
 
 	public void doGet(HttpRestRequest restRequest, HttpRestResponse restResponse) throws MethodNotSupportedException, RemoteException, RestException
 	{
@@ -54,17 +57,17 @@ public class RESTPrimImpl extends PrimImpl implements RESTPrim
 
 	public void doPut(HttpRestRequest restRequest, HttpRestResponse restResponse) throws MethodNotSupportedException, RemoteException, RestException
 	{
-		throw new MethodNotSupportedException("PUT not allowed on RestPrim!");
+		throw new MethodNotSupportedException("PUT"+ NOT_IMPLEMENTED);
 	}
 
 	public void doPost(HttpRestRequest restRequest, HttpRestResponse restResponse) throws MethodNotSupportedException, RemoteException, RestException
 	{
-		throw new MethodNotSupportedException("POST not allowed on RestPrim!");
+		throw new MethodNotSupportedException("POST"+ NOT_IMPLEMENTED);
 	}
 
 	public void doDelete(HttpRestRequest restRequest, HttpRestResponse restResponse) throws MethodNotSupportedException, RemoteException, RestException
 	{
-		throw new MethodNotSupportedException("DELETE not allowed on RestPrim!");
+		throw new MethodNotSupportedException("DELETE"+ NOT_IMPLEMENTED);
 	}
 
 	public Document getXMLRepresentation() throws RemoteException

@@ -18,7 +18,7 @@
 	For more information: www.smartfrog.org
  */
  
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
 
 RestPrim extends Prim
 {
