@@ -20,10 +20,7 @@
 package org.smartfrog.services.display;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -32,24 +29,12 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
+import java.awt.event.*;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -853,9 +838,9 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         out.println("");
         out.println("*******************************************************");
         out.println("* " + org.smartfrog.Version.versionString() +
-                "\n* (C)Copyright Hewlett-Packard Development Company, LP ");
+                "\n* "+ org.smartfrog.Version.copyright());
         out.println("*******************************************************");
-        out.println("* Java Version:   " + System.getProperty("java.version"));
+        out.println("* cd Java Version:   " + System.getProperty("java.version"));
         out.println("* Java Home:      " + System.getProperty("java.home"));
         out.println("* Java Ext Dir:   " + System.getProperty("java.ext.dirs"));
 
@@ -868,8 +853,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         out.println("* User Work Dir:  " + System.getProperty("user.dir"));
 
         try {
-            java.net.InetAddress localhost = SFProcess.sfDeployedHost();
-            ;
+            java.net.InetAddress localhost = SFProcess.sfDeployedHost();            
             out.println("* LocalHost Name: " + localhost.getHostName());
             out.println("* LocalHost Add:  " + localhost.getHostAddress());
 
@@ -881,6 +865,12 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         out.println("* Java ClassPath: " + "\n" +
                 (System.getProperty("java.class.path")).replace(
                         System.getProperty("path.separator").charAt(0), '\n'));
+        try {
+            String[] words = Logger.testJarRepeat;
+            String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
+            StringBuffer message = Logger.getRepeatsMessage(words, classpath);
+            if (message !=null) out.println("* Possible problem with classpath: \n"+message.toString());
+        } catch (Throwable thr) { /* ignore*/ }
         out.println("*****************************************************");
         out.println("");
     }
