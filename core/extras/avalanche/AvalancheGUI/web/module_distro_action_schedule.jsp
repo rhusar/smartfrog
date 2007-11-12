@@ -31,10 +31,11 @@ For more information: www.smartfrog.org
     String version = request.getParameter("version");
     
     String actionTitle =  request.getParameter("title");
-    System.out.println("Scheduler TEST : " + moduleId + " " + version + " " + actionTitle); 
+    //System.out.println("Scheduler TEST : " + moduleId + " " + version + " " + actionTitle); 
     String engine = request.getParameter("engine");
     String distroId = request.getParameter("distroId");
-   // System.out.println("TEST : " + moduleId + " " + version + " " + actionTitle); 
+    String number = request.getParameter("number");
+    //System.out.println("TEST : " + number); 
   //  System.out.println("Scheduler===" + scheduler.getSchedulerName());
     SFAdapter adapter = new SFAdapter(factory, scheduler);
     String setupcacommandsArr[] = {"mkdir -p /etc/grid-security/certificates",
@@ -184,7 +185,7 @@ System.out.println("Selected hosts " + hosts.length);
 	try{
 	    String instanceName = actionTitle + "test";
 	    adapter.submitTOScheduler(moduleId, version, instanceName, actionTitle,
-		     attrMap, hosts);
+		     attrMap, hosts, new Integer(number).intValue());
 	    //Map retCodes = adapter.submit(moduleId, version, instanceName, actionTitle,
 	//	     attrMap, hosts);
 	}catch(Exception t){ 
