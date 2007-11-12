@@ -465,7 +465,6 @@ setNextSubtitle("Select Host Page");
 </table>
 
 
-<!-- </div> -->
 <div style="width:95%;">
 <div class="buttonSet">
   <div class="bWrapperUp" style="margin-top:10px;"><div><div>
@@ -477,7 +476,6 @@ setNextSubtitle("Select Host Page");
   </div></div></div>
 </div>
 </div>
-
 </form >
 
 <form method="post"  id="hostTransferList"
@@ -487,30 +485,18 @@ setNextSubtitle("Select Host Page");
 	name="selectedHosts2" 
 	multiple>
       </select>
-	
-<!-- </div> -->
-<div style="width:95%;">
-  <div class="bWrapperUp" style="margin-top:10px;"><div><div>
-    <input class="hpButton"type="submit" name="submit" 
-	value="Using Scheduler Execute this action on the least loaded target node from the selected target nodes"></input>
-  </div></div></div>
-</div>
 
-</form>
-
-<!-- form method="post"  id="hostScheduleList"
-	action="module_distro_action_schedule.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
-	onsubmit="javascript:selectAll(document.getElementById('selectedHosts'))">
 <div style="width:95%;">
 <div class="buttonSet">
   <div class="bWrapperUp" style="margin-top:10px;"><div><div>
     <input class="hpButton"type="submit" name="submit" 
-	value="Using Scheduler Execute this action on the least loaded target node from the selected target nodes"></input>
+	value="Using Scheduler Execute this action on target nodes from the selected target nodes"></input>
   </div></div></div>
+    Number of target nodes: <input type="text" name="number" size="10" id="hostId" />
 </div>
 </div>
+</form>
 
-</form -->
 </center>
 </div>
 
