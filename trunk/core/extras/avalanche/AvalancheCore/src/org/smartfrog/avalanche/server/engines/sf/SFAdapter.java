@@ -413,7 +413,7 @@ public class SFAdapter {
     }
 
     public void submitTOScheduler(String moduleId, String version, String instanceName,
-                                  String title, Map attrMap, String[] hosts) throws Exception {
+                                  String title, Map attrMap, String[] hosts, int num_of_machines) throws Exception {
 
         // computer a time that is on the next round minute
         Date runTime = TriggerUtils.getEvenMinuteDate(new Date());
@@ -434,30 +434,35 @@ public class SFAdapter {
         for (String host : hosts) machines.add(host);
         setTargetInstances(machines.size());
         //Sort the array based on the values in allValues and then schedule on the first element.
-        allValues.put("test", new Integer(200));
+     //   allValues.put("localhost", new Integer(200));
         Collection collect = allValues.values();
         Object[] array = collect.toArray();
         List list = Arrays.asList(array);
         Collections.sort(list);
+	Vector target_nodes = new Vector();
         for (int i = 0; i < list.size(); i++) {
             System.out.println("Element in sorted list===========" + (list.get(i)).toString());
         }
-        Enumeration keys = allValues.keys();
-        Object key = null;
-        Object value = null;
-        while (keys.hasMoreElements()) {
-            key = keys.nextElement();
-            value = allValues.get(key);
-            if (value == list.get(0)) {
-                break;
-            }
-        }
-
-        System.out.println("Final machine for scheduling is===========" + key.toString());
+	for(int i =0 ; i < num_of_machines; i++){
+        	Enumeration keys = allValues.keys();
+        	Object key = null;
+        	Object value = null;
+        	while (keys.hasMoreElements()) {
+            		key = keys.nextElement();
+            		value = allValues.get(key);
+            		if (value == list.get(i)) {
+				target_nodes.add(key.toString());
+                		break;
+            		}
+        	}
+	}
+        //System.out.println("Final machine for scheduling is===========" + key.toString());
+        System.out.println("Final machine for scheduling is===========" + target_nodes.toString());
 
         //  job.getJobDataMap().put("hostname", "localhost");
 
-        job.getJobDataMap().put("hostname", key.toString());
+        //job.getJobDataMap().put("hostname", key.toString());
+        job.getJobDataMap().put("hostname", target_nodes);
 
         // Tell quartz to schedule the job using our trigger
         sched.scheduleJob(job, new SimpleTrigger("trigger1", "group1"));
