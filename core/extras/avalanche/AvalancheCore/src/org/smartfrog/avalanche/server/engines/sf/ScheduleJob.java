@@ -21,6 +21,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p> This is just a simple job execution. </p>
@@ -53,7 +54,7 @@ public class ScheduleJob implements Job {
 
             JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-            String hostname = dataMap.getString("hostname");
+          //  String hostname = dataMap.getString("hostname");
 	        String moduleId = dataMap.getString("moduleId");
 	        String version = dataMap.getString("version");
 	        String instanceName = dataMap.getString("instanceName");
@@ -61,17 +62,22 @@ public class ScheduleJob implements Job {
 	        String [] keys = dataMap.getKeys();
 	        Map attrMap = null;
 	        SFAdapter adapter = null;
-
+		Vector hosts = null;
+		String [] array = null;
             for (String key : keys) {
                 if (key.equals("attrMap")) {
                     attrMap = (Map) dataMap.get("attrMap");
                 } else if (key.equals("adapter")) {
                     adapter = (SFAdapter) dataMap.get("adapter");
+		} else if (key.equals("hostname")) {
+                    hosts = (Vector) dataMap.get("hostname");
+        	    array = (String [])hosts.toArray(new String[hosts.size()]);
                 }
             }
 
             // Call Submission API
-	        Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, new String[]{hostname});
+	        //Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, new String[]{hostname});
+	       Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, array);
             log.info("Submission Done " + cd1.toString());
         } catch (Exception ex) {
             log.error(ex);
