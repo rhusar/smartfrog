@@ -53,7 +53,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl {
 
     /**
      * Get the connector
-     * @return
+     * @return the connector
      */
     public Connector getConnector() {
         return connector;
