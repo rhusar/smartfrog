@@ -48,13 +48,6 @@ public class JettyTCPTest
         super(s);
     }
 
-
-    public void testCaseTCPJettyCore() throws Throwable {
-        application = deployExpectingSuccess(FULL_FILES + "tcp_jetty_core.sf",
-                "tcp_jetty_core");
-        assertNotNull(application);
-    }
-
     public void testCaseTCN52() throws Exception {
         deployExpectingException(FULL_FILES + "tcn52.sf",
                 "tcn52",
