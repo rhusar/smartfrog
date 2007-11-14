@@ -102,7 +102,7 @@ public class InterruptibleLogger implements BuildLogger {
     /**
      * Sets the output stream to which this logger is to send its output.
      *
-     * @param output The output stream for the logger. Must not be <code>null</code>.
+     * @param out The output stream for the logger. Must not be <code>null</code>.
      */
     public void setOutputPrintStream(PrintStream out) {
         checkForHalt();
