@@ -12,10 +12,16 @@ public class NodeVistor implements CDVisitor {
     Map attAndvalue = new HashMap();
     Vector attlist = null;
     Vector complist = null;
+    String usertag = null;
 
-    public NodeVistor() throws FileNotFoundException {
+    public NodeVistor( ) throws FileNotFoundException {
+        attlist = new Vector();
+        complist = new Vector();
+    }
 
+    public NodeVistor(String tagname) throws FileNotFoundException {
 
+	usertag = tagname;
         attlist = new Vector();
         complist = new Vector();
     }
@@ -46,7 +52,21 @@ public class NodeVistor implements CDVisitor {
                 attName= "sfConfig".concat(":").concat(attName);
                 attValue = valueObj.toString();
             }
-            attAndvalue.put(attName, attValue);
+	    if (usertag != null) {
+	    	Set tags = node.sfGetTags(attObj);
+	    	if( tags != null) {
+			Iterator iter = tags.iterator();
+			while (iter.hasNext()){    
+            			Object tag = iter.next();
+				if ((tag.toString()).equals(usertag) && !(attValue.startsWith("LAZY"))) {
+					attAndvalue.put(attName, attValue);
+					break;
+				}
+			}
+	    	}
+	    } else { 
+		attAndvalue.put(attName, attValue);
+	    }
             for (int k = 0; k < complist.size(); k++) {
 
               String key="sfConfig:"+complist.get(k);
@@ -54,12 +74,6 @@ public class NodeVistor implements CDVisitor {
                 {
                     attAndvalue.remove(attName);
                 }
-
-
-                /*attlist.addElement(attName);
-                for (int k = 0; k < complist.size(); k++) {
-                    if ((complist.get(k)).equals(attName))
-                        attlist.removeElement(attName); */
             }
         }
     }

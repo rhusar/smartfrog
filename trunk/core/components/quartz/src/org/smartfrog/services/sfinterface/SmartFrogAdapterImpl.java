@@ -317,6 +317,17 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         return CD.attAndvalue;
     }
 
+    public static Map getAllAttribute(String descriptionFileName, String tag) throws Exception {
+        InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
+        SFParser parser = new SFParser(SFParser.getLanguageFromUrl(descriptionFileName));
+        Phases phases = parser.sfParse(descriptionStream);
+        phases = phases.sfResolvePhases();
+        ComponentDescription cd = phases.sfAsComponentDescription();
+        NodeVistor CD = new NodeVistor(tag);
+        cd.visit(CD, false);
+        return CD.attAndvalue;
+    }
+
 
     public static void setLogFilePath(String filePath) {
         logFilePath = filePath;
