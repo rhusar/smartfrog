@@ -49,7 +49,14 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime->default;test->default;testwar->testwar"/>
+        conf="compile,runtime,test->default;testwar->testwar"/>
+
+    <!-- depend on logging services, to pick up commons-logging and bindings -->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        rev="latest.integration"
+        conf="jsp->default"/>
+
     <dependency org="org.smartfrog"
         name="sf-tasks"
         changing="true"
@@ -109,9 +116,7 @@
         conf="redist->default"/>
 -->
 
-    <dependency org="commons-logging"
-        name="commons-logging"
-        rev="${commons-logging.version}"
-        conf="jsp->master"/>
+
+
   </dependencies>
 </ivy-module>

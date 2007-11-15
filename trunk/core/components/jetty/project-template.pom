@@ -33,5 +33,10 @@
       <artifactId>jetty</artifactId>
       <version>${jetty.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
   </dependencies>
 </project>
