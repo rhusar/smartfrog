@@ -128,10 +128,13 @@
 
   <target name="ready-to-run" depends="izpack"/>
 
-  <target name="run" depends="ready-to-run,run-no-rebuild">
+  <target name="run" depends="ready-to-run,run-no-rebuild"
+      description="pack the application and run it">
   </target>
 
-  <target name="run-no-rebuild" depends="init">
+
+  <target name="run-no-rebuild" depends="init"
+      description="run the izpack application in debug mode, with no rebuilding">
     <java jar="${izpack.jar}" fork="true">
       <sysproperty key="TRACE" value="${trace.enabled}"/>
     </java>

@@ -654,7 +654,8 @@ SmartFrog to deploy complex systems.
         This package contains XOM and components to create a XOM graph from
         a component description.
 
-        The package contains xom-${xom.version}.jar, which includes the Jaxen runtime.
+        The package contains xom-${xom.version}.jar, which includes the Jaxen runtime,
+        jdom-${jdom.version}, Apache xerces ${xerces.version} and Apache Xalan ${xalan.version}
       </description>
       <file src="ivy/lib/package-xml/sf-xml-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -666,7 +667,19 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
 
+      <file src="ivy/lib/package-xml/jdom-${jdom.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
       <file src="ivy/lib/package-xml/xom-${xom.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-xml/xmlParserAPIs-${xerces.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-xml/xercesImpl-${xerces.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-xml/xalan-${xalan.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
     </pack>
