@@ -18,11 +18,10 @@
         <artifactId>sfServices</artifactId>
         <version>${smartfrog.version}</version>
       </dependency>
-
       <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging-api</artifactId>
-        <version>${commons-logging.version}</version>
+        <groupId>org.smartfrog</groupId>
+        <artifactId>sf-loggingservices</artifactId>
+        <version>${smartfrog.version}</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
@@ -33,6 +32,16 @@
         <groupId>xerces</groupId>
         <artifactId>xmlParserAPIs</artifactId>
         <version>${xerces.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>${xalan.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>${jdom.version}</version>
       </dependency>
       <dependency>
         <groupId>xom</groupId>

@@ -34,35 +34,11 @@
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
-  <condition property="javac.version" value="1.5">
-    <available classname="java.lang.Readable"/>
-  </condition>
-  <property name="javac.version" value="1.4"/>
-  <condition property="javac.is.1.4" >
-    <equals arg1="${javac.version}" arg2="1.4" />
-  </condition>
-  <property name="javac.java.version" value="${javac.version}"/>
-  <condition property="system.tests.enabled">
-    <and>
-      <istrue value="${system.tests.enabled}"/>
-      <isset property="java1.5+"/>
-    </and>
-  </condition>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init"
-    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-    <property name="deploy.sf" value="org/smartfrog/services/xml/test/files/deploy.sf"/>
-    <!--
-    <property name="default.ini" location="test/files/default.ini"/>
-    <property name="default.sf" location="test/files/default.sf"/>-->
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>    
-  </target>
 
 
   <target name="check-versions" depends="init">
@@ -71,22 +47,14 @@
     <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
   </target>
 
-  <target name="javac.version" depends="check-versions" if="javac.is.1.4">
-    <echo level="warning">
-      Using Javac version 1.4: the java 1.5 packages will be omitted.
-      Do not redistribute this build.
-    </echo>
-  </target>
-
-  <target name="define-java15-patternsets" depends="check-versions">
+  <target name="define-patternsets" depends="check-versions">
     <patternset id="source.patternset">
       <include name="**/*.java"/>
       <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
-      <exclude name="**/java5/**/*.java" unless="java1.5+"/>
     </patternset>
   </target>
 
-  <target name="ready-to-compile" depends="pre-compile,javac.version,define-java15-patternsets"/>
+  <target name="ready-to-compile" depends="pre-compile,define-patternsets"/>
 
   <!-- ========================================================== -->
   <!-- this is an override
@@ -101,8 +69,6 @@
     <sf-javac
         classpathref="compile.classpath"
         srcdir="${src.dir}"
-        source="${javac.version}"
-        target="${javac.version}"
         destdir="${build.classes.dir}"
         >
           <patternset refid="source.patternset" />
@@ -127,7 +93,6 @@
     <sf-javadoc
         destdir="${dist.jdocs.dir}"
         classpathref="compile.classpath"
-        source="${javac.version}"
         >
         <fileset  dir="${src.dir}">
           <patternset refid="source.patternset" />
