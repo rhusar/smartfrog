@@ -57,7 +57,7 @@ For more information: www.smartfrog.org
     boolean state = true ;
     Map  m  = null;
     try{
-	    m  = SFAdapter.getSFAttributes(configFile);
+	    m  = SFAdapter.getSFAttributes(configFile, "user");
     }catch(Throwable t ){
 	state = false ; 
 	session.setAttribute("message",
