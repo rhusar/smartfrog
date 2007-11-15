@@ -507,7 +507,7 @@ java.class.path=
     <property name="javadoc.version" value="true"/>
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*, com.hp.*"/>
     <property name="javadoc.header" value="${Name.System} ${smartfrog.version}"/>
     <property name="javadoc.footer" value="${Name.System} ${smartfrog.version}"/>
     <presetdef name="sf-javadoc" >
