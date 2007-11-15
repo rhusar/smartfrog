@@ -1120,10 +1120,10 @@ java.class.path=
 	               refid="compile.classpath">
 	  </pathconvert>
       <echo message=" --------------------------------------------------------"/>
-	  <echo message=" Project: ${ant.project.name}"/>
-	  <echo message=" Ant file: ${ant.file}"/>
+	    <echo message=" Project: ${ant.project.name}"/>
+	    <echo message=" Ant file: ${ant.file}"/>
       <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
-	  <echo message=" --------------------------------------------------------"/>
+	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
           cache="${build.dir}/depends"
@@ -1148,7 +1148,7 @@ java.class.path=
           verify="true"
           compiler="${rmic.compiler}"
           includes="**/*.class">
-          <classpath refid="compile.classpath"/>
+        <classpath refid="compile.classpath"/>
       </sf-rmic>
   </target>
 
@@ -1368,6 +1368,52 @@ java.class.path=
     <echo level="verbose">
       deploying to ${deploy.host}
       codebase=${codebase}</echo>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- get the build into the state where the application is ready-->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test">
+
+  </target>
+
+  <target name="ready-to-undeploy" depends="init-deploy-properties,init-codebase">
+
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="ready-to-deploy"
+      description="deploy">
+
+    <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+
+      <application name="${application.name}">
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        #include "/${deploy.sf}"
+      </application>
+    </sf-deploy>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- undeploy the application-->
+  <!-- ========================================================== -->
+  <target name="undeploy" depends="ready-to-undeploy"
+      description="undeploy the application">
+    <sf-undeploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        failonerror="false"
+        timeout="30000"
+        application="${application.name}"/>
   </target>
 
 
