@@ -4,7 +4,10 @@
   <info organisation="org.smartfrog" module="sf-xml">
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
-    <description>XML support by way of Xom</description>
+    <description>XML support by way of Xom.
+      This package also includes Xerces and Xalan, for a rounded core XML package.
+      We don't (yet) include JAXB, though this is an option.
+    </description>
   </info>
 <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
@@ -23,10 +26,11 @@
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"
-        extends="parser"/>
+        extends="parser,xslt"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="parser" description="Xerces xml parser for Java1.4"/>
+    <conf name="parser" description="Xerces XML parser"/>
+    <conf name="xslt" description="XSLT support"/>
     <conf name="documentation"
         description="all documentation artifacts"/>    
   </configurations>
@@ -36,6 +40,7 @@
     <artifact name="sf-xml-javadocs" conf="documentation" ext="zip"/>
     <artifact name="sf-xml-documentation" conf="documentation" ext="zip"/>
   </publications>
+
   <dependencies>
     <dependency org="org.smartfrog"
       name="smartfrog"
@@ -65,11 +70,16 @@
         name="xom"
         rev="${xom.version}"
         conf="compile,redist->master"/>
-    <!-- here jaxen is included, but none of its dependencies-->
-    <!-- Since Xom1.1, Jaxen is built in to Xom-->
-<!--    <dependency org="jaxen"
-        name="jaxen"
-        rev="${jaxen.version}"
-        conf="compile,redist->master"/>-->
+    <!--xalan is added in here, for efficient XML operations.
+    The version built in to Java 5 is very memory hungry
+    -->
+    <dependency org="xalan"
+        name="xalan"
+        rev="${xalan.version}"
+        conf="compile,xslt->master"/>
+    <dependency org="jdom"
+        name="jdom"
+        rev="${jdom.version}"
+        conf="compile,redist->master"/>
   </dependencies>
 </ivy-module>

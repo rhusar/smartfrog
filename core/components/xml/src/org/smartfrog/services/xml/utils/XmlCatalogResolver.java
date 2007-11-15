@@ -45,7 +45,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
     /**
      * map table
      */
-    protected HashMap mappings;
+    protected HashMap<String,String> mappings;
 
     public XmlCatalogResolver(ResourceLoader loader) {
         setLoader(loader);
@@ -61,11 +61,11 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
         this.loader = loader;
     }
 
-    public HashMap getMappings() {
+    public HashMap<String, String> getMappings() {
         return mappings;
     }
 
-    protected void setMappings(HashMap mappings) {
+    protected void setMappings(HashMap<String, String> mappings) {
         this.mappings = mappings;
     }
 
@@ -73,7 +73,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
      * reset the resolution table
      */
     public void resetMap() {
-        setMappings(new HashMap());
+        setMappings(new HashMap<String, String>());
     }
 
     /**
@@ -102,11 +102,11 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
     /**
      * look up a mapping
      *
-     * @param uri
+     * @param uri uri to resolve
      * @return whatever is registered
      */
     public String lookup(String uri) {
-        return (String) mappings.get(uri);
+        return mappings.get(uri);
     }
 
     /**
@@ -118,7 +118,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
      *             encountered.
      * @return A Source object, or null if the href cannot be resolved, and the
      *         processor should try to resolve the URI itself.
-     * @throws javax.xml.transform.TransformerException if an error occurs when trying to resolve
+     * @throws TransformerException if an error occurs when trying to resolve
      *                              the URI.
      */
     public Source resolve(String href, String base)
