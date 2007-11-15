@@ -28,7 +28,6 @@
   <description>
      Build file for the XML component
   </description>
-
   <!-- override point -->
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
@@ -40,6 +39,10 @@
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+
+    <property name="deploy.sf" value="org/smartfrog/services/xml/test/files/deploy.sf"/>
 
   <target name="check-versions" depends="init">
     <available property="nux.found"
@@ -131,44 +134,8 @@
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- set up any properties for deployment -->
-  <!-- ========================================================== -->
-  <target name="init-deploy-properties" depends="init">
-    <property name="deploy.host" value="localhost"/>
-    <property name="application.name" value="${project.name}"/>
-  </target>
 
 
-  <!-- ========================================================== -->
-  <!-- deploy; requires a host -->
-  <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
-    description="deploy">
-
-    <sf-deploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      >
-      <codebase url="${codebase}"/>
-
-      <application name="${application.name}">
-              sfCodeBase PROPERTY org.smartfrog.codebase;
-              #include "/${deploy.sf}"
-      </application>
-    </sf-deploy>
-  </target>
-
-  <target name="undeploy" depends="init-deploy-properties"
-    description="deploy">
-    <sf-undeploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      application="${application.name}"/>
-  </target>
-    
 
   <!-- ========================================================== -->
   <!-- system tests -->
