@@ -187,7 +187,7 @@ Servlet extends ServletContextComponent {
 
 /**
  A mime is a tuple of name,value. that is bound to a servlet context
- It does not get cleaned up after; you need to terminate the servlet
+ It does not get cleaned up after; you need to terminate the context
  */
 
 MimeType extends ServletContextComponent {
