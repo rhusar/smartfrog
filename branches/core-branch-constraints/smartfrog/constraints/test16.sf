@@ -1,0 +1,16 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array {
+     sfArrayGenerator extends Constraint {
+        help VAR "[0,1]";
+        [sfConstraint] -- "(sfArrayIndex==0 -> help=0; help=1)"; 
+     }
+  }  
+
+  foo2 extends Aggregator {
+	sfAggregatorPath "foo1:help";
+        foo3 extends concat;
+        
+  }
+}

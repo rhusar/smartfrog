@@ -1,4 +1,4 @@
-#include "/org/smartfrog/sfcore/languages/sf/constraints/constraints.sf"
+#include "/org/smartfrog/functions.sf"
 
 ListElement extends Constraint {
    list theList;
@@ -13,11 +13,10 @@ sfConfig extends {
    z extends ListElement { el elements:z; }
 
    elements extends Constraint {
-      x VAR; 
-      y VAR; 
-      z VAR;
-      list theList;
-      [sfConstraint] -- "&::([x,y,z], list), sd:alldifferent([x,y,z])";
+      x VAR theList; 
+      y VAR theList; 
+      z VAR theList;
+      [sfConstraint] -- "ealldiff([x,y,z])";
    }   
 
    genList extends Constraint {

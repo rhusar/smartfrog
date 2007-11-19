@@ -1,22 +1,16 @@
 #include "/org/smartfrog/functions.sf"
 
-ListElement extends Constraint {
-   list theList;
-   [sfConstraint] -- "member(el, list)"; 
-}
-
 sfConfig extends {
    theList genList:theList; 
 
-   x extends ListElement { el elements:x; } 
-   y extends ListElement { el elements:y; } 
-   z extends ListElement { el elements:z; }
+   x elements:x; 
+   y elements:y;
+   z elements:z;
 
    elements extends Constraint {
-      x VAR list; 
-      y VAR list; 
-      z VAR list;
-      list theList;
+      [sfConstraintUserVar] x VAR theList; 
+      [sfConstraintUserVar] y VAR theList; 
+      [sfConstraintUserVar] z VAR theList;
       [sfConstraint] -- "ealldiff([x,y,z])";
    }   
 

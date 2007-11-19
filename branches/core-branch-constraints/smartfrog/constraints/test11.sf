@@ -1,0 +1,23 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Constraint {
+     foo3b foo3;
+     foo4b foo4;
+     foor "[foo4b, foo3b]";
+     [sfConstraintAutoVar] foo VAR foor;
+     [sfConstraint] -- "foo subtype foo4b";
+  }
+
+  foo2 extends {
+     bar "32";
+     bar2 "33";
+  }
+  foo3 extends foo2 {
+     bar2 "48";
+     bar3 "51";
+  }
+  foo4 extends {
+     bar4 "73";
+  }
+}

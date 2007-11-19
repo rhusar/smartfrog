@@ -1,0 +1,19 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array {
+     sfArrayGenerator extends {
+        help extends {
+            help2 6; 
+        }
+     }
+  }
+  
+  foo2 extends Aggregator {
+        sfAggregatorPath "foo1:sfArrayIndex";
+        foo3 extends forall {
+           sfAllOperator extends EQ;
+           sfAllLeftArg 1;
+        }
+  }
+}

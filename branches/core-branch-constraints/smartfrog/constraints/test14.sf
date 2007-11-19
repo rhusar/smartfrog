@@ -1,0 +1,7 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array{
+     extent ["fred", "clive", "joe"];
+  }
+}

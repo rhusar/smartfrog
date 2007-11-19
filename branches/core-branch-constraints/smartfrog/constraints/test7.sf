@@ -1,4 +1,4 @@
-#include "/org/smartfrog/sfcore/languages/sf/constraints/constraints.sf"
+#include "/org/smartfrog/functions.sf"
 
 sfConfig extends {
    foo extends Constraint{
