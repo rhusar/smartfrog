@@ -57,7 +57,7 @@
     <dependency org="log4j"
         name="log4j"
         rev="${log4j.version}"
-        conf="compile,redist->default"
+        conf="compile,redist->master"
     />
     <!--it is essential that only the master JAR of commons logging
     is pulled in, as its dependencies are usually a mess, including things
