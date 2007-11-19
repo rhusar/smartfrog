@@ -21,10 +21,9 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import org.smartfrog.sfcore.languages.sf.constraints.CDBrowserModel;
 
 public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	private JScrollPane m_scpane;
@@ -36,6 +35,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	private JButton m_done;
 	private EclipseSolver.EclipseStatus m_est;
 	private EclipseSolver.EclipseCDAttr m_ecda;
+	private DefaultMutableTreeNode m_visnode;
 	
 	public void kill(){
 		setVisible(false);
@@ -45,8 +45,10 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 		m_est=(EclipseSolver.EclipseStatus) est;
 	}
 	
-	public Object attr(Object d, Object av){
+	public Object attr(Object d, Object av, boolean showme){
 	   DefaultMutableTreeNode node = new DefaultMutableTreeNode(av);
+	
+	   if (showme && m_visnode==null) m_visnode=node;
 	   
 	   if (root==null){
 		   root = node;;
@@ -78,6 +80,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	    	  m_undo.setEnabled(false);
 	       }
 	       m_done.setEnabled(m_est.isDone());
+	       
 	       repaint();
 	   }   	
 	}
@@ -177,6 +180,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	    		     if (succ) {
 	    		    	 m_label.setText("Attribute set successfully");
 	    		    	 m_set.setEnabled(false);
+	    		    	 m_entry.setEnabled(false);
 	    		     } else {
 	    		    	 m_label.setText("Value selected not in range:"+m_ecda.getRangeAsString()+". Please try again");
 	    		     }
@@ -204,8 +208,11 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	    	   }
 	       }
 	       	
+          tree.makeVisible(new TreePath(model.getPathToRoot(m_visnode)));
+
 		  setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  setVisible(true); 		
+
 	}
 	
     private DefaultMutableTreeNode root;

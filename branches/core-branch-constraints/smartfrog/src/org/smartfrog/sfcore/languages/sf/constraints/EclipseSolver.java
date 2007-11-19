@@ -25,17 +25,27 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.LinkResolutionState;
 import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.reference.AttribReferencePart;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import com.parctechnologies.eclipse.Atom;
 import com.parctechnologies.eclipse.CompoundTerm;
+import com.parctechnologies.eclipse.CompoundTermImpl;
 import com.parctechnologies.eclipse.EXDRInputStream;
 import com.parctechnologies.eclipse.EXDROutputStream;
 import com.parctechnologies.eclipse.EclipseEngine;
@@ -48,7 +58,7 @@ import com.parctechnologies.eclipse.ToEclipseQueue;
 /**
  * Implmentation of solver for Eclipse
  */
-public class EclipseSolver extends PrologSolver implements Runnable, QueueListener {
+public class EclipseSolver extends CoreSolver implements Runnable, QueueListener {
 	
     /**
      * Default Eclipse options 
@@ -68,7 +78,13 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
      * Thread for main eclipse goal
      */
     Thread m_ecr;
+    
+    CDBrowserModel m_cdbm;
+    
+    boolean m_isuservars;
 
+    ComponentDescription m_solve_comp;
+    
     /**
      * Queue for coms TO eclipse
      */
@@ -95,6 +111,11 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
      */
     boolean m_cons_finished = false;
     
+	private final String pathswitch = "/../constraints/";
+	private final String coreFileSuffix = "core.ecl";
+    private final String theoryFileSuffix = "base.ecl";
+    private final String theoryFilePath = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFilePath";
+    
     /**
      * Eclipse main goal to run in secondary thread
      */
@@ -103,6 +124,36 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
     		m_eclipse.rpc("sfsolve");
     	} catch (Exception e){}
     }
+        
+    void prepareSolver() throws SmartFrogResolutionException {
+        String sfhome = SFSystem.getEnv("SFHOME");
+        
+        if (sfhome==null){
+    		throw new SmartFrogResolutionException("Environment variable SFHOME must be set. Context: constraint processing");
+    	}
+                
+        String corefile = sfhome+pathswitch+coreFileSuffix;
+        String thfile = sfhome+pathswitch+theoryFileSuffix;
+       
+        
+        // create the theory
+        try {
+            prepareTheory(top,corefile,thfile);
+        } catch (Exception e) {
+            throw new SmartFrogResolutionException("Unable to parse base theory for constraint resolution. ", e);
+        }
+         
+        //Add the path root
+        String thpath = System.getProperty(theoryFilePath);
+        
+        if (thpath!=null){
+        	try {
+        		runGoal("add_path(\""+thpath+"\")");
+        	} catch (Exception e) {
+                throw new SmartFrogResolutionException("Unable to add root theory file path. ", e);
+            }	
+        }		
+    }    
     
     /**
      * Prepare the engine with two theories
@@ -149,17 +200,23 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
     /**
      * Solve a Constraint goal
      */
-    public void solve(Context cxt, Vector attrs, Vector values, Vector logic, Vector goal) throws Exception{    	
+    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector logic, Vector goal, Vector autos, boolean isuservars) throws Exception {    	   	
+    	//Set comp as current solving comp descr
+    	m_solve_comp = comp;
+    	
+    	//Set is user vars?
+    	m_isuservars = isuservars;
     	
     	//Construct goal
     	String _attrs = mapValueJE(attrs);
-    	String _values = mapValueJE(values, true); 
+    	String _values = mapValueJE(values); 
     	String _goal = mapValueJE(goal);
+    	String _autos = mapValueJE(autos);
     	    	
     	m_get_val = "sfsolve("+_attrs+", "+_values+", "+
-    					LinkResolutionState.getLRS().addConstraintEval(cxt)+", "+_goal+")";
+    					LinkResolutionState.getLRS().addConstraintEval(comp.sfContext())+", "+_goal+", "+_autos+")";
     	
-    	//System.out.println(m_get_val);
+        //System.out.println(m_get_val);
     	
     	//Allocate new thread for goal and start it
     	m_cons_finished = m_ecr_sought_lock = false;
@@ -183,7 +240,7 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
      * @param v  object to be transformed
      * @return eclipse string
      */
-    private String mapValueJE(Object v) { 
+    private String mapValueJE(Object v) throws SmartFrogResolutionException { 
         return mapValueJE(v, false);
     }
 
@@ -193,14 +250,24 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
      * @param quoted indicates whether Strings should be double quoted
      * @return eclipse string
      */
-    private String mapValueJE(Object v, boolean quoted) { 
+    private String mapValueJE(Object v, boolean quoted) throws SmartFrogResolutionException { 
     	if (v instanceof FreeVar) {
     		FreeVar fv = (FreeVar) v;
     		if (fv.getConsEvalKey()!=null){	    		
 	    		if (fv.getConsEvalIdx()==-1){
 	    			fv.setConsEvalIdx(LinkResolutionState.getLRS().getConsEvalIdx()+1);  //+1 as yet to add entry
 	    			//System.out.println("Setting The Index! "+fv.getConsEvalIdx());
-	    			return v.toString();
+	    			String range_s = "null";
+	    			Object range = fv.getRange();
+	    			if (range!=null){
+	    				if (range instanceof String) range_s = (String) range;
+	    				else if (range instanceof Vector) range_s = mapValueJE(range);
+	    				else throw new SmartFrogResolutionException("Invalid range specifier for FreeVar: "+v);
+	    			}
+	    			Object defVal = fv.getDefVal();
+	    			String defVal_s = "";
+	    			if (defVal!=null) defVal_s=", "+defVal.toString();
+	    			return "sfvar("+v.toString()+", "+range_s+defVal_s+")";
 	    		} else {
 	    			return "sfref("+fv.getConsEvalIdx()+", "+fv.getConsEvalKey()+")";
 	    		}
@@ -223,10 +290,20 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
         	return val;
         } else if (v instanceof String) {
         	if (quoted) return "\""+v+"\"";
-        	else return v.toString();
+        	else return (String)v;
         } else if (v instanceof SFNull){
         	return "sfnull";
+        } else if (v instanceof SFReference) {
+        	ReferencePart rp = ((SFReference)v).firstElement();
+        	if (rp instanceof AttribReferencePart) {
+        		String ret_s = ((AttribReferencePart)rp).getValue().toString();
+        		if (quoted) ret_s = "\""+ret_s+"\"";
+        		return ret_s;
+        	}
+        	else return null;
         }
+        else if (v instanceof ComponentDescription) return "sfcd";
+        else if (v instanceof Boolean) return (((Boolean)v).booleanValue() ? "true" : "false");
         else return null;
     }
     
@@ -247,7 +324,7 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
         else if (v instanceof Atom){
         	Atom va = (Atom) v;
         	if (va.functor().equals("sfnull")) return SFNull.get();
-        	else throw new SmartFrogEclipseRuntimeException("mapValueEJ: unknown data *from* solver " + v);
+        	else return va.functor();
         } else if (v==null) return new FreeVar();
         else throw new SmartFrogEclipseRuntimeException("mapValueEJ: unknown data *from* solver " + v);	
     }	    
@@ -265,6 +342,262 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
     		super(msg, null);
     	}
     }
+    
+    EclipseStatus m_est;
+    Vector m_rangeAttrs = new Vector();
+    EclipseCDAttr m_ecda;
+    
+    public class EclipseStatus{
+    	private boolean done;
+    	private int undo;
+    	private boolean back;
+    	private String ref;
+    	private String val;
+
+    	public void undo(){
+    		m_get_val = new Atom("back");
+			try{
+		    	m_java_to_eclipse.setListener(EclipseSolver.this);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unanable to set JtoE listener");            	
+	        }
+    	}
+    	
+    	public void done(){
+    		m_cdbm.kill();
+    		Iterator atiter = m_rangeAttrs.iterator();
+    		m_get_val=new Atom("done");
+            
+    		while (atiter.hasNext()){
+    			EclipseCDAttr ecda = (EclipseCDAttr) atiter.next();
+    			try{
+    				ecda.cd.sfReplaceAttribute(ecda.name, ecda.val);
+    			} catch (Exception e){
+		            throw new SmartFrogEclipseRuntimeException("Unable to set attr val in CD after user set");            	
+		        }
+    		}
+			try{
+				m_java_to_eclipse.setListener(EclipseSolver.this);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");            	
+	        }
+
+    	}
+    	
+        public boolean isDone(){
+        	return done;
+        }
+
+        public void setBack(boolean back){
+        	this.back=back;
+        }
+        
+        public boolean isBack(){
+        	return back;
+        }
+        
+        public int getUndo(){
+        	return undo;
+        }
+        
+        public String getUndoLabel(){
+        	if (ref!=null) return ref+" currently set to "+val;
+        	else return "";
+        }
+    }
+    
+    
+    public class EclipseCDAttr {
+    	private String name;
+    	private Object val;
+    	private Object range;
+    	private boolean set;
+    	private ComponentDescription cd;
+    	private Class vclass;
+    	
+    	public boolean isSet(){
+    		return set;
+    	}
+    	
+    	public boolean process_sel(String entry){
+    		m_ecda = this;
+    		Collection c = (Collection) range;
+    	    Iterator iter = c.iterator();
+    		while (iter.hasNext()){
+    			String el = iter.next().toString();
+    			if (el.equals(entry)){			
+    				m_get_val = new CompoundTermImpl("set", new Atom(name), new Atom(entry));  	
+    				try{
+    			    	m_java_to_eclipse.setListener(EclipseSolver.this);
+    				} catch (Exception e){
+    		            throw new SmartFrogEclipseRuntimeException("Unanable to reset JtoE listener");            	
+    		        }
+    				
+    				return true;
+    			} 
+    		}
+    		return false;
+    	}
+    	        
+        public String getRangeAsString(){
+    		return range.toString();
+    	}
+        
+    	public String getAttrName(){
+    		return name;
+    	}
+    	
+    	public String toString(){
+    		if (set){
+    			return name+" has value: "+val;
+    		} else {
+    			return name+" ranges over: "+range;
+    		}
+    	}
+    }
+    
+    void populateBrowser(){
+           Object root = m_cdbm.attr(null, "sfConfig", false);
+	       populateBrowser(top, root, false);	
+	    }
+	    
+	    void populateBrowser(ComponentDescription cd, Object root, boolean showme){
+	    	
+	    	Iterator attriter = cd.sfAttributes();
+	    	Context cxt = cd.sfContext();
+	    	//String cxts = create_ref_str(cd);
+	    	while (attriter.hasNext()){
+	    		Object attr = attriter.next();
+	    		
+	    		Object val = null;
+	    		
+	    		try {
+	    		   val = cxt.sfResolveAttribute(attr);
+	    		}  catch (Exception e){
+	    			throw new SmartFrogEclipseRuntimeException("Can not resolve attribute when populating browser", e);
+	    		}
+	    		
+	    		if (val instanceof SFApplyReference){
+	    			SFApplyReference val_ar = (SFApplyReference) val;
+	    			val = val_ar.getComponentDescription(); 
+	    		} 
+	    		
+	    		if (val instanceof ComponentDescription){
+	    			boolean showkids = (!showme && m_solve_comp==val);
+	    			Object chroot = m_cdbm.attr(root, attr.toString(), showme);
+	    			populateBrowser((ComponentDescription)val, chroot, showkids);
+	    		} else {	    		
+		    		EclipseCDAttr ecda = new EclipseCDAttr();
+		    		ecda.cd = cd;
+		    		ecda.name = attr.toString();
+		    		ecda.val = val;
+	                m_cdbm.attr(root, ecda, showme);
+	                try {
+	                	if (cd==m_solve_comp && cxt.sfContainsTag(attr, "sfConstraintUserVar") && val instanceof FreeVar) {
+	             		   m_rangeAttrs.add(ecda);
+	             		   ecda.set=false;             		   
+	                    } else {
+	 		    			ecda.set=true;
+	 		    		}
+	 	    		}  catch (Exception e){
+	 	    			throw new SmartFrogEclipseRuntimeException("Can not check attribute for tag", e);
+	 	    		}
+		    		
+	    		}
+	    		
+	    	}
+	    	
+	    }
+	    
+	    void sfuser(){
+	    	
+         String classname = System.getProperty("org.smartfrog.sfcore.languages.sf.constraints.CDBrowser");  
+         if (classname==null || !m_isuservars){
+         	m_get_val = new Atom("done");
+			try{
+				m_java_to_eclipse.setListener(EclipseSolver.this);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");            	
+	        }
+         	return;
+         }
+         
+         try {            
+         	m_cdbm = (CDBrowserModel) SFClassLoader.forName(classname).newInstance(); 
+         
+         } catch (Exception e){
+         	throw new SmartFrogEclipseRuntimeException("Can not instantiate CD Browser");
+         	
+         }
+         
+         populateBrowser();
+         
+         
+         if (m_rangeAttrs.size()!=0) {
+         	
+	        	List ranges = new LinkedList();
+	        	Iterator raiter = m_rangeAttrs.iterator();
+	        	while (raiter.hasNext()){
+	        		EclipseCDAttr ecda = (EclipseCDAttr) raiter.next();
+                    ranges.add(ecda.getAttrName());	        		
+	        	}
+	     
+	        	m_est = new EclipseStatus();
+	        	m_cdbm.setES(m_est);
+	        	m_get_val = new CompoundTermImpl("range", ranges);
+	        	
+         } else {
+         	m_get_val = new Atom("done");
+         }
+             	
+			try{
+				m_java_to_eclipse.setListener(EclipseSolver.this);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");            	
+	        }
+          
+	    }
+	    
+	    
+	    void range(CompoundTerm ct){
+	    	Collection c = (Collection)ct.arg(1);
+	    	Iterator citer = c.iterator();
+	    	Iterator riter = m_rangeAttrs.iterator();
+	    	boolean all_done=true;
+	    	
+	    	while (citer.hasNext()){
+	    		EclipseCDAttr ecda = (EclipseCDAttr) riter.next();
+	    		Collection range = (Collection) citer.next();
+	    		if (range.size()>1) {
+	    			ecda.range=mapValueEJ(range);
+	    			ecda.set=false;
+	    			all_done=false;
+	    		} else {
+	    			Iterator range_iter = range.iterator();
+	    			ecda.val = mapValueEJ(range_iter.next());
+	    			ecda.set=true;
+	    		}
+	    	}
+	    	
+	    	m_est.done=all_done;
+	    	m_cdbm.redraw();
+	    }
+	    
+	    void set(CompoundTerm ct){
+	    	m_est.undo = ((Integer)ct.arg(1)).intValue();
+	    	Object ref = ct.arg(2);
+	    	m_est.ref = (ref!=null? ((CompoundTerm)ref).functor() : null);
+	    	Object val = ct.arg(3);
+	    	m_est.val = (val!=null? ((CompoundTerm)val).functor() : null);
+	    	m_est.back = ((CompoundTerm)ct.arg(4)).functor().equals("back");
+	    	m_get_val = new Atom("range");
+	    	try{
+				m_java_to_eclipse.setListener(EclipseSolver.this);
+			} catch (Exception e){
+	            throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");            	
+	        }
+	    }
+    
      
 	    /**
 	     * Called when Eclipse flushes source
@@ -288,9 +621,13 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
 	         }
 	         
 	         String func = ct.functor();
-	         	    
+	         	 
+	         if (func.equals("sfuser")) sfuser();	         
+	         else if (func.equals("range")) range(ct);
+	         else if (func.equals("set")) set(ct);
+	         else if (func.equals("norange")) throw new SmartFrogEclipseRuntimeException("Unable to collect range information for sfConsUser tagged attributes. Probably because it has not been set in constraint annotations");
 	         //If done on constraint goal, yield lock so solve() may complete
-	         if (func.equals("sfdonegoal")) yieldLockFromECRThread();
+	         else if (func.equals("sfdonegoal")) yieldLockFromECRThread();
 	         //Setting an attributes value 
 	         else if (func.equals("sfset")){
 	        	 int idx = ((Integer) ct.arg(1)).intValue();
@@ -306,6 +643,8 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
 	        	 
 	        	 Iterator tar_iter = ctar.iterator();
 	        	 LinkResolutionState.getLRS().backtrackConstraintAss(idx, cidx);
+
+	        	 val = LinkResolutionState.getLRS().adjustSetValue(val);
 	        	 
 	        	 boolean first=true;
 	        	 while (tar_iter.hasNext()){
@@ -321,9 +660,15 @@ public class EclipseSolver extends PrologSolver implements Runnable, QueueListen
 	        			 first=false;
 	        		 }
 	        		 
-	        		 LinkResolutionState.getLRS().addConstraintAss(idx, key, val, cidx);
+	        		 boolean success = LinkResolutionState.getLRS().addConstraintAss(idx, key, val, cidx);
+	        		 m_get_val = ""+success;
+         	    	 try{ m_java_to_eclipse.setListener(this); } catch(Exception e){}
 	        	 }
 	        	 
+	         } else if (func.equals("sfsubtype")){
+	        	 String attr = ((Atom) ct.arg(1)).functor();
+	        	 String type = ((Atom) ct.arg(2)).functor();
+	        	 LinkResolutionState.getLRS().addTyping(attr, type);
 	         }
 	    }
 	

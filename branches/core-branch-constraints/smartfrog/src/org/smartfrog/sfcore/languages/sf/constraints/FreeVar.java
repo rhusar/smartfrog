@@ -20,18 +20,28 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.constraints;
 
+import java.util.Vector;
+import java.io.Serializable;
+
 import org.smartfrog.sfcore.common.Copying;
-import org.smartfrog.sfcore.common.LinkResolutionState;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.ResolutionState;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
+import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * Define a TBD entry in the syntax. Is used as a free variable to be bound
  * by coonstraint resolution.
  */
-//public class FreeVar implements ComponentResolver, Copying {
-public class FreeVar implements Copying {
+public class FreeVar implements Copying, Serializable {
 
+	static final long serialVersionUID = -2618542538185314519L;
+	
+	private Object defVal;
+	
+	public Object getDefVal() { return defVal; }
+	
 	/**
 	 * The constraint evaluation index that originates this FreeVar
 	 */
@@ -69,110 +79,57 @@ public class FreeVar implements Copying {
 	 */
 	public Object getConsEvalKey() { return ckey; }
 	
+	public void addTyping(String attr){ 
+		typeInfo.add(attr);
+	}
+	
+	public Vector getTyping(){ 
+		if (typeInfo.size()==0) return null;
+		else return typeInfo;
+	}
+	
+	public void removeLastTyping(){
+		typeInfo.remove(typeInfo.size()-1);
+	}
+	
+	public Vector typeInfo = new Vector();
+	
     private static int nextId = 0;
 
     private int id;
 
-    private boolean indexFixed;
+    private Object range;
+    private Reference rangeRef;
+    
+    public Object getRange(){ 
+    	return range; 
+    }
+    
+    public Object setRange(ComponentDescription comp) throws SmartFrogFunctionResolutionException { 
+        if (rangeRef!=null){
+        	String ref = rangeRef.toString();
+        	try {
+        		range = comp.sfResolve(rangeRef);
+        	} catch (SmartFrogResolutionException e){
+        		throw new SmartFrogFunctionResolutionException("Can resolve range for reference: "+rangeRef+" in constraint: "+comp, e);
+        	}
+        }
+    	return range; 
+    }
+    
     
     public FreeVar() {
         id = nextId++;
-        indexFixed = false;
     }
-
-    public FreeVar( int id ) {
-        this.id = id;
-        indexFixed = true;
+  
+    public FreeVar( Object range, Object defVal ) {
+    	this();   	
+    	if (range instanceof Reference) rangeRef = (Reference) range; 
+    	else this.range = range;
+    	
+    	this.defVal = defVal;
     }
-
-    public FreeVar( String image ) {
-        int startPoint = image.indexOf('/');
-        if (startPoint == -1) {
-            this.id = nextId++;
-            indexFixed = false;
-        } else {
-            int index = new Integer(image.substring(startPoint+1)).intValue();
-            this.id = index;
-            indexFixed = true;
-        }
-    }
-    /**
-     * Internal method that place resolves a parsed component. Place resolving
-     * places all attributes which have a reference (eager) as attribute name in
-     * their target component.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to place resolve
-     */
-    public void placeResolve() throws SmartFrogResolutionException {
-        //return this;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    /**
-     * Internal recursive method for doing the actual placement resolution.
-     * Implementors place any attributes with an eager reference as key in the
-     * prospective component.
-     *
-     * @param resState resolution state
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to place resolve
-     */
-    public void doPlaceResolve(ResolutionState resState) throws SmartFrogResolutionException {
-        //return this;
-    }
-
-    /**
-     * Internal method that type resolves a parsed component. Place resolving
-     * finds all supertypes and flattens them out.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to type resolve
-     */
-    public void typeResolve() throws SmartFrogResolutionException {
-        if (indexFixed)    ;
-            //return this;
-        else     ;
-            //return new FreeVar();
-    }
-
-    /**
-     * Internal recursive method for doing the actual type resolution.
-     *
-     * @param resState resolution state
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to type resolve
-     */
-    public void doTypeResolve(ResolutionState resState) throws SmartFrogResolutionException {
-         if (indexFixed)     ;
-            //return this;
-        else                ;
-            //return new FreeVar();
-    }
-
-    /**
-     * Internal method that performs a pre-deployment resolution on the object
-     * implementing this interface. Pre-deployment resolution means finding all
-     * eager reference values, resolving them, and copying the result into the
-     * target component
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to deploy resolve
-     */
-    public void linkResolve() throws SmartFrogResolutionException {
-        //return this;
-    }
-
-    /**
-     * Internal recursive method for doing the actual link resolution.
-     *
-     * @param resState resolution state
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
-     *          failed to deploy resolve
-     */
-    public void doLinkResolve(ResolutionState resState) throws SmartFrogResolutionException {
-        //return this;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
+        
     public int getId() {
         return id;
     }
@@ -182,11 +139,17 @@ public class FreeVar implements Copying {
     }
 
     public Object copy(){
-       return new FreeVar();
+       FreeVar fv = new FreeVar();
+       fv.cidx = cidx;
+       fv.ckey = ckey;
+       fv.rangeRef = rangeRef;
+       fv.range = range;
+       fv.defVal = defVal;
+       return fv;
     }
 
     public Object clone() {
-       return new FreeVar();
+       return copy();
     }
 
 }

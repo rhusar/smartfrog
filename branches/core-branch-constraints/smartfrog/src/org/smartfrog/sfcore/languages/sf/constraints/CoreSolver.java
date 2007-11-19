@@ -3,9 +3,9 @@ package org.smartfrog.sfcore.languages.sf.constraints;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.LinkResolutionState;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 abstract public class CoreSolver {
@@ -36,7 +36,11 @@ abstract public class CoreSolver {
         return solver;
     }
      
+    public void setRootDescription(ComponentDescription top){ this.top = top; }
+    
     abstract void prepareSolver() throws SmartFrogResolutionException;
-    abstract public void solve(Context cxt, Vector attrs, Vector values, Vector logic, Vector goal)  throws Exception;
+    abstract public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector logic, Vector goal, Vector autos, boolean isuservars)  throws Exception;
     abstract public void stopSolving() throws Exception;
+    abstract public void prepareTheory(ComponentDescription cd, String coreFile, String prologFile) throws Exception;
+    abstract public void runGoal(String goal) throws Exception;
 }
