@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xml.java5.iterators;
+package org.smartfrog.services.xml.utils.iterators;
 
 import nu.xom.Attribute;
 import nu.xom.Element;

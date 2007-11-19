@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xml.java5;
+package org.smartfrog.services.xml.utils;
 
 import nu.xom.Element;
 

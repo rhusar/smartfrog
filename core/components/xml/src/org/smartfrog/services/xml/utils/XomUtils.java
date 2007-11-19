@@ -25,6 +25,7 @@ import nu.xom.Serializer;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
+import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -100,5 +101,18 @@ public class XomUtils {
         sun.misc.BASE64Decoder decoder=new BASE64Decoder();
         return decoder.decodeBuffer(encoded);
     }
-    
+
+    /**
+     * turn a qname into an element of the same name
+     *
+     * @param qname quanlified name of the elemment
+     * @return an element of the qname
+     */
+    public static Element element(QName qname) {
+        Element element = new Element(qname.getLocalPart(),
+                qname.getNamespaceURI());
+        element.setNamespacePrefix(qname.getPrefix());
+        return element;
+
+    }
 }
