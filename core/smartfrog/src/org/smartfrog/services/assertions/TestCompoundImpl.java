@@ -217,7 +217,7 @@ public class TestCompoundImpl extends ConditionCompound
                 updateFlags(false);
                 endTestRun(record);
                 //then throw an exception
-                throw new SmartFrogException(UNEXPECTED_STARTUP_EXCEPTION
+                throw SmartFrogException.forward(UNEXPECTED_STARTUP_EXCEPTION
                         + "expected: '" + exitText + "'\n"
                         + "found   : '" + message + "'\n"
                         + exceptionCheck!=null?exceptionCheck:"",
