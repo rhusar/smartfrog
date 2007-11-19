@@ -250,7 +250,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
           }
        } catch (Exception e) {
           if (mandatory) {
-             throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
+             throw (SmartFrogResolutionException) SmartFrogResolutionException
+                     .forward("Error accessing attribute tags " + name, e);
           }
           return null;
        }

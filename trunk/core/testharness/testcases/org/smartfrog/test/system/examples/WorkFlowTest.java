@@ -51,7 +51,7 @@ public class WorkFlowTest
           diag = ((application).sfDiagnosticsReport()).toString();
           h1 = (Prim)application.sfResolveHere("h1");
         } catch (Exception ex) {
-            throw new SmartFrogResolutionException ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);
         }
         ComponentDescription cd = null;
         cd = h1.sfResolve("nodeAction", cd, true);

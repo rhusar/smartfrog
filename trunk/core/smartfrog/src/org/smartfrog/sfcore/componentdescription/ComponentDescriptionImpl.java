@@ -537,7 +537,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
           }
        } catch (SmartFrogException e) {
           if (mandatory) {
-             throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
+             throw (SmartFrogResolutionException) SmartFrogResolutionException
+                     .forward("Error accessing attribute tags " + name, e);
           }
           return null;
        }
@@ -906,7 +907,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         try {
             descr = (new SFParser(language)).sfParseResource(url,codebase);
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException("Error creating parser for '"+url+"'. "
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
                 +" ["+ thr.toString()+"]", thr);
         }
@@ -917,7 +918,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                descr = descr.sfResolvePhases(phases);
             }
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException ("Error during parsing of '"+url+"'. "
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error during parsing of '"+url+"'. "
                 +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
                 +" ["+ thr.toString()+"]", thr);
         }

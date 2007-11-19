@@ -142,7 +142,8 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
                     .newInstance());
             result = function.doit(forFunction, null, rr);
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create function class " + functionClass, e);
         }
         return result;
     }
@@ -204,7 +205,8 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
                     .newInstance());
             result = function.doit(forFunction, null, rr);
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
         return result;
     }
