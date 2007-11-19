@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,30 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.xml.java5;
+package org.smartfrog.services.xml.utils.iterators;
 
-import nu.xom.Element;
-
-import javax.xml.namespace.QName;
+import java.util.Iterator;
 
 /**
- * created 21-Dec-2006 16:09:10
+ * Dumb little class to relay iterators, just to force them into for() loops.
+ *
+ * created 17-May-2005 14:46:09
  */
 
-public class Xom5Utils {
-    /**
-     * turn a qname into an element of the same name
-     *
-     * @param qname quanlified name of the elemment
-     * @return an element of the qname
-     */
-    public static Element element(QName qname) {
-        Element element = new Element(qname.getLocalPart(),
-                qname.getNamespaceURI());
-        element.setNamespacePrefix(qname.getPrefix());
-        return element;
+public class IteratorRelay<T> implements Iterable<T>{
 
+    Iterator<T> iterator;
+
+    public IteratorRelay(Iterator<T> iterator) {
+        this.iterator = iterator;
+    }
+
+    /**
+     * Returns an iterator over a set of elements of type T.
+     *
+     * @return an Iterator.
+     */
+    public Iterator<T> iterator() {
+        return iterator;
     }
 }
