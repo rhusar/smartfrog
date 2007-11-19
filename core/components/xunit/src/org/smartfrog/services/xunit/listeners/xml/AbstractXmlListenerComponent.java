@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
+ * An abstract base class for XML Listeners
  */
 public abstract class AbstractXmlListenerComponent extends PrimImpl
         implements XmlListenerFactory {
