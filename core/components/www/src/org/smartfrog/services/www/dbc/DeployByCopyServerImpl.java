@@ -71,6 +71,10 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * {@value}
      */
     public static final String ERROR_ALREADY_RUNNING = "The servlet is already running!";
+    private static final String ERROR_DURING_SHUTDOWN =
+        "When running the shutdown component";
+    private static final String ERROR_TERMINATING_STARTUP =
+        "When terminating the startup component";
 
     public DeployByCopyServerImpl() throws RemoteException {
     }
@@ -128,8 +132,9 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
 
     /**
      * handle liveness check by throwing any fault received in the worker thread, then
-     * checking the health of the startup component.
-     * @param source caller
+     * checking the health of the startup component. We also ping the startup component
+     * if it exists.
+     * @param source source of the ping
      * @throws SmartFrogLivenessException ping failure
      * @throws RemoteException network failure
      */
@@ -149,7 +154,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * then kill the startup prim.
      * If shutdown was not null, it is started and then immediately terminated (so it
      * had better do its work in the start component)
-     * @param status exit record
+     * @param status exit record.
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         //close down the thread
@@ -162,7 +167,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
             try {
                 startupPrim.sfTerminate(status);
             } catch (RemoteException e) {
-                LogFactory.sfGetProcessLog().ignore("When terminating the startup component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_TERMINATING_STARTUP, e);
             }
             startupPrim = null;
         }
@@ -174,9 +179,9 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
                 shutdownPrim.sfStart();
                 shutdownPrim.sfTerminate(status);
             } catch (RemoteException e) {
-                LogFactory.sfGetProcessLog().ignore("When running the shutdown component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_DURING_SHUTDOWN, e);
             } catch (SmartFrogException e) {
-                LogFactory.sfGetProcessLog().ignore("When running the shutdown component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_DURING_SHUTDOWN, e);
             }
             shutdownPrim = null;
         }

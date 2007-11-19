@@ -17,7 +17,6 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
@@ -31,16 +30,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 
 /**
  * Model a liveness page.
- *
- * This is not quite a SmartFrog component, but rather a helper component for
+ * <p/>
+ * This is not quite a SmartFrog component, but rather a general purpose class for
  * importing into other things, as needed.
- *
+ * <p/>
  * Created 20-Apr-2004 16:11:51
  */
 public class LivenessPageChecker implements LivenessPage {
@@ -53,8 +51,8 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * path attribute
      */
-    protected String path=null;
-    
+    protected String path = null;
+
     /**
      */
     protected String page = "/";
@@ -70,6 +68,16 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      */
     protected int port = 80;
+
+    /**
+     * user name
+     */
+    protected String username;
+
+    /**
+     * password
+     */
+    protected String password;
 
     /**
      */
@@ -112,9 +120,10 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * Mime types
      */
-    protected HashMap mimeTypeMap;
+    protected HashMap<String, String> mimeTypeMap;
     private String errorMessage;
-
+    private Vector<Vector<String>> headers;
+    private int connectTimeout;
 
     /**
      * create a new liveness page
@@ -124,12 +133,13 @@ public class LivenessPageChecker implements LivenessPage {
      * @param port port to use
      * @param page page on the web site
      * @throws RemoteException for RMI/Networking problems
+     * @throws SmartFrogDeploymentException deployment problems
      */
     public LivenessPageChecker(
-        String protocol,
-        String host,
-        int port,
-        String page) throws RemoteException, SmartFrogDeploymentException {
+            String protocol,
+            String host,
+            int port,
+            String page) throws RemoteException, SmartFrogDeploymentException {
         this.page = page;
         this.protocol = protocol;
         this.host = host;
@@ -141,17 +151,22 @@ public class LivenessPageChecker implements LivenessPage {
      * Creates a new LivenessPageChecker object.
      *
      * @param url A URL to check
-     * @throws MalformedURLException if the URL is invalid
+     * @throws SmartFrogDeploymentException if the url generated a {@link
+     * MalformedURLException}
+     * @throws SmartFrogLogException log setup problems
      */
-    public LivenessPageChecker(String url) throws MalformedURLException, SmartFrogLogException {
+    public LivenessPageChecker(String url)
+            throws SmartFrogLogException, SmartFrogDeploymentException {
         bind(null);
-        targetURL = new URL(url);
+        bindToURL(url);
     }
 
     /**
      * Creates a new LivenessPageChecker object.
      *
+     * @param owner owner component
      * @param url A URL to check
+     * @throws SmartFrogLogException log setup problems
      */
     public LivenessPageChecker(Prim owner, URL url) throws SmartFrogLogException {
         bind(owner);
@@ -160,6 +175,9 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Creates a new LivenessPageChecker object.
+     *
+     * @param owner onwner component
+     * @throws SmartFrogLogException log setup problems
      */
     public LivenessPageChecker(Prim owner) throws SmartFrogLogException {
         bind(owner);
@@ -169,10 +187,11 @@ public class LivenessPageChecker implements LivenessPage {
      * bind to the owner, includes log setup
      *
      * @param owner owner class
+     * @throws SmartFrogLogException log setup problems
      */
     private void bind(Prim owner) throws SmartFrogLogException {
-        if(owner!=null) {
-            log=LogFactory.getLog(owner);
+        if (owner != null) {
+            log = LogFactory.getLog(owner);
         }
     }
 
@@ -182,7 +201,7 @@ public class LivenessPageChecker implements LivenessPage {
      *
      * @param target URL to bind to
      * @throws SmartFrogDeploymentException if the url generated a {@link
-     *                                      MalformedURLException}
+     * MalformedURLException}
      */
     public void bindToURL(String target) throws SmartFrogDeploymentException {
         try {
@@ -195,28 +214,37 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * make a URL from the various things
      *
-     * @throws SmartFrogDeploymentException DOCUMENT ME!
+     * @throws SmartFrogDeploymentException if the url generated a {@link
+     * MalformedURLException}
      */
     protected void makeURL() throws SmartFrogDeploymentException {
         StringBuilder target = new StringBuilder();
         target.append(protocol);
         target.append("://");
+        if (username != null) {
+            target.append(username);
+            target.append(':');
+            if (password != null) {
+                target.append(password);
+            }
+            target.append('@');
+        }
         target.append(host);
         target.append(':');
         target.append(port);
         String fullpath;
-        if(path!=null) {
-            fullpath=path;
+        if (path != null) {
+            fullpath = path;
             if (page != null) {
                 //add a page
-                if(!fullpath.endsWith("/") && !page.startsWith("/")) {
+                if (!fullpath.endsWith("/") && !page.startsWith("/")) {
                     //maybe a / char
-                    fullpath+="/";
+                    fullpath += "/";
                 }
-                fullpath+=page;
+                fullpath += page;
             }
         } else {
-            fullpath=page;
+            fullpath = page;
         }
         if (!fullpath.startsWith("/")) {
             target.append('/');
@@ -236,12 +264,16 @@ public class LivenessPageChecker implements LivenessPage {
      * nothing.
      *
      * @throws SmartFrogDeploymentException if the URL is bad
-     *
      */
     public synchronized void onStart() throws SmartFrogDeploymentException {
         demandCreateURL();
     }
 
+    /**
+     * Create the URL on demand
+     *
+     * @throws SmartFrogDeploymentException the URL is bad
+     */
     private void demandCreateURL() throws SmartFrogDeploymentException {
         if (targetURL == null) {
             makeURL();
@@ -252,7 +284,6 @@ public class LivenessPageChecker implements LivenessPage {
      * try and retrieve the liveness page.
      *
      * @throws SmartFrogLivenessException if the check fails
-     *
      */
     public void onPing() throws SmartFrogLivenessException {
         if (!isEnabled()) {
@@ -269,13 +300,22 @@ public class LivenessPageChecker implements LivenessPage {
     public void checkPage() throws SmartFrogLivenessException {
         //set up the connection
         HttpURLConnection connection = null;
-        boolean logDebug= log != null && log.isDebugEnabled(); 
+        boolean logDebug = log != null && log.isDebugEnabled();
         try {
             if (logDebug) {
                 log.debug("connecting to " + targetURL);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setInstanceFollowRedirects(followRedirects);
+            //set the headers
+            if (headers != null) {
+                for (Vector<String> tuple : headers) {
+                    connection.addRequestProperty(tuple.get(0), tuple.get(1));
+                }
+            }
+            if (connectTimeout >= 0) {
+                connection.setConnectTimeout(connectTimeout);
+            }
 
             //this call actually triggers sending the request
             int responseCode = connection.getResponseCode();
@@ -323,6 +363,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * Log the error message and raise an exception.
      * The error text is also saved to {@link #errorMessage}
+     *
      * @param message message to report
      * @throws SmartFrogLivenessException always
      */
@@ -333,14 +374,15 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * just a little something for subclassers out there
+     * Override point.
      *
      * @param responseCode response http code
      * @param response response line
      * @param body body of the response
      * @throws SmartFrogLivenessException if need be
      */
-    private void postProcess(int responseCode, String response, String body) throws SmartFrogLivenessException {
+    private void postProcess(int responseCode, String response, String body)
+            throws SmartFrogLivenessException {
     }
 
 
@@ -419,8 +461,8 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public String toString() {
         return targetURL.toString() + " "
-            + minimumResponseCode + "< response <" + maximumResponseCode 
-            + (enabled?"":"(disabled)");
+                + minimumResponseCode + "< response <" + maximumResponseCode
+                + (enabled ? "" : "(disabled)");
     }
 
     /**
@@ -587,6 +629,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Get any error message raised by the last poll
+     *
      * @return the error message, which may be null
      */
     public String getErrorMessage() {
@@ -594,7 +637,7 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * query the enabled flag. 
+     * query the enabled flag.
      * Overrides other options
      *
      * @return current value
@@ -658,10 +701,37 @@ public class LivenessPageChecker implements LivenessPage {
         if (mimeTypes == null || mimeTypes.size() == 0) {
             mimeTypeMap = null;
         } else {
+            mimeTypeMap = new HashMap<String, String>(mimeTypes.size());
             for (Object mimeType : mimeTypes) {
                 String type = (mimeType.toString()).intern();
                 mimeTypeMap.put(type, type);
             }
         }
+    }
+
+    /**
+     * Set the headers
+     *
+     * @param headers headers
+     */
+    public void setHeaders(Vector<Vector<String>> headers) {
+        this.headers = headers;
+    }
+
+    /**
+     * Set the timeout in milliseconds for opening a connection
+     *
+     * @param connectTimeout the new value in millis
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
