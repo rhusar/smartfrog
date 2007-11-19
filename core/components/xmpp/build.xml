@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
-<project name="xmpp" default="default"
-    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="xmpp" default="default" >
 
   <!--
-  /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -25,15 +24,13 @@
   -->
 
   <description>
-    Build file for the JUnit tests.
+    Build file for the XMPP components.
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
 
-  <!--java 1.5-->
-  <property name="javac.java.version" value="1.5"/>
 
   <!-- override point -->
   <property file="build.properties"/>
@@ -77,5 +74,4 @@
   </target>
 
 
-  <target name="all" depends="published,test"/>
 </project>
