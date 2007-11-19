@@ -200,7 +200,7 @@ public class SFPersist extends PrimImpl implements Prim {
                             sfPersist,
                             e);
                 }
-                throw new SmartFrogException("Error persisting component to file " +
+                throw SmartFrogException.forward("Error persisting component to file " +
                         sfPersist, e);
             }
         }
@@ -240,7 +240,7 @@ public class SFPersist extends PrimImpl implements Prim {
                 if (log.isErrorEnabled()) {
                     log.error("Error persisting component to file " + file, e);
                 }
-                throw new SmartFrogException("Error persisting component to file " +
+                throw SmartFrogException.forward("Error persisting component to file " +
                         file, e);
             }
         }
