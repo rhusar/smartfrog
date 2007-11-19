@@ -64,11 +64,19 @@ For more information: www.smartfrog.org
      //    name&users&error=500
      queries extends OptionalVector;
 
+      //Basic authentication only; if the username is set, the password is needed 
+     username extends OptionalString;
+     password extends OptionalString;
+     
    //and any of
 
      //flag to set if you want any error text fetched from
      //the remote site. This is good for diagnostics.
      fetchErrorText extends OptionalBoolean;
+
+     //headers
+     headers extends Vector;
+
      //response code below which the fetch is an error
      minimumResponseCode extends OptionalInteger;
      //error code above which an error has occurred,
@@ -103,15 +111,18 @@ For more information: www.smartfrog.org
      fetchErrorText true;
      maximumResponseCode 299;
      minimumResponseCode 200;
+     enabled true;
      followRedirects true;
      checkFrequency 1000;
-     enabled true;
      checkOnStartup false;
      checkOnLiveness true;
+     connectTimeout -1;
+     headers [];
      host "127.0.0.1";
      protocol "http";
      port 80;
      page "/";
+
  }
 
 

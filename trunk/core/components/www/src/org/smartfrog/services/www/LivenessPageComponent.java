@@ -24,7 +24,9 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.net.URL;
@@ -72,6 +74,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
 
     private boolean checkOnStartup;
     private boolean checkOnLiveness;
+
 
     /**
      * empty constructor
@@ -136,6 +139,12 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
             livenessPage.setPage(sfResolve(ATTR_PAGE,
                     livenessPage.getPage(),
                     false));
+            String username = sfResolve(ATTR_USERNAME, (String) null, false);
+            if (username != null) {
+                String password = sfResolve(ATTR_PASSWORD, (String) null, true);
+                livenessPage.setUsername(username);
+                livenessPage.setPassword(password);
+            }
             Vector queries = sfResolve(ATTR_QUERIES, (Vector) null, false);
             livenessPage.buildQueryString(queries);
         }
@@ -153,6 +162,13 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
         checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
+
+        //header vector
+        Vector<Vector<String>> headers;
+        headers= ListUtils.resolveStringTupleList(this,new Reference(ATTR_HEADERS),true);
+        livenessPage.setHeaders(headers);
+
+        livenessPage.setConnectTimeout(sfResolve(ATTR_CONNECT_TIMEOUT,0,true));
 
         updateEnabledState();
         //now tell the liveness page it is deployed

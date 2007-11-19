@@ -32,22 +32,61 @@ import java.rmi.RemoteException;
 
 public interface LivenessPage extends Remote {
 
+    /** component attribute, value {@value} */
     String ATTR_URL = "url";
+    /** component attribute, value {@value} */
     String ATTR_HOST = "host";
+    /** component attribute, value {@value} */
     String ATTR_PORT = "port";
+    /** component attribute, value {@value} */
     String ATTR_PROTOCOL = "protocol";
+    /** component attribute, value {@value} */
     String ATTR_PAGE = "page";
+    /** component attribute, value {@value} */
     String ATTR_PATH = "path";
+    /** component attribute, value {@value} */
     String ATTR_FOLLOW_REDIRECTS = "followRedirects";
+    /** component attribute, value {@value} */
     String ATTR_ERROR_TEXT = "fetchErrorText";
+    /** component attribute, value {@value} */
     String ATTR_MINIMUM_RESPONSE_CODE = "minimumResponseCode";
+    /** component attribute, value {@value} */
     String ATTR_MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
+    /** component attribute, value {@value} */
     String ATTR_CHECK_FREQUENCY = "checkFrequency";
+    /** component attribute, value {@value} */
     String ATTR_ENABLED = "enabled";
+    /** component attribute, value {@value} */
     String ATTR_QUERIES = "queries";
+    /** component attribute, value {@value} */
     String ATTR_MIME_TYPES = "mimeType";
+    /** component attribute, value {@value} */
     String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
+    /** component attribute, value {@value} */
     String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
+    /**
+     * component attribute, value {@value}
+     */
+    String ATTR_REGEXP = "regexp";
+    /**
+     * component attribute, value {@value}
+     */
+    String ATTR_HEADERS = "headers";
+
+    /**
+     * component attribute, value {@value}
+     */
+    String ATTR_CONNECT_TIMEOUT = "connectTimeout";
+
+    /**
+     * component attribute, value {@value}
+     */
+    String ATTR_USERNAME = "username";
+
+    /**
+     * component attribute, value {@value}
+     */
+    String ATTR_PASSWORD = "password";
 
     /**
      * Check the page, regardless of whether the component is enabled or not.
