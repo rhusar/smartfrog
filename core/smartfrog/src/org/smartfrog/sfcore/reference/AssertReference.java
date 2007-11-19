@@ -141,7 +141,8 @@ public class AssertReference extends Reference implements Copying, Cloneable, Se
                     .newInstance());
             result = function.doit(forFunction, null, rr);
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("failed to create function class " + functionClass, e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create function class " + functionClass, e);
         }
         if (result instanceof Boolean) {
             if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for " +

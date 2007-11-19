@@ -53,7 +53,8 @@ abstract public class PrologSolver extends CoreSolver {
         try {
             prepareTheory(cd,corefile,thfile);
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("Unable to parse base theory for constraint resolution. ", e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("Unable to parse base theory for constraint resolution. ", e);
         }
 
         //Add the path root
@@ -63,7 +64,8 @@ abstract public class PrologSolver extends CoreSolver {
         	try {
         		runGoal("add_path(\""+thpath+"\")");
         	} catch (Exception e) {
-                throw new SmartFrogResolutionException("Unable to add root theory file path. ", e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException
+                        .forward("Unable to add root theory file path. ", e);
             }	
         }
         
@@ -71,7 +73,8 @@ abstract public class PrologSolver extends CoreSolver {
         try {
             collectConstraints();
         } catch (Exception e) {
-            throw new SmartFrogResolutionException("Error collecting constraints during constraint resolution", e);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("Error collecting constraints during constraint resolution", e);
         }
 
         if (constraints.size()!=0) {       
@@ -79,14 +82,15 @@ abstract public class PrologSolver extends CoreSolver {
 		    try {
 			    solveConstraints();
 		    } catch (Exception e) {
-			throw new SmartFrogResolutionException("Error in solving constraints", e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error in solving constraints", e);
 		    }	
 	    }
 
  		try {
 	    	destroy();
 	    } catch (Exception e){
-	    	throw new SmartFrogResolutionException("Problem with destroying constraint solver", e);
+	    	throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("Problem with destroying constraint solver", e);
 	    }
     }
 

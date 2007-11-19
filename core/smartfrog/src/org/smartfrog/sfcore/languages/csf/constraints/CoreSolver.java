@@ -27,7 +27,8 @@ abstract public class CoreSolver implements Solver {
                 solverClass = SFClassLoader.forName(solverClassname);
                 solver = (Solver) solverClass.newInstance();
             } catch (Exception e) {
-                throw new SmartFrogResolutionException("Unable to construct constraint solver", e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException
+                        .forward("Unable to construct constraint solver", e);
             }
         }
         return solver;
