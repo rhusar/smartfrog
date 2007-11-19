@@ -42,6 +42,7 @@ public interface XmlListener extends TestListener {
      * get the filename of this
      *
      * @return the filename used
+     * @throws RemoteException network trouble
      */
     String getFilename() throws RemoteException;
 }
