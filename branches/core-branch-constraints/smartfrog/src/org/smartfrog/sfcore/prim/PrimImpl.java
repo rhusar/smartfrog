@@ -52,7 +52,6 @@ import org.smartfrog.sfcore.common.SmartFrogUpdateException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -187,8 +186,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                if ((sfLog!=null) && sfLog().isTraceEnabled()) {
                    sfLog().trace("sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
-           } catch (SmartFrogConstraintBacktrackError sfcbe){
-           	throw sfcbe;
            } catch (Throwable thr) {thr.printStackTrace();} //ignore
 
         } catch (SmartFrogContextException ex) {
@@ -251,8 +248,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
              }
              return null;
           }
-       } catch (SmartFrogConstraintBacktrackError sfcbe){
-       	   throw sfcbe;
        } catch (Exception e) {
           if (mandatory) {
              throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
@@ -349,11 +344,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (java.lang.StackOverflowError st){
             throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
                st.toString() +". Possible cause: cyclic reference",null,st,this);
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
-        } catch (Throwable thr){
+        } catch (Exception ex){
              throw new SmartFrogResolutionException(r,this.sfCompleteNameSafe(),
-              null,null,thr,this);
+              null,null,ex,this);
         }
 
         return obj;

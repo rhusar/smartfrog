@@ -4,6 +4,7 @@ package org.smartfrog.sfcore.languages.sf;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
@@ -36,7 +37,7 @@ import java.util.HashSet;
 
 public class DefaultParser implements DefaultParserConstants {
   protected IncludeHandler includeHandler;
-  static int nextId = 0;
+  public static int nextId = 0;
 
   static final String appendOp = "org.smartfrog.sfcore.languages.sf.functions.Append";
   static final String concatOp = "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
@@ -475,9 +476,90 @@ public class DefaultParser implements DefaultParserConstants {
   }
 
   final public Object Var() throws ParseException {
-   Token res = null;
-    res = jj_consume_token(VAR);
-                 {if (true) return new FreeVar(res.image);}
+   Object ran = null;
+   Object val = null;
+    jj_consume_token(VAR);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case APPLY:
+    case ASSERT:
+    case ATTRIB:
+    case HERE:
+    case HOST:
+    case PROPERTY:
+    case IPROPERTY:
+    case ENVPROPERTY:
+    case IENVPROPERTY:
+    case LAZY:
+    case OPTIONAL:
+    case PARENT:
+    case PROCESS:
+    case ROOT:
+    case THIS:
+    case WORD:
+    case STRING:
+    case MULTILINESTRING:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case APPLY:
+      case ASSERT:
+      case ATTRIB:
+      case HERE:
+      case HOST:
+      case PROPERTY:
+      case IPROPERTY:
+      case ENVPROPERTY:
+      case IENVPROPERTY:
+      case LAZY:
+      case OPTIONAL:
+      case PARENT:
+      case PROCESS:
+      case ROOT:
+      case THIS:
+      case WORD:
+        ran = ReferenceNoEOF();
+        break;
+      case STRING:
+      case MULTILINESTRING:
+        ran = String();
+        break;
+      default:
+        jj_la1[11] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case STRING:
+      case MULTILINESTRING:
+      case INTEGER:
+      case DOUBLE:
+      case LONG:
+      case FLOAT:
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case STRING:
+        case MULTILINESTRING:
+          val = String();
+          break;
+        case INTEGER:
+        case DOUBLE:
+        case LONG:
+        case FLOAT:
+          val = Number();
+          break;
+        default:
+          jj_la1[12] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      default:
+        jj_la1[13] = jj_gen;
+        ;
+      }
+           {if (true) return new FreeVar(ran, val);}
+      break;
+    default:
+      jj_la1[14] = jj_gen;
+           {if (true) return new FreeVar();}
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -526,7 +608,7 @@ public class DefaultParser implements DefaultParserConstants {
       res = IfThenElse();
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -612,7 +694,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[12] = jj_gen;
+              jj_la1[16] = jj_gen;
               break label_2;
             }
             jj_consume_token(APPEND);
@@ -632,7 +714,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[13] = jj_gen;
+              jj_la1[17] = jj_gen;
               break label_3;
             }
             jj_consume_token(CONCAT);
@@ -652,7 +734,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[14] = jj_gen;
+              jj_la1[18] = jj_gen;
               break label_4;
             }
             jj_consume_token(SUM);
@@ -672,7 +754,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[15] = jj_gen;
+              jj_la1[19] = jj_gen;
               break label_5;
             }
             jj_consume_token(TIMES);
@@ -692,7 +774,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[16] = jj_gen;
+              jj_la1[20] = jj_gen;
               break label_6;
             }
             jj_consume_token(AND);
@@ -712,7 +794,7 @@ public class DefaultParser implements DefaultParserConstants {
               ;
               break;
             default:
-              jj_la1[17] = jj_gen;
+              jj_la1[21] = jj_gen;
               break label_7;
             }
             jj_consume_token(OR);
@@ -761,18 +843,18 @@ public class DefaultParser implements DefaultParserConstants {
           b = SimpleValue();
           break;
         default:
-          jj_la1[18] = jj_gen;
+          jj_la1[22] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[23] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[24] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -861,7 +943,7 @@ public class DefaultParser implements DefaultParserConstants {
                                        componentClass = id.image;
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[25] = jj_gen;
       ;
     }
     component = ComponentType(componentClass);
@@ -895,7 +977,7 @@ public class DefaultParser implements DefaultParserConstants {
       DataComponent(component);
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[26] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -917,7 +999,7 @@ public class DefaultParser implements DefaultParserConstants {
       jj_consume_token(LAZY);
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[27] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -941,7 +1023,7 @@ public class DefaultParser implements DefaultParserConstants {
         jj_consume_token(SEMICOLON);
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[28] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -968,7 +1050,7 @@ public class DefaultParser implements DefaultParserConstants {
         jj_consume_token(SEMICOLON);
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[29] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -981,12 +1063,12 @@ public class DefaultParser implements DefaultParserConstants {
         BaseComponentRest(comp);
         break;
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[30] = jj_gen;
         ;
       }
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[31] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1039,7 +1121,7 @@ public class DefaultParser implements DefaultParserConstants {
         jj_consume_token(NULL);
         break;
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[32] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1052,7 +1134,7 @@ public class DefaultParser implements DefaultParserConstants {
         jj_consume_token(SEMICOLON);
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[33] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1061,7 +1143,7 @@ public class DefaultParser implements DefaultParserConstants {
       BaseComponentAttributesType(comp);
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[34] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1090,7 +1172,7 @@ public class DefaultParser implements DefaultParserConstants {
             lazy = true;
       break;
     default:
-      jj_la1[31] = jj_gen;
+      jj_la1[35] = jj_gen;
       ;
     }
     res = BaseReference();
@@ -1127,13 +1209,13 @@ public class DefaultParser implements DefaultParserConstants {
           jj_consume_token(OPEND);
           break;
         default:
-          jj_la1[32] = jj_gen;
+          jj_la1[36] = jj_gen;
           ;
         }
                                                               optional = true;
         break;
       default:
-        jj_la1[33] = jj_gen;
+        jj_la1[37] = jj_gen;
         ;
       }
       ref = LinkReference();
@@ -1156,7 +1238,7 @@ public class DefaultParser implements DefaultParserConstants {
               ref = new SFAssertReference(comp);
       break;
     default:
-      jj_la1[34] = jj_gen;
+      jj_la1[38] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1176,7 +1258,7 @@ public class DefaultParser implements DefaultParserConstants {
         ;
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[39] = jj_gen;
         break label_8;
       }
       jj_consume_token(REFPARTSEP);
@@ -1248,7 +1330,7 @@ public class DefaultParser implements DefaultParserConstants {
                       ref.addElement(ReferencePart.here(id.image));
       break;
     default:
-      jj_la1[36] = jj_gen;
+      jj_la1[40] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1320,7 +1402,7 @@ public class DefaultParser implements DefaultParserConstants {
             ;
             break;
           default:
-            jj_la1[37] = jj_gen;
+            jj_la1[41] = jj_gen;
             break label_9;
           }
           jj_consume_token(COMMA);
@@ -1329,7 +1411,7 @@ public class DefaultParser implements DefaultParserConstants {
         }
         break;
       default:
-        jj_la1[38] = jj_gen;
+        jj_la1[42] = jj_gen;
         ;
       }
       jj_consume_token(RBRACKET);
@@ -1347,7 +1429,7 @@ public class DefaultParser implements DefaultParserConstants {
       res = component;
       break;
     default:
-      jj_la1[39] = jj_gen;
+      jj_la1[43] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1407,7 +1489,7 @@ public class DefaultParser implements DefaultParserConstants {
             ;
             break;
           default:
-            jj_la1[40] = jj_gen;
+            jj_la1[44] = jj_gen;
             break label_10;
           }
           jj_consume_token(COMMA);
@@ -1416,7 +1498,7 @@ public class DefaultParser implements DefaultParserConstants {
         }
         break;
       default:
-        jj_la1[41] = jj_gen;
+        jj_la1[45] = jj_gen;
         ;
       }
       jj_consume_token(VECTOREND);
@@ -1434,7 +1516,7 @@ public class DefaultParser implements DefaultParserConstants {
       res = Var();
       break;
     default:
-      jj_la1[42] = jj_gen;
+      jj_la1[46] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1466,7 +1548,7 @@ public class DefaultParser implements DefaultParserConstants {
       num = Long.valueOf(res.image.substring(0, res.image.length() - 1));
       break;
     default:
-      jj_la1[43] = jj_gen;
+      jj_la1[47] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1487,7 +1569,7 @@ public class DefaultParser implements DefaultParserConstants {
                                s = fixEscapes(res.image.substring(2, res.image.length() - 1));
       break;
     default:
-      jj_la1[44] = jj_gen;
+      jj_la1[48] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1508,7 +1590,7 @@ public class DefaultParser implements DefaultParserConstants {
                      b = Boolean.FALSE;
       break;
     default:
-      jj_la1[45] = jj_gen;
+      jj_la1[49] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1547,7 +1629,7 @@ public class DefaultParser implements DefaultParserConstants {
       res = jj_consume_token(WORD);
       break;
     default:
-      jj_la1[46] = jj_gen;
+      jj_la1[50] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1560,7 +1642,7 @@ public class DefaultParser implements DefaultParserConstants {
   public Token token, jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[47];
+  final private int[] jj_la1 = new int[51];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -1570,13 +1652,13 @@ public class DefaultParser implements DefaultParserConstants {
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0xdf7ce000,0x40000000,0x40810000,0x40810000,0x10000,0x40000000,0x20000,0x0,0x0,0x0,0xdf7ce000,0xdf74e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xdf74e000,0x0,0xbf648000,0x10040000,0x20020000,0x20020000,0x20020000,0xaf608000,0xaf608000,0x20020000,0x20020000,0x10000000,0x0,0x0,0xf60e000,0x0,0xf608000,0x20000,0xdf74e000,0xc0140000,0x20000,0x80140000,0x80140000,0x0,0x0,0x100000,0x0,};
+      jj_la1_0 = new int[] {0xdf7ce000,0x40000000,0x40810000,0x40810000,0x10000,0x40000000,0x20000,0x0,0x0,0x0,0xdf7ce000,0x1f60e000,0x0,0x0,0x1f60e000,0xdf74e000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xdf74e000,0x0,0xbf648000,0x10040000,0x20020000,0x20020000,0x20020000,0xaf608000,0xaf608000,0x20020000,0x20020000,0x10000000,0x0,0x0,0xf60e000,0x0,0xf608000,0x20000,0xdf74e000,0xc0140000,0x20000,0x80140000,0x80140000,0x0,0x0,0x100000,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x80005747,0x0,0x2080,0x2080,0x0,0x0,0x0,0x0,0x20,0x2000,0x800057c7,0x80005747,0x200000,0x100000,0x10000,0x40000,0x10000000,0x20000000,0x3fff0000,0x3fff0000,0xc0005747,0x20,0x2c6,0x0,0x80,0x80,0x0,0x2c6,0x246,0x80,0x0,0x0,0x4000,0x1,0x247,0x20,0x246,0x0,0x80005747,0x1500,0x0,0x1500,0x1500,0x0,0x0,0x400,0x0,};
+      jj_la1_1 = new int[] {0x80005747,0x0,0x2080,0x2080,0x0,0x0,0x0,0x0,0x20,0x2000,0x800057c7,0x247,0x0,0x0,0x247,0x80005747,0x200000,0x100000,0x10000,0x40000,0x10000000,0x20000000,0x3fff0000,0x3fff0000,0xc0005747,0x20,0x2c6,0x0,0x80,0x80,0x0,0x2c6,0x246,0x80,0x0,0x0,0x4000,0x1,0x247,0x20,0x246,0x0,0x80005747,0x1500,0x0,0x1500,0x1500,0x0,0x0,0x400,0x0,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x1e718,0x0,0x110,0x110,0x0,0x0,0x0,0x310,0x0,0x110,0x1e718,0x1e718,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e718,0x0,0x10,0x0,0x0,0x0,0x0,0x10,0x10,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x10,0x0,0x1e718,0x1e708,0x0,0x1e708,0x1e708,0xe400,0x300,0x0,0x310,};
+      jj_la1_2 = new int[] {0x1e718,0x0,0x110,0x110,0x0,0x0,0x0,0x310,0x0,0x110,0x1e718,0x310,0xe700,0xe700,0x310,0x1e718,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e718,0x0,0x10,0x0,0x0,0x0,0x0,0x10,0x10,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x10,0x0,0x1e718,0x1e708,0x0,0x1e708,0x1e708,0xe400,0x300,0x0,0x310,};
    }
 
   public DefaultParser(java.io.InputStream stream) {
@@ -1585,7 +1667,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.InputStream stream) {
@@ -1594,7 +1676,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   public DefaultParser(java.io.Reader stream) {
@@ -1603,7 +1685,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.Reader stream) {
@@ -1612,7 +1694,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   public DefaultParser(DefaultParserTokenManager tm) {
@@ -1620,7 +1702,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(DefaultParserTokenManager tm) {
@@ -1628,7 +1710,7 @@ public class DefaultParser implements DefaultParserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 47; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 51; i++) jj_la1[i] = -1;
   }
 
   final private Token jj_consume_token(int kind) throws ParseException {
@@ -1683,7 +1765,7 @@ public class DefaultParser implements DefaultParserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 47; i++) {
+    for (int i = 0; i < 51; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

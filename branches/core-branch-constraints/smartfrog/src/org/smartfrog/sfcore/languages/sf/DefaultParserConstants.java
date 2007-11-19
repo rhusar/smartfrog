@@ -148,7 +148,7 @@ public interface DefaultParserConstants {
     "\"THEN\"",
     "\"ELSE\"",
     "\"FI\"",
-    "<VAR>",
+    "\"VAR\"",
     "<WORD>",
     "<SPECIAL>",
     "<LETTER>",

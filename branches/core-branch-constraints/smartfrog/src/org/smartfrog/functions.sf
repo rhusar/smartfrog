@@ -146,3 +146,60 @@ ref extends Function{
 Ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
+
+Constraint extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+     sfConstraintAggregated false;
+}
+
+AggregatedConstraint extends Constraint {
+     sfConstraintAggregated true;
+}
+
+Array extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+     sfArrayExtent 3;
+     sfArrayPrefix "foo";
+     sfArrayGenerator extends {}
+}
+
+Aggregator extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+}
+
+forall extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
+     sfFunctionQual "forall";
+}
+
+exists extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
+     sfFunctionQual "exists";
+}
+
+nsum extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+     sfFunctionQual "sum";
+}
+
+nproduct extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+     sfFunctionQual "product";
+}
+
+alldiff extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+}
+
+ResourceAllocator extends AggregatedConstraint{
+   sfAggregatedConstraintSource0 producers;
+   sfAggregatedConstraintSource1 producer_caps;
+   sfAggregatedConstraintSource2 consumers;
+   sfAggregatedConstraintSource3 consumer_caps;
+   sfAggregatedConstraintSource4 allocation;
+   colocations [];
+   nocolocations [];
+   hosted [];
+   [sfConstraint] -- "allocate(sfAggregatedConstraintVals0, sfAggregatedConstraintVals1, sfAggregatedConstraintVals2, sfAggregatedConstraintVals3, sfAggregatedConstraintVals4, colocations, nocolocations, hosted)";
+}
+

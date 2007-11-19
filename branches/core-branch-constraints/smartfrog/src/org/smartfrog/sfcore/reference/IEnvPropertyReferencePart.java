@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -101,9 +100,7 @@ public class IEnvPropertyReferencePart extends ReferencePart {
             if (v == null)
                 throw SmartFrogResolutionException.notFound(r, null);
             return SFSystem.parseValue(v,null);
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
@@ -126,9 +123,7 @@ public class IEnvPropertyReferencePart extends ReferencePart {
             String v = SFSystem.getEnv((String) value, null);
             if (v == null) throw SmartFrogResolutionException.notFound(r, null);
             return SFSystem.parseValue(v,null);
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }

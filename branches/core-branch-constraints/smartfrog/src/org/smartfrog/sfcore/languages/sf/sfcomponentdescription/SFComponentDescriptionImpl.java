@@ -30,14 +30,12 @@ import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.LinkResolutionState;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SFByteArray;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SFTempValue;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
@@ -49,6 +47,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
+import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.parser.Phases;
@@ -96,7 +95,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        super(parent, cxt, eager);
        if (types != null) this.types = types;
     }
-
+    
+    /**
+     * Constuctor.
+     *
+     */
+    public SFComponentDescriptionImpl() {
+        super(null, new ContextImpl(), true);
+    }
 
    /**
     *  Get prototypes for this description. This is the component from which
@@ -595,45 +601,51 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        Object key, value, result;       
 
        //Add a link history record to link resolution state
-       LinkResolutionState.LRSRecord lrsr = LinkResolutionState.getLRS().addLRSRecord(this, 0);
+       LinkResolutionState.getLRS().addLRSRecord(this, 0);       
+       if (LinkResolutionState.getConstraintsPossible()) CoreSolver.getInstance().setRootDescription(this);
        
        while (true){
     	   //Get current description being processed...
-    	   SFComponentDescription sfcd = lrsr.getSFCD();
+    	   SFComponentDescription sfcd = LinkResolutionState.getLRS().getLRSRecord().getSFCD();
     	   //If all attributes processed...
     	   if (LinkResolutionState.getLRS().getIdx()==sfcd.sfContext().size()) {
     		   //Get parent description
-    		   lrsr = LinkResolutionState.getLRS().pop();
+    		   LinkResolutionState.getLRS().pop();
     		   //If no parent
-               if (lrsr==null) {
+               if (LinkResolutionState.getLRS().getLRSRecord()==null) {
             	   //Reset whether constraints are relevant
             	   LinkResolutionState.resetConstraintRelevance();
             	   //Do a visit to every cd removing constraint annotations...
                    try {
                 	   visit(new CDVisitor(){
                 		   public void actOn(ComponentDescription node, java.util.Stack path){
-                			   try {
-                				   Object functionClass = node.sfResolveHere("sfFunctionClass");
-	                               if (functionClass!=null && functionClass.equals("done")){
+                			   Object functionClassStatus=node.sfContext().get("sfFunctionClassStatus");                			
+                			   try {  
+	                               if (functionClassStatus!=null && functionClassStatus.equals("done")){
+	                            	   node.sfContext().remove("sfFunctionClassStatus");
+	                            	   Object functionClass=node.sfContext().get("sfFunctionClass");
 	                            	   node.sfContext().remove("sfFunctionClass");
-	                            	   Enumeration attr_enum = node.sfContext().keys();
-	                            	   Vector attr_keys = new Vector();
-	                            	   while (attr_enum.hasMoreElements()){
-	                            		   Object _key = attr_enum.nextElement();
-	                            		   try {
-	                            			   if (node.sfContext().sfContainsTag(_key, "sfConstraint")) {
-	                            				   attr_keys.add(_key);
-	                            			   }
-	                            		   }catch (SmartFrogContextException e){}
-	                            	   }
-	                            	   Iterator attr_iter = attr_keys.iterator();
-	                            	   while (attr_iter.hasNext()) node.sfContext().remove(attr_iter.next());
+	                            	   if (functionClass.equals("org.smartfrog.sfcore.languages.sf.functions.Constraint")){
+		                            	   Enumeration attr_enum = node.sfContext().keys();
+		                            	   Vector attr_keys = new Vector();
+		                            	   while (attr_enum.hasMoreElements()){
+		                            		   Object _key = attr_enum.nextElement();
+		                            		   //Check not FreeVar as this should have been completed...
+		                            		   Object _val = node.sfContext().get(_key);
+		                            		   if (_val instanceof FreeVar) throw new SmartFrogResolutionException("VAR(s) are left in: "+node);	                            		   
+		                            			   if (node.sfContext().sfContainsTag(_key, "sfConstraint")) {
+		                            				   attr_keys.add(_key);
+		                            			   }
+		                            	   }
+		                            	   Iterator attr_iter = attr_keys.iterator();
+		                            	   while (attr_iter.hasNext()) node.sfContext().remove(attr_iter.next());
+		                            	   }
 	                               }
-                			   } catch (SmartFrogResolutionException sfre){}
+                			   } catch (Exception sfre){ throw new RuntimeException(sfre);}
                 		 }
                 	   }, true);
-                   } catch (Exception e){} 
-                   System.out.println(this.toString());
+                   } catch (Exception e){throw new SmartFrogResolutionException(e);} 
+                   //System.out.println(this.toString());
             	   return;               
                }
                continue; //around while...
@@ -654,7 +666,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         	   
         	   //Yes, add a new record to link resolution state, which will determine that 
         	   //value is next explored (Depth First exploration)
-        	   lrsr = LinkResolutionState.getLRS().addLRSRecord(sfcd, idx);
+        	   LinkResolutionState.getLRS().addLRSRecord(sfcd, idx);
          	   continue; //around while to explore new description
          	   
          	   //Is value a Reference?

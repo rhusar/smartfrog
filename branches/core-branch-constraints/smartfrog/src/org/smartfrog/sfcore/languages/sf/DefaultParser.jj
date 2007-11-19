@@ -11,6 +11,7 @@ package org.smartfrog.sfcore.languages.sf;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
@@ -43,7 +44,7 @@ import java.util.HashSet;
 
 public class DefaultParser {
   protected IncludeHandler includeHandler;
-  static int nextId = 0;
+  public static int nextId = 0;
 
   static final String appendOp = "org.smartfrog.sfcore.languages.sf.functions.Append";
   static final String concatOp = "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
@@ -261,7 +262,7 @@ TOKEN : /* reserved words */
  | <ELSE: "ELSE">
  | <FI: "FI">
 
- | <VAR: "VAR" ("/" (<DIGIT>)+ )? >
+ | <VAR: "VAR">
 }
 
 TOKEN :
@@ -531,10 +532,6 @@ void AttrName(SFReference res) :
 }
 
 
-
-
-
-
 Object Value() :
 {
   Object res=null;
@@ -549,12 +546,19 @@ Object Value() :
 
 Object Var() :
 {
-   Token res = null;
+   Object ran = null;
+   Object val = null;
 }
-{
-   res = <VAR> { return new FreeVar(res.image);}
+{ 
+    <VAR> 
+    (
+    (ran = ReferenceNoEOF() | ran = String())
+	(val = String() | val = Number())?
+	  {return new FreeVar(ran, val); }
+	|
+	  {return new FreeVar(); }
+	)
 }
-
 
 Object SimpleValue() :
 {
@@ -568,7 +572,6 @@ Object SimpleValue() :
     | res = IfThenElse()
     ) { return res; }
 }
-
 
 Object Operator() :
 {
@@ -889,8 +892,6 @@ Object Primitive() :
    | res=Var()
   ) { return res; }
 }
-
-
 
 Number Number() :
 {

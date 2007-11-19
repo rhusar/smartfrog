@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
+
 
 /**
  * Implements the context interface. This implementation relies on the
@@ -56,19 +59,27 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     /**
      * Sets the originating context.  Used in constraint solving.
      */
-    public void setOriginatingContext(Context originatingContext) {
-    	this.originatingContext= originatingContext;
+    public void setOriginatingDescr(ComponentDescription originatingDescr) {
+    	this.originatingDescr=originatingDescr;
+    	((ContextImpl)originatingDescr.sfContext()).setOriginatingDescrShallow(originatingDescr);
+    }
+    
+    /**
+     * 
+     */
+    void setOriginatingDescrShallow(ComponentDescription originatingDescr) {
+    	this.originatingDescr=originatingDescr;
     }
 
     /**
      * Gets the originating context.  Used in constraint solving.
      */
-    public Context getOriginatingContext() {
-    	return originatingContext;
+    public ComponentDescription getOriginatingDescr() {
+    	return originatingDescr;
     }
 
     
-    private Context originatingContext;
+    private ComponentDescription originatingDescr;
     
     /**
      * Constructs a context with initial capacity and a load trigger for
@@ -868,4 +879,22 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         return oldValue;
     }
         
+    public boolean ofType(ComponentDescription comp, String attr){
+    	ContextImpl comp_cxt = (ContextImpl) comp.sfContext();
+    	Object aval = get(attr);
+    	ContextImpl attr_cxt;
+    	if (aval instanceof ComponentDescription) attr_cxt = (ContextImpl) ((ComponentDescription) aval).sfContext();
+    	else return false;
+    	
+    	Iterator comp_iter = comp_cxt.orderedAttributes();
+    	Iterator attr_iter = attr_cxt.orderedAttributes();
+    	
+    	while(attr_iter.hasNext()){
+    		if (!comp_iter.hasNext()) return false;
+    		String akey = (String) attr_iter.next();
+    		String ckey = (String) comp_iter.next();
+    		if (!akey.equals(ckey)) return false;
+    	}
+    	return true;
+    }
 }

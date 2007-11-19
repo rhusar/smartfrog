@@ -24,7 +24,6 @@ import java.io.Serializable;
 
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -270,8 +269,6 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
         } else if (rr instanceof RemoteReferenceResolver) {
             try {
                 return ((RemoteReferenceResolver) rr).sfResolve(r, index);
-            } catch (SmartFrogConstraintBacktrackError sfcbe){
-            	throw sfcbe;
             } catch (Exception ex){
                 throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
             }

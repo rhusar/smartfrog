@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.reference;
 
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 
 /**
@@ -112,8 +111,6 @@ public class ParentReferencePart extends ReferencePart {
         }
 
         return forwardReference(rr.sfResolveParent(), r, index + 1);
-    } catch (SmartFrogConstraintBacktrackError sfcbe){
-    	throw sfcbe;
     } catch (Exception ex){
         throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
     }

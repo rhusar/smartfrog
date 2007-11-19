@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -230,8 +229,6 @@ public class HereReferencePart extends ReferencePart {
             // Else forward on to result
             return forwardReference(result, r, index + 1);
 
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }

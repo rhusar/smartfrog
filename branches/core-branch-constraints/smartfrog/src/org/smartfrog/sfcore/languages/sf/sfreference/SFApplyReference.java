@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.LinkResolutionState;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
@@ -12,9 +11,11 @@ import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+import org.smartfrog.sfcore.languages.sf.functions.Aggregator;
+import org.smartfrog.sfcore.languages.sf.functions.Array;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
+import org.smartfrog.sfcore.languages.sf.functions.ForAllExists;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.prim.Prim;
@@ -122,8 +123,9 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         Context forFunction = new ContextImpl();
         String functionClass = null;
-        Object result;
+        Object result=null;
         boolean isLazy = false;
+        String functionClassStatus = null;
 
         if (getData()) return this;
 
@@ -135,12 +137,13 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             comp.setPrimParent((Prim) rr);
 
         try {
-            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+            functionClass = (String) comp.sfContext().get("sfFunctionClass");
+            functionClassStatus = (String) comp.sfContext().get("sfFunctionClassStatus");
         } catch (ClassCastException e) {
             throw new SmartFrogFunctionResolutionException("function class is not a string", e);
         }
         
-        if (functionClass.equals("done")) return comp; //done already
+        if (functionClassStatus!=null && functionClassStatus.equals("done")) return comp; //done already
         
         if (functionClass == null) {
             throw new SmartFrogFunctionResolutionException("unknown function class ");
@@ -152,11 +155,25 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         } catch (Exception e) {
                 throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create function class " + functionClass + " with data " + forFunction, e);
         }
+        
+        //In an Aggregator, we apply the function first, and then resolve the arguments
+        //Normally, other way around...
+        try {            
+            if (function instanceof Aggregator || function instanceof ForAllExists) {
+            	forFunction.setOriginatingDescr(comp);
+            	result = function.doit(forFunction, null, rr);
+            	if (result!=null) return result; //for forall and exists...
+            }            
+        } catch (Exception e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+        }
 
+       
+        
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass")){
+            if (!nameS.equals("sfFunctionClass") && !(function instanceof Array && nameS.equals("sfArrayGenerator"))){
                 Object value = null;
 
                 try {
@@ -186,19 +203,15 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
 
         if (isLazy) throw new SmartFrogLazyResolutionException("function has lazy parameter");
         
-        try {
-            
-            //We set the originating context in the copy context as we want changes to persist immediately if it is a Constraint
-            //This is a minimal impact solution, but should be reworked...
-            if (function instanceof Constraint) forFunction.setOriginatingContext(comp.sfContext());
-            
-            result = function.doit(forFunction, null, rr);
+        try {            
+            if (!(function instanceof Aggregator)) {
+            	forFunction.setOriginatingDescr(comp);
+            	result = function.doit(forFunction, null, rr);
+            }
             
             //If Constraint, the result is the component description...
-            if (function instanceof Constraint) result = comp; 
+            if (function instanceof Constraint || function instanceof Array || function instanceof Aggregator) result = comp; 
             
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
         } catch (Exception e) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
         }
@@ -308,4 +321,6 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
     public void sfAddParameter(String name, Object data) throws SmartFrogRuntimeException {
         comp.sfReplaceAttribute(name, data);
     }
+    
+    public SFComponentDescription getComponentDescription(){ return comp; }
 }

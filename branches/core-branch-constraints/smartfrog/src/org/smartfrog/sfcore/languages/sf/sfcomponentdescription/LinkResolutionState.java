@@ -18,13 +18,14 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.common;
+package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 
 import java.util.Vector;
 
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 
 /**
@@ -47,6 +48,14 @@ public class LinkResolutionState {
 	 * Indicates current component description being processed
 	 */
 	private LRSRecord currentLRSRecord; 
+
+    /**
+     * Gets the current LRS record
+     * @return the current record
+     */
+    public LRSRecord getLRSRecord(){ return currentLRSRecord; }
+
+	
 	/**
 	 * Indicates current link history record being used.
 	 */
@@ -71,17 +80,17 @@ public class LinkResolutionState {
     /**
      * Used to maintain whether backtracking -- as part of constraint solving -- has just occurred in processing current attribute. 
      */
-    private boolean hasDoneBacktracking=false;
+    private Context backtrackedTo=null;
 	/**
 	 * Gets whether backtracking has occurred recently
 	 * @return backtracking flag
 	 */
-    public boolean hasDoneBacktracking() { return hasDoneBacktracking; }
+    public Context hasBacktrackedTo() { return backtrackedTo; }
     /**
      * Resets flag wrt backtracking
      *
      */
-    public void resetDoneBacktracking() { hasDoneBacktracking=false; }
+    public void resetDoneBacktracking() { backtrackedTo=null; }
 
     
     /**
@@ -229,6 +238,9 @@ public class LinkResolutionState {
      */
     public static final int g_LRSUndo_PUTFVIDX = 0x2;
     
+    public static final int g_LRSUndo_PUTFVTYPESTR = 0x3;
+    
+    
     /**
      * Maintains single undo actions
      * @author anfarr
@@ -255,6 +267,8 @@ public class LinkResolutionState {
     	FreeVar fv;
     	
     	int idx;
+    	
+    	Vector typeInfo;
     	
     	/**
     	 * Constructs single undo action for g_LRSUndo_PUT
@@ -290,14 +304,27 @@ public class LinkResolutionState {
     	}
     	
     	/**
+    	 * Constructs single undo action for g_LRSUndo_PUTFVIDX
+    	 * @param type
+    	 * @param ctxt
+    	 * @param key
+    	 * @param value
+    	 */
+    	LRSUndoRecord(FreeVar fv, Vector typeInfo){
+    		this.type = g_LRSUndo_PUTFVTYPESTR; this.fv=fv; this.typeInfo=typeInfo;
+    	}
+    	
+    	/**
     	 * Does the undo!
     	 *
     	 */
     	void undo(){
     		switch (type){
-    		case g_LRSUndo_PUT: ctxt.put(key, value); break;
+    		case g_LRSUndo_PUT: if (value!=null) ctxt.put(key, value); 
+    		                    else ctxt.remove(key); break;
     		case g_LRSUndo_PUTFVKEY: fv.setConsEvalKey(key); break;
     		case g_LRSUndo_PUTFVIDX: fv.setConsEvalIdx(idx); break;
+    		case g_LRSUndo_PUTFVTYPESTR: fv.removeLastTyping(); break;
     		}		
     	}
     }
@@ -400,6 +427,35 @@ public class LinkResolutionState {
 		currentLHRecord.addUndo(new LRSUndoRecord(fv, idx));
 	}
 	
+	/**
+	 * Add undo action to current lhr
+	 * @param type
+	 * @param ctxt
+	 * @param key
+	 * @param value
+	 */
+	public void addUndo(FreeVar fv, Vector typeInfo){
+		currentLHRecord.addUndo(new LRSUndoRecord(fv, typeInfo));
+	}
+	
+	
+	public void addTyping(String attr, String type){
+		int last_cidx = constraintEvalHistory.size()-1;
+		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(last_cidx);
+		Object val = cehr.cxt.get(attr);
+		if (val instanceof FreeVar){
+			FreeVar fv = (FreeVar) val;
+			fv.addTyping(type);
+		}
+	}
+	
+	public Object adjustSetValue(Object key){
+		int last_cidx = constraintEvalHistory.size()-1;
+		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(last_cidx);
+		Object val = cehr.cxt.get(key);
+	    if (val!=null && val instanceof ComponentDescription) return val;
+	    else return key;
+	}
 	
 	/**
 	 * Add an assingment of an attribute within a description
@@ -409,28 +465,43 @@ public class LinkResolutionState {
 	 * @param cidx The appropriate constraint eval record
 	 */
 	
-	public void addConstraintAss(int idx, String key, Object val, int cidx){
+	public boolean addConstraintAss(int idx, String key, Object val, int cidx){
 		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(cidx);
+		
+		//Get typing information...
+		Object cur_val = cehr.cxt.get(key);
+		Vector types=null;
+		if (cur_val instanceof FreeVar) types = ((FreeVar) cur_val).getTyping();
+		
+		if (types!=null && (!(val instanceof ComponentDescription) || 
+				!ofTypes((ComponentDescription)val, types, cehr.cxt))) return false; 
 		
 		//set the value prescribed
 		g_constraintsShouldUndo=true;
-		cehr.cxt.put(key, val);
-		System.out.println("Setting "+key+":"+cehr.cxt.get(key)+" in "+cidx);
+		cehr.cxt.put(key, val);		
+		//System.out.println("Setting "+key+":"+cehr.cxt.get(key)+" in "+cidx);
 		g_constraintsShouldUndo=false;
 		
+		return true;
 	}
 	
+	public boolean ofTypes(ComponentDescription comp, Vector types, Context cxt){
+		for (int i=0; i<types.size(); i++){
+			String type = (String)types.get(i);
+			if (!cxt.ofType(comp, type)) return false;
+		}
+		return true;
+	}
 	
 	public void backtrackConstraintAss(int idx, int cidx){
+		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(cidx); 
+		
 		//need to backtrack cidx...
 		int constraintEvalHistoryLastIdx = constraintEvalHistory.size()-1;
 
-		if (!hasDoneBacktracking) hasDoneBacktracking=(cidx<constraintEvalHistoryLastIdx);
-		
-		if (hasDoneBacktracking) System.out.println("Backtracking..."+cidx);
-		
+		if (backtrackedTo==null && cidx<constraintEvalHistoryLastIdx) backtrackedTo = cehr.cxt;
+				
 		for (int i=constraintEvalHistoryLastIdx; i>cidx; i--) constraintEvalHistory.remove(i);
-		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(cidx);
 		currentIndex = cehr.idx;
 		currentLRSRecord = cehr.lrsr;
 	

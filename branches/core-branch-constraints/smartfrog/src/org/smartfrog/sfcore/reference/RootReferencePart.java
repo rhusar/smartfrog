@@ -24,7 +24,6 @@ package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 
 /**
  * Implements the root reference part.
@@ -113,8 +112,6 @@ public class RootReferencePart extends ReferencePart {
             } else {
                 return forwardReference(rr.sfResolveParent(), r, index);
             }
-        } catch (SmartFrogConstraintBacktrackError sfcbe){
-        	throw sfcbe;
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }

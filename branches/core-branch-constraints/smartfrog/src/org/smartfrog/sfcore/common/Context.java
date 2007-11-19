@@ -20,9 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.io.Serializable;
+
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -308,11 +310,13 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     /**
      * Sets the originating context.  Used in constraint solving.
      */
-    public void setOriginatingContext(Context originatingContext);
+    public void setOriginatingDescr(ComponentDescription originatingDescription);
     
     /**
      * Gets the originating context.  Used in constraint solving.
      */
-    public Context getOriginatingContext();
+    public ComponentDescription getOriginatingDescr();
 
+    public boolean ofType(ComponentDescription comp, String attr);
+    
 }

@@ -52,13 +52,14 @@ public abstract class BaseBinaryOperator extends BaseFunction implements Message
     Object left = context.get("left");
     Object right = context.get("right");
 
-    if (left == null)
-        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
-                              null, name, null);
-    if (right == null)
-        throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
-                              null, name, null);
+    if (left == null) handleMissingOperands("left");
+    if (right == null) handleMissingOperands("right");
 
     return doOperator(left, right);
+    }
+    
+    protected void handleMissingOperands(String which) throws SmartFrogFunctionResolutionException {
+    	throw new SmartFrogFunctionResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, which),
+                null, name, null);
     }
 }
