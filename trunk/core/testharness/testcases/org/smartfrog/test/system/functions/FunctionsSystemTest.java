@@ -54,7 +54,7 @@ public class FunctionsSystemTest extends DeployingTestBase {
                 "tcn32",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_LINKRESOLUTION,
+                EXCEPTION_TYPERESOLUTION,
                 "nonExistentConcat in: HERE sfConfig:message cause: Reference not found");
     }
 

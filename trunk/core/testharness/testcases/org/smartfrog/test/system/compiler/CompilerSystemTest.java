@@ -102,7 +102,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn23",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_LINKRESOLUTION,
+                EXCEPTION_TYPERESOLUTION,
                 ERROR_UNRESOLVED_REFERENCE_TYPE_RESOLUTION);
     }
 

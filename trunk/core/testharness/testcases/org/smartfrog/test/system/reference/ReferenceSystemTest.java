@@ -211,7 +211,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "tcn99",
                 EXCEPTION_DEPLOYMENT,
                 "",
-                EXCEPTION_LINKRESOLUTION,
+                EXCEPTION_TYPERESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
 }
