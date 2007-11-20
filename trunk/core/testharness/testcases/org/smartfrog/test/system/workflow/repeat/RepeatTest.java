@@ -20,8 +20,8 @@ public class RepeatTest extends DeployingTestBase {
     public void testEmptyRepeat() throws Throwable {
         deployExpectingException(FILES + "testEmptyRepeat.sf",
                 "testEmptyRepeat",
-                "SmartFrogDeploymentException", null,
-                "SmartFrogResolutionException",
+                EXCEPTION_DEPLOYMENT, null,
+                EXCEPTION_LINKRESOLUTION,
                 "non-optional attribute");
     }
 

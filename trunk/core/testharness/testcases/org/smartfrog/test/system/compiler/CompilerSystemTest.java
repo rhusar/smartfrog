@@ -41,8 +41,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn5",
                 EXCEPTION_DEPLOYMENT,
                 "error in schema: wrong class found for attribute 'sfClass (class that implements component)', expected: java.lang.String, found: org.smartfrog.sfcore.common.SFNull",
-                EXCEPTION_RESOLUTION,
-                null);
+                EXCEPTION_LINKRESOLUTION,
+                ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION);
     }
 
     public void testCaseTCN47() throws Exception {
@@ -102,8 +102,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn23",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
-                "SmartFrogTypeResolutionException:: , data: [CounterCompound in: HERE sfConfig:c2 cause: Reference not found");
+                EXCEPTION_LINKRESOLUTION,
+                ERROR_UNRESOLVED_REFERENCE_TYPE_RESOLUTION);
     }
 
     public void testCaseTCN24() throws Exception {
@@ -136,8 +136,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn27",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
-                "dataLazy in: HERE sfConfig:c3 attribute: attributeMissingATTRIB cause: Reference not found");
+                EXCEPTION_LINKRESOLUTION,
+                ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION);
     }
     public void testCaseTCN28() throws Exception {
         deployExpectingException(FILES + "tcn28.sf",

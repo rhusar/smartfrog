@@ -158,6 +158,10 @@ public abstract class SmartFrogTestBase extends TestCase {
      * This is an application that will be undeployed at teardown time
      */
     protected Prim application;
+    protected static final String ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION
+            = "Unresolved Reference during phase link resolution";
+    protected static final String ERROR_UNRESOLVED_REFERENCE_TYPE_RESOLUTION
+            = "Unresolved Reference during phase type resolution";
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM

@@ -45,8 +45,8 @@ public class FunctionsSystemTest extends DeployingTestBase {
                 "tcn29",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
-	        "SmartFrogLinkResolutionException:: , source: HERE sfConfig, data: [APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.fu... in: HERE sfConfig attribute: throw1 cause: Unresolved Reference, APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.fu... in: HERE sfConfig attribute: throw2 cause: Unresolved Reference], Unresolved Reference during phase link resolution");
+                EXCEPTION_LINKRESOLUTION,
+	        "APPLY {sfFunctionClass \"org.smartfrog.sfcore.languages.sf.fu... in: HERE sfConfig attribute: throw1 cause: Unresolved Reference");
     }
 
     public void testCaseTCN32() throws Exception {
@@ -54,7 +54,7 @@ public class FunctionsSystemTest extends DeployingTestBase {
                 "tcn32",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "nonExistentConcat in: HERE sfConfig:message cause: Reference not found");
     }
 
