@@ -50,7 +50,7 @@ public class EmailerTest
                                  "tcn65",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'to' is missing");
     }
 
@@ -59,7 +59,7 @@ public class EmailerTest
                                  "tcn66",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'from' is missing");
     }
 
@@ -68,7 +68,7 @@ public class EmailerTest
                                  "tcn67",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'smtpHost' is missing");
     }
 }
