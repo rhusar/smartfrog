@@ -229,20 +229,20 @@ public class GraphPanel extends JPanel implements ComponentListener,
         }
     }
 
-
+    /**
+     * If no image is found a null is returned.
+     * @param SFURL
+     * @return the image or null if nothing found.
+     */
     public Image createImage(String SFURL) {
         try {
             byte imageData[] =  SFSystem.getByteArrayForResource(SFURL);
             Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
-
             return img;
         } catch (Exception e) {
             if (log.isDebugEnabled()){
-                log.error("Resulting image will be null. " + e.getMessage(),e);
-            } else  if (log.isWarnEnabled()){
-               log.warn("Resulting image will be null. " + e.getMessage());
+               log.warn("Resulting image will be null. " + e.getMessage(),e);
             }
-
         }
         return null;
     }
