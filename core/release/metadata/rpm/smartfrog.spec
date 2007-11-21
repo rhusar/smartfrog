@@ -140,6 +140,57 @@ as a heartbeat mechanism.
 
 # -----------------------------------------------------------------------------
 
+%package ant
+Group:         ${rpm.framework}
+Summary:        Ant integration with SmartFrog
+Requires:       %{name} = %{version}-%{release}
+#
+%description ant 
+This package contains the JAR file sf-ant.jar, which contains
+components that can run Ant tasks and build files during deployment.
+Build file logging and failure is integrated into the overall deployment,
+so remote errors will be caught and reported. 
+
+The package also contains the Ant ${apache.ant.version} JAR files:
+ant-${apache.ant.version}.jar
+ant-launcher-${apache.ant.version}.jar
+It does not contain any of the Ant optional libraries, or their dependencies.
+
+# -----------------------------------------------------------------------------
+
+%package database
+Group:         ${rpm.framework}
+Summary:        the components needed to talk to a database
+Requires:       %{name} = %{version}-%{release}
+#
+%description database
+The database package contains the components needed to talk to a database
+during deployment, or when terminating a deployment. It has special component templates.
+to start and administer MySQL.
+
+This package does not include any JDBC drivers. The appropriate JDBC driver for the
+target system must be installed/added to the sfCodeBase attribute of the components,
+in order for JDBC connectivity to work.
+
+# -----------------------------------------------------------------------------
+
+%package jmx
+Group:         ${rpm.framework}
+Summary:        JMX integration with SmartFrog
+Requires:       %{name} = %{version}-%{release}
+#
+%description jmx
+The sf-jmx package can integrate JMX MBeans with SmartFrog, and
+export SmartFrog components as MBeans.
+
+The MX4J JARs (version ${mx4j.version}) are included:
+mx4j-${mx4j.version}.jar
+mx4j-remote-${mx4j.version}.jar
+mx4j-jmx-${mx4j.version}.jar
+mx4j-tools-${mx4j.version}.jar
+
+# -----------------------------------------------------------------------------
+
 %package logging
 Group:         ${rpm.framework}
 Summary:        SmartFrog logging services
@@ -149,6 +200,115 @@ Requires:       %{name} = %{version}-%{release}
 This package integrates SmartFrog with Apache Log4j. It includes the Apache
 commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
 
+# -----------------------------------------------------------------------------
+
+%package networking
+Group:         ${rpm.framework}
+Summary:        SmartFrog Networking services
+Requires:       %{name} = %{version}-%{release}
+#
+%description networking
+SmartFrog networking components, including DNS, FTP, email and SSH support
+
+The components use the following bundled libraries:
+activation-${activation.version}.jar
+commons-net-${commons-net.version}.jar
+dnsjava-${dnsjava.version}.jar
+jsch-${jsch.version}.jar
+mail-${mail.version}.jar
+oro-${oro.version}.jar
+
+# -----------------------------------------------------------------------------
+
+%package quartz
+Group:         ${rpm.framework}
+Summary:        Work scheduling with Quartz
+Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+#
+%description quartz
+Work scheduling. These components can be used to schedule work to a pool of machines,
+using Quartz to queue the jobs. A CPU monitor component provides information about the
+current system state, using the Unix/Linux vmstat command as a source of information.
+
+Contains the Quartz library version quartz-${quartz.version}.jar.
+
+# -----------------------------------------------------------------------------
+
+%package scripting
+Group:         ${rpm.framework}
+Summary:       Scripting support
+Requires:      %{name} = %{version}-%{release}
+#
+%description scripting
+Scripting support.
+Includes BeanShell bsh-${bsh.version}.jar
+# -----------------------------------------------------------------------------
+
+%package xunit
+Group:         ${rpm.framework}
+Summary:       Testing under SmartFrog
+Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+#
+%description xunit
+The base testing components. This contains the sfunit test components
+for testing deployments, and the listeners/reporters for running tests.
+
+# -----------------------------------------------------------------------------
+
+%package junit
+Group:         ${rpm.framework}
+Summary:        Junit testing
+Requires:       %{name} = %{version}-%{release}  , smartfrog-xunit
+#
+%description junit
+This contains the components for running JUnit ${junit.version} tests, and the
+junit-${junit.version}.jar.
+Prerequisite packages: xunit, Logging.
+# -----------------------------------------------------------------------------
+
+%package www
+Group:         ${rpm.framework}
+Summary:        WWW components
+Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+#
+%description www
+This package contains components to deploy web applications on different
+Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
+component that can monitor the health of a remote site.
+
+The bundled libraries are
+commons-httpclient-${commons-httpclient.version}.jar
+commons-codec-${commons-codec.version}.jar
+servlet-api-${servletapi.version}.jar
+jetty-${jetty.version}.jar
+
+# -----------------------------------------------------------------------------
+
+%package xml
+Group:         ${rpm.framework}
+Summary:        XML support
+Requires:       %{name} = %{version}-%{release}
+#
+%description xml
+This package provides XML support; components to create
+XML files and recent versions of the main Java XML libraries.
+The package contains xom-${xom.version}.jar, which includes the Jaxen runtime,
+jdom-${jdom.version}, Apache Xerces ${xerces.version} and Apache Xalan ${xalan.version}
+
+
+# -----------------------------------------------------------------------------
+
+%package xmpp
+Group:         ${rpm.framework}
+Summary:        XMPP/Jabber support
+Requires:       %{name} = %{version}-%{release}
+#
+%description xmpp
+This package provides Jabber support: components to register with a Jabber server and
+relay notification methods. These can be used to communicate over long distances,
+or track the availability of remote systems.
+
+This package uses smack-${smack.version}.jar for XMPP support.
 
 # -----------------------------------------------------------------------------
 
@@ -199,23 +359,7 @@ fi
 rm -rf $RPM_BUILD_ROOT
 pwd
 cp -dpr . $RPM_BUILD_ROOT
-#ls -l $RPM_BUILD_ROOT/usr/share
 
-
-
-
-# jar
-#install -d $RPM_BUILD_ROOT%{javadir}
-# install jars to $RPM_BUILD_ROOT%{javadir}/ (as %{name}-%{version}.jar)
-#(cd $RPM_BUILD_ROOT%{javadir} && for jar in *-%{version}.jar; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
-
-# javadoc
-#install -d $RPM_BUILD_ROOT%{javadocdir}/%{name}-%{version}/
-# cp -pr javadocs to $RPM_BUILD_ROOT%{javadocdir}/%{name}-%{version}/
-
-# demo
-#install -d $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
-# cp demos to $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}/
 
 # -----------------------------------------------------------------------------
 
@@ -403,12 +547,41 @@ fi
 #and the etc stuff
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
+%(0644,root,root) /etc/sysconfig/smartfrog
+
+
+%files ant
+
+%{libdir}/sf-ant-${smartfrog.version}.jar
+%{libdir}/ant-${apache.ant.version}.jar
+%{libdir}/ant-launcher-${apache.ant.version}.jar
+%{linkdir}/sf-ant.jar
+%{linkdir}/ant.jar
+%{linkdir}/ant-launcher.jar
 
 
 %files anubis
 
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
+
+%files database
+
+%{libdir}/sf-database-${smartfrog.version}.jar
+%{linkdir}/sf-database.jar
+
+%files jmx
+
+%{libdir}/sf-jmx-${smartfrog.version}.jar
+%{libdir}/mx4j-${mx4j.version}.jar
+%{libdir}/mx4j-remote-${mx4j.version}.jar
+%{libdir}/mx4j-jmx-${mx4j.version}.jar
+%{libdir}/mx4j-tools-${mx4j.version}.jar
+%{linkdir}/sf-jmx.jar
+%{linkdir}/mx4j.jar
+%{linkdir}/mx4j-remote.jar
+%{linkdir}/mx4j-jmx.jar
+%{linkdir}/mx4j-tools.jar
 
 
 %files logging
@@ -421,11 +594,108 @@ fi
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
 
+%files networking
+
+%{libdir}/sf-dns-${smartfrog.version}.jar
+%{libdir}/sf-emailer-${smartfrog.version}.jar
+%{libdir}/sf-net-${smartfrog.version}.jar
+%{libdir}/sf-ssh-${smartfrog.version}.jar
+%{libdir}/dnsjava-${dnsjava.version}.jar
+%{libdir}/mail-${mail.version}.jar
+%{libdir}/activation-${activation.version}.jar
+%{libdir}/commons-net-${commons-net.version}.jar
+%{libdir}/oro-${oro.version}.jar
+%{libdir}/jsch-${jsch.version}.jar
+
+
+%{linkdir}/sf-dns.jar
+%{linkdir}/sf-emailer.jar
+%{linkdir}/sf-net.jar
+%{linkdir}/sf-ssh.jar
+%{linkdir}/dnsjava.jar
+%{linkdir}/mail.jar
+%{linkdir}/activation.jar
+%{linkdir}/commons-net.jar
+%{linkdir}/oro.jar
+%{linkdir}/jsch.jar
+
+%files quartz
+
+%{libdir}/sf-quartz-${smartfrog.version}.jar
+%{libdir}/quartz-${quartz.version}.jar
+
+%{linkdir}/sf-quartz.jar
+%{linkdir}/quartz.jar
+
+
+%files scripting
+%{libdir}/sf-scripting-${smartfrog.version}.jar
+%{libdir}/bsh-${bsh.version}.jar
+
+%{linkdir}/sf-scripting.jar
+%{linkdir}/bsh.jar
+
+%files xunit
+%{libdir}/sf-xunit-${smartfrog.version}.jar
+
+%{linkdir}/sf-xunit.jar
+
+%files junit
+%{libdir}/sf-junit-${smartfrog.version}.jar
+%{libdir}/junit-${junit.version}.jar
+
+%{linkdir}/sf-junit.jar
+%{linkdir}/junit.jar
+
+%files www
+%{libdir}/sf-www-${smartfrog.version}.jar
+%{libdir}/sf-jetty-${smartfrog.version}.jar
+%{libdir}/jetty-${jetty.version}.jar
+%{libdir}/jetty-util-${jetty.version}.jar
+%{libdir}/servlet-api-${servletapi.version}.jar
+
+%{linkdir}/sf-www.jar
+%{linkdir}/sf-jetty.jar
+%{linkdir}/servlet-api.jar
+%{linkdir}/jetty.jar
+%{linkdir}/jetty-util.jar
+
+%files xml
+%{libdir}/sf-xml-${smartfrog.version}.jar
+%{libdir}/jdom-${jdom.version}.jar
+%{libdir}/xom-${xom.version}.jar
+%{libdir}/xmlParserAPIs-${xerces.version}.jar
+%{libdir}/xercesImpl-${xerces.version}.jar
+%{libdir}/xalan-${xalan.version}.jar
+
+%{linkdir}/sf-xml.jar
+%{linkdir}/jdom.jar
+%{linkdir}/xom.jar
+%{linkdir}/xmlParserAPIs.jar
+%{linkdir}/xercesImpl.jar
+%{linkdir}/xalan.jar
+
+%files xmpp
+%{libdir}/sf-xmpp-${smartfrog.version}.jar
+%{libdir}/smack-${smack.version}.jar
+
+%{linkdir}/sf-xmpp.jar
+%{linkdir}/smack.jar
+
+
+#%files 
+#%{libdir}/sf--${smartfrog.version}.jar
+#%{libdir}/-${.version}.jar
+#%{linkdir}/sf-.jar
+#%{linkdir}/.jar
 
 # -----------------------------------------------------------------------------
 
 %changelog
 # to get the date, run:   date +"%a %b %d %Y"
+* Wed Nov 21 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0011-1.el4
+-add the ant, database, jmx, junit,networking, quartz, scrpting, www, xml, xmpp,
+ xunit RPMs.
 * Wed Oct 24 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.008-1.el4
 - use RHEL-specific distribution tags
 - change permissions on profile.d scripts

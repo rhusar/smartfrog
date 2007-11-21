@@ -167,6 +167,22 @@
 izpack gets to see it. Whenever you have $ and { next to each other, and you
 want izpack to see it, double escape the $$ symbol.-->
 
+<!--
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  For more information: www.smartfrog.org
+  */
+-->
 <installation version="1.0">
 
 
@@ -311,7 +327,9 @@ SmartFrog to deploy complex systems.
     <pack name="Ant" required="no" preselected="no">
       <description>
         This package contains the JAR file sf-ant.jar, which contains
-        components that can run Ant tasks during deployment.
+        components that can run Ant tasks and build files during deployment.
+        Build file logging and failure is integrated into the overall deployment,
+        so remote errors will be caught and reported. 
 
         The package also contains the Ant ${apache.ant.version} JAR files:
         ant-${apache.ant.version}.jar
@@ -447,7 +465,7 @@ SmartFrog to deploy complex systems.
         oro-${oro.version}.jar
 
       </description>
-      <description>SmartFrog Logging services</description>
+      <description>SmartFrog Networking services</description>
       <file src="ivy/lib/package-networking/sf-dns-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
@@ -554,7 +572,7 @@ SmartFrog to deploy complex systems.
     </pack>
 
     <pack name="xunit" required="no" preselected="no">
-      <description>the base testing components. This contains the sfunit test components
+      <description>The base testing components. This contains the sfunit test components
         for testing deployments, and the listeners/reporters for running tests.
         For JUnit 3 testing, include the JUnit package.
 
@@ -655,7 +673,7 @@ SmartFrog to deploy complex systems.
         a component description.
 
         The package contains xom-${xom.version}.jar, which includes the Jaxen runtime,
-        jdom-${jdom.version}, Apache xerces ${xerces.version} and Apache Xalan ${xalan.version}
+        jdom-${jdom.version}, Apache Xerces ${xerces.version} and Apache Xalan ${xalan.version}
       </description>
       <file src="ivy/lib/package-xml/sf-xml-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"

@@ -2,7 +2,22 @@
 <project name="release" default="default"
     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     xmlns:iz="http://www.izforge.com/">
-
+<!--
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  For more information: www.smartfrog.org
+  */
+-->
   <description>
     This build file aggregates artifacts from other projects to cut a release.
 
@@ -63,6 +78,7 @@
   <target name="published" depends="ivy-report,dist"/>
 
   <!--
+  //this is commented out because izpack isnt in the big repository
   <target name="declare-izpack" depends="ivy-resolve">
     <ivy:cachepath pathid="izpack.classpath" conf="izpack" />
     <taskdef name="izpack" classpathref="izpack.classpath"
@@ -364,8 +380,6 @@
   <target name="rpm-components"
       if="has.rpm.tools"
       depends="expand-core">
-    <rpmpackage package="anubis" />
-    <rpmpackage package="logging" />
   </target>
 
   <!-- create the link dir and its symlinks -->
@@ -395,14 +409,92 @@
         </exec>
       </sequential>
     </macrodef>
+    <!--core-->
     <ln artifact="smartfrog" version="${smartfrog.version}" />
     <ln artifact="sfExamples" version="${smartfrog.version}" />
     <ln artifact="sfServices" version="${smartfrog.version}" />
+    
+    <!-- ant -->
+    <rpmpackage package="ant" />
+    <ln artifact="sf-ant" version="${smartfrog.version}" />
+    <ln artifact="ant" version="${apache.ant.version}" />
+    <ln artifact="ant-launcher" version="${apache.ant.version}" />
+    
     <!-- anubis -->
+    <rpmpackage package="anubis" />
     <ln artifact="sf-anubis" version="${smartfrog.version}" />
+    
+    <!-- database -->
+    <rpmpackage package="database" />
+    <ln artifact="sf-database" version="${smartfrog.version}" />
+    
+    <!-- jmx -->
+    <rpmpackage package="jmx" />
+    <ln artifact="sf-jmx" version="${smartfrog.version}" />
+    <ln artifact="mx4j" version="${mx4j.version}" />
+    <ln artifact="mx4j-remote" version="${mx4j.version}" />
+    <ln artifact="mx4j-jmx" version="${mx4j.version}" />
+    <ln artifact="mx4j-tools" version="${mx4j.version}" />
+    
+    <!--logging-->
+    <rpmpackage package="logging" />
     <ln artifact="sf-loggingservices" version="${smartfrog.version}" />
     <ln artifact="commons-logging" version="${commons-logging.version}" />
     <ln artifact="log4j" version="${log4j.version}" />
+    
+    <!-- networking -->
+    <rpmpackage package="networking" />
+    <ln artifact="sf-dns" version="${smartfrog.version}" />
+    <ln artifact="sf-emailer" version="${smartfrog.version}" />
+    <ln artifact="sf-net" version="${smartfrog.version}" />
+    <ln artifact="sf-ssh" version="${smartfrog.version}" />
+    
+    <ln artifact="dnsjava" version="${dnsjava.version}" />
+    <ln artifact="mail" version="${mail.version}" />
+    <ln artifact="activation" version="${activation.version}" />
+    <ln artifact="commons-net" version="${commons-net.version}" />
+    <ln artifact="oro" version="${oro.version}" />
+    <ln artifact="jsch" version="${jsch.version}" />
+    
+    <!-- quartz -->
+    <rpmpackage package="quartz" />
+    <ln artifact="sf-quartz" version="${smartfrog.version}" />
+    <ln artifact="quartz" version="${quartz.version}" />
+    
+    <!-- scripting -->
+    <rpmpackage package="scripting" />
+    <ln artifact="sf-scripting" version="${smartfrog.version}" />
+    <ln artifact="bsh" version="${bsh.version}" />
+    
+    <!-- xunit -->
+    <!-- junit -->
+    <rpmpackage package="testing" />
+    <ln artifact="sf-xunit" version="${smartfrog.version}" />
+    <ln artifact="sf-junit" version="${smartfrog.version}" />
+    <ln artifact="junit" version="${junit.version}" />
+    
+    <!-- WWW -->
+    <rpmpackage package="www" />
+    <ln artifact="sf-www" version="${smartfrog.version}" />
+    <ln artifact="sf-jetty" version="${smartfrog.version}" />
+    <ln artifact="jetty" version="${jetty.version}" />
+    <ln artifact="jetty-util" version="${jetty.version}" />
+    <ln artifact="servlet-api" version="${servletapi.version}" />
+    
+    <!--  xml-->
+    <rpmpackage package="xml" />
+    <ln artifact="sf-xml" version="${smartfrog.version}" />
+    <ln artifact="jdom" version="${jdom.version}" />
+    <ln artifact="xom" version="${xom.version}" />
+    <ln artifact="xmlParserAPIs" version="${xerces.version}" />
+    <ln artifact="xercesImpl" version="${xerces.version}" />
+    <ln artifact="xalan" version="${xalan.version}" />
+
+    <!-- xmpp -->
+    <rpmpackage package="xmpp" />
+    <ln artifact="sf-xmpp" version="${smartfrog.version}" />
+    <ln artifact="smack" version="${smack.version}" />
+    
   </target>
 
   <target name="prepare-binary-rpm"
@@ -789,7 +881,8 @@
     <!--this is the full rpm destination-->
     <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}" />
     <!--list of rpms-->
-    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-anubis smartfrog-logging" />
+
+    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-ant smartfrog-anubis smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit" />
 
     <echo >
       remote server is ${rpm.ssh.server}
@@ -921,7 +1014,10 @@ rpm -qf /etc/profile.d/smartfrog.sh ;
 rpm -qf /etc/profile.d/smartfrog.csh ;
 rpm -qf ${rpm.install.dir}/docs ;
 rpm -qf ${rpm.install.dir}/src ;
-rpm -qf ${rpm.install.dir}/src.zip "
+rpm -qf ${rpm.install.dir}/src.zip ;
+rpm -qf ${rpm.install.dir}/lib/ant-launcher-${apache.ant.version}.jar; 
+rpm -qf ${rpm.install.dir}/links/ant-launcher.jar
+"
         outputProperty="rpm.queries.results"/>
 
     <echo>${rpm.queries.results}</echo>
