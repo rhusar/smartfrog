@@ -105,7 +105,7 @@ public void testCaseTCN81()  throws Exception
                                  "ScriptingTCN81",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "Unresolved Reference");
 	
 	}
