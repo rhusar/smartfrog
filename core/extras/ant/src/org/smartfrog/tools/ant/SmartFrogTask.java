@@ -645,7 +645,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         try {
             Method method=Java.class.getMethod("getCommandLine",new Class[0]);
             CommandlineJava commandLine = (CommandlineJava)
-                    method.invoke(smartfrog,new Object[0]);
+                    method.invoke(smartfrog);
             return commandLine.describeJavaCommand();
         } catch (Exception ignore) {
             return null;
