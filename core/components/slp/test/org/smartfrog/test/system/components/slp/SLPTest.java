@@ -79,7 +79,7 @@ public class SLPTest extends SmartFrogTestBase {
                 "tcn80",
                 EXCEPTION_LIFECYCLE,
                 "sfDeploy",
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "HERE serviceType");
         //Unresolved Reference: HERE serviceType
     }
