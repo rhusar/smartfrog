@@ -23,7 +23,6 @@ package org.smartfrog.examples.dynamicwebserver.filetester;
 import java.io.File;
 import java.rmi.RemoteException;
 
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -39,27 +38,22 @@ public class FileTesterImpl extends EventPrimImpl implements FileTester, Prim {
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         String filename;
-        Logger logger;
+
         Reference name = sfCompleteName();
 
         filename = sfResolve(FILENAME, "", true);
-        logger = (Logger) sfResolve(LOGTO, false);
 
         File f = new File(filename);
 
         if (f.exists()) {
             t = TerminationRecord.normal(name);
 
-            if (logger != null) {
-                logger.log(name.toString(), "file " + filename + "exists");
-            }
+            if (sfLog().isInfoEnabled()) sfLog().info("file " + filename + "exists");
+
         } else {
             t = TerminationRecord.abnormal("file not found", name);
 
-            if (logger != null) {
-                logger.log(name.toString(),
-                    "file " + filename + "does not exist");
-            }
+            if (sfLog().isInfoEnabled()) sfLog().info("file " + filename + "does not exist");
         }
 
         Runnable terminator = new Runnable() {

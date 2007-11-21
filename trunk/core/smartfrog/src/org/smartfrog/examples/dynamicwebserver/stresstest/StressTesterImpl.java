@@ -31,8 +31,6 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -45,7 +43,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
     StressTester, DataSource {
-    String name;
     String host = "localhost";
 
     //String[] hosts = null;
@@ -81,7 +78,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
 
     // Random number generator for randomized sleep...
     Random random = new Random();
-    LogWrapper logger;
+
 
     /**
      * Constructor for the StressTesterImpl object
@@ -131,7 +128,6 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
             }
         }
 
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
     }
 
     /**
@@ -142,7 +138,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
     public String toString() {
         StringBuffer str = new StringBuffer();
 
-        str.append("name: " + name);
+        str.append("name: " + sfCompleteNameSafe());
         str.append(", host: " + host);
         str.append(", hosts: " + hosts);
         str.append(", port: " + port);
@@ -179,16 +175,16 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        name = sfCompleteName().toString();
+
         readSFAttributes();
 
         if (controlGui != null) {
             boolean done = controlGui.registerStressClient(this);
 
             if (done) {
-                logger.log(name, "registered to controlGui");
+                if (sfLog().isInfoEnabled()) sfLog().info ("registered to controlGui");
             } else {
-                logger.log(name, "registered to controlGui. FAILED");
+                if (sfLog().isErrorEnabled()) sfLog().error (" Failed to register to controlGui.");
             }
         }
 
@@ -272,15 +268,13 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                     try {
                         if (this.frequency < maxValue) {
                             int targetSleep = (this.frequency * factor);
-                            logger.log(name,
-                                "freq " + frequency + " factor " + factor);
+                            if (sfLog().isDebugEnabled()) sfLog().debug ("freq " + frequency + " factor " + factor);
 
                             if (targetSleep <= 0) {
                                 timeSleep = 0;
                             } else {
                                 int rnd = random.nextInt(targetSleep);
-                                logger.log(name,
-                                    "sleep numbers are " + rnd + " " +
+                                if (sfLog().isDebugEnabled()) sfLog().debug ("sleep numbers are " + rnd + " " +
                                     targetSleep + " " + afterTime + " " +
                                     beforeTime);
                                 timeSleep = (rnd + (targetSleep / 2)) -
@@ -289,9 +283,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                                 if (timeSleep < 0) {
                                     timeSleep = 0;
                                 } else if (timeSleep > (2 * targetSleep)) {
-                                    logger.log(name,
-                                        "emergency correction - attempted sleep " +
-                                        timeSleep);
+                                    if (sfLog().isWarnEnabled()) sfLog().warn ( "emergency correction - attempted sleep " + timeSleep);
                                     timeSleep = targetSleep;
                                 }
                             }
@@ -299,21 +291,18 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                             timeSleep = (1000 * 60 * 20);
                         }
 
-                        logger.log(name, "sleeping for " + timeSleep);
+                        if (sfLog().isDebugEnabled()) sfLog().debug ( "sleeping for " + timeSleep);
 
                         if ((timeSleep) > 0) {
                             Thread.sleep(timeSleep);
                         }
 
                         sleeping = false;
-                        logger.log(name, "awake again...");
+                        if (sfLog().isDebugEnabled()) sfLog().debug ( "awake again...");
                     } catch (InterruptedException ie) {
-                        logger.err(name,
-                            "interrupted sleep - returning to sleep ," +
-                            ie.getMessage());
+                        if (sfLog().isErrorEnabled()) sfLog().error ("interrupted sleep - returning to sleep ," + ie.getMessage(),ie);
                     } catch (Exception ex) {
-                        logger.err(name,
-                            "Setting time to sleep: " + ex.getMessage());
+                        if (sfLog().isErrorEnabled()) sfLog().error ( "Setting time to sleep: " + ex.getMessage(),ex);
                     }
                 }
 
@@ -328,13 +317,13 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                     // should be 0 to size-1
                     newHost = (String) newHosts.elementAt(hostId);
                     newHosts.removeElementAt(hostId);
-                    logger.log(name, "trying server " + newHost);
+                    if (sfLog().isDebugEnabled()) sfLog().debug ( "trying server " + newHost);
 
                     beforeTime = System.currentTimeMillis();
                     clientSocket = connect(newHost, this.port);
 
                     if (clientSocket != null) {
-                        logger.log(name, "connected to server " + newHost);
+                        if (sfLog().isInfoEnabled()) sfLog().info ( "connected to server " + newHost);
                         succeeded = true;
                         afterTime = handleConnection(newHost, clientSocket);
 
@@ -367,20 +356,16 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                                 hitPosition = 0;
                             }
                         } else {
-                            logger.log(name,
-                                "potential problem coming up - after is early than before!");
+                            if (sfLog().isWarnEnabled()) sfLog().warn ("potential problem coming up - after is early than before!");
                         }
 
-                        logger.log(name,
-                            "> Access to Host: " + newHost + ":" + port + ", " +
+                        if (sfLog().isDebugEnabled()) sfLog().debug ("  > Access to Host: " + newHost + ":" + port + ", " +
                             this.requestLine + ", " + ", elapseTime" + ":" +
                             this.data + ", toSleep:" + timeSleep);
                     }
                 }
             } catch (Throwable ex) {
-                logger.log(name,
-                    "In while(!terminated) loop: " + newHost + ", " +
-                    ex.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error ("In while(!terminated) loop: " + newHost + ", " + ex.getMessage(),ex);
             }
         }
     }
@@ -405,16 +390,15 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
             out.print("\n");
 
             String line = in.readLine();
-            logger.log(name, "   Response: " + line + "\n");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "   Response: " + line + "\n");
 
             while ((line = in.readLine()) != null) {
             }
 
             return System.currentTimeMillis();
         } catch (Exception e) {
-            logger.err(name, "Error: " + e.getMessage());
+            if (sfLog().isErrorEnabled()) sfLog().error ("Error: " + e.getMessage(),e);
             connected = false;
-
             return 0;
         }
     }
@@ -432,8 +416,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
 
             return (true);
         } catch (java.net.UnknownHostException uhe) {
-            logger.err(name, "Bogus host: " + targetHost);
-
+            if (sfLog().isErrorEnabled()) sfLog().error ( "Bogus host: " + targetHost, uhe);
             return (false);
         }
     }
@@ -448,7 +431,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
      */
     public Socket connect(String targetHost, int targetPort) {
         try {
-            //logger.log(name, "Connecting to:"+host+":"+port);
+            if (sfLog().isInfoEnabled()) sfLog().info ("Connecting to:"+host+":"+port);
             if (client != null) {
                 client.close();
             }
@@ -460,10 +443,9 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
 
             //handleConnection(client);
         } catch (java.net.UnknownHostException uhe) {
-            logger.err(name, "Unknown host: " + targetHost + ", " + uhe.getMessage());
+            if (sfLog().isErrorEnabled()) sfLog().error ("Unknown host: " + targetHost + ", " + uhe.getMessage(),uhe);
         } catch (IOException ioe) {
-            logger.err(name,
-                targetHost + ":" + targetPort + ", IOException: " + ioe.getMessage());
+            if (sfLog().isErrorEnabled()) sfLog().error (targetHost + ":" + targetPort + ", IOException: " + ioe.getMessage(),ioe);
         }
 
         connected = false;
@@ -539,7 +521,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
         this.frequency = newFrequency;
 
         //this.timeSleep = (this.frequency * factor);
-        logger.log(name, " frequency updated: " + this.frequency);
+        if (sfLog().isInfoEnabled()) sfLog().info (" frequency updated: " + this.frequency);
 
         if (sleeping) {
             downloader.interrupt();
@@ -552,7 +534,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
      * @return The data value
      */
     public int getData() {
-        //logger.log(name, "> "+this.getNameID()+", getData = "+ this.data);
+        //if (sfLog().isDebugEnabled()) sfLog().debug (" > "+ "getData = "+ this.data);
         return this.data;
     }
 }

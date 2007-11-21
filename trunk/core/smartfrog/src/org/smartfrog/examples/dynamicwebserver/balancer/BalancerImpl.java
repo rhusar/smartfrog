@@ -29,8 +29,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -70,8 +69,6 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     private ServerSelector serverSelector; // Object that does the load balancing to select a server from a list
     private volatile BalancerThread balancerThread = null; // The main Balancer thread
     private volatile boolean stopping = false; // Used to signal the Balancer server thread to terminate
-    private LogWrapper logger; // used to log through the logging component if one exists
-    private String name;
     private int port; // port number to register balancer server socket
     private int hostsPort; // port number for connections to remote hosts
     private Vector hosts; // initial set of hosts to include in the balancer set
@@ -139,7 +136,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         stopping = false;
 
         // Start the Server Selector
-        serverSelector = new ServerSelector();
+        serverSelector = new ServerSelector(sfCompleteNameSafe().toString());
         serverSelector.start();
 
         //
@@ -210,7 +207,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     public String toString() {
         StringBuffer str = new StringBuffer();
 
-        str.append("name: " + name);
+        str.append("LoadBalancer - name: " + sfCompleteNameSafe());
         str.append(", port: " + port);
         str.append(", hostsPort: " + hostsPort);
         str.append(", hosts: " + hosts);
@@ -228,14 +225,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //
         // Optional attributes.
         //
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
-        name = sfCompleteName().toString();
 
         hosts = sfResolve(HOSTS, hosts, false);
         port = sfResolve(PORT, port, false);
         hostsPort = sfResolve(HOSTSPORT, hostsPort, false);
 
-        logger.log(name, this.toString());
+        if (sfLog().isInfoEnabled()) sfLog().info(this.toString());
     }
 
     /**
@@ -299,7 +294,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         void start() {
             if (thread == null) {
                 // Create writer thread.
-                thread = new Thread(this, "BalancerThread");
+                thread = new Thread(this, "SFBalancerThread");
                 thread.start();
             }
         }
@@ -315,6 +310,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
                 try {
                     thread.join();
                 } catch (InterruptedException ie) {
+                    if (sfLog().isIgnoreEnabled()) sfLog().ignore(ie);
                 }
 
                 thread = null;
@@ -335,7 +331,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         			InetSocketAddress address = new InetSocketAddress(port);
         			server.socket().bind(address);
         		} catch (IOException e) {
-        			logger.err(name, "Error creating server socket: " + e.getMessage());
+        			if (sfLog().isErrorEnabled()) sfLog().error("Error creating server socket: " + e.getMessage(),e);
 
         			// Exit thread because encountered a severe problem
         			return;
@@ -348,14 +344,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         			try {
         				SocketChannel client = server.accept();
         				connectionCount += 1;
-        				logger.log(name, "Accepted connection from " + client);
+        				if (sfLog().isInfoEnabled()) sfLog().info("   - Accepted connection from " + client);
 
         				// Select a server to handle the new client socket, and hand off processing to it.
         				serverSelector.addClient(client);
         			} catch (IOException ioe) {
-        				logger.err(name,
-        						"Error accepting connection from client" +
-        						ioe.getMessage());
+        				if (sfLog().isErrorEnabled()) sfLog().error("Error accepting connection from client" +ioe.getMessage(),ioe);
         			}
         		}
 
@@ -368,12 +362,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         				server.close();
         			}
         		} catch (IOException ioe) {
-        			logger.err(name,
-        					"Error closing server socket " + ioe.getMessage());
+        			if (sfLog().isErrorEnabled()) sfLog().error("Error closing server socket " + ioe.getMessage(),ioe);
         		} 	
         		//and remove our self-reference
         		balancerThread = null;
         	}
+            if (sfLog().isDebugEnabled()) sfLog().debug("BalancerThread terminated.");
         }
     }
 }

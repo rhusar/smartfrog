@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
@@ -40,8 +43,10 @@ class ServerSelector {
     private static int roundRobinServerIndex = 0; // Index to use for selecting server
     private Hashtable serversMap = new Hashtable(); // Mapping from server hostname to corresponding Server instance
     private Vector servers = new Vector(); // Set of servers to choose from
+    private static String name="ServerSelector";
 
-    ServerSelector() {
+    ServerSelector(String name) {
+        this.name = name+"_"+this.name;
     }
 
     private synchronized Server selectServer() {
@@ -74,10 +79,10 @@ class ServerSelector {
             // Could not find a server, so disconnect the client.
             // We assume that the client will try again at a future time
             try {
-                //Logger.err("Could not find a server, closing client connection ");
+                if (sfLog().isWarnEnabled()) sfLog().warn("Could not find a server, closing client connection ");
                 clientChannel.close();
             } catch (IOException ioe) {
-                //Logger.err("Could not close client connection ");
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not close client connection ",ioe);
             }
         } else {
             try {
@@ -92,14 +97,14 @@ class ServerSelector {
                 // Add this new socket pair to the selected server
                 server.addNewConnection(clientChannel, serverChannel);
             } catch (IOException ioe) {
-                //Logger.err("Could not connect to the server " + server.getHostname() + ", closing client " + ioe.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not connect to the server " + server.getHostname() + ", closing client " + ioe.getMessage(),ioe);
                 // Could not connect to server, so disconnect the client.
                 // We assume that the client will try again at a future time
                 try {
-                    //Logger.err("Could not find a server, closing client connection ");
+                    if (sfLog().isWarnEnabled()) sfLog().warn("Could not find a server, closing client connection ");
                     clientChannel.close();
                 } catch (IOException ioe2) {
-                    //Logger.err("Could not close client connection " + ioe2.getMessage());
+                    if (sfLog().isErrorEnabled()) sfLog().error("Could not close client connection " + ioe2.getMessage(),ioe2);
                 }
             }
         }
@@ -142,7 +147,7 @@ class ServerSelector {
      * @param port port number to open socket to new server
      */
     synchronized void addServer(String hostname, int port) {
-        Server server = new Server(hostname, port);
+        Server server = new Server(name, hostname, port);
         serversMap.put(hostname, server);
         servers.add(server);
     }
@@ -180,19 +185,31 @@ class ServerSelector {
          */
         public void run() {
             try {
-                //Logger.log("Setting client socket to non-blocking");
+                if (sfLog().isDebugEnabled()) sfLog().debug("Setting client socket to non-blocking");
                 client.configureBlocking(false);
 
-                //Logger.log("Select a server and create connection to it");
+                if (sfLog().isDebugEnabled()) sfLog().debug("Select a server and create connection to it");
                 createConnection(client);
             } catch (IOException e) {
-                //Logger.err("Closing client socket because Error setting client socket to non-blocking mode: " + e.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Closing client socket because Error setting client socket to non-blocking mode: " + e.getMessage(),e);
                 try {
                     client.close();
                 } catch (IOException ioe) {
-                    //Logger.err("Error closing client channel: " + ioe.getMessage());
+                    if (sfLog().isErrorEnabled()) sfLog().error("Error closing client channel: " + ioe.getMessage(),ioe);
                 }
             }
         }
+    }
+
+    private static  LogSF sflog = null;
+    /**
+     *
+     * @return LogSF
+     */
+    public static LogSF sfLog(){
+         if (sflog==null) {
+             sflog= LogFactory.getLog(name);
+         }
+         return sflog;
     }
 }

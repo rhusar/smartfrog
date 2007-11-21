@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -76,7 +79,7 @@ class ConnectionRelay implements Runnable {
         try {
             selector = Selector.open();
         } catch (IOException e) {
-            //Logger.err("Error creating selector: " + e.getMessage());
+            if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay - Error creating selector: " + e.getMessage(),e);
         }
 
         clients = new HashMap();
@@ -146,18 +149,18 @@ class ConnectionRelay implements Runnable {
                 serverSocket = conn.getServerSocket();
 
                 try {
-                    //Logger.logOptional("Setting channels to non-blocking mode");
+                    if (server.sfLog().isInfoEnabled()) server.sfLog().info("ConnectionRelay - Setting channels to non-blocking mode");
                     client.configureBlocking(false);
                     serverSocket.configureBlocking(false);
 
-                    //Logger.logOptional("Registering channels with selector");
+                    if (server.sfLog().isInfoEnabled()) server.sfLog().info ("ConnectionRelay - Registering channels with selector");
                     client.register(selector, SelectionKey.OP_READ);
                     serverSocket.register(selector, SelectionKey.OP_READ);
 
                     clients.put(client, conn);
                     servers.put(serverSocket, conn);
                 } catch (IOException e) {
-                    //Logger.err("Error configuring channels: " + e.getMessage());
+                    if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay - Error configuring channels: " + e.getMessage(),e);
                     // There was a problem, so forcibly terminate the connection
                     closeConnection(conn);
                 }
@@ -269,7 +272,7 @@ class ConnectionRelay implements Runnable {
             // If we exceed the threshold of failed selects, pause
             // for a bit so we don't go into a tight loop
             if (selectFailureOrZeroCount >= 10) {
-                //Logger.log("select appears to be failing repeatedly, pausing");
+                if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - select appears to be failing repeatedly, pausing");
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -290,13 +293,13 @@ class ConnectionRelay implements Runnable {
                     selectFailureOrZeroCount++;
                 }
             } catch (IOException e) {
-                //Logger.err("Error when selecting for ready channel: " + e.getMessage());
+                if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay - Error when selecting for ready channel: " + e.getMessage(),e);
                 selectFailureOrZeroCount++;
 
                 continue;
             }
 
-            //Logger.logOptional("select reports " + selectReturn + " channels ready to read");
+            if (server.sfLog().isInfoEnabled()) server.sfLog().info("ConnectionRelay - select reports " + selectReturn + " channels ready to read");
             // Work through the list of channels that have data to read
             keyIter = selector.selectedKeys().iterator();
 
@@ -333,7 +336,7 @@ class ConnectionRelay implements Runnable {
                         buffer.clear();
                         numberOfBytes = src.read(buffer);
 
-                        //Logger.logOptional("Read " + numberOfBytes + " bytes from " + src);
+                        if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - Read " + numberOfBytes + " bytes from " + src);
                         if (numberOfBytes > 0) { // Data was read
 
                             if (copyData(buffer, src, dst, clientToServer, key,
@@ -345,7 +348,7 @@ class ConnectionRelay implements Runnable {
                         }
                     } while (readMore);
                 } catch (IOException e) {
-                    //Logger.err("Error moving data between channels: " + e.getMessage());
+                    if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay - Error moving data between channels: " + e.getMessage(),e);
                     closeConnection(conn);
                 }
             }
@@ -355,7 +358,7 @@ class ConnectionRelay implements Runnable {
         try {
             selector.close();
         } catch (IOException ioe) {
-            //Logger.err("Error closing selector " + ioe.getMessage());
+            if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay - Error closing selector " + ioe.getMessage(),ioe);
         }
     }
 
@@ -440,23 +443,23 @@ class ConnectionRelay implements Runnable {
             // If the other half of the socket is already shutdown then
             // go ahead and close the socket
             if (srcSocket.isOutputShutdown()) {
-                //Logger.log("Closing source socket");
+                if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - Closing source socket");
                 srcSocket.close();
             }
             // Otherwise just close down the input stream.  This allows
             // any return traffic to continue to flow.
             else {
-                //Logger.log("Shutting down source input");
+                if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - Shutting down source input");
                 srcSocket.shutdownInput();
             }
 
             // Do the same thing for the destination, but using the
             // reverse streams.
             if (dstSocket.isInputShutdown()) {
-                //Logger.log("Closing destination socket");
+                if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - Closing destination socket");
                 dstSocket.close();
             } else {
-                //Logger.log("Shutting down dest output");
+                if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay - Shutting down dest output");
                 dstSocket.shutdownOutput();
             }
 
@@ -526,7 +529,7 @@ class ConnectionRelay implements Runnable {
             try {
                 delayedSelector = Selector.open();
             } catch (IOException e) {
-                //Logger.err("Error creating selector: " + e.getMessage());
+                if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - Error creating selector: " + e.getMessage(),e);
             }
 
             writeQueue = new LinkedList();
@@ -599,22 +602,21 @@ class ConnectionRelay implements Runnable {
 
                     if (key == null) {
                         // No key already registered so register a new one.
-                        //Logger.logOptional("Registering channel with delayed writer selector");
+                        if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay_DelayedWriter - Registering channel with delayed writer selector");
                         try {
                             dst.register(delayedSelector, SelectionKey.OP_WRITE);
                         } catch (ClosedChannelException e) {
                             // If the channel is already closed, make sure we have cleaned up.
-                            //Logger.err("ClosedChannelException when register channel " + e.getMessage());
+                            if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - ClosedChannelException when register channel " + e.getMessage(),e);
                             closeConnection(conn);
                         }
                     } else {
                         // Already have a key registered, make sure it has the right interest bits.
                         try {
-                            key.interestOps(key.interestOps() |
-                                SelectionKey.OP_WRITE);
+                            key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
                         } catch (CancelledKeyException e) {
                             // If the channel is already closed, make sure we have cleaned up.
-                            //Logger.err("CancelledKeyException when change interestOps channel " + e.getMessage());
+                            if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - CancelledKeyException when change interestOps channel " + e.getMessage(),e);
                             closeConnection(conn);
                         }
                     }
@@ -653,7 +655,7 @@ class ConnectionRelay implements Runnable {
                 // If we exceed the threshold of failed selects, pause
                 // for a bit so we don't go into a tight loop
                 if (selectFailureOrZeroCount >= 10) {
-                    //Logger.log("select appears to be failing repeatedly, pausing");
+                    if (server.sfLog().isWarnEnabled()) server.sfLog().warn("ConnectionRelay_DelayedWriter - select appears to be failing repeatedly, pausing");
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
@@ -672,7 +674,7 @@ class ConnectionRelay implements Runnable {
                         selectFailureOrZeroCount++;
                     }
                 } catch (IOException e) {
-                    //Logger.err("Error when selecting for ready channel: " + e.getMessage());
+                    if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - Error when selecting for ready channel: " + e.getMessage(),e);
                     selectFailureOrZeroCount++;
 
                     continue;
@@ -698,7 +700,7 @@ class ConnectionRelay implements Runnable {
                     try {
                         numberOfBytes = dst.write(delayedBuffer);
 
-                        //Logger.logOptional("Wrote " + numberOfBytes + " delayed bytes to " + dst + ", " + delayedBuffer.remaining() + " bytes remain delayed");
+                        if (server.sfLog().isTraceEnabled()) server.sfLog().trace("ConnectionRelay_DelayedWriter - Wrote " + numberOfBytes + " delayed bytes to " + dst + ", " + delayedBuffer.remaining() + " bytes remain delayed");
                         // If the buffer is now empty, we're done with this channel.
                         if (!delayedBuffer.hasRemaining()) {
                             // The delayed write Key seems to prevent the socket from being closed cleanly,
@@ -719,7 +721,7 @@ class ConnectionRelay implements Runnable {
                             addToReactivateList(src);
                         }
                     } catch (IOException e) {
-                        //Logger.err("Error writing delayed data: " + e.getMessage());
+                        if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - Error writing delayed data: " + e.getMessage(),e);
                         closeConnection(conn);
                     }
                 }
@@ -729,18 +731,18 @@ class ConnectionRelay implements Runnable {
             try {
                 delayedSelector.close();
             } catch (IOException ioe) {
-                //Logger.err("Error closing delayedSelector " + ioe.getMessage());
+                if (server.sfLog().isErrorEnabled()) server.sfLog().error("ConnectionRelay_DelayedWriter - Error closing delayedSelector " + ioe.getMessage(),ioe);
             }
         }
 
         void connectionClosed(Connection conn) {
-            //Logger.log("DelayedWriter connectionClosed for " + conn.getServer().toString());
+            if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay_DelayedWriter - DelayedWriter connectionClosed for " + conn.getServer().toString());
             cleanSocketState(conn.getClientSocket());
             cleanSocketState(conn.getServerSocket());
         }
 
         private void cleanSocketState(SocketChannel dst) {
-            //Logger.log("DelayedWriter cleanSocketState " + dst);
+            if (server.sfLog().isDebugEnabled()) server.sfLog().debug("ConnectionRelay_DelayedWriter - DelayedWriter cleanSocketState " + dst);
             synchronized (delayedInfo) {
                 delayedInfo.remove(dst);
             }
@@ -788,7 +790,7 @@ class ConnectionRelay implements Runnable {
             return conn;
         }
     }
-}
+}    // End connection relay
 
 
 /**
@@ -813,13 +815,16 @@ class Server {
     private ConnectionRelay connectionRelay; // Reference to associated ConnectionRelay instance
     private volatile boolean closing = false; // true if Server is in process of closing or is closed
 
+    private static String name="Server";
+
     /**
      * Constructor for Server
      *
      * @param hostname The host name of the remote server
      * @param port Port number used to connect to the server
      */
-    Server(String hostname, int port) {
+    Server(String name, String hostname, int port) {
+        this.name = name+"_"+this.name;
         InetSocketAddress address = new InetSocketAddress(hostname, port);
         this.addr = address;
         this.hostname = hostname;
@@ -874,13 +879,13 @@ class Server {
             try {
                 clientChannel.close();
             } catch (IOException ioe) {
-                //Logger.err("Could not close client socket " + ioe.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not close client socket " + ioe.getMessage(),ioe);
             }
 
             try {
                 serverChannel.close();
             } catch (IOException ioe) {
-                //Logger.err("Could not close server socket " + ioe.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not close server socket " + ioe.getMessage());
             }
         }
     }
@@ -896,8 +901,7 @@ class Server {
         Vector tempConnections = (Vector) connections.clone();
 
         // Close all open connections
-        for (Enumeration connectionEnum = tempConnections.elements();
-                connectionEnum.hasMoreElements();) {
+        for (Enumeration connectionEnum = tempConnections.elements(); connectionEnum.hasMoreElements();) {
             Connection connection = (Connection) connectionEnum.nextElement();
             connection.terminate();
         }
@@ -919,7 +923,7 @@ class Server {
         connections.remove(conn);
         connectionRelay.connectionClosed(conn);
 
-        //Logger.log("Server Connection closed to " + getHostname() + ": " + getPort() + ". Remaining: " + connections.size());
+        if (sfLog().isInfoEnabled()) sfLog().debug("Server Connection closed to " + getHostname() + ": " + getPort() + ". Remaining: " + connections.size());
     }
 
     /**
@@ -931,6 +935,18 @@ class Server {
     void dataTransferConnectionClosed(Connection conn) {
         connections.remove(conn);
 
-        //Logger.logOptional("dataTransferConnectionClosed Connection closed to " + getHostname() + ": " + getPort() + ". Remaining: " + connections.size());
+        if (sfLog().isDebugEnabled()) sfLog().debug("dataTransferConnectionClosed Connection closed to " + getHostname() + ": " + getPort() + ". Remaining: " + connections.size());
+    }
+
+    private LogSF sflog = null;
+    /**
+     *
+     * @return LogSF
+     */
+    public LogSF sfLog(){
+         if (sflog==null) {
+             sflog= LogFactory.getLog(name);
+         }
+         return sflog;
     }
 }
