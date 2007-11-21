@@ -29,7 +29,6 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.Resource;
 
 import java.io.File;
 import java.lang.reflect.Method;
