@@ -39,7 +39,7 @@ public class ScpNegativeTest
                 "tcn83",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "attribute is still TBD");
     }
 
@@ -49,7 +49,7 @@ public class ScpNegativeTest
                 "tcn84",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "error in schema: non-optional attribute 'host' is missing");
     }
 
@@ -59,7 +59,7 @@ public class ScpNegativeTest
                 "tcn86",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "error in schema: non-optional attribute 'username' is missing");
     }
 
@@ -69,7 +69,7 @@ public class ScpNegativeTest
                 "tcn87",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "error in schema: non-optional attribute 'localFiles' is missing");
     }
 
@@ -79,7 +79,7 @@ public class ScpNegativeTest
                 "tcn88",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "error in schema: non-optional attribute 'remoteFiles' is missing");
     }
 
