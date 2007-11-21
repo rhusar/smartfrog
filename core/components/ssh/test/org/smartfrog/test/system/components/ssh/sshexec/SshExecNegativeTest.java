@@ -39,7 +39,7 @@ public class SshExecNegativeTest
                                  "tcn91",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'host' is missing");
     }
 
@@ -49,7 +49,7 @@ public class SshExecNegativeTest
                                  "tcn92",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 	/*sshexec : command missing*/
@@ -65,10 +65,10 @@ public class SshExecNegativeTest
     public void testCaseTCN94_missing_password_file() throws Exception {
         deployExpectingException(FILES +"tcn94.sf",
                                  "tcn94",
-                                 "SmartFrogLifecycleException",
-                                 "sfDeploy",
-                                  "SmartFrogException",
-                                 "java.io.FileNotFoundException");
+                                EXCEPTION_LIFECYCLE,
+                                "sfDeploy",
+                                EXCEPTION_SMARTFROG,
+                                "java.io.FileNotFoundException");
     }
 
 
