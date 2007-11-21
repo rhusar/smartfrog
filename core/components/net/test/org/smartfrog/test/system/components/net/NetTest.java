@@ -39,81 +39,81 @@ public class NetTest
     public void testCaseTCN68() throws Exception {
         deployExpectingException(FILES+"tcn68.sf",
                                  "tcn68",
-                                 "SmartFrogLifecycleException",
+                                 EXCEPTION_LIFECYCLE,
                                  "sfDeploy",
-                                 "SmartFrogException",
+                                 EXCEPTION_SMARTFROG,
                                  "java.io.FileNotFoundException");
     }
 
     public void testCaseTCN69() throws Exception {
         deployExpectingException(FILES+"tcn69.sf",
                                  "tcn69",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'host' is missing");
     }
 
     public void testCaseTCN70() throws Exception {
         deployExpectingException(FILES+"tcn70.sf",
                                  "tcn70",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 
     public void testCaseTCN71() throws Exception {
         deployExpectingException(FILES+"tcn71.sf",
                                  "tcn71",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'commands' is missing");
     }
 
     public void testCaseTCN72() throws Exception {
         deployExpectingException(FILES+"tcn72.sf",
                                  "tcn72",
-                                 "SmartFrogLifecycleException",
+                                 EXCEPTION_LIFECYCLE,
                                  "sfStart",
-                                 "SmartFrogException",
+                                 EXCEPTION_SMARTFROG,
                                  "java.io.FileNotFoundException");
     }
 
     public void testCaseTCN73() throws Exception {
         deployExpectingException(FILES+"tcn73.sf",
                                  "tcn73",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'ftpHost' is missing");
     }
 
     public void testCaseTCN74() throws Exception {
         deployExpectingException(FILES+"tcn74.sf",
                                  "tcn74",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 
     public void testCaseTCN75() throws Exception {
         deployExpectingException(FILES+"tcn75.sf",
                                  "tcn75",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'localFiles' is missing");
     }
 
     public void testCaseTCN76() throws Exception {
         deployExpectingException(FILES+"tcn76.sf",
                                  "tcn76",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 EXCEPTION_RESOLUTION,
+                                 EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'remoteFiles' is missing");
     }
 }
