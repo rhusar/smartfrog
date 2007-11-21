@@ -34,7 +34,7 @@ public class CargoTest extends CargoTestBase {
                 "testIncomplete",
                 EXCEPTION_DEPLOYMENT,
                 "",
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "error in schema: non-optional attribute 'configurationClass' is missing");
     }
 
