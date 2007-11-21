@@ -38,6 +38,9 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.Enumeration;
 
 
 /** Multiuse Simple display object. It is possible to start / stop the data producer. */
@@ -887,16 +890,29 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
         out.println("*   Info Properties: ");
         out.println("*  ----------------- ");
 
-        // to standard output a more complete info ;-)
-        java.util.Properties p = System.getProperties();
-        java.util.Enumeration keys = p.keys();
-        Object key = "";
+        Properties sysprops = null;
+        try {
+        	sysprops = System.getProperties();
 
-        while (keys.hasMoreElements()) {
-            key = keys.nextElement();
-            out.println("* " + key + ": " + System.getProperty((String) key));
+        	Vector<String> keysVector = new Vector<String>();
+        	for (Enumeration keys = sysprops.propertyNames(); keys.hasMoreElements();) {
+        		keysVector.add((String) keys.nextElement());
+        	}
+        	// Order keys
+        	keysVector= JarUtil.sort(keysVector);
+
+        	for(String key:keysVector) {
+        		String value = "";
+        		try {
+        			if (!(key.trim().equals(""))) value = System.getProperty(key);
+        		} catch (SecurityException e) {
+        			value = "Access to this property blocked by a security manager";
+        		}
+                out.println("* " + key + ": " + value);
+        	}
+        } catch (SecurityException  e) {
+        	out.append("Access to System.getProperties() blocked by a security manager\n");
         }
-
         out.println("*****************************************************\n");
     }
 
@@ -910,19 +926,6 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
             out.println("*   Diagnostics Process Compound: ");
             out.println("*  ------------------------ ");
             out.println(SFProcess.getProcessCompound().sfDiagnosticsReport());
-
-//         Context context = SFProcess.getProcessCompound().sfContext();
-//         // to standard output a more complete info ;-)
-//         //out.println("");
-//         java.util.Enumeration keys = context.keys();
-//         Object key = "";
-//
-//         while (keys.hasMoreElements()) {
-//            key = keys.nextElement();
-//            out.println("* " + key + ": " +
-//                  (context.get((String) key)).toString());
-//         }
-
             out.println(
                     "*****************************************************\n");
         } catch (Exception ex) {
