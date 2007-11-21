@@ -507,11 +507,15 @@ java.class.path=
     <property name="javadoc.version" value="true"/>
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.packagenames" value="org.smartfrog.*, com.hp.*"/>
+    <property name="javadoc.packages" value="org.smartfrog.*, com.hp.*"/>
+    <property name="javadoc.package.name" value="SmartFrog Packages"/>
+    <property name="javadoc.package.title" value="SmartFrog Packages"/>
+    <property name="javadoc.package.title" value="SmartFrog Packages"/>
     <property name="javadoc.header" value="${Name.System} ${smartfrog.version}"/>
     <property name="javadoc.footer" value="${Name.System} ${smartfrog.version}"/>
+    <!--packagenames="${javadoc.packagenames}"-->
     <presetdef name="sf-javadoc" >
-      <javadoc packagenames="${javadoc.packagenames}"
+      <javadoc
           author="${javadoc.author}"
           version="${javadoc.version}"
           use="${javadoc.use}"
@@ -548,20 +552,21 @@ java.class.path=
     [${dist.jdocs.dir}]
     </echo>
     <echo level="verbose">
-    (language level=${javac.java.version})
+      language level=${javac.java.version}
+      javadoc.packages=${javadoc.packages}
+      javadoc.package.title=${javadoc.package.title}
     </echo>
     <fail unless="dist.jdocs.dir">
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
-    <property name="javadoc.packages" value="org.smartfrog.*"/>
-    <property name="javadoc.package.name" value="SmartFrog Packages"/>
     <sf-javadoc
+        packagenames="${javadoc.packages}"
         sourcepath="${src.dir}"
         destdir="${dist.jdocs.dir}"
         classpathref="compile.classpath"
         >
-      <group title="${javadoc.package.name}" packages="${javadoc.packages}"/>
+      <!--<group title="${javadoc.package.title}" packages="${javadoc.packages}"/>-->
     </sf-javadoc>
   </target>
 
