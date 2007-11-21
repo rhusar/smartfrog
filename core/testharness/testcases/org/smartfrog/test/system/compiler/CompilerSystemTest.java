@@ -49,7 +49,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"tcn47.sf",
                 "tcn47",
                 EXCEPTION_DEPLOYMENT,
-	        "The sfConfig attribute of a SmartFrog description must be a Component Description",
+	           "The sfConfig attribute of a SmartFrog description must be a Component Description",
                 EXCEPTION_RESOLUTION,
                 null);
     }
