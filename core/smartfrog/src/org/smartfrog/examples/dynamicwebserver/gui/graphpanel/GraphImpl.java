@@ -27,8 +27,6 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -68,7 +66,7 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
 
     // do we want bars or lines ?
     protected boolean histogram = false;
-    protected LogWrapper logger;
+
     boolean keysAllowed = false;
 
     // the frame to hold the display for this graph
@@ -91,7 +89,6 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
 
     // the number of values
     protected int numberOfSamples;
-    String name;
 
     /**
      * Overwrite this method in any case : it turns the value you get into the
@@ -111,18 +108,15 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        name = sfCompleteName().toString();
 
         try {
             initGraph();
         } catch (Exception e) {
             if (!(e instanceof SmartFrogException)) {
-                throw new SmartFrogException("Exception in sfDeply of Graph component",
-                    e, this);
+                throw new SmartFrogException("Exception in sfDeply of Graph component", e, this);
             }
         }
-
-        logger.log(name, "finished graph deployment");
+        if (sfLog().isDebugEnabled()) sfLog().debug("finished graph deployment");
     }
 
     /**
@@ -148,18 +142,16 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        logger.log(name, "starting graph");
+        if (sfLog().isDebugEnabled()) sfLog().debug("starting graph");
 
         try {
             startCollection();
         } catch (Exception e) {
             if (!(e instanceof SmartFrogException)) {
-                throw new SmartFrogException("Exception in sfStart of Graph component",
-                    e, this);
+                throw new SmartFrogException("Exception in sfStart of Graph component", e, this);
             }
         }
-
-        logger.log(name, "finished starting graph");
+        if (sfLog().isDebugEnabled()) sfLog().debug("finished starting graph");
     }
 
     /**
@@ -188,7 +180,6 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
         positionDisplay = sfResolve(POSITIONDISPLAY, "NW", false);
         graphPencilWidth = sfResolve(GRAPHPENCILWIDTH, 5, false);
         frameTitle = sfResolve(FRAMETITLE, "Graph", false);
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
     }
 
     /**
@@ -238,9 +229,9 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
         pollingPeriod = sfResolve(POLLINGPERIOD, 5, false);
         collecting = true;
         collector = new Thread(this);
-        logger.logOptional(name, "starting polling thread");
+        if (sfLog().isDebugEnabled()) sfLog().debug("starting polling thread");
         collector.start();
-        logger.logOptional(name, "started polling thread");
+        if (sfLog().isInfoEnabled()) sfLog().info("polling thread started");
     }
 
     /**
@@ -278,7 +269,7 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
 
             try {
                 Thread.sleep(1000 * pollingPeriod);
-                logger.logOptional(name, "polling thread running");
+                if (sfLog().isDebugEnabled()) sfLog().debug( "polling thread running");
             } catch (Exception e) {
             }
         }
@@ -299,6 +290,7 @@ public class GraphImpl extends CompoundImpl implements Graph, Compound,
     }
 
     protected void convertData(int value) {
+        if (sfLog().isDebugEnabled()) sfLog().debug("new value: "+value);
         allValues.removeElementAt(0);
         allValues.addElement(new Integer(value)); //values are added at the end
 

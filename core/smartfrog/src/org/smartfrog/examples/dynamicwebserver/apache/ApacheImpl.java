@@ -29,8 +29,6 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -46,7 +44,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         DataSource, Runnable {
-    String name = "";
+
     String location = "";
     String baseConfigLocation = "";
     String configLocation = "";
@@ -54,7 +52,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     boolean manageDaemon = true;
 
     int interCheckTime;
-    LogWrapper logger;
+
     Vector envVars;
     boolean terminated = false;
     private boolean apacheState = false;
@@ -79,14 +77,9 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
-        if (logger != null) {
-            logger.log(name, "apache deploying");
-        }
+        if (sfLog().isDebugEnabled()) sfLog().debug("apache deploying");        
 
-        name = sfCompleteName().toString();
         interCheckTime = sfResolve(INTERCHECKTIME, 15, false);
-
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
 
         location = sfResolve(LOCATION, "", true);
         baseConfigLocation = sfResolve(BASECONFIGLOCATION, "", true);
@@ -95,7 +88,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         apachectlLocation = sfResolve(APACHECTLLOCATION, "", true);
         manageDaemon = sfResolve(MANAGEDAEMON, manageDaemon, false);
 
-        logger.log(name, "apache deployed");
+        if (sfLog().isInfoEnabled()) sfLog().info("apache deployed");
     }
 
     /**
@@ -106,9 +99,9 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        logger.log(name, "apache starting");
+        if (sfLog().isDebugEnabled()) sfLog().debug("apache starting");
         setApacheState(true);
-        logger.log(name, "apache started");
+        if (sfLog().isInfoEnabled()) sfLog().info("apache started");
     }
 
     /**
@@ -118,7 +111,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * @param tr TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-        logger.log(name, "terminating apache - setting runstate to false");
+        if (sfLog().isInfoEnabled()) sfLog().info("terminating apache - setting runstate to false");
         setApacheState(false);
         terminated = true;
         super.sfTerminateWith(tr);
@@ -135,16 +128,16 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
      * @param newState new state of Apache
      */
     public synchronized void setApacheState(boolean newState) {
-        logger.log(name, "setting apache state to " + newState + " from " + apacheState);
+        if (sfLog().isDebugEnabled()) sfLog().debug("setting apache state to " + newState + " from " + apacheState);
 
         if ((!apacheState) && (newState)) {
             apacheState = newState;
-            logger.log(name, "starting apache thread");
+            if (sfLog().isDebugEnabled()) sfLog().debug("starting apache thread");
             thread = new Thread(this);
             thread.start();
-            logger.log(name, "started apache thread");
+            if (sfLog().isDebugEnabled()) sfLog().debug("started apache thread");
         } else {
-            logger.log(name, "really setting apache to " + newState);
+            if (sfLog().isDebugEnabled()) sfLog().debug("really setting apache to " + newState);
             apacheState = newState;
         }
     }
@@ -167,7 +160,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     public void run() {
         boolean needRestart = false;
         Process p;
-        logger.log(name, "apache monitor thread running");
+        if (sfLog().isInfoEnabled()) sfLog().info("apache monitor thread running");
 
         try {
             if (manageDaemon)
@@ -176,12 +169,12 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
             if (sfLog().isErrorEnabled()) sfLog().error (e);
         }
 
-        logger.log(name, "httpd started");
+        if (sfLog().isInfoEnabled()) sfLog().info( "httpd started");
 
         while (getApacheState()) {
             if (needRestart) {
                 try {
-                    logger.log(name, "restarting apache");
+                    if (sfLog().isDebugEnabled()) sfLog().debug("restarting apache");
                     if (manageDaemon)
                         p = Runtime.getRuntime().exec(apachectlLocation + " start");
                     needRestart = false;
@@ -201,11 +194,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 String test = null;
                 String shellLocation = "/bin/bash";
                 Process p2 = Runtime.getRuntime().exec(shellLocation);
-                BufferedReader pOut2 =
-                        new BufferedReader(new InputStreamReader(p2.
-                                getInputStream()));
-                DataOutputStream dos2 =
-                        new DataOutputStream(p2.getOutputStream());
+                BufferedReader pOut2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+                DataOutputStream dos2 = new DataOutputStream(p2.getOutputStream());
 
                 dos2.writeBytes("ps -A | grep httpd" + ((char) 10));
                 dos2.writeBytes("exit 0" + ((char) 10));
@@ -225,8 +215,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
 
                 pOut2.close();
                 threadCount = count;
-                logger.log(name,
-                        "Currently " + count + " httpd threads are running.");
+                if (sfLog().isDebugEnabled()) sfLog().debug("Currently " + count + " httpd threads are running.");
 
                 /**
                  * If the count is 0 is means there are no daemon processes
@@ -239,14 +228,13 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
 
                 if (shouldRefresh) {
                     if (manageDaemon) {
-                        Process pGraceful = Runtime.getRuntime().
-                                exec(apachectlLocation + " graceful");
+                        Process pGraceful = Runtime.getRuntime().exec(apachectlLocation + " graceful");
                         pGraceful.waitFor();
                     }
                     shouldRefresh = false;
                 }
             } catch (Exception e) {
-                if (sfLog().isErrorEnabled()) sfLog().error (name + "- error checking for processes - ignored",e);
+                if (sfLog().isErrorEnabled()) sfLog().error (" Error checking for processes - ignored",e);
             }
         }
 
@@ -255,10 +243,10 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
                 // kill only if we still want to kill apache
                 // someone may have restarted it with a new thread
                 if (!getApacheState()) {
-                    logger.log(name, "stopping apache");
+                    if (sfLog().isDebugEnabled()) sfLog().debug("stopping apache");
                     if (manageDaemon)
                         p = Runtime.getRuntime().exec(apachectlLocation + " stop");
-                    logger.log(name, "apache stopped");
+                    if (sfLog().isInfoEnabled()) sfLog().info("apache stopped");
                 }
             }
         } catch (Exception e) {
