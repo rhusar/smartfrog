@@ -38,6 +38,7 @@ import java.net.URLConnection;
 
 /**
  * JUnit test class for some of the test cases related to the "jetty" component.
+ * All these tests are negative: deployment is expected to fail for some reason 
  *
  */
 public class JettyTCNTest
@@ -72,7 +73,7 @@ public class JettyTCNTest
                 "tcn54",
                 EXCEPTION_DEPLOYMENT,
                 "unnamed component",
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "java.lang.StackOverflowError");
     }
 
@@ -81,7 +82,7 @@ public class JettyTCNTest
                 "tcn55",
                 EXCEPTION_DEPLOYMENT,
                 "unnamed component",
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "jettyhome");
     }
 

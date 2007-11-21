@@ -48,59 +48,6 @@ public class JettyTCPTest
         super(s);
     }
 
-    public void testCaseTCN52() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn52.sf",
-                "tcn52",
-                EXCEPTION_LIFECYCLE,
-                "sfStart",
-                EXCEPTION_DEPLOYMENT,
-                JettyIntf.ATTR_JETTY_SERVER);
-    }
-
-
-    public void testCaseTCN53() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn53.sf",
-                "tcn53",
-                EXCEPTION_LIFECYCLE,
-                "sfStart",
-                EXCEPTION_DEPLOYMENT,
-                "java.net.UnknownHostException: no-hostname");
-    }
-
-    public void NotestCaseTCN54() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn54.sf",
-                "tcn54",
-                EXCEPTION_DEPLOYMENT,
-                "unnamed component",
-                EXCEPTION_RESOLUTION,
-                "java.lang.StackOverflowError");
-    }
-
-    public void testCaseTCN55() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn55.sf",
-                "tcn55",
-                EXCEPTION_DEPLOYMENT,
-                "unnamed component",
-                EXCEPTION_RESOLUTION,
-                "jettyhome");
-    }
-
-    public void testCaseTCN56() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn56.sf",
-                "tcn56",
-                EXCEPTION_LIFECYCLE,
-                null,
-                EXCEPTION_DEPLOYMENT,
-                "Port value out of range");
-    }
-
-    public void testCaseTCN57() throws Exception {
-        deployExpectingException(FULL_FILES + "tcn57.sf",
-                "tcn57",
-                EXCEPTION_LIFECYCLE,
-                "unnamed component");
-    }
-
 
 
 
