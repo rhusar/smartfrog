@@ -372,7 +372,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, sfDiagnosticsReport());
         }
         if (sfLog().isDebugEnabled()&& Logger.logStackTrace) {
-            sfLog().debug(sfDiagnosticsReport());
+            StringBuffer report = new StringBuffer();
+            Diagnostics.doShortReport(report,(Prim)null);
+            sfLog().debug(report);
         } else if (sfLog().isTraceEnabled()){
             sfLog().trace(sfDiagnosticsReport());
         }

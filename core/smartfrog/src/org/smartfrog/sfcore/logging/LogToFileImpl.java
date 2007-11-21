@@ -112,18 +112,16 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
             } catch (FileNotFoundException ex) {
                if (isErrorEnabled()) {
-                   System.err.println("[ERROR] Failed to create log file '"+logFile+"', Reason: "+ex.getMessage()+", creating ramdom log file: ");
+                   error("Failed to create log file '"+logFile+"', Reason: "+ex.getMessage()+", creating ramdom log file: ",ex);
                }
                 // Create TempFile already checks for certail error and returns null if it failed to create temp file
                 logFile = createTempFile ();
                 fos = new FileOutputStream(logFile, append);
                 String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
-                System.err.println("[WARN] "+msg);
+                if (isWarnEnabled()) warn(msg);
             }
             out = new PrintStream(fos);
-            if (isDebugEnabled() && this.getClass()
-                    .toString()
-                    .endsWith(getShortClassName())) {
+            if (isDebugEnabled() && this.getClass().toString().endsWith(getShortClassName())) {
                 //This will go to the std output.
                 debug( getShortClassName() +" using file name: " + logFile.getAbsolutePath());
             }
@@ -131,9 +129,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if (redirectSystemOutputs) {
                 redirectOutputs();
             }
-            if (isTraceEnabled() && this.getClass()
-                    .toString()
-                    .endsWith(getShortClassName())) {
+            if (isTraceEnabled() && this.getClass().toString().endsWith(getShortClassName())) {
                 String msg2 = "Log '" + name + "' " +
                         "\nusing Class ComponentDescription:\n{" + classComponentDescription +
                         "}\n, and using Component ComponentDescription:\n{" + componentComponentDescription + "}";
@@ -304,8 +300,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             System.err.println("[ERROR] File  "+ tempFile + " could not be created");
             if(tempFile!=null && tempFile.exists()) {
               tempFile.delete();
-          }
-          return null;
+            }
+            testDir(tempDirectory.toString());
+            return null;
         }
         //Return file
         return tempFile;
@@ -382,5 +379,65 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     }
 
 
+    /**
+     * Tries and creates a temp file in our  dir; this
+     * checks that it has space and access.
+     * It also does some clock reporting using std.error for messages
+     *
+     * Derived from Ant Diagnostics class
+     * @param dir directory path
+     */
+    private void testDir(String dir) {
+        try {
+            if (( dir == null )||(dir.trim().equals(""))) {
+                error ("'dir' is undefined");
+                return;
+            }
+            //System.err.println("[ERROR] Temp dir is "+ dir);
+            File tempDirectory=new File(dir);
+            if(!tempDirectory.exists()) {
+                error(""+dir+" directory does not exist: "+dir);
+                return;
+            }
+            //create a temp file for testing
+            long now=System.currentTimeMillis();
+            File tempFile=null;
+            FileOutputStream fileout = null;
+            try {
+                tempFile = File.createTempFile("sfDiagLog","txt",tempDirectory);
+                //do some writing to it
+                fileout = new FileOutputStream(tempFile);
+                byte buffer[]=new byte[1024];
+                for(int i=0;i<32;i++) {
+                    fileout.write(buffer);
+                }
+                fileout.close();
+                fileout=null;
+                long filetime=tempFile.lastModified();
+                tempFile.delete();
+                //System.err.println("Temp dir is writeable");
+                long drift=filetime-now;
+                //System.err.println("temp dir alignment with system clock is "+drift+" ms");
+                if(Math.abs(drift)>10000) {
+                    warn("big clock drift -maybe a network filesystem");
+                }
+            } catch (IOException e) {
+                error("[ERROR] File  "+ tempFile + " could not be created/written to" + dir,e);
+            } finally {
+              if (fileout != null) {
+                try {
+                  fileout.close();
+                } catch (IOException ioex) {
+                  //ignore
+                }
+              }
+              if(tempFile!=null && tempFile.exists()) {
+                  tempFile.delete();
+              }
+            }
+        } catch (Throwable thr) {
+            thr.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
 }

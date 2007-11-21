@@ -177,14 +177,14 @@ public final class Diagnostics {
         header(out, "ClassPath");
         doReportClassPath(out);
 
-        header(out, "ClassPath repeats");
+        //header(out, "ClassPath repeats");
         doReportClassPathRepeats(out);
 
 
         header(out, "CodeBase");
         doReportCodeBase(out);
         
-        header(out, "CodeBase repeats");
+        //header(out, "CodeBase repeats");
         doReportCodeBaseRepeats(out);
 
         header(out, "Locale information");
@@ -228,6 +228,19 @@ public final class Diagnostics {
         header(out, org.smartfrog.Version.versionString() );
         out.append("\n");
 
+    }
+
+
+   /**
+     * Print a short report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     * @param object prim/componentdescription the SmartFrog component where to extract info from.
+     * Derived from Ant Diagnostics class
+     */
+    public static void doShortReport(StringBuffer out, Object object) {
+        doReportCommon(out);
+        header(out, org.smartfrog.Version.versionString() );
+        out.append("\n");
     }
 
 
@@ -400,6 +413,14 @@ public final class Diagnostics {
      */
     public static void doReport(StringBuffer out) {
        doReport ( out, (Prim)null);
+    }
+
+    /**
+     * Print a short report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     */
+    public static void doShortReport(StringBuffer out) {
+       doShortReport (out, (Prim)null);
     }
 
     //  Derived from Ant Diagnostics class
