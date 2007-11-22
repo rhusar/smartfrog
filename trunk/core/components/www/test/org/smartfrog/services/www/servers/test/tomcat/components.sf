@@ -139,5 +139,4 @@ testWaitForTimesOut extends ExpectDeployFailure {
     timeout 1000;
   }
   exitType FailingTestCompound:exitType;
-  exitText "Timeout waiting for a page to go live";
 }
