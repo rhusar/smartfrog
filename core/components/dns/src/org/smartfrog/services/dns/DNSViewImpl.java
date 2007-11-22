@@ -228,7 +228,23 @@ public class DNSViewImpl extends DNSComponentImpl implements DNSView {
         }
         return null;
     }
+    /**
+     * Find an attribute in this context, so long as it is visible anywhere.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     */
+    public Object sfResolveHereNonlocal(Object name, boolean mandatory)
+        throws SmartFrogResolutionException {
 
+        return sfResolveHere(name,mandatory);
+    }
    /**
      * Find an attribute in this component context. It creates an alias
      * for a "default" zone and a "defaultReverse" zone.
