@@ -66,68 +66,68 @@ public abstract class SmartFrogTestBase extends TestCase {
      * Smartfrog assertion.
      * Value: {@value}
      */
-    private static final String EXCEPTION_SMARTFROG_ASSERTION = "SmartFrogAssertionException";
+    private static final String EXCEPTION_SMARTFROG_ASSERTION = "org.smartfrog.services.assertions.SmartFrogAssertionException";
 
     /**
      * Text to look for in classname when seeking a resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_RESOLUTION = "SmartFrogResolutionException";
+    public static final String EXCEPTION_RESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogResolutionException";
 
     /**
      * Text to look for in classname when seeking a type resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_TYPERESOLUTION = "SmartFrogTypeResolutionException";
+    public static final String EXCEPTION_TYPERESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogTypeResolutionException";
 
     /**
      * Text to look for in classname when seeking a place resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_PLACERESOLUTION = "SmartFrogPlaceResolutionException";
+    public static final String EXCEPTION_PLACERESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogPlaceResolutionException";
 
     /**
      * Text to look for in classname when seeking a link resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_LINKRESOLUTION = "SmartFrogLinkResolutionException";
+    public static final String EXCEPTION_LINKRESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogLinkResolutionException";
 
     /**
      * Text to look for in classname when seeking a function  resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_FUNCTIONRESOLUTION = "SmartFrogFunctionResolutionException";
+    public static final String EXCEPTION_FUNCTIONRESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogFunctionResolutionException";
 
     /**
      * Text to look for in classname when seeking a assertion resolution exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_ASSERTIONRESOLUTION = "SmartFrogAssertionResolutionException";
+    public static final String EXCEPTION_ASSERTIONRESOLUTION = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogAssertionResolutionException";
 
 
     /**
      * Text to look for in classname when seeking a lifecycle exception.
      * Value: {@value}
      */
-    public static final String EXCEPTION_LIFECYCLE = "SmartFrogLifecycleException";
+    public static final String EXCEPTION_LIFECYCLE = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogLifecycleException";
     /**
      * Text to look for in classname when seeking a SmartFrogException.
      * Value: {@value}
      */
-    public static final String EXCEPTION_SMARTFROG = "SmartFrogException";
+    public static final String EXCEPTION_SMARTFROG = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogException";
     /**
      * Text to look for in classname when seeking a liveness exception.
      * Value: {@value}
      */
 
-    public static final String EXCEPTION_LIVENESS = "SmartFrogLivenessException";
+    public static final String EXCEPTION_LIVENESS = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogLivenessException";
 
     /**
      * Text to look for in classname when seeking a SmartFrogDeploymentException.
      * Value: {@value}
      */
 
-    public static final String EXCEPTION_DEPLOYMENT = "SmartFrogDeploymentException";
+    public static final String EXCEPTION_DEPLOYMENT = "org.smartfrog.sfcore.common.SmartFrog.SmartFrogDeploymentException";
 
     /**
      * Text to look for in classname when seeking a ClassCastException.
@@ -146,7 +146,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * Text to look for in classname when seeking a SmartFrogParseException.
      * Value: {@value}
      */
-    public static final String EXCEPTION_PARSE = "SmartFrogParseException";
+    public static final String EXCEPTION_PARSE = "org.smartfrog.sfcore.common.SmartFrogParseException";
 
     /**
      * Text to look for in classname when seeking a
@@ -154,6 +154,14 @@ public abstract class SmartFrogTestBase extends TestCase {
      * Value: {@value}
      */
     public static final String EXCEPTION_COMPILE_RESOLUTION = "SmartFrogCompileResolutionException";
+
+    /**
+     * Text to look for in classname when seeking a
+     * SmartFrogLazyResolutionException.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_SMARTFROG_LAZY_RESOLUTION_EXCEPTION = "org.smartfrog.sfcore.common.SmartFrogLazyResolutionException";
+
     /**
      * This is an application that will be undeployed at teardown time
      */
