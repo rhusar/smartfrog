@@ -40,8 +40,12 @@ public class AntBuildTest
     public void testProperties() throws Throwable {
         expectSuccessfulTestRun(FILES, "testProperties");
     }
-    
+
     public void testPropertyPassdown() throws Throwable {
         expectSuccessfulTestRun(FILES, "testPropertyPassdown");
+    }
+    
+    public void testSkipUnimplementedTargets() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testSkipUnimplementedTargets");
     }
 }

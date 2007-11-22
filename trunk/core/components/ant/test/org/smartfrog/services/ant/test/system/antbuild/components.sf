@@ -51,6 +51,7 @@ TestBuildFile extends TempBuildFile {
 }
 
 
+
 BuildFileTest extends TestCompound {
 
   buildfile LAZY action:build:absolutePath;
@@ -95,7 +96,7 @@ testProperties extends BuildFileTest {
     }
 
     test.property extends java.version {
-      propertyTarget LAZY action;
+      propertyTarget LAZY action:results;
       name "p1";
       value name;
     }
@@ -107,22 +108,40 @@ testPropertyPassdown extends BuildFileTest {
 
   description "test that properties can be passed down";
 
-  tests:antbuild:properties [ ["p1","overwrite"],
-      ["new.prop","new.value"]];
+  tests:antbuild:properties [
+      ["p1","overwrite"],
+      ["new.prop","new.value"]
+      ];
 
    tests:assertions extends Sequence {
 
 
     test.property extends AssertPropertySet{
-      propertyTarget LAZY action;
+      propertyTarget LAZY action:results;
       name "p1";
       value "overwrite";
     }
 
-    test.property2 extends AssertPropertySet {
-      propertyTarget LAZY action;
+    test.property2 extends test.property{
       name "new.prop";
       value "new.value";
+    }
+
+  }
+}
+
+testSkipUnimplementedTargets extends BuildFileTest {
+
+  description "test that unimplemented targets can be skipped";
+
+  tests:antbuild:skipUnimplementedTargets true;
+  tests:antbuild:targets ["undefined","inner"];
+
+  tests:assertions extends Sequence {
+    inner.property extends AssertPropertySet {
+      name "inner";
+      value "true";
+      propertyTarget LAZY action:results;
     }
 
   }
