@@ -5,6 +5,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.SFSystem;
 
 import java.lang.reflect.Field;
+import java.io.IOException;
 
 /**
  * Implements the constant reference part. This part resolves to the value
@@ -20,6 +21,12 @@ public class ConstantReferencePart extends ReferencePart {
 
 
     public String value;
+    public static final String CLASS_NOT_FOUND = "Class not found:";
+    public static final String FIELD_NOT_FOUND = "Field not found:";
+    public static final String ILLEGAL_ACCESS = "Illegal access to :";
+    public static final String NOT_A_STATIC_FIELD = "Not a static field: ";
+    public static final String ILLEGAL_CLASS_NAME_SYNTAX_IN_CONSTANT_REFERENCE_PART
+            = "illegal class name syntax in Constant Reference Part: ";
 
     /**
      * Constructs with a class.fieldname string.
@@ -69,7 +76,7 @@ public class ConstantReferencePart extends ReferencePart {
       try {
          cl = c.substring(0, c.lastIndexOf('.'));
       } catch (Exception e) {
-         throw new SmartFrogResolutionException("illegal class name syntax in Constant Reference Part: " + c);
+         throw new SmartFrogResolutionException(ILLEGAL_CLASS_NAME_SYNTAX_IN_CONSTANT_REFERENCE_PART + c);
       }
       return cl;
    }
@@ -79,7 +86,7 @@ public class ConstantReferencePart extends ReferencePart {
       try {
          fl = f.substring(f.lastIndexOf('.')+1, f.length());
       } catch (Exception e) {
-         throw new SmartFrogResolutionException("illegal class name syntax in Constant Reference Part: " + f);
+         throw new SmartFrogResolutionException(ILLEGAL_CLASS_NAME_SYNTAX_IN_CONSTANT_REFERENCE_PART + f);
       }
       return fl;
    }
@@ -94,15 +101,30 @@ public class ConstantReferencePart extends ReferencePart {
      *
      * @return the attribute found on resolution
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if failed to resolve reference
+     * @throws SmartFrogResolutionException if failed to resolve reference
      */
     public Object resolve(ReferenceResolver rr, Reference r, int index)
             throws SmartFrogResolutionException {
+        return innerResolve(r);
+    }
+
+    private Object innerResolve(Reference r) throws SmartFrogResolutionException {
+        String classname = classpart(value);
+        String fieldname = fieldpart(value);
         try {
-            Class c = SFClassLoader.forName(classpart(value));
-            Field f = c.getField(fieldpart(value));
+            Class clazz = SFClassLoader.forName(classname);
+            Field f = clazz.getField(fieldname);
             return f.get(null);
+        } catch (ClassNotFoundException e) {
+            throw new SmartFrogResolutionException(r, CLASS_NOT_FOUND + classname);
+        } catch (NoSuchFieldException e) {
+            throw new SmartFrogResolutionException(r, FIELD_NOT_FOUND + fieldname + " in " + classname);
+        } catch (IllegalAccessException e) {
+            throw new SmartFrogResolutionException(r, ILLEGAL_ACCESS + fieldname + " in " + classname);
+        } catch (NullPointerException npe) {
+            throw new SmartFrogResolutionException(r, NOT_A_STATIC_FIELD +fieldname+" in "+classname);
         } catch (Throwable ex) {
+            //any other problem, such as a security issue
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
         }
     }
@@ -117,16 +139,9 @@ public class ConstantReferencePart extends ReferencePart {
      *
      * @return the attribute found on resolution
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if failed to resolve reference
+     * @throws  SmartFrogResolutionException if failed to resolve reference
      */
-    public Object resolve(RemoteReferenceResolver rr, Reference r, int index)
-       throws SmartFrogResolutionException {
-        try {
-            Class c = SFClassLoader.forName(classpart(value));
-            Field f = c.getField(fieldpart(value));
-            return f.get(null);
-        } catch (Throwable ex) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex.toString(), r, ex);
-        }
+    public Object resolve(RemoteReferenceResolver rr, Reference r, int index) throws SmartFrogResolutionException {
+        return innerResolve(r);
     }
 }
