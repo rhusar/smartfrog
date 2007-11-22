@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * created 28-Apr-2004 11:40:53
  */
-public class AssertComponent extends PrimImpl implements Condition,Assert {
+public class AssertComponent extends PrimImpl implements Condition, Assert {
     private static final String ERROR_VECTOR = "Vector too small, expected ";
     private static final String ERROR_COULD_NOT_RESOLVE_ATTRIBUTE = "Could not resolve attribute ";
 

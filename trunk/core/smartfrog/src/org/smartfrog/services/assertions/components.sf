@@ -25,3 +25,4 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/testblock.sf"
 #include "/org/smartfrog/services/assertions/exceptionthrower.sf"
 #include "/org/smartfrog/services/assertions/fail.sf"
+#include "/org/smartfrog/services/assertions/exceptions.sf"
