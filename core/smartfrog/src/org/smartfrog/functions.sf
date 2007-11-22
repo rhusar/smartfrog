@@ -33,6 +33,14 @@ vector extends Function{
 }
 
 /**
+ * Creates a vector from all children
+ */
+System extends Function{
+   sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.SystemComponent";
+   system TBD;
+}
+
+/**
  takes the vector attributes and puts them
  together into a new vector. Ignores non-vector attribute
  */
@@ -70,9 +78,6 @@ minus extends Function{
 divide extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
 }
-
-
-
 
 and extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.And";
