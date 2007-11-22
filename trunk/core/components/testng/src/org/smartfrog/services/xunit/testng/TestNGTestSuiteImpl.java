@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
- * Implementation of a TestNGtset suite runner, hosting TestNG under SmartFrog
+ * Implementation of a TestNG tset suite runner, hosting TestNG under SmartFrog
  */
 public class TestNGTestSuiteImpl extends AbstractTestSuite implements TestSuite {
 
