@@ -24,7 +24,6 @@ For more information: www.smartfrog.org
 
 
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
-#include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 
 /*
  * The following global values must be defined in the included location 
@@ -43,7 +42,6 @@ loadingCgi         TBD;
 
 // a single load generator
 aLoadGenerator extends StressTester {
-    //logTo LAZY PARENT:logTo;
     controlGui LAZY PARENT:controlGui;
 
     host PARENT:host;
@@ -58,7 +56,7 @@ aLoadGenerator extends StressTester {
 
 // a commonly-parameterised set of load generators
 LoadGeneratorSet extends Compound {
-    logTo      LAZY PARENT:logTo;
+
     controlGui LAZY PARENT:controlGui;
 
     host PARENT:host;
@@ -100,21 +98,14 @@ LoadGeneratorTemplate extends Compound {
     port 80;
     page loadingCgi;
 
-
-    logger extends Logger {
-        verbose PARENT:verbose;
-    }
-
     stressControlGui extends StressControlGui {
         verbose PARENT:verbose;
-        // logTo        LAZY logger;
         name         "stress test load control";
         initialValue frequency;
         id           1;
     }
 
     loadGenerators extends LoadGeneratorSet {
-	    // logTo LAZY logger;
         controlGui LAZY stressControlGui;
     }
 }
