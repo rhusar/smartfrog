@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/ant/types.sf"
 #include "/org/smartfrog/services/ant/tasks.sf"
-#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
 
 AntWorkflowComponent extends WorkflowPrim {
@@ -111,9 +111,6 @@ AntBuild extends AntWorkflowComponent {
         //list of targets to run. If empty, the default target is executed
         targets extends Vector;
 
-
-
-
         //the name of a generic ant file. Overrides the value of buildfile
         antfile extends OptionalFilenameType;
 
@@ -150,6 +147,14 @@ AntBuild extends AntWorkflowComponent {
     skipUnimplementedTargets false;
     targets [];
     properties [];
+}
+
+
+AntBuildConstants extends {
+  //a SmartFrog exception that indicates the build has halted
+  AntBuildException "org.smartfrog.services.ant.SmartFrogAntBuildException";
+  //this is a subclass of Ant's BuildException, one that is raised to interrupt a build.
+  BuildInterruptedException "org.smartfrog.services.ant.BuildInterruptedException"
 }
 
 /**

@@ -19,7 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
 #include "/org/smartfrog/services/ant/components.sf"
 
 
@@ -29,9 +28,10 @@ For more information: www.smartfrog.org
 ExpectBuildFailure extends ExpectDeployFailure {
 
     exitText CONSTANT "org.smartfrog.services.ant.AntBuildImpl.BUILD_FAILED";
-    exceptions [["SmartFrogAntBuildException",""]];
+    exceptions [[AntBuildConstants:AntBuildException,""]];
 
 }
+
 
 
 ExpectBuildSuccess extends ExpectDeployFailure {
