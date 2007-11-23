@@ -19,24 +19,24 @@
  */
 package org.smartfrog.services.assertions.events;
 
-import org.smartfrog.sfcore.workflow.eventbus.EventSink;
+import org.smartfrog.services.assertions.TestFailureException;
+import org.smartfrog.services.assertions.TestTimeoutException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
+import org.smartfrog.sfcore.workflow.eventbus.EventSink;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
-import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.services.assertions.TestTimeoutException;
-import org.smartfrog.services.assertions.TestFailureException;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.RemoteStub;
-import java.util.List;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Handler for test lifecycle events.
@@ -59,20 +59,31 @@ public class TestEventSink implements EventSink {
 
 
     /**
-     * for java1.5+; a queue would be much nicer
+     * Queue of incoming events
      */
-    private List<LifecycleEvent> incoming =new ArrayList<LifecycleEvent>();
+    private Queue<LifecycleEvent> incoming =new ArrayDeque<LifecycleEvent>();
 
+    /**
+     * History of events
+     */
     private List<LifecycleEvent> history=new ArrayList<LifecycleEvent>();
 
     /**
      * The source of events
      */
     private volatile EventRegistration source;
+
+    /**
+     * This is a remote stub to ourselves, which is set after exporting
+     * the instance using RMI
+     */
     private volatile RemoteStub remoteStub;
 
+    /** error message : {@value} */
     public static final String ERROR_STARTUP_TIMEOUT = "Timeout waiting for the application to start";
+    /** error message : {@value} */
     public static final String ERROR_TEST_RUN_TIMEOUT = "Timeout waiting for a test run to complete";
+    /** error message : {@value} */
     private static final String ERROR_PREMATURE_TERMINATION = "Test component terminated before starting up";
 
 
@@ -172,6 +183,10 @@ public class TestEventSink implements EventSink {
     }
 
 
+    /**
+     * Is this sink listening
+     * @return true iff the source is not null
+     */
     public boolean isListening() {
         return source!=null;
     }
@@ -183,25 +198,33 @@ public class TestEventSink implements EventSink {
         return (Prim)source;
     }
 
+    /**
+     * Set the source
+     * @param source source
+     */
     private void setSource(EventRegistration source) {
         this.source = source;
     }
 
 
+    /**
+     * Get the remote stub of this object
+     * @return the remote stub (which is null when we are not exported)
+     */
     public RemoteStub getRemoteStub() {
         return remoteStub;
     }
 
     /**
      * return the object at the head of the event queue, or null.
-     * The event is removed from the queue.
+     * The event is removed from the queue and added to the history
      * @return the polled object.
      */
     public synchronized LifecycleEvent poll() {
         if(incoming.size()==0) {
             return null;
         } else {
-            LifecycleEvent event= incoming.remove(0);
+            LifecycleEvent event= incoming.remove();
             history.add(event);
             return event;
         }
@@ -270,10 +293,20 @@ public class TestEventSink implements EventSink {
         }
     }
 
+    /**
+     * Deploy by asking the applicaton to deploy
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of Remote/nework error
+     */
     public void invokeDeploy() throws SmartFrogException, RemoteException {
         getApplication().sfDeploy();
     }
 
+    /**
+     * Deploy by asking the applicaton to deploy
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of Remote/nework error
+     */
     public void invokeStart() throws SmartFrogException, RemoteException {
         getApplication().sfStart();
     }
