@@ -33,10 +33,10 @@ import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handler for test lifecycle events.
@@ -61,7 +61,7 @@ public class TestEventSink implements EventSink {
     /**
      * Queue of incoming events
      */
-    private Queue<LifecycleEvent> incoming =new ArrayDeque<LifecycleEvent>();
+    private Queue<LifecycleEvent> incoming =new ConcurrentLinkedQueue<LifecycleEvent>();
 
     /**
      * History of events
