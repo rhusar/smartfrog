@@ -74,7 +74,7 @@ public class NetworkFailureTest extends SmartFrogTestBase {
         }
     }
 
-    public void testConnectionRefusedTCN51b() throws Exception {
+    public void NotestConnectionRefusedTCN51b() throws Exception {
 
         deployExpectingException(FILES + "tcn51b.sf",
                 "tcn51b",
