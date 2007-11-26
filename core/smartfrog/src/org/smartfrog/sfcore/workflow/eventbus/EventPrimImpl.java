@@ -57,7 +57,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
      * @see EventRegistration
      */
-    synchronized public void register(EventSink sink) {
+    public synchronized void register(EventSink sink) {
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
         }
@@ -73,7 +73,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
      * @see EventRegistration
      */
-    synchronized public void deregister(EventSink sink) {
+    public synchronized void deregister(EventSink sink) {
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
         }
@@ -85,7 +85,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      *
      * @param event java.lang.Object
      */
-    synchronized public void event(Object event) {
+    public synchronized void event(Object event) {
         handleEvent(event);
         sendEvent(event);
     }
@@ -108,7 +108,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      *
      * @param event java.lang.Object
      */
-    synchronized public void sendEvent(Object event) {
+    public synchronized void sendEvent(Object event) {
         for (EventSink s:sendTo) {
             try {
                 if (sfLog().isDebugEnabled()) {
