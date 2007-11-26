@@ -62,7 +62,7 @@ public class SFParse implements MessageKeys {
     }
 
     /**
-     * Gets language grom the URL
+     * Gets language from the URL
      *
      * @param url URL passed to application
      *
