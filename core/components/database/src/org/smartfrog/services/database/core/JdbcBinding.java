@@ -35,7 +35,7 @@ public interface JdbcBinding extends Remote {
     /**
      * Get the properties of the connection
      * @return the properties of this JDBC binding
-     * @throws RemoteException
+     * @throws RemoteException network trouble
      */
     Properties createConnectionProperties() throws RemoteException;
 
@@ -43,6 +43,7 @@ public interface JdbcBinding extends Remote {
      * Get the driver
      *
      * @return the driver
+     * @throws RemoteException network trouble
      */
     String getDriver() throws RemoteException;
 
@@ -50,6 +51,7 @@ public interface JdbcBinding extends Remote {
      * get the username
      *
      * @return username or null
+     * @throws RemoteException network trouble
      */
     String getUser() throws RemoteException;
 
@@ -57,6 +59,7 @@ public interface JdbcBinding extends Remote {
      * get the password
      *
      * @return password or null
+     * @throws RemoteException network trouble
      */
     String getPassword() throws RemoteException;
 
@@ -64,6 +67,7 @@ public interface JdbcBinding extends Remote {
      * get the jdbc url
      *
      * @return JDBC url
+     * @throws RemoteException network trouble
      */
     String getUrl() throws RemoteException;
 }

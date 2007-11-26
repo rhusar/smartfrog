@@ -27,13 +27,13 @@ SetupDatabase extends Compound {
 
   Operations extends Sequence {
 
-      DiaryTransaction extends SequentialTransaction {
+      DiaryTransaction extends Transaction {
           database LAZY DiaryDB;
 
           sql "";
       }
 
-      AdminTransaction extends SequentialTransaction {
+      AdminTransaction extends Transaction {
           database LAZY Admin;
       }
 
