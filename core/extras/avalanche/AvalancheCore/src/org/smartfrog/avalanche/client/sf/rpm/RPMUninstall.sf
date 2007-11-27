@@ -16,7 +16,7 @@ sfConfig extends Parallel {
 	asynchCreateChild true;
 	RPMUninstall extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.rpm.SFRPMUninstall";
-		rpmPackage "calc-2.11.9.3-0";
-		eraseOptions ""; // This takes -e as default erase option
+		[user] rpmPackage "calc-2.11.9.3-0";
+		[user] eraseOptions ""; // This takes -e as default erase option
 	}
 }

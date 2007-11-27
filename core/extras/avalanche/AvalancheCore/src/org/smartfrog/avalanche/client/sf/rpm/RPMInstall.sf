@@ -16,7 +16,7 @@ sfConfig extends Parallel {
 	asynchCreateChild true;
 	RPMInstall extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.rpm.SFRPMInstall";
-		rpmPackage "/home/bnaveen/calc-sandya.rpm";
-		installOptions ""; // This takes -i as default install option
+		[user] rpmPackage "/home/bnaveen/calc-sandya.rpm";
+		[user] installOptions ""; // This takes -i as default install option
 	}
 }
