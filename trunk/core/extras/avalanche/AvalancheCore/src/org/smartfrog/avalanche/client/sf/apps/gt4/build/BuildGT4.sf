@@ -17,24 +17,24 @@ sfConfig extends Parallel {
 	BuildGT4 extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.build.SFBuildGT4";
 		
-		javaPath "";
-		javaVersion "";
+		[user] javaPath "";
+		[user]javaVersion "";
 		
-		antPath "";
-		antVersion "";
+		[user] antPath "";
+		[user] antVersion "";
 		
-		cVersion "";
+		[user] cVersion "";
 		
 		tarVendor "GNU";
 		sedVendor "GNU";
 		makeVendor "GNU";
 		sudo "sudo";
 	//	postgresVersion "";
-		perlPath "";	
-		perlVersion "";
+		[user] perlPath "";	
+		[user] perlVersion "";
 
-		installerDir "";
-		globusLoc "";
+		[user] installerDir "";
+		[user] globusLoc "";
 		
 		configureOpts "";	// comma separated configure options	
 		makeTargets "";		// comma separated make targets	
