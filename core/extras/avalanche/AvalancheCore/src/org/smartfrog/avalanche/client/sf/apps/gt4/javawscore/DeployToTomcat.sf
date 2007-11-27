@@ -14,8 +14,8 @@ For more information: www.smartfrog.org
 
 DeployToTomcat extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.SFDeployToTomcat";
-		globusLocation "";
-		tomcatDir ""; 
+		[user] globusLocation "";
+		[user] tomcatDir ""; 
 		
 		target "deployTomcat";
 		webAppName ["webapp.name", "wsrf"];

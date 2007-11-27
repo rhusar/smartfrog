@@ -61,13 +61,13 @@ sfConfig extends Parallel {
 
 WSCoreInstallation extends Sequence {
 	gzFileName "";
-	tempTarFileName "";
+	[user] tempTarFileName "";
 	
-	outputDirectoryBase "";
+	[user] outputDirectoryBase "";
 	
-	globusLoc "";
-	buildFilepath ""; 
-	tomcatLoc "";
+	[user] globusLoc "";
+	[user] buildFilepath ""; 
+	[user] tomcatLoc "";
 	
 	// this will automatically create tar file
 	extract extends Gunzip.Untar{
@@ -91,7 +91,7 @@ WSCoreInstallation extends Sequence {
 
 sfConfig extends Sequence{
 	
-	srcFile "";
+	[user] srcFile "";
 	
 	download extends FTPDownload{
 		 localFile LAZY srcFile ;
