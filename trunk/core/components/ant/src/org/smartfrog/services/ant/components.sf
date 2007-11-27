@@ -36,8 +36,6 @@ AntWorkflowComponent extends WorkflowPrim {
     //log level, one of "debug", "info", "error", "warn"
     logLevel extends String;
 
-
-
     //this is an optional base directory. If it exists, then
     //it is used as the base directory for the run.
     //In AntBuild, it also sets the base dir for all (relative) directories
