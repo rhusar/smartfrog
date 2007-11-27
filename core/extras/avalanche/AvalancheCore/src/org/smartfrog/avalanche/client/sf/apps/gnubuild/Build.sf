@@ -17,8 +17,8 @@ sfConfig extends Parallel {
 	Build extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gnubuild.SFBuild";
 		
-		installerDir "";
-		installationDir "";
+		[user] installerDir "";
+		[user] installationDir "";
 		
 		configureOpts "";	// comma separated configure options	
 		makeTargets "";		// comma separated make targets	
