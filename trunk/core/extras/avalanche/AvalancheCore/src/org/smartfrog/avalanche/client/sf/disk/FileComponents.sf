@@ -15,6 +15,6 @@ For more information: www.smartfrog.org
 // It is programmed not to delete any first level directory like /usr, /bin etc. 
 DeleteFile extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.disk.SFDeleteFile";
-	fileToDelete "";
+	[user] fileToDelete "";
 	stopOnFailure false ; 
 }
