@@ -17,11 +17,11 @@ For more information: www.smartfrog.org
 
 MySQLInstallation extends Sequence {
 	gzFileName "";
-	tempTarFileName "";
+	[user] tempTarFileName "";
 	
-	installDir "";
+	[user] installDir "";
 
-	mysqlHome "";
+	[user] mysqlHome "";
 	
 	// this will automatically create tar file
 	extract extends Gunzip.Untar{
@@ -39,7 +39,7 @@ MySQLInstallation extends Sequence {
 
 sfConfig extends Sequence{
 	
-	srcFile "";
+	[user] srcFile "";
 	
 	download extends FTPDownload{
 		localFile LAZY srcFile ;
