@@ -14,8 +14,8 @@ For more information: www.smartfrog.org
 
 JavaWSCore extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.SFJavaWSCore";
-		globusLocation "";
-		buildFile ""; 
+		[user] globusLocation "";
+		[user] buildFile ""; 
 		shouldTerminate true;
 }
 

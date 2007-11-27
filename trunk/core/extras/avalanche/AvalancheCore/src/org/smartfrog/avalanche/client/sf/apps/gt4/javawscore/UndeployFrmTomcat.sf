@@ -17,7 +17,7 @@ sfConfig extends Parallel {
 	UndeployFrmTomcat extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.javawscore.SFUndeployFrmTomcat";
 		//globusLocation "";
-		tomcatDir ""; 
+		[user] tomcatDir ""; 
 		
 		webAppName "wsrf";
 		tomcatVersion "5.0.28";
