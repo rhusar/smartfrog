@@ -18,10 +18,10 @@ For more information: www.smartfrog.org
 
 JBossInstallation extends Sequence {
 	gzFileName "";
-	tempTarFileName "";
-	installDir "";
+	[user] tempTarFileName "";
+	[user] installDir "";
 
-	jbossHome "";
+	[user] jbossHome "";
 	
 	// this will automatically create tar file
 	extract extends Gunzip.Untar{
@@ -45,7 +45,7 @@ stopServer extends BashShellScript {
 
 sfConfig extends Sequence{
 	
-	srcFile "";
+	[user] srcFile "";
 	
 	download extends FTPDownload{
 		localFile LAZY srcFile ;
