@@ -16,9 +16,9 @@ sfConfig extends Parallel {
 	asynchCreateChild true;
 	ConfigureGridFTP extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.gridftp.SFConfigureGridFTP";
-		globusLoc "";
-		port 2811;
-		configureType "";	// Valid values are "inetd", "xinetd", "daemon" ...
+		[user] globusLoc "";
+		[user] port 2811;
+		[user] configureType "";	// Valid values are "inetd", "xinetd", "daemon" ...
 		
 		shouldTerminate true;
 	}
