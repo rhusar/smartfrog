@@ -14,11 +14,11 @@ For more information: www.smartfrog.org
 
 FTPDownload extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.ftp.SFFTPDownload";
-		server ""; 								
-		userName ""; 
-		password "";
-		downloadFile "";
-		localFile "";
+		[user] server ""; 								
+		[user] userName ""; 
+		[user] password "";
+		[user] downloadFile "";
+		[user] localFile "";
 		trMode "binary";
 }
 
