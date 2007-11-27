@@ -25,10 +25,4 @@ public interface Cyclic {
     // Attribute names
     final static String ATTR1 = "attr";
 
-    // Interfaces Examples.
-    // //Normal method
-    //  public int enable (InetAddress hostIP, int port) throws Exception;
-    // //Remote methods
-    //  public int enable (InetAddress hostIP, int port) throws RemoteException;
-    //
 }
