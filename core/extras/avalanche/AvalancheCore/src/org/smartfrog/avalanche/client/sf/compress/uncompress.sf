@@ -13,30 +13,30 @@ For more information: www.smartfrog.org
 
 Untar extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.compress.SFUnTar";
-	tarFile "";
-	outputDir ""; 
+	[user] tarFile "";
+	[user] outputDir ""; 
 }
 Unzip extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.compress.SFUnzip";
-	zipFile "";
-	outputDir ""; 
+	[user] zipFile "";
+	[user] outputDir ""; 
 }
 Gunzip extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.compress.SFGunzip";
-	gzipFile "";
-	outputDir ""; 
+	[user] gzipFile "";
+	[user] outputDir ""; 
 }
 Bunzip2 extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.compress.SFBunzip2";
-	bzip2File "";
-	outputDir ""; 
+	[user] bzip2File "";
+	[user] outputDir ""; 
 }
 
 
 Gunzip.Untar extends Sequence{
-	gzFile "";
-	tarFileName "";
-	outputDirectory "";
+	[user] gzFile "";
+	[user] tarFileName "";
+	[user] outputDirectory "";
 	
 	extractGzip extends Gunzip{
 		gzipFile ATTRIB gzFile ; 

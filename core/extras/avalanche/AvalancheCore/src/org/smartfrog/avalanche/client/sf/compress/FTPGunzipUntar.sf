@@ -18,9 +18,9 @@ For more information: www.smartfrog.org
 sfConfig extends Parallel {
 	asynchCreateChild true;
 	ftpunzipuntarComp extends Sequence {
-		srcFile "";
-		installDir "";
-		tempTarFileName "";
+		[user] srcFile "";
+		[user] installDir "";
+		[user] tempTarFileName "";
 		
 		download extends  FTPDownload {
 			localFile LAZY srcFile ;
