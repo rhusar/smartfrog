@@ -49,8 +49,7 @@ Exec extends DATA {
 //----------- SHELL EXEC -----------------------------------
 ShellExecSchema extends ExecSchema {
     lineSeparator extends OptionalString;
-
-    echoCmd extends OptionalString, OptionalNull;
+    echoCmd extends Optional { class ["java.lang.String","org.smartfrog.sfcore.common.SFNull"]; }
     echoErrorCmd extends OptionalString;
 }
 
