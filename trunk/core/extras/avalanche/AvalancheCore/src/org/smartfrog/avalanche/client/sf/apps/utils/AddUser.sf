@@ -14,10 +14,10 @@ For more information: www.smartfrog.org
 AddUser extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.apps.utils.SFAddUser";
 	
-	user "";
-	homeDir "";
-	shell "";
-	passwd "";
+	[user] user "";
+	[user] homeDir "";
+	[user] shell "";
+	[user] passwd "";
 	
 	shouldTerminate true;
 }
