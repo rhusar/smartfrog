@@ -17,10 +17,10 @@ For more information: www.smartfrog.org
 sfConfig extends Parallel {
 	asynchCreateChild true;
 	GridFTP extends Sequence {
-		cVer "";
+		[user] cVer "";
 		
-		instDir "";
-		globusLocation "";
+		[user] instDir "";
+		[user] globusLocation "";
 		configOpts [];
 		makeTargts [];
 		
