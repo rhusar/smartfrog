@@ -4,8 +4,8 @@ GlobusStopContainer extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.exec.SFStopContainer";
 	
 	componentName "";
-	env "";
-	componentPath "";
+	[user] env "";
+	[user] componentPath "";
 	parameters "";
 	proxyCert "";
 }

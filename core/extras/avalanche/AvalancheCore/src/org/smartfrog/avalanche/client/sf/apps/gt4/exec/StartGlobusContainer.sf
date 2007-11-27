@@ -6,8 +6,8 @@ sfConfig extends Parallel {
 	asynchCreateChild true;
 	StartGlobusContainer extends GlobusContainer {
 		componentName "GlobusStartContainer";
-		env "GLOBUS_LOCATION=/opt/globus-4.0.1";
-		componentPath "/opt/globus-4.0.1/bin/globus-start-container";
+		[user] env "GLOBUS_LOCATION=/opt/globus-4.0.1";
+		[user] componentPath "/opt/globus-4.0.1/bin/globus-start-container";
 		parameters "";
 	}	
 }

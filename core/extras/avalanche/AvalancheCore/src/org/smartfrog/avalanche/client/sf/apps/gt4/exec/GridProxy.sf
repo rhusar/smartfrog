@@ -10,9 +10,9 @@ sfConfig extends Parallel {
 								// <componentName>_StartComponent as 
 								// this reference will be used by the 
 								// stopComponent
-		env "GLOBUS_LOCATION=/opt/globus-4.0.1";
-		componentPath "/opt/globus-4.0.1/bin/grid-proxy-init";
-		parameters "-pwstdin iso*help";
+		[user] env "GLOBUS_LOCATION=/opt/globus-4.0.1";
+		[user] componentPath "/opt/globus-4.0.1/bin/grid-proxy-init";
+		[user] parameters "-pwstdin iso*help";
 		proxyCert "";
 	}
 }
