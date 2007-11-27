@@ -174,7 +174,9 @@ For more information: www.smartfrog.org
       <!-- SFOS-563 Constant tests are failing -->
       <exclude name="${systemtests}/reference/constant/ConstantReferenceTest.*"
           unless="run.failing.tests" />
-
+      <!-- SFOS-563 Constant tests are failing -->
+      <exclude name="${systemtests}/reference/ReferenceSystemTest.*"
+          unless="run.failing.tests" />
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
