@@ -40,10 +40,10 @@ sfConfig extends Parallel {
 
 UpdateGridMapFile extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.apps.gt4.security.SFUpdateGridMapFile";
-	globusLoc "";
-	certFile "";
-	mapUser "";
-	certSubject "";	
+	[user] globusLoc "";
+	[user] certFile "";
+	[user] mapUser "";
+	[user] certSubject "";	
 }
 
 sfConfig extends UpdateGridMapFile;
