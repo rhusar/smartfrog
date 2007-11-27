@@ -30,9 +30,9 @@ CAService extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.ca.SFCAService";
 	//	sfProcessComponentName "caService";
 		
-		caPassphrase "" ;
-		caDir "";
-		opensslDir "";
+		[user] caPassphrase "" ;
+		[user] caDir "";
+		[user] opensslDir "";
 		
 		shouldTerminate false; 
 }

@@ -16,19 +16,19 @@ sfConfig extends Parallel {
 	asynchCreateChild true;
 	CAInstallation extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.apps.ca.SFCAInstallation";
-		installerDir "";
-		installationDir "";
-		caDirectory "";
-		uniqueSubject ""; // values shd is yes or no
-		country ""; // 2 letter country code. India - IN
-		state ""; // State code - Karnataka = KA
-		location ""; // location code = Bangalore - BLR
-		organization ""; // HP
-		orgUnit ""; // STSD
-		commonName ""; 
-		emailAddr "";
+		[user] installerDir "";
+		[user] installationDir "";
+		[user] caDirectory "";
+		[user] uniqueSubject ""; // values shd is yes or no
+		[user] country ""; // 2 letter country code. India - IN
+		[user] state ""; // State code - Karnataka = KA
+		[user] location ""; // location code = Bangalore - BLR
+		[user] organization ""; // HP
+		[user] orgUnit ""; // STSD
+		[user] commonName ""; 
+		[user] emailAddr "";
 		
-		passwd "";
+		[user] passwd "";
 		validity "365"; // default is 1 year
 		shouldTerminate true;
 	}
