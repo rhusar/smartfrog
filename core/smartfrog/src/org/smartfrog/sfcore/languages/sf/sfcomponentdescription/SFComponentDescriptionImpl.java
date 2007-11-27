@@ -64,6 +64,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public Vector types = new Vector();
     private static final String PHASE_LIST = "phaseList";
+    public static final String POSSIBLE_CAUSE_CYCLIC_REFERENCE = "Possible cause: cyclic reference.";
 
 
     /**
@@ -654,7 +655,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                        msg.append(value);
                        msg.append("'");
                        if (thr instanceof StackOverflowError) {
-                           msg.append(". Possible cause: cyclic reference.");
+                           msg.append(". "+ POSSIBLE_CAUSE_CYCLIC_REFERENCE);
                        }
                        throw new SmartFrogLinkResolutionException(msg.toString(),
                                thr, sfCompleteName(), resState.unresolved());
