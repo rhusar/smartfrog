@@ -14,12 +14,12 @@ For more information: www.smartfrog.org
 
 StartComponent extends Prim {
 		sfClass "org.smartfrog.avalanche.client.sf.exec.simple.SFStartComponent";
-		componentName "Hostname";	// The component must be deployed as 
+		[user] componentName "Hostname";	// The component must be deployed as 
 								// <componentName>_StartComponent as this 
 								// reference will be used by the stopComponent
-		env "";
-		componentPath "/bin/hostname";	//default application
-		parameters "";				// multiple parameters are comma seperated 
+		[user] env "";
+		[user] componentPath "/bin/hostname";	//default application
+		[user] parameters "";				// multiple parameters are comma seperated 
 }
 
 sfConfig extends Parallel {
