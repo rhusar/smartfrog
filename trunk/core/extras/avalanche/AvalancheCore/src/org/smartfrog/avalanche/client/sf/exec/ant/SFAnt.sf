@@ -15,10 +15,10 @@ For more information: www.smartfrog.org
 SFAnt extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.exec.ant.SFAntHelper";
 	
-	buildFile ;
-	outputLogFile ;
-	target ;
-	baseDirectory ;
+	[user] buildFile ;
+	[user] outputLogFile ;
+	[user] target ;
+	[user] baseDirectory ;
 }
 
 sfConfig extends Parallel {
