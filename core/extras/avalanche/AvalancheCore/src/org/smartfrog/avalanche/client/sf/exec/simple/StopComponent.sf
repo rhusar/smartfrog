@@ -14,7 +14,7 @@ For more information: www.smartfrog.org
 
 StopComponent extends Prim {
 	sfClass "org.smartfrog.avalanche.client.sf.exec.simple.SFStopComponent";
-	componentName "Hostname"; //This attribute value should be the same as the one in the corresponding StartComponent
+	[user] componentName "Hostname"; //This attribute value should be the same as the one in the corresponding StartComponent
 }
 
 sfConfig extends Parallel {
