@@ -103,15 +103,15 @@ sfConfig extends Sequence {
 	asynchCreateChild true;
 	security extends Sequence {*/
 	//	caLocator LAZY HOST "grid1.india.hp.com":rootProcess:App_2006-05-29_14_09_182;
-		caLocator "App_2006-05-29_14_09_182";
-		caHost "grid1.india.hp.com";
-		globusLocation "/home/sandya/globus401bin";
+		[user] caLocator "App_2006-05-29_14_09_182";
+		[user] caHost "grid1.india.hp.com";
+		[user] globusLocation "/home/sandya/globus401bin";
 		
-		rootUser "root";
-		rootPassword "";
+		[user] rootUser "root";
+		[user] rootPassword "";
 	
-		globusUser "ritu";	
-		caHashkey "";
+		[user] globusUser "ritu";	
+		[user] caHashkey "";
 		setupCAInfoCommands ["mkdir -p /etc/grid-security/certificates",
 							("mv /tmp/grid-security.conf."++ LAZY caHashkey ++ " /etc/grid-security/certificates/"),
 							"rm -rf /etc/grid-security/*.conf",
