@@ -30,5 +30,9 @@ import java.rmi.Remote;
 
 public interface SFSlpAdvertiser extends Remote {
 
+    String ATTR_TO_ADVERTISE = "toAdvertise";
+    String ATTR_SERVICE_TYPE = "serviceType";
+    String ATTR_SERVICE_LIFETIME = "serviceLifetime";
+    String ATTR_ADVERTISE_REFERENCE = "advertiseReference";
 }
 

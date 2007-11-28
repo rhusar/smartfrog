@@ -62,11 +62,12 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
     protected LogSF slpLog = null;
 
     // references.
-    public static final Reference toAdvertiseRef = new Reference("toAdvertise");
-    public static final Reference serviceTypeRef = new Reference("serviceType");
-    public static final Reference serviceAttributeRef = new Reference("serviceAttributes");
-    public static final Reference serviceLifetimeRef = new Reference("serviceLifetime");
-    public static final Reference advertiseReferenceRef = new Reference("advertiseReference");
+    public static final Reference toAdvertiseRef = new Reference(ATTR_TO_ADVERTISE);
+    public static final Reference serviceTypeRef = new Reference(ATTR_SERVICE_TYPE);
+    public  static final String ATTR_SERVICE_ATTRIBUTES = "serviceAttributes";
+    public static final Reference serviceAttributeRef = new Reference(ATTR_SERVICE_ATTRIBUTES);
+    public static final Reference serviceLifetimeRef = new Reference(ATTR_SERVICE_LIFETIME);
+    public static final Reference advertiseReferenceRef = new Reference(ATTR_ADVERTISE_REFERENCE);
 
     public SFSlpAdvertiserImpl() throws RemoteException {
         super();
@@ -79,9 +80,9 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         Properties p = getSlpConfiguration();
 
         // get properties for the service to advertise.
-        toAdvertise = sfContext().get("toAdvertise"); //sfResolve(toAdvertiseRef);
+        toAdvertise = sfContext().get(ATTR_TO_ADVERTISE); //sfResolve(toAdvertiseRef);
         if (toAdvertise == null) {
-            throw new SmartFrogException("SLP: Could not find 'toAdvertise' attribute");
+            throw new SmartFrogException("SLP: Could not find '"+ATTR_TO_ADVERTISE+"' attribute");
         }
         serviceType = (String) sfResolve(serviceTypeRef);
         serviceAttributes = (Vector) sfResolve(serviceAttributeRef);
@@ -124,7 +125,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
                 advertiser.setSFLog(slpLog);
             }
         } catch (ServiceLocationException ex) {
-            throw (SmartFrogException) SmartFrogException.forward(ex);
+            throw SmartFrogException.forward(ex);
         }
     }
 
@@ -135,7 +136,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         try {
             advertiser.register(serviceURL, serviceAttributes);
         } catch (ServiceLocationException ex) {
-            throw (SmartFrogException) SmartFrogException.forward(ex);
+            throw  SmartFrogException.forward(ex);
         }
     }
 
@@ -203,7 +204,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
 
     protected void createStringURL() throws SmartFrogException, RemoteException {
         Context c = sfContext();
-        Object value = c.get("toAdvertise");
+        Object value = c.get(ATTR_TO_ADVERTISE);
         if (value instanceof Reference) {
             // check if we are advertising the process compound.
             Reference r = (Reference) value;
