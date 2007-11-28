@@ -208,9 +208,9 @@ public class FilterImpl extends Thread {
             line = (String) buffer.firstElement();
             buffer.removeElementAt(0);
           }
-          // This trace is very useful for debugging but application output
-          if (sfLog.isDebugEnabled()){
-            sfLog.debug(line );
+          // This trace is very useful for debugging  application output
+          if (sfLog.isTraceEnabled()){
+            sfLog.trace(line );
           }
 
           // Now actually do the filtering.
@@ -275,7 +275,7 @@ public class FilterImpl extends Thread {
           }
       }
       if ((!found) || (passPositives)) {
-          listener.line(line, getName());
+          listener.line(line, getName());          
       }
   }
 
