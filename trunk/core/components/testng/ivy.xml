@@ -63,6 +63,6 @@
     <dependency org="testng"
         name="testng"
         rev="${testng.version}"
-        conf="compile->default;redist->default"/>
+        conf="compile->master;redist->master"/>
   </dependencies>
 </ivy-module>
