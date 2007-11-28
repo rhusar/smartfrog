@@ -56,7 +56,7 @@ testDeploy extends ExpectDeploy {
   }
   tests extends Sequence {
   
-}
+  }
 }
 
 testInline extends testDeploy {
