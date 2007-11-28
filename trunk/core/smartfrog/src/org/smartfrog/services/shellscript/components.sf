@@ -40,6 +40,8 @@ ExecSchema extends Schema {
     detach extends OptionalBoolean;
     terminate extends OptionalBoolean;
     restart extends OptionalBoolean;
+
+    passPositives extends OptionalBoolean;
 }
 
 Exec extends DATA {
@@ -61,11 +63,13 @@ ShellExec extends Exec {
 BashExec extends ShellExec{
   cmd  ["/bin/bash"];
   echoErrorCmd "$?";
+  passPositives false;
 }
 
 WinXPExec extends ShellExec{
    cmd    ["cmd.exe"];
    echoErrorCmd "%ERRORLEVEL%";
+   passPositives false;
 }
 
 //----------- PROCESS  ----------------------------------------

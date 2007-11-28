@@ -128,6 +128,9 @@ public class FilterImpl extends Thread {
   private InputStream in = null;
   private BufferFiller bufferFiller = null;
   private boolean stopRequested = false;
+  // decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+  private boolean passPositives = false;
+
 //  private RunProcess process = null;
   private String type = null;
   private String ID = "";
@@ -139,8 +142,22 @@ public class FilterImpl extends Thread {
   private String filters[] = null;
 
 
-  public FilterImpl( String ID, InputStream in, String type, String filters[], FilterListener listener) {
+    /**
+     *
+     * @param ID filter ID
+     * @param in stream input
+     * @param type type of filter, use for logging mainly.
+     * @param filters  data to be search in inputstream. Positives are sent to the listener.found() interface
+     * @param listener  listener to process read lines and found positives
+     * @param passPositives decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+     */
+
+  public FilterImpl( String ID, InputStream in, String type, String filters[], FilterListener listener, boolean passPositives) {
+
     super ("Filter(" + type + ")");
+
+    this.passPositives = passPositives;
+
     this.type = type;
     //this.type = "Filter "+ ID+ "(" + type + ")" ;
 //    this.setName(this.type);
@@ -239,29 +256,34 @@ public class FilterImpl extends Thread {
       }
   }
 
+
+  boolean found = false;
   // Compares line with filters[] set
   protected void filter(String line, String lineFilters[]) {
-      if (listener !=null) {
-          listener.line(line, getName());
-      }
-
-      if (lineFilters==null) return;
-
-      for (int i = 0; i<lineFilters.length; ++i) {
-          //sfLog.trace("Comparing: "+ line +", "+filters[i]);
-          if (line.indexOf(lineFilters[i])==-1) {
-              //No match
-              continue;
+      found = false;
+      if (listener == null) return;
+      if (lineFilters!=null) {
+          for (int i = 0; i<lineFilters.length; ++i) {
+              //sfLog.trace("Comparing: "+ line +", "+filters[i]);
+              if (line.indexOf(lineFilters[i])==-1) {
+                  //No match
+                  continue;
+              }
+              // it tells you the write filter!
+              positiveFilter(line, i, getName());
+              found =true;
           }
-          // it tells you the write filter!
-          positiveFilter(line, i, getName());
+      }
+      if ((!found) || (passPositives)) {
+          listener.line(line, getName());
       }
   }
 
   protected void positiveFilter(String line, int filterIndex, String filterName) {
-      if (listener !=null){
-          listener.found(line, filterIndex, getName());
-      }
+      if (listener == null) return;
+
+      listener.found(line, filterIndex, getName());
+
   }
 }
 //------------------- end FILTER -------------------------------

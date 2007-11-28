@@ -242,8 +242,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
-                  new FilterImpl( sfLog.getLogName(), process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
-                  new FilterImpl( sfLog.getLogName(), process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
+                  new FilterImpl( sfLog.getLogName(), process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener(),cmd.passPositives()),
+                  new FilterImpl( sfLog.getLogName(), process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener(),cmd.passPositives())
                 );
 
             // process may be null by the time we get here after the synchronized
