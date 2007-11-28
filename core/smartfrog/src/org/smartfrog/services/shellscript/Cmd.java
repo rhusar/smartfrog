@@ -64,6 +64,12 @@ import java.io.Serializable;
      public final static String ATR_TERMINATE = "terminate";
 
 
+     /**
+      * Decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+      * Value {@value}.
+      */
+     public final static String ATR_PASS_POSITIVES = "passPositives";
+
      // Data needed for runTime Exec.
 
      private String cmdarray[] = null;
@@ -101,6 +107,11 @@ import java.io.Serializable;
      */
      private boolean shouldRestart = false;
 
+     /**
+      * decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+      */
+     private boolean passPositives = false;
+
      public Cmd() {
 
      }
@@ -119,6 +130,7 @@ import java.io.Serializable;
               this.shouldTerminate = cd.sfResolve (ATR_TERMINATE,shouldTerminate,false);
               this.shouldDetach = cd.sfResolve (ATR_DETACH,shouldDetach,false);
               this.shouldRestart = cd.sfResolve (ATR_RESTART,shouldRestart,false);
+              this.passPositives = cd.sfResolve (ATR_PASS_POSITIVES, passPositives,false);
           } catch (Exception ex) {
               throw SmartFrogException.forward("Failed to create CMD", ex);
           }
@@ -198,6 +210,11 @@ import java.io.Serializable;
          return this;
      }
 
+     public Cmd setPassPosistives(boolean passPositives) {
+         this.passPositives = passPositives;
+         return this;
+     }
+
      public Cmd setDetatch(boolean detatch) {
          this.shouldDetach = detatch;
          return this;
@@ -260,6 +277,10 @@ import java.io.Serializable;
          return this.shouldRestart;
      }
 
+     public boolean passPositives() {
+         return this.passPositives;
+     }
+
      public String toString(){
          StringBuffer str = new StringBuffer();
          str.append("Cmd: ");
@@ -303,6 +324,8 @@ import java.io.Serializable;
          str.append(this.terminate());
          str.append(", restart: ");
          str.append(this.restart());
+         str.append(", passPositives: ");
+         str.append(this.passPositives());
 
          return str.toString();
      }
