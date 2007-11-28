@@ -30,7 +30,17 @@
 SFSlpAdvertiser extends Prim {
     // implementation
     sfClass "org.smartfrog.services.comm.slp.SFSlpAdvertiserImpl";
-    
+
+      schema extends Schema {
+        serviceType extends String;
+        //Vector of service attributes
+        serviceAttributes extends Vector;
+        advertiseReference extends Boolean;
+        serviceLifetime extends Integer;
+
+      }
+
+
     // slp configuration
     slp_config_mc_max ATTRIB SFSlpConfiguration:slp_config_mc_max;
     slp_config_rnd_wait ATTRIB SFSlpConfiguration:slp_config_rnd_wait;
