@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/ant/types.sf"
 #include "/org/smartfrog/services/ant/tasks.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 
 AntWorkflowComponent extends WorkflowPrim {
@@ -35,6 +35,8 @@ AntWorkflowComponent extends WorkflowPrim {
     propertyTarget extends OptionalCD;
     //log level, one of "debug", "info", "error", "warn"
     logLevel extends String;
+
+
 
     //this is an optional base directory. If it exists, then
     //it is used as the base directory for the run.
