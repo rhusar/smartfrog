@@ -569,9 +569,11 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
                     }
                 }
             }
-            //remove the ScriptExecEcho output from stdout...
-            int last = results.stdOut.lastIndexOf(line);
-            results.stdOut.remove(last);
+//            //remove the ScriptExecEcho output from stdout...
+//            //New attribute passPositives controls this now directly on the filter.            
+//            int last = results.stdOut.lastIndexOf(line);
+//            results.stdOut.remove(last);
+
             createNewScriptResults(exitCode);
         } else if (filterIndex == 1) {
             //Next command will follow
