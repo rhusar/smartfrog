@@ -209,7 +209,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             throw new SmartFrogRuntimeException(ERROR_NO_COMMAND,this);
         }
         fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
-        String[] cmdArray=commands.toArray(null);
+        String[] cmdArray=commands.toArray(new String[commands.size()]);
         subProcess = runtime.exec(
                 cmdArray,
                 envProp,
