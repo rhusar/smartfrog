@@ -119,8 +119,8 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      super.sfStart();
      if (startScript !=null) {
          ComponentDescription cd = run(startScript);
-         if (sfLog().isDebugEnabled()){
-             sfLog().debug(("run"+lineSeparator+"["+ startScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
+         if (sfLog().isTraceEnabled()){
+             sfLog().trace(("run:"+lineSeparator+"["+ startScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
          }
          checkResult(startScript, cd);
      }

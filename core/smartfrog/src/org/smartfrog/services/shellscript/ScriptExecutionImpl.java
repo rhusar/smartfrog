@@ -548,8 +548,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     }
 
     public synchronized void found(String line, int filterIndex, String filterName) {
-        if (sfLog().isDebugEnabled()) {
-            sfLog().debug("FOUND LINE " + line + ", " + filterIndex + ", " + filterName);
+        if (sfLog().isTraceEnabled()) {
+            sfLog().trace("FOUND LINE " + line + ", " + filterIndex + ", " + filterName);
         }
         if (filterIndex == 0) {
             //Finished
@@ -563,6 +563,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
             if (index != -1) {
                 try {
                     exitCode = new Integer(line.substring(index + 12).trim());
+                    if (sfLog().isDebugEnabled()) {
+                       sfLog().debug("FOUND exit code: " + exitCode );
+                    }
                 } catch (NumberFormatException ex) {
                     if (sfLog().isWarnEnabled()) {
                         sfLog().warn(ex);
@@ -579,9 +582,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
             //Next command will follow
             if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_NEXT_CMD + " " + name) != -1)
                 return; // This is the echo command itself, ignore
-            //((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
-            //((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
-            //System.out.println("\n -- GO NEXT Command -- "+line);
+
         } else {
             if (sfLog().isWarnEnabled())
                 sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);

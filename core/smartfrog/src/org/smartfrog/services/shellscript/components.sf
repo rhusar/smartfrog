@@ -58,18 +58,17 @@ ShellExecSchema extends ExecSchema {
 ShellExec extends Exec {
   execSchema extends ShellExecSchema;
   echoCmd "echo";
+  passPositives false;
 }
 
 BashExec extends ShellExec{
   cmd  ["/bin/bash"];
   echoErrorCmd "$?";
-  passPositives false;
 }
 
 WinXPExec extends ShellExec{
    cmd    ["cmd.exe"];
    echoErrorCmd "%ERRORLEVEL%";
-   passPositives false;
 }
 
 //----------- PROCESS  ----------------------------------------
