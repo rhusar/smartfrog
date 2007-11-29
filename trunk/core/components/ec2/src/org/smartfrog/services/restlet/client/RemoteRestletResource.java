@@ -19,7 +19,11 @@
  */
 package org.smartfrog.services.restlet.client;
 
+import org.restlet.resource.Representation;
 import org.smartfrog.services.www.HttpAttributes;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
 
 /**
  * Created 28-Nov-2007 17:23:26
@@ -43,6 +47,7 @@ public interface RemoteRestletResource extends HttpAttributes {
      * SF attribute - {@value}
      */
     String ATTR_LIVENESSACTIONS = "livenessActions";
+
 
     /**
      * SF attribute - {@value}
@@ -74,14 +79,7 @@ public interface RemoteRestletResource extends HttpAttributes {
     /**
      * SF constant {@value}
      */
-    String NO_AUTH = "none";
-    /**
-     * SF constant {@value}
-     */
-    String BASIC_AUTH = "basic";
-    /**
-     * SF constant {@value}
-     */
-    String AMAZON_AUTH = "amazon";
+    String HEAD = "options";
+
 
 }

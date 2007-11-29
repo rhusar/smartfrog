@@ -18,13 +18,46 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/services/www/livenessPage.sf"
 #include "/org/smartfrog/services/passwords/components.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 
-RemoteResource extends Prim {
-  NO_AUTH "none"
-  BASIC_AUTH "basic";
-  AMAZON_AUTH "amazon"
+LocalDataSource extends Prim {
+  contentType TBD;
+}
+
+
+TextDataSource extends LocalDataSource {
+  sfClass "org.smartfrog.services.restlet.client.TextDataSource";
+  text TBD;
+  contentType MimeTypes:TEXT_PLAIN;
+}
+
+HtmlDataSource extends TextDataSource {
+ contentType MimeTypes:TEXT_HTML;
+}
+
+XHtmlDataSource extends TextDataSource {
+ contentType MimeTypes:TEXT_XML;
+}
+
+FileDataSource extends LocalDataSource {
+  schema extends Schema {
+    filename extends FilenameType;
+    timeToLive extends Integer;
+  }
+  timeToLive 60000;
+}
+
+
+RemoteResource extends HttpPageSchema {
+  sfClass "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl";
+  NO_AUTH ""
+  HTTP_BASIC "HTTP_BASIC";
+  HTTP_AMAZON_AWS "HTTP_AWS"
+  HTTP_NTLM "HTTP_NTLM"
+  HTTP_DIGEST "HTTP_DIGEST";
   authorization NO_AUTH;
 
   username "";
@@ -41,12 +74,51 @@ RemoteResource extends Prim {
   startActions [];
   terminateActions [];
   livenessActions [];
-
   headers [];
-  expectedMimeType
-  resultXPath "";
+
   maximumResponseCode 299;
   minimumResponseCode 200;
   followRedirects true;
 
+  //not yet implemented
+  resultXPath "";
+
+  //data source
+  //datasource ;
+
+/**
+ * These are error strings that can get raised.
+ */
+  ERROR_UNKNOWN_VERB CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNKNOWN_VERB";
+  ERROR_UNSUPPORTED_MEDIA_TYPE CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNSUPPORTED_MEDIA_TYPE";
+
 }
+
+GetRestResource extends RemoteResource {
+  startActions [GET];
+  livenessActions [HEAD];
+}
+
+HeadLivenessRestResource extends RemoteResource {
+  livenessActions [HEAD];
+}
+
+PostRestResource extends RemoteResource {
+  startActions [POST];
+}
+
+PutRestResource extends RemoteResource {
+  startActions [POST];
+}
+
+/**
+ * A resource whose life is managed.
+ * liveness checks do HEAD too. 
+ */
+
+PutDeleteRestResource extends RemoteResource {
+  startActions [PUT];
+  livenessActions [HEAD];
+  terminateActions [DELETE];
+}
+
