@@ -229,7 +229,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
                 sfLog().debug("Failing to reconnect",e);
                 if (timeout > 0 &&
                         System.currentTimeMillis() > (reconnectStarted + timeout)) {
-                    throw new SmartFrogLivenessException("Could not reconnect",e);
+                    throw (SmartFrogLivenessException) SmartFrogLivenessException.forward("Could not reconnect",e);
                 }
                 return false;
             }
