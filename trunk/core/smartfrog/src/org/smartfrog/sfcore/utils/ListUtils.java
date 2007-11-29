@@ -194,6 +194,35 @@ public final class ListUtils {
     }
 
     /**
+     * Extract a string list; everything is
+     * converted to strings in the process
+     *
+     * @param component component to resolve against
+     * @param ref       a reference
+     * @param required  whether the element is required or not
+     *
+     * @return the list, or null if none was provided
+     *
+     * @throws SmartFrogResolutionException if the resolution fails.
+     * @throws RemoteException network problems
+     */
+    public static Vector<String> resolveStringList(Prim component,
+                                                                Reference ref,
+                                                                boolean required)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector vector = null;
+        vector = component.sfResolve(ref, vector, required);
+        if (vector == null) {
+            return null;
+        }
+        Vector<String> result = new Vector<String>(vector.size());
+        for (Object element : vector) {
+            result.add(element.toString());
+        }
+        return result;
+    }
+
+    /**
      * Extract a string tuple list; verify the depth is 2.
      * Everything is converted to strings in the process
      * @param component component to resolve against
