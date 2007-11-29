@@ -75,17 +75,22 @@ public class LoggerTest
 
         assertTrue(file.exists());
 
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String ln = null;
-        String[] expected
-                = {"Foo:localhost:==>Info msg1", "Foo:localhost:==>Warning msg1", "Foo:localhost:==>Info msg1", "Foo:localhost:==>Log Error1"};
+        BufferedReader br=null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String ln = null;
+            String[] expected
+                    = {"Foo:localhost:==>Info msg1", "Foo:localhost:==>Warning msg1", "Foo:localhost:==>Info msg1", "Foo:localhost:==>Log Error1"};
 
-        int i = 0;
-        do {
-            ln = br.readLine();
-            assertContains(ln, expected[i]);
-            i++;
-        } while (i != 4);
+            int i = 0;
+            do {
+                ln = br.readLine();
+                assertContains(ln, expected[i]);
+                i++;
+            } while (i != 4);
+        } finally {
+            FileSystem.close(br);
+        }
     }
 
     public void testCaseTCP37() throws Throwable {
@@ -138,7 +143,7 @@ public class LoggerTest
             ln = br.readLine();
             assertEquals(ln, null);
         } finally {
-            FileSystem.close(br);;
+            FileSystem.close(br);
         }
     }
 }
