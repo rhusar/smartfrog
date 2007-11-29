@@ -33,6 +33,32 @@ For more information: www.smartfrog.org
   */
  #include "/org/smartfrog/components.sf"
 
+/**
+ Popular Mime type constants
+
+ */
+
+
+MimeTypes extends {
+
+  APPLICATION_ATOM_XML "application/atom+xml";
+  APPLICATION_JSON "application/json";
+  APPLICATION_RDF_XML "application/rdf+xml";
+  APPLICATION_WWW_FORM "application/x-www-form-urlencoded";
+  APPLICATION_XHTML_XML "application/xhtml+xml";
+  APPLICATION_XML  "application/xml";
+  TEXT_PLAIN "text/plain"
+  TEXT_CSS "text/css"
+  TEXT_HTML "text/html"
+  TEXT_XML "text/xml"
+  IMAGE_BMP "image/bmp";
+  IMAGE_GIF "image/gif";
+  IMAGE_ICON "image/x-icon";
+  IMAGE_JPEG "image/jpeg";
+  IMAGE_PNG "image/png";
+  IMAGE_SVG "image/svg+xml";
+}
+
 
  /**
   * for liveness pages you need to give either the url, or the
@@ -42,7 +68,7 @@ For more information: www.smartfrog.org
   * If the URL is not specified, the attribute <code>url</code>
   * is set to the full URL at startup time.
   */
- LivenessPageSchema extends Schema {
+ HttpPageSchema extends Schema {
 
   //either
      //full URL to the page
@@ -55,7 +81,7 @@ For more information: www.smartfrog.org
      //protocol, default http
      protocol extends OptionalString;
      path extends OptionalString;
-     
+
      //page
      page extends OptionalString;
      //query list of things that get turned into queries -without escaping.
@@ -64,15 +90,11 @@ For more information: www.smartfrog.org
      //    name&users&error=500
      queries extends OptionalVector;
 
-      //Basic authentication only; if the username is set, the password is needed 
+      //if the username is set, the password is needed 
      username extends OptionalString;
      password extends OptionalString;
-     
-   //and any of
 
-     //flag to set if you want any error text fetched from
-     //the remote site. This is good for diagnostics.
-     fetchErrorText extends OptionalBoolean;
+   //and any of
 
      //headers
      headers extends Vector;
@@ -84,6 +106,22 @@ For more information: www.smartfrog.org
      maximumResponseCode extends OptionalInteger;
      //flag to follow redirects
      followRedirects extends OptionalBoolean;
+
+ }
+
+ /**
+  * for liveness pages you need to give either the url, or the
+  * built up URL
+  * ${protocol}://${host}:${port}/[${path}]/${[page][?queries]
+  * if the URL is specified, the alternate set is ignored.
+  * If the URL is not specified, the attribute <code>url</code>
+  * is set to the full URL at startup time.
+  */
+ LivenessPageSchema extends HttpPageSchema {
+
+     //flag to set if you want any error text fetched from
+     //the remote site. This is good for diagnostics.
+     fetchErrorText extends OptionalBoolean;
 
      //check frequency. This is the number of pings between checks
      //and so lets us probe less often than normal.

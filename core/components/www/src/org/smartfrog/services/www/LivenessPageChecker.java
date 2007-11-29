@@ -27,7 +27,9 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Vector;
@@ -80,8 +82,12 @@ public class LivenessPageChecker implements LivenessPage {
     protected String password;
 
     /**
+     * The URL
      */
     protected URL targetURL = null;
+
+    private String urlAsString;
+    private URI uri;
 
     /**
      */
@@ -203,10 +209,14 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogDeploymentException if the url generated a {@link
      * MalformedURLException}
      */
-    public void bindToURL(String target) throws SmartFrogDeploymentException {
+    public synchronized void bindToURL(String target) throws SmartFrogDeploymentException {
         try {
             targetURL = new URL(target);
+            uri=targetURL.toURI();
+            urlAsString=target;
         } catch (MalformedURLException e) {
+            throw new SmartFrogDeploymentException("bad URL" + target, e);
+        } catch (URISyntaxException e) {
             throw new SmartFrogDeploymentException("bad URL" + target, e);
         }
     }
@@ -259,7 +269,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * call this after configuring the class; does any preparation and turns
-     * any {@link java.net.MalformedURLException} into a {@link
+     * any {@link MalformedURLException} into a {@link
      * SmartFrogDeploymentException}. If the target URL is already defined, does
      * nothing.
      *
@@ -330,8 +340,7 @@ public class LivenessPageChecker implements LivenessPage {
                 log.debug("response=" + response);
             }
 
-            if ((responseCode < minimumResponseCode)
-                    || (responseCode > maximumResponseCode)) {
+            if (isStatusOutOfRange(responseCode)) {
                 String text = maybeGetErrorText(connection);
                 String message = "endpoint " + toString()
                         + " returned error " + response
@@ -344,7 +353,7 @@ public class LivenessPageChecker implements LivenessPage {
 
             if (mimeTypeMap != null) {
                 String mimeType = connection.getContentType();
-                if (null == mimeTypeMap.get(mimeType)) {
+                if (!isMimeTypeInRange(mimeType)) {
                     logAndRaise("Unexpected mimetype: " + mimeType);
                 }
 
@@ -358,6 +367,19 @@ public class LivenessPageChecker implements LivenessPage {
                     + "\n" + exception.getMessage();
             logAndRaise(message);
         }
+    }
+
+    public boolean isMimeTypeInRange(String mimeType) {
+        return (lookupMimeType(mimeType)==null);
+    }
+
+    public String lookupMimeType(String mimeType) {
+        return mimeTypeMap.get(mimeType);
+    }
+
+    public boolean isStatusOutOfRange(int responseCode) {
+        return (responseCode < minimumResponseCode)
+                || (responseCode > maximumResponseCode);
     }
 
     /**
@@ -460,7 +482,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @return a string representation of the object.
      */
     public String toString() {
-        return targetURL.toString() + " "
+        return urlAsString + " "
                 + minimumResponseCode + "< response <" + maximumResponseCode
                 + (enabled ? "" : "(disabled)");
     }
@@ -654,6 +676,15 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+
+    public String getUrlAsString() {
+        return urlAsString;
+    }
+
+    public URI getUri() {
+        return uri;
     }
 
     /**

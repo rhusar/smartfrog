@@ -22,8 +22,9 @@ package org.smartfrog.services.www;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -43,24 +44,18 @@ import java.util.Vector;
  *
  * Created 21-Apr-2004 13:46:23
  */
-public class LivenessPageComponent extends PrimImpl implements LivenessPage, Condition {
+public class LivenessPageComponent extends AbstractLivenessPageComponent
+        implements LivenessPage, Condition {
 
     /**
      * enabled flag
      */
     private boolean enabled = true;
-
-    /**
-     * the class that contains all the checking code. This is on the side for
-     * reuse in other components.
-     */
-    private LivenessPageChecker livenessPage;
-
     /**
      * how often to check
      */
     private int checkFrequency = 1;
-
+    private boolean checkOnLiveness;
     /**
      * when is the next check
      */
@@ -71,9 +66,6 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      */
     private Log log;
     private ComponentHelper helper;
-
-    private boolean checkOnStartup;
-    private boolean checkOnLiveness;
 
 
     /**
@@ -88,10 +80,6 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
         return enabled;
     }
 
-    public LivenessPageChecker getLivenessPage() {
-        return livenessPage;
-    }
-
     public int getCheckFrequency() {
         return checkFrequency;
     }
@@ -104,13 +92,12 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
         return log;
     }
 
-    public ComponentHelper getHelper() {
+    public synchronized ComponentHelper getHelper() {
         return helper;
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Start up by creating the liveness checker
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
@@ -118,67 +105,13 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        livenessPage = new LivenessPageChecker(this);
 
-        String url = sfResolve(ATTR_URL, (String) null, false);
+        buildLivenessChecker();
 
-        if (url != null) {
-            livenessPage.bindToURL(url);
-        } else {
-            livenessPage.setHost(sfResolve(ATTR_HOST,
-                    livenessPage.getHost(),
-                    false));
-            livenessPage.setPort(sfResolve(ATTR_PORT,
-                    livenessPage.getPort(),
-                    false));
-            livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
-                    livenessPage.getProtocol(), false));
-            livenessPage.setPath(sfResolve(ATTR_PATH,
-                livenessPage.getPath(),
-                false));
-            livenessPage.setPage(sfResolve(ATTR_PAGE,
-                    livenessPage.getPage(),
-                    false));
-            String username = sfResolve(ATTR_USERNAME, (String) null, false);
-            if (username != null) {
-                String password = sfResolve(ATTR_PASSWORD, (String) null, true);
-                livenessPage.setUsername(username);
-                livenessPage.setPassword(password);
-            }
-            Vector queries = sfResolve(ATTR_QUERIES, (Vector) null, false);
-            livenessPage.buildQueryString(queries);
-        }
-
-        Vector mimeTypes = sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
-        livenessPage.setMimeTypes(mimeTypes);
-        livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
-                livenessPage.getMinimumResponseCode(), false));
-        livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
-                livenessPage.getMaximumResponseCode(), false));
-        livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
-                livenessPage.getFollowRedirects(), false));
-        livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
-                livenessPage.getFetchErrorText(), false));
         checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
-        checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
+        boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
-
-        //header vector
-        Vector<Vector<String>> headers;
-        headers= ListUtils.resolveStringTupleList(this,new Reference(ATTR_HEADERS),true);
-        livenessPage.setHeaders(headers);
-
-        livenessPage.setConnectTimeout(sfResolve(ATTR_CONNECT_TIMEOUT,0,true));
-
         updateEnabledState();
-        //now tell the liveness page it is deployed
-        livenessPage.onStart();
-        if (url == null) {
-            //set the URL if it was not already set
-            URL targetURL = livenessPage.getTargetURL();
-            sfReplaceAttribute(ATTR_URL, targetURL.toString());
-        }
-
         helper = new ComponentHelper(this);
         log = helper.getLogger();
         String description = getDescription() + toString();
@@ -265,18 +198,6 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      */
     public void checkPage() throws SmartFrogLivenessException {
         livenessPage.checkPage();
-    }
-
-    /**
-     * @return string form for this component
-     */
-    public String toString() {
-        //delegate
-        if (livenessPage != null) {
-            return livenessPage.toString();
-        } else {
-            return "undeployed liveness checker";
-        }
     }
 
 
