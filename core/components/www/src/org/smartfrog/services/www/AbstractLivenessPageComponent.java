@@ -132,7 +132,7 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
     protected void buildLivenessPageAuthentication()
             throws SmartFrogException, RemoteException {
         String username = resolveUsername();
-        if (username != null && !username.isEmpty()) {
+        if (username != null && username.length()>0) {
             String password = resolvePassword();
             livenessPage.setUsername(username);
             livenessPage.setPassword(password);
