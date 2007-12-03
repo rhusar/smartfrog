@@ -122,7 +122,7 @@ public class DumperCDImpl implements Dumper {
 
             String name = ((HereReferencePart)(relativeRef.lastElement())).getValue().toString();
 
-            relativeRef.removeElement(relativeRef.lastElement());
+            relativeRef.removeElement(relativeRef.size()-1);
 
             //Place stateCopy in the right spot inside cd.
             try {
