@@ -73,9 +73,8 @@
 
   </target>
 
-  <target name="default" depends="published"/>
   <target name="release" depends="published"/>
-  <target name="published" depends="ivy-report,dist"/>
+  <target name="published" depends="ivy-report,common.published"/>
 
   <!--
   //this is commented out because izpack isnt in the big repository
@@ -104,14 +103,15 @@
     </copy>
   </target>
 
-  <target name="prepare-executables" depends="ivy-retrieve">
-    <property name="sf-core-install.zip"
-        location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
+  <target name="prepare-executables" depends="ivy-retrieve,locate-core-artifacts">
   </target>
 
-  <target name="locate-core-install" depends="ivy-properties">
+  <target name="locate-core-artifacts" depends="ivy-properties">
     <property name="sf-core-install.zip"
         location="${ivy.lib.dir}/package-core-install/sf-core-install-${smartfrog.version}.zip"/>
+    <property name="sf-core-javadocs.zip"
+        location="${ivy.lib.dir}/package-core/sf-core-javadocs-${smartfrog.version}.zip"/>
+
   </target>
 
   <target name="expand-izpack" depends="init">
@@ -130,7 +130,6 @@
     </copy>
     <xmlvalidate file="build/izpack-dtd.xml" warn="false"/>
   </target>
-
 
   <target name="ready-to-izpack"
       depends="declare-izpack,prepare-resources,prepare-executables,packaged,expand-izpack"/>
@@ -258,6 +257,14 @@
     </echo>
   </target>
 
+  <!--
+  This target sets up all the RPM directories, and defined the properties that
+  can refer to them.
+
+  When we build an RPM, we have to use the built in tar and ln commands to get
+  everything set up right, at least until ant gets the ability to set up
+  symlinks in a <tar> file.
+  -->
   <target name="init-rpm" depends="check-rpm,ivy-properties">
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
@@ -366,6 +373,8 @@
       location="${rpm.root.dir}/${rpm.install.dir}" />
     <unzip src="${sf-core-install.zip}"
       dest="${core.install.dir}" />
+    <unzip src="${sf-core-javadocs.zip}"
+        dest="${core.install.dir}" />
     <property name="rpm.lib.dir" location="${core.install.dir}/lib" />
   </target>
 
@@ -503,7 +512,6 @@
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
-    <mkdir dir="${build.rpm.dir}/root${rpm.install.dir}/links" />
     <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}" />
     <exec executable="tar" failonerror="true" 
       dir="${build.rpm.dir}/root/">
@@ -752,7 +760,7 @@
   <!--iniitialise the upload process by copying all the relevant artifacts and creating
   the upload fileset-->
   <target name="upload-init"
-      depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-install">
+      depends="init,ready-to-upload-rpms,check-scp,load-server-settings,check-ftp,locate-core-artifacts">
 
     <copy todir="${upload.dir}" flatten="true">
       <fileset file="${izpack.jar}" />
