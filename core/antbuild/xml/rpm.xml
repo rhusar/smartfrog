@@ -50,6 +50,7 @@
   <property name="project.name" value="sf-${ant.project.name}"/>
   <property name="artifact.name" value="${project.name}"/>
   <property name="trace.enabled" value="true"/>
+  <property name="rpm.includes.jdocs" value="true"/>
   <property name="ivy.artifact.retrieve.pattern"
       value="[conf]/[artifact]-[revision].[ext]"/>
 
@@ -122,6 +123,7 @@
 
     <m:newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
     <m:newdir name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.install.dir}/links"/>
+    <m:newdir name="rpm.doc.dir" location="${build.rpm.dir}/root${rpm.install.dir}/docs"/>
 
     <m:newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata"/>
@@ -164,7 +166,17 @@
         </copy>
       </sequential>
     </macrodef>
-    
+    <macrodef name="rpmjavadocs">
+      <attribute name="package"/>
+      <sequential>
+        <mkdir dir="${rpm.doc.dir}/@{package}"/>
+        <unzip dest="${rpm.doc.dir}/@{package}">
+          <fileset file="${ivy.lib.dir}/package-@{package}/*-javadocs-*.zip"/>
+        </unzip>
+      </sequential>
+    </macrodef>
+
+
     <!-- macro to create a symlink on Unix for the RPM.
       The artifact is verified as living in the reparented filesystem, 
       but the symlinks is set to point to the destination relative to root.
@@ -188,6 +200,8 @@
       </sequential>
     </macrodef>
   </target>
+
+  <!--copy the .spec file, expanding properties as we go-->
   <target name="copy-rpm-specs" depends="init-rpm">
     <m:expandingcopy todir="${rpm.SPECS}">
       <fileset dir="${rpm.metadata.dir}" includes="**/*.spec"/>
