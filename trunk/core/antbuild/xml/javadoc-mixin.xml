@@ -119,7 +119,7 @@
           description="package up all the javadocs">
     <zip destfile="${javadocs.zip}">
       <zipfileset dir="${dist.javadoc.dir}" includes="**/*.*"
-                  prefix="javadoc"/>
+          prefix="${javadocs.zipentry.prefix}"/>
     </zip>
   </target>
 
