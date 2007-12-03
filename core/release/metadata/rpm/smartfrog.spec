@@ -34,7 +34,6 @@
 # tag, and the menu entries' descriptions
 
 %define javadir         %{_datadir}/java
-%define javadocdir      %{_datadir}/javadoc
 %define section         free
 
 %define approot         %{_datadir}/smartfrog
@@ -101,6 +100,16 @@ with logLevel=3 (INFO) using LogToFileImpl. The GUI is turned off.
 
 
 # -----------------------------------------------------------------------------
+
+%package javadocs
+Group:         ${rpm.framework}
+Summary:        Javadocs for %{name}
+Requires:       %{name} = %{version}-%{release}
+#
+%description javadocs
+Installs the javadocs for the SmartFrog core, services and examples into
+%{basedir}/docs/jdocs
+
 
 %package demo
 Group:         ${rpm.framework}
@@ -470,8 +479,8 @@ rm -rf $RPM_BUILD_ROOT
 %{basedir}/signedLib
 
 #the log output directory
-#this is world writeable, so that anyone can run SmartFrog
-%attr(777, ${rpm.username},${rpm.groupname}) ${rpm.log.dir}
+#this is no longer world writeable, as the logging can fall back gracefully now 
+%attr(755, ${rpm.username},${rpm.groupname}) ${rpm.log.dir}
 
 #and the shell scripts, which belong to root
 #these are not executable, because they are meant to be sourced
@@ -479,11 +488,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0644, root,root) /etc/profile.d/smartfrog.csh
 %attr(755, root,root) ${rpm.etc.dir}
 
-#%doc # add docs here
-#%{javadir}/*
-
-#%files manual
-#%defattr(0644,root,root,0755)
 
 %docdir %{docs}
 %{docs}
@@ -495,13 +499,12 @@ rm -rf $RPM_BUILD_ROOT
 # %dir %{docs}/components
 # %dir %{docs}/openOfficeEmbeddedImage
 
-#%files javadoc
-#%defattr(0644,root,root,0755)
-#%{javadocdir}/%{name}-%{version}
+%files javadocs
+%defattr(0644,root,root,0755)
+%attr(755, ${rpm.username},${rpm.groupname}) %dir %{basedir}/docs/jdocs
 
 %files demo
 %defattr(0644,${rpm.username},${rpm.username},0755)
-#%{_datadir}/%{name}-%{version}
 %{srcdir}
 
 # -----------------------------------------------------------------------------
@@ -693,9 +696,12 @@ fi
 
 %changelog
 # to get the date, run:   date +"%a %b %d %Y"
+* Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0013-1.el4
+- add the javadocs RPM
+- remove og-w permissions from the log directory 
 * Wed Nov 21 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0011-1.el4
--add the ant, database, jmx, junit,networking, quartz, scrpting, www, xml, xmpp,
- xunit RPMs.
+- add the ant, database, jmx, junit,networking, quartz, scrpting, www, xml, xmpp,
+  xunit RPMs.
 * Wed Oct 24 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.008-1.el4
 - use RHEL-specific distribution tags
 - change permissions on profile.d scripts
