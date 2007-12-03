@@ -561,14 +561,23 @@
     </copy>
   </target>
   <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
+  <!--   JavaDocs                                                          -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist,generateversion,jjdocs"
-      description="Generates the API documentation">
+
+
+  <target name="ready-to-javadoc"
+      depends="initdist,generateversion">
+
+    <mkdir dir="${dist.jdocs.dir}"/>
+  </target>
+
+  <target name="jdocs"
+  depends="ready-to-javadoc,jjdocs"
+  unless="javadoc.disabled"
+  description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc
       packagenames="org.smartfrog.*"
       sourcepath="${src.dir}"
@@ -587,7 +596,7 @@
     </javadoc>
   </target>
 
-  <target name="jjdocs" depends="initdist">
+  <target name="jjdocs" depends="ready-to-javadoc" unless="javadoc.disabled">
     <!--  Java doc for the grammars -->
     <java classname="jjdoc" failonerror="true">
       <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
@@ -598,7 +607,18 @@
     </java>
   </target>
 
-  <target name="documentation" depends="copydocs,target-names">
+  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
+
+
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+      description="package up all the javadocs">
+    <zip destfile="${javadocs.zip}" whenempty="create">
+      <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
+          prefix="docs/jdocs"/>
+    </zip>
+  </target>
+
+  <target name="documentation" depends="copydocs,target-names,package-javadocs">
 
   </target>
 
@@ -984,7 +1004,7 @@ ${ivy.reports.dir}
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
   </target>
 
-  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact"/>
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
 
   <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
@@ -1006,8 +1026,9 @@ ${ivy.reports.dir}
         location="${artifacts.dir}/sf-core-source-${Version}.zip" />
     <property name="sf-core-documentation.zip"
         location="${artifacts.dir}/sf-core-documentation-${Version}.zip" />
-    <property name="sf-core-documentation.zip"
+    <property name="sf-core-javadocs.zip"
         location="${artifacts.dir}/sf-core-javadocs-${Version}.zip" />
+    <property name="javadocs.zip" location="${sf-core-javadocs.zip}" />
   </target>
 
   <target name="package-source-artifact" depends="artifact-names">
@@ -1017,7 +1038,7 @@ ${ivy.reports.dir}
   </target>
 
   <!--
-  the install artifact is the core com
+  the install artifact is the core component that is published to Ivy
   -->
   <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
     <zip destfile="${sf-core-install.zip}">

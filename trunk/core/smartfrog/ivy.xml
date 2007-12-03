@@ -48,6 +48,8 @@
     <artifact name="${sf-examples.title}" conf="examples-master"/>
     <artifact name="sf-core-install" conf="installation" type="zip"/>
     <!--<artifact name="sf-core-documentation" conf="documentation" ext="zip"/>-->
+    <artifact name="sf-core-javadocs" conf="documentation" ext="zip"/>
+
   </publications>
   <dependencies>
 
