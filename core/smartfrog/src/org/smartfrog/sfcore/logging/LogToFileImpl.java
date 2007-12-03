@@ -87,7 +87,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param initialLogLevel level to log at
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
-        this (name,null,initialLogLevel);
+        this (name,null,initialLogLevel);                                                     
     }
 
     /**
@@ -97,16 +97,14 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at
      */
-    public LogToFileImpl(String name,
-                         ComponentDescription componentComponentDescription,
-                         Integer initialLogLevel) {
+    public LogToFileImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
         super(name, initialLogLevel);
         try {
             readSFFileAttributes(classComponentDescription);
             readSFFileAttributes(componentComponentDescription);
             PrintStream out = null;
             logFile = createFile(logFileExtension);
-            FileOutputStream fos;
+            FileOutputStream fos=null;
             try {
                fos = new FileOutputStream(logFile, append);
 
@@ -116,9 +114,22 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                }
                 // Create TempFile already checks for certail error and returns null if it failed to create temp file
                 logFile = createTempFile ();
-                fos = new FileOutputStream(logFile, append);
-                String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
-                if (isWarnEnabled()) warn(msg);
+                if  (logFile!=null) {
+                    try {
+                        fos = new FileOutputStream(logFile, append);
+                        String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
+                        if (isWarnEnabled()) {
+                            warn(msg);
+                            //Direct output in console so that the new log file can be found.
+                            System.err.println("[WARN] " + msg);
+                        }
+                    } catch (Throwable e) {
+                        faultInInitialization("Could not create logging file: "+ex.getMessage()+", or temp "+e.getMessage(),e);
+                    }
+                } else {
+                    faultInInitialization("Could not create logging file.",ex);
+
+                }
             }
             out = new PrintStream(fos);
             if (isDebugEnabled() && this.getClass().toString().endsWith(getShortClassName())) {
@@ -139,7 +150,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         } catch (FileNotFoundException ex) {
             faultInInitialization("Could not create logging file.",ex);
         }
-
+        //For info
+        if (logFile!=null) {
+            setLogFileProperty (logFile.getAbsolutePath());
+        }    
     }
 
     private String getShortClassName() {
@@ -438,6 +452,27 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         } catch (Throwable thr) {
             thr.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    void setLogFileProperty (String fullFileName ){
+         // This is just for info, it security does not allow it, nothing will break.
+         try {
+            String className = this.getClass().toString();
+            if (className.startsWith("class ")) {
+              className = className.substring(6);
+            }
+            String propContent = System.getProperty(className);
+            if  (propContent!=null){
+               if (!(propContent.contains(fullFileName))){
+                  System.setProperty(className+".info.fileName", propContent+", "+fullFileName);
+               }
+            } else {
+               System.setProperty(className+".info.fileName", fullFileName);
+            }
+
+         } catch (Throwable thr){
+             //ignore
+         }
     }
 
 }
