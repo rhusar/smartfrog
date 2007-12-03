@@ -73,7 +73,7 @@ public class IsOSCondition extends PrimImpl implements Condition {
     private boolean supported;
     public static final String WINDOWS = "windows";
     public static final String XP = "xp";
-    private static final String VISTA = "vista";
+    public static final String VISTA = "vista";
     public static final String MAC = "mac";
     public static final String NONSTOP_KERNEL = "nonstop_kernel";
     public static final String OPENVMS = "openvms";
