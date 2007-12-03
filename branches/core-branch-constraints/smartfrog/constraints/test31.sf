@@ -1,0 +1,9 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  baz extends Array {
+      sfArrayGenerator extends {
+          bar "hello world";
+      }
+  }
+}
