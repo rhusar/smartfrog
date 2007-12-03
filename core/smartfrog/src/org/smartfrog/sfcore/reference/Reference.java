@@ -364,7 +364,7 @@ public class Reference implements Copying, Cloneable, Serializable {
 
         return ret;
     }
-
+    
     /**
      * Returns last element in reference.
      *
@@ -412,7 +412,7 @@ public class Reference implements Copying, Cloneable, Serializable {
     }
 
     /**
-     * Remove element from reference.
+     * Remove the first element that matches from reference. 
      *
      * @param o to remove from reference
      *
@@ -422,6 +422,18 @@ public class Reference implements Copying, Cloneable, Serializable {
         return ref.removeElement(o);
     }
 
+    /**
+     * Removes the reference part at the given index. All
+     * parts with an index greater then index are shifted one to
+     * the left (n-1). Returns the reference part removed.
+     * 
+     * @param index
+     * @return
+     */
+    public ReferencePart removeElement(int index) {
+        return (ReferencePart)ref.remove(index);
+    }
+    
     /**
      * Resolves this reference using the given reference resolver, and starting
      * at index of this reference. If the reference size is 0 the given
