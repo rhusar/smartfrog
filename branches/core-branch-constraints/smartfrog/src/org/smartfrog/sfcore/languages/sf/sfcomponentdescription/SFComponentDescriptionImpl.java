@@ -623,6 +623,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                 			   try {  
 	                               if (functionClassStatus!=null && functionClassStatus.equals("done")){
 	                            	   node.sfContext().remove("sfFunctionClassStatus");
+	                            	   node.sfContext().remove("sfConstraintAggregated");
 	                            	   Object functionClass=node.sfContext().get("sfFunctionClass");
 	                            	   node.sfContext().remove("sfFunctionClass");
 	                            	   if (functionClass.equals("org.smartfrog.sfcore.languages.sf.functions.Constraint")){

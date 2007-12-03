@@ -267,6 +267,7 @@
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.classes.dir}"/>
     <mkdir dir="${build.extra.dir}"/>
+    <copy todir="${build.classes.dir}/org/smartfrog/sfcore/languages/sf/constraints" file="HP_ICON.PNG"/> 
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->

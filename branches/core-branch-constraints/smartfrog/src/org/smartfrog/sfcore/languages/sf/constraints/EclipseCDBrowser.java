@@ -1,5 +1,23 @@
-package org.smartfrog.sfcore.languages.sf.constraints;
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+package org.smartfrog.sfcore.languages.sf.constraints;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -25,7 +43,13 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
+
+/**
+ * Browser for displaying sfComfig hierarchy for the purpose of setting user variables
+ * @author anfarr
+ *
+ */
+public class EclipseCDBrowser extends JFrame implements CDBrowser {
 	private JScrollPane m_scpane;
 	private JLabel m_label;
 	private JLabel m_undo_label;
@@ -37,14 +61,28 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	private EclipseSolver.EclipseCDAttr m_ecda;
 	private DefaultMutableTreeNode m_visnode;
 	
+	/**
+	 * Kill the browser...
+	 */
 	public void kill(){
 		setVisible(false);
 	}
 	
+	/**
+	 * Sets an unspecified object as pertaining to the state of the solving engine
+	 * @param es
+	 */
 	public void setES(Object est){
 		m_est=(EclipseSolver.EclipseStatus) est;
 	}
 	
+	/**
+	 * Add attribute to the hierarchy to be displayed
+	 * @param d -- my parent as unspecified object
+	 * @param av  -- my attribute name / value as unspecified object
+	 * @param showme -- am I in the immediate component description to be displayed? 
+	 * @return
+	 */
 	public Object attr(Object d, Object av, boolean showme){
 	   DefaultMutableTreeNode node = new DefaultMutableTreeNode(av);
 	
@@ -58,6 +96,9 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	   return node;
 	}
 	
+	/**
+	 * Redraws browser...
+	 */
 	public void redraw(){
 	   if (!isVisible()){
 		  init();
@@ -85,6 +126,10 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	   }   	
 	}
 		
+	/**
+	 * Reset browser to initial look...
+	 *
+	 */
 	void reset_display(){
 		m_label.setText("Click on an attribute with range to set its value");
 		m_entry.setText("");
@@ -92,6 +137,9 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 		m_entry.setEnabled(false);		
 	}	
 	
+	/**
+	 * Initialise browser...
+	 */
 	void init(){
 	       setTitle("sfConfig Browser");
 	       setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -199,6 +247,8 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	    		   m_est.done();
 	    	   }
 	       });
+	      
+	       tree.makeVisible(new TreePath(model.getPathToRoot(m_visnode)));
 	       
 	       URL url = getClass().getResource("HP_ICON.PNG");
 	       if (url!=null){
@@ -208,8 +258,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowserModel {
 	    	   }
 	       }
 	       	
-          tree.makeVisible(new TreePath(model.getPathToRoot(m_visnode)));
-
+          
 		  setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  setVisible(true); 		
 

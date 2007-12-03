@@ -36,5 +36,4 @@ alloc2 extends Constraint {
 
 sfConfig extends {
   -- alloc1;
-  -- alloc2;
 }

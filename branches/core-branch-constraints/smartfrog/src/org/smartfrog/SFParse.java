@@ -52,7 +52,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 public class SFParse implements MessageKeys {
 
 //    static String usageString = "Usage: sfParse [-v][-d] filename";
-    static ParseOptionSet opts = null;
+    public static ParseOptionSet opts = null;
 
     static Vector phases;
 

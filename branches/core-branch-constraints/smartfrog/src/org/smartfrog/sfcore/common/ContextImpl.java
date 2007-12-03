@@ -78,7 +78,9 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     	return originatingDescr;
     }
 
-    
+    /**
+     * The originating component description of this context.
+     */
     private ComponentDescription originatingDescr;
     
     /**
@@ -191,8 +193,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         return orderedValues();
     }
 
-
-
     /**
      * Find an attribute in this context.
      *
@@ -210,9 +210,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         }
         return result;
     }
-
-
-
 
    /**
       * Adds an attribute to this context under given name.
@@ -717,8 +714,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     // reimplementation of the hash table and order hash table methods to deal with the tags
     // ///////////////////////////////////////////////////////////////////////////////////
 
-
-
     /**
      * Clears the tags as well as the hashtable.
      * Overwrites OrderedHashtable.clear().
@@ -764,7 +759,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         return value;
     }
 
-
     /**
      * Renames an entry in the otable, leaving its position in the table
      * unchanged. Overrides method in OrderedHashtable.
@@ -790,7 +784,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      *
      * @return shallow copy of this table
      */
-
 
     public Object clone() {
        Object ret = super.clone();
@@ -823,7 +816,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
       // this is already copying attributeTags
       return super.copy();
    }
-
 
     /**
      * Compares the specified Object with this Context for equality,
@@ -878,7 +870,12 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     	if (LinkResolutionState.getConstraintsShouldUndo()) LinkResolutionState.getLRS().addUndo(this, key, oldValue);
         return oldValue;
     }
-        
+
+    /**
+     * Verifies that comp is a sub-type of the description pertaining to attr
+     * @return Whether sub-type
+     */
+    
     public boolean ofType(ComponentDescription comp, String attr){
     	ContextImpl comp_cxt = (ContextImpl) comp.sfContext();
     	Object aval = get(attr);

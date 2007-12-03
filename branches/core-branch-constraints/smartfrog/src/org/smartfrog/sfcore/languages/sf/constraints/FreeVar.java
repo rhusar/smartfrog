@@ -38,8 +38,15 @@ public class FreeVar implements Copying, Serializable {
 
 	static final long serialVersionUID = -2618542538185314519L;
 	
+	/**
+	 * Default value for VAR
+	 */
 	private Object defVal;
 	
+	/**
+	 * Get the VAR's default value
+	 * @return
+	 */
 	public Object getDefVal() { return defVal; }
 	
 	/**
@@ -79,10 +86,18 @@ public class FreeVar implements Copying, Serializable {
 	 */
 	public Object getConsEvalKey() { return ckey; }
 	
+	/**
+	 * Add that VAR is a subtype of...
+	 * @param attr
+	 */
 	public void addTyping(String attr){ 
 		typeInfo.add(attr);
 	}
 	
+	/**
+	 * Get the vector of types
+	 * @return
+	 */
 	public Vector getTyping(){ 
 		if (typeInfo.size()==0) return null;
 		else return typeInfo;

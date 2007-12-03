@@ -31,6 +31,7 @@ import java.util.Vector;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.smartfrog.SFParse;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SFNull;
@@ -79,10 +80,19 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     Thread m_ecr;
     
-    CDBrowserModel m_cdbm;
+    /**
+     * sfConfig browser for purpose of setting user variables 
+     */
+    CDBrowser m_cdbm;
     
+    /**
+     * Are there user variables?
+     */
     boolean m_isuservars;
 
+    /**
+     * Component description pertaining to Constraint type being solved
+     */
     ComponentDescription m_solve_comp;
     
     /**
@@ -111,9 +121,28 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     boolean m_cons_finished = false;
     
+    /**
+     * Stores any exception thrown from Eclipse thread
+     */
+    Exception m_general_error = null;
+    
+    /**
+     * Relative path to constraint theory files
+     */
 	private final String pathswitch = "/../constraints/";
+	
+	/**
+	 * Name of core theory file
+	 */
 	private final String coreFileSuffix = "core.ecl";
+	/**
+	 * Name of additional theory file
+	 */
     private final String theoryFileSuffix = "base.ecl";
+    
+    /**
+     * Property indicating where to find additional user-specified theory files
+     */
     private final String theoryFilePath = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFilePath";
     
     /**
@@ -122,9 +151,15 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     public void run(){  	
     	try {
     		m_eclipse.rpc("sfsolve");
-    	} catch (Exception e){}
+    	} catch (Exception e){
+    		m_general_error=e;
+    		yieldLockFromECRThread();
+    	}
     }
         
+    /**
+     * Prepare the solver
+     */
     void prepareSolver() throws SmartFrogResolutionException {
         String sfhome = SFSystem.getEnv("SFHOME");
         
@@ -138,7 +173,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         
         // create the theory
         try {
-            prepareTheory(top,corefile,thfile);
+            prepareTheory(corefile,thfile);
         } catch (Exception e) {
             throw new SmartFrogResolutionException("Unable to parse base theory for constraint resolution. ", e);
         }
@@ -158,7 +193,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     /**
      * Prepare the engine with two theories
      */
-    public void prepareTheory(ComponentDescription cd, String coreFile, String coreFile2) throws Exception {
+    public void prepareTheory(String coreFile, String coreFile2) throws Exception {
 		//Set up eclipse...
     	m_eclipseEngineOptions  = new EclipseEngineOptions();
 		
@@ -200,7 +235,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     /**
      * Solve a Constraint goal
      */
-    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector logic, Vector goal, Vector autos, boolean isuservars) throws Exception {    	   	
+    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector goal, Vector autos, boolean isuservars) throws Exception {    	   	
     	//Set comp as current solving comp descr
     	m_solve_comp = comp;
     	
@@ -212,9 +247,10 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     	String _values = mapValueJE(values); 
     	String _goal = mapValueJE(goal);
     	String _autos = mapValueJE(autos);
+    	String verbose = (SFParse.opts.verbose? "true":"false");
     	    	
     	m_get_val = "sfsolve("+_attrs+", "+_values+", "+
-    					LinkResolutionState.getLRS().addConstraintEval(comp.sfContext())+", "+_goal+", "+_autos+")";
+    					LinkResolutionState.getLRS().addConstraintEval(comp.sfContext())+", "+_goal+", "+_autos+", "+verbose+")";
     	
         //System.out.println(m_get_val);
     	
@@ -233,6 +269,8 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 		m_solverLock.lock();
 		while (!m_cons_finished) m_solverFinished.await();
 		m_solverLock.unlock();
+		
+		if (m_general_error!=null) throw m_general_error;
    }
     
     /**
@@ -523,7 +561,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
          }
          
          try {            
-         	m_cdbm = (CDBrowserModel) SFClassLoader.forName(classname).newInstance(); 
+         	m_cdbm = (CDBrowser) SFClassLoader.forName(classname).newInstance(); 
          
          } catch (Exception e){
          	throw new SmartFrogEclipseRuntimeException("Can not instantiate CD Browser");
@@ -621,8 +659,11 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	         }
 	         
 	         String func = ct.functor();
-	         	 
-	         if (func.equals("sfuser")) sfuser();	         
+	         
+	         if (func.equals("sffailed")) {
+	        	 throw new SmartFrogEclipseRuntimeException("Unable to solve constraints. General failure.");
+	         }
+	         else if (func.equals("sfuser")) sfuser();	         
 	         else if (func.equals("range")) range(ct);
 	         else if (func.equals("set")) set(ct);
 	         else if (func.equals("norange")) throw new SmartFrogEclipseRuntimeException("Unable to collect range information for sfConsUser tagged attributes. Probably because it has not been set in constraint annotations");
@@ -637,7 +678,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	        	 int cidx = ((Integer) ct.arg(5)).intValue();
 	        	 
 	        	 FreeVar fv=null;
-	        	 if (qual.equals("vecvar")){
+	        	 if (qual.equals("first")){
 	        		 val = fv = new FreeVar();
 	        	 }
 	        	 

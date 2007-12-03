@@ -15,6 +15,7 @@ Host extends Constraint {
    [sfConstraint] -- "sfArrayIndex gt 0 implies memory eq 3 and host_type eq ht1";
 }
 
+
 VM extends Constraint {
    [sfConstraintAutoVar] vm_type VAR vm_types;
    vm_types ["vmt0", "vmt1"];
@@ -22,7 +23,7 @@ VM extends Constraint {
    [sfConstraintAutoVar] memory VAR memory_types;
    memory_types [2, 3];
 
-   caps [memory];
+   reqs [memory];
 
    allocated VAR; 
 
@@ -33,10 +34,10 @@ VM extends Constraint {
 }
 
 sfConfig extends ResourceAllocator {
-   producers "hosts:sfArrayTag";
-   producer_caps "hosts:caps";
+   providers "hosts:sfArrayTag";
+   provider_caps "hosts:caps";
    consumers "vms:sfArrayTag";
-   consumer_caps "vms:caps";	
+   consumer_reqs "vms:reqs";	
    allocation "vms:allocated";
 
    hosts extends Array {

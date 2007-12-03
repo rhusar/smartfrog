@@ -11,9 +11,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 abstract public class CoreSolver {
     private static Class solverClass = null;
     private static CoreSolver solver;
-    protected Vector constraints;
     protected ComponentDescription top;
-
     
     /**
      * Attempt to obtain an instance of the solver for the constraints. 
@@ -22,7 +20,6 @@ abstract public class CoreSolver {
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException
      *
      */
-    
     public static CoreSolver getInstance(){
         try {           	
         	if (solver==null){
@@ -36,11 +33,33 @@ abstract public class CoreSolver {
         return solver;
     }
      
+    /**
+     * Sets the component description pertaining to sfConfig 
+     * @param top
+     */
     public void setRootDescription(ComponentDescription top){ this.top = top; }
     
+    /**
+     * Prepare solver...
+     * @throws SmartFrogResolutionException
+     */
     abstract void prepareSolver() throws SmartFrogResolutionException;
-    abstract public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector logic, Vector goal, Vector autos, boolean isuservars)  throws Exception;
-    abstract public void stopSolving() throws Exception;
-    abstract public void prepareTheory(ComponentDescription cd, String coreFile, String prologFile) throws Exception;
-    abstract public void runGoal(String goal) throws Exception;
+    
+    /**
+     * Solve constraint strings pertaining to a Constraint type...  
+     * @param comp  Pertaining Component Description
+     * @param attrs Attributes thereof
+     * @param values Values thereof
+     * @param goal Constraint goal to be solved
+     * @param autos Automatic variable attributes
+     * @param isuservars Whether there are user variables
+     * @throws Exception
+     */
+    abstract public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector goal, Vector autos, boolean isuservars)  throws Exception;
+    
+    /**
+     * Indicates no more solving to be done for current sfConfig description
+     * @throws Exception
+     */
+    abstract public void stopSolving() throws Exception;        
 }

@@ -31,8 +31,8 @@ VM extends Constraint {
 }
 
 sfConfig extends ResourceAllocator {
-   producers "hosts:sfArrayTag";
-   producer_caps "hosts:caps";
+   providers "hosts:sfArrayTag";
+   provider_caps "hosts:caps";
    consumers "vms:sfArrayTag";
    consumer_caps "vms:caps";	
    allocation "vms:allocated";

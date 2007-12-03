@@ -2,7 +2,7 @@
 
 sfConfig extends {
    foo extends Constraint{
-	theList [VAR, VAR, VAR];
+	theList VAR;
         [sfConstraint] -- "theList = [1,_,_]";
    }
    foo2 extends Constraint {

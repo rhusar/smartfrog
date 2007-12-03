@@ -187,15 +187,15 @@ nproduct extends Function {
      sfFunctionQual "product";
 }
 
-alldiff extends Function {
+alldifferent extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
 }
 
 ResourceAllocator extends AggregatedConstraint{
-   sfAggregatedConstraintSource0 producers;
-   sfAggregatedConstraintSource1 producer_caps;
+   sfAggregatedConstraintSource0 providers;
+   sfAggregatedConstraintSource1 provider_caps;
    sfAggregatedConstraintSource2 consumers;
-   sfAggregatedConstraintSource3 consumer_caps;
+   sfAggregatedConstraintSource3 consumer_reqs;
    sfAggregatedConstraintSource4 allocation;
    colocations [];
    nocolocations [];

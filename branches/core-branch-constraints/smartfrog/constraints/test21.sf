@@ -63,7 +63,7 @@ Server extends Compute {
 }
 
 HPServer extends Server {
-    types "[rp7410, rp8400]";
+    types ["rp7410", "rp8400"];
     model extends Constraint {
        numPartsA numParts:val;
        [sfConstraintAutoVar] val VAR types;

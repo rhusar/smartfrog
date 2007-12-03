@@ -3,14 +3,14 @@
 sfConfig extends {
   foo1 extends Array {
      sfArrayGenerator extends Constraint {
-        help VAR "[0,1]";
-        [sfConstraint] -- "(sfArrayIndex==0 -> help=0; help=1)"; 
+         bar VAR "[0,1]";
+         index sfArrayIndex;
+         [sfConstraint] -- "(index==0 -> bar=0; bar=1)"; 
      }
   }  
 
   foo2 extends Aggregator {
-	sfAggregatorPath "foo1:help";
-        foo3 extends concat;
-        
+	sfAggregatorPath "foo1:bar";
+        foo3 extends concat;        
   }
 }

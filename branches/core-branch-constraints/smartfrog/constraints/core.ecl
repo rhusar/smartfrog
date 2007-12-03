@@ -82,10 +82,12 @@ clause_state_level(C) :- level(L), clause_state(L, C).
 :- dynamic namespace/1.
 :- dynamic root/1.
 
-add_path(PT) :- assert(root(PT)). 
+add_path(PT) :- atom_string(PT, PTS), assert(root(PTS)). 
 
-source_compose(FNIn,FNOut) :- 
-        (root(PT) -> concat_strings(PT, FNIn, FNOut); FNOut=FNIn). 
+source_compose(FNIn,FNOut) :-
+        atom_string(FNIn, FNInS), 
+        (root(PTS) -> concat_strings(PTS, FNInS, FNOutS), atom_string(FNOut, FNOutS); 
+                   FNOut=FNIn). 
 
 source(FN) :- source_compose(FN,FNO), compile(FNO).
 source(FN, NSS) :- (namespace(NSS) -> 
@@ -196,114 +198,21 @@ process_atom(NSs, Hs, H, NSH) :-
 convert_tuple_list((M,Ms), [M,Ms1|MsR]) :- !, convert_tuple_list(Ms, [Ms1|MsR]).
 convert_tuple_list((M), [M]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Preprocessing
-:- lib(hash).
-:- dynamic sfvcnt/1.
-
-sfvcnt(1).
-
-preprocess(Cxt,G,Gs) :-
-                 hash_create(AttrCount),         
-                 convert_tuple_list(G, GL),
-                 preprocess_goal(AttrCount, Cxt, GL, GLP, GL2, GLS),
-                 append(GLP, GL2, GL3),
-                 append(GL3, GLS, GL1),
-                 convert_tuple_list(G1, GL1),
-                 term_string(G1, Gs).
-
-preprocess_sfop_done(sfget,(sfget,_)).
-preprocess_sfop_done(sfset,(_,sfset)).
-preprocess_sfop_done(sfuser,(_,sfset)).
-preprocess_sfop_done(sfattr,(sfget,sfset)).
-
-preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1, GLP, GLS1, GLS):-
-            (F==sfuser -> HGOut=sfuser((sfvar(0), Cxt), Key, sfvar(Cnt));
-                          HGOut=sfvar(Cnt)), 
-            (hash_get(AC,Key,(Cnt,SFG,SFS)) ->
-                (preprocess_sfop_done(F,(SFG,SFS))->
-                    GLP=GLP1, GLS=GLS1; 
-                    (F==sfget ->   hash_set(AC, Key, (Cnt,sfget,SFS)),
-                                   GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1],GLS=GLS1;
-                    (F==sfset ->   hash_set(AC,Key,(Cnt, SFG, sfset)),
-                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1;
-                    (F==sfuser ->  hash_set(AC,Key,(Cnt, SFG, sfset)),
-                                   GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1],GLP=GLP1;
-                    (SFG==sfget -> GLP=GLP1;GLP=[sfget((sfvar(0),Cxt),Key,sfvar(Cnt))|GLP1]),
-                    (SFS==sfset -> GLS=GLS1;GLS=[sfset((sfvar(0),Cxt),Key,sfvar(Cnt))|GLS1]),
-                    hash_set(AC,Key,(Cnt,sfget,sfset))))));
-                %%No entry present
-                incr_cnt(Cnt), 
-                (F==sfget -> hash_set(AC, Key, (Cnt, sfget, nil)),
-                             GLP=[sfget((sfvar(0),Cxt),Key, sfvar(Cnt))|GLP1],GLS=GLS1;
-                (F==sfset -> hash_set(AC, Key, (Cnt,nil,sfset)),
-                             GLS=[sfset((sfvar(0),Cxt),Key, sfvar(Cnt))|GLS1],GLP=GLP1;
-
-                             hash_set(AC, Key, (Cnt,nil,sfset)),
-                             GLP=[sfget((sfvar(0),Cxt),Key, sfvar(Cnt))|GLP1],
-                             GLS=[sfset((sfvar(0),Cxt),Key, sfvar(Cnt))|GLS1]))).
-                                          
-preprocess_sfop(sfget).
-preprocess_sfop(sfset).
-preprocess_sfop(sfattr).
-preprocess_sfop(sfuser).
-
-preprocess_attr_try(AC,Cxt,F,HGOut,Args,GLP1,GLP,GLS1,GLS) :- 
-        (Args=[Key] -> preprocess_attr(AC, Cxt, F, HGOut, Key, GLP1,
-                                       GLP, GLS1, GLS);
-                       (Args=[Key,Var] -> GCxt=(sfvar(0),Cxt); Args=[GCxt,Key,Var]),                   
-                       preprocess_goal(AC, Cxt, [Var], _, [Var1], _),
-                       GLP=GLP1, GLS=GLS1,
-                       HGOut=..[F,GCxt,Key,Var1]).
-
-preprocess_goal(_, _, [], [], [], []).
-preprocess_goal(AC, Cxt, [HG|TG], GLP, [HGOut|TGOut], GLS) :-
-        preprocess_goal(AC, Cxt, TG, GLP1, TGOut, GLS1),
-        (var(HG) -> incr_cnt(Cnt), HG=HGOut, HGOut=sfvar(Cnt), GLP=GLP1, GLS=GLS1;
-                    HG =..[F|Args],
-                    (F==sfcxt ->
-                        HGOut=(sfvar(0),Cxt), GLP=GLP1, GLS=GLS1;
-                    (F==sfvar ->
-                        HGOut=HG, GLP=GLP1, GLS=GLS1;  
-                        (preprocess_sfop(F)-> preprocess_attr_try(AC,Cxt,F,HGOut,Args,
-                                                GLP1,GLP,GLS1,GLS);
-                            preprocess_goal(AC, Cxt, Args, ArgsP, Args1, ArgsS),
-                            append(GLP1, ArgsP, GLP), append(GLS1, ArgsS, GLS), HGOut =..[F|Args1])))).
-
-
-preprocess2(G,Gs) :- 
-                 hash_create(AttrCount),         
-                 convert_tuple_list(G, GL),
-                 preprocess_goal2(AttrCount, GL, GL1),
-                 convert_tuple_list(G1, GL1),
-                 term_string(G1, Gs).
-
-preprocess_goal2(_, [], []).
-preprocess_goal2(AC, [HG|TG], [HGOut|TGOut]) :-
-        preprocess_goal2(AC, TG, TGOut),
-        (HG = sfvar(Key) ->
-            (hash_get(AC, Key, HGOut) -> true;hash_set(AC, Key, HGOut));
-            HG=..[F|Args],
-            preprocess_goal2(AC, Args, Args1),
-            HGOut=..[F|Args1]).
-
-incr_cnt(Cnt) :-
-               sfvcnt(Cnt),
-               retract(sfvcnt(Cnt)),
-               Cnt1 is Cnt + 1,
-               assert(sfvcnt(Cnt1)).
-        
-       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Description hierarchy state
 
 :- lib(ic).
 :- lib(sd).
+:- lib(hash).
 
 %%%
 %solve/0: Solve an sfConfig hierarchy
 %%%
-sfsolve :- hash_create(Binds), 
+sfsolve :- 
+        (sfsolve_wkr -> true; sftojava(sffailed)).
+sfsolve_wkr :-
+           hash_create(Binds), 
+           %set undo index
            hash_set(Binds, sf_evalidx, 0),         
            sffromjava(Binds).
 
@@ -323,55 +232,70 @@ sffromjava(Binds) :-
         term_string(Solve, Resp),
         sfsolve_process(Solve, Binds).
 
+%%%
+%sfsolve_process/2: Processes coms from Java
+%%%
 sfsolve_process(sfstop, _).
-sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars), Binds) :-
+sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose), Binds) :-
+        %set particular constraint index
         hash_set(Binds, sf_evalcidx, CIndex),
-        %writeln(("1", Attrs, Values, CIndex, Solve)), flush(stdout),
-        %writeln("hellohello"), flush(stdout),
+        %populate hash table with info (attrs, vals) from current description
         sfsolve_populate_hash(Binds, Attrs, Values, Pref),
-        %writeln(("2", Binds)), flush(stdout),
+        %need to replace any variable references in vectors
         sfreplace_refs_in_vec(Binds, CIndex),
-        %writeln(("2i", Binds)), flush(stdout),
+        %add suspend goals, range goals, default value goals
         sfsolve_pref_goals(Binds, Pref, Pref1, Pref2, Defs),
-        %writeln(("2a", Pref1, Pref2, Defs)), flush(stdout),
+        %pre-process solve goal
         sfsolve_preprocess(Binds, CIndex, Attrs, Solve, SolveP1),
-        %writeln("2b"), flush(stdout),
+        %add automatic variable processing
         sfsolve_indomains(Binds, CIndex, AutoVars, InDomains), 
-        %writeln(("3",SolveP1)), flush(stdout),
+        %aggregate goal
         append(Pref2, SolveP1, SolveP2),
         append(Pref1, SolveP2, SolveP3),
         append(SolveP3, InDomains, SolveP4),
         append(SolveP4, Defs, SolveP),
-        %writeln(""), writeln(("3a", SolveP)), flush(stdout),
+        %render goal list as a goal tuple
         convert_tuple_list(SolveT, SolveP),
-        %writeln(""), writeln(("converted",SolveT)), flush(stdout),       
+        %write the goal out on verbose
+        (Verbose==true -> write("Solving: "), writeln(SolveT), flush(stdout); true),  
+        %call the blighter
         call(SolveT),
-        %writeln("Now for some user vars..."), flush(stdout),
+        %process any user variables
         sfuser(Binds, CIndex),
-        %writeln("sfdonegoal"), flush(stdout),
+        %communicate to Java we're done
         sftojava(sfdonegoal),
+        %get next constraint
         sffromjava(Binds). 
 
+%%%
+%sfsolve_indomains/4: Adds indomain (automatic variable) dispensation
+% for each of the given attributes
+%%%
 sfsolve_indomains(_, _, [], []).
 sfsolve_indomains(Binds, CIndex, [Attr|TAttrs], [HID|TIDs]) :-
-        hash_get(Binds, (CIndex, Attr), (RefVal, _, Type)),
+        hash_get(Binds, (CIndex, Attr), (RefVal, _, Type, _)),
         (Type==enum -> HID=sd:indomain(RefVal); HID=ic:indomain(RefVal)),
         sfsolve_indomains(Binds, CIndex, TAttrs, TIDs).
-   
+
+%%%
+%sfsolve_pref_goals/5: Adds suspend, range and default goals to the
+% global goal to solve
+%%%
 sfsolve_pref_goals(_,[],[],[],[]).
-sfsolve_pref_goals(Binds, [(RefCI, RefAttr, RangeGoal, Def, RefQual)|Rem],
+sfsolve_pref_goals(Binds, [(RefCI, RefAttr, RangeGoal, Def)|Rem],
                    [Susp|TSusp], RangeGoals, DefGoals):-      
         sfsolve_pref_goals(Binds, Rem, TSusp, RangeGoals1, DefGoals1),
         hash_get(Binds, (RefCI, RefAttr), (Val,_)),
-        Susp=suspend(sfsolve_var_sync(Binds, (RefCI, RefAttr, RefQual),
+        Susp=suspend(sfsolve_var_sync(Binds, (RefCI, RefAttr),
                                       Val), 1, Val->inst), 
-        %writeln("*********"),
-        %writeln(Susp),
-        %writeln("*********"), flush(stdout), 
         append(RangeGoals1, RangeGoal, RangeGoals), 
         (nonvar(Def) -> DefGoal= [sfsetdefault(Val,Def)]; DefGoal=[]),
         append(DefGoals1, DefGoal, DefGoals).    
 
+%%%
+%sfsetdefault/2: If the current Val for an attribute is a Var then
+% unify the first arg, the Var, with its default, the second arg.
+%%%
 sfsetdefault(Val, _):-nonvar(Val),!.
 sfsetdefault(Val, Val).
 
@@ -384,75 +308,83 @@ sfsetdefault(Val, Val).
 %%%
 sfsolve_populate_hash(_, [], [], []).
 sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
-        %writeln(("3",Attr, Val)), flush(stdout),
         sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1),
         hash_get(Binds, sf_evalcidx, CIndex),
-        %writeln(""), writeln(("3i",Attr, Val)), flush(stdout),
-        %writeln((Binds,CIndex)), flush(stdout),
+        %I'm a VAR with a range and a possible default?
         (Val = sfvar(Var, Range, Def) -> IsVar=yes; 
                                     (Val = sfvar(Var, Range) -> IsVar=yes; IsVar=no)),
-        (IsVar==yes -> %writeln("I'm free!"), flush(stdout),
-                     Pref2=[(CIndex, Attr, RangeGoal, Def, 
-                                            novecvar)], 
-                     %writeln(("Pref2", Pref2)), flush(stdout),  
+        %Yes?
+        (IsVar==yes ->
+                     %Pref2 will house details for adding a suspend goal
+                     Pref2=[(CIndex, Attr, RangeGoal, Def)], 
+                     %Extract and importantly assign variable range
                      sfsolve_extract_var_range(Range, Var, Type, RangeGoal),
-                     hash_set(Binds, (CIndex, Attr), (Var, [], Type));
+                     hash_set(Binds, (CIndex, Attr), (Var, [], Type, first));
+        %I'm a reference to a variable attribute?             
         (Val = sfref(RefCI, RefAttr) ->
-            hash_get(Binds, (RefCI, RefAttr), (RefVal, Refs, Type)),
-            hash_set(Binds, (CIndex, Attr), (RefVal, [], Type)),
+            hash_get(Binds, (RefCI, RefAttr), (RefVal, Refs, Type, First)),
+            hash_set(Binds, (CIndex, Attr), (RefVal, [], Type, notfirst)),
             hash_set(Binds, (RefCI, RefAttr), (RefVal, [(CIndex, Attr)
-                                                       | Refs], Type)),
+                                                       | Refs], Type, First)),
             Pref2=[];
+        %Is my value a component description? If so, we assign the
+        % value kept in the hash table to the name of the attribute
         (Val==sfcd -> Val1=Attr;Val1=Val),
-        %writeln(((CIndex, Attr), (Val1, [], null))), flush(stdout),
-        hash_set(Binds, (CIndex, Attr), (Val1, [], null)),     
-        (sfterm_variables(Val1) -> Pref2=[(CIndex, Attr, [], _, vecvar)];
-                                   Pref2=[]))),
+        %We are an instantiated value, but are we just partially
+        % instantiated? If so, we need to add a suspend goal for
+        % future instantiations...
+        (sfterm_variables(Val1) -> Pref2=[(CIndex, Attr, [], _)], First=first;
+                                   Pref2=[], First=notfirst),
+        hash_set(Binds, (CIndex, Attr), (Val1, [], null, First)))),     
         append(Pref2, Pref1, Pref).
 
+%%%
+%sfterm_variables/1: Extracts whether there are any variables or
+% variable references in a vector (list) value
+%%%
 sfterm_variables([]):- false.
 sfterm_variables([H|_]) :- var(H).
 sfterm_variables([sfref(_,_)|_]).
 sfterm_variables([H|T]):- sfterm_variables(H),!; sfterm_variables(T).
 
+%%%
+%sfreplace_refs_in_vec/2: Replaces variable references in vector (list)
+%values.  Uses a "wkr" predicate.
+%%%
 sfreplace_refs_in_vec(Binds, CIndex):-
         hash_list(Binds, Attrs, Vals),
         sfreplace_refs_in_vec(Binds, CIndex, Attrs, Vals).
-
 sfreplace_refs_in_vec(_, _, [], []).
-sfreplace_refs_in_vec(Binds, CIndex, [(CIndex, Attr)|TAs], [(Val,
-                                                             Rem)|TVs]):-!,
-                %writeln(("Setting:", Attr, Val)), flush(stdout),
+sfreplace_refs_in_vec(Binds, CIndex, [(CIndex, Attr)|TAs], [(Val, Rem)|TVs]):-!,
         sfreplace_refs_in_vec_wkr(Binds, Val, ValOut),
-        %writeln(("Setting:", Attr, Val, ValOut)), flush(stdout),
         hash_set(Binds, (CIndex, Attr), (ValOut, Rem)),
         sfreplace_refs_in_vec(Binds, CIndex, TAs, TVs).
-        
 sfreplace_refs_in_vec(Binds, CIndex, [_|TAs], [_|TVs]):-
         sfreplace_refs_in_vec(Binds, CIndex, TAs, TVs).
-        
+
+%%%
+%sfreplace_refs_in_vec_wkr/3: Does the work for the aforementioned
+% predicate.  For sfref, we retrieve the actual Var from the hash table.
+%%%     
 sfreplace_refs_in_vec_wkr(_, Var, Var):-var(Var),!.
 sfreplace_refs_in_vec_wkr(_, [], []):-!.
-sfreplace_refs_in_vec_wkr(Binds, [sfref(RefCI, RefAttr)|TIn], [HOut|TOut]):- !,
-        hash_get(Binds, (RefCI, RefAttr), (HOut, _)),
-        sfreplace_refs_in_vec_wkr(Binds, TIn, TOut).
 sfreplace_refs_in_vec_wkr(Binds, [HIn|TIn], [HOut|TOut]):- 
         sfreplace_refs_in_vec_wkr(Binds, HIn, HOut), !, 
         sfreplace_refs_in_vec_wkr(Binds, TIn, TOut).
-sfreplace_refs_in_vec_wkr(Binds, [H|TIn], [H|TOut]):- !,
-        sfreplace_refs_in_vec_wkr(Binds, TIn, TOut). 
-sfreplace_refs_in_vec_wkr(_, In, In).
+sfreplace_refs_in_vec_wkr(Binds, sfref(RefCI, RefAttr), Out):- !, 
+                          hash_get(Binds, (RefCI, RefAttr), (Out, _)).
+sfreplace_refs_in_vec_wkr(_, Val, Val). 
 
+%%%
+%sfsolve_extract_var_range/4: Constructs a range goal for Var on the
+% basis of the nature of its Range
+%%%
 sfsolve_extract_var_range(null, _, null, []) :- !.
 sfsolve_extract_var_range(Range, Var, Type, RangeGoal) :-
         sfsolve_extract_var_range(Range, Range, Var, Type, RangeGoal).
 sfsolve_extract_var_range([H|_], Range, Var, Type, RangeGoal) :-
        (atom(H) -> Type=enum; Type=integer),
        (Type==enum -> %%Enum Range
-                  %writeln("******"),
-                  %writeln((Var, Range)),
-                  %writeln("******"),
-                  %flush(stdout),
                   RangeGoal=[&::(Var, Range)]; 
                   %%Int Range
                   RangeGoal=[#::(Var, Range)]). 
@@ -467,54 +399,76 @@ sfsolve_preprocess(Binds, CIndex, Attrs, [HG|TG], [HGOut|TGOut]):-
         (var(HG) -> HGOut=HG;
         (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut, _)) -> true; HGOut=HG);
                      HG=..[F|Args], 
-                         (F==subtype -> F=FOut, Args1=Args;
-                                        sfmapop(Binds, CIndex, F, Args, FOut, Args2), 
+                         (F==subtype -> sfmapop_(F, FOut), Args1=Args, Lib=none;
+                                        sfmapop(Binds, CIndex, F, Args, FOut, Args2, Lib), 
                                         sfsolve_preprocess(Binds, CIndex, Attrs, Args2, Args1)),     
-                     HGOut=..[FOut|Args1])),
+                     (Lib==none -> HGOut=..[FOut|Args1]; HGOut1=..[FOut|Args1], HGOut=Lib:HGOut1))),
     sfsolve_preprocess(Binds, CIndex, Attrs, TG, TGOut).
 
+%%%
+%sfpossenumop/1: Is it possible that the argument is an operator for
+% enum attributes/values
+%%%
 sfpossenumop(eq).
 sfpossenumop(neq).
 sfpossenumop(equal).
 sfpossenumop(notequal).
 sfpossenumop(alldifferent).
 
-sfmapenumop(eq, &=).
-sfmapenumop(equals, &=).
-sfmapenumop(neq, &\=).
-sfmapenumop(notequals, &\=).
-sfmapenumop(alldifferent, sd:alldifferent).
+%%%
+%sfmapenumop/3: Maps the SF lang operator to its eclipse version, for
+% enum operators. Third arg yields library qualification
+%%%
+sfmapenumop(eq, &=, none).
+sfmapenumop(equals, &=, none).
+sfmapenumop(neq, &\=, none).
+sfmapenumop(notequals, &\=, none).
+sfmapenumop(alldifferent, alldifferent, sd).
 
-sfmapnotenumop(eq, #=).
-sfmapnotenumop(equals, #=).
-sfmapnotenumop(neq, #\=).
-sfmapnotenumop(notequals, #\=).
-sfmapnotenumop(alldifferent, ic:alldifferent).
+%%%
+%sfmapnotenumop/3: Maps the SF lang operator to its eclipse version, for
+% non-enum (ie integer) operators. Third arg yields library qualification
+%%%
+sfmapnotenumop(eq, #=, none).
+sfmapnotenumop(equals, #=, none).
+sfmapnotenumop(neq, #\=, none).
+sfmapnotenumop(notequals, #\=, none).
+sfmapnotenumop(alldifferent, alldifferent, ic).
 
+%%%
+%sfobtaintype/4: Obtains the type of a range from its constituents.
+%%%
 sfobtaintype(Binds, CIndex, Arg, Type) :-
-        hash_get(Binds, (CIndex, Arg), (_, _, Type)), !.
+        hash_get(Binds, (CIndex, Arg), (_, _, Type, _)), !.
 sfobtaintype(_, _, Arg, enum) :-
         atom(Arg), !.
+sfobtaintype(Binds, CIndex, [Arg|_], Type) :- !,
+        sfobtaintype(Binds, CIndex, Arg, Type).
 sfobtaintype(_, _, _, notenum).
 
-sfmapop(Binds, CIndex, F, Args, FOut, ArgsOut) :-
+%%%
+%sfmapop/7: Maps SF lang operator to appropriate eclipse version
+%%%
+sfmapop(Binds, CIndex, F, Args, FOut, ArgsOut, Lib) :-
         (F=='-->' ->
-            Args=[Cond, Then],  FOut=';', CondThen=..['->',Cond, Then], ArgsOut=[CondThen, true];
+            Args=[Cond, Then],  FOut=';', CondThen=..['->',Cond, Then],
+            ArgsOut=[CondThen, true], Lib=none;
         ArgsOut=Args,
-        (sfpossenumop(F) -> Args = [Arg|_], sfobtaintype(Binds, CIndex, Arg, Type),
-                            (Type==enum -> sfmapenumop(F, FOut);
-                                           sfmapnotenumop(F, FOut));
-                            sfmapop(F, FOut))).  
+        (sfpossenumop(F) -> Args = [Arg|_], 
+                            sfobtaintype(Binds, CIndex, Arg, Type),
+                            (Type==enum -> sfmapenumop(F, FOut, Lib);
+                                           sfmapnotenumop(F, FOut, Lib));
+                            sfmapop(F, FOut), Lib=none)).  
  
-% sfmapop(and, ',', if).
-% sfmapop(and, and, noif).
-% sfmapop(or, ';', if).
-% sfmapop(or, or, noif).
-% sfmapop(In, Out, _) :- sfmapop_(In, Out).
-
+%%%
+%sfmap/2: Wkr for its 7-arg version
+%%%
 sfmapop(F, FOut) :- sfmapop_(F, FOut), !.
 sfmapop(F, F).
 
+%%%
+%sfmapop_/2: Wkr for sfmapop/2
+%%%
 sfmapop_(subtype, sfsubtype).
 sfmapop_(lt, #<).
 sfmapop_(lessthan, #<).
@@ -528,6 +482,9 @@ sfmapop_(impl, =>).
 sfmapop_(implies, =>).
 sfmapop_(nt, neg).
 
+%%%
+%Declare operator definitions
+%%%
 :- op(780, xfx, impl).
 :- op(780, xfx, implies).
 :- op(750, fx, nt).
@@ -545,6 +502,9 @@ sfmapop_(nt, neg).
 :- op(700, xfx, gte).
 :- op(700, xfx, greaterthanequal).
 
+%%%
+%sfsubtype/2: Effects subtype constraint
+%%%
 sfsubtype(Attr, Type) :-
         sftojava(sfsubtype(Attr,Type)).
 
@@ -552,38 +512,35 @@ sfsubtype(Attr, Type) :-
 %sfsolve_var_sync/4: Synchronises variable binding (inc. in
 % backtracking) with Java side 
 %%%
-:-demon sfsolve_var_sync/3.
-sfsolve_var_sync(Binds, (RefCI, RefAttr, RefQual), Val):-
-       %writeln(("********Awoken**********", Val)), flush(stdout), 
-       hash_get(Binds, (RefCI, RefAttr), (Val, Lists, _)),
-       (RefQual == vecvar -> 
-           (term_variables(Val, [])-> RefQual1=novecvar; 
-               (Lists==[] -> RefQual1=vecvar; Send=no)); 
-           RefQual1=novecvar),
+sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
+       hash_get(Binds, (RefCI, RefAttr), (Val, Lists, Type, First)),
+       (term_variables(Val, []) -> Send=final;
+                                   (First=first -> Send=notfinal; Send=no)),
+       %Toggle first as set, just in case first currently...
+       hash_set(Binds, (RefCI, RefAttr), (Val, Lists, Type, notfirst)),
+       (Send==final -> true; 
+                       suspend(sfsolve_var_sync(Binds, (RefCI,RefAttr), Val), 1, Val->inst)),       
        (Send==no -> true;
            hash_get(Binds, sf_evalcidx, CIndex),
-           %writeln(("here", (RefCI, RefAttr, RefQual1), Val, CIndex)), flush(stdout),
            hash_get(Binds, sf_evalidx, Index),
            Index1 is Index + 1,
            hash_set(Binds, sf_evalidx, Index1),
-           %writeln(("here", (RefCI, RefAttr, RefQual1), Val, CIndex)),
-           flush(stdout),
-           (RefQual1==vecvar ->
-               sftojava(sfset(Index, [], vecvar, [(RefCI, RefAttr) |
-                                                 Lists], CIndex));
-               sftojava(sfset(Index, Val, novecvar, [(RefCI, RefAttr) |
-                                                 Lists], CIndex))),
+           (Send==final ->
+               sftojava(sfset(Index, Val, notfirst, [(RefCI, RefAttr) | Lists], CIndex));
+
+               (First==first -> Val1=[]; Val1=Val),
+               sftojava(sfset(Index, Val1, First, [(RefCI, RefAttr) | Lists], CIndex))),
            read_exdr(java_to_eclipse, SuccS),
            term_string(Succ, SuccS),
            call(Succ)).
 
-
-
-%%Need to reduce these as appropriate: 12/10/07
 :-dynamic sfuser_back/1.
 :-dynamic sfuser_desc/3.
 :-dynamic sfuser_refs/1.
 
+%%%
+%sfuser/2: Effects user variable processing
+%%%
 sfuser(Binds, CIndex):-
         assert(sfuser_back(0)),
         write_exdr(eclipse_to_java, sfuser),
@@ -594,37 +551,46 @@ sfuser(Binds, CIndex):-
         retract_all(sfuser_desc(_,_,_)),
         retract_all(sfuser_refs(_)).
 
+%%%
+%sfuser_wkr/3: Processes requests for eg range from Java side
+%%%
 sfuser_wkr(_, _, done).
-
 sfuser_wkr(Binds, CIndex, range) :-
         sfuser_refs(Refs),
         sfuser_wkr_range(Binds, CIndex, Refs).
-
 sfuser_wkr(Binds, CIndex, range(Refs)) :-
-        %writeln(("Getting the ranges for:", Refs)), flush(stdout),
         assert(sfuser_refs(Refs)),
         sfuser_wkr_range(Binds, CIndex, Refs).
-
 sfuser_wkr(Binds, CIndex, set(Ref, ValIn1)) :-
-        %writeln(("Setting ", Ref, ValIn1)), flush(stdout),
-        hash_get(Binds, (CIndex, Ref), (Val, _, Type)),
+        hash_get(Binds, (CIndex, Ref), (Val, _, Type, _)),
         (Type==integer -> integer_atom(ValIn, ValIn1);
                           ValIn=ValIn1),
         sfuser_unify(Binds, CIndex, Ref, Val, ValIn),
-        %writeln("Post Unify"), flush(stdout),
         sfuser_back(N),
-        % writeln("Post Unify2"), flush(stdout),
         sfuser_msg(Binds, CIndex, set(N, Ref, ValIn, noback)).
-
 sfuser_wkr(_, _, _, back):-
         fail.
 
+%%%
+%sfuser_msg/3: Feeds back response to Java side, and gets response in
+% return
+%%%
+sfuser_msg(Binds, CIndex, CDOp):-
+        write_exdr(eclipse_to_java, CDOp), 
+        flush(eclipse_to_java), 
+        read_exdr(java_to_eclipse, ValOut),
+        sfuser_wkr(Binds, CIndex, ValOut).                      
+
+
+%%%
+%sfuser_unify/5: Performs unification of user-specified value with
+% variable pertaining to attribute
+%%%
 sfuser_unify(_, _, Ref, Val, Val2):-
         retract(sfuser_back(N)), N1 is N+1,
         assert(sfuser_back(N1)),
         assert(sfuser_desc(N1,Ref,Val2)),
         Val=Val2.
-
 sfuser_unify(Binds, CIndex, _, _, _):-
         retract(sfuser_back(N)), N1 is N-1,
         assert(sfuser_back(N1)), 
@@ -632,23 +598,24 @@ sfuser_unify(Binds, CIndex, _, _, _):-
         (N1>0 -> sfuser_desc(N1, Ref, Val);true),
         sfuser_msg(Binds, CIndex, set(N1,Ref,Val,back)).
 
-sfuser_msg(Binds, CIndex, CDOp):-
-        write_exdr(eclipse_to_java, CDOp), 
-        flush(eclipse_to_java), 
-        read_exdr(java_to_eclipse, ValOut),
-        sfuser_wkr(Binds, CIndex, ValOut).                      
-
+%%%
+%sfuser_wkr_range/3: Processes a range request from Java side for user
+% variable. Uses sfuser_range/5. 
+%%%
 sfuser_wkr_range(Binds, CIndex, Refs):-
         sfuser_range(Binds, CIndex, Refs, Ranges, Succ),
         (Succ==yes -> 
              sfuser_msg(Binds, CIndex, range(Ranges));
              sfuser_msg(Binds, CIndex, norange(Ranges))).
 
-%%Ambiguous import...
+%%%
+%sfuser_range/5: Does the work for sfuser_wkr_range/3 in getting the
+% range for a user variable.
+%%%
 sfuser_range(_, _, [], [], yes).
 sfuser_range(Binds, CIndex,  [HRef|TRefs], Rans, Succ):-
         atom_string(HRefA, HRef),
-        (hash_get(Binds, (CIndex, HRefA), (Var, _, Type))->
+        (hash_get(Binds, (CIndex, HRefA), (Var, _, Type, _))->
             (Type==enum -> sd:get_domain_as_list(Var, HRan);
                            ic:get_domain_as_list(Var, HRan)),
             sfuser_range(Binds, CIndex, TRefs, TRans, Succ),

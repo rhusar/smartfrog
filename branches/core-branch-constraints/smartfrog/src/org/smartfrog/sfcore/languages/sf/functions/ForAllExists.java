@@ -46,16 +46,16 @@ public class ForAllExists extends BaseFunction implements MessageKeys {
     	
     	boolean forall = ((String) orgContext.get("sfFunctionQual")).equals("forall");
     	
-    	Object binOp = orgContext.get("sfAllOperator");
-    	if (binOp==null || !(binOp instanceof SFApplyReference)) throw new SmartFrogFunctionResolutionException("sfAllOperator should be set/ be a Function in context: "+orgContext);
+    	Object binOp = orgContext.get("sfAEOperator");
+    	if (binOp==null || !(binOp instanceof SFApplyReference)) throw new SmartFrogFunctionResolutionException("sfAEOperator should be set/ be a Function in context: "+orgContext);
     	SFApplyReference binOp_ar = (SFApplyReference) binOp;
     	ComponentDescription binOp_cd = (ComponentDescription) binOp_ar.getComponentDescription();
     	    
-    	Object left = orgContext.get("sfAllLeftArg");
+    	Object left = orgContext.get("sfAELeftArg");
     	Object right = null;
     	if (left==null) {
-    		right = orgContext.get("sfAllRightArg");
-    		if (right==null) throw new SmartFrogFunctionResolutionException("sfAllLeftArg or sfAllRightArg should be set in context: "+orgContext);
+    		right = orgContext.get("sfAERightArg");
+    		if (right==null) throw new SmartFrogFunctionResolutionException("sfAELeftArg or sfAERightArg should be set in context: "+orgContext);
     	}
     		
        	//Process attributes, either constraint goals or other...
@@ -66,7 +66,7 @@ public class ForAllExists extends BaseFunction implements MessageKeys {
     	
     	while (attr_enum.hasMoreElements()){
     		Object key = attr_enum.nextElement();
-    		if (key.equals("sfFunctionClass") || key.equals("sfAllOperator") || key.equals("sfAllLeftArg") || key.equals("sfAllRightArg")) continue;
+    		if (key.equals("sfFunctionClass") || key.equals("sfAEOperator") || key.equals("sfAELeftArg") || key.equals("sfAERightArg")) continue;
     		
     		Object val = orgContext.get(key);	
         	if (right!=null) binOp_cd.sfContext().put("left", val);
@@ -75,8 +75,8 @@ public class ForAllExists extends BaseFunction implements MessageKeys {
     		Object res;
     		try {
     			res = binOp_ar.resolve(comp, 0);	
-    		} catch (Exception e) { throw new SmartFrogFunctionResolutionException("Can not apply sfAllOperator in context: "+orgContext); }    		
-    		if (!(res instanceof Boolean)) throw new SmartFrogFunctionResolutionException("Not a boolean sfAllOperator in context: "+orgContext); 
+    		} catch (Exception e) { throw new SmartFrogFunctionResolutionException("Can not apply sfAEOperator in context: "+orgContext); }    		
+    		if (!(res instanceof Boolean)) throw new SmartFrogFunctionResolutionException("Not a boolean sfAEOperator in context: "+orgContext); 
     		
     		if (forall && !((Boolean) res).booleanValue() || 
     		    !forall && ((Boolean) res).booleanValue()) return res;

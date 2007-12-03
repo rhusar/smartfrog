@@ -153,7 +153,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	
     	//Solve goal
     	try {
-    	   CoreSolver.getInstance().solve(comp, attrs, values, null, goal, autos, isuservars);
+    	   CoreSolver.getInstance().solve(comp, attrs, values, goal, autos, isuservars);
     	} catch (Exception e){ 
     		e.printStackTrace();
     	    throw new SmartFrogFunctionResolutionException("Error in solving constraints in: "+context);

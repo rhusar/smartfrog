@@ -316,7 +316,11 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * Gets the originating context.  Used in constraint solving.
      */
     public ComponentDescription getOriginatingDescr();
-
+    
+    /**
+     * Verifies that comp is a sub-type of the description pertaining to attr
+     * @return Whether sub-type
+     */
     public boolean ofType(ComponentDescription comp, String attr);
     
 }

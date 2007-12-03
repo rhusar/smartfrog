@@ -11,7 +11,7 @@ sfConfig extends {
       [sfConstraintUserVar] x VAR theList; 
       [sfConstraintUserVar] y VAR theList; 
       [sfConstraintUserVar] z VAR theList;
-      [sfConstraint] -- "ealldiff([x,y,z])";
+      [sfConstraint] -- "alldifferent([x,y,z])";
    }   
 
    genList extends Constraint {
