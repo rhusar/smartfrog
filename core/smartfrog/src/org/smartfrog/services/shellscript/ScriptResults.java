@@ -97,7 +97,7 @@ public interface ScriptResults {
 
     /**
      * Get any exception from the invocation
-     * @return
+     * @return the exception; may be null
      * @throws SmartFrogException
      */
   public InvocationTargetException getException() throws SmartFrogException;
