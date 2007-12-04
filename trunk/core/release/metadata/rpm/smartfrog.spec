@@ -42,6 +42,7 @@
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
 %define docs            %{basedir}/docs
+%define jdocs           %{basedir}/docs/jdocs
 %define srcdir          %{basedir}/src
 %define linkdir         %{basedir}/links
 %define examples        %{srcdir}/org/smartfrog/examples
@@ -396,6 +397,12 @@ rm -rf $RPM_BUILD_ROOT
 
 # -----------------------------------------------------------------------------
 
+%files javadocs
+%defattr(0644,${rpm.username},${rpm.groupname},0755)
+%{jdocs}
+
+# -----------------------------------------------------------------------------
+
 %files
 %defattr(0644,${rpm.username},${rpm.groupname},0755)
 
@@ -486,16 +493,14 @@ rm -rf $RPM_BUILD_ROOT
 #these are not executable, because they are meant to be sourced
 %attr(0644, root,root) /etc/profile.d/smartfrog.sh
 %attr(0644, root,root) /etc/profile.d/smartfrog.csh
-%attr(755, root,root) ${rpm.etc.dir}
+%attr(0755, root,root) ${rpm.etc.dir}
 
 
 %docdir %{docs}
 %{docs}
 %doc %{basedir}/src.zip
 
-%files javadocs
-%defattr(755, ${rpm.username},${rpm.groupname})
-%{basedir}/docs/jdocs
+
 
 %files demo
 %defattr(0644,${rpm.username},${rpm.username},0755)

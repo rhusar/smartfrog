@@ -891,7 +891,7 @@
     <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}" />
     <!--list of rpms-->
 
-    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-ant smartfrog-anubis smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit" />
+    <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit" />
 
     <echo >
       remote server is ${rpm.ssh.server}
@@ -1022,6 +1022,8 @@ rpm -qf ${rpm.install.dir}/signedLib ;
 rpm -qf /etc/profile.d/smartfrog.sh ;
 rpm -qf /etc/profile.d/smartfrog.csh ;
 rpm -qf ${rpm.install.dir}/docs ;
+rpm -qf ${rpm.install.dir}/docs/jdocs ;
+rpm -qf ${rpm.install.dir}/docs/jdocs/index.html ;
 rpm -qf ${rpm.install.dir}/src ;
 rpm -qf ${rpm.install.dir}/src.zip ;
 rpm -qf ${rpm.install.dir}/lib/ant-launcher-${apache.ant.version}.jar; 
