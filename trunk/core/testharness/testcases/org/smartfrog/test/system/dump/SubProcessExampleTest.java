@@ -69,7 +69,7 @@ public class SubProcessExampleDumpTest
     assertNotNull("No Diagnostics report", cd);
     log.info("Diagnostics report: \n"+cd);
     //Testing Dump now
-    long.info (dumpState (application));
+    log.info (dumpState (application));
 
       
 
