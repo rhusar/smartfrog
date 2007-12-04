@@ -164,6 +164,7 @@
   <property name="jdocs" value="${doc.dir}/jdocs"/>
   <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
+  <property name="dist.metadata.dir" location="${dist.lib.dir}"/>
   <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
   <property name="dist.src.dir" location="${dist.dir}/${src}"/>
   <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
@@ -282,12 +283,22 @@
   </target>
 
   <!-- =================================================================== -->
-  <!--  Generte Forrest Docs -->
+  <!--  Generate Forrest Docs -->
   <!-- =================================================================== -->
 
-  <target name="generatedoc" depends="init, dist, jdocs"
+
+  <target name="ready-to-forrest" depends="init, dist, jdocs">
+    <condition property="execute.forrest">
+      <and>
+        <isset property="env.FORREST_HOME" />
+        <istrue value="${forrest.enabled}" />
+      </and>
+    </condition>
+  </target>
+
+  <target name="generatedoc" depends="ready-to-forrest"
       description="Document Generation"
-      if="env.FORREST_HOME">
+      if="execute.forrest">
 	  <ant antfile="documentation.xml" inheritall="false"/> 
     <!-- Forrest build dir -->
   </target>
@@ -820,9 +831,9 @@
   <target name="checksum-target-jar"
     description="checksum our target jars" depends="jars,sha1macro">
 
-    <sha1 file="${smartfrog.jar}" todir="${dist.dir}/metadata"/>
-    <sha1 file="${sf-examples.jar}" todir="${dist.dir}/metadata"/>
-    <sha1 file="${sf-services.jar}" todir="${dist.dir}/metadata"/>
+    <sha1 file="${smartfrog.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-examples.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-services.jar}" todir="${dist.metadata.dir}"/>
   </target>
 
   <!-- ========================================================== -->
@@ -867,13 +878,13 @@
       version="${Version}" />
 	  
     <property name="smartfrog.pom"
-      location="${dist.dir}/metadata/${smartfrog.stub}.pom" />
+      location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
     <property name="target.pom"
       value="${smartfrog.pom}" />
     <property name="sf-services.pom"
-      location="${dist.dir}/metadata/${sf-services.stub}.pom" />
+      location="${dist.metadata.dir}/${sf-services.stub}.pom" />
     <property name="sf-examples.pom"
-      location="${dist.dir}/metadata/${sf-examples.stub}.pom" />
+      location="${dist.metadata.dir}/${sf-examples.stub}.pom" />
 	  
      <property name="metadata.dir" location="bin/metadata" />
      <presetdef name="expandingcopy">
@@ -896,9 +907,9 @@
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
 		 
-     <sha1 file="${smartfrog.pom}"   todir="${dist.dir}/metadata"/>
-     <sha1 file="${sf-services.pom}" todir="${dist.dir}/metadata"/>
-     <sha1 file="${sf-examples.pom}" todir="${dist.dir}/metadata"/>
+     <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
    </target>
 
 
@@ -927,19 +938,19 @@
     <m2-install
       destdir="${m2.subdir}"
       target="${smartfrog.jar}"
-	  target.md5="${dist.dir}/metadata/${smartfrog.stub}.jar.md5"
+	  target.md5="${dist.metadata.dir}/${smartfrog.stub}.jar.md5"
       pom="${smartfrog.pom}"
       />
     <m2-install
       destdir="${m2.sf-services}"
       target="${sf-services.jar}"
-	  target.md5="${dist.dir}/metadata/${sf-services.stub}.jar.md5"
+	  target.md5="${dist.metadata.dir}/${sf-services.stub}.jar.md5"
       pom="${sf-services.pom}"
       />
     <m2-install
       destdir="${m2.sf-examples}"
       target="${sf-examples.jar}"
-	  target.md5="${dist.dir}/metadata/${sf-examples.stub}.jar.md5"
+	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
   </target>
@@ -1045,6 +1056,8 @@ ${ivy.reports.dir}
     <zip destfile="${sf-core-install.zip}">
       <zipfileset dir="${dist.dir}" >
         <include name="**/*" />
+        <!--this can be turned on/off-->
+        <exclude name="docs/jdocs" if="install.excludes.javadocs"/>
         <exclude name="lib/*" />
         <exclude name="bin/sfGui*" />
       </zipfileset>
