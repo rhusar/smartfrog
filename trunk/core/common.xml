@@ -407,6 +407,7 @@ java.class.path=
     <presetdef name="sf-junit">
       <junit printsummary="no"
            fork="true"
+           forkmode="once"
            includeantruntime="true"
            showoutput="true"
            timeout="6000000"
@@ -530,6 +531,12 @@ java.class.path=
       </javadoc>
     </presetdef>
 
+    <!-- turn off javadocu-->
+    <condition property="javadoc.disabled">
+      <resourcecount when="equal" count="0" >
+        <fileset dir="${src.dir}" includes="**/*.java" />
+      </resourcecount>
+    </condition>
   </target>
 
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
@@ -576,9 +583,10 @@ java.class.path=
 
   <target name="package-javadocs" depends="ready-to-package-javadocs"
       description="package up all the javadocs">
-    <zip destfile="${javadocs.zip}">
+    <property name="javadocs.zipentry.prefix" value="jdocs" />
+    <zip destfile="${javadocs.zip}" whenempty="create">
       <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
-          prefix="javadoc"/>
+          prefix="${javadocs.zipentry.prefix}"/>
     </zip>
   </target>
 
