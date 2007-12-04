@@ -243,29 +243,17 @@ sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose), Binds)
         sfsolve_populate_hash(Binds, Attrs, Values, Pref),
         %need to replace any variable references in vectors
         sfreplace_refs_in_vec(Binds, CIndex),
-<<<<<<< .mine
         %add suspend goals, range goals, default value goals
         sfsolve_pref_goals(Binds, Pref, Suspends, RangeGoals1, Defs),
         %Further pre-process range goals for component descriptions
         sfsolve_preprocess_cds_rangegoals(Binds, CIndex, RangeGoals1, RangeGoals),
         %pre-process solve goal
-=======
-        %add suspend goals, range goals, default value goals
-        sfsolve_pref_goals(Binds, Pref, Pref1, Pref2, Defs),
-        %pre-process solve goal
->>>>>>> .r5627
         sfsolve_preprocess(Binds, CIndex, Attrs, Solve, SolveP1),
         %add automatic variable processing
         sfsolve_indomains(Binds, CIndex, AutoVars, InDomains), 
-<<<<<<< .mine
         %aggregate goal
         append(RangeGoals, SolveP1, SolveP2),
         append(Suspends, SolveP2, SolveP3),
-=======
-        %aggregate goal
-        append(Pref2, SolveP1, SolveP2),
-        append(Pref1, SolveP2, SolveP3),
->>>>>>> .r5627
         append(SolveP3, InDomains, SolveP4),
         append(SolveP4, Defs, SolveP),
         %render goal list as a goal tuple
@@ -341,7 +329,6 @@ sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
             hash_set(Binds, (RefCI, RefAttr), (RefVal, [(CIndex, Attr)
                                                        | Refs], Type, First)),
             Pref2=[];
-<<<<<<< .mine
         %Is my value a component description? If so, we assign the
         % value kept in the hash table to the name of the attribute
         (Val==sfcd -> Type=sfcd, concat_atoms(sfcd, Attr, Val1);
@@ -352,17 +339,6 @@ sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
         (sfterm_variables(Val1) -> Pref2=[(CIndex, Attr, [], _)], First=first;
                                    Pref2=[], First=notfirst),
         hash_set(Binds, (CIndex, Attr), (Val1, [], Type, First)))),     
-=======
-        %Is my value a component description? If so, we assign the
-        % value kept in the hash table to the name of the attribute
-        (Val==sfcd -> Val1=Attr;Val1=Val),
-        %We are an instantiated value, but are we just partially
-        % instantiated? If so, we need to add a suspend goal for
-        % future instantiations...
-        (sfterm_variables(Val1) -> Pref2=[(CIndex, Attr, [], _)], First=first;
-                                   Pref2=[], First=notfirst),
-        hash_set(Binds, (CIndex, Attr), (Val1, [], null, First)))),     
->>>>>>> .r5627
         append(Pref2, Pref1, Pref).
 
 %%%
@@ -553,7 +529,6 @@ sfmapop_(nt, neg).
 :- op(700, xfx, gte).
 :- op(700, xfx, greaterthanequal).
 
-<<<<<<< .mine
 %%%
 %sfsubtype/2: Effects subtype constraint
 %%%
@@ -561,19 +536,11 @@ sfsubtype(Attr, [Type|Types]) :- !,
         sftojava(sfsubtype(Attr,[Type|Types])).
 sfsubtype(Attr, Type) :- !,
         sftojava(sfsubtype(Attr,[Type])).
-=======
-%%%
-%sfsubtype/2: Effects subtype constraint
-%%%
-sfsubtype(Attr, Type) :-
-        sftojava(sfsubtype(Attr,Type)).
->>>>>>> .r5627
 
 %%%
 %sfsolve_var_sync/4: Synchronises variable binding (inc. in
 % backtracking) with Java side 
 %%%
-<<<<<<< .mine
 sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
        hash_get(Binds, (RefCI, RefAttr), (Val, Lists, Type, First)),
        (term_variables(Val, []) -> Send=final;
@@ -582,32 +549,14 @@ sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
        hash_set(Binds, (RefCI, RefAttr), (Val, Lists, Type, notfirst)),
        (Send==final -> true; 
                        suspend(sfsolve_var_sync(Binds, (RefCI,RefAttr), Val), 1, Val->inst)),       
-=======
-sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
-       hash_get(Binds, (RefCI, RefAttr), (Val, Lists, Type, First)),
-       (term_variables(Val, []) -> Send=final;
-                                   (First=first -> Send=notfinal; Send=no)),
-       %Toggle first as set, just in case first currently...
-       hash_set(Binds, (RefCI, RefAttr), (Val, Lists, Type, notfirst)),
-       (Send==final -> true; 
-                       suspend(sfsolve_var_sync(Binds, (RefCI,RefAttr), Val), 1, Val->inst)),       
->>>>>>> .r5627
        (Send==no -> true;
            hash_get(Binds, sf_evalcidx, CIndex),
            hash_get(Binds, sf_evalidx, Index),
            Index1 is Index + 1,
            hash_set(Binds, sf_evalidx, Index1),
-<<<<<<< .mine
            (Send==final ->               
                sftojava(sfset(Index, Val, notfirst, [(RefCI, RefAttr) | Lists], CIndex));
                sftojava(sfset(Index, Val, first, [(RefCI, RefAttr) | Lists], CIndex))),
-=======
-           (Send==final ->
-               sftojava(sfset(Index, Val, notfirst, [(RefCI, RefAttr) | Lists], CIndex));
-
-               (First==first -> Val1=[]; Val1=Val),
-               sftojava(sfset(Index, Val1, First, [(RefCI, RefAttr) | Lists], CIndex))),
->>>>>>> .r5627
            read_exdr(java_to_eclipse, SuccS),
            term_string(Succ, SuccS),
            call(Succ)).
@@ -649,7 +598,6 @@ sfuser_wkr(Binds, CIndex, set(Ref, ValIn1)) :-
 sfuser_wkr(_, _, _, back):-
         fail.
 
-<<<<<<< .mine
 %%%
 %sfuser_msg/3: Feeds back response to Java side, and gets response in
 % return
@@ -664,23 +612,6 @@ sfuser_msg(Binds, CIndex, CDOp):-
 %sfuser_unify/5: Performs unification of user-specified value with
 % variable pertaining to attribute
 %%%
-=======
-%%%
-%sfuser_msg/3: Feeds back response to Java side, and gets response in
-% return
-%%%
-sfuser_msg(Binds, CIndex, CDOp):-
-        write_exdr(eclipse_to_java, CDOp), 
-        flush(eclipse_to_java), 
-        read_exdr(java_to_eclipse, ValOut),
-        sfuser_wkr(Binds, CIndex, ValOut).                      
-
-
-%%%
-%sfuser_unify/5: Performs unification of user-specified value with
-% variable pertaining to attribute
-%%%
->>>>>>> .r5627
 sfuser_unify(_, _, Ref, Val, Val2):-
         retract(sfuser_back(N)), N1 is N+1,
         assert(sfuser_back(N1)),

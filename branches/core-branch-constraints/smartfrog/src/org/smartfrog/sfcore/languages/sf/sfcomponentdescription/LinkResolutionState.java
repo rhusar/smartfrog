@@ -454,7 +454,7 @@ public class LinkResolutionState {
 		int last_cidx = constraintEvalHistory.size()-1;
 		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(last_cidx);
 		Object val = cehr.cxt.get(key);
-	    if (val!=null /*&& val instanceof ComponentDescription*/) return val;
+	    if (val!=null && val instanceof ComponentDescription) return val;
 	    else return key;
 	}
 	

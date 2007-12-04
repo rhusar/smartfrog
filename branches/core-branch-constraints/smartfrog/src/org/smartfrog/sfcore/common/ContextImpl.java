@@ -877,7 +877,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     
     public boolean ofType(ComponentDescription comp){
-
     	ContextImpl comp_cxt = (ContextImpl) comp.sfContext();
     	
     	Iterator comp_iter = comp_cxt.orderedAttributes();
