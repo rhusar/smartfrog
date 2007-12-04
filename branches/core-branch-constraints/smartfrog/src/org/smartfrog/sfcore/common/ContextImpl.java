@@ -61,7 +61,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public void setOriginatingDescr(ComponentDescription originatingDescr) {
     	this.originatingDescr=originatingDescr;
-    	((CopyOfContextImpl)originatingDescr.sfContext()).setOriginatingDescrShallow(originatingDescr);
+    	((ContextImpl)originatingDescr.sfContext()).setOriginatingDescrShallow(originatingDescr);
     }
     
     /**
@@ -795,7 +795,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
           sc.addAll(s);
           m.put(key, sc);
        }
-       ((CopyOfContextImpl) ret).attributeTags = m;
+       ((ContextImpl) ret).attributeTags = m;
         return ret;
     }
 
@@ -838,7 +838,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 
 
         // Compares Tags
-        if (!((o instanceof CopyOfContextImpl) && (((CopyOfContextImpl)o).equalsTags(attributeTags)))){
+        if (!((o instanceof ContextImpl) && (((ContextImpl)o).equalsTags(attributeTags)))){
             return false;
         }
         return true;
@@ -870,7 +870,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     	if (LinkResolutionState.getConstraintsShouldUndo()) LinkResolutionState.getLRS().addUndo(this, key, oldValue);
         return oldValue;
     }
-<<<<<<< .mine
 
     /**
      * Verifies that comp is a sub-type of this context
@@ -878,15 +877,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     
     public boolean ofType(ComponentDescription comp){
-=======
 
-    /**
-     * Verifies that comp is a sub-type of the description pertaining to attr
-     * @return Whether sub-type
-     */
-    
-    public boolean ofType(ComponentDescription comp, String attr){
->>>>>>> .r5627
     	ContextImpl comp_cxt = (ContextImpl) comp.sfContext();
     	
     	Iterator comp_iter = comp_cxt.orderedAttributes();
