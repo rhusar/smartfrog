@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
@@ -268,8 +269,6 @@ public class LinkResolutionState {
     	
     	int idx;
     	
-    	Vector typeInfo;
-    	
     	/**
     	 * Constructs single undo action for g_LRSUndo_PUT
     	 * @param type
@@ -310,8 +309,8 @@ public class LinkResolutionState {
     	 * @param key
     	 * @param value
     	 */
-    	LRSUndoRecord(FreeVar fv, Vector typeInfo){
-    		this.type = g_LRSUndo_PUTFVTYPESTR; this.fv=fv; this.typeInfo=typeInfo;
+    	LRSUndoRecord(FreeVar fv){
+    		this.type = g_LRSUndo_PUTFVTYPESTR; this.fv=fv; 
     	}
     	
     	/**
@@ -324,7 +323,7 @@ public class LinkResolutionState {
     		                    else ctxt.remove(key); break;
     		case g_LRSUndo_PUTFVKEY: fv.setConsEvalKey(key); break;
     		case g_LRSUndo_PUTFVIDX: fv.setConsEvalIdx(idx); break;
-    		case g_LRSUndo_PUTFVTYPESTR: fv.removeLastTyping(); break;
+    		case g_LRSUndo_PUTFVTYPESTR: fv.clearTyping(); break;
     		}		
     	}
     }
@@ -434,18 +433,20 @@ public class LinkResolutionState {
 	 * @param key
 	 * @param value
 	 */
-	public void addUndo(FreeVar fv, Vector typeInfo){
-		currentLHRecord.addUndo(new LRSUndoRecord(fv, typeInfo));
+	public void addUndo(FreeVar fv){
+		currentLHRecord.addUndo(new LRSUndoRecord(fv));
 	}
 	
 	
-	public void addTyping(String attr, String type){
+	public void setTyping(String attr, Vector types){
 		int last_cidx = constraintEvalHistory.size()-1;
 		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(last_cidx);
 		Object val = cehr.cxt.get(attr);
 		if (val instanceof FreeVar){
 			FreeVar fv = (FreeVar) val;
-			fv.addTyping(type);
+			fv.setTyping(attr, types);
+			//need to add an undo record for the typing...
+			addUndo(fv);
 		}
 	}
 	
@@ -465,7 +466,7 @@ public class LinkResolutionState {
 	 * @param cidx The appropriate constraint eval record
 	 */
 	
-	public boolean addConstraintAss(int idx, String key, Object val, int cidx){
+	public boolean addConstraintAss(ComponentDescription solve_comp, int idx, String key, Object val, int cidx) throws SmartFrogResolutionException {
 		ConstraintEvalHistoryRecord cehr = (ConstraintEvalHistoryRecord) constraintEvalHistory.get(cidx);
 		
 		//Get typing information...
@@ -474,7 +475,7 @@ public class LinkResolutionState {
 		if (cur_val instanceof FreeVar) types = ((FreeVar) cur_val).getTyping();
 		
 		if (types!=null && (!(val instanceof ComponentDescription) || 
-				!ofTypes((ComponentDescription)val, types, cehr.cxt))) return false; 
+				!ofTypes(solve_comp, (ComponentDescription)val, types))) return false; 
 		
 		//set the value prescribed
 		g_constraintsShouldUndo=true;
@@ -485,12 +486,14 @@ public class LinkResolutionState {
 		return true;
 	}
 	
-	public boolean ofTypes(ComponentDescription comp, Vector types, Context cxt){
-		for (int i=0; i<types.size(); i++){
-			String type = (String)types.get(i);
-			if (!cxt.ofType(comp, type)) return false;
+	public boolean ofTypes(ComponentDescription solve_comp, ComponentDescription comp, Vector types) throws SmartFrogResolutionException {
+		Context type_cxt = null;
+		try {
+		   type_cxt = SFComponentDescriptionImpl.composeTypes(solve_comp, types);
+		} catch (SmartFrogResolutionException smfre){
+			throw new SmartFrogResolutionException("Unable to compose types in sub-type evaluation.");
 		}
-		return true;
+		return type_cxt.ofType(comp);
 	}
 	
 	public void backtrackConstraintAss(int idx, int cidx){

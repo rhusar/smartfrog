@@ -405,6 +405,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       }
    }
 
+   static public Context composeTypes(ComponentDescription parent, Vector types) throws SmartFrogResolutionException {
+	   SFComponentDescriptionImpl sfcd = new SFComponentDescriptionImpl(types, (SFComponentDescription) parent, null, true);
+	   sfcd.typeResolve();
+	   return sfcd.sfContext;
+   }
 
    /**
     *  Internal method to do recursion of type resolve.
