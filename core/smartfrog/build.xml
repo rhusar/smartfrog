@@ -566,7 +566,7 @@
 
 
   <target name="ready-to-javadoc"
-      depends="initdist,generateversion">
+      depends="initdist,generateversion,jars">
 
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
@@ -598,7 +598,8 @@
 
   <target name="jjdocs" depends="ready-to-javadoc" unless="javadoc.disabled">
     <!--  Java doc for the grammars -->
-    <java classname="jjdoc" failonerror="true">
+    <property name="jjdoc.failonerror" value="false" />
+    <java classname="jjdoc" failonerror="${jjdoc.failonerror}">
       <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
       <arg value="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
       <classpath>
