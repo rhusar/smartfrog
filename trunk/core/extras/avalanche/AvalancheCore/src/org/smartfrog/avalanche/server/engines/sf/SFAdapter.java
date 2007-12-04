@@ -320,7 +320,7 @@ public class SFAdapter {
                 }
             }
             String url = sfDesc.getUrl();
-            Map sfcMap = SmartFrogAdapterImpl.getAllAttribute(url,"user");
+            Map sfcMap = SmartFrogAdapterImpl.getAllAttribute(url,null);
 
 
             Set cbAttrs = sfcMap.keySet();
