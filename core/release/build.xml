@@ -25,8 +25,9 @@
 
   <!--we are a component -->
   <property name="is.component" value="true"/>
+  <!--no javadocs until we have source-->
+  <!--<property name="javadoc.disabled" value="true" />-->
   <!--we disable Ivy to let us use a copy of izpack in the lib dir-->
-  <!--<property name="ivy.enabled" value="true"/>-->
 
   <!-- override point -->
   <property file="build.properties"/>
