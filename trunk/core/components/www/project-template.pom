@@ -18,5 +18,11 @@
       <artifactId>sfServices</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${servletapi.version}</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>

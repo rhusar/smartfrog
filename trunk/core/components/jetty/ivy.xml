@@ -49,7 +49,8 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,test->default;testwar->testwar"/>
+        conf="compile,runtime,test,daemon->default,servletapi;testwar->testwar"/>
+
 
     <!-- depend on logging services, to pick up commons-logging and bindings -->
     <dependency org="org.smartfrog"
@@ -104,10 +105,7 @@
 
 
     <!--extra Jetty libraries-->
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master;redist->default"/>
+
 <!--
   //doesn't parse in Ivy 2.0.0-alpha-2; incompatible pom. 
     <dependency org="org.slf4j"

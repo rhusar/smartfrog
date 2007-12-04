@@ -493,15 +493,9 @@ rm -rf $RPM_BUILD_ROOT
 %{docs}
 %doc %{basedir}/src.zip
 
-# %dir %{docs}
-# %dir %{docs}/images
-# %dir %{docs}/skin
-# %dir %{docs}/components
-# %dir %{docs}/openOfficeEmbeddedImage
-
 %files javadocs
-%defattr(0644,root,root,0755)
-%attr(755, ${rpm.username},${rpm.groupname}) %dir %{basedir}/docs/jdocs
+%defattr(755, ${rpm.username},${rpm.groupname})
+%{basedir}/docs/jdocs
 
 %files demo
 %defattr(0644,${rpm.username},${rpm.username},0755)
