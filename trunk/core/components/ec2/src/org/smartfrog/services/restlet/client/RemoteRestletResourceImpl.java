@@ -194,7 +194,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     /**
      * Create a new CR scheme using the local challenge scheme,
      * username and password
-     * @return
+     * @return the CR scheme of this user.
      */
     protected ChallengeResponse createChallengeResponse() {
         return new ChallengeResponse(
@@ -246,7 +246,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
 
     /**
      * Check that the response was valid
-     * @param response
+     * @param response the response we check
      * @throws RestletOperationException for validation failures and errors
      */
     protected void validate(Response response)
