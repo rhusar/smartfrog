@@ -428,7 +428,7 @@ public class Reference implements Copying, Cloneable, Serializable {
      * the left (n-1). Returns the reference part removed.
      * 
      * @param index
-     * @return
+     * @return the reference part removed.
      */
     public ReferencePart removeElement(int index) {
         return (ReferencePart)ref.remove(index);
