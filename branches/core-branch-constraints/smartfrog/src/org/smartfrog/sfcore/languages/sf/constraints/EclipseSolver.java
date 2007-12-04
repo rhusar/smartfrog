@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionSt
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.reference.AttribReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
@@ -345,24 +346,43 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         else return null;
     }
     
+
     /**
      * Maps Eclipse object to Java object after transfer from Eclipse 
      * @param v  object to be transformed
      * @return transformed object
      */
     private Object mapValueEJ(Object v)  {
+    	return mapValueEJ(v, false);
+    }
+    
+    /**
+     * Maps Eclipse object to Java object after transfer from Eclipse 
+     * @param v  object to be transformed
+     * @param ref_create indicates whether references should be created for atoms -- used for subtyping directives
+     * @return transformed object
+     */
+    private Object mapValueEJ(Object v, boolean ref_create)  {
 		if (v.equals(Collections.EMPTY_LIST)) return new Vector();
     	else if (v instanceof Number) return v;
         else if (v instanceof Collection) {
             Vector result = new Vector();
             Iterator it = ((Collection)v).iterator();  
-            while (it.hasNext()) result.add(mapValueEJ(it.next()));
+            while (it.hasNext()) result.add(mapValueEJ(it.next(), ref_create));
             return result;
         } else if (v instanceof String) return v;
         else if (v instanceof Atom){
         	Atom va = (Atom) v;
         	if (va.functor().equals("sfnull")) return SFNull.get();
-        	else return va.functor();
+        	else {
+        		String va_s = va.functor();
+        		try {
+        			if (ref_create) return Reference.fromString(va_s);
+        			return va_s;
+        		} catch (SmartFrogResolutionException sfre){
+        			throw new SmartFrogEclipseRuntimeException("mapValueEJ: Trouble in creating reference from attribute string for subtyping. ");	
+        		}
+        	}
         } else if (v==null) return new FreeVar();
         else throw new SmartFrogEclipseRuntimeException("mapValueEJ: unknown data *from* solver " + v);	
     }	    
@@ -372,7 +392,10 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      * @author anfarr
      *
      */
-    class SmartFrogEclipseRuntimeException extends RuntimeException {
+    static public class SmartFrogEclipseRuntimeException extends RuntimeException {
+    	SmartFrogEclipseRuntimeException(Throwable cause){
+    		super(null, cause);
+    	}
     	SmartFrogEclipseRuntimeException(String msg, Throwable cause){
     		super(msg, cause);
     	}
@@ -677,6 +700,16 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	        	 Collection ctar = (Collection) ct.arg(4);
 	        	 int cidx = ((Integer) ct.arg(5)).intValue();
 	        	 
+	        	 boolean sfcd = false;
+	        	 
+	        	 if (val instanceof String){
+	        		 String val_s = (String) val;
+	        	     if (val_s.indexOf("sfcd")==0) {
+	        	    	 sfcd=true;
+	        	    	 val = val_s.substring(4);	 
+	        	     }
+	        	 }
+	        	 	        	 
 	        	 FreeVar fv=null;
 	        	 if (qual.equals("first")){
 	        		 val = fv = new FreeVar();
@@ -685,7 +718,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	        	 Iterator tar_iter = ctar.iterator();
 	        	 LinkResolutionState.getLRS().backtrackConstraintAss(idx, cidx);
 
-	        	 val = LinkResolutionState.getLRS().adjustSetValue(val);
+	        	 if (sfcd) val = LinkResolutionState.getLRS().adjustSetValue(val);
 	        	 
 	        	 boolean first=true;
 	        	 while (tar_iter.hasNext()){
@@ -700,16 +733,19 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	        			 }
 	        			 first=false;
 	        		 }
-	        		 
-	        		 boolean success = LinkResolutionState.getLRS().addConstraintAss(idx, key, val, cidx);
-	        		 m_get_val = ""+success;
+	        		 try {
+	        			 boolean success = LinkResolutionState.getLRS().addConstraintAss(m_solve_comp, idx, key, val, cidx);
+	        			 m_get_val = ""+success;
+	        		 } catch (SmartFrogResolutionException smfre){
+	        			 throw new SmartFrogEclipseRuntimeException(smfre);
+	        		 }
          	    	 try{ m_java_to_eclipse.setListener(this); } catch(Exception e){}
 	        	 }
 	        	 
 	         } else if (func.equals("sfsubtype")){
 	        	 String attr = ((Atom) ct.arg(1)).functor();
-	        	 String type = ((Atom) ct.arg(2)).functor();
-	        	 LinkResolutionState.getLRS().addTyping(attr, type);
+	        	 Vector types = (Vector) mapValueEJ(ct.arg(2), true);  //by this stage we know its a Vector
+	        	 LinkResolutionState.getLRS().setTyping(attr, types);
 	         }
 	    }
 	
