@@ -16,7 +16,7 @@
         description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile" visibility="private" extends="servletapi"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
@@ -26,7 +26,9 @@
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="war" description="compile path for the test war" visibility="private"/>
+    <conf name="servletapi" description="the servlet API" />
+    <conf name="war" description="compile path for the test war" visibility="private"
+        extends="servletapi"/>
     <conf name="testwar"
         description="The war file used for testing WWW support"/>
     <conf name="documentation"
@@ -54,7 +56,7 @@
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
-        conf="compile,war->master"/>
+        conf="servletapi->master"/>
     <dependency org="org.smartfrog"
         name="sf-testharness"
         changing="true"

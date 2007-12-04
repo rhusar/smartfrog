@@ -217,7 +217,7 @@
         name="sf-www"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,documentation"/>
+        conf="package-www->master,redist,documentation,servletapi"/>
 <!--    <dependency org="org.smartfrog"
         name="sf-tomcat"
         changing="true"
