@@ -86,7 +86,7 @@
     <property name="dist.lib.dir" location="${dist.dir}/lib"/>
     <property name="dist.doc.dir" location="${dist.dir}/doc"/>
     <property name="javadocs.directory.prefix" value="jdocs" />
-    <property name="javadocs.zipentry.prefix" value="jdocs" />
+    <property name="javadocs.zipentry.prefix" value="" />
     <property name="dist.javadoc.dir" location="${dist.doc.dir}/${javadocs.directory.prefix}"/>
     <property name="dist.bin.dir" location="${dist.dir}/bin"/>
     <property name="dist.src.dir" location="${dist.dir}/src"/>      

@@ -374,8 +374,6 @@
       location="${rpm.root.dir}/${rpm.install.dir}" />
     <unzip src="${sf-core-install.zip}"
       dest="${core.install.dir}" />
-    <unzip src="${sf-core-javadocs.zip}"
-        dest="${core.install.dir}" />
     <property name="rpm.lib.dir" location="${core.install.dir}/lib" />
   </target>
 
@@ -387,10 +385,23 @@
     <property name="init.d" location="${rpm.root.dir}/etc/init.d" />
   </target>
 
+
+  <!--set up the javadocs by
+    -unzipping the JAR into its own location
+  -->
+  <target name="rpm-javadocs" if="has.rpm.tools"  depends="init-rpm,prepare-executables">
+    <newdir name="rpm.javadocs.install.dir"
+        location="${rpm.root.dir}${rpm.javadocs.path}" />
+    <unzip src="${sf-core-javadocs.zip}"
+        dest="${rpm.javadocs.install.dir}" />
+  </target>
+
+
   <target name="rpm-components"
       if="has.rpm.tools"
       depends="expand-core">
   </target>
+
 
   <!-- create the link dir and its symlinks -->
   <target name="create-link-dir" if="has.rpm.tools"
@@ -507,9 +518,11 @@
     
   </target>
 
+
+
   <target name="prepare-binary-rpm"
       if="has.rpm.tools"
-      depends="copy-scripts,rpm-components,create-link-dir" >
+      depends="copy-scripts,rpm-components,create-link-dir,rpm-javadocs" >
     <expandingcopy todir="${build.rpm.dir}/root/" >
       <fileset dir="scripts" includes="**/*" />
     </expandingcopy>
@@ -521,6 +534,7 @@
       <arg value="etc"/>
       <arg value="opt"/>
       <arg value="var"/>
+      <arg value="usr"/>
     </exec>
 <!-- 
     <sf-tar destfile="${smartfrog.rpmfiles.tar}" >

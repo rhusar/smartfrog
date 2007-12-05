@@ -583,7 +583,8 @@ java.class.path=
 
   <target name="package-javadocs" depends="ready-to-package-javadocs"
       description="package up all the javadocs">
-    <property name="javadocs.zipentry.prefix" value="jdocs" />
+    <property name="javadocs.zipentry.prefix" value="" />
+    <echo >building javadocs into  package "${javadocs.zipentry.prefix}"</echo>
     <zip destfile="${javadocs.zip}" whenempty="create">
       <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
           prefix="${javadocs.zipentry.prefix}"/>

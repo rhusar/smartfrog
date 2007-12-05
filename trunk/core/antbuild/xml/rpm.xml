@@ -122,8 +122,9 @@
     <m:newdir name="build.rpm.dir" location="${build.dir}/rpm"/>
 
     <m:newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
-    <m:newdir name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.install.dir}/links"/>
-    <m:newdir name="rpm.doc.dir" location="${build.rpm.dir}/root${rpm.install.dir}/docs"/>
+    <m:newdir name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.links.path}"/>
+    <m:newdir name="rpm.doc.dir" location="${build.rpm.dir}/root${rpm.docs.path}"/>
+    <m:newdir name="rpm.javadocs.root.dir" location="${build.rpm.dir}/root${rpm.javadocs.path.root}"/>
 
     <m:newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata"/>
@@ -169,8 +170,8 @@
     <macrodef name="rpmjavadocs">
       <attribute name="package"/>
       <sequential>
-        <mkdir dir="${rpm.doc.dir}/@{package}"/>
-        <unzip dest="${rpm.doc.dir}/@{package}">
+        <mkdir dir="${rpm.javadocs.root.dir}/@{package}"/>
+        <unzip dest="${rpm.javadocs.root.dir}/@{package}">
           <fileset file="${ivy.lib.dir}/package-@{package}/*-javadocs-*.zip"/>
         </unzip>
       </sequential>

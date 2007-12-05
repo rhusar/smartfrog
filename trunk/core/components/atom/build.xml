@@ -24,7 +24,7 @@
   -->
 
   <description>
-    Ant support. Derived from a (relicensed as LGPL) release of the samples of Ant in Action
+    Atom support. Derived from a (relicensed as LGPL) release of the samples of Ant in Action
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>

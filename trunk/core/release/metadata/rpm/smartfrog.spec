@@ -42,7 +42,7 @@
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
 %define docs            %{basedir}/docs
-%define jdocs           %{basedir}/docs/jdocs
+%define jdocs           ${rpm.javadocs.path} 
 %define srcdir          %{basedir}/src
 %define linkdir         %{basedir}/links
 %define examples        %{srcdir}/org/smartfrog/examples
