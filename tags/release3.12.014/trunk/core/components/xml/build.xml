@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<project name="xml" default="default"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+  >
+
+  <!--
+  /** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+     Build file for the XML component
+  </description>
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+  <property name="system.tests" value="true"/>
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+
+    <property name="deploy.sf" value="org/smartfrog/services/xml/test/files/deploy.sf"/>
+
+  <target name="check-versions" depends="init">
+    <available property="nux.found"
+        classname="nux.xom.binary.BinaryXMLCodec"/>
+    <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
+  </target>
+
+  <target name="define-patternsets" depends="check-versions">
+    <patternset id="source.patternset">
+      <include name="**/*.java"/>
+      <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
+    </patternset>
+  </target>
+
+  <target name="ready-to-compile" depends="pre-compile,define-patternsets"/>
+
+  <!-- ========================================================== -->
+  <!-- this is an override
+       with selective use of the nux codec. -->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="ready-to-compile">
+    <depend srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
+    <sf-javac
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        destdir="${build.classes.dir}"
+        >
+          <patternset refid="source.patternset" />
+    </sf-javac>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
+  <target name="javadoc"
+      depends="ready-to-javadoc"
+      unless="javadoc.disabled"
+      >
+    <!--  Java Docs for all  -->
+    <echo>
+      Creating Java Docs for ${javadoc.header} into
+      [${dist.jdocs.dir}]
+      (language level=${javac.java.version})
+    </echo>
+    <fail unless="dist.jdocs.dir">
+      We are not properly initialized, as dist.jdocs.dir is undefined.
+    </fail>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <sf-javadoc
+        destdir="${dist.jdocs.dir}"
+        classpathref="compile.classpath"
+        >
+        <fileset  dir="${src.dir}">
+          <patternset refid="source.patternset" />
+        </fileset>
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </sf-javadoc>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- parse test files -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="init-codebase,package-tests"
+    description="parse the deployment descriptor">
+    <property name="parse.quiet" value="true"/>
+    <sf-parse quiet="${parse.quiet}">
+      <classpath refid="tests.run.classpath"/>
+      <sysproperty key="org.smartfrog.codebase"
+        value="${codebase}"/>
+      <!-- source files -->
+      <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
+        >
+        <include name="testDocument.sf" />
+        <include name="deploy.sf" />
+      </source>
+    </sf-parse>
+    <sf-parse quiet="${parse.quiet}">
+      <classpath path="${target.jar}:${test.jar}"/>
+      <sysproperty key="org.smartfrog.codebase"
+          value="${codebase}"/>
+      <!-- source files -->
+      <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
+          >
+        <include name="textNode.sf" />
+      </source>
+    </sf-parse>
+  </target>
+
+
+
+
+
+  <!-- ========================================================== -->
+  <!-- system tests -->
+  <!-- ========================================================== -->
+
+
+
+
+
+</project>

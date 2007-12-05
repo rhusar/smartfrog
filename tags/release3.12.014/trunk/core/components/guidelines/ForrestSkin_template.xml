@@ -1,0 +1,16 @@
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.3//EN" "http://forrest.apache.org/dtd/document-v13.dtd">
+<document> 
+  <header> 
+    <title>Document Folder for XXX Components</title> 
+    <notice>Select a Document</notice>
+    <abstract>Document  List</abstract> 
+  </header> 
+  <body> 
+   
+
+	  	<p><link href="sf-xxx-UserManual.html">sf-xxx-UserManual</link></p>
+		<p><link href="sf-xxx-ReadMe.html">sf-xxx-ReadMe</link></p>
+    
+  </body> 
+  
+</document>
