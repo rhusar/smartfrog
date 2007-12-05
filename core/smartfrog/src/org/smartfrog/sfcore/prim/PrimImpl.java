@@ -2015,14 +2015,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     *          the attribute does not exist;
     */
    public void sfRemoveTags( Set tags)  throws RemoteException, SmartFrogRuntimeException {
-        Object key = null;
+       Object key = null;
         if (sfParent!=null) {
           key = sfParent.sfAttributeKeyFor(this);
-          sfParent.sfRemoveTags(key,tags);
+          sfParent.sfRemoveTags(tags);
         } else {
           Prim parent = SFProcess.getProcessCompound();
           key = parent.sfAttributeKeyFor(this);
-          parent.sfRemoveTags(key, tags);
+          parent.sfRemoveTags(tags);
         }
    }
 
@@ -2039,11 +2039,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         Object key = null;
         if (sfParent!=null) {
           key = sfParent.sfAttributeKeyFor(this);
-          return sfParent.sfContainsTag(key, tag);
+          return sfParent.sfContainsTag(tag);
         } else {
           Prim parent = SFProcess.getProcessCompound();
           key = parent.sfAttributeKeyFor(this);
-          return parent.sfContainsTag(key, tag);
+          return parent.sfContainsTag(tag);
         }
    }
 
