@@ -109,6 +109,53 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+There are no major changes in this release, only ongoing bug fixes and minor
+improvements, and build process tuning. 
+
+The RPMs have been improved;  the javadocs for the core JARs are provided as their own RPM.
+
+** Bug
+    * [SFOS-560] - -x bit is set in /etc/sysconfig/smartfrog
+    * [SFOS-561] - sfResolveHereNonlocal does not delegate to sfResolveHere when
+      the attribute is not in the context and the dns component overrides
+      sfResolveHere to give a default value
+    * [SFOS-564] - regression in RunShell; list operations causing NPW
+    * [SFOS-572] - default for sfDump does not handle references with repeated
+      names correctly
+    * [SFOS-574] - jjdocs target fails on CruiseControl
+    * [SFOS-575] - common.xml javadoc fails if there is no source
+
+** Improvement
+    * [SFOS-265] - bits of smartfrog arent forwarding
+      SmartFrogResolutionExceptions consistently
+    * [SFOS-501] - Ant component needs more tests
+    * [SFOS-548] - Add SFNULL to schemas template
+    * [SFOS-551] - add Xalan and JDom to the XML component
+    * [SFOS-552] - review XML component source+build; add in xalan and JDOM
+    * [SFOS-556] - move up to httpunit 1.6.2 for testing www componentry
+    * [SFOS-569] - Add attribute to filter the output of positive searches.
+      Useful to remove the "echoExit command" from the standard output .
+    * [SFOS-573] - logToFile when failing to create a log file, it should try
+      java temp dir before failing
+
+** New Feature
+    * [SFOS-559] - Create RPMs for the other packages: ant, database, jmx,
+      xunit, junit, net, www, quartz
+    * [SFOS-568] - Add a component to test the specific OS
+
+** Task
+    * [SFOS-129] - incorporate ivy published documentation into the release
+      artifacts
+    * [SFOS-357] - Move Jetty support up to Jetty6
+    * [SFOS-467] - Admin/Debug servlets are no longer in Jetty6; remove the
+      components and their tests
+    * [SFOS-540] - document the Ant components
+
+** Sub-task
+    * [SFOS-473] - Add SSL support with an SSLSocketListener
+    * [SFOS-475] - Move realm/security config out of SFJetty and make reusable
+    * [SFOS-476] - Remove SFJettyAdmin as the servlet is gone
+
 
 
   

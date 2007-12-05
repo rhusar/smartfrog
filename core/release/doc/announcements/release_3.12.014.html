@@ -181,6 +181,87 @@
 
 
 <h3>Changes since last release</h3>
+<p>
+There are no major changes in this release, only ongoing bug fixes and minor
+improvements, and build process tuning. 
+</p>
+<p>
+The RPMs have been improved;  the javadocs for the core JARs are provided as their own RPM.
+<p>
+
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-560'>SFOS-560</a>] -         -x bit is set in /etc/sysconfig/smartfrog
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-561'>SFOS-561</a>] -         sfResolveHereNonlocal does not delegate to sfResolveHere when the attribute is not in the context and the dns component overrides sfResolveHere to give a default value
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-564'>SFOS-564</a>] -         regression in RunShell; list operations causing NPW
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-572'>SFOS-572</a>] -         default for sfDump does not handle references with repeated names correctly
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-574'>SFOS-574</a>] -         jjdocs target fails on CruiseControl
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-575'>SFOS-575</a>] -         common.xml javadoc fails if there is no source
+</li>
+
+</ul>
+        
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-265'>SFOS-265</a>] -         bits of smartfrog arent forwarding SmartFrogResolutionExceptions consistently
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-501'>SFOS-501</a>] -         Ant component needs more tests
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-548'>SFOS-548</a>] -         Add SFNULL to schemas template
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-551'>SFOS-551</a>] -         add Xalan and JDom to the XML component
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-552'>SFOS-552</a>] -         review XML component source+build; add in xalan and JDOM
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-556'>SFOS-556</a>] -         move up to httpunit 1.6.2 for testing www componentry
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-569'>SFOS-569</a>] -         Add attribute to filter the output of positive searches. Useful to remove the &quot;echoExit command&quot; from the standard output .
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-573'>SFOS-573</a>] -         logToFile when failing to create a log file, it should try java tem dir before failing
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-559'>SFOS-559</a>] -         Create RPMs for the other packages: ant, database, jmx, xunit, junit, net, www, quartz
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-568'>SFOS-568</a>] -         Add a component to test the specific OS
+</li>
+</ul>
+        
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-129'>SFOS-129</a>] -         incorporate ivy published documentation into the release artifacts
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-357'>SFOS-357</a>] -         Move Jetty support up to Jetty6
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-467'>SFOS-467</a>] -         Admin/Debug servlets are no longer in Jetty6; remove the components and their tests
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-540'>SFOS-540</a>] -         document the Ant components
+</li>
+
+</ul>
+    
+<h4>        Sub-task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-473'>SFOS-473</a>] -         Add SSL support with an SSLSocketListener
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-475'>SFOS-475</a>] -         Move realm/security config out of SFJetty and make reusable
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-476'>SFOS-476</a>] -         Remove SFJettyAdmin as the servlet is gone
+</li>
+</ul>
+
 
 </body>
 </html>
