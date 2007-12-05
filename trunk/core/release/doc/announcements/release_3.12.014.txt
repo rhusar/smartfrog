@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is 3.12.014; built from revision 5645
+This release is 3.12.014; built from revision 5649
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
