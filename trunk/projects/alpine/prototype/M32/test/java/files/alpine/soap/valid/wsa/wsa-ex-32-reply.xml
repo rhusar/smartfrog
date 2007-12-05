@@ -1,0 +1,13 @@
+<S:Envelope
+    xmlns:S="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+  <S:Header>
+    <wsa:MessageID>http://example.com/someotheruniquestring</wsa:MessageID>
+    <wsa:RelatesTo>http://example.com/someuniquestring</wsa:RelatesTo>
+    <wsa:To>http://example.com/business/client1</wsa:To>
+    <wsa:Action>http://example.com/fabrikam/mail/DeleteAck</wsa:Action>
+  </S:Header>
+  <S:Body>
+    <f:DeleteAck xmlns:f="http://example.com/fabrikam"/>
+  </S:Body>
+</S:Envelope>

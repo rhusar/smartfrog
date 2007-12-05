@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<cdl:expression xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  value-of="/"
+    >
+  <!-- this is not a valid CDL document -->
+  <!-- the root element is of the wrong type -->
+  <cdl:documentation>
+    While the base parser should accept this, it is not a legal CDL document
+  </cdl:documentation>
+</cdl:expression>

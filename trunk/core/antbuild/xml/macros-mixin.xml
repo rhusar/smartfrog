@@ -1,0 +1,200 @@
+<project name="macros"
+    xmlns:m="http://smartfrog.org/macro"
+    xmlns:ac="antlib:net.sf.antcontrib">
+
+
+  <property name="macros-mixin.uri" value="http://smartfrog.org/macro"/>
+
+
+  <macrodef name="copy-useful-files" uri="${macros-mixin.uri}">
+    <attribute name="src"/>
+    <attribute name="dest"/>
+    <attribute name="failonerror" default="false"/>
+    <attribute name="pattern"
+        default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.properties,**/*.sf"/>
+    <sequential>
+      <echo level="verbose">copying @{pattern}
+        from @{src} to @{dest}
+      </echo>
+      <copy todir="@{dest}" failonerror="@{failonerror}">
+        <fileset dir="@{src}" includes="@{pattern}"/>
+      </copy>
+    </sequential>
+  </macrodef>
+
+
+  <!--echo the nested text at the verbose level-->
+  <macrodef name="verbose" uri="${macros-mixin.uri}">
+    <text name="text.value" trim="false" optional="true"/>
+    <sequential>
+      <echo level="verbose">@{text.value}</echo>
+    </sequential>
+  </macrodef>
+
+  <!--echo the nested text at the error level-->
+  <macrodef name="error" uri="${macros-mixin.uri}">
+    <text name="text.value" trim="false" optional="true"/>
+    <sequential>
+      <echo level="error">@{text.value}</echo>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="printref" uri="${macros-mixin.uri}">
+    <attribute name="refid"/>
+    <attribute name="level" default="info"/>
+    <sequential>
+      <ac:var name="printref.refid.value" unset="true"/>
+      <property name="printref.refid.value" refid="@{refid}"/>
+      <echo level="@{level}">refid @{refid}=${printref.refid.value}</echo>
+    </sequential>
+  </macrodef>
+
+  <!--copy files somewhere (Default is temp directory) and make a URL of all
+      the files in the property-->
+  <macrodef name="copy-and-url" uri="${macros-mixin.uri}">
+    <attribute name="dest" default="${java.io.tmpdir}"/>
+    <attribute name="property"/>
+    <element name="files" optional="false"/>
+    <sequential>
+      <m:verbose>copying to @{dest}</m:verbose>
+      <echoxml>
+        <files/>
+      </echoxml>
+      <copy todir="@{dest}">
+        <files/>
+      </copy>
+      <makeurl property="@{property}">
+        <files/>
+      </makeurl>
+      <m:verbose>URL =${@{property}}</m:verbose>
+    </sequential>
+  </macrodef>
+
+  <!--Execute the nested commands twice-->
+  <macrodef name="do2" uri="${macros-mixin.uri}">
+    <element name="commands" implicit="true"/>
+    <sequential>
+      <commands/>
+      <commands/>
+    </sequential>
+  </macrodef>
+
+
+  <!-- take a file and a destdir and set the property attribute
+  to  ${destdir}/basename(${file}), where basename() extracts the base filename
+  of the full path. Uses ant contrib <var> task for local variables
+  -->
+  <macrodef name="reparent" uri="${macros-mixin.uri}">
+    <attribute name="file"/>
+    <attribute name="destdir"/>
+    <attribute name="property"/>
+    <sequential>
+      <ac:var name="reparent.dest" unset="true"/>
+      <property name="reparent.dest" location="@{destdir}"/>
+      <ac:var name="reparent.filename" unset="true"/>
+      <basename property="reparent.filename" file="@{file}"/>
+      <property name="@{property}"
+          location="${reparent.dest}/${reparent.filename}"/>
+    </sequential>
+  </macrodef>
+
+
+  <!--defaults for our javac-->
+  <property name="javac.debug.mode" value="true"/>
+  <property name="javac.deprecation.mode" value="false"/>
+  <property name="javac.java.version" value="5"/>
+
+  <!--this preset runs javac with some predefined behavior-->
+  <presetdef name="javac" uri="${macros-mixin.uri}">
+    <javac debug="${javac.debug.mode}"
+        nowarn="true"
+        deprecation="${javac.deprecation.mode}"
+        source="${javac.java.version}"
+        target="${javac.java.version}"
+        includeAntRuntime="false"
+        includes="**/*.java"
+        >
+    </javac>
+  </presetdef>
+
+  <!-- Default Jar task is configured to skip a duplicate add and fail if there
+      is nothing but a manifest to create -->
+  <presetdef name="jar" uri="${macros-mixin.uri}">
+    <jar duplicate="fail"
+        compress="false"
+        whenmanifestonly="fail"
+        />
+  </presetdef>
+
+  <presetdef name="tar" uri="${macros-mixin.uri}">
+    <tar
+        longfile="gnu"
+        >
+    </tar>
+  </presetdef>
+
+  <!--preset to copy with ant property expansion (and always overwrite)-->
+  <presetdef name="expandingcopy" uri="${macros-mixin.uri}">
+    <copy overwrite="true">
+      <filterchain>
+        <expandproperties/>
+      </filterchain>
+    </copy>
+  </presetdef>
+
+  <!-- a macro to define a property to a new directory, and create the directory-->
+  <macrodef name="newdir" uri="${macros-mixin.uri}">
+    <attribute name="name"/>
+    <attribute name="location"/>
+    <sequential>
+      <property name="@{name}" location="@{location}"/>
+      <mkdir dir="@{location}"/>
+    </sequential>
+  </macrodef>
+
+
+  <!-- a new version of the java task that always forks, does not include
+the ant runtime by default, and fails on any error -->
+  <presetdef name="java" uri="${macros-mixin.uri}">
+    <java
+        includeantruntime="false"
+        fork="true"
+        failonerror="true"
+        >
+    </java>
+  </presetdef>
+
+  <!-- define a new javac task with new default options -->
+  <presetdef name="sf-javac">
+    <m:javac/>
+  </presetdef>
+
+  <!-- an extension of the previous javac, this with ant classpath included -->
+  <presetdef name="sf-javac-with-ant">
+    <m:javac
+        includeAntRuntime="true" />
+  </presetdef>
+
+
+  <!-- a new version of the java task that always forks, does not include
+the ant runtime by default, and fails on any error -->
+  <presetdef name="sf-java">
+    <m:java/>
+  </presetdef>
+
+  <!--
+  JAR files are uncompressed, with duplicate classes preserved, meaning
+  whatever was there first wins.
+  -->
+  <presetdef name="sf-jar">
+    <m:jar/>
+  </presetdef>
+
+  <!--
+  Tar files are gnu formatted for long files
+  -->
+  <presetdef name="sf-tar">
+    <m:tar/>
+  </presetdef>
+
+</project>

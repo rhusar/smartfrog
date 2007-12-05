@@ -1,0 +1,37 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/sfcore/compound/compound.sf"
+
+/**
+ * This compound may detach its children from itself (if 'detachDownwards' is set to true) ,
+ * or itself from its parent (if 'detachUpwards' is set to true) ,
+ * and terminate itself (if 'autoDestruct' is set to true).
+ * Default behaviour is to detach itself, its children, and terminate.
+ * Beware, if the compound does not detach itself and terminates, it terminates the whole tree above.
+ */
+
+DetachingCompound extends Compound {
+  sfClass "org.smartfrog.sfcore.workflow.combinators.DetachingCompoundImpl";
+  detachDownwards true; // set to true if you want the compound to detach its children on start
+  detachUpwards true;   // set to true if you want the compound to detach itself on start
+  autoDestruct true;    // set to true if you want the compound to terminate at the end of the start phase
+}
+
