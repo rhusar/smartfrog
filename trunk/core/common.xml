@@ -798,7 +798,6 @@ java.class.path=
       depends="init-common-simpledefinitions">
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}"  />
-    <delete dir="releases"  />
     <delete file="version.properties"/>
   </target>
 
