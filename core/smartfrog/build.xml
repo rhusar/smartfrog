@@ -621,12 +621,13 @@
 
   <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
 
-
+ <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
   <target name="package-javadocs" depends="ready-to-package-javadocs"
       description="package up all the javadocs">
+    <property name="javadocs.zipfile.package" value="" />
     <zip destfile="${javadocs.zip}" whenempty="create">
       <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
-          prefix="docs/jdocs"/>
+          prefix="${javadocs.zipfile.package}"/>
     </zip>
   </target>
 
@@ -1057,7 +1058,7 @@ ${ivy.reports.dir}
       <zipfileset dir="${dist.dir}" >
         <include name="**/*" />
         <!--this can be turned on/off-->
-        <exclude name="docs/jdocs" if="install.excludes.javadocs"/>
+        <exclude name="docs/jdocs" unless="install.includes.javadocs"/>
         <exclude name="lib/*" />
         <exclude name="bin/sfGui*" />
       </zipfileset>
