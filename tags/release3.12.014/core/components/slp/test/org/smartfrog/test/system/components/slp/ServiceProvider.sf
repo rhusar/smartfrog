@@ -1,0 +1,17 @@
+#include "org/smartfrog/components.sf"
+
+#include "org/smartfrog/examples/helloworld/printer.sf"
+#include "org/smartfrog/examples/helloworld/generator.sf"
+#include "org/smartfrog/services/comm/slp/components.sf"
+
+sfConfig extends Compound {
+  p extends Printer {
+    name "PrinterService";
+  }
+
+	adv extends SFSlpAdvertiser	{
+  	serviceType "service:sf-prim:printer";
+  	toAdvertise LAZY p;
+	}
+
+}

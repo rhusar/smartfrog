@@ -1,0 +1,47 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+//#include "/org/smartfrog/predicates.sf"
+
+LogToLog4JImpl extends {
+
+
+/*
+   This comes in too early for schema use
+   logToLog4JSchema extends Schema {
+    ignoreSetLogLevel extends OptionalBoolean;
+    setIniLog4JLoggerLevel extends OptionalBoolean;
+    //file or URL to the location of the content
+    configuratorFile extends OptionalString;
+    //a resource path
+    resource extends OptionalString;
+
+   }
+
+*/
+
+   //configuratorFile ""; //Optional. If not defined will try: "log4j.configuration" system env variable
+   setIniLog4JLoggerLevel false; //Optional. Don't set initial Log4J level.
+   ignoreSetLogLevel false; //Optional. It will ignore any external logLevel set
+
+   loggerClass "org.smartfrog.services.logging.log4j.LogToLog4JImpl";
+   //NOT SUPPORTED in new Log4J - configureAndWatch false;
+   //NOT SUPPORTED in new Log4J - configureAndWatchDelay 60000L; //Default 60 secs
+}

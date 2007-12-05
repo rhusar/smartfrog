@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project name="releasetest" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+    Build file for releasetest SmartFrog components.
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+
+<!--    <property name="releasetest.lib.dir" location="lib" description=
+                        "place to put third party libraries"/> -->
+       
+  
+  <property name="root.dir" location="../.."  />
+    <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+  
+ 
+
+  
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-standard-output-dirs">
+          
+<!--     <property name="target.jar" 
+        location="${dist.lib.dir}/releasetestComponents.jar" /> -->
+    
+    
+    <!-- the compile time path includes releasetest-->
+<!--     <path id="compile.classpath">
+      <path refid="smartfrog.classpath"/>
+      <fileset dir="${releasetest.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+    
+    <path id="run.classpath">
+      <path refid="compile.classpath"/>
+      <path location="${target.jar}" />
+    </path>   -->
+    
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="common.dist" 
+    description="create the jar files">
+    <!--copy toDir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}">
+            <include name = "**/*.jar"/>
+        </fileset>    
+    </copy -->
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- override: copy in the releasetest files too -->
+  <!-- ========================================================== -->
+  <target name="install" depends="dist">
+      <copy toDir = "${smartfrog.dist.lib.dir}">
+        <fileset dir ="${dist.lib.dir}"> 
+            <include name = "**/*.jar"/>
+        </fileset>    
+    </copy>
+  </target>
+
+
+</project>

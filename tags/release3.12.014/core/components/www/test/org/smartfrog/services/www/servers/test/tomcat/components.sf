@@ -1,0 +1,142 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/www/servers/tomcat5.sf"
+//#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
+
+
+// this is a non-lazy binding to whatever is passed in to the deployment process; it sets
+// tomcat.home to the property or to ""
+tomcat.home OPTIONAL("") PROPERTY test.tomcat.home;
+
+//this is the port to which we expect tomcat to be running
+tomcat.port OPTIONAL(8080) PROPERTY test.tomcat.port;
+
+// a boolean property that is true if tomcat.home is non-empty
+tomcat.present IF (tomcat.home != "") THEN true ELSE false FI;
+
+//tomcat fails big time if this is not set
+jdk.home OPTIONAL("") PROPERTY test.jdk.home ;
+
+
+
+/**
+ * A local page for liveness; assumes port 8080
+ */
+TomcatLivenessPage extends LivenessPage {
+    port tomcat.port;
+}
+
+WaitForTomcat extends WaitForPage {
+    port tomcat.port;
+    timeout 30000;
+}
+
+// now switch this to a condition
+IsTomcatPresent extends BooleanValue {
+  value tomcat.present;
+}
+
+
+NoRunningServer extends Not {
+     condition extends TomcatLivenessPage;
+    }
+
+IsTomcatPresentButNotRunning extends And {
+  -- extends IsTomcatPresent;
+  -- extends NoRunningServer;
+}
+
+/**
+ * Tomcat bound to the local properties
+ */
+BoundTomcatServer extends Tomcat5Server {
+  server.home tomcat.home;
+  jdk.home PARENT:ATTRIB jdk.home;
+}
+
+/**
+ * a template that only deploys if test.tomcat.home is set
+ * we use this to make things conditional
+ */
+DeployTomcat extends ExpectDeploy {
+  condition extends IsTomcatPresentButNotRunning;
+  description "test tomcat deployment -requires test.tomcat.home to be set";
+
+  action extends Compound {
+    tomcat extends BoundTomcatServer;
+  }
+
+
+
+  undeployAfter 60000;
+
+}
+
+/*
+ * one test with a 10s shutdown
+ */
+DeployTomcatTests extends DeployTomcat {
+  description "test that tomcat runs";
+  expectTerminate false;
+  tests extends WaitForTomcat ;
+}
+
+
+
+/**
+ * simple test to fail if there is a web site running
+ * but skip if tomcat is absent
+ */
+
+testTomcatIsNotRunning extends ExpectTerminate {
+  condition extends IsTomcatPresent;
+  description "fail if there is a web site already running";
+
+  action extends EvaluateCondition {
+    condition extends NoRunningServer;
+    message "There is a web server running on the target port";
+  }
+
+  undeployAfter 15000;
+
+}
+
+
+/*
+ * one test with a 10s shutdown
+ */
+testTomcatRuns extends DeployTomcatTests {
+  description "test that tomcat runs";
+}
+
+/*
+ * one test with a 10s shutdown
+ */
+testWaitForTimesOut extends ExpectDeployFailure {
+  condition extends NoRunningServer;
+  description "Wait for a few seconds for tomcat, then give up";
+
+  action extends WaitForTomcat {
+    timeout 1000;
+  }
+  exitType FailingTestCompound:exitType;
+}

@@ -1,0 +1,17 @@
+
+http://localhost:5050/axis/services/cddlm?wsdl
+ant demo-serverStatus -e
+
+ant demo-listApplications -e
+
+ant demo-deploy-sf -Dfile=test/files/counter.sf
+ant demo-deploy-sf -Dfile=test/files/emailDemo.sf
+
+ant -e demo-listApplications 
+
+ant demo-applicationStatus -Duri=
+
+ant demo-undeploy -Duri=
+
+ant demo-listen  -Duri=
+

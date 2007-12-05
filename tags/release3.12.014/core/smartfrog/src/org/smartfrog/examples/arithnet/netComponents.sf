@@ -1,0 +1,103 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+Output extends Prim {
+    sfClass "org.smartfrog.examples.arithnet.OutputImpl";
+    //to LAZY LinkToInput;
+} 
+
+Input extends Prim {
+    sfClass "org.smartfrog.examples.arithnet.InputImpl";
+}
+
+NetElem extends Compound {
+    inputs extends Compound;
+    outputs extends Compound;
+}
+
+Dup extends NetElem {
+    sfClass "org.smartfrog.examples.arithnet.Dup";
+    inputs:value extends Input;
+    outputs:copy1 extends Output;
+    outputs:copy2 extends Output;
+}
+
+Constant extends NetElem {
+    sfClass "org.smartfrog.examples.arithnet.Constant";
+    outputs:value extends Output;
+    constant 0;
+}
+
+Generator extends NetElem {
+    sfClass "org.smartfrog.examples.arithnet.Generator";
+    outputs:value extends Output;
+    seed 6298426;
+    max 10;
+    min 0;
+    interval 5;
+}
+
+Op extends NetElem {
+    outputs:value extends Output;
+}
+UnaryOp extends Op {
+    inputs:value extends Input;
+}
+
+BinaryOp extends Op {
+    inputs:lhs extends Input;
+    inputs:rhs extends Input;
+}
+
+Negate extends UnaryOp {
+    sfClass "org.smartfrog.examples.arithnet.Negate";
+}
+
+Plus extends BinaryOp {
+    sfClass "org.smartfrog.examples.arithnet.Plus";
+}   
+
+Delay extends UnaryOp {
+    sfClass "org.smartfrog.examples.arithnet.Delay";
+    delay 1;
+}
+
+Times extends BinaryOp {
+    sfClass "org.smartfrog.examples.arithnet.Times";
+}
+
+Printer extends NetElem {
+    sfClass "org.smartfrog.examples.arithnet.Printer";
+    inputs:printVal extends Input;
+}
+
+/**
+ * This NetElem component sends the difference 'target - candidate' to its 
+ * output.
+ * Can also be used to stop a test in the TestHarness. In this case 'counts' is
+ * used to know how many times we want to check for equality before the 'DONE' 
+ * message is printed.
+ */
+Comparator extends NetElem {
+    sfClass "org.smartfrog.examples.arithnet.Comparator";
+    count 1; // the number of equalities to count before stopping the test.
+    inputs:target extends Input;
+    inputs:candidate extends Input;
+}   

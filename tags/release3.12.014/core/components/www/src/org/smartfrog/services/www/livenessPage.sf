@@ -1,0 +1,187 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this declares the liveness page.
+ This is a component that does not deploy anything, merely
+ verifies on a liveness (and optionally deploy) check that
+ a web page is visible and returns with an error code within
+ a specified range
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+ #include "/org/smartfrog/components.sf"
+
+/**
+ Popular Mime type constants
+
+ */
+
+
+MimeTypes extends {
+
+  APPLICATION_ATOM_XML "application/atom+xml";
+  APPLICATION_JSON "application/json";
+  APPLICATION_RDF_XML "application/rdf+xml";
+  APPLICATION_WWW_FORM "application/x-www-form-urlencoded";
+  APPLICATION_XHTML_XML "application/xhtml+xml";
+  APPLICATION_XML  "application/xml";
+  TEXT_PLAIN "text/plain"
+  TEXT_CSS "text/css"
+  TEXT_HTML "text/html"
+  TEXT_XML "text/xml"
+  IMAGE_BMP "image/bmp";
+  IMAGE_GIF "image/gif";
+  IMAGE_ICON "image/x-icon";
+  IMAGE_JPEG "image/jpeg";
+  IMAGE_PNG "image/png";
+  IMAGE_SVG "image/svg+xml";
+}
+
+
+ /**
+  * for liveness pages you need to give either the url, or the
+  * built up URL
+  * ${protocol}://${host}:${port}/[${path}]/${[page][?queries]
+  * if the URL is specified, the alternate set is ignored.
+  * If the URL is not specified, the attribute <code>url</code>
+  * is set to the full URL at startup time.
+  */
+ HttpPageSchema extends Schema {
+
+  //either
+     //full URL to the page
+     url extends OptionalString;
+  //or
+     //port of the page; default 80
+     port extends OptionalInteger;
+     //host of the page; default 127.0.0.1
+     host extends OptionalString;
+     //protocol, default http
+     protocol extends OptionalString;
+     path extends OptionalString;
+
+     //page
+     page extends OptionalString;
+     //query list of things that get turned into queries -without escaping.
+     //vectors inside are treated as name=value pairs
+     //e.g ["name,"users",["error",500]] maps to
+     //    name&users&error=500
+     queries extends OptionalVector;
+
+      //if the username is set, the password is needed 
+     username extends OptionalString;
+     password extends OptionalString;
+
+   //and any of
+
+     //headers
+     headers extends Vector;
+
+     //response code below which the fetch is an error
+     minimumResponseCode extends OptionalInteger;
+     //error code above which an error has occurred,
+     //default is 299.
+     maximumResponseCode extends OptionalInteger;
+     //flag to follow redirects
+     followRedirects extends OptionalBoolean;
+
+ }
+
+ /**
+  * for liveness pages you need to give either the url, or the
+  * built up URL
+  * ${protocol}://${host}:${port}/[${path}]/${[page][?queries]
+  * if the URL is specified, the alternate set is ignored.
+  * If the URL is not specified, the attribute <code>url</code>
+  * is set to the full URL at startup time.
+  */
+ LivenessPageSchema extends HttpPageSchema {
+
+     //flag to set if you want any error text fetched from
+     //the remote site. This is good for diagnostics.
+     fetchErrorText extends OptionalBoolean;
+
+     //check frequency. This is the number of pings between checks
+     //and so lets us probe less often than normal.
+     //this is in milliseconds
+     checkFrequency extends OptionalInteger;
+
+     //flag to say that the check is on/off; useful during development
+     enabled extends OptionalBoolean;
+
+     //check on startup
+     checkOnStartup extends Boolean;
+     //check on liveness
+     checkOnLiveness extends Boolean;
+ }
+
+ /*
+  The liveness page defines a component whose sole aim in life is to probe
+  a web page for health, whenever it gets an sfPing call to see if it is healthy.
+  The
+ */
+
+ LivenessPage extends WorkflowPrim {
+     livenessPageSchema extends LivenessPageSchema;
+     sfClass "org.smartfrog.services.www.LivenessPageComponent";
+     fetchErrorText true;
+     maximumResponseCode 299;
+     minimumResponseCode 200;
+     enabled true;
+     followRedirects true;
+     checkFrequency 1000;
+     checkOnStartup false;
+     checkOnLiveness true;
+     connectTimeout -1;
+     headers [];
+     host "127.0.0.1";
+     protocol "http";
+     port 80;
+     page "/";
+
+ }
+
+
+/**
+ * This is the variant for use in a workflow sequence; it blocks
+ * the sequence until the page arrives.
+ *
+ * In WaitForPage, checkFrequency becomes the time in seconds between
+ * polls on the page
+ */
+  
+  WaitForPage extends LivenessPage {
+    WaitForPageSchema extends Schema {
+      //timeout in milliseconds
+      timeout extends Integer;
+    }
+    sfClass "org.smartfrog.services.www.WaitForPageImpl";
+    checkFrequency 500;
+    fetchErrorText false;
+    checkOnLiveness false;
+    sfShouldTerminate true;
+  }
+  
+
