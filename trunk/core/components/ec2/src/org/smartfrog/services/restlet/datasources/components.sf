@@ -33,7 +33,7 @@ LocalDataSource extends Prim {
 
 
 TextDataSource extends LocalDataSource {
-  sfClass "org.smartfrog.services.restlet.client.TextDataSource";
+  sfClass "org.smartfrog.services.restlet.datasources.TextDataSource";
   text TBD;
   contentType MimeTypes:TEXT_PLAIN;
 }
@@ -47,6 +47,7 @@ XHtmlTextDataSource extends TextDataSource {
 }
 
 FileDataSource extends LocalDataSource {
+  sfClass "org.smartfrog.services.restlet.datasources.FileDataSource";
   schema extends Schema {
     filename extends FilenameType;
     timeToLive extends Integer;

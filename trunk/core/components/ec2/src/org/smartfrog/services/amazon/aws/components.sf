@@ -18,30 +18,20 @@
 
  */
 
-#include "/org/smartfrog/services/passwords/components.sf"
-
-/**
- * this represents an AWS User account
- */
+#include "/org/smartfrog/services/restlet/components.sf"
 
 
-AWSUserAccount extends Prim {
 
-  id TBD;
-  secretKey TBD;
-
-}
 
 
 /**
  * An AWS service includes resources and SOAPy stuff
  */
-AWSService extends Prim {
-  //LAZY ref to an AWSUserAccount
-  login TBD;
-  //URL to the service. This could be an endpoint or a resource
-  url TBD;
+AWSService extends RemoteResource {
+  authorization HTTP_AMAZON_AWS;
 }
+
+
 
 /**
  * Resources extends Services with a stable HTTP interface. You can also
@@ -49,17 +39,6 @@ AWSService extends Prim {
  * During startup, liveness and termination
  */
 AWSResource extends AWSService {
-  //LAZY ref to an AWSUserAccount
-  login TBD;
 
-  putOnStartup false;
-  headOnStartup false;
-  getOnStartup false;
-  deleteOnStartup false;
-
-  headOnLiveness false;
-  getOnLiveness false;
-
-  deleteOnTerminate false;
 
 }
