@@ -80,7 +80,7 @@ sfConfig extends Parallel {
  							 "export SFSECURITY_ON=ENABLED",
 				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/$jar #end",
 				 			 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon &"];  
+                        	 			 "nohup sfDaemon -headless"];  
 				#else 
 					Telnet:commands ["mkdir -p ${daemon.installdir}",
 							"cd ${daemon.installdir}",
@@ -97,7 +97,7 @@ sfConfig extends Parallel {
                         	 			 "export PATH=$SFHOME/bin:$PATH",
  				 		 	 "export SFSECURITY_ON=ENABLED",
 						 	 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon &"];  
+                        	 			 "nohup sfDaemon -headless"];  
 				#end
 			#else
 				#if ($dynamicLoadingOn)
@@ -109,7 +109,7 @@ sfConfig extends Parallel {
                         		 		 "export PATH=$SFHOME/bin:$PATH",
 					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-							 "nohup sfDaemon &"]; 
+							 "nohup sfDaemon -headless"]; 
 				#else
 					Telnet:commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
@@ -118,7 +118,7 @@ sfConfig extends Parallel {
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
                                  			 "export PATH=$SFHOME/bin:$PATH",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-		                        		 "nohup sfDaemon &"];
+		                        		 "nohup sfDaemon -headless"];
 				#end
 			#end
 	    #elseif ($daemon.isWindows())
@@ -200,7 +200,7 @@ sfConfig extends Parallel {
  							 "export SFSECURITY_ON=ENABLED",
 				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
 				 			 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon &"];  
+                        	 			 "nohup sfDaemon -headless"];  
 				#else 
 					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
@@ -218,7 +218,7 @@ sfConfig extends Parallel {
                         	 			 "export PATH=$SFHOME/bin:$PATH",
  				 		 	 "export SFSECURITY_ON=ENABLED",
 						 	 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon &"];  
+                        	 			 "nohup sfDaemon -headless"];  
 				#end
 			#else
 				#if ($dynamicLoadingOn)
@@ -231,7 +231,7 @@ sfConfig extends Parallel {
                         		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
 					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-							 "nohup sfDaemon &"]; 
+							 "nohup sfDaemon -headless"]; 
 				#else
 					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
 								"cd ${daemon.installdir}",
@@ -241,7 +241,7 @@ sfConfig extends Parallel {
                         		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
                                  			 "export PATH=$SFHOME/bin:$PATH",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-	                        			 "nohup sfDaemon &"];
+	                        			 "nohup sfDaemon -headless"];
 				#end
 			#end
 	    #end
