@@ -17,4 +17,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/restlet/client/components.sf"
+package org.smartfrog.services.amazon.s3.test;
+
+import org.smartfrog.test.DeployingTestBase;
+
+/**
+ *
+ * Created 30-Nov-2007 16:46:45
+ *
+ */
+
+public class S3BucketTest extends DeployingTestBase {
+
+    public static final String FILES = "/org/smartfrog/services/amazon/s3/test";
+
+    public S3BucketTest(String name) {
+        super(name);
+    }
+
+    public void testCreateBucket() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testCreateBucket");
+    }
+    public void testDeployGetBucket() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testDeployGetBucket");
+    }
+}

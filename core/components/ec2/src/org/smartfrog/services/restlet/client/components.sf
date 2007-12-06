@@ -18,40 +18,14 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/restlet/datasources/components.sf"
 #include "/org/smartfrog/services/passwords/components.sf"
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 
-LocalDataSource extends Prim {
-  contentType TBD;
-}
 
-
-TextDataSource extends LocalDataSource {
-  sfClass "org.smartfrog.services.restlet.client.TextDataSource";
-  text TBD;
-  contentType MimeTypes:TEXT_PLAIN;
-}
-
-HtmlDataSource extends TextDataSource {
- contentType MimeTypes:TEXT_HTML;
-}
-
-XHtmlDataSource extends TextDataSource {
- contentType MimeTypes:TEXT_XML;
-}
-
-FileDataSource extends LocalDataSource {
-  schema extends Schema {
-    filename extends FilenameType;
-    timeToLive extends Integer;
-  }
-  timeToLive 60000;
-}
-
-
-RemoteResource extends HttpPageSchema {
+RemoteResource extends Prim {
+  schema extends HttpPageSchema;
   sfClass "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl";
   NO_AUTH ""
   HTTP_BASIC "HTTP_BASIC";
@@ -82,6 +56,7 @@ RemoteResource extends HttpPageSchema {
 
   //not yet implemented
   resultXPath "";
+  
 
   //data source
   //datasource ;

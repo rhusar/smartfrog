@@ -38,17 +38,27 @@ S3Resource extends AWSResource {
 
 S3Bucket extends S3Resource {
   name TBD;
-  url host ++ name;
-  headOnStartup true;
-  deleteOnTerminate false;
+  url (host ++ name);
+  startActions [HEAD];
+  livenessActions [HEAD];
 }
 
 /**
  * This does create a bucket on demand
  */
 
-NewS3Bucket extends S3Bucket {
-  putOnStartup true;
-  deleteOnTerminate true;
+TransientS3Bucket extends S3Bucket {
+  startActions [PUT];
+  livenessActions [HEAD];
+  terminateActions [DELETE];
 }
 
+
+
+/**
+ * This does create a bucket on demand
+ */
+
+PersistentS3Bucket extends TransientS3Bucket {
+  terminateActions [];
+}

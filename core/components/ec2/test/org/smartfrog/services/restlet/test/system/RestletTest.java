@@ -17,4 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/restlet/client/components.sf"
+package org.smartfrog.services.restlet.test.system;
+
+import org.smartfrog.test.DeployingTestBase;
+
+/**
+ *
+ * Created 30-Nov-2007 16:46:45
+ *
+ */
+
+public class RestletTest extends DeployingTestBase {
+
+    public RestletTest(String name) {
+        super(name);
+    }
+
+    public void testNothing() throws Throwable {
+        
+    }
+}
