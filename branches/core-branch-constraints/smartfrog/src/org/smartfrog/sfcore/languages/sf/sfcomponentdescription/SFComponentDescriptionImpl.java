@@ -662,10 +662,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     	   
     	   //Get attribute (ie key)
     	   key = sfcd.sfContext().getKey(idx);
+    	
     	   
     	   //Get value
     	   value = sfcd.sfContext().getVal(idx);  	   
-    	      	   
+    	
+    	   //System.out.println("Key:Value, "+key+":"+value);
+    	   
+    	   
     	   //Is value SFCD?
            if (value instanceof SFComponentDescription) {
         	   sfcd = (SFComponentDescription) value;

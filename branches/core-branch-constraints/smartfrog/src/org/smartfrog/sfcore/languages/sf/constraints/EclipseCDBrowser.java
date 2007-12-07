@@ -25,6 +25,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.net.URL;
 
 import javax.swing.Box;
@@ -39,7 +41,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -108,7 +109,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
 			   m_est.setBack(false);
 			   String label = "Attribute setting undone. "+m_label.getText();
     		   m_label.setText(label);
-    		   m_set.setEnabled(true);
+    		   m_set.setEnabled(false);
 		   }
     	   int undo = m_est.getUndo();
 	       if (undo>0){
@@ -163,13 +164,14 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
 	                	m_ecda = (EclipseSolver.EclipseCDAttr) uobj;
 		                if (m_ecda.isSet()) reset_display();
 		                else {
-		                	m_set.setEnabled(true);
+		                	m_set.setEnabled(false);
 		                    m_label.setText(m_ecda.toString());
 		                    m_entry.setEnabled(true);
 		                }	   	                	
 	                } else reset_display();	                
 	             }
 	          });
+	       	       
 	       int mode = TreeSelectionModel.SINGLE_TREE_SELECTION;
 	       tree.getSelectionModel().setSelectionMode(mode);
 
@@ -190,6 +192,14 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
 	       vbox.add(Box.createVerticalGlue());
 	       vbox.add(m_entry); 
 	       vbox.add(Box.createVerticalStrut(10));
+	       
+	       //set up selection mode
+	       m_entry.addKeyListener(new KeyAdapter(){
+	    	   public void keyTyped(KeyEvent event){
+	    		   m_set.setEnabled(true);
+	    		   repaint();
+	    	   } 
+	       });
 		       
 	       JPanel hbox = new JPanel();
 	       hbox.setLayout(new GridLayout(2,3));

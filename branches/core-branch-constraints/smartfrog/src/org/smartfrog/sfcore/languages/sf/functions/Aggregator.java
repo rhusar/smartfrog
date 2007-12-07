@@ -107,7 +107,7 @@ public class Aggregator extends BaseFunction implements MessageKeys {
         		
         		idx = sourcePath.lastIndexOf(':');
         		if (idx>-1){
-        			interPath = sourcePath.substring(0, idx);
+        			interPath = ":"+sourcePath.substring(0, idx);
         			key = sourcePath.substring(idx+1);
         		} else key = sourcePath;
         	} 

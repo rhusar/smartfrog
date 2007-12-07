@@ -26,6 +26,6 @@ Version extends DATA {
   build "001"; // odd numbers are development versions
   status "dev"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP";
-  buildDate "2007-12-04 21:23:43";
+  buildDate "2007-12-07 11:55:05";
 }
 

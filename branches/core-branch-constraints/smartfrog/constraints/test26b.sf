@@ -1,0 +1,44 @@
+#include "/org/smartfrog/functions.sf"
+
+HostTypeBase extends {
+   memory 4;
+   caps [memory];
+}
+HostType0 extends HostTypeBase;
+HostType1 extends HostTypeBase {
+   memory 3;
+}
+
+VMTypeBase extends {
+  allocated VAR;
+  memory 2;
+  reqs [memory];
+}
+VMType0 extends VMTypeBase;
+VMType1 extends VMTypeBase {
+   memory 3;
+}
+
+sfConfig extends ResourceAllocator {
+   providers "hosts:sfArrayTag";
+   provider_caps "hosts:caps";
+   consumers "vms:sfArrayTag";
+   consumer_reqs "vms:reqs";	
+   allocation "vms:allocated";
+
+   hosts extends Array {
+      [sfArrayGenerator] -- extends HostType0;
+      [sfArrayExtent] -- 1;
+      [sfArrayGenerator] -- extends HostType1;
+      [sfArrayExtent] -- 2;
+      sfArrayPrefix "host";
+   }
+
+   vms extends Array {
+      [sfArrayGenerator] -- extends VMType0;
+      [sfArrayExtent] -- 2;
+      [sfArrayGenerator] -- extends VMType1;
+      [sfArrayExtent] -- 2;
+      sfArrayPrefix "vm";
+   }
+}

@@ -1,7 +1,12 @@
 #include "/org/smartfrog/functions.sf"
 
 sfConfig extends {
-  foo1 extends Array{
-     extent ["fred", "clive", "joe"];
+  baz extends Array {
+      sfArrayGenerator extends {
+          bar "hello world";
+      }
+      sfArrayExtent ["fred", "clive", "joe"];
+      sfArrayPrefix "foo";
   }
 }
+

@@ -59,7 +59,7 @@ public class FreeVar implements Copying, Cloneable, Serializable {
 	 * @param cidx
 	 */
 	public void setConsEvalIdx(int cidx){ 
-		LinkResolutionState.getLRS().addUndo(this, this.cidx);
+		LinkResolutionState.getLRS().addUndo(this, LinkResolutionState.g_LRSUndo_PUTFVINFO);
 		this.cidx = cidx;    	
 	}
 	/**
@@ -78,7 +78,6 @@ public class FreeVar implements Copying, Cloneable, Serializable {
 	 * @param cidx
 	 */
 	public void setConsEvalKey(Object ckey){
-		LinkResolutionState.getLRS().addUndo(this, this.ckey);	
 		this.ckey = ckey; 
 	}
 	/**
@@ -87,7 +86,11 @@ public class FreeVar implements Copying, Cloneable, Serializable {
 	 */
 	public Object getConsEvalKey() { return ckey; }
 	
-
+	public void resetConsEvalInfo(){ 
+		this.cidx = -1;
+		this.ckey = null;
+	}
+	
 	/**
 	 * Set that VAR is a subtype of...
 	 * @param attr
@@ -165,6 +168,7 @@ public class FreeVar implements Copying, Cloneable, Serializable {
         try {
         	cloned = super.clone();
         } catch (CloneNotSupportedException cnse){ /*won't happen*/}
+        ((FreeVar)cloned).id = nextId++;
     	return cloned;
     }
 

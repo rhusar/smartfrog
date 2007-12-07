@@ -241,8 +241,6 @@ sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose), Binds)
         hash_set(Binds, sf_evalcidx, CIndex),
         %populate hash table with info (attrs, vals) from current description
         sfsolve_populate_hash(Binds, Attrs, Values, Pref),
-        %need to replace any variable references in vectors
-        sfreplace_refs_in_vec(Binds, CIndex),
         %add suspend goals, range goals, default value goals
         sfsolve_pref_goals(Binds, Pref, Suspends, RangeGoals1, Defs),
         %Further pre-process range goals for component descriptions
@@ -313,8 +311,8 @@ sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
         sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1),
         hash_get(Binds, sf_evalcidx, CIndex),
         %I'm a VAR with a range and a possible default?
-        (Val = sfvar(Var, Range, Def) -> IsVar=yes; 
-                                    (Val = sfvar(Var, Range) -> IsVar=yes; IsVar=no)),
+        (Val = sfvar(Range, Def) -> IsVar=yes; 
+                                    (Val = sfvar(Range) -> IsVar=yes; IsVar=no)),
         %Yes?
         (IsVar==yes ->
                      %Pref2 will house details for adding a suspend goal
@@ -349,34 +347,6 @@ sfterm_variables([]):- false.
 sfterm_variables([H|_]) :- var(H).
 sfterm_variables([sfref(_,_)|_]).
 sfterm_variables([H|T]):- sfterm_variables(H),!; sfterm_variables(T).
-
-%%%
-%sfreplace_refs_in_vec/2: Replaces variable references in vector (list)
-%values.  Uses a "wkr" predicate.
-%%%
-sfreplace_refs_in_vec(Binds, CIndex):-
-        hash_list(Binds, Attrs, Vals),
-        sfreplace_refs_in_vec(Binds, CIndex, Attrs, Vals).
-sfreplace_refs_in_vec(_, _, [], []).
-sfreplace_refs_in_vec(Binds, CIndex, [(CIndex, Attr)|TAs], [(Val, Rem)|TVs]):-!,
-        sfreplace_refs_in_vec_wkr(Binds, Val, ValOut),
-        hash_set(Binds, (CIndex, Attr), (ValOut, Rem)),
-        sfreplace_refs_in_vec(Binds, CIndex, TAs, TVs).
-sfreplace_refs_in_vec(Binds, CIndex, [_|TAs], [_|TVs]):-
-        sfreplace_refs_in_vec(Binds, CIndex, TAs, TVs).
-
-%%%
-%sfreplace_refs_in_vec_wkr/3: Does the work for the aforementioned
-% predicate.  For sfref, we retrieve the actual Var from the hash table.
-%%%     
-sfreplace_refs_in_vec_wkr(_, Var, Var):-var(Var),!.
-sfreplace_refs_in_vec_wkr(_, [], []):-!.
-sfreplace_refs_in_vec_wkr(Binds, [HIn|TIn], [HOut|TOut]):- 
-        sfreplace_refs_in_vec_wkr(Binds, HIn, HOut), !, 
-        sfreplace_refs_in_vec_wkr(Binds, TIn, TOut).
-sfreplace_refs_in_vec_wkr(Binds, sfref(RefCI, RefAttr), Out):- !, 
-                          hash_get(Binds, (RefCI, RefAttr), (Out, _)).
-sfreplace_refs_in_vec_wkr(_, Val, Val). 
 
 %%%
 %sfsolve_extract_var_range/4: Constructs a range goal for Var on the
@@ -424,13 +394,28 @@ sfsolve_preprocess(_,_,_,[],[]).
 sfsolve_preprocess(Binds, CIndex, Attrs, [HG|TG], [HGOut|TGOut]):-
         hash_get(Binds, sf_evalcidx, CIndex),
         (var(HG) -> HGOut=HG;
-        (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut, _)) -> true; HGOut=HG);
-                     HG=..[F|Args], 
+        (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut1, _)) -> 
+                         sfsolve_sfref_replace(Binds, HGOut1, HGOut); HGOut=HG);
+                     HG=..[F|Args],
+                         (HG=sfref(RefCI, RefAttr)-> hash_get(Binds, (RefCI, RefAttr), (HGOut, _));
                          (F==subtype -> sfmapop_(F, FOut), Args1=Args, Lib=none;
-                                        sfmapop(Binds, CIndex, F, Args, FOut, Args2, Lib), 
+                                        sfmapop(Binds, CIndex, F, Args,
+                                                FOut, Args2, Lib),
                                         sfsolve_preprocess(Binds, CIndex, Attrs, Args2, Args1)),     
-                     (Lib==none -> HGOut=..[FOut|Args1]; HGOut1=..[FOut|Args1], HGOut=Lib:HGOut1))),
+                     (Lib==none -> HGOut=..[FOut|Args1]; HGOut1=..[FOut|Args1], HGOut=Lib:HGOut1)))),
     sfsolve_preprocess(Binds, CIndex, Attrs, TG, TGOut).
+
+
+
+sfsolve_sfref_replace(_, In, In) :- var(In), !.
+sfsolve_sfref_replace(_, [], []). 
+sfsolve_sfref_replace(Binds, [HIn|TIn], [HOut|TOut]):- 
+        sfsolve_sfref_replace(Binds, HIn, HOut),
+        sfsolve_sfref_replace(Binds, TIn, TOut).
+sfsolve_sfref_replace(Binds, sfref(RefCI, RefAttr), Out) :-
+        hash_get(Binds, (RefCI, RefAttr), (Out, _)).
+sfsolve_sfref_replace(_, In, In).
+
 
 %%%
 %sfpossenumop/1: Is it possible that the argument is an operator for
@@ -466,7 +451,12 @@ sfmapnotenumop(alldifferent, alldifferent, ic).
 %sfobtaintype/4: Obtains the type of a range from its constituents.
 %%%
 sfobtaintype(Binds, CIndex, Arg, Type) :-
-        hash_get(Binds, (CIndex, Arg), (_, _, Type, _)), !.
+        hash_get(Binds, (CIndex, Arg), (Val, _, Type1, _)), !,
+        (is_list(Val) -> Val=[H|_], 
+                       sfobtaintype(Binds, CIndex, H, Type);
+                       Type=Type1).
+sfobtaintype(Binds, _, sfref(CIndex, Attr), Type) :- !,
+        sfobtaintype(Binds, CIndex, Attr, Type).
 sfobtaintype(_, _, Arg, enum) :-
         atom(Arg), !.
 sfobtaintype(Binds, CIndex, [Arg|_], Type) :- !,

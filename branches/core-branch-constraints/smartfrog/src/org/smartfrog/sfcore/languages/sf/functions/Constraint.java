@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.functions.Aggregator.AggregatorReverseSourcePath;
 import org.smartfrog.sfcore.languages.sf.functions.Aggregator.AggregatorSourcePath;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
+import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * Defines the Constraint function.
@@ -104,8 +105,12 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		    	String val_s = (String) val;
 			 
 		    	Vector ac_values = Aggregator.extractArgumentsFromSource(comp, suff, new AggregatorSourcePath(val_s));	
-			//System.out.println(ac_values.toString());
-		    	comp.sfContext().put("sfAggregatedConstraintVals"+suff, ac_values);
+		    	
+		    	String vals_key = "sfAggregatedConstraintVals"+suff;
+		    	
+		    	//System.out.println(ac_values.toString());
+		    	
+		    	comp.sfContext().put(vals_key, ac_values);
 			}
 			LinkResolutionState.setConstraintsShouldUndo(false);
     	}
@@ -138,10 +143,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    		}
     		} catch (Exception e){}
     	}
-    	    	
-    	//If no goals, nor other attributes, nor free vars, nothing to do... 
-    	if (goal_attrs.size()==0 && autos.size()==0 && !isuservars) return null;
-    	
+    	    	    	
     	//Sort the goal in lex order
     	Collections.sort(goal_attrs);   	
     	
@@ -150,6 +152,9 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	while (goal_iter.hasNext()) {
     		goal.add(orgContext.get(goal_iter.next()));
     	}    	
+    	
+    	//Add empty goal if no goal...
+    	if (goal_attrs.size()==0) goal.add("true");
     	
     	//Solve goal
     	try {
@@ -260,7 +265,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     void replace(ComponentDescription source_cd, String interPath, String key, Object val) throws SmartFrogFunctionResolutionException{
     	ComponentDescription refined_cd;
     	try {
-    		refined_cd =  (ComponentDescription) source_cd.sfResolve(interPath);
+    		refined_cd =  (ComponentDescription) source_cd.sfResolve(Reference.fromString(interPath));
     		refined_cd.sfContext().put(key, val);		
     	} catch (SmartFrogResolutionException e){ 
     		throw new SmartFrogFunctionResolutionException("Can't replace attributes as part of AggregatedConstraint, source:"+source_cd+" interPath:"+interPath+", key:"+key+", value:"+val); 

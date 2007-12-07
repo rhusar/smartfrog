@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
@@ -49,28 +50,90 @@ public class Array extends BaseFunction implements MessageKeys {
     	String prefix_s = (String)prefix;
      	
     	Object generator = orgContext.get("sfArrayGenerator");
-    	if (generator == null) throw new SmartFrogFunctionResolutionException("Generator in Array: "+comp+" should be a ComponentDescription or SFApplyReference");
-    	
     	Object extent = orgContext.get("sfArrayExtent");
-    	if (extent!=null && extent instanceof Integer){
-    		int ext_int = ((Integer)extent).intValue();
-    		for (int i=0; i<ext_int; i++) putArrayEntry(comp, prefix_s+i, generator, new Integer(i));
-    	} else if (extent!=null && extent instanceof Vector){
-    		Vector ext_vec = (Vector)extent;
-    		for (int i=0; i<ext_vec.size(); i++) {
-    			Object suff = ext_vec.get(i);
-    			if (!(suff instanceof String)) throw new SmartFrogFunctionResolutionException("Vector extent in Array: "+comp+" should be comprised of Strings");
-    			putArrayEntry(comp, prefix_s+suff, generator, (String) suff);
+    	
+    	int idx=0;
+    	Vector vec_extent = new Vector();
+    	Vector gen_exts = new Vector();
+    	
+    	if (extent instanceof Vector) {
+    		Vector extent_v = (Vector) extent;
+    		for (int i=0;i<extent_v.size();i++) vec_extent.add(extent_v.get(i)); 
+    	}
+
+    	LinkResolutionState.setConstraintsShouldUndo(true);
+    	
+    	//Do the standard generator and extent
+    	idx = processGeneratorExtent(orgContext, idx, comp, prefix_s, generator, extent);
+
+    	if (extent!=null) {
+    		orgContext.remove("sfArrayGenerator");
+    		orgContext.remove("sfArrayExtent");
+    	}
+    	
+    	generator = extent = null;
+    	
+    	//Now do the tagged versions...
+    	Enumeration attr_enum = orgContext.keys();
+    	while (attr_enum.hasMoreElements()){
+    		Object attr = attr_enum.nextElement();
+    		if (generator!=null){
+    			try {
+    				if (orgContext.sfContainsTag(attr, "sfArrayExtent")){
+    					gen_exts.add(attr);
+    					extent = orgContext.get(attr);
+    			    	if (extent instanceof Vector) {
+    			    		Vector extent_v = (Vector) extent;
+    			    		for (int i=0;i<extent_v.size();i++) vec_extent.add(extent_v.get(i)); 
+    			    	}    					
+    					idx = processGeneratorExtent(orgContext, idx, comp, prefix_s, generator, extent);
+    					generator = extent = null;
+    				}
+    			} catch (Exception e){/*shouldn't happen*/}
+    		} else {
+    			try {
+    				if (orgContext.sfContainsTag(attr, "sfArrayGenerator")){
+    					gen_exts.add(attr);
+    					generator = orgContext.get(attr);
+    				}
+    			} catch (Exception e){/*shouldn't happen*/}    			
     		}
-    	} else throw new SmartFrogFunctionResolutionException("Extent in Array: "+comp+" should be an Integer or a Vector");
+    	}
+    	
+    	//Remove extents and gens
+    	for (int i=0;i<gen_exts.size();i++) orgContext.remove(gen_exts.get(i));     	
+
+    	//Write aggregated extent
+    	if (idx>0) orgContext.put("sfArrayExtent", new Integer(idx));
+    	else if (vec_extent.size()>0) orgContext.put("sfArrayExtent", vec_extent);
     	
     	//Set sfFunctionClass to "done"
-    	LinkResolutionState.setConstraintsShouldUndo(true);
     	orgContext.put("sfFunctionClassStatus", "done");
-    	orgContext.remove("sfArrayGenerator");
+    	
+    	//remove
+    	
     	LinkResolutionState.setConstraintsShouldUndo(false);
     	
         return null;
+    }
+    
+    int processGeneratorExtent(Context orgContext, int idx, ComponentDescription comp, String prefix_s, 
+    		Object generator, Object extent) throws SmartFrogFunctionResolutionException {
+    	if (extent!=null){
+    		if (extent instanceof Integer){
+        		int ext_int = ((Integer)extent).intValue() + idx;
+        		for (int i=idx; i<ext_int; i++) putArrayEntry(comp, prefix_s+i, generator, new Integer(i));
+        		idx=ext_int;
+        	} else if (extent instanceof Vector){
+        		Vector ext_vec = (Vector)extent;
+        		for (int i=0; i<ext_vec.size(); i++) {
+        			Object suff = ext_vec.get(i);
+        			if (!(suff instanceof String)) throw new SmartFrogFunctionResolutionException("Vector extent in Array: "+comp+" should be comprised of Strings");
+        			putArrayEntry(comp, prefix_s+suff, generator, (String) suff);
+        		}
+        	} else throw new SmartFrogFunctionResolutionException("Extent in Array: "+comp+" should be an Integer or a Vector");    	
+    	} 
+    	return idx;
     }
     
     void putArrayEntry(ComponentDescription orgComp, String el, Object generator, Object el_idx) throws SmartFrogFunctionResolutionException{
@@ -78,18 +141,16 @@ public class Array extends BaseFunction implements MessageKeys {
     	ComponentDescription generator_cd;
     	Object generator_copy;
     	
-    	if (generator instanceof ComponentDescription) {
+    	if (generator!=null && generator instanceof ComponentDescription) {
     		generator_copy = generator_cd = (ComponentDescription) ((ComponentDescription) generator).copy();
-    	} else if (generator instanceof SFApplyReference) {
+    	} else if (generator!=null && generator instanceof SFApplyReference) {
     		generator_copy = ((SFApplyReference) generator).copy();
     		generator_cd = ((SFApplyReference)generator_copy).getComponentDescription();
     	} else throw new SmartFrogFunctionResolutionException("Generator in Array: "+orgComp+" should be a ComponentDescription or SFApplyReference");
     	
     	generator_cd.sfContext().put("sfArrayIndex", el_idx);
     	generator_cd.sfContext().put("sfArrayTag", el);
- 	    LinkResolutionState.setConstraintsShouldUndo(true);
  	    orgComp.sfContext().put(el, generator_copy);   
-		LinkResolutionState.setConstraintsShouldUndo(false);
     }
     
 }

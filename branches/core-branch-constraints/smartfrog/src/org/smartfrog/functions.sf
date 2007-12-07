@@ -158,9 +158,6 @@ AggregatedConstraint extends Constraint {
 
 Array extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
-     sfArrayExtent 3;
-     sfArrayPrefix "foo";
-     sfArrayGenerator extends {}
 }
 
 Aggregator extends Function {

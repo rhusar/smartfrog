@@ -232,14 +232,10 @@ public class LinkResolutionState {
     /**
      * Undo action: put, for putting values for key into FreeVars
      */
-    public static final int g_LRSUndo_PUTFVKEY = 0x1;
+    public static final int g_LRSUndo_PUTFVINFO = 0x1;
 
-    /**
-     * Undo action: put, for putting values for idx into FreeVars
-     */
-    public static final int g_LRSUndo_PUTFVIDX = 0x2;
     
-    public static final int g_LRSUndo_PUTFVTYPESTR = 0x3;
+    public static final int g_LRSUndo_PUTFVTYPESTR = 0x2;
     
     
     /**
@@ -266,9 +262,7 @@ public class LinkResolutionState {
     	int type;
     	
     	FreeVar fv;
-    	
-    	int idx;
-    	
+    	    	
     	/**
     	 * Constructs single undo action for g_LRSUndo_PUT
     	 * @param type
@@ -279,18 +273,7 @@ public class LinkResolutionState {
     	LRSUndoRecord(Context ctxt, Object key, Object value){
     		this.type = g_LRSUndo_PUT; this.ctxt=ctxt; this.key=key; this.value=value;
     	}
-    	
-    	/**
-    	 * Constructs single undo action for g_LRSUndo_PUTFVKEY
-    	 * @param type
-    	 * @param ctxt
-    	 * @param key
-    	 * @param value
-    	 */
-    	LRSUndoRecord(FreeVar fv, Object key){
-    		this.type = g_LRSUndo_PUTFVKEY; this.fv=fv; this.key=key;
-    	}
-    	
+    	    	
     	/**
     	 * Constructs single undo action for g_LRSUndo_PUTFVIDX
     	 * @param type
@@ -298,20 +281,10 @@ public class LinkResolutionState {
     	 * @param key
     	 * @param value
     	 */
-    	LRSUndoRecord(FreeVar fv, int idx){
-    		this.type = g_LRSUndo_PUTFVIDX; this.fv=fv; this.idx=idx;
+    	LRSUndoRecord(FreeVar fv, int type){
+    		this.type = type; this.fv=fv; 
     	}
     	
-    	/**
-    	 * Constructs single undo action for g_LRSUndo_PUTFVIDX
-    	 * @param type
-    	 * @param ctxt
-    	 * @param key
-    	 * @param value
-    	 */
-    	LRSUndoRecord(FreeVar fv){
-    		this.type = g_LRSUndo_PUTFVTYPESTR; this.fv=fv; 
-    	}
     	
     	/**
     	 * Does the undo!
@@ -321,8 +294,7 @@ public class LinkResolutionState {
     		switch (type){
     		case g_LRSUndo_PUT: if (value!=null) ctxt.put(key, value); 
     		                    else ctxt.remove(key); break;
-    		case g_LRSUndo_PUTFVKEY: fv.setConsEvalKey(key); break;
-    		case g_LRSUndo_PUTFVIDX: fv.setConsEvalIdx(idx); break;
+    		case g_LRSUndo_PUTFVINFO: fv.resetConsEvalInfo(); break;
     		case g_LRSUndo_PUTFVTYPESTR: fv.clearTyping(); break;
     		}		
     	}
@@ -403,7 +375,6 @@ public class LinkResolutionState {
 		currentLHRecord.addUndo(new LRSUndoRecord(ctxt, key, value));
 	}
 		
-
 	/**
 	 * Add undo action to current lhr
 	 * @param type
@@ -411,32 +382,9 @@ public class LinkResolutionState {
 	 * @param key
 	 * @param value
 	 */
-	public void addUndo(FreeVar fv, Object key){
-		currentLHRecord.addUndo(new LRSUndoRecord(fv, key));
-	}
-
-	/**
-	 * Add undo action to current lhr
-	 * @param type
-	 * @param ctxt
-	 * @param key
-	 * @param value
-	 */
-	public void addUndo(FreeVar fv, int idx){
-		currentLHRecord.addUndo(new LRSUndoRecord(fv, idx));
-	}
-	
-	/**
-	 * Add undo action to current lhr
-	 * @param type
-	 * @param ctxt
-	 * @param key
-	 * @param value
-	 */
-	public void addUndo(FreeVar fv){
-		currentLHRecord.addUndo(new LRSUndoRecord(fv));
-	}
-	
+	public void addUndo(FreeVar fv, int type){
+		currentLHRecord.addUndo(new LRSUndoRecord(fv, type));
+	}	
 	
 	public void setTyping(String attr, Vector types){
 		int last_cidx = constraintEvalHistory.size()-1;
@@ -446,7 +394,7 @@ public class LinkResolutionState {
 			FreeVar fv = (FreeVar) val;
 			fv.setTyping(attr, types);
 			//need to add an undo record for the typing...
-			addUndo(fv);
+			addUndo(fv, g_LRSUndo_PUTFVTYPESTR);
 		}
 	}
 	

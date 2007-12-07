@@ -303,13 +303,12 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	    				else if (range instanceof Vector) range_s = mapValueJE(range);
 	    				else throw new SmartFrogResolutionException("Invalid range specifier for FreeVar: "+v);
 	    			}
+	    			
 	    			Object defVal = fv.getDefVal();
-	    			String defVal_s = "";
-	    			if (defVal!=null) defVal_s=", "+defVal.toString();
-	    			return "sfvar("+v.toString()+", "+range_s+defVal_s+")";
-	    		} else {
-	    			return "sfref("+fv.getConsEvalIdx()+", "+fv.getConsEvalKey()+")";
-	    		}
+	    			String defVal_s = (defVal!=null? defVal_s=", "+defVal.toString() : "");
+	    			return "sfvar("+range_s+defVal_s+")";
+	    			
+	    		} else return "sfref("+fv.getConsEvalIdx()+", "+fv.getConsEvalKey()+")";
     		} else {
     			return v.toString();
     		}
