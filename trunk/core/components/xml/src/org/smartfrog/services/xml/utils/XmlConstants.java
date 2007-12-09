@@ -31,23 +31,23 @@ public interface XmlConstants {
      * parser of choice is Apache Xerces; fallback is Sun xerces. {@value}
      */
 
-    final static String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
+    static final String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
     /**
      * what ships with Java1.5 {@value}
      */
-    final static String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    static final String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
 
     static final String FEATURE_XERCES_XSD = "http://apache.org/xml/features/validation/schema";
 
-    final static String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
-    final static String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
-    final static String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
-    final static String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+    static final String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
+    static final String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
+    static final String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
+    static final String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
     /**
      * ask for secure XML parsing
      * {@value}
      */
-    final static String FEATURE_JAXP_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
+    static final String FEATURE_JAXP_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
 
     public static final String PROPERTY_XERCES_SCHEMA_LOCATION =
             "http://apache.org/xml/properties/schema/external-schemaLocation";
@@ -70,5 +70,5 @@ public interface XmlConstants {
     public static final String DOM_PARSER_JAVA15 =
             "com.sun.org.apache.xerces.internal.dom.DOMImplementationSourceImpl";
 
-    public static final String DOM3_PARSER_LIST=DOM_PARSER_XERCES+" "+DOM_PARSER_JAVA15;
+    public static final String DOM3_PARSER_LIST=DOM_PARSER_XERCES+ ' ' +DOM_PARSER_JAVA15;
 }

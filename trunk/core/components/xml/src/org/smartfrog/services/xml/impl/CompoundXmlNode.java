@@ -104,7 +104,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException for smartfrog problems, and for caught
      *                            XMLExceptions
      */
@@ -116,8 +116,8 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      * Validate the XML, post-generation. Default implementation checks the
      * <code>valid</code> attribute and fails if it is false.
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public void validate() throws SmartFrogException,
             RemoteException {
@@ -128,9 +128,8 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
      * After calling the superclass (and so deploying all our children), we
      * generate the XML
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {

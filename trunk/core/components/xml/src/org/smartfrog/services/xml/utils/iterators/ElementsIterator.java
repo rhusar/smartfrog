@@ -56,7 +56,7 @@ public class ElementsIterator implements Iterator<Element>,
      * return each element in the underlying collection exactly once.
      *
      * @return the next element in the iteration.
-     * @throws java.util.NoSuchElementException
+     * @throws NoSuchElementException
      *          iteration has no more elements.
      */
     public Element next() {

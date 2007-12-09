@@ -42,7 +42,7 @@ public class XmlProcessingInstructionImpl extends SimpleXmlNode
     /**
      * create a node of the appropriate type. This is called during deployment;
      *
-     * @return a Node of type {@link nu.xom.ProcessingInstruction}
+     * @return a Node of type {@link ProcessingInstruction}
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions     */

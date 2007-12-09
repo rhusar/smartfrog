@@ -43,7 +43,7 @@ public class XomUtils {
      * Save Xom to a buffer
      * @param document document to save
      * @return the document serialized to a byte array
-     * @throws java.io.IOException in very unlikely circumstaances
+     * @throws IOException in very unlikely circumstaances
      */
     public static byte[] xomToBuffer(Document document) throws IOException {
         ByteArrayOutputStream out=new ByteArrayOutputStream();

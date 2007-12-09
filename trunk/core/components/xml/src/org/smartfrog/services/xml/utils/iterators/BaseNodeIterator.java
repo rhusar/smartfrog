@@ -38,10 +38,10 @@ import java.util.NoSuchElementException;
 public class BaseNodeIterator <E extends Node> implements Iterator<E>,
         Iterable<E> {
 
-    LinkedList l;
-    ParentNode parent;
+    private LinkedList l;
+    private ParentNode parent;
 
-    int index = 0;
+    private int index = 0;
 
     public BaseNodeIterator(ParentNode parent) {
         this.parent = parent;

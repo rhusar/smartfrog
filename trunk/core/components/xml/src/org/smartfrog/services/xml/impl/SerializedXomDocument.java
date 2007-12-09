@@ -24,6 +24,8 @@ import org.smartfrog.services.xml.impl.codecs.XmlTextCodec;
 import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -57,7 +59,7 @@ public class SerializedXomDocument implements Serializable {
      * @param out output stream
      * @throws IOException if writing fails
      */
-    private void writeObject(java.io.ObjectOutputStream out) throws
+    private void writeObject(ObjectOutputStream out) throws
             IOException {
         codec.writeObject(document,out);
     }
@@ -69,7 +71,7 @@ public class SerializedXomDocument implements Serializable {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void readObject(java.io.ObjectInputStream in) throws
+    private void readObject(ObjectInputStream in) throws
             IOException, ClassNotFoundException {
         document = codec.readObject(in);
     }

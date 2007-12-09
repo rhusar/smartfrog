@@ -170,7 +170,7 @@ public final class XmlNodeHelper implements XmlNode {
             return false;
         }
 
-        final XmlNodeHelper xmlNodeHelper = (XmlNodeHelper) o;
+        XmlNodeHelper xmlNodeHelper = (XmlNodeHelper) o;
 
         if (node != null ?
                 !node.equals(xmlNodeHelper.node) :

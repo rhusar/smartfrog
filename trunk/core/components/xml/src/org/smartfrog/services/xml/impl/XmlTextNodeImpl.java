@@ -42,7 +42,7 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
     /**
      * create a node of the appropriate type. This is called during deployment;
      * Requires {@link #ATTR_TEXT} to be set
-     * @return a Node of type {@link nu.xom.Text}
+     * @return a Node of type {@link Text}
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException For smartfrog problems, and for caught
      *                            XMLExceptions
