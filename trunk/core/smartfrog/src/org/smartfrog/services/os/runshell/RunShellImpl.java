@@ -630,12 +630,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         int additionalParam = 3;
 
-        cmd = new Vector<String>(attributes.size() + additionalParam);
+        cmd = new Vector<String>(attributes.size() + cmdGeneral.length + additionalParam);
 
         //Cleaning empty args in the array
-        for (int a = 0; a < cmdGeneral.length; a++) {
-            if (!isEmptyArg(cmdGeneral[a])) {
-                cmd.add(cmdGeneral[a]);
+        for (String aCmdGeneral : cmdGeneral) {
+            if (!isEmptyArg(aCmdGeneral)) {
+                cmd.add(aCmdGeneral);
             }
         }
 
@@ -645,9 +645,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         if (!attributes.isEmpty()) {
             attributes.trimToSize();
-
-            Iterator iter = attributes.iterator();
-
             for (Object attribute : attributes) {
                 String attr = (String) attribute;
                 if (!isEmptyArg(attr)) {
