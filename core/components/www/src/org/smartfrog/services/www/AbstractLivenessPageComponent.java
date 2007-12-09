@@ -91,9 +91,9 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
         Vector mimeTypes = sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
         livenessPage.setMimeTypes(mimeTypes);
         livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
-                livenessPage.getMinimumResponseCode(), false));
+                0,true));
         livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
-                livenessPage.getMaximumResponseCode(), false));
+                0, true));
         livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
                 livenessPage.getFollowRedirects(), false));
         livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,

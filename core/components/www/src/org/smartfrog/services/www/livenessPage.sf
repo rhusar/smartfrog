@@ -32,33 +32,8 @@ For more information: www.smartfrog.org
   * Include the core smartfrog components.
   */
  #include "/org/smartfrog/components.sf"
-
-/**
- Popular Mime type constants
-
- */
-
-
-MimeTypes extends {
-
-  APPLICATION_ATOM_XML "application/atom+xml";
-  APPLICATION_JSON "application/json";
-  APPLICATION_RDF_XML "application/rdf+xml";
-  APPLICATION_WWW_FORM "application/x-www-form-urlencoded";
-  APPLICATION_XHTML_XML "application/xhtml+xml";
-  APPLICATION_XML  "application/xml";
-  TEXT_PLAIN "text/plain"
-  TEXT_CSS "text/css"
-  TEXT_HTML "text/html"
-  TEXT_XML "text/xml"
-  IMAGE_BMP "image/bmp";
-  IMAGE_GIF "image/gif";
-  IMAGE_ICON "image/x-icon";
-  IMAGE_JPEG "image/jpeg";
-  IMAGE_PNG "image/png";
-  IMAGE_SVG "image/svg+xml";
-}
-
+ #include "/org/smartfrog/services/www/httpcodes.sf"
+ #include "/org/smartfrog/services/www/mimetypes.sf"
 
  /**
   * for liveness pages you need to give either the url, or the
@@ -100,12 +75,11 @@ MimeTypes extends {
      headers extends Vector;
 
      //response code below which the fetch is an error
-     minimumResponseCode extends OptionalInteger;
+     minimumResponseCode extends Integer;
      //error code above which an error has occurred,
-     //default is 299.
-     maximumResponseCode extends OptionalInteger;
+     maximumResponseCode extends Integer;
      //flag to follow redirects
-     followRedirects extends OptionalBoolean;
+     followRedirects extends Boolean;
 
  }
 
@@ -121,7 +95,7 @@ MimeTypes extends {
 
      //flag to set if you want any error text fetched from
      //the remote site. This is good for diagnostics.
-     fetchErrorText extends OptionalBoolean;
+     fetchErrorText extends Boolean;
 
      //check frequency. This is the number of pings between checks
      //and so lets us probe less often than normal.
@@ -129,7 +103,7 @@ MimeTypes extends {
      checkFrequency extends OptionalInteger;
 
      //flag to say that the check is on/off; useful during development
-     enabled extends OptionalBoolean;
+     enabled extends  Boolean;
 
      //check on startup
      checkOnStartup extends Boolean;
@@ -147,8 +121,8 @@ MimeTypes extends {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
      fetchErrorText true;
-     maximumResponseCode 299;
-     minimumResponseCode 200;
+     minimumResponseCode HttpCodes:START_2XX;
+     maximumResponseCode HttpCodes:END_2XX;
      enabled true;
      followRedirects true;
      checkFrequency 1000;
