@@ -26,7 +26,7 @@
   -->
 
   <description>
-    Build file for the JUnit tests.
+    Build file for the JUnit component.
   </description>
 
 
@@ -36,13 +36,11 @@
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true"/>
 
-  <property name="root.dir" location="../.."/>
-
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -58,7 +56,7 @@
         <sf-system-test-junit>
           <batchtest todir="${test.data.dir}" unless="testcase">
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/**/test/*Test.class"/>
+              <include name="org/smartfrog/*/test/**/*Test.class"/>
               <exclude name="**/LoggingChainListenerTest.class" unless="run.failing.tests" />
               <!--these are the tests that we expect to fail, because they are called in the test runs-->
               <exclude name="org/smartfrog/**/test/targets/*Test.class"/>

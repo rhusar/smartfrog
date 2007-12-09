@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
-import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
+import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
 import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.io.File;
