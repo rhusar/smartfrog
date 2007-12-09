@@ -23,7 +23,6 @@ package org.smartfrog.services.xunit.listeners.xml;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
-import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -201,22 +200,22 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             //set the absolute path of the file
             log.debug(
                     "Setting " +
-                    XmlListener.ATTR_FILE +
+                    FileListener.ATTR_FILE +
                     "attribute on test suite");
-            ((Prim)suite).sfReplaceAttribute(XmlListener.ATTR_FILE,
+            ((Prim)suite).sfReplaceAttribute(FileListener.ATTR_FILE,
                     destpath);
         }
 
         try {
             Date start = new Date(timestamp);
-            OneHostXMLListener xmlLog;
-            xmlLog = createNewSingleHostListener(hostname, 
+            FileListener fileLog;
+            fileLog = createNewSingleHostListener(hostname,
                 destFile, 
                 processname, 
                 suitename, 
                 start);
-            xmlLog.open();
-            return xmlLog;
+            fileLog.open();
+            return fileLog;
         } catch (IOException e) {
             throw SmartFrogException.forward("Failed to open ", e);
         }
@@ -233,7 +232,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @return a new XML listener
      * @throws IOException if the file cannot be created
      */
-    protected abstract OneHostXMLListener createNewSingleHostListener(String hostname,
+    protected abstract FileListener createNewSingleHostListener(String hostname,
                                                                       File destFile,
                                                                       String processname,
                                                                       String suitename,

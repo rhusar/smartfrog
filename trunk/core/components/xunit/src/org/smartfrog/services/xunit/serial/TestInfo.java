@@ -223,7 +223,7 @@ public final class TestInfo implements Serializable, Cloneable {
     }
 
     /**
-     * get the duration of the call
+     * get the duration of the call in milliseconds
      * @return the duration (start time - end time)
      */
     public long getDuration() {

@@ -33,7 +33,7 @@ import java.rmi.RemoteException;
  * All events are otherwise lost.
  */
 
-public class StatisticsTestListenerImpl extends AbstractListenerImpl implements StatisticsTestListener{
+public class StatisticsTestListenerImpl extends AbstractListenerImpl implements StatisticsTestListener {
 
     public StatisticsTestListenerImpl() throws RemoteException {
     }
@@ -63,15 +63,6 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
 
 
     /**
-     * end this test suite. After calling this, caller should discard
-     * all references; they may no longer be valid.
-     * <i>No further methods may be called</i>
-     */
-    public void endSuite() {
-
-    }
-
-    /**
      * An error occurred.
      */
     public void addError(TestInfo test) {
@@ -94,12 +85,7 @@ public class StatisticsTestListenerImpl extends AbstractListenerImpl implements 
 
     /**
      * A test started.
-     */
-    /**
-     *
-     * @param test
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @param test test info
      */
     public void startTest(TestInfo test) {
         stats.incTestsStarted();

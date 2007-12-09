@@ -20,7 +20,9 @@
 package org.smartfrog.services.xunit.listeners.xml;
 
 import org.smartfrog.services.xunit.base.TestListener;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -31,7 +33,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface XmlListener extends TestListener {
+public interface FileListener extends TestListener {
 
     /**
      * the name of the file that is used to store the XML output of the test
@@ -45,4 +47,36 @@ public interface XmlListener extends TestListener {
      * @throws RemoteException network trouble
      */
     String getFilename() throws RemoteException;
+    
+    /**
+     * Open the listener. This can be a no-op, or it can open a file and throw
+     * An exception on demand
+     * @throws IOException for IO trouble
+     * @throws RemoteException network trouble
+     */
+    void open() throws IOException, RemoteException;
+
+
+    /**
+     * close the file.
+     * This call  must be harmless if the file is already closed.
+     *
+     * Note: some implementations may choose to delay saving the file until
+     * this event. That is OK. just don't take too long.
+     *
+     * @throws IOException IO trouble
+     * @throws RemoteException network trouble
+     * @throws SmartFrogException for anything else.
+     */
+   void close() throws IOException, RemoteException, SmartFrogException;
+
+
+    /**
+     * test for the file being open
+     *
+     * @return true iff the file is not null
+     * @throws RemoteException network trouble
+     */
+    boolean isOpen()  throws RemoteException;
+
 }
