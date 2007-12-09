@@ -41,13 +41,12 @@
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <property name="system.tests" value="true" />
-  <property name="root.dir" location="../.."/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
   
   
 

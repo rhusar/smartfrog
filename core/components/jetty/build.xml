@@ -49,8 +49,7 @@ For more information: www.smartfrog.org
   <echo message="= ${ant.project.name}"/>
   
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
   
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
   <property name="deploy.sf" value="${example.path}/example1.sf"/>
