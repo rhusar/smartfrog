@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
-import org.smartfrog.services.xunit.listeners.xml.XmlListener;
+import org.smartfrog.services.xunit.listeners.xml.FileListener;
 import org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.prim.Prim;
@@ -65,7 +65,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
                 application.sfResolve(TEST_SUITE_COMPONENT_NAME,
                         (Prim) null,
                         true);
-        String output = tests.sfResolve(XmlListener.ATTR_FILE,
+        String output = tests.sfResolve(FileListener.ATTR_FILE,
                 "",
                 true);
         File xmlfile = new File(output);
