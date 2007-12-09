@@ -29,7 +29,7 @@ import java.util.Iterator;
 
 public class IteratorRelay<T> implements Iterable<T>{
 
-    Iterator<T> iterator;
+    private Iterator<T> iterator;
 
     public IteratorRelay(Iterator<T> iterator) {
         this.iterator = iterator;

@@ -55,7 +55,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
      *
      * @throws RemoteException In case of network/rmi error
      */
-    public SimpleXmlNode() throws RemoteException {
+    protected SimpleXmlNode() throws RemoteException {
     }
 
     /**

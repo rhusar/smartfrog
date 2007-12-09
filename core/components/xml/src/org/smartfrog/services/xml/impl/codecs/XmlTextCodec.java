@@ -74,7 +74,7 @@ public class XmlTextCodec implements XmlWireCodec {
      *
      * @param document document to write
      * @param out      output stream
-     * @throws IOException
+     * @throws IOException for output problems
      */
     public void writeObject(Document document, ObjectOutputStream out)
             throws IOException {

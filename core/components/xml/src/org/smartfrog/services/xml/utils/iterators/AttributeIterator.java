@@ -32,9 +32,9 @@ import java.util.NoSuchElementException;
 public class AttributeIterator implements Iterator<Attribute>,
         Iterable<Attribute> {
 
-    Element element;
-    int index=0;
-    Attribute currentAttribute;
+    private Element element;
+    private int index=0;
+    private Attribute currentAttribute;
 
     public AttributeIterator(Element element) {
         this.element = element;

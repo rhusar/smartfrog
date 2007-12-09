@@ -77,7 +77,7 @@ public class DomToXom {
      */
     public Document convert(org.w3c.dom.Document dom) throws ParsingException {
         try {
-            byte bytes[]=convertToBytes(dom);
+            byte[] bytes=convertToBytes(dom);
             ByteArrayInputStream r=new ByteArrayInputStream(bytes);
             Document result = builder.build(r);
             return result;

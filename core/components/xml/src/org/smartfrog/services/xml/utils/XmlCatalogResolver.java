@@ -140,7 +140,7 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
      * @param resource resource to load
      * @param href     href for relative URI resolution
      * @return source
-     * @throws java.io.IOException on trouble
+     * @throws IOException on trouble
      */
     protected Source loadStreamSource(String resource, String href)
             throws IOException {
@@ -174,9 +174,9 @@ public class XmlCatalogResolver implements URIResolver, EntityResolver {
      * @return An InputSource object describing the new input source, or null to
      *         request that the parser open a regular URI connection to the
      *         system identifier.
-     * @throws org.xml.sax.SAXException Any SAX exception, possibly wrapping another
+     * @throws SAXException Any SAX exception, possibly wrapping another
      *                      exception.
-     * @throws java.io.IOException  A Java-specific IO exception, possibly the result of
+     * @throws IOException  A Java-specific IO exception, possibly the result of
      *                      creating a new InputStream or Reader for the
      *                      InputSource.
      * @see org.xml.sax.InputSource
