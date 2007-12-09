@@ -1034,6 +1034,16 @@ java.class.path=
     description="start a local daemon">
   </target>
 
+  
+  <!-- ========================================================== -->
+  <!-- public startup operation; uses the name that netbeans expects -->
+  <!-- ========================================================== -->
+  <target name="run"
+    depends="start-daemon-if-needed"
+    description="start a local daemon">
+  </target>
+
+  
   <!-- ========================================================== -->
   <!-- always shutdown a local daemon. keep going if one is not running -->
   <!-- ========================================================== -->
@@ -1951,7 +1961,8 @@ java.class.path=
     <ivy:resolve />
   </target>
 
-  <target name="ivy-retrieve" depends="ivy-resolve" >
+  <target name="ivy-retrieve" depends="ivy-resolve" 
+    description="retrieve all dependent artifacts through Ivy">
     <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]" />
     <property name="ivy.retrieve.path"
