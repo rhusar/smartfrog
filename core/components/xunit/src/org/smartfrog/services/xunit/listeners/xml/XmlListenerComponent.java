@@ -1,6 +1,6 @@
 package org.smartfrog.services.xunit.listeners.xml;
 
-import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
+import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.Date;
  * This is a listener of tests
  * Implement the {@link XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory; the listening is done by
- * {@link org.smartfrog.services.xunit.listeners.html.OneHostXMLListener }
+ * {@link OneHostXMLListener }
  */
 public class XmlListenerComponent
         extends AbstractXmlListenerComponent implements XmlListenerFactory {
@@ -30,7 +30,7 @@ public class XmlListenerComponent
 
      * @throws IOException for problems
      */
-    protected OneHostXMLListener createNewSingleHostListener(String hostname,
+    protected FileListener createNewSingleHostListener(String hostname,
                                                              File destFile,
                                                              String processname, String suitename,
                                                              Date start) throws

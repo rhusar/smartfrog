@@ -22,6 +22,7 @@ package org.smartfrog.services.xunit.listeners.html;
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
+import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,16 +66,14 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * {@inheritDoc}
      * @throws IOException IO trouble
      */
-    protected void writeDocumentHeader() throws IOException {
+    protected synchronized void writeDocumentHeader() throws IOException {
         writeln(XML_DECLARATION);
         //a strict HTML 1.1 document
         writeln("<!DOCTYPE\n"
                 + " html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n"
                 + " \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
         //preamble if supplied
-        if (preamble != null) {
-            writeln(preamble);
-        }
+        writeln(preamble);
         //write the root tag
         writeln("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
         String fullTitle = getTitle()
@@ -113,10 +112,8 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @throws IOException IO trouble
      */
 
-    protected void writeDocumentTail() throws IOException {
+    protected synchronized void writeDocumentTail() throws IOException {
         writeSummary();
-
-
         exit("body");
         exit("html");
     }
@@ -208,6 +205,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      *
      * @param style style of the division
      * @param text text to write
+     * @return the division
      */
     protected String div(String style, String text) {
         return div(style,null, text, true);
@@ -246,13 +244,13 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @return xml variant
      */
     protected String toXML(String tag, TestInfo test) {
-        StringBuffer body=new StringBuffer();
+        StringBuilder body=new StringBuilder();
         enter(body,"div",style("testblock"));
         body.append(div(test.getOutcome(),
                 test.getName()));
         body.append(div("test-duration","duration " +
                 ""+ test.getDuration()/1000.0
-                +"s"
+                + 's'
                 ));
         body.append(div("test-text",test.getText()));
         if(test.getFault()!=null) {
@@ -260,7 +258,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         }
         //now do the log
         for(LogEntry entry:test.getMessages()) {
-            String log="["+entry.levelToText()+"]"
+            String log= '[' +entry.levelToText()+ ']'
                     +entry.getText();
             body.append(div(style(entry),log));
         }
@@ -283,7 +281,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
         if (fault == null) {
             result = "";
         } else {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             enter(buf,"div", style("faultblock"));
             enter(buf,"table",null);
             enter(buf, "tr", null);
@@ -328,8 +326,8 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @param element element name
      * @param attrs attributes
      */
-    protected void enter(StringBuffer buf, String element, String attrs) {
-        buf.append("<");
+    protected void enter(StringBuilder buf, String element, String attrs) {
+        buf.append('<');
         buf.append(element);
         if(attrs!=null) {
             buf.append(' ');
@@ -343,7 +341,7 @@ public class OneHostHtmlListener extends OneHostXMLListener {
      * @param buf buffer 
      * @param element element name
      */
-    protected void exit(StringBuffer buf, String element) {
+    protected void exit(StringBuilder buf, String element) {
         buf.append("</");
         buf.append(element);
         buf.append(">\n");

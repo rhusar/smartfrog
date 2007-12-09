@@ -46,6 +46,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
      * @throws RemoteException network problems
      */
     public BufferingListenerImpl() throws RemoteException {
+        events = new ArrayList<TestInfo>();
         errors = new ArrayList<TestInfo>();
         failures = new ArrayList<TestInfo>();
         starts = new ArrayList<TestInfo>();
@@ -56,7 +57,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     /**
      * Lists of different results
      */
-    private List<TestInfo> errors, failures, starts, ends;
+    private List<TestInfo> events, errors, failures, starts, ends;
 
     /**
      * logged messages

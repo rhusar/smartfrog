@@ -23,9 +23,7 @@ import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

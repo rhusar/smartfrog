@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,11 @@
  */
 
 
-package org.smartfrog.services.xunit.listeners.html;
+package org.smartfrog.services.xunit.listeners.xml;
 
 import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
-import org.smartfrog.services.xunit.listeners.xml.XmlListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.BufferedOutputStream;
@@ -46,7 +45,7 @@ import java.util.HashMap;
  * Important: close the file after use. The finalizer does not clean up; it
  * merely throws an assertion failure if it is called while the file is open.
  */
-public class OneHostXMLListener implements XmlListener {
+public class OneHostXMLListener implements FileListener {
 
     /**
      * file we save to
@@ -57,9 +56,13 @@ public class OneHostXMLListener implements XmlListener {
      * name of host
      */
     protected String hostname;
+    /** name of the process */
     protected String processname;
+    /** name of the test suite */
     protected String suitename;
+    /** when did the test start */
     protected Date startTime;
+    /** any text to include before the root element, like PI and */
     protected String preamble;
 
     protected OutputStream outstream = null;
@@ -132,7 +135,7 @@ public class OneHostXMLListener implements XmlListener {
      *
      * @throws IOException
      */
-    public void open() throws IOException {
+    public synchronized void open() throws IOException {
         assert !isOpen(): "file is already open";
         destFile.getParentFile().mkdirs();
         outstream = new BufferedOutputStream(new FileOutputStream(destFile));
@@ -142,14 +145,11 @@ public class OneHostXMLListener implements XmlListener {
         flush();
     }
 
-    protected void writeDocumentHeader() throws IOException {
+    protected synchronized void writeDocumentHeader() throws IOException {
         out.write(XML_DECLARATION);
         out.write("\n");
         //preamble if supplied
-        if (preamble != null) {
-            out.write(preamble);
-            out.write("\n");
-        }
+        writeln(preamble);
         //write the root tag
         out.write("<");
         out.write(ROOT_TAG);
@@ -167,7 +167,7 @@ public class OneHostXMLListener implements XmlListener {
      *
      * @throws IOException IO trouble
      */
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         if (!isOpen()) {
             //harmless to close an already closed file.
             return;
@@ -194,7 +194,7 @@ public class OneHostXMLListener implements XmlListener {
      * Write the tail of the document out
      * @throws IOException  IO trouble
      */
-    protected void writeDocumentTail() throws IOException {
+    protected synchronized void writeDocumentTail() throws IOException {
         write("summary",
                 attr("tests", testCount)
                 +
@@ -211,7 +211,7 @@ public class OneHostXMLListener implements XmlListener {
      * @return true iff we have an output stream and it is open
      */
     public boolean isHappy() {
-        return out != null;
+        return isOpen();
     }
 
     /**
@@ -227,7 +227,7 @@ public class OneHostXMLListener implements XmlListener {
      * Flush the output stream. Harmless if the file is closed.
      * @throws IOException  IO trouble
      */
-    protected void flush() throws IOException {
+    protected synchronized void flush() throws IOException {
         if(isOpen())
             out.flush();
     }
@@ -248,7 +248,7 @@ public class OneHostXMLListener implements XmlListener {
      * called</i>
      * @throws SmartFrogException containing a nested IOException
      */
-    public void endSuite() throws SmartFrogException {
+    public synchronized void endSuite() throws SmartFrogException {
         try {
             close();
             tests=null;
@@ -260,7 +260,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * An error occurred.
      */
-    public void addError(TestInfo test) {
+    public synchronized void addError(TestInfo test) {
         errorCount++;
         tests.put(test.getText(),test);
     }
@@ -268,7 +268,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * A failure occurred.
      */
-    public void addFailure(TestInfo test)  {
+    public synchronized void addFailure(TestInfo test)  {
         failureCount++;
         tests.put(test.getText(), test);
     }
@@ -276,7 +276,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * A test ended.
      */
-    public void endTest(TestInfo test) throws SmartFrogException {
+    public synchronized void endTest(TestInfo test) throws SmartFrogException {
         testCount++;
         TestInfo cached=tests.get(test.getText());
         String type;
@@ -324,12 +324,12 @@ public class OneHostXMLListener implements XmlListener {
      * @param tag  element name
      * @param test test result to log
      */
-    protected void add(String tag, TestInfo test) throws SmartFrogException {
+    protected synchronized void add(String tag, TestInfo test) throws SmartFrogException {
+        String entry = toXML(tag, test);
         if (!isOpen()) {
             //bail out on a closed operation
             throw new SmartFrogException(ERROR_LISTENER_CLOSED);
         }
-        String entry = toXML(tag, test);
         try {
             out.write(entry);
         } catch (IOException e) {
@@ -346,7 +346,7 @@ public class OneHostXMLListener implements XmlListener {
      * @param attrs attributes (can be null)
      * @param body  text body (can be null)
      */
-    protected void write(String tag,
+    protected synchronized void write(String tag,
             String attrs,
             String body,
             boolean escape) throws IOException {
@@ -366,13 +366,13 @@ public class OneHostXMLListener implements XmlListener {
      * @return a new element
      */
     protected String element(String tag, String attrs, String body, boolean escape) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append('<');
         buf.append(tag);
         if (attrs != null) {
-            buf.append(" ");
+            buf.append(' ');
             buf.append(attrs);
-            buf.append(" ");
+            buf.append(' ');
         }
         if (body == null) {
             buf.append("/>\n");
@@ -429,7 +429,7 @@ public class OneHostXMLListener implements XmlListener {
         if (text == null) {
             return null;
         }
-        StringBuffer buf = new StringBuffer(text.length());
+        StringBuilder buf = new StringBuilder(text.length());
         for (int i = 0; i < text.length(); i++) {
             buf.append(escapeChar(text.charAt(i), doublequotes));
         }
@@ -484,7 +484,7 @@ public class OneHostXMLListener implements XmlListener {
         String classname = attr("classname", test.getName());
         String duration = attr("duration", Long.toString(test.getDuration()));
         return element(tag,
-                classname + " " + duration,
+                classname + ' ' + duration,
                 body,
                 false);
     }
@@ -501,7 +501,7 @@ public class OneHostXMLListener implements XmlListener {
         if (fault == null) {
             result="";
         } else {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             String cause = toXML(fault.getCause());
             String classname = element("classname", null, fault.getClassname(), true);
             String message = element("message", null, fault.getMessage(), true);
@@ -510,9 +510,9 @@ public class OneHostXMLListener implements XmlListener {
                     fault.getLocalizedMessage(),
                     true);
             StackTraceElement[] stack = fault.getStack();
-            StringBuffer stackTrace = new StringBuffer();
+            StringBuilder stackTrace = new StringBuilder();
             for (StackTraceElement frame : stack) {
-                StringBuffer attrs = new StringBuffer();
+                StringBuilder attrs = new StringBuilder();
                 attrs.append(attr("classname", frame.getClassName()));
                 attrs.append(attr("method", frame.getMethodName()));
                 attrs.append(attr("file", frame.getFileName()));
@@ -544,13 +544,10 @@ public class OneHostXMLListener implements XmlListener {
             return false;
         }
 
-        final OneHostXMLListener oneHostXMLListener = (OneHostXMLListener) that;
+        OneHostXMLListener oneHostXMLListener = (OneHostXMLListener) that;
 
-        if (!destFile.equals(oneHostXMLListener.destFile)) {
-            return false;
-        }
+        return destFile.equals(oneHostXMLListener.destFile);
 
-        return true;
     }
 
     /**
@@ -576,9 +573,11 @@ public class OneHostXMLListener implements XmlListener {
      * @param message text message
      * @throws IOException io trouble
      */
-    protected void writeln(String message) throws IOException {
-        out.write(message);
-        out.write('\n');
+    protected synchronized void writeln(String message) throws IOException {
+        if(message!=null) {
+            out.write(message);
+            out.write('\n');
+        }
     }
 
     /**
@@ -598,9 +597,9 @@ public class OneHostXMLListener implements XmlListener {
      */
     protected void enter(String element,String attributes) throws IOException {
         if(attributes!=null) {
-            writeln("<"+element+" "+attributes+">");
+            writeln('<'+element+' '+attributes+'>');
         } else {
-            writeln("<"+element + ">");
+            writeln('<'+element + '>');
         }
     }
 
@@ -610,7 +609,7 @@ public class OneHostXMLListener implements XmlListener {
      * @throws IOException io trouble
      */
     protected void exit(String element) throws IOException {
-        writeln("</" + element + ">");
+        writeln("</" + element + '>');
     }
 
 }
