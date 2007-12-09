@@ -729,7 +729,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @param mimeTypes vector of supported mime types
      */
     public void setMimeTypes(Vector mimeTypes) {
-        if (mimeTypes == null || mimeTypes.size() == 0) {
+        if (mimeTypes == null || mimeTypes.isEmpty()) {
             mimeTypeMap = null;
         } else {
             mimeTypeMap = new HashMap<String, String>(mimeTypes.size());
