@@ -620,10 +620,25 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                if (LinkResolutionState.getLRS().getLRSRecord()==null) {
             	   //Reset whether constraints are relevant
             	   LinkResolutionState.resetConstraintRelevance();
-            	   //Do a visit to every cd removing constraint annotations...
+            	   //Do a visit to every cd removing constraint annotations... 
+            	  
                    try {
                 	   visit(new CDVisitor(){
                 		   public void actOn(ComponentDescription node, java.util.Stack path){
+                			   //Start by removing any child generator types
+                			   //CHOOSE NOT TO DO THIS FOR NOW. 
+                			   /*Enumeration keys = node.sfContext().keys();
+                			   while (keys.hasMoreElements()){
+                				   Object key = keys.nextElement();
+                				   Object val = node.sfContext().get(key);
+                				   if (val instanceof ComponentDescription){
+                					   ComponentDescription val_cd = (ComponentDescription) val;
+                					   Object is_gen = val_cd.sfContext().get("sfIsGenerator");
+                					   if (is_gen!=null) node.sfContext().remove(key);
+                				   }
+                			   }*/
+                			   
+                			   //What about done function status etc?
                 			   Object functionClassStatus=node.sfContext().get("sfFunctionClassStatus");                			
                 			   try {  
 	                               if (functionClassStatus!=null && functionClassStatus.equals("done")){

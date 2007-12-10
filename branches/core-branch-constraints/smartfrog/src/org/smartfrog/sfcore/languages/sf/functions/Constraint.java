@@ -32,8 +32,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.functions.Aggregator.AggregatorReverseSourcePath;
-import org.smartfrog.sfcore.languages.sf.functions.Aggregator.AggregatorSourcePath;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionState;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -77,7 +75,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	 */
     	ComponentDescription comp = context.getOriginatingDescr();
     	Context orgContext = comp.sfContext();
-    	
+    	    	
     	//UserVars?
     	boolean isuservars=false;
     	
@@ -91,27 +89,48 @@ public class Constraint extends BaseFunction implements MessageKeys {
 			LinkResolutionState.setConstraintsShouldUndo(true);
 			Enumeration attr_enum = orgContext.keys();
 			
-			int acs_len = "sfAggregatedConstraintSource".length();
-			
 			while (attr_enum.hasMoreElements()){
-				String key = (String) attr_enum.nextElement();
-				
-				if (key.indexOf("sfAggregatedConstraintSource")!=0) continue;
-				
-				String suff = key.substring(acs_len);
+				Object attr = attr_enum.nextElement();
+			
+	    		try {
+					if (orgContext.sfContainsTag(attr, "sfAggregatedConstraintSource")){
+						
+						Object val = orgContext.get(attr);
+						if (!(val instanceof Vector)) throw new SmartFrogFunctionResolutionException("sfAggregatedConstraintSource-tagged attributes in AggregatedConstraint: "+comp+" must have Vector values.");
+						Vector val_vec = (Vector) val;
+						if (val_vec.size()!=3) throw new SmartFrogFunctionResolutionException("sfAggregatedConstraintSource-tagged attributes in AggregatedConstraint: "+comp+" must have Vector values with 2 members."); 
+						Object arraysource = val_vec.get(0);
+						
+				    	if (arraysource==null || !(arraysource instanceof String)) throw new SmartFrogFunctionResolutionException("First argument of an sfAggregatedConstraintSource tagged attribute in: "+comp+" should be a STRING which resolves to a Component Description");    	    	
+                        Object _arraysource = comp.sfResolve(Reference.fromString((String)arraysource));
+				    	if (_arraysource==null || !(_arraysource instanceof ComponentDescription)) throw new SmartFrogFunctionResolutionException("First argument of an sfAggregatedConstraintSource tagged attribute in: "+comp+" should be a String which resolves to a COMPONENT DESCRIPTION");    	    	
+				    	
+				    	
+                        ComponentDescription source_cd = (ComponentDescription) _arraysource;
+                        
+				    	Object sourceClass = source_cd.sfContext().get("sfFunctionClass");
+				    	if (!sourceClass.equals("org.smartfrog.sfcore.languages.sf.functions.Array"))  throw new SmartFrogFunctionResolutionException("First argument of an sfAggregatedConstraintSource tagged attribute in: "+comp+" must have orginated as an Array type");    	    	
+				    	
+						Object attrpath = val_vec.get(1);
+						if (attrpath==null || !(attrpath instanceof String)) throw new SmartFrogFunctionResolutionException("Second argument of an sfAggregatedConstraintSource tagged attribute in: "+comp+" should be a STRING");    	        	    	
+				    	String path_s = ":"+attrpath;
+						
+						Object newattr = val_vec.get(2);
+						if (newattr==null || !(newattr instanceof String)) throw new SmartFrogFunctionResolutionException("Third argument of an sfAggregatedConstraintSource tagged attribute in: "+comp+" should be a STRING");    	        	    	
+				    	String newattr_s = (String)newattr;
+
+				    	Vector ac_values = new Vector();
+				    	
+				    	boolean freevars = Aggregator.extractArgumentsFromSource(comp, source_cd, path_s, ac_values);	
+				    	
+				    	comp.sfContext().put(newattr_s, ac_values);
+				    	if (freevars) comp.sfContext().sfAddTag(newattr_s, "sfAggregatedConstraintFreeVars");
 					
-			   	Object val = comp.sfContext().get(key);
-		    	if (!(val instanceof String)) throw new SmartFrogFunctionResolutionException("sfAggregatedConstraintSource in AggregatedConstraint: "+comp+" must be a String");
-		    	String val_s = (String) val;
-			 
-		    	Vector ac_values = Aggregator.extractArgumentsFromSource(comp, suff, new AggregatorSourcePath(val_s));	
-		    	
-		    	String vals_key = "sfAggregatedConstraintVals"+suff;
-		    	
-		    	//System.out.println(ac_values.toString());
-		    	
-		    	comp.sfContext().put(vals_key, ac_values);
+					}
+				} catch (Exception e){/*shouldn't happen*/}    		
+
 			}
+						
 			LinkResolutionState.setConstraintsShouldUndo(false);
     	}
     	
@@ -141,7 +160,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 	    			if (orgContext.sfContainsTag(key, "sfConstraintAutoVar")) autos.add(key);
 	    			else if (!isuservars && orgContext.sfContainsTag(key, "sfConstraintUserVar")) isuservars=true;
 	    		}
-    		} catch (Exception e){}
+    		} catch (Exception e){/**Shouldn't happen**/}
     	}
     	    	    	
     	//Sort the goal in lex order
@@ -178,53 +197,58 @@ public class Constraint extends BaseFunction implements MessageKeys {
 			LinkResolutionState.setConstraintsShouldUndo(true);
 
 			attr_enum = orgContext.keys();
-			int acs_len = "sfAggregatedConstraintVals".length();
 			
 			while (attr_enum.hasMoreElements()){
-				String key = (String) attr_enum.nextElement();
+				Object attr = attr_enum.nextElement();
 				
-				if (key.indexOf("sfAggregatedConstraintVals")!=0) continue;
+	    		try {
+	    			
+	    			if (orgContext.sfContainsTag(attr, "sfAggregatedConstraintSource")){						
+						Vector val = (Vector) orgContext.get(attr);
+						Object arraysource = val.get(0);
+						ComponentDescription source_cd = (ComponentDescription) comp.sfResolve(Reference.fromString((String)arraysource)); 
+						String path_s = (String) val.get(1);
+						Object newattr = val.get(2);
+						
+						//Manipulate path to get inter_path
+						int idx = path_s.lastIndexOf(":");
+						String interpath_s = "";
+						if (idx!=-1){
+							interpath_s = ":"+path_s.substring(0, idx);
+							path_s = path_s.substring(idx+1);
+						} 
+						
+						if (orgContext.sfContainsTag(newattr, "sfAggregatedConstraintFreeVars")){
+						
+							Vector ac_values = (Vector) orgContext.get(newattr);
+						   						   	
+					    	//Extent
+					    	Object extent = source_cd.sfContext().get("sfArrayExtent");
+					    	
+					    	//Prefix
+					    	String prefix_s = (String) source_cd.sfContext().get("sfArrayPrefix");
+					    			    	
+					    	if (extent instanceof Integer){
+					    		int ext_int = ((Integer)extent).intValue();
+					    		for (int i=0; i<ext_int; i++){
+					    			String el = prefix_s+i;
+					    			Object ac_val = ac_values.get(i);
+					    			if (!(ac_val instanceof FreeVar)) replace(source_cd, el+interpath_s, path_s, ac_val);
+					    		}
+					    	} else if (extent instanceof Vector){
+					    		Vector ext_vec = (Vector)extent;
+					    		for (int i=0; i<ext_vec.size(); i++){
+					    			String suff_s = (String) ext_vec.get(i);
+					    			String el=prefix_s+suff_s;
+					    			Object ac_val = ac_values.get(i);
+					    			if (!(ac_val instanceof FreeVar)) replace(source_cd, el+interpath_s, path_s, ac_val);
+					    		}
+					    	}	
+						}	
+	    			}
+				} catch (Exception e){}
 				
-				String suff = key.substring(acs_len);
-				
-				Object frees = orgContext.get("sfAggregatedConstraintFrees"+suff);
-				if (frees==null) continue;
-				
-			   	Vector ac_values = (Vector) orgContext.get(key);
-			   	Object source = orgContext.get("sfAggregatedConstraintSource"+suff);
-			   	AggregatorReverseSourcePath asp = new AggregatorReverseSourcePath((String)source);
-			
-			   	ComponentDescription cd = orgContext.getOriginatingDescr();
-			   	ComponentDescription source_cd;
-			   	
-			   	try {
-		    		source_cd =  (ComponentDescription) cd.sfResolve(asp.getSource());
-		    	} catch (SmartFrogResolutionException e){ 
-		    		throw new SmartFrogFunctionResolutionException(e); 
-		    	}
-	    		
-		    	//Extent
-		    	Object extent = source_cd.sfContext().get("sfArrayExtent");
-		    	
-		    	//Prefix
-		    	String prefix_s = (String) source_cd.sfContext().get("sfArrayPrefix");
-		    			    	
-		    	if (extent instanceof Integer){
-		    		int ext_int = ((Integer)extent).intValue();
-		    		for (int i=0; i<ext_int; i++){
-		    			String el = prefix_s+i;
-		    			replace(source_cd, el+asp.getInterPath(), asp.getKey(), ac_values.get(i));
-		    		}
-		    	} else if (extent instanceof Vector){
-		    		Vector ext_vec = (Vector)extent;
-		    		for (int i=0; i<ext_vec.size(); i++){
-		    			String suff_s = (String) ext_vec.get(i);
-		    			String el=prefix_s+suff_s;
-		    			replace(source_cd, el+asp.getInterPath(), asp.getKey(), ac_values.get(i));
-		    		}
-		    	}	
-	    	}
-			
+			}						
 			LinkResolutionState.setConstraintsShouldUndo(false);
     	}
     	

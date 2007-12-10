@@ -136,6 +136,11 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         else if (rr instanceof Prim)
             comp.setPrimParent((Prim) rr);
 
+    	//Check not generator at some point in scope...
+    	try {
+    		if (comp.sfResolve(Reference.fromString("sfIsGenerator"))!=null) return this;
+    	} catch (SmartFrogResolutionException e){}
+        
         try {
             functionClass = (String) comp.sfContext().get("sfFunctionClass");
             functionClassStatus = (String) comp.sfContext().get("sfFunctionClassStatus");
@@ -166,14 +171,12 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
             }            
         } catch (Exception e) {
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
-        }
-
-       
+        } 
         
         for (Iterator v = comp.sfAttributes(); v.hasNext();) {
             Object name = v.next();
             String nameS = name.toString();
-            if (!nameS.equals("sfFunctionClass") && !(function instanceof Array && nameS.equals("sfArrayGenerator"))){
+            if (!nameS.equals("sfFunctionClass")){
                 Object value = null;
 
                 try {

@@ -188,15 +188,20 @@ alldifferent extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
 }
 
-ResourceAllocator extends AggregatedConstraint{
-   sfAggregatedConstraintSource0 providers;
-   sfAggregatedConstraintSource1 provider_caps;
-   sfAggregatedConstraintSource2 consumers;
-   sfAggregatedConstraintSource3 consumer_reqs;
-   sfAggregatedConstraintSource4 allocation;
+ResourceAllocator extends AggregatedConstraint {
+   [sfAggregatedConstraintSource] -- [providers_array, providers_attr, "providers"];
+   [sfAggregatedConstraintSource] -- [providers_array, provider_caps_attr, "provider_caps"];
+   [sfAggregatedConstraintSource] -- [consumers_array, consumers_attr, "consumers"];
+   [sfAggregatedConstraintSource] -- [consumers_array, consumer_reqs_attr, "consumer_reqs"];
+   [sfAggregatedConstraintSource] -- [consumers_array, allocation_attr, "allocation"];   
    colocations [];
    nocolocations [];
    hosted [];
-   [sfConstraint] -- "allocate(sfAggregatedConstraintVals0, sfAggregatedConstraintVals1, sfAggregatedConstraintVals2, sfAggregatedConstraintVals3, sfAggregatedConstraintVals4, colocations, nocolocations, hosted)";
+   [sfConstraint] -- "allocate(providers, provider_caps, consumers, consumer_reqs, allocation, colocations, nocolocations, hosted)";
+
+}
+
+Generator extends {
+   sfIsGenerator true;
 }
 

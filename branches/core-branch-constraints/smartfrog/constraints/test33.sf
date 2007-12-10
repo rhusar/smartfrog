@@ -6,7 +6,7 @@ sfConfig extends {
    elements extends Array {
       sfArrayPrefix "foo";
       sfArrayExtent 3;
-      sfArrayGenerator extends {
+      sfArrayGenerator extends Generator {
 
          element extends Constraint{
             val VAR theList;
@@ -24,8 +24,8 @@ sfConfig extends {
    }
 
    diff extends AggregatedConstraint {
-     sfAggregatedConstraintSource0 "elements:element:val";	 
-     [sfConstraint] -- "alldifferent(sfAggregatedConstraintVals0)";
+     [sfAggregatedConstraintSource] -- ["elements", "element:val", "element_vals"];	 
+     [sfConstraint] -- "alldifferent(element_vals)";
    }
 
    genList extends Constraint {

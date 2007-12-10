@@ -362,7 +362,8 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      * @return transformed object
      */
     private Object mapValueEJ(Object v, boolean ref_create)  {
-		if (v.equals(Collections.EMPTY_LIST)) return new Vector();
+    	if (v==null) return new FreeVar();
+    	else if (v.equals(Collections.EMPTY_LIST)) return new Vector();
     	else if (v instanceof Number) return v;
         else if (v instanceof Collection) {
             Vector result = new Vector();
@@ -382,8 +383,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         			throw new SmartFrogEclipseRuntimeException("mapValueEJ: Trouble in creating reference from attribute string for subtyping. ");	
         		}
         	}
-        } else if (v==null) return new FreeVar();
-        else throw new SmartFrogEclipseRuntimeException("mapValueEJ: unknown data *from* solver " + v);	
+        } else throw new SmartFrogEclipseRuntimeException("mapValueEJ: unknown data *from* solver " + v);	
     }	    
 
     /**
@@ -698,6 +698,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 	        	 String qual = ((Atom) ct.arg(3)).functor();
 	        	 Collection ctar = (Collection) ct.arg(4);
 	        	 int cidx = ((Integer) ct.arg(5)).intValue();
+	        	 
 	        	 
 	        	 boolean sfcd = false;
 	        	 

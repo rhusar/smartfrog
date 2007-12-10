@@ -7,10 +7,13 @@ sfConfig extends {
          index sfArrayIndex;
          [sfConstraint] -- "(index==0 -> bar=0; bar=1)"; 
      }
+     sfArrayPrefix "foo";
+     sfArrayExtent 3;
   }  
 
   foo2 extends Aggregator {
-	sfAggregatorPath "foo1:bar";
+	sfAggregatorArraySource foo1;
+        sfAggregatorAttributePath "bar";
         foo3 extends concat;        
   }
 }

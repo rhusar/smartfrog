@@ -235,18 +235,18 @@ sffromjava(Binds) :-
 %%%
 %sfsolve_process/2: Processes coms from Java
 %%%
-sfsolve_process(sfstop, _).
+sfsolve_process(sfstop, _). 
 sfsolve_process(sfsolve(Attrs, Values, CIndex, Solve, AutoVars, Verbose), Binds) :-
         %set particular constraint index
         hash_set(Binds, sf_evalcidx, CIndex),
         %populate hash table with info (attrs, vals) from current description
         sfsolve_populate_hash(Binds, Attrs, Values, Pref),
+        %pre-process solve goal
+        sfsolve_preprocess(Binds, CIndex, Attrs, Solve, SolveP1),
         %add suspend goals, range goals, default value goals
         sfsolve_pref_goals(Binds, Pref, Suspends, RangeGoals1, Defs),
         %Further pre-process range goals for component descriptions
         sfsolve_preprocess_cds_rangegoals(Binds, CIndex, RangeGoals1, RangeGoals),
-        %pre-process solve goal
-        sfsolve_preprocess(Binds, CIndex, Attrs, Solve, SolveP1),
         %add automatic variable processing
         sfsolve_indomains(Binds, CIndex, AutoVars, InDomains), 
         %aggregate goal
@@ -308,7 +308,6 @@ sfsetdefault(Val, Val).
 %%%
 sfsolve_populate_hash(_, [], [], []).
 sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
-        sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1),
         hash_get(Binds, sf_evalcidx, CIndex),
         %I'm a VAR with a range and a possible default?
         (Val = sfvar(Range, Def) -> IsVar=yes; 
@@ -329,14 +328,21 @@ sfsolve_populate_hash(Binds, [Attr|TAttrs], [Val|TVals], Pref) :-
             Pref2=[];
         %Is my value a component description? If so, we assign the
         % value kept in the hash table to the name of the attribute
-        (Val==sfcd -> Type=sfcd, concat_atoms(sfcd, Attr, Val1);
-                      Type=null, Val1=Val),
-        %We are an instantiated value, but are we just partially
-        % instantiated? If so, we need to add a suspend goal for
-        % future instantiations...
-        (sfterm_variables(Val1) -> Pref2=[(CIndex, Attr, [], _)], First=first;
-                                   Pref2=[], First=notfirst),
+        (Val==sfcd -> Type=sfcd, concat_atoms(sfcd, Attr, Val1);                      
+            %We are an instantiated value, but are we just partially
+            % instantiated? If so, we need to add a suspend goal for
+            % future instantiations...
+            (sfterm_variables(Val) -> 
+                                       sfobtaintype_many(Binds, CIndex,
+                                                         Val, Type),
+                                       sfsolve_sfref_replace(Binds, Val, Val1),
+                                       Pref2=[(CIndex, Attr, [], _)],
+                                       First=first;
+                                      
+                                       Pref2=[], First=notfirst, Val1=Val,
+                                       Type=null)),
         hash_set(Binds, (CIndex, Attr), (Val1, [], Type, First)))),     
+        sfsolve_populate_hash(Binds, TAttrs, TVals, Pref1),
         append(Pref2, Pref1, Pref).
 
 %%%
@@ -386,6 +392,18 @@ sfsolve_adjustrange_cds([H|T], [H1|T1]):-
         concat_atoms(sfcd, H, H1), 
         sfsolve_adjustrange_cds(T, T1).
 
+
+write_table(Binds):-
+        hash_list(Binds, Attrs, Vals),
+        write_table_vals(Binds, Attrs, Vals), flush(stdout).
+
+write_table_vals(_, [], []).
+write_table_vals(Binds, [HA|TA], [HV|TV]):-
+        writeln((HA, HV)), %term_string(HV, HVS), writeln(HVS), 
+        flush(stdout),
+        write_table_vals(Binds, TA, TV).
+
+
 %%%
 %sfsolve_preprocess/4: Preprocess goal string. Converts all references
 % to attributes (stored in Binds) to vars.
@@ -394,26 +412,26 @@ sfsolve_preprocess(_,_,_,[],[]).
 sfsolve_preprocess(Binds, CIndex, Attrs, [HG|TG], [HGOut|TGOut]):-
         hash_get(Binds, sf_evalcidx, CIndex),
         (var(HG) -> HGOut=HG;
-        (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut1, _)) -> 
-                         sfsolve_sfref_replace(Binds, HGOut1, HGOut); HGOut=HG);
+        (HG=..[F] -> (hash_get(Binds, (CIndex, F), (HGOut, _)) -> 
+                            true; 
+                            HGOut=HG);
                      HG=..[F|Args],
                          (HG=sfref(RefCI, RefAttr)-> hash_get(Binds, (RefCI, RefAttr), (HGOut, _));
                          (F==subtype -> sfmapop_(F, FOut), Args1=Args, Lib=none;
                                         sfmapop(Binds, CIndex, F, Args,
                                                 FOut, Args2, Lib),
-                                        sfsolve_preprocess(Binds, CIndex, Attrs, Args2, Args1)),     
+                                        sfsolve_preprocess(Binds, CIndex, Attrs, Args2,Args1)),     
                      (Lib==none -> HGOut=..[FOut|Args1]; HGOut1=..[FOut|Args1], HGOut=Lib:HGOut1)))),
     sfsolve_preprocess(Binds, CIndex, Attrs, TG, TGOut).
 
 
-
 sfsolve_sfref_replace(_, In, In) :- var(In), !.
-sfsolve_sfref_replace(_, [], []). 
-sfsolve_sfref_replace(Binds, [HIn|TIn], [HOut|TOut]):- 
+sfsolve_sfref_replace(_, [], []) :- !. 
+sfsolve_sfref_replace(Binds, [HIn|TIn], [HOut|TOut]):- !, 
         sfsolve_sfref_replace(Binds, HIn, HOut),
         sfsolve_sfref_replace(Binds, TIn, TOut).
-sfsolve_sfref_replace(Binds, sfref(RefCI, RefAttr), Out) :-
-        hash_get(Binds, (RefCI, RefAttr), (Out, _)).
+sfsolve_sfref_replace(Binds, sfref(RefCI, RefAttr), Out) :- !,
+        hash_get(Binds, (RefCI, RefAttr), (Out, _)). 
 sfsolve_sfref_replace(_, In, In).
 
 
@@ -447,14 +465,17 @@ sfmapnotenumop(neq, #\=, none).
 sfmapnotenumop(notequals, #\=, none).
 sfmapnotenumop(alldifferent, alldifferent, ic).
 
+sfobtaintype_many(_, _, [], null).
+sfobtaintype_many(Binds, CIndex, [H|T], Type):-
+        %Dont need to recurse on many, as we can assume the list is flat
+        (var(H) -> 
+                   sfobtaintype_many(Binds, CIndex, T, Type);
+                   sfobtaintype(Binds, CIndex, H, Type)). 
 %%%
 %sfobtaintype/4: Obtains the type of a range from its constituents.
 %%%
 sfobtaintype(Binds, CIndex, Arg, Type) :-
-        hash_get(Binds, (CIndex, Arg), (Val, _, Type1, _)), !,
-        (is_list(Val) -> Val=[H|_], 
-                       sfobtaintype(Binds, CIndex, H, Type);
-                       Type=Type1).
+        hash_get(Binds, (CIndex, Arg), (_, _, Type, _)),!. 
 sfobtaintype(Binds, _, sfref(CIndex, Attr), Type) :- !,
         sfobtaintype(Binds, CIndex, Attr, Type).
 sfobtaintype(_, _, Arg, enum) :-
@@ -532,12 +553,12 @@ sfsubtype(Attr, Type) :- !,
 % backtracking) with Java side 
 %%%
 sfsolve_var_sync(Binds, (RefCI, RefAttr), Val):-
-       hash_get(Binds, (RefCI, RefAttr), (Val, Lists, Type, First)),
+        hash_get(Binds, (RefCI, RefAttr), (Val, Lists, Type, First)),
        (term_variables(Val, []) -> Send=final;
                                    (First==first -> Send=notfinal; Send=no)),
        %Toggle first as set, just in case first currently...
-       hash_set(Binds, (RefCI, RefAttr), (Val, Lists, Type, notfirst)),
-       (Send==final -> true; 
+        hash_set(Binds, (RefCI, RefAttr), (Val, Lists, Type, notfirst)),
+        (Send==final -> true; 
                        suspend(sfsolve_var_sync(Binds, (RefCI,RefAttr), Val), 1, Val->inst)),       
        (Send==no -> true;
            hash_get(Binds, sf_evalcidx, CIndex),

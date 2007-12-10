@@ -33,7 +33,7 @@ import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.LinkResolutionSt
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.reference.Reference;
 
-/**
+/** 
  * Defines the Constraint function.
  */
 public class Aggregator extends BaseFunction implements MessageKeys {
@@ -48,12 +48,22 @@ public class Aggregator extends BaseFunction implements MessageKeys {
     	ComponentDescription comp = context.getOriginatingDescr();
     	Context orgContext = comp.sfContext();
 
-    	//Path
-    	Object path = orgContext.get("sfAggregatorPath"); 
-    	if (path==null || !(path instanceof String)) throw new SmartFrogFunctionResolutionException("Path in Aggregator: "+comp+" should be a String");    	    	
-    	AggregatorSourcePath asp = new AggregatorSourcePath((String)path);
+    	//Source
+    	Object arraysource = orgContext.get("sfAggregatorArraySource"); 
+    	if (arraysource==null || !(arraysource instanceof Reference)) throw new SmartFrogFunctionResolutionException("ArraySource in Aggregator: "+comp+" should be a REFERENCE to a ComponentDescription");    	    	
+    	try {
+    		arraysource = comp.sfResolve((Reference)arraysource);
+    	} catch (Exception e){ throw new SmartFrogFunctionResolutionException(e); }
+    	if (arraysource==null || !(arraysource instanceof ComponentDescription)) throw new SmartFrogFunctionResolutionException("ArraySource in Aggregator: "+comp+" should resolve to a COMPONENT DESCRIPTION");    	    	
+    	ComponentDescription source_cd = (ComponentDescription) arraysource;
     	
-    	Vector arguments = extractArgumentsFromSource(comp, null, asp);
+    	//Attr Path
+    	Object attrpath = orgContext.get("sfAggregatorAttributePath"); 
+    	if (attrpath==null || !(attrpath instanceof String)) throw new SmartFrogFunctionResolutionException("AttributePath in Aggregator: "+comp+" should be a String");    	    	
+    	String path_s = ":"+attrpath;
+    	
+    	Vector arguments = new Vector();
+    	extractArgumentsFromSource(comp, source_cd, path_s, arguments);
     	  	
     	LinkResolutionState.setConstraintsShouldUndo(true);
     	
@@ -77,78 +87,23 @@ public class Aggregator extends BaseFunction implements MessageKeys {
         return null;
     }
     
-    public static class AggregatorSourcePath {
-    	private Reference source;
-    	private String path;
-    	AggregatorSourcePath(String sourcePath){
-        	int endFirst = sourcePath.indexOf(':');
-        	if (endFirst>-1){
-        		try {
-        		    source = Reference.fromString(sourcePath.substring(0, endFirst));
-        		} catch (Exception e){}
-        		path = ":"+sourcePath.substring(endFirst+1);
-        	} 
-    	}
-    	public Reference getSource(){return source;}
-    	public String getPath(){return path;}
-    }
-    
-    public static class AggregatorReverseSourcePath {
-    	private Reference source;
-    	private String interPath="";
-    	private String key="";
-    	AggregatorReverseSourcePath(String sourcePath){
-        	int idx = sourcePath.indexOf(':');
-        	if (idx>-1){
-        		try {
-        		    source = Reference.fromString(sourcePath.substring(0, idx));
-        		} catch (Exception e){}    
-        		sourcePath = sourcePath.substring(idx+1);
-        		
-        		idx = sourcePath.lastIndexOf(':');
-        		if (idx>-1){
-        			interPath = ":"+sourcePath.substring(0, idx);
-        			key = sourcePath.substring(idx+1);
-        		} else key = sourcePath;
-        	} 
-    	}
-     	public Reference getSource(){return source;}
-    	public String getInterPath(){return interPath;}
-    	public String getKey() { return key; }
-    }
-
-    
-    static Vector extractArgumentsFromSource(ComponentDescription comp, String idx_s, AggregatorSourcePath asp) throws SmartFrogFunctionResolutionException {
-    	
-    	if (asp.getPath()==null) throw new SmartFrogFunctionResolutionException("No path specified from source "+asp.getSource()+" in Aggregator: "+comp);    	
-    	
-    	Object source=null;
-    	//And resolve source...
-    	try {
-    		source = comp.sfResolve(asp.getSource());
-    	} catch (Exception e) {  throw new SmartFrogFunctionResolutionException(e); }
-    	if (source==null || !(source instanceof ComponentDescription)) throw new SmartFrogFunctionResolutionException("Source Reference in Aggregator: "+comp+" should RESOLVE TO a ComponentDescription");    	
-    	ComponentDescription source_cd = (ComponentDescription)source;
-    	
+   static boolean extractArgumentsFromSource(ComponentDescription comp, ComponentDescription source_cd, String path_s, Vector arguments) throws SmartFrogFunctionResolutionException {  	
     	Object sourceClass = source_cd.sfContext().get("sfFunctionClass");
-    	if (!sourceClass.equals("org.smartfrog.sfcore.languages.sf.functions.Array"))  throw new SmartFrogFunctionResolutionException("Source in Aggregator: "+comp+" must be an Array"); 
+    	if (!sourceClass.equals("org.smartfrog.sfcore.languages.sf.functions.Array"))  throw new SmartFrogFunctionResolutionException("Source in Aggregator: "+comp+" must have orginated as an Array type"); 
     	
     	//Extent
     	Object extent = source_cd.sfContext().get("sfArrayExtent");
     	
     	//Prefix
     	String prefix_s = (String) source_cd.sfContext().get("sfArrayPrefix");
-    	
-    	//Gather arguments for the processing functions...
-    	Vector arguments = new Vector();
-    	
+    	    	
     	boolean freevar=false;
     	
     	if (extent instanceof Integer){
     		int ext_int = ((Integer)extent).intValue();
     		for (int i=0; i<ext_int; i++){
     			String el = prefix_s+i;
-    			Object arg = resolve(source_cd, el+asp.getPath());
+    			Object arg = resolve(source_cd, el+path_s);
     			if (freevar==false && isFreeVar(arg)) freevar=true;
     			if (arg!=null) arguments.add(arg);
     		}
@@ -156,16 +111,15 @@ public class Aggregator extends BaseFunction implements MessageKeys {
     		Vector ext_vec = (Vector)extent;
     		for (int i=0; i<ext_vec.size(); i++){
     			Object suff = ext_vec.get(i);
-    			if (!(suff instanceof String)) throw new SmartFrogFunctionResolutionException("Vector extent in Array: "+comp+" should be comprised of Strings");
+    			if (!(suff instanceof String)) throw new SmartFrogFunctionResolutionException("Vector extent in Array: "+source_cd+" should be comprised of Strings");
     			String el=prefix_s+suff;
-    			Object arg = resolve(source_cd, el+asp.getPath());
+    			Object arg = resolve(source_cd, el+path_s);
     			if (freevar==false && isFreeVar(arg)) freevar=true;
     			if (arg!=null) arguments.add(arg);
     		}
     	}
     	
-    	if (idx_s!=null && freevar) comp.sfContext().put("sfAggregatedConstraintFrees"+idx_s, "true");
-    	return arguments;
+    	return freevar;
     }
     
     static boolean isFreeVar(Object arg){
