@@ -169,7 +169,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected void buildAuthentication()
             throws SmartFrogException, RemoteException {
         String auth = sfResolve(ATTR_AUTHORIZATION, "", true);
-        if(!auth.isEmpty()) {
+        if(auth.length()!=0) {
             challengeScheme = ChallengeScheme.valueOf(auth);
             username = resolveUsername();
             password = resolvePassword();
@@ -178,7 +178,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     }
 
     /**
-     * Build tup a new request
+     * Build up a new request
      * @param method method
      * @param localData local data (can be null)
      * @return the request
@@ -192,6 +192,10 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         return request;
     }
 
+    /**
+     * Get the URL of the connection
+     * @return
+     */
     public String getURL() {
         return getLivenessPage().getUrlAsString();
     }
