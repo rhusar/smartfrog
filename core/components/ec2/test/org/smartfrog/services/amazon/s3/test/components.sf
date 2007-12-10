@@ -26,9 +26,7 @@ login PROPERTY test.awsid;
 password PROPERTY test.awskey
 timeout 10000;
 
-bucketURL (bucket ++ "s3.amazonaws.com");
-
-
+bucketURL (bucket ++ ".s3.amazonaws.com");
 
 
 Testbucket extends  TransientS3Bucket {
@@ -36,7 +34,6 @@ Testbucket extends  TransientS3Bucket {
     username ROOT:login;
     password ROOT:password;
     connectTimeout timeout;
-
 }
 
 
@@ -59,6 +56,8 @@ HeadBucket extends Testbucket {
 
 DeleteBucket extends Testbucket {
   startActions [Delete];
+  maximumResponseCode HttpCodes:NOT_FOUND;
+  minimumResponseCode maximumResponseCode;
 }
 
 

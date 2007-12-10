@@ -34,7 +34,6 @@ import org.smartfrog.services.www.LivenessPageChecker;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -111,7 +110,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         ComponentHelper helper = new ComponentHelper(this);
 
         //and do a termination if asked for
-        helper.sfSelfDetachAndOrTerminate(null, getLivenessPage().getUrlAsString(), null, null);
+        helper.sfSelfDetachAndOrTerminate(null, getURL(), null, null);
     }
 
     /**
@@ -170,12 +169,12 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected void buildAuthentication()
             throws SmartFrogException, RemoteException {
         String auth = sfResolve(ATTR_AUTHORIZATION, "", true);
-        challengeScheme = ChallengeScheme.valueOf(auth);
-
-        username = resolveUsername();
-        if (username != null) {
+        if(!auth.isEmpty()) {
+            challengeScheme = ChallengeScheme.valueOf(auth);
+            username = resolveUsername();
             password = resolvePassword();
         }
+
     }
 
     /**
@@ -186,9 +185,15 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      */
     protected Request buildRequest(Method method, Representation localData) {
         // Send an authenticated request
-        Request request = new Request(method, getLivenessPage().getUrlAsString(), localData);
-        request.setChallengeResponse(createChallengeResponse());
+        Request request = new Request(method, getURL(), localData);
+        if(challengeScheme!=null) {
+                request.setChallengeResponse(createChallengeResponse());
+        }
         return request;
+    }
+
+    public String getURL() {
+        return getLivenessPage().getUrlAsString();
     }
 
     /**
@@ -229,7 +234,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     }
 
     /**
-     * Create a client and handle the request, then call {@link #validate(Response)} to check it
+     * Create a client and handle the request, then call {@link #validate(Request,Response)} to check it
      *
      * @param method method to run
      * @param data any data
@@ -240,21 +245,28 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
             throws RestletOperationException {
         Request request = buildRequest(method, data);
         Response response = handle(request);
-        validate(response);
+        validate(request, response);
         return response;
     }
 
     /**
      * Check that the response was valid
+     * @param request the request issues
      * @param response the response we check
      * @throws RestletOperationException for validation failures and errors
      */
-    protected void validate(Response response)
+    protected void validate(Request request, Response response)
             throws RestletOperationException {
         LivenessPageChecker checker = getLivenessPage();
         int responseCode = response.getStatus().getCode();
         if (checker.isStatusOutOfRange(responseCode)) {
-            throw new RestletOperationException("Status code " + responseCode + " is out of range",
+            throw new RestletOperationException(
+                    request,
+                    "Status code " + responseCode
+                        + " is out of range of "
+                        + livenessPage.getMinimumResponseCode()
+                        +"-"
+                        +livenessPage.getMaximumResponseCode(),
                     response,
                     this);
         }
@@ -262,7 +274,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         if (responseData != null) {
             String type = responseData.getMediaType().getName();
             if (!checker.isMimeTypeInRange(type)) {
-                throw new RestletOperationException(UNSUPPORTED_MEDIA_TYPE + type,
+                throw new RestletOperationException(request,
+                        UNSUPPORTED_MEDIA_TYPE + type,
                         response,
                         this);
             }
@@ -339,7 +352,10 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         RestletDataSource restletDataSource = (RestletDataSource) sfResolve(
                 ATTR_DATASOURCE,
                 (Prim) null,
-                true);
+                false);
+        if(restletDataSource==null) {
+            return null;
+        }
 
         InprocDataSource inprocDataSource;
         try {
