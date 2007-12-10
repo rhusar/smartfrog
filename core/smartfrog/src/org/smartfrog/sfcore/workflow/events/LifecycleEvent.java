@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.rmi.Remote;
 
 /**
  * Base class for lifecycle events that components may send
@@ -41,6 +43,9 @@ public abstract class LifecycleEvent implements Serializable {
     private String componentName;
 
     private TerminationRecord status;
+
+    private HashMap<String, Object> data = new HashMap<String, Object>();
+
     private static final String UNKNOWN_COMPONENT = "(unknown)";
 
     public TerminationRecord getStatus() {
@@ -57,7 +62,7 @@ public abstract class LifecycleEvent implements Serializable {
 
     /**
      * Set the event to a component
-     * @param component
+     * @param component component the event came from
      */
     protected LifecycleEvent( Prim component) {
         this(component,null);
@@ -142,7 +147,7 @@ public abstract class LifecycleEvent implements Serializable {
         buf.append(getComponentName());
         buf.append(" -"+getEventName());
         buf.append(" at ");
-        buf.append(new Date(timestamp).toString());
+        buf.append(new Date(getTimestamp()).toString());
         buf.append(" alive: ");
         buf.append(Boolean.valueOf(isAlive()));
         if(getStatus()!=null) {
@@ -151,4 +156,59 @@ public abstract class LifecycleEvent implements Serializable {
         }
         return buf.toString();
     }
+
+
+    /**
+     * Add a remote reference. This will be sent over to the far end.
+     * Do not add references that will go away, such as those to
+     * a component that is being terminatd.
+     *
+     * @param key string key
+     * @param endpoint endpoint to refer to
+     */
+    public void put(String key, Remote endpoint) {
+        data.put(key, endpoint);
+    }
+
+    /**
+     * Add serializable data. This will be sent over to the listener
+     *
+     * @param key string key
+     * @param value value
+     */
+    public void put(String key, Serializable value) {
+        data.put(key, value);
+    }
+
+    /**
+     * Look up a value; return it or the default
+     *
+     * @param key key to look up
+     * @param defval the value to return if there is no entry
+     * @return the lookup result or the supplied default value
+     */
+    public Object get(String key, Object defval) {
+        Object result = data.get(key);
+        return result != null ? result : defval;
+    }
+
+    /**
+     * lookup a specific key; return the value or null
+     *
+     * @param key key to look up
+     * @return the value or null for no match
+     */
+    public Object get(String key) {
+        return data.get(key);
+    }
+
+    /**
+     * Protected access to the hashmap.
+     *
+     * @return the map.
+     */
+    protected HashMap<String, Object> getData() {
+        return data;
+    }
+
 }
