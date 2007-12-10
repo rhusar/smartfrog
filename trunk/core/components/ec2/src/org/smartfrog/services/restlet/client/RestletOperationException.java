@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.restlet.client;
 
+import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public class RestletOperationException extends SmartFrogException {
 
-    int status;
+    private int status;
     private String text;
 
     /**
@@ -88,12 +88,30 @@ public class RestletOperationException extends SmartFrogException {
      * @param response the response in question
      * @param sfObject The Component that has encountered the exception
      */
-    public RestletOperationException(String message,
+    public RestletOperationException(String url,String message,
                                      Response response, Prim sfObject) {
-        super(message, sfObject);
+        super(url+" : "+message, sfObject);
         build(response);
     }
 
+    /**
+     * Constructs a SmartFrogException with specified message. Also initializes
+     * the exception context with component details.
+     *
+     * @param request request that caused the problem
+     * @param message  message
+     * @param response the response in question
+     * @param sfObject The Component that has encountered the exception
+     */
+    public RestletOperationException(Request request, String message,
+                                     Response response, Prim sfObject) {
+        super(request.getMethod().getName()
+                +" on "+
+                request.getResourceRef().toString()
+                        + " : " + message,
+                sfObject);
+        build(response);
+    }
 
     /**
      * Constructs a SmartFrogException with specified cause. Also initializes the
@@ -121,5 +139,13 @@ public class RestletOperationException extends SmartFrogException {
         } catch (IOException e) {
             text=null;
         }
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public String getText() {
+        return text;
     }
 }

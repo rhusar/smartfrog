@@ -54,6 +54,18 @@ TransientS3Bucket extends S3Bucket {
 }
 
 
+DeleteS3BucketOnStartup extends S3Bucket {
+  maximumResponseCode HttpCodes:NOT_FOUND;
+  minimumResponseCode maximumResponseCode;
+  startActions [DELETE];
+}
+
+
+DeleteS3BucketOnTermination extends S3Bucket {
+  maximumResponseCode HttpCodes:NOT_FOUND;
+  minimumResponseCode maximumResponseCode;
+  terminateActions [DELETE];
+}
 
 /**
  * This does create a bucket on demand

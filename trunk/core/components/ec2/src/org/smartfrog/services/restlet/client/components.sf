@@ -50,8 +50,8 @@ RemoteResource extends Prim {
   livenessActions [];
   headers [];
 
-  maximumResponseCode 299;
-  minimumResponseCode 200;
+  minimumResponseCode HttpCodes:START_2XX;
+  maximumResponseCode HttpCodes:END_2XX;
   followRedirects true;
 
   //not yet implemented
