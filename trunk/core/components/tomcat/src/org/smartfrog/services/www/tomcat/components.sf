@@ -34,9 +34,7 @@
 
 
 /**
- * this is jetty with no running listeners or contexts.
- * It is implemented as a compound; you can add anything underneath it and they
- * will be deployed.
+ * this tomcat through get
  */
 TomcatServer extends ApplicationServer {
    sfClass "org.smartfrog.services.www.tomcat.TomcatServerImpl";
