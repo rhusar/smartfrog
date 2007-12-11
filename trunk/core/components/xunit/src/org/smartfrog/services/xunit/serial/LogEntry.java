@@ -22,6 +22,7 @@ package org.smartfrog.services.xunit.serial;
 import org.smartfrog.sfcore.logging.LogLevel;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * This class represents an entry in the log.
@@ -115,6 +116,7 @@ public final class LogEntry implements Serializable, Cloneable {
 
     /**
      * Create a log entry from another entry
+     * @param that the other log entry
      */
     public LogEntry(LogEntry that) {
         level = that.level;
@@ -204,5 +206,25 @@ public final class LogEntry implements Serializable, Cloneable {
             default:
                 return "unknown";
         }
+    }
+    
+    /**
+     * Creates a full log string with the log level
+     * @return
+     */
+    public String logString() {
+        if(level==LOG_LEVEL_STDERR || level==LOG_LEVEL_STDOUT) {
+            return text+"\n";
+        }
+        StringBuilder buffer=new StringBuilder();
+        buffer.append('[');
+        buffer.append(levelToText().toUpperCase(Locale.ENGLISH));
+        buffer.append(" ]");
+        buffer.append(text);
+        if(thrown!=null) {
+            buffer.append(thrown.toString());
+        }
+        
+        return buffer.toString();
     }
 }
