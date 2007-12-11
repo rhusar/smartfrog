@@ -42,6 +42,7 @@ public class TestCompletedEvent extends LifecycleEvent {
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
         this.skipped = skipped;
+        this.description=description;
     }
 
 
@@ -68,18 +69,23 @@ public class TestCompletedEvent extends LifecycleEvent {
         return "TestCompletedEvent";
     }
 
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * {@inheritDoc}
      */
     public String toString() {
-        StringBuffer buffer=new StringBuffer(super.toString());
+        StringBuilder buffer=new StringBuilder(super.toString());
         if(description!=null && description.length()>0) {
             buffer.append("\n").append(description);
+            buffer.append("\n");
         }
         buffer.append("\nsucceeded:").append(succeeded);
         buffer.append("\nforcedTimeout:").append(forcedTimeout);
         buffer.append("\nskipped:").append(skipped);
+        buffer.append("\n");
         return buffer.toString();
     }
 }
