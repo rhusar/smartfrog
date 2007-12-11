@@ -120,8 +120,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      * @param source source of call
      *
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness}
-     * interface
+     * @throws RemoteException for network trouble
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -194,7 +193,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
 
     /**
      * Get the URL of the connection
-     * @return
+     * @return the URL
      */
     public String getURL() {
         return getLivenessPage().getUrlAsString();

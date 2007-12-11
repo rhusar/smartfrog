@@ -77,6 +77,12 @@ ProbeForBucket extends WaitForPage {
 
 BucketTest extends ExpectDeploy {
 
+  description "test against the S3 servers; requires test.awsid to be set with a login, and test.awskey with its secret key"
+
+  condition extends IsPropertySet {
+    property "test.awsid";
+  }
+  
   action extends  Compound {
 
     datasource extends TextDataSource { text "";}
