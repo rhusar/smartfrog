@@ -26,7 +26,9 @@ import org.smartfrog.services.xml.interfaces.XmlWireCodec;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
+import nu.xom.Element;
 
 /**
  * switchable codec
@@ -74,6 +76,11 @@ public class SerializedXomDocument implements Serializable {
     private void readObject(ObjectInputStream in) throws
             IOException, ClassNotFoundException {
         document = codec.readObject(in);
+    }
+    
+    private void readObjectNoData() 
+     throws ObjectStreamException {
+        document=new Document(new Element("root"));
     }
 
     /**
