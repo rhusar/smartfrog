@@ -44,6 +44,9 @@ public class RepresentationHelper {
      * @return true if we think it is a text, XML or XHTML
      */
     public boolean isTextType() {
+        if(data==null) {
+            return false;
+        }
         MediaType mt=data.getMediaType();
         return isTextType(mt);
     }
@@ -53,6 +56,9 @@ public class RepresentationHelper {
      * @return true iff this is  XML
      */
     public boolean isXMLType() {
+        if(data==null) {
+            return false;
+        }
         return isXMLType(data.getMediaType());
     }
 
