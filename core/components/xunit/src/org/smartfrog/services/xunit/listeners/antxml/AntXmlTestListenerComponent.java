@@ -54,7 +54,7 @@ public class AntXmlTestListenerComponent
                                                       String suitename,
                                                       Date start)
             throws IOException {
-        return new SingleProcessAntXmlListener(hostname,
+        return new AntXmlListener(hostname,
                 destFile,
                 processname,
                 suitename,
