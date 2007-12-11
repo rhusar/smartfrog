@@ -80,7 +80,8 @@ For more information: www.smartfrog.org
      maximumResponseCode extends Integer;
      //flag to follow redirects
      followRedirects extends Boolean;
-
+      //connect timeout in milliseconds
+     connectTimeout extends Integer;
  }
 
  /**

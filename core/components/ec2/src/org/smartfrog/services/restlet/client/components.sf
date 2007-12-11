@@ -53,6 +53,7 @@ RemoteResource extends Prim {
   minimumResponseCode HttpCodes:START_2XX;
   maximumResponseCode HttpCodes:END_2XX;
   followRedirects true;
+  connectTimeout -1;
 
   //not yet implemented
   resultXPath "";

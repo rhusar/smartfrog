@@ -22,8 +22,8 @@
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default"
-        description="the classpath needed to run tests"/>
+    <conf name="test" extends="compile,default"
+        description="the classpath needed to run tests" />
   <conf name="testwar"
       description="the test WAR File" visibility="private"/>  
     <conf name="master" description="contains the artifact but no dependencies"/>
@@ -42,17 +42,19 @@
       changing="true"
       rev="latest.integration"
       conf="compile,runtime,daemon->services"/>
+
+    <!--we pull in www stuff -->
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,test,daemon->default;testwar->testwar"/>
+        conf="compile,runtime,daemon->master;test->default;testwar->testwar"/>
 
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon->default"/>
+        conf="test->default"/>
     <dependency org="org.smartfrog"
         name="sf-xml"
         changing="true"

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 
 /**
  */
@@ -43,6 +44,16 @@ public class ErrorCodeServlet extends HttpServlet {
         response.setStatus(code);
         out.println("<html><head><title>Error Page</title</head><body>");
         out.println("<h1>Error Code "+code+"</h1>");
+
+        out.println("<p>Headers</p>");
+        out.println("<table>");
+        Enumeration names = request.getHeaderNames();
+        while (names.hasMoreElements()) {
+            String name = (String) names.nextElement();
+            String value=request.getHeader(name);
+            out.println("<tr><td>" + name+ "</td><td>"+value+"</td></tr>");
+        }
+        out.println("</table>");
     }
 
 }

@@ -17,6 +17,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/restlet/components.sf"
+package org.smartfrog.services.restlet.test.system.testwar;
+
+import org.smartfrog.test.DeployingTestBase;
+
+/**
+ *
+ * Created 30-Nov-2007 16:46:45
+ *
+ */
+
+public class TestwarTest extends DeployingTestBase {
+    public static final String PACKAGE="/org/smartfrog/services/restlet/test/system/testwar";
+
+    public TestwarTest(String name) {
+        super(name);
+    }
+
+    public void testWarDeployed() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE,"testWarDeployed");
+    }
+    public void testErrorPage() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testErrorPage");
+    }
+}
