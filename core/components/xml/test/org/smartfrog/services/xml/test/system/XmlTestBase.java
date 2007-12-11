@@ -21,7 +21,6 @@
 
 package org.smartfrog.services.xml.test.system;
 
-import junit.framework.AssertionFailedError;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;
