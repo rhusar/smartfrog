@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.nbm;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.IOException;
-import java.util.TreeSet;
-import org.openide.ErrorManager;
+//import org.openide.ErrorManager;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;

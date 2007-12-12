@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ import org.openide.util.actions.CookieAction;
 public final class SmartFrogParse extends CookieAction {
     
     protected void performAction(Node[] activatedNodes) {
-        DataObject c = (DataObject) activatedNodes[0].getCookie(DataObject.class);
+        DataObject c = activatedNodes[0].getCookie(DataObject.class);
         FileObject f = c.getPrimaryFile();
         // get classpath
         String cp = SmartFrogSvcUtil.getSFClassPath();

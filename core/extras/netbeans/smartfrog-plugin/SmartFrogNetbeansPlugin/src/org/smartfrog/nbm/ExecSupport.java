@@ -18,11 +18,15 @@
  */
 
 package org.smartfrog.nbm;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.ErrorManager;
-import org.openide.windows.*;
+import org.openide.windows.InputOutput;
 /**
  *
  * @author  ludo
