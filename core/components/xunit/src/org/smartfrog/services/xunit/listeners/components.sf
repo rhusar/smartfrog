@@ -27,15 +27,29 @@ For more information: www.smartfrog.org
   */
 #include "/org/smartfrog/components.sf"
 
+
+/**
+ * Schema for test listeners
+ */
+TestListenerSchema extends Schema {
+   name extends String;
+}
+
+/**
+ * Schema for directory driven test listeners
+ */
+DirectoryBasedTestListenerSchema extends Schema {
+  outputDirectory extends FilenameType ;
+  name extends String;
+}
+
+
 /**
  * this is a declaration of a test listener
  */
 
 TestListener extends Prim {
-
-   testListenerSchema extends Schema {
-       name extends String;
-   }
+   testListenerSchema extends TestListenerSchema ;
 }
 
 

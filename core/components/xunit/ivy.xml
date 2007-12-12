@@ -48,10 +48,6 @@
         name="sf-tasks" changing="true"
         rev="latest.integration"
         conf="build->default"/>
-<!--    <dependency org="org.smartfrog"
-        name="sf-xml" changing="true"
-        rev="latest.integration"
-        conf="compile->master;runtime->default"/>-->
     <dependency org="org.smartfrog"
         name="sf-testharness" changing="true"
         rev="latest.integration"
@@ -61,6 +57,13 @@
         changing="true"
         rev="latest.integration"
         conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>
+
+    <!-- ant is pulled in to test the AntXML; if junitreport can handle it,
+         then it must be OK -->
+    <dependency org="org.smartfrog"
+        name="sf-ant" changing="true"
+        rev="latest.integration"
+        conf="test->ant-optional"/>
 
     <!--Xom is pulled in for AntXML support.
     It is mandatory during compile and test, but only needed at runtime if

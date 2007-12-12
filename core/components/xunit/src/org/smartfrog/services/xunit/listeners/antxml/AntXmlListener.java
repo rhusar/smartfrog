@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 import nu.xom.Attribute;
 import nu.xom.Serializer;
@@ -86,9 +84,8 @@ public class AntXmlListener implements FileListener,XMLConstants {
     /**
      * This is built up as we go along
      */
-    private Element root;
+    private Element root,stdout,stderr;
     
-    private List<LogEntry> logEntries;
 
     public AntXmlListener(String hostname,
                                        File destFile,
@@ -101,9 +98,6 @@ public class AntXmlListener implements FileListener,XMLConstants {
         this.suitename = suitename;
         this.startTime = startTime;
     }
-
-
-
 
 
     /**
@@ -127,7 +121,8 @@ public class AntXmlListener implements FileListener,XMLConstants {
     public synchronized void open() throws IOException, RemoteException {
         root = new Element(TESTSUITES);
         document=new Document(root);
-        logEntries=new ArrayList<LogEntry>();
+        stdout=new Element(XMLConstants.SYSTEM_OUT);
+        stderr=new Element(XMLConstants.SYSTEM_OUT);
         maybeAddAttribute(root, XMLConstants.HOSTNAME, hostname);
         maybeAddAttribute(root, XMLConstants.ATTR_NAME, suitename);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -156,7 +151,8 @@ public class AntXmlListener implements FileListener,XMLConstants {
         } finally {
             //cleanup
             document=null;
-            logEntries=null;
+            stdout=null;
+            stderr=null;
         }
         
     }
@@ -203,8 +199,6 @@ public class AntXmlListener implements FileListener,XMLConstants {
                 }
             }
         }
-        
-        
     }
     
     
@@ -283,7 +277,10 @@ public class AntXmlListener implements FileListener,XMLConstants {
      * @throws RemoteException on network trouble
      */
     public void log(LogEntry event) throws RemoteException {
-        logEntries.add(event);
+        String text = event.logString();
+        Element target;
+        target = (event.getLevel() == LogEntry.LOG_LEVEL_STDERR) ? stderr : stdout;
+        target.appendChild(text);
         stats.incLoggedMessages();
     }
      /**
@@ -344,9 +341,6 @@ public class AntXmlListener implements FileListener,XMLConstants {
         }
     }
 
- 
-    
-       
     
 
     
@@ -415,14 +409,6 @@ skipped:falsetest that error page of the WAR returns the error we want,
         //process the fault
         ThrowableTraceInfo fault = test.getFault();
         if (fault != null) {
-//            StackTraceElement[] stack = fault.getStack();
-//            StringBuilder trace = new StringBuilder();
-//            for (StackTraceElement elt : stack) {
-//                trace.append(elt.toString());
-//                trace.append('\n');
-//            }
-//            Element thrown = addElement(testcase, type, fault.toString()
-//                +"\n"+trace.toString());
             Element thrown = addElement(testcase, type, fault.toString());
             maybeAddAttribute(thrown, 
                     XMLConstants.ATTR_MESSAGE, 
@@ -434,16 +420,14 @@ skipped:falsetest that error page of the WAR returns the error we want,
     }    
 
     /**
-     * Run through the log creating all the entries
+     * append the log elements if they are not already in the document
      */
     void addLogEntries() {
-        Element stdout=addElement(XMLConstants.SYSTEM_OUT, null);
-        Element stderr=addElement(XMLConstants.SYSTEM_OUT, null);
-        for(LogEntry entry:logEntries) {
-            String text=entry.logString();
-            Element target;
-            target=(entry.getLevel()==LogEntry.LOG_LEVEL_STDERR)?stderr:stdout;
-            target.appendChild(text);
+        if(stdout.getParent()==null) {
+            root.appendChild(stdout);
+        }
+         if(stderr.getParent()==null) {
+            root.appendChild(stderr);
         }
     }
 }
