@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.nbm;
 
+import java.util.prefs.Preferences;
 import org.netbeans.spi.options.AdvancedOption;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.NbBundle;
-import java.util.prefs.*;
 
 public final class SmartfrogsvcAdvancedOption extends AdvancedOption {
     

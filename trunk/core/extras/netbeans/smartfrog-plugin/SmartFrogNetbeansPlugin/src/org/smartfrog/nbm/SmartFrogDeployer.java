@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -54,7 +54,7 @@ public class SmartFrogDeployer {
     
     public static void terminateComponent() {
         
-        TreeSet currentNames = SmartFrogDeployer.getDeployedNames();
+        TreeSet<String> currentNames = SmartFrogDeployer.getDeployedNames();
         SelectCurrentName scn = new SelectCurrentName(null,true);
         scn.setModel(currentNames.iterator());
         int centerX = scn.getWidth()/2;

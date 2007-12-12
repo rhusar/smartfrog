@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@ import org.openide.util.actions.CookieAction;
 public final class SmartFrogDeployUsingFile extends CookieAction {
     
     protected void performAction(Node[] activatedNodes) {
-        SmartFrogFileTypeDataObject c = (SmartFrogFileTypeDataObject) activatedNodes[0].getCookie(SmartFrogFileTypeDataObject.class);
+        SmartFrogFileTypeDataObject c = activatedNodes[0].getCookie(SmartFrogFileTypeDataObject.class);
         SmartFrogDeployer.deployComponent(c,false);
     }
     

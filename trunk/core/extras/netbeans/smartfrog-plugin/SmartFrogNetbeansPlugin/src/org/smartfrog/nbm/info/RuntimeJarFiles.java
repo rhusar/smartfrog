@@ -20,11 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.nbm.info;
 
-import org.netbeans.api.project.Project;
-import org.netbeans.api.project.ProjectUtils;
-import org.netbeans.api.java.classpath.*;
 import org.smartfrog.nbm.SmartFrogSvcUtil;
-import java.util.*;
 
 
 public class RuntimeJarFiles {

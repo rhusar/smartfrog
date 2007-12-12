@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -122,11 +122,11 @@ public class SmartFrogSyntax extends Syntax {
                             offset++;
                             actChar = buffer[offset];
                             if (actChar == '/') {
-                                state = this.STATE_IN_COMMENT_LINE;
+                                state = SmartFrogSyntax.STATE_IN_COMMENT_LINE;
                                 offset++;
                                 return SmartFrogTokenContext.COMMENT;
                             } else if (actChar == '*') {
-                                state = this.STATE_IN_COMMENT_BLOCK;
+                                state = SmartFrogSyntax.STATE_IN_COMMENT_BLOCK;
                                 offset++;
                                 return SmartFrogTokenContext.COMMENT;
                             } else {
@@ -138,13 +138,13 @@ public class SmartFrogSyntax extends Syntax {
                             actChar = buffer[offset];
                             if (actChar == '-') {
                                 offset++;
-                                state = this.STATE_AFTER_NAME;
+                                state = SmartFrogSyntax.STATE_AFTER_NAME;
                                 return SmartFrogTokenContext.KEYWORD;
                             } else {
-                                state = this.STATE_ATTRIBUTE_NAME;
+                                state = SmartFrogSyntax.STATE_ATTRIBUTE_NAME;
                             }
                         default:
-                            state = this.STATE_ATTRIBUTE_NAME;
+                            state = SmartFrogSyntax.STATE_ATTRIBUTE_NAME;
                             partialToken += actChar;
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
                     }
@@ -152,7 +152,7 @@ public class SmartFrogSyntax extends Syntax {
                 case STATE_IN_COMMENT_LINE:
                     switch (actChar) {
                         case '\n' :
-                            state = this.STATE_INIT;
+                            state = SmartFrogSyntax.STATE_INIT;
                             return SmartFrogTokenContext.COMMENT;
                         default:
                             if ( (offset+1 == stopOffset) && (lastBuffer) ) {
@@ -170,7 +170,7 @@ public class SmartFrogSyntax extends Syntax {
                                 actChar = buffer[offset];
                                 if (actChar == '/') {
                                     offset++;
-                                    state = this.STATE_INIT;
+                                    state = SmartFrogSyntax.STATE_INIT;
                                     return SmartFrogTokenContext.COMMENT;
                                 } else {
                                     offset++;
@@ -192,7 +192,7 @@ public class SmartFrogSyntax extends Syntax {
                 case STATE_AFTER_INCLUDE:
                     switch (actChar) {
                         case '\n':
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             return SmartFrogTokenContext.IVALUE;
                         case '\"':
                             if (!firstQuote) {
@@ -201,7 +201,7 @@ public class SmartFrogSyntax extends Syntax {
                                 return SmartFrogTokenContext.IVALUE;
                             } else {
                                 firstQuote = false;
-                                state = this.STATE_INIT;
+                                state = STATE_INIT;
                                 offset++;
                                 return SmartFrogTokenContext.IVALUE;
                             }
@@ -215,11 +215,11 @@ public class SmartFrogSyntax extends Syntax {
                         case ' ' :
                             if (partialToken.equalsIgnoreCase("include")) {
                                 firstQuote = false;
-                                state = this.STATE_AFTER_INCLUDE;
+                                state = STATE_AFTER_INCLUDE;
                                 offset++;
                                 return SmartFrogTokenContext.INCLUDE;
                             } else {
-                                state = this.STATE_INIT;
+                                state = STATE_INIT;
                             }
                             break;
                         default :
@@ -238,13 +238,13 @@ public class SmartFrogSyntax extends Syntax {
                             partialToken = new String();
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
                         case ';' :
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
                         case '\n' :
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
                         case ' ' :
-                            state = this.STATE_AFTER_NAME;
+                            state = STATE_AFTER_NAME;
                             offset++;
                             partialToken = new String();
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
@@ -379,7 +379,7 @@ public class SmartFrogSyntax extends Syntax {
                             return SmartFrogTokenContext.OPERATOR;
                         case '\"':
                             offset++;
-                            state = this.STATE_IN_QUOTE;
+                            state = STATE_IN_QUOTE;
                             return SmartFrogTokenContext.STRING;
                         case '#':
                             offset++;
@@ -387,7 +387,7 @@ public class SmartFrogSyntax extends Syntax {
                             if (offset < stopOffset) {
                                 if (actChar == '#') {
                                     offset++;
-                                    state = this.STATE_IN_POUND_QUOTE;
+                                    state = STATE_IN_POUND_QUOTE;
                                     return SmartFrogTokenContext.STRING;
                                 }
                             } else {
@@ -395,21 +395,21 @@ public class SmartFrogSyntax extends Syntax {
                             }
                         case '\n':
                             offset++;
-                            state = this.STATE_INIT;
+                            state =STATE_INIT;
                             return SmartFrogTokenContext.END_OF_LINE;
                         case ';' :
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             // don't increment offset so that it stays pointing at ';'
                             return SmartFrogTokenContext.ATTRIBUTE_VALUE;
                         case ' ' :
                             if (!firstQuote) {
                                 if (partialToken.equals("IF")) {
                                     offset++;
-                                    state = this.STATE_IF;
+                                    state = STATE_IF;
                                     partialToken = new String();
                                     return SmartFrogTokenContext.KEYWORD;
                                 } else if (partialToken.equalsIgnoreCase("extends")) {
-                                    state = this.STATE_AFTER_EXTENDS;
+                                    state = STATE_AFTER_EXTENDS;
                                     partialToken = new String();
                                     return SmartFrogTokenContext.EXTENDS;
                                 } else if (partialToken.equals("TBD")) {
@@ -474,7 +474,7 @@ public class SmartFrogSyntax extends Syntax {
                             } else if ( partialToken.equals("extends")) {
                                 partialToken = new String();
                                 offset++;
-                                state = this.STATE_AFTER_EXTENDS;
+                                state = STATE_AFTER_EXTENDS;
                                 return SmartFrogTokenContext.EXTENDS;
                             } else if ( (offset+1 == stopOffset) && (lastBuffer) ) {
                                 offset++;
@@ -487,7 +487,7 @@ public class SmartFrogSyntax extends Syntax {
                         case '\n':
                         case '\"' :
                             offset++;
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             return SmartFrogTokenContext.STRING;
                         default:
                             offset++;
@@ -497,7 +497,7 @@ public class SmartFrogSyntax extends Syntax {
                     switch (actChar) {
                         case '#' :
                             offset++;
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             return SmartFrogTokenContext.STRING;
                         default:
                             offset++;
@@ -510,7 +510,7 @@ public class SmartFrogSyntax extends Syntax {
                             return SmartFrogTokenContext.BASE;
                         case '{' :
                         case ';' :
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             // don't increment offset so that it stays pointing at ';'
                             if (partialToken.indexOf("NULL")>=0) {
                                 return SmartFrogTokenContext.KEYWORD;
@@ -521,7 +521,7 @@ public class SmartFrogSyntax extends Syntax {
                             offset++;
                             return SmartFrogTokenContext.ATTRIBUTE_VALUE;
                         case '\n':
-                            state = this.STATE_INIT;
+                            state = STATE_INIT;
                             break;
                         default:
                             partialToken += actChar;
