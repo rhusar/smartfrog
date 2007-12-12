@@ -27,7 +27,6 @@ import org.smartfrog.test.DeployingTestBase;
 public class ConditionalTest extends DeployingTestBase {
 
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
-    private static final String WAITFOR_FAILED = "waitfor failed";
 
     public ConditionalTest(String s) {
         super(s);
