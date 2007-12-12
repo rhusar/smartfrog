@@ -29,6 +29,10 @@
   <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
   <conf name="runtime" description="runtime but not the artifact"
       extends="redist"/>
+  <conf name="ant-optional" 
+    description="ant and its optional JARs; no dependent artifacts; 
+     JARs with proprietary dependencies are omitted"
+      extends="redist"/>
   <conf name="documentation"
       description="all documentation artifacts"/>  
 </configurations> 
@@ -57,10 +61,77 @@
     <dependency org="org.apache.ant"
         name="ant"
         rev="${apache.ant.version}"
-        conf="compile->default;redist->default"/>
-<!--    <dependency org="org.apache.ant"
-        name="ant-optional"
+        conf="compile->master;redist->master"/>
+   <!-- here are the optionals -->
+   <dependency org="org.apache.ant"
+        name="ant-antlr"
         rev="${apache.ant.version}"
-        conf="compile->default;redist->default"/>-->
-  </dependencies>
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-bcel"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-bsf"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-log4j"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-oro"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-regexp"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-resolver"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-commons-logging"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-commons-net"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jai"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jai"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jdepend"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jmf"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jsch"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-junit"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-launcher"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-nodeps"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+
+  
+</dependencies>
 </ivy-module>
