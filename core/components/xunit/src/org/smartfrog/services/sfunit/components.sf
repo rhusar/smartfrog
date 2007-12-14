@@ -29,8 +29,8 @@ For more information: www.smartfrog.org
    *
    */
   SFUnitTestSuite extends TestSuite {
-
-    sfClass "org.smartfrog.services.sfunit.SFUnitSuiteImpl";
+    sfClass "org.smartfrog.services.sfunit.SFUnitTestSuiteImpl";
+    sfShouldTerminate true;
   }
 
 

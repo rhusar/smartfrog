@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 /**
- * Compoennt to create indices
+ * Component to create indices
  */
 
 XmlTestIndexSchema extends Schema {

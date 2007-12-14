@@ -45,7 +45,6 @@ public class AntXmlTestListenerComponent
 
     /**
      * {@inheritDoc}
-
      * @throws IOException for problems
      */
     protected FileListener createNewSingleHostListener(String hostname,

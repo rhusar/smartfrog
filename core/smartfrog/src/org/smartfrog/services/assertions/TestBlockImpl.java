@@ -115,7 +115,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * RegisterWith sub-component.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while deploying the
+     * @throws SmartFrogException In case of any error while deploying the
      * component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -239,6 +239,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @param record exit record of the component
      * @param comp   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
+     * @throws SmartFrogRuntimeException for runtime exceptions
+     * @throws RemoteException for network problems
      */
     protected boolean onChildTerminated(TerminationRecord record, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {
