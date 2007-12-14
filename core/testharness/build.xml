@@ -161,6 +161,9 @@ For more information: www.smartfrog.org
       run.failing.tests=${run.failing.tests}
       testcase=${testcase}
     </echo>
+    <condition property="jrockit.jvm" >
+        <contains string="${sun.boot.class.path}" substring="jrockit" />
+    </condition>
     <patternset id="teststhatfail">
       <!--SFOS-403-->
       <exclude name="${systemtests}/workflow/conditional/FailingConditionTest.*"
@@ -174,9 +177,13 @@ For more information: www.smartfrog.org
       <!-- SFOS-563 Constant tests are failing -->
       <exclude name="${systemtests}/reference/constant/ConstantReferenceTest.*"
           unless="run.failing.tests" />
-      <!-- SFOS-563 Constant tests are failing -->
-      <exclude name="${systemtests}/reference/ReferenceSystemTest.*"
-          unless="run.failing.tests" />
+          
+      <!-- SFOS-565 cyclic reference test tcn19.sf is now spinning instead of detecting a cyclic reference 
+       (this is a JRockit problem)
+      -->
+      <exclude name="${systemtests}/reference/CyclicReferenceTest.*"
+        if="jrockit.jvm"
+        unless="run.failing.tests" />
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
