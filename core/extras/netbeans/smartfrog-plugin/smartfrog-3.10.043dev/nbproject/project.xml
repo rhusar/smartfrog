@@ -33,14 +33,14 @@
                 <package>org.smartfrog.sfcore.workflow.eventbus</package>
             </public-packages>
             <class-path-extension>
-<!--
-                <runtime-relative-path>ext/smartfrog-3.10.043dev.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/smartfrog-3.10.043dev.jar</binary-origin>
--->
                 <runtime-relative-path>ext/smartfrog.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/smartfrog.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/sfServices.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/sfServices.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/sfExamples.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/sfExamples.jar</binary-origin>
             </class-path-extension>

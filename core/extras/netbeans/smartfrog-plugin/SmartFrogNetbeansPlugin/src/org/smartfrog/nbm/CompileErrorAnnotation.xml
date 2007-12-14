@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 -->
 
 <!DOCTYPE type PUBLIC '-//NetBeans//DTD annotation type 1.0//EN' 'http://www.netbeans.org/dtds/annotation-type-1_0.dtd'>
-<type name="CompileError" severity="error" description_key="LBL_some-annotation" localizing_bundle="com.hp.ov.smartfrogsvc.Bundle"
+<type name="CompileError" severity="error" description_key="LBL_some-annotation" localizing_bundle="org.smartfrog.nbm.Bundle"
 visible="true" glyph="nbresloc:/org/smartfrog/nbm/frog16x16error.gif" type="line" waveunderline="1">
     <!-- highlight="#FFFF00" -->
 </type>
