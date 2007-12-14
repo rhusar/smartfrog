@@ -34,7 +34,7 @@ public class SmartFrogFileTypeDataLoader extends UniFileLoader {
     private static final long serialVersionUID = 1L;
     
     public SmartFrogFileTypeDataLoader() {
-        super("com.hp.ov.smartfrogsvc.SmartFrogFileTypeDataObject");
+        super("org.smartfrog.nbm.SmartFrogFileTypeDataObject");
     }
     
     protected String defaultDisplayName() {
