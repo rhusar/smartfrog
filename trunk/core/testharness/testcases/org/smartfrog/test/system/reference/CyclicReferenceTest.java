@@ -73,4 +73,14 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
                 EXCEPTION_TYPERESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
+    
+    
+    public void testCaseTCN19() throws Exception {
+        deployExpectingException("org/smartfrog/test/system/reference/" + "tcn19.sf",
+                "tcn19",
+                EXCEPTION_DEPLOYMENT,
+                "Failed to resolve 'attr ",
+                EXCEPTION_LINKRESOLUTION,
+                POSSIBLE_CAUSE_CYCLIC_REFERENCE);
+    }
 }
