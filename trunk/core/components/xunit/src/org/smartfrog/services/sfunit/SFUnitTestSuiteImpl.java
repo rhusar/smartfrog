@@ -39,6 +39,7 @@ import java.net.InetAddress;
 
 public class SFUnitTestSuiteImpl extends AbstractTestSuite
         implements SFUnitTestSuite {
+    public static final String ERROR_NOT_CONFIGURED = "TestSuite has not been configured yet";
     private volatile boolean finished = false;
     private volatile boolean failed = false;
     private volatile boolean succeeded = false;
@@ -164,6 +165,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @return true if they worked
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for other problems
+     * @throws InterruptedException if the test run is interrupted
      */
     public boolean runTests() throws RemoteException, SmartFrogException, InterruptedException {
         InetAddress host = sfDeployedHost();
@@ -177,7 +179,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         if (getConfiguration() == null) {
             throw new SmartFrogException(
-                    "TestSuite has not been configured yet");
+                    ERROR_NOT_CONFIGURED);
         }
         if (maybeSkipTestSuite()) {
             skipped = true;
@@ -223,6 +225,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         activeTest = (Prim) testBlock;
         Exception caught;
         try {
+            sfLog().info("Starting "+activeTest.sfCompleteName().toString());
             activeTest.sfStart();
             //now we wait for the child to terminate
             //TODO: block, without breaking synchronization

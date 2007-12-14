@@ -42,6 +42,7 @@ import java.util.HashMap;
  */
 public abstract class AbstractXmlListenerComponent extends PrimImpl
         implements XmlListenerFactory {
+    public static final String ERROR_UNABLE_TO_CREATE_DEST_DIR = "Unable to create destination directory ";
     private Log log;
     protected ComponentHelper helper = new ComponentHelper(this);
     protected String outputDir;
@@ -67,7 +68,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param xmlFilename the XML filename being created
      */
     protected synchronized void addMapping(String hostname,String suitename, String xmlFilename) {
-        if (getMapping(suitename) != null) {
+        if (getMapping(hostname,suitename) != null) {
             log.warn("A suite called " +
                     suitename
                     + " exists; its output will be overwritten");
@@ -81,7 +82,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param suitename suite to lookup
      * @return absolute path of the output file, or null for no mapping.
      */
-    private synchronized String getMapping(String suitename) {
+    private synchronized String getMapping(String hostname,String suitename) {
         return testFiles.get(suitename);
     }
 
@@ -95,7 +96,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      */
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException {
-        return getMapping(suitename);
+        return getMapping(hostname,suitename);
     }
 
     /**
@@ -128,7 +129,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = helper.getLogger();
+        log = sfLog();
     }
 
     /**
@@ -141,22 +142,25 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        log = sfLog();
         outputDir = lookupOutputDir();
         File destDir = new File(outputDir);
         destDir.mkdirs();
         if (!destDir.exists()) {
             throw new SmartFrogInitException(
-                    "Unable to create destination directory " + destDir);
+                    ERROR_UNABLE_TO_CREATE_DEST_DIR + destDir);
         }
         preamble = sfResolve(XmlListenerFactory.ATTR_PREAMBLE, (String) null, false);
         useHostname = sfResolve(XmlListenerFactory.ATTR_USE_HOSTNAME, true, true);
         useProcessname = sfResolve(XmlListenerFactory.ATTR_USE_PROCESSNAME, true, true);
         suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, false);
-        log.info("output dir is " + outputDir
-                + "; hostname=" + useHostname
-                +" ; useProcessname="
-                +useProcessname);
-        log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
+        if(log.isInfoEnabled()) {
+            log.info("output dir is " + outputDir
+                    + "; hostname=" + useHostname
+                    +" ; useProcessname="
+                    +useProcessname);
+            log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
+        }
     }
 
     /**

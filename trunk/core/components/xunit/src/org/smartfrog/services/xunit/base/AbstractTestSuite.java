@@ -237,7 +237,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
     public List<String> flattenStringList(List src, String listName)
-            throws SmartFrogException {
+            throws SmartFrogInitException {
         if (src == null) {
             return new ArrayList<String>(0);
         }
@@ -293,7 +293,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * Create a new listener from the current factory.
      * @param suiteName name of the suite
      * @return a new listener
-     * @throws SmartFrogRuntimeException if needed
+     * @throws SmartFrogException if needed
      * @throws RemoteException on network trouble
      */
     protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
