@@ -190,7 +190,9 @@ public class SmartFrogSvcUtil {
         while (iter.hasNext()) {
             res += iter.next().toExternalForm() + " ";
         }
-        res = res.substring(0,res.length()-1);
+        if(res.length()>0) {
+            res = res.substring(0,res.length()-1);
+        }
         return res;
     }
     
