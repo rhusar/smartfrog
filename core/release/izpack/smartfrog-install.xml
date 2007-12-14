@@ -331,9 +331,8 @@ SmartFrog to deploy complex systems.
         Build file logging and failure is integrated into the overall deployment,
         so remote errors will be caught and reported. 
 
-        The package also contains the Ant ${apache.ant.version} JAR files:
+        The package also contains the Ant ${apache.ant.version} JAR file:
         ant-${apache.ant.version}.jar
-        ant-launcher-${apache.ant.version}.jar
         It does not contain any of the Ant optional libraries, or their dependencies.
       </description>
       <file src="ivy/lib/package-ant/sf-ant-${smartfrog.version}.jar"
@@ -346,9 +345,6 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>
       <file src="ivy/lib/package-ant/ant-${apache.ant.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-ant/ant-launcher-${apache.ant.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
     </pack>

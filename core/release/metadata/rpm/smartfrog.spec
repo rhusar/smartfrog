@@ -161,9 +161,8 @@ components that can run Ant tasks and build files during deployment.
 Build file logging and failure is integrated into the overall deployment,
 so remote errors will be caught and reported. 
 
-The package also contains the Ant ${apache.ant.version} JAR files:
+The package also contains the Ant ${apache.ant.version} JAR file:
 ant-${apache.ant.version}.jar
-ant-launcher-${apache.ant.version}.jar
 It does not contain any of the Ant optional libraries, or their dependencies.
 
 # -----------------------------------------------------------------------------
@@ -559,7 +558,7 @@ fi
 %{libdir}/ant-launcher-${apache.ant.version}.jar
 %{linkdir}/sf-ant.jar
 %{linkdir}/ant.jar
-%{linkdir}/ant-launcher.jar
+#no longer present %{linkdir}/ant-launcher.jar
 
 
 %files anubis
