@@ -121,7 +121,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     }
 
-    private void submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
+    private String submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
 
         String AppName = null;
         AppName = "App_" + sdf.format(cal.getTime()).replace(' ', '_').replace(':', '_') + appCounter++;
@@ -137,13 +137,13 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
             }
 
         } catch (SmartFrogDeploymentException ex1) {
-            throw new SFSubmitException(ex1);
+            throw new SFSubmitException(AppName, ex1);
         } catch (SmartFrogException ex1) {
-            throw new SFSubmitException(ex1);
+            throw new SFSubmitException(AppName, ex1);
         } catch (RemoteException ex1) {
-            throw new SFSubmitException(ex1);
+            throw new SFSubmitException(AppName, ex1);
         }
-
+	return AppName;
     }
 
 
@@ -288,12 +288,16 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
         Map resultSet = new HashMap();
         String status = "Success";
+	String appName = null;
         try {
-            submitTemplate(descriptionFile, attributes, host);
+             appName = submitTemplate(descriptionFile, attributes, host);
         } catch (Exception exp) {
-            status = "Deployment Failed with Exception " + exp.toString();
+            status = "Deployment Failed with Exception " + exp.getCause();
+	    appName = exp.getMessage();
         }
         resultSet.put("STATUS", status);
+	if( appName != null)
+        	resultSet.put("APP_NAME", appName);
         return resultSet;
     }
 
