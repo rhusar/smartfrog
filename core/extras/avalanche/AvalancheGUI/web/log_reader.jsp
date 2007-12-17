@@ -18,17 +18,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 */ %>
 <%@ page language="java" %>
+<%@ page import="java.io.*"%>
+<%@ page import="org.smartfrog.avalanche.util.*"%>
+<%@ page import="org.smartfrog.avalanche.server.engines.sf.*"%>
 <%@ include file="header.inc.jsp" %>
-<%@	page import="java.io.*"%>
-<%@	page import="org.smartfrog.avalanche.util.*"%>
 
 <%
 	String myURI = request.getRequestURI() + "?" + request.getQueryString();
   	String errMsg = null; 
   	String filePath = request.getParameter("filePath");
-  	
+  	String host = request.getParameter("host");
+  	String avalancheServer = request.getServerName();
+	int  avalanchePort = request.getServerPort();
+		
   	// use only if startLine is null;
   	String maxLinesStr = request.getParameter("maxLines");
+	SFAdapter adapter = new SFAdapter(factory);
+	adapter.getHostReport(host, filePath, avalancheServer, avalanchePort);
 
 	File file = new File(filePath);
 	if( !file.exists() ){
@@ -36,7 +42,6 @@ For more information: www.smartfrog.org
 	}else if( !file.canRead() ){
 		errMsg = "Error! No read permission for log file: " + filePath ;
 	}
-	
 	long fileSize = file.length();
 	String readAll = request.getParameter("readAll");
 	StringBuffer buf = null;
@@ -45,7 +50,7 @@ For more information: www.smartfrog.org
 		buf = DiskUtils.readFile(file);
 	}else{
 	
-		int maxLines = 100; // default value
+		int maxLines = 1000; // default value
 		
 		if( maxLinesStr != null ){
 			try{
@@ -78,7 +83,7 @@ For more information: www.smartfrog.org
 
 <br/>
 
-<textarea readonly cols="auto" rows="auto" style="width:100%;height:90%"><%=buf.toString()%></textarea>
+<textarea readonly cols="auto" rows="10" style="width:100%;height:100%"><%=buf.toString()%></textarea>
 
 
 <%@ include file="footer.inc.jsp" %>
