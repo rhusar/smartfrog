@@ -249,7 +249,7 @@
 
 
   <target name="allJars"
-      depends="coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
+      depends="setup-library,coreJar,sfXMPPClient,shared,simpleExecComponentJar,ftpComponentJar,sfAntJar,gnubuild,gt4build,gridftp,
 		gt4prereqs,clientutils,diskutils,gt4exec,gt4javawscore,gt4security,gt4wsgram,ca,compressComponentJar,rpmComponentJar,
 		sfUninstallJar,sfGT4WSCoreJar,jboss">
   </target>
