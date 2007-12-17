@@ -41,6 +41,9 @@ import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.avalanche.core.host.DataTransferModeType;
+import org.smartfrog.avalanche.core.host.ArgumentType;
+import org.smartfrog.services.sfinterface.SmartfrogAdapter;
 
 import javax.swing.*;
 import java.io.File;
@@ -183,14 +186,16 @@ public class SFAdapter {
                             break;
                         }
                     }
-
+		String homeDir = this.avalancheFactory.getAvalancheHome();
+       		String logsDir = homeDir + File.separator + "logs";
                     if (null != currentState) {
                         currentState.setState("Running");
 
                         Map m = (Map) retCodes.get(h);
                         String status = (String) m.get("STATUS");
+                        String appName = (String) m.get("APP_NAME");
 
-                        currentState.setLogFile(status);
+                        currentState.setLogFile(logsDir+File.separator +appName+".out");
                         currentState.setLastUpdated(getDateTime());
                         currentState.setState(status);
                     }
@@ -504,6 +509,83 @@ public class SFAdapter {
             putValue(server, new Integer(monitor.getData()));
             System.out.println("Value   " + monitor.getData());
         }
+    }
+
+    public void getHostReport(String host, String outputFile, String avalancheServer, int avalanchePort) throws SFSubmitException{
+	    try {
+	    HostManager hm = avalancheFactory.getHostManager();
+	    // Retrieving host information
+                HostType h = hm.getHost(host);
+
+                // Username and password
+                String username = h.getUser();
+                String password = h.getPassword();
+                
+                HostType.TransferModes tm = h.getTransferModes();
+                if (null != tm) {
+                    DataTransferModeType[] transferModes = tm.getModeArray();
+                    if (null != transferModes) {
+                        for (DataTransferModeType transferMode : transferModes) {
+                            // Set TransferMode which is selected as default
+                            if (transferMode.getIsDefault()) {
+                                username = transferMode.getUser();
+                                password = transferMode.getPassword();
+                                break;
+                            }
+                        }
+                    }
+                }
+		
+		ArgumentType argType = h.getArguments();
+                String avalancheInstallationDirectory = null;
+                
+                if (null != argType) {
+                    ArgumentType.Argument[] args = argType.getArgumentArray();
+
+                    for (ArgumentType.Argument arg : args) {
+                        if (arg.getName().equals("AVALANCHE_HOME")) {
+                            avalancheInstallationDirectory = arg.getValue();
+                        }
+                    }
+                }
+		 String remoteLoadServer = this.avalancheFactory.getAttribute(AvalancheFactory.AVALANCHE_SERVER_NAME);
+
+		HashMap attrMap = new HashMap();
+		/*attrMap.put("sfConfig:FTPDownloadComp:server", host);
+		attrMap.put("sfConfig:FTPDownloadComp:userName", username);
+		attrMap.put("sfConfig:FTPDownloadComp:password", password);
+		attrMap.put("sfConfig:FTPDownloadComp:downloadFile", avalancheInstallationDirectory + "/smartfrog/nohup.out");
+		attrMap.put("sfConfig:FTPDownloadComp:localFile",outputFile);*/
+		Vector a = new Vector();
+		a.add(avalancheInstallationDirectory + "/smartfrog/nohup.out");
+		Vector b = new Vector();
+		b.add(outputFile);
+		attrMap.put("sfConfig:SCP:host", host);
+		attrMap.put("sfConfig:SCP:username", username);
+		attrMap.put("sfConfig:password", password);
+		attrMap.put("sfConfig:remoteFiles", a);
+		attrMap.put("sfConfig:localFiles",b);
+	//	attrMap.put("sfConfig:sfCodeBase","http://" + avalancheServer + ":" + avalanchePort+ "/" + remoteLoadServer + "/Downloader.jsp?filePath=ftpComponent.jar" + " http://" + avalancheServer + ":" + avalanchePort+ "/" + remoteLoadServer + "/Downloader.jsp?filePath=commons-net-1.4.1.jar ");
+	//	attrMap.put("sfConfig:FTPDownloadComp:sfCodeBase","http://" + avalancheServer + ":" + avalanchePort+ "/" + remoteLoadServer + "/Downloader.jsp?filePath=ftpComponent.jar" + " http://" + avalancheServer + ":" + avalanchePort+ "/" + remoteLoadServer + "/Downloader.jsp?filePath=commons-net-1.4.1.jar ");
+		String homeDir = this.avalancheFactory.getAvalancheHome();
+        	String sfDistDir = homeDir + File.separator + "smartfrog" + File.separator + "dist";
+        	String logsDir = homeDir + File.separator + "logs";
+		
+		SmartfrogAdapter adapter = new SmartFrogAdapterImpl(sfDistDir);
+                SmartFrogAdapterImpl.setLogFilePath(logsDir);
+
+            	// run the description on local host for remote deployments.
+          //  	adapter.submit("org/smartfrog/avalanche/client/sf/ftp/FTPDownload.sf", attrMap, new String[]{host});
+            	//adapter.submit("org/smartfrog/avalanche/client/sf/ftp/FTPDownload.sf", attrMap, new String[]{"localhost"});
+            	adapter.submit("org/smartfrog/services/ssh/examples/scpAuthInlinePassExample.sf", attrMap, new String[]{"localhost"});
+	} catch (SFParseException e) {
+            throw new SFSubmitException(e);
+        } catch (SFMultiHostSubmitException e) {
+            throw new SFSubmitException(e);
+        } catch (Exception e) {
+            throw new SFSubmitException(e);
+        }
+
     }
 
     public void startMngConsole(String hostname) {
