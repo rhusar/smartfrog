@@ -1452,7 +1452,12 @@ java.class.path=
         <application>
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
-              classpathref="tests.run.classpath"/>
+              classpathref="tests.run.classpath">
+            <!--all properties beginning with test and runtime, and the codebase-->
+            <syspropertyset>
+              <propertyref prefix="test."/>
+            </syspropertyset>
+          </sf-startdaemon-debug>
         </application>
         <probe>
           <socket port="${smartfrog.daemon.port}" server="localhost"/>
