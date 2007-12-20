@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.Properties;
@@ -222,7 +221,7 @@ public final class ListUtils {
         return result;
     }
 
-        /**
+    /**
      * Extract a string tuple list; verify the depth is 2.
      * Everything is converted to strings in the process
      * @param component component to resolve against
@@ -242,15 +241,24 @@ public final class ListUtils {
         }
         int count=0;
         for (Object element : tupleList) {
-
             if (!(element instanceof Vector)) {
-                throw new SmartFrogResolutionException("Element ["+count+"] is "+ERROR_NOT_A_LIST + element);
+                throw new SmartFrogResolutionException(
+                        ref,null,
+                        "Element ["+count+"] is "+ERROR_NOT_A_LIST + element,
+                        element,
+                        null,
+                        component);
             }
             Vector entry = (Vector) element;
             if (entry.size() != width) {
-                throw new SmartFrogResolutionException("Element [" + count + "] is " +ERROR_WRONG_SIZE +
+                throw new SmartFrogResolutionException(
+                        ref,null,
+                        "Element [" + count + "] is " +ERROR_WRONG_SIZE +
                         " (expected "+width+" but got "+entry.size()+") "
-                        +entry);
+                        +entry,
+                        entry,
+                        null,
+                        component);
             }
         }
         return tupleList;
