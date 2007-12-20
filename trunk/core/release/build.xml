@@ -439,7 +439,6 @@
     <rpmpackage package="ant" />
     <ln artifact="sf-ant" version="${smartfrog.version}" />
     <ln artifact="ant" version="${apache.ant.version}" />
-    <ln artifact="ant-launcher" version="${apache.ant.version}" />
     
     <!-- anubis -->
     <rpmpackage package="anubis" />
@@ -1039,8 +1038,8 @@ rpm -qf ${rpm.install.dir}/docs ;
 rpm -qf ${rpm.javadocs.path}/index.html ;
 rpm -qf ${rpm.install.dir}/src ;
 rpm -qf ${rpm.install.dir}/src.zip ;
-rpm -qf ${rpm.install.dir}/lib/ant-launcher-${apache.ant.version}.jar; 
-rpm -qf ${rpm.install.dir}/links/ant-launcher.jar
+rpm -qf ${rpm.install.dir}/lib/ant-${apache.ant.version}.jar; 
+rpm -qf ${rpm.install.dir}/links/ant.jar
 "
         outputProperty="rpm.queries.results"/>
 
