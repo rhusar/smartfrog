@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -222,6 +222,40 @@ public final class ListUtils {
         return result;
     }
 
+        /**
+     * Extract a string tuple list; verify the depth is 2.
+     * Everything is converted to strings in the process
+     * @param component component to resolve against
+     * @param ref a reference
+     * @param required whether the element is required or not
+     * @return the tuple list, or null if none was provided
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
+     * otherwise fails.
+     * @throws RemoteException network problems
+     */
+    public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref,int width,boolean required)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector tupleList=null;
+        tupleList=component.sfResolve(ref, tupleList,required);
+        if(tupleList==null) {
+            return null;
+        }
+        int count=0;
+        for (Object element : tupleList) {
+
+            if (!(element instanceof Vector)) {
+                throw new SmartFrogResolutionException("Element ["+count+"] is "+ERROR_NOT_A_LIST + element);
+            }
+            Vector entry = (Vector) element;
+            if (entry.size() != width) {
+                throw new SmartFrogResolutionException("Element [" + count + "] is " +ERROR_WRONG_SIZE +
+                        " (expected "+width+" but got "+entry.size()+") "
+                        +entry);
+            }
+        }
+        return tupleList;
+    }
+    
     /**
      * Extract a string tuple list; verify the depth is 2.
      * Everything is converted to strings in the process
@@ -235,29 +269,18 @@ public final class ListUtils {
      */
     public static Vector<Vector<String>> resolveStringTupleList(Prim component, Reference ref,boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector tupleList=null;
-        tupleList=component.sfResolve(ref, tupleList,required);
+        Vector<Vector<Object>> tupleList=resolveNTupleList(component,ref,2,required);
         if(tupleList==null) {
             return null;
         }
         Vector<Vector<String>> result=new Vector<Vector<String>>(tupleList.size());
-        int count=0;
-        for (Object element : tupleList) {
-
-            if (!(element instanceof Vector)) {
-                throw new SmartFrogResolutionException("Element ["+count+"] is "+ERROR_NOT_A_LIST + element);
-            }
-            Vector entry = (Vector) element;
-            if (entry.size() != 2) {
-                throw new SmartFrogResolutionException("Element [" + count + "] is " +ERROR_WRONG_SIZE + entry);
-            }
+        for (Vector<Object> tuple: tupleList) {
             Vector<String> newEntry=new Vector<String>(2);
-            String name = entry.get(0).toString();
-            String value = entry.get(1).toString();
+            String name = tuple.get(0).toString();
+            String value = tuple.get(1).toString();
             newEntry.add(name);
             newEntry.add(value);
             result.add(newEntry);
-            
         }
         return result;
     }
