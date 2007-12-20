@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -27,13 +27,11 @@ import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestEventSink;
-import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.SFSystem;
 
 import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
 
-import junit.framework.AssertionFailedError;
 
 /**
  * An extension of SmartFrogTestBase with test awareness
