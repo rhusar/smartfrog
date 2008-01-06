@@ -1,4 +1,4 @@
-/** (C) Copyright 2004-2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2004-2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -21,15 +21,18 @@
 
 package org.smartfrog.services.xunit.listeners.antxml;
 
-import java.io.BufferedOutputStream;
+import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Serializer;
 import org.smartfrog.services.xunit.listeners.xml.FileListener;
-import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.LogEntry;
+import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,9 +41,6 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import nu.xom.Attribute;
-import nu.xom.Serializer;
-import org.smartfrog.services.xunit.serial.Statistics;
 
 
 
