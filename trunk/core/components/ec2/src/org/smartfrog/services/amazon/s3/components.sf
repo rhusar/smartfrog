@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -39,8 +39,12 @@ S3Resource extends AWSResource {
 S3Bucket extends S3Resource {
   name TBD;
   url (host ++ name);
-  startActions [HEAD];
-  livenessActions [HEAD];
+  startActions [];
+  livenessActions [];
+  terminateActions [];
+  //Amazon S3 return 404 on a delete, it makes responses idempotent.
+  //by defining a new delete action we can encode this
+  S3_DELETE_ACTION [DELETE,HttpCodes:NOT_FOUND,HttpCodes:NOT_FOUND];
 }
 
 /**
@@ -48,23 +52,19 @@ S3Bucket extends S3Resource {
  */
 
 TransientS3Bucket extends S3Bucket {
-  startActions [PUT];
-  livenessActions [HEAD];
-  terminateActions [DELETE];
+  startActions [PUT_ACTION];
+  livenessActions [HEAD_ACTION];
+  terminateActions [S3_DELETE_ACTION];
 }
 
 
 DeleteS3BucketOnStartup extends S3Bucket {
-  maximumResponseCode HttpCodes:NOT_FOUND;
-  minimumResponseCode maximumResponseCode;
-  startActions [DELETE];
+  startActions [S3_DELETE_ACTION];
 }
 
 
 DeleteS3BucketOnTermination extends S3Bucket {
-  maximumResponseCode HttpCodes:NOT_FOUND;
-  minimumResponseCode maximumResponseCode;
-  terminateActions [DELETE];
+  terminateActions [S3_DELETE_ACTION];
 }
 
 /**

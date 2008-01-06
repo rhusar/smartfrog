@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.LogSF;
 
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.Vector;
 
 /**
  * Implementation of a reslet resource
@@ -61,7 +61,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     public static final String ATTR_DATASOURCE = "datasource";
     public static final String ERROR_DIFFERENT_JVM = "Cannot access data from a data source in a different JVM";
 
-    private List<String> startActions, terminateActions, livenessActions;
+    private Vector<Vector<Object>> startActions, terminateActions, livenessActions;
     private LogSF log;
 
     public RemoteRestletResourceImpl() throws RemoteException {
@@ -97,12 +97,15 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         buildAuthentication();
         protocol = Protocol.valueOf(getLivenessPage().getTargetURL().getProtocol());
 
-        startActions= ListUtils.resolveStringList(this,new Reference(ATTR_STARTACTIONS),true);
-        livenessActions = ListUtils.resolveStringList(this,
+        startActions= ListUtils.resolveNTupleList(this,
+                new Reference(ATTR_STARTACTIONS),3,true);
+        livenessActions = ListUtils.resolveNTupleList(this,
                 new Reference(ATTR_LIVENESSACTIONS),
+                3,
                 true);
-        terminateActions = ListUtils.resolveStringList(this,
+        terminateActions = ListUtils.resolveNTupleList(this,
                 new Reference(ATTR_TERMINATEACTIONS),
+                3,
                 true);
 
         execute(startActions);
@@ -237,18 +240,20 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     }
 
     /**
-     * Create a client and handle the request, then call {@link #validate(Request,Response)} to check it
+     * Create a client and handle the request, then call validate() to check it
      *
      * @param method method to run
      * @param data any data
      * @return the response
      * @throws RestletOperationException for validation failures and errors
      */
-    protected Response handleAndValidate(Method method,Representation data)
+    protected Response handleAndValidate(Method method,Representation data,
+            int minResponseCode,
+            int maxResponseCode)
             throws RestletOperationException {
         Request request = buildRequest(method, data);
         Response response = handle(request);
-        validate(request, response);
+        validate(request, response,minResponseCode,maxResponseCode);
         return response;
     }
 
@@ -258,18 +263,20 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      * @param response the response we check
      * @throws RestletOperationException for validation failures and errors
      */
-    protected void validate(Request request, Response response)
+    protected void validate(Request request, Response response,
+            int minResponseCode,
+            int maxResponseCode)
             throws RestletOperationException {
         LivenessPageChecker checker = getLivenessPage();
         int responseCode = response.getStatus().getCode();
-        if (checker.isStatusOutOfRange(responseCode)) {
+        if (responseCode<minResponseCode || responseCode>maxResponseCode) {
             throw new RestletOperationException(
                     request,
                     "Status code " + responseCode
                         + " is out of range of "
-                        + livenessPage.getMinimumResponseCode()
+                        + minResponseCode
                         +"-"
-                        +livenessPage.getMaximumResponseCode(),
+                        +maxResponseCode,
                     response,
                     this);
         }
@@ -286,56 +293,59 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     }
 
 
-    protected Response get() throws RestletOperationException {
-      return handleAndValidate(Method.GET, null);
+    protected Response get(int minResponseCode,int maxResponseCode) throws RestletOperationException {
+      return handleAndValidate(Method.GET, null, minResponseCode, maxResponseCode);
     }
 
-    protected Response head() throws RestletOperationException {
-        return handleAndValidate(Method.HEAD, null);
+    protected Response head(int minResponseCode,int maxResponseCode) throws RestletOperationException {
+        return handleAndValidate(Method.HEAD, null, minResponseCode, maxResponseCode);
     }
 
-    protected Response options() throws RestletOperationException {
-        return handleAndValidate(Method.OPTIONS, null);
+    protected Response options(int minResponseCode,int maxResponseCode) throws RestletOperationException {
+        return handleAndValidate(Method.OPTIONS, null, minResponseCode, maxResponseCode);
     }
 
-    protected Response delete() throws RestletOperationException {
-        return handleAndValidate(Method.DELETE, null);
+    protected Response delete(int minResponseCode,int maxResponseCode) throws RestletOperationException {
+        return handleAndValidate(Method.DELETE, null, minResponseCode, maxResponseCode);
     }
 
-    protected Response post(Representation data)
+    protected Response post(Representation data,int minResponseCode,int maxResponseCode)
             throws RestletOperationException {
-        return handleAndValidate(Method.DELETE, data);
+        return handleAndValidate(Method.POST, data, minResponseCode, maxResponseCode);
     }
 
-    protected Response put(Representation data) throws RestletOperationException {
-        return handleAndValidate(Method.DELETE, data);
+    protected Response put(Representation data,int minResponseCode,int maxResponseCode) throws RestletOperationException {
+        return handleAndValidate(Method.PUT, data, minResponseCode, maxResponseCode);
     }
 
-    protected void execute(List<String> verbs)
+    protected void execute(Vector<Vector<Object>> operations)
             throws RemoteException, SmartFrogException {
-        if (verbs == null) {
+        if (operations == null) {
             return;
         }
-        for (String verb : verbs) {
-            execute(verb);
+        for(Vector<Object> operation:operations) {
+            String verb=operation.get(0).toString();
+            int minResponse=(Integer)operation.get(1);
+            int maxResponse=(Integer)operation.get(2);
+            execute(verb,minResponse,maxResponse);
         }
     }
 
-    protected Response execute(String verb)
+    protected Response execute(String verb,int minResponseCode,int maxResponseCode)
             throws RemoteException, SmartFrogException {
         Response response=null;
         if(GET.equals(verb)) {
-            response=get();
+            response=get(minResponseCode, maxResponseCode);
         } else if(HEAD.equals(verb)) {
-            response=head();
+            response=head(minResponseCode, maxResponseCode);
         } else if (OPTIONS.equals(verb)) {
-            response = options();
+            response = options(minResponseCode, maxResponseCode);
         } else if (POST.equals(verb)) {
-            response = post(loadRepresentation());
+            response = post(loadRepresentation(),minResponseCode, maxResponseCode);
         } else if (PUT.equals(verb)) {
-            response = post(loadRepresentation());
+            response = put(loadRepresentation(),minResponseCode, maxResponseCode);
         } else if (DELETE.equals(verb)) {
-            response = delete();
+            response = delete(minResponseCode, maxResponseCode);
         } else {
             throw new RestletOperationException(UNKNOWN_VERB +verb);
         }

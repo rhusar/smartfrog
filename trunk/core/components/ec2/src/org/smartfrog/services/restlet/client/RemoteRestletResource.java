@@ -19,11 +19,8 @@
  */
 package org.smartfrog.services.restlet.client;
 
-import org.restlet.resource.Representation;
 import org.smartfrog.services.www.HttpAttributes;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
 
 /**
  * Created 28-Nov-2007 17:23:26

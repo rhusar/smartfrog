@@ -68,6 +68,9 @@ public class RepresentationHelper {
      * @return true iff this is text or XML
      */
     public static boolean isTextType(MediaType mt) {
+        if(mt==null) {
+            return false;
+        }
         String maintype = mt.getMainType();
         return "text".equals(maintype)
                 || mt.equals(MediaType.TEXT_ALL, true)
@@ -80,11 +83,11 @@ public class RepresentationHelper {
      * @return true iff this is  XML
      */
     public static boolean isXMLType(MediaType mt) {
-        return mt.equals(MediaType.APPLICATION_XML, true)
+        return mt!=null && (mt.equals(MediaType.APPLICATION_XML, true)
                 || mt.equals(MediaType.APPLICATION_ATOM_XML, true)
                 || mt.equals(MediaType.APPLICATION_XHTML_XML, true)
                 || mt.equals(MediaType.APPLICATION_RDF_XML, true)
-                || mt.equals(MediaType.TEXT_XML, true)
+                || mt.equals(MediaType.TEXT_XML, true))
                 ;
     }
 

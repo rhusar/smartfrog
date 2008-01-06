@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -28,13 +28,26 @@ import org.smartfrog.test.DeployingTestBase;
  */
 
 public class S3BucketTest extends DeployingTestBase {
-
+    public static final String AWSID = "test.awsid";
+    public static final String AWSKEY = "test.awskey";
     public static final String FILES = "/org/smartfrog/services/amazon/s3/test";
 
     public S3BucketTest(String name) {
         super(name);
     }
 
+    public void testAwsId() throws Throwable {
+        if(System.getProperty(AWSID)==null) {
+            fail("not set: "+AWSID);
+        }
+    }
+    
+     public void testAwsKey() throws Throwable {
+        if(System.getProperty(AWSKEY)==null) {
+            fail("not set: "+AWSKEY);
+        }
+    }
+    
     public void testCreateBucket() throws Throwable {
         expectSuccessfulTestRun(FILES, "testCreateBucket");
     }

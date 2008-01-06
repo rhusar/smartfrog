@@ -57,6 +57,9 @@
       test.jetty.home=${test.jetty.home}
       test.demo.webapp=${test.demo.webapp}
       test.testwar.war=${test.testwar.war}
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
     </echo>
   </target>
 
