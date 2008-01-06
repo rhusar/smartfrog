@@ -45,13 +45,17 @@ RemoteResource extends Prim {
   OPTIONS "options";
   HEAD "head";
 
+  //the actions are a list of verbs and min/max response codes
   startActions [];
   terminateActions [];
   livenessActions [];
   headers [];
 
+  //these response codes are actually unused. 
   minimumResponseCode HttpCodes:START_2XX;
   maximumResponseCode HttpCodes:END_2XX;
+  
+
   followRedirects true;
   connectTimeout -1;
 
@@ -67,24 +71,33 @@ RemoteResource extends Prim {
  */
   ERROR_UNKNOWN_VERB CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNKNOWN_VERB";
   ERROR_UNSUPPORTED_MEDIA_TYPE CONSTANT "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl.UNSUPPORTED_MEDIA_TYPE";
+ 
+  //the normal get action
 
+  GET_ACTION [GET,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  HEAD_ACTION [HEAD,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  POST_ACTION [POST,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  PUT_ACTION [PUT,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  
+  //HTTP1.1 says that DELETE should also return 2XX responses.
+  DELETE_ACTION [DELETE,HttpCodes:START_2XX,HttpCodes:END_2XX];
 }
 
 GetRestResource extends RemoteResource {
-  startActions [GET];
-  livenessActions [HEAD];
+  startActions [GET_ACTION];
+  livenessActions [HEAD_ACTION];
 }
 
 HeadLivenessRestResource extends RemoteResource {
-  livenessActions [HEAD];
+  livenessActions [HEAD_ACTION];
 }
 
 PostRestResource extends RemoteResource {
-  startActions [POST];
+  startActions [POST_ACTION];
 }
 
 PutRestResource extends RemoteResource {
-  startActions [POST];
+  startActions [POST_ACTION];
 }
 
 /**
@@ -93,8 +106,8 @@ PutRestResource extends RemoteResource {
  */
 
 PutDeleteRestResource extends RemoteResource {
-  startActions [PUT];
-  livenessActions [HEAD];
-  terminateActions [DELETE];
+  startActions [PUT_ACTION];
+  livenessActions [HEAD_ACTION];
+  terminateActions [DELETE_ACTION];
 }
 
