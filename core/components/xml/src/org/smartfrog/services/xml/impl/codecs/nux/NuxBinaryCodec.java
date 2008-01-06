@@ -18,7 +18,7 @@
 
  */
 
-package org.smartfrog.services.xml.impl.codecs;
+package org.smartfrog.services.xml.impl.codecs.nux;
 
 import nu.xom.Document;
 import nux.xom.binary.BinaryParsingException;
