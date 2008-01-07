@@ -121,15 +121,15 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     }
 
-    private String submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
+    private ComponentDescription submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
 
         String AppName = null;
         AppName = "App_" + sdf.format(cal.getTime()).replace(' ', '_').replace(':', '_') + appCounter++;
-
+	ComponentDescription cd = null;
         try {
             if (sfDaemon != null) {
                 //deploy(AppName, descriptionFile, attributes, host);
-                asynchDeploy(AppName, descriptionFile, attributes, host);
+                cd = asynchDeploy(AppName, descriptionFile, attributes, host);
             } else {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error("SmartFrog Daemon Not found");
@@ -143,7 +143,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         } catch (RemoteException ex1) {
             throw new SFSubmitException(AppName, ex1);
         }
-	return AppName;
+	return cd;
     }
 
 
@@ -289,8 +289,12 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         Map resultSet = new HashMap();
         String status = "Success";
 	String appName = null;
+	ComponentDescription cd = null;
+	
         try {
-             appName = submitTemplate(descriptionFile, attributes, host);
+             //appName = submitTemplate(descriptionFile, attributes, host);
+             cd = submitTemplate(descriptionFile, attributes, host);
+	     appName = cd.sfResolve("compName", appName, true);
         } catch (Exception exp) {
             status = "Deployment Failed with Exception " + exp.getCause();
 	    appName = exp.getMessage();
@@ -298,6 +302,8 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         resultSet.put("STATUS", status);
 	if( appName != null)
         	resultSet.put("APP_NAME", appName);
+	if( cd != null)
+        	resultSet.put("CD", cd);
         return resultSet;
     }
 
@@ -438,7 +444,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
 
-    public void asynchDeploy(String compName, String descriptionFile,Map attributes,String host) throws SmartFrogException, RemoteException {
+    public ComponentDescription asynchDeploy(String compName, String descriptionFile,Map attributes,String host) throws SmartFrogException, RemoteException {
           Phases phases = null;
         try {
             InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFile);
@@ -455,6 +461,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
         try {
          cd.sfAddAttribute("sfProcessHost", host);
+         cd.sfAddAttribute("compName", compName);
             if (sfLog().isInfoEnabled()) {
             sfLog().info("\n*************************************************\n*** Ashync. Deploying:\n" +
                     cd.toString() + compName +
@@ -465,7 +472,8 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
             sfLog().error("", ex);
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(ex);
         }
+    return cd;
     }
-
+ 
 
 }
