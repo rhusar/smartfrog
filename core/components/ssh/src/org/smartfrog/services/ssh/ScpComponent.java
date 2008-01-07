@@ -39,5 +39,9 @@ public interface ScpComponent extends SSHComponent {
      * {@value}
      */
     String TRANSFER_TYPE = "transferType";
+    /**
+     * {@value}
+     */
+    String RECURSIVE = "recursive";
 }
 

@@ -33,6 +33,9 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.Vector;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.optional.ssh.Scp;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Class to upload files to a remote host over SSH Session.
@@ -84,6 +87,24 @@ public class ScpTo extends AbstractScpOperation {
             }
         }
     }
+
+    
+    public void doDirCopy(String host, String user, String password, Vector remoteFiles,Vector<File> localFiles) {
+	    for (int index = 0; index < remoteFiles.size(); index++) {
+	    File localFile = localFiles.elementAt(index);
+            String remoteFile = (String) remoteFiles.elementAt(index);
+	    Scp scpConnection = new Scp();
+    	    scpConnection.setTrust(true);
+    	    scpConnection.setTodir(user+":"+password+"@"+host+":"+remoteFile.trim());
+    	    scpConnection.setProject(new Project());
+    	    FileSet f = new FileSet();
+    	    f.setDir(localFile);
+    	    f.setIncludes("*");
+    	    scpConnection.addFileset(f);
+    	    scpConnection.execute();
+	}
+    }
+
     /**
      * Use scp to copy file to the remote host.
      * @param in Input Stream of the channel
