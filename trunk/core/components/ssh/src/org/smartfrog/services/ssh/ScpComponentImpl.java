@@ -62,7 +62,10 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * Vector of local file names
      */
     private Vector<File> localFiles = null;
-
+    /**
+     * true if recursive directory transfer
+     */
+    private boolean recursive = true;
     /**
      * The worker thread is here
      */
@@ -110,20 +113,19 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             //now that we are starting up, check the files.
             if (getFiles) {
                 //verify that the remote file list is not empty
-                for (File file : localFiles) {
+              /*  for (File file : localFiles) {
                     if (file.exists() && file.isDirectory()) {
                         throw new SmartFrogLifecycleException(ERROR_OUTPUT_IS_A_DIRECTORY + file);
                     }
-                }
-
+                }*/
             } else {
                 for (File file : localFiles) {
                     if (!file.exists()) {
                         throw new SmartFrogLifecycleException(ERROR_MISSING_FILE_TO_UPLOAD + file);
                     }
-                    if (!file.isFile()) {
+                  /*  if (!file.isFile()) {
                         throw new SmartFrogLifecycleException(ERROR_NOT_A_NORMAL_FILE + file);
-                    }
+                    }*/
                 }
             }
         }
@@ -184,6 +186,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                     "Unsupported action: \"" + transferType+"\"");
         }
 
+	recursive = sfResolve(RECURSIVE, recursive, true);
+
 
     }
 
@@ -235,11 +239,17 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                             log.info("Going to start scp to download files");
                             ScpFrom scpFrom = new ScpFrom(log);
                             operation=scpFrom;
-                            scpFrom.doCopy(getSession(), remoteFileList, localFiles);
+			    if (recursive)
+                            scpFrom.doDirCopy(getHost(), getUser(), getPassword(), remoteFileList, localFiles);
+			    else
+			    scpFrom.doCopy(getSession(), remoteFileList, localFiles);
                         } else {
                             log.info("Going to start scp to upload files");
                             ScpTo scpTo = new ScpTo(log);
                             operation=scpTo;
+			    if (recursive)
+                            scpTo.doDirCopy(getHost(), getUser(), getPassword(), remoteFileList, localFiles);
+			    else
                             scpTo.doCopy(getSession(), remoteFileList, localFiles);
                         }
                     } else {
