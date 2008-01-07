@@ -55,6 +55,14 @@
     <dependency org="com.jcraft"
         name="jsch"
         rev="${jsch.version}"
-        conf="compile,redist->default"/>
+	conf="compile,redist->default"/>
+    <dependency org="org.apache.ant"
+        name="ant"
+        rev="${apache.ant.version}"
+	conf="compile->default;redist->default"/>
+    <dependency org="org.apache.ant"
+        name="ant-jsch"
+        rev="${apache.ant.version}"
+        conf="compile->default;redist->default"/>
   </dependencies>
 </ivy-module>
