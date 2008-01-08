@@ -43,6 +43,7 @@
       <xs:element name="lastUpdated" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <xs:element name="logFile" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <xs:element name="msg" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="reportPath" type="xs:string" minOccurs="1" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
