@@ -112,6 +112,7 @@ setNextSubtitle("Active View Page");
 		if( st.length() > 100 ){
 			st = st.substring(0,100);
 		}
+
 %>
 <tr <%=rowClass %>>
 	<td></td>
@@ -120,8 +121,17 @@ setNextSubtitle("Active View Page");
 <%
 		if( null != logFile ){
 %>			
-	<td><a href="log_reader.jsp?filePath=<%=moduleStates[j].getLogFile()%>&host=<%=targetHosts[i]%>"><%=moduleStates[j].getState() %></a>
+	<td><a href="log_reader.jsp?fileName=<%=moduleStates[j].getLogFile()%>&host=<%=targetHosts[i]%>"><%=moduleStates[j].getState() %></a>
+	<br><br>
+<%
+	if (moduleStates[j].getReportPath() != null){
+%>
+		<a href="log_reader.jsp?fileName=<%=moduleStates[j].getLogFile()%>&reportPath=<%=moduleStates[j].getReportPath()%>&host=<%=targetHosts[i]%>">View Report</a>
+<%
+	}
+%>
 	</td>
+	
 <%
 		}else{
 %>			

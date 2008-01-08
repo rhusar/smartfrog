@@ -26,17 +26,21 @@ For more information: www.smartfrog.org
 <%
 	String myURI = request.getRequestURI() + "?" + request.getQueryString();
   	String errMsg = null; 
-  	String filePath = request.getParameter("filePath");
+  	String fileName = request.getParameter("fileName");
   	String host = request.getParameter("host");
-  	String avalancheServer = request.getServerName();
-	int  avalanchePort = request.getServerPort();
+  	String reportPath = request.getParameter("reportPath");
 		
   	// use only if startLine is null;
   	String maxLinesStr = request.getParameter("maxLines");
 	SFAdapter adapter = new SFAdapter(factory);
-	adapter.getHostReport(host, filePath, avalancheServer, avalanchePort);
+//	adapter.getHostReport(host, fileName, reportPath);
 
-	File file = new File(filePath);
+	String homeDir = factory.getAvalancheHome();
+        String logsDir = homeDir + File.separator + "logs";
+	String filePath = logsDir + File.separator + fileName;
+ 	if(reportPath == null) {	
+		File file = new File(filePath+".out");
+	
 	if( !file.exists() ){
 		errMsg = "Error! log file doesn't exist: " + filePath;
 	}else if( !file.canRead() ){
@@ -84,6 +88,12 @@ For more information: www.smartfrog.org
 <br/>
 
 <textarea readonly cols="auto" rows="10" style="width:100%;height:100%"><%=buf.toString()%></textarea>
-
-
+<%
+}else {
+	String reportFile = filePath + File.separator + "index.html";
+%>
+<h2><a href=<%=reportFile%> TARGET="_blank"> Open Report</a></h2>
+<%
+	}
+%>
 <%@ include file="footer.inc.jsp" %>
