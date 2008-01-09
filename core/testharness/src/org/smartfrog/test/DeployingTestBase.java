@@ -1,4 +1,4 @@
-/* (C) Copyright 2006-2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -183,9 +183,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param filename filename excluding .sf
      * @param startupTimeout limit in millis to start up
      * @param executeTimeout limit in millis to execute
-     * @return the lifecycle at the end of the run. This s either a {@link TestCompletedEvent} or a
+     * @return the lifecycle at the end of the run. This is either a
+     * {@link org.smartfrog.services.assertions.events.TestCompletedEvent} or a
      * {@link org.smartfrog.sfcore.workflow.events.TerminatedEvent}
-     * @throws Throwable on failure. A {@link TestTimeoutException} indicates timeout.
+     * @throws Throwable on failure. A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates timeout.
      */
     protected LifecycleEvent runTestDeployment(String packageName, String filename,int startupTimeout,int executeTimeout) throws Throwable {
         String urlstring=createUrlString(packageName, filename);
@@ -206,7 +207,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      *
      * @return the lifecycle at the end of the run. This s either a {@link TestCompletedEvent} or a
      * {@link org.smartfrog.sfcore.workflow.events.TerminatedEvent}
-     * @throws Throwable on failure. A {@link TestTimeoutException} indicates timeout.
+     * @throws Throwable on failure. A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates timeout.
      */
     protected LifecycleEvent runTestDeployment(String packageName, String filename) throws Throwable {
         return runTestDeployment(packageName, filename, getTestStartupTimeout(),
@@ -230,8 +231,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param executeTimeout limit in millis to execute
      * @return the test results
      * @throws Throwable on any problem.
-     *  A {@link TestTimeoutException} indicates timeout waiting for results
-     *  An {@link AssertionFailedError} is raised if the tests were not successful
+     *  A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates timeout waiting for results
+     *  A {@link junit.framework.AssertionFailedError} is raised if the tests were not successful
      */
     protected TestCompletedEvent completeTestDeployment(String packageName, String filename, int startupTimeout, int executeTimeout)
             throws Throwable {
@@ -266,8 +267,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     * @param filename test file name, excluding .sf
     * @return the test results
     * @throws Throwable on any problem.
-    *  A {@link TestTimeoutException} indicates timeout waiting for results
-    *  An {@link AssertionFailedError} is raised if the tests were not successful
+     *  A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates timeout waiting for results
+     *  A {@link junit.framework.AssertionFailedError} is raised if the tests were not successful
     */
     protected TestCompletedEvent runTestsToCompletion(String packageName,String filename) throws Throwable {
         return completeTestDeployment(packageName, filename,
@@ -289,7 +290,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param test condition to evaluate
      * @param message message to print
      * @param event related event
-     * @throws AssertionFailedError if the condition is true
+     * @throws junit.framework.AssertionFailedError if the condition is true
      */
     private void conditionalFail(boolean test,String message,LifecycleEvent event) {
         if(test) {
