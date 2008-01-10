@@ -2,6 +2,12 @@
 
 <!DOCTYPE MODE SYSTEM "xmode.dtd">
 <!-- this is the smartfrog mode  -->
+<!-- to use it, 
+  1. copy it to your jedit modes/ directory, 
+  2. edit the file  modes/catalog to add a new entry
+  <MODE NAME="smartfrog" FILE="jedit-smartfrog.xml"
+                         FILE_NAME_GLOB="*.sf" />
+-->
 <MODE>
   <PROPS>
     <PROPERTY NAME="commentStart" VALUE="/*" />
