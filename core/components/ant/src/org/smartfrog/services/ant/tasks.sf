@@ -109,6 +109,7 @@ maudit extends { AntTask "maudit";}
 junit extends { AntTask "junit";}
 cab extends { AntTask "cab";}
 ftp extends { AntTask "ftp";}
+scp extends { AntTask "scp";}
 icontract extends { AntTask "icontract";}
 javacc extends { AntTask "javacc";}
 jjdoc extends { AntTask "jjdoc";}
