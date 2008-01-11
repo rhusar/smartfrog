@@ -239,17 +239,11 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                             log.info("Going to start scp to download files");
                             ScpFrom scpFrom = new ScpFrom(log);
                             operation=scpFrom;
-			    if (recursive)
-                            scpFrom.doDirCopy(getHost(), getUser(), getPassword(), remoteFileList, localFiles);
-			    else
 			    scpFrom.doCopy(getSession(), remoteFileList, localFiles);
                         } else {
                             log.info("Going to start scp to upload files");
                             ScpTo scpTo = new ScpTo(log);
                             operation=scpTo;
-			    if (recursive)
-                            scpTo.doDirCopy(getHost(), getUser(), getPassword(), remoteFileList, localFiles);
-			    else
                             scpTo.doCopy(getSession(), remoteFileList, localFiles);
                         }
                     } else {

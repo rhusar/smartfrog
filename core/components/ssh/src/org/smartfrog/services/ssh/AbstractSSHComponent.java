@@ -205,31 +205,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     }
 
     /**
-     * Get the host
-     * @return the host
-     */
-    public synchronized String getHost() {
-        return host;
-    }
-
-    /**
-     * Get the username
-     * @return the username
-     */
-    public synchronized String getUser() {
-        return userName;
-    }
-
-    /**
-     * Get the password
-     * @return the password
-     */
-    public synchronized String getPassword() {
-        return passphrase;
-    }
-
-
-    /**
      * Set the current session
      * @param session the new session, can be null
      */
