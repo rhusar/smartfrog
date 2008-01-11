@@ -39,8 +39,6 @@ import java.io.OutputStream;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.optional.ssh.Scp;
-import org.apache.tools.ant.types.FileSet;
 
 /**
  * Class to copy securely from a remote machine. 
@@ -93,21 +91,6 @@ public class ScpFrom extends AbstractScpOperation {
         }
     }
 
-    public void doDirCopy(String host, String user, String password, Vector remoteFiles,Vector<File> localFiles) {
-	    for (int index = 0; index < remoteFiles.size(); index++) {
-	    File localFile = localFiles.elementAt(index);
-            String remoteFile = (String) remoteFiles.elementAt(index);
-	    Scp scpConnection = new Scp();
-    	    scpConnection.setTrust(true);
-    	    scpConnection.setFile(user+":"+password+"@"+host+":"+remoteFile.trim()+"/*");
-    	    scpConnection.setProject(new Project());
-	    if (!localFile.exists())
-		    localFile.mkdir();
-	    scpConnection.setTodir(localFile.toString());
-    	    scpConnection.execute();
-	}
-    }
-    
     /**
      * Copies file from the remote host.
      * @param in Input Stream of the channel

@@ -30,7 +30,6 @@ For more information: www.smartfrog.org
         localFiles extends Vector;
         remoteFiles extends Vector;
         transferType extends String;
-	recursive extends Boolean;
     }
 
     /**
@@ -48,8 +47,6 @@ For more information: www.smartfrog.org
         //default transfer is a get
         transferType get_files;
 
-	//default is no recursive transfer
-	recursive false;
     }
 
     /**
@@ -70,7 +67,6 @@ For more information: www.smartfrog.org
         localFiles TBD;
         remoteFiles TBD;
         transferType ScpOperation:get_files;
-	recursive ScpOperation:recursive;
 
         SCP extends ScpOperation {
 
@@ -88,8 +84,6 @@ For more information: www.smartfrog.org
             transferType PARENT:ATTRIB transferType;
             localFiles PARENT:ATTRIB localFiles;
             remoteFiles PARENT:ATTRIB remoteFiles;
-	    recursive PARENT:ATTRIB recursive;
-
         }
     }
 
