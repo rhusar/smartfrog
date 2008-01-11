@@ -33,9 +33,6 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.Vector;
-import org.apache.tools.ant.Project;
-//import org.apache.tools.ant.taskdefs.optional.ssh.Scp;
-//import org.apache.tools.ant.types.FileSet;
 
 /**
  * Class to upload files to a remote host over SSH Session.

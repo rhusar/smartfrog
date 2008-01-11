@@ -38,7 +38,6 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import org.apache.tools.ant.Project;
 
 /**
  * Class to copy securely from a remote machine. 
