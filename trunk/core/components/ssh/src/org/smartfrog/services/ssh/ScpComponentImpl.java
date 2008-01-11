@@ -63,9 +63,6 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      */
     private Vector<File> localFiles = null;
     /**
-     * true if recursive directory transfer
-     */
-    private boolean recursive = true;
     /**
      * The worker thread is here
      */
@@ -185,10 +182,6 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             throw new SmartFrogLifecycleException(
                     "Unsupported action: \"" + transferType+"\"");
         }
-
-	recursive = sfResolve(RECURSIVE, recursive, true);
-
-
     }
 
     private void readFileLists() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
