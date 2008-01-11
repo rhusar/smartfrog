@@ -18,11 +18,10 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
 
-sfConfig extends Compound {
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
 
-    commons-logging extends commons-logging-1.0.4  {
-    }
+sfConfig extends Maven2Library {
 
+    
 }

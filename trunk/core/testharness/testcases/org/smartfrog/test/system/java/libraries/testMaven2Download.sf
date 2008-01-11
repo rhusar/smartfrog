@@ -18,39 +18,22 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
-
-sfConfig extends Compound {
+Download extends Compound {
 
     sfSyncTerminate true;
 
-    /**
-     * we know that temp files get created at deploy time
-     */
-    tempFile extends TempFile {
-        deleteOnExit true;
-        prefix "temp1";
-        suffix ".txt";
+    library extends Maven2Library {
     }
 
-    /**
-     * and touch makes sure it exists
-     */
-    touch extends TouchFile {
-        filename LAZY tempFile:absolutePath;
+    commons-logging extends commons-logging-1.0.4  {
+        library LAZY PARENT:library;
     }
 
-    /**
-     * so by the time you get here, there is a file of the given name
-     * which can therefore not be a directory
-     */
-    lib extends Library {
-        cacheDir LAZY tempFile:absolutePath;
-		policy extends Maven2Policy;
-		localCachePolicy policy;
-		remoteCachePolicy policy;
-        
-        repositories [| |];
-    }
+    /** post deployment path */
+    absolutePath LAZY commons-logging:absolutePath;
 }
+
+
+sfConfig Download;

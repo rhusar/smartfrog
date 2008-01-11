@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,22 +18,12 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
 
-Download extends Compound {
 
-    sfSyncTerminate true;
-
-    library extends Maven2Library {
+    commons-logging-1.0.4 extends JarArtifact {
+        project "commons-logging";
+        version "1.0.4";
+        sha1 "f029a2aefe2b3e1517573c580f948caac31b1056";
+        md5 "8a507817b28077e0478add944c64586a";        
     }
-
-    commons-logging extends commons-logging-1.0.4  {
-        library LAZY PARENT:library;
-    }
-
-    /** post deployment path */
-    absolutePath LAZY commons-logging:absolutePath;
-}
-
-
-sfConfig Download;

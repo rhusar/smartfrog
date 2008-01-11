@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,13 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
 
 sfConfig extends Compound {
 
-    commons-logging extends JarArtifact {
-        library "wrong type";
-        project "commons-logging";
-        version "1.0.4";
+    commons-logging extends commons-logging-1.0.4  {
     }
+
 }

@@ -18,10 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/test/system/java/libraries/testMaven2Download.sf"
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
+Download:commons-logging:sha1 "this is not a valid sha1";
 
-sfConfig extends Maven2Library {
-
-    
-}
