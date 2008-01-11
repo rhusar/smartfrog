@@ -641,6 +641,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
         s = s.replaceAll("\b", "\\\\b");
         s = s.replaceAll("\r", "\\\\r");
         s = s.replaceAll("\f", "\\\\f");
+        s = s.replaceAll("\"", "\\\\\"");
         return s;
     }
 
