@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/ant/types.sf"
 #include "/org/smartfrog/services/ant/tasks.sf"
-#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
 
 AntWorkflowComponent extends WorkflowPrim {
