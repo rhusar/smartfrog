@@ -19,30 +19,38 @@ For more information: www.smartfrog.org
 */
 
 
-#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
 
 sfConfig extends Compound {
 
     sfSyncTerminate true;
 
-    cacheDirectory extends File {
-        //JVM property user.home
-        dir LAZY PROPERTY user.home;
-        //subdir
-        filename ".maven/repository";
+    /**
+     * we know that temp files get created at deploy time
+     */
+    tempFile extends TempFile {
+        deleteOnExit true;
+        prefix "temp1";
+        suffix ".txt";
     }
 
-    Libset extends Library {
+    /**
+     * and touch makes sure it exists
+     */
+    touch extends TouchFile {
+        filename LAZY tempFile:absolutePath;
+    }
 
-        repositories [| |];
-
-        //cache into the well known maven location
-        cacheDir LAZY cacheDirectory:absolutePath;
+    /**
+     * so by the time you get here, there is a file of the given name
+     * which can therefore not be a directory
+     */
+    lib extends Library {
+        cacheDir LAZY tempFile:absolutePath;
 		policy extends Maven2Policy;
 		localCachePolicy policy;
 		remoteCachePolicy policy;
-
+        
+        repositories [| |];
     }
-
-
 }

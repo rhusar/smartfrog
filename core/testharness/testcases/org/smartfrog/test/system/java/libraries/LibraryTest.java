@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.system.java;
+package org.smartfrog.test.system.java.libraries;
 
 import junit.framework.AssertionFailedError;
 import org.smartfrog.services.filesystem.FileUsingComponent;
@@ -25,7 +25,7 @@ import org.smartfrog.services.os.java.LibraryArtifact;
 import org.smartfrog.services.os.java.LibraryArtifactImpl;
 import org.smartfrog.services.os.java.LibraryHelper;
 import org.smartfrog.services.os.java.LibraryImpl;
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 
 import java.io.File;
 import java.net.ConnectException;
@@ -35,8 +35,9 @@ import java.net.ConnectException;
  * created 04-Apr-2005 15:35:58
  */
 
-public class LibraryTest extends SmartFrogTestBase {
-    public static final String FILES = JavaPackageTest.FILES;
+public class LibraryTest extends DeployingTestBase {
+    public static final String FILES = "org/smartfrog/test/system/java/libraries/";
+    private static final String CONNECTION_REFUSED = "refused";
     private static final String EXCEPTION_JUNIT_ASSERTION_FAILED = "junit.framework.AssertionFailedError";
 
 
@@ -128,7 +129,7 @@ public class LibraryTest extends SmartFrogTestBase {
                     cause);
         } catch(Throwable cause) {
             //connection refused exceptions are a sign of being offline
-            assertFaultCauseAndTextContains(cause,null, "onnection refused",null);
+            assertFaultCauseAndTextContains(cause,null,CONNECTION_REFUSED,null);
             getLog().info("No connection to the remote server; ignoring result",cause);
         }
     }
@@ -156,7 +157,7 @@ public class LibraryTest extends SmartFrogTestBase {
                     EXCEPTION_SMARTFROG,
                     LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
         } catch (AssertionFailedError thrown) {
-            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED, "onnection refused", null);
+            assertFaultCauseAndTextContains(thrown, EXCEPTION_JUNIT_ASSERTION_FAILED,CONNECTION_REFUSED, null);
         }
     }
 }

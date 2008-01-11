@@ -18,16 +18,31 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/os/runshell/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/os/java/library.sf"
 
+#include "/org/smartfrog/test/system/java/libraries/libraryTestBase.sf"
 
-    commons-logging-1.0.4 extends JarArtifact {
-        project "commons-logging";
-        version "1.0.4";
-        sha1 "f029a2aefe2b3e1517573c580f948caac31b1056";
-        md5 "8a507817b28077e0478add944c64586a";        
+sfConfig extends Compound {
+
+    sfSyncTerminate true;
+
+    cacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".maven/repository";
     }
+
+    Libset extends Library {
+
+        repositories [| |];
+
+        //cache into the well known maven location
+        cacheDir LAZY cacheDirectory:absolutePath;
+		policy extends Maven2Policy;
+		localCachePolicy policy;
+		remoteCachePolicy policy;
+
+    }
+
+
+}
