@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -58,26 +58,19 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      */
     private RemoteCachePolicy remotePolicy;
 
-    /**
-     * Our little log
-     */
-    private Log log;
-
     public LibraryImpl() throws RemoteException {
     }
 
     /**
      * deployment: validate and create
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException any other error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         //this implicitly deploys all our children too
         super.sfDeploy();
-        //set up logging.
-        log = sfGetApplicationLog();
         //bind our directory
         bindDirectory();
         //bind our policies
@@ -92,8 +85,8 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
     /**
      * bind our cache directory information
      *
-     * @throws RemoteException
-     * @throws SmartFrogRuntimeException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException any other error
      */
     private void bindDirectory() throws RemoteException,
             SmartFrogRuntimeException {
@@ -115,7 +108,11 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
     /**
      * @see org.smartfrog.services.os.java.Library#determineArtifactPath(SerializedArtifact
-            *      artifact)
+     *      artifact)
+     * @param artifact the artifact to look up
+     * @return the absolute path of the local copy of the artifact
+     * @throws RemoteException network problems
+     * @throws SmartFrogException any other error
      */
     public String determineArtifactPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogException {
@@ -124,6 +121,11 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
 
     /**
+     * 
+     * @param artifact the artifact to look up
+     * @return the URL fragment to look up. Null means "no remote artifact supported"
+     * @throws java.rmi.RemoteException network problems
+     * @throws SmartFrogException any other error
      * @see org.smartfrog.services.os.java.Library#determineArtifactRelativeURLPath(org.smartfrog.services.os.java.SerializedArtifact)
      */
     public String determineArtifactRelativeURLPath(SerializedArtifact artifact)
@@ -135,6 +137,10 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
     /**
      * Get the filename of the artifact.
+     * @param artifact the artifact to look up
+     * @return the file instance of the local copy
+     * @throws java.rmi.RemoteException network problems
+     * @throws SmartFrogException any other error
      */
     public File determineArtifactFile(SerializedArtifact artifact)
             throws RemoteException, SmartFrogException {

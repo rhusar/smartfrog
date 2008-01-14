@@ -1,4 +1,4 @@
-/** (C) Copyright 2005-2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.services.os.download.Download;
 import org.smartfrog.services.os.download.DownloadImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
@@ -45,6 +44,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 /**
  * Implementation of a library artifact.
@@ -55,8 +58,12 @@ import java.util.Vector;
 public class LibraryArtifactImpl extends FileUsingCompoundImpl
         implements LibraryArtifact, Runnable {
 
+    /**
+     * 
+     */
+    public static final String ERROR_NO_DOWNLOAD = "The network policy prevents the download of ";
     private Library owner;
-    private Vector repositories;
+    private Vector<String> repositories;
     private boolean syncDownload;
     private String sha1;
     private String md5;
@@ -96,7 +103,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      */
     public static final String ERROR_ARTIFACT_NOT_FOUND = "Artifact not found at ";
 
-    private volatile Thread thread;
+    private volatile SmartFrogThread thread;
     private int maxCacheAge= 600000;
 
     public LibraryArtifactImpl() throws RemoteException {
@@ -119,8 +126,9 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         log = sfGetApplicationLog();
         Prim ownerPrim = sfResolve(ATTR_LIBRARY, (Prim)null, true);
         owner = (Library) ownerPrim;
-        repositories = ownerPrim.sfResolve(Library.ATTR_REPOSITORIES,
-                (Vector) null, true);
+        repositories = ListUtils.resolveStringList(ownerPrim, 
+                new Reference(Library.ATTR_REPOSITORIES),
+                true);
         syncDownload = sfResolve(ATTR_SYNCHRONOUS, syncDownload, true);
         project = sfResolve(ATTR_PROJECT, project, true);
         version = sfResolve(ATTR_VERSION, version, false);
@@ -159,22 +167,28 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         boolean mustDownload;
         mustDownload = (!exists && downloadIfAbsent) || downloadAlways;
 
-        if(syncDownload) {
-            if (mustDownload) {
+        if (mustDownload) {
+            // Bail out if we cannot download an artifact that we must
+            if (remoteUrlPath == null) {
+                throw new SmartFrogDeploymentException(
+                                ERROR_NO_DOWNLOAD 
+                                + toString() 
+                                +"\nwhich was not found locally at "
+                                +localFile);
+            }
+            if (syncDownload) {
                 download();
-            }
-            postDownloadActions(mustDownload);
-        } else {
-            //async download
-            if (mustDownload) {
-                thread = new Thread(this);
-                thread.start();
-            } else {
                 postDownloadActions(mustDownload);
+            } else {
+                thread = new SmartFrogThread(this);
+                thread.start();
             }
 
+        } else {
+            //no download, do whatever the post d/l actions are
+            postDownloadActions(false);
         }
-
+        
     }
 
     /**
@@ -310,9 +324,9 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     public String makeRepositoryUrlList() {
         StringBuffer repos = new StringBuffer();
         repos.append('[');
-        Iterator it = repositories.iterator();
+        Iterator<String> it = repositories.iterator();
         while (it.hasNext()) {
-            String repository = (String) it.next();
+            String repository = it.next();
             repos.append(repository);
             repos.append('/');
             repos.append(remoteUrlPath);
@@ -332,6 +346,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * @param repositoryBaseURL base URL of the repository
      *
      * @return the exception that got us here
+     * @throws SmartFrogException on any download failure
      */
     public IOException downloadFromOneRepository(String repositoryBaseURL)
             throws SmartFrogException {
@@ -344,7 +359,6 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         log.info("Trying to download from " + url);
 
         try {
-
             DownloadImpl.download(url, getFile(), blocksize, maxCacheAge);
             return null;
         } catch (MalformedURLException e) {
@@ -456,9 +470,9 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      * Determine our relative path. This forwards up to the owner, which must,
      * of course, not be null
      *
-     * @return path
+     * @return path or null if there is no supported remote path
      *
-     * @throws SmartFrogResolutionException on resolution trouble
+     * @throws SmartFrogException on resolution trouble
      * @throws RemoteException on network problems
      */
     public String makeRemoteUrlPath() throws RemoteException,
@@ -639,5 +653,17 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
         return pojo;
     }
 
+    /** 
+     * {@inheritDoc}
+     */
+    public String toString() {
+        StringBuilder b=new StringBuilder();
+        b.append(project);
+        b.append("/");
+        b.append(LibraryHelper.createIvyArtifactFilename(createSerializedArtifact(),true));
+        return b.toString();
+    }
+
+    
 
 }

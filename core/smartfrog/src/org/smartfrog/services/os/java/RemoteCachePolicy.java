@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,11 @@ public interface RemoteCachePolicy extends LibraryCachePolicy {
     
     /**
      * create a path to the remote system, all but the base URL,
-     * using the artifact as the 
-     * @param artifact
-     * @return String path
-     * @throws RemoteException
+     * using the artifact as the source of the path information.
+     * @param artifact the artifact
+     * @return String the generated path
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for other problems
      */
     public String createRemotePath(SerializedArtifact artifact) throws RemoteException,SmartFrogException;
 

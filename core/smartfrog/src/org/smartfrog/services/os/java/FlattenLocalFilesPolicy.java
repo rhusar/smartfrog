@@ -37,7 +37,7 @@ public class FlattenLocalFilesPolicy
      * @see LocalCachePolicy#createLocalPath(SerializedArtifact)
      */
     public String createLocalPath(SerializedArtifact artifact) throws SmartFrogRuntimeException {
-        String filename=createMavenArtifactName(artifact);
+        String filename=LibraryHelper.createMavenArtifactName(artifact);
         return filename;
     }
 

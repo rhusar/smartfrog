@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -93,9 +93,8 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
         objectInstances = new Object[instanceSize];
 
         int count = 0;
-        Iterator it = classes.iterator();
-        while (it.hasNext()) {
-            String classname = (String) it.next();
+        for(Object instance:classes) {
+            String classname = instance.toString();
             log.debug("Loading class "+classname);
             Class clazz = loadClass(this, classname);
             classInstances[count] = clazz;
@@ -196,7 +195,6 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
      * @throws SmartFrogException if the loading failed; in which case a nested ClassNotFoundException will exist.
      */
     public static Class loadClass(Prim owner, String classname) throws RemoteException, SmartFrogException {
-        Class loadedClass;
         ComponentHelper helper = new ComponentHelper(owner);
         return helper.loadClass(classname);
     }
