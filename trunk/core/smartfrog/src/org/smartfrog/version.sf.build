@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,8 @@ For more information: www.smartfrog.org
 */
 
 Version extends DATA {
-  version ( name ++ "." ++ majorRelease ++ "." ++ minorRelease ++ "." ++ build ++ status ++ " (" ++ buildDate ++ ")" );
+  jarVersion "@majorRelease@.@minorRelease@.@build@@status@";
+  version ( name ++ "." ++ jarVersion ++ " (" ++ buildDate ++ ")" );
   name "SmartFrog";
   majorRelease "@majorRelease@";
   minorRelease "@minorRelease@";
