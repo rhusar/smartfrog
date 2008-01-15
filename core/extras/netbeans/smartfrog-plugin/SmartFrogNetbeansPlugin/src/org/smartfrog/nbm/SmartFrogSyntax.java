@@ -57,6 +57,7 @@ public class SmartFrogSyntax extends Syntax {
     private static final int STATE_IN_QUOTE = 26;
     
     private String partialToken = null;
+    private TokenID lastToken = null;
     boolean firstQuote = false;
     private int operatorStackCount = 0;
     
@@ -69,8 +70,7 @@ public class SmartFrogSyntax extends Syntax {
      * logging debug messages, etc.
      */
     private static final ErrorManager LOGGER =
-            ErrorManager.getDefault().getInstance("com.hp.ov." +
-            "smartfrogsvc.SmartFrogSyntax");
+            ErrorManager.getDefault().getInstance("org.smartfrog.nbm.SmartFrogSyntax");
     
     /**
      * Used to avoing calling the log() or notify() method if the message
@@ -82,9 +82,10 @@ public class SmartFrogSyntax extends Syntax {
     
     protected TokenID parseToken() {
         if (state == INIT) {
-            state = this.STATE_INIT;
+            state = STATE_INIT;
         }
         TokenID result = doParseToken();
+        lastToken = result;
         if (LOG) {
             LOGGER.log(ErrorManager.INFORMATIONAL, "parseToken: " + result);
         }
@@ -250,6 +251,7 @@ public class SmartFrogSyntax extends Syntax {
                             return SmartFrogTokenContext.ATTRIBUTE_NAME;
                         default:
                             partialToken += actChar;
+                            //TODO: move keywords to an array we can keep up to date from SmartFrog kernel
                             if ( (partialToken.equals("ROOT")) ||
                                     (partialToken.equals("PARENT")) ||
                                     (partialToken.equals("ATTRIB")) ||
@@ -647,4 +649,11 @@ public class SmartFrogSyntax extends Syntax {
         return null;
     }
     
+    public String toString() {
+        String s=super.toString();
+        if(lastToken!=null) {
+            s+=" lastToken: "+lastToken.toString();
+        }
+        return s;
+    }
 }

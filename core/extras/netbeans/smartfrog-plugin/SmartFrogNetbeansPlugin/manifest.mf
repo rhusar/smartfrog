@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
-OpenIDE-Module: org.smartfrog.nbm
+OpenIDE-Module: org.smartfrog.nbm/3
+OpenIDE-Module-Implementation-Version: 12
 OpenIDE-Module-Layer: org/smartfrog/nbm/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/smartfrog/nbm/Bundle.properties
 OpenIDE-Module-Specification-Version: 0.2.0
