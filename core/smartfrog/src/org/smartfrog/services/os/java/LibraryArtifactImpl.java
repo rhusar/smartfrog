@@ -104,7 +104,11 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
     public static final String ERROR_ARTIFACT_NOT_FOUND = "Artifact not found at ";
 
     private volatile SmartFrogThread thread;
-    private int maxCacheAge= 600000;
+    
+    /**
+     *  Maximum age in the cache
+     */
+    private int maxCacheAge;
 
     public LibraryArtifactImpl() throws RemoteException {
     }
@@ -148,7 +152,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
                 true);
         classifier = sfResolve(ATTR_CLASSIFIER, classifier, false);
         copyTo = FileSystem.lookupAbsoluteFile(this,ATTR_COPYTO,null,null,false,null);
-        maxCacheAge = sfResolve(Download.ATTR_MAX_CACHE_AGE, maxCacheAge, false);
+        maxCacheAge = sfResolve(Download.ATTR_MAX_CACHE_AGE, maxCacheAge, true);
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points

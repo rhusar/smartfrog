@@ -378,6 +378,32 @@ LibraryArtifact extends FileUsingWorkflowComponent {
 
 }
 
+//some errors for test cases
+LibraryArtifactErrors extends LibraryArtifact {
+    
+    //"The network policy prevents the download of ";
+    ERROR_NO_DOWNLOAD "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_DOWNLOAD" ;
+
+    //"Checksum mismatch on file " 
+    ERROR_CHECKSUM_FAILURE "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE" ;
+    
+    /**
+     * Error text when there is no repository entry anywhere
+     */
+    ERROR_NO_OWNER "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_OWNER" ;
+   
+    /**
+     * Error text when repostiories == [] and a download was needed.
+     */
+    ERROR_NO_REPOSITORIES "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_REPOSITORIES" ;
+
+    /**
+     * Error when a file was not found in any repository
+     */
+    ERROR_ARTIFACT_NOT_FOUND "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_ARTIFACT_NOT_FOUND" ;
+    
+}
+
 /**
  * JAR artifacts have a well known extension
  */
