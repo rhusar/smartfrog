@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.nbm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -112,23 +113,36 @@ public class SmartFrogSyntaxTest extends TestCase {
     }
     
     public void doParse(String m, TokenID[] expected) {
-        Syntax s = new SmartFrogSyntax();
+        SmartFrogSyntax s = new SmartFrogSyntax();
         s.load(null, m.toCharArray(), 0, m.length(), true, m.length());
+        System.out.println("Loaded syntax: "+s);
+        List<TokenID> parsedTokens=new ArrayList<TokenID>();
+        StringBuffer buffer=new StringBuffer();
         int position=0;
         TokenID token = null;
         Iterator<TokenID> i = Arrays.asList(expected).iterator();
         do {
             token = s.nextToken();
             if (token != null) {
+                parsedTokens.add(token);
+                String entry="[" + position + "] "+token.toString();
+                buffer.append(entry);
+                buffer.append("\n");
+                System.out.print(entry);     
+                System.out.println("\tsyntax: "+s);
+            }
+            if (token != null) {
                 if (!i.hasNext()) {
-                    fail("More tokens returned than expected.");
+                    fail("More tokens returned than expected.\n"+buffer);
                 } else {
-                    expectToken("Tokens differ at position "+position, i.next(), token);
+                    expectToken("Tokens differ at position "+position
+                            +"\n"+buffer, i.next(), token);
                 }
             } else {
-                assertFalse("More tokens expected than returned.", i.hasNext());
+                assertFalse("More tokens expected than returned."
+                       +"\n"+buffer , i.hasNext());
             }
-            System.out.println("@"+position+"\t"+token);
+            
             position++;
         } while (token != null);
     }
@@ -142,5 +156,15 @@ public class SmartFrogSyntaxTest extends TestCase {
             fail(message+"\nexpected "+expected.toString()+" #"+expected.getNumericID()
                     +"\nfound:"+details);
         }
+    }
+    
+    protected String toString(List<TokenID> tokens) {
+        StringBuffer buffer=new StringBuffer();
+        int counter=0;
+        for(TokenID token:tokens) {
+            buffer.append("["+counter+"] ");
+            buffer.append(token.toString());
+        }
+        return buffer.toString();
     }
 }
