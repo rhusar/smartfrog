@@ -188,17 +188,10 @@ ExpectTerminate extends TestCompound {
 /**
  * an abstract component to represent failures
  */
-FailingTestCompound extends TestCompound {
+FailingTestCompound extends ExpectTerminate {
 
   description "The deployment is expected to fail";
 
-  FailureCompoundSchema extends Schema {
-
-
-
-  }
-
-  expectTerminate true;
   exitType "abnormal";
 }
 
@@ -207,7 +200,6 @@ FailingTestCompound extends TestCompound {
  * This component expects failure on deployment
  */
 ExpectDeployFailure extends FailingTestCompound {
-
 }
 
 
