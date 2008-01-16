@@ -43,8 +43,7 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
 
         int seconds = getTimeout();
         application = deployExpectingSuccess(url, "XmlTest");
-        TestRunner runner = (TestRunner) application;
-        assertTrue(runner != null);
+        TestRunner runner = getTestRunner();
         XmlListenerFactory listenerFactory = null;
         listenerFactory =
                 (XmlListenerFactory) application.sfResolve(

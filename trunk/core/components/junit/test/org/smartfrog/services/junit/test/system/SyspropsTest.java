@@ -39,8 +39,7 @@ public class SyspropsTest extends TestRunnerTestBase {
 
         int seconds = getTimeout();
         application = deployExpectingSuccess(url, "localhostTest");
-        TestRunner runner = (TestRunner) application;
-        assertTrue(runner != null);
+        TestRunner runner =  getTestRunner();
         BufferingListener listener = null;
         listener =
                 (BufferingListener) application.sfResolve(TestRunner.ATTR_LISTENER,

@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -54,6 +54,17 @@ public abstract class TestRunnerTestBase extends DeployingTestBase {
         assertSystemPropertySet(CODEBASE_PROPERTY);
     }
 
+    /**
+     * Get the application as a test runner. 
+     * If the application is null: a JUnit exception is trown
+     * @return the application as a test runner.
+     */
+    TestRunner getTestRunner() {
+        TestRunner runner = (TestRunner) application;
+        assertNotNull(runner);
+        return runner;
+    }
+    
     /**
      * Spin till a component is finished
      *
