@@ -19,7 +19,8 @@
  */
 package org.smartfrog.services.www.cargo;
 
-import org.codehaus.cargo.util.log.*;
+import org.codehaus.cargo.util.log.LogLevel;
+import org.codehaus.cargo.util.log.Logger;
 import org.smartfrog.sfcore.logging.Log;
 
 

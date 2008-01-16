@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,13 @@
 
 package org.smartfrog.services.www.cargo;
 
-import org.codehaus.cargo.container.LocalContainer;
-import org.codehaus.cargo.container.State;
 import org.codehaus.cargo.container.EmbeddedLocalContainer;
 import org.codehaus.cargo.container.InstalledLocalContainer;
+import org.codehaus.cargo.container.LocalContainer;
+import org.codehaus.cargo.container.State;
+import org.codehaus.cargo.container.configuration.LocalConfiguration;
 import org.codehaus.cargo.container.deployable.Deployable;
 import org.codehaus.cargo.container.property.ServletPropertySet;
-import org.codehaus.cargo.container.configuration.LocalConfiguration;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
@@ -48,14 +48,17 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 
 /**
@@ -67,7 +70,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     private LocalConfiguration configuration;
     private String containerClassname;
     private String codebase;
-    private Thread thread;
+    private SmartFrogThread thread;
     //internal state tracking
     private int state;
     public static final int STATE_UNCONFIGURED = 0;
@@ -79,14 +82,14 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     private Throwable caughtException;
     private Log log;
     public static final int DEFAULT_CARGO_PORT = 8080;
-    private Vector properties;
+    private Vector<Vector<String>> properties;
     private String home;
     private File homedir;
     private int port;
     private Vector extraClasspath;
     private String configurationClass;
     //list of things to deploy
-    private List deployables=new ArrayList();
+    private List<Deployable> deployables=new ArrayList<Deployable>();
     private File configurationDir;
     private ComponentHelper helper;
 
@@ -200,8 +203,8 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         extraClasspath = sfResolve(ATTR_EXTRA_CLASSPATH, extraClasspath, false);
 
         //properties
-        properties=sfResolve(ATTR_PROPERTIES,properties,false);
-
+        properties = ListUtils.resolveStringTupleList(this, new Reference(ATTR_PROPERTIES), true);
+        
         //add any direct bindings from JavaWebApplicationServer to cargo options
 
         //the port is only set if it !=8080. This is to avoid bothering
@@ -212,27 +215,33 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
 
     /**
      * This is something for a background thread to do.
+     * @throws SmartFrogException faiure to deploy
+     * @throws RemoteException network problems
      */
     protected void createAndConfigureContainer() throws SmartFrogException, RemoteException {
 
         configuration = createLocalConfiguration(configurationClass, configurationDir);
-
-        if (properties != null) {
-            Iterator it = properties.iterator();
-            int count = 0;
-            while (it.hasNext()) {
-                Vector tuple = (Vector) it.next();
-                if (tuple.size() != 2) {
-                    throw new SmartFrogDeploymentException("Element "
-                            + count
-                            + " in " + ATTR_PROPERTIES + "is not a two element list");
-                }
-                String propertyName = tuple.get(0).toString();
-                String value = tuple.get(1).toString();
-                setConfigurationProperty(propertyName, value);
-                count++;
-            }
+        for(Vector<String> tuple:properties) {
+            String propertyName = tuple.get(0);
+            String value = tuple.get(1);
+            setConfigurationProperty(propertyName, value);
         }
+//        if (properties != null) {
+//            Iterator it = properties.iterator();
+//            int count = 0;
+//            while (it.hasNext()) {
+//                Vector tuple = (Vector) it.next();
+//                if (tuple.size() != 2) {
+//                    throw new SmartFrogDeploymentException("Element "
+//                            + count
+//                            + " in " + ATTR_PROPERTIES + "is not a two element list");
+//                }
+//                String propertyName = tuple.get(0).toString();
+//                String value = tuple.get(1).toString();
+//                setConfigurationProperty(propertyName, value);
+//                count++;
+//            }
+//        }
         if (port != DEFAULT_CARGO_PORT) {
             setConfigurationProperty(ServletPropertySet.PORT, Integer.toString(port));
         }
@@ -314,26 +323,34 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     }
 
 
-    private void setConfigurationProperty(String propertyName, String value) {
+    /**
+     * Set a Cargo property. Unsupported properties are logged at the warn nevel
+     * @param propertyName name of the property
+     * @param value value.
+     * @return true if the property was supported.
+     */
+    private boolean setConfigurationProperty(String propertyName, String value) {
         if(log.isDebugEnabled()) {
             log.debug("Setting property "+propertyName +" :="+value);
         }
         if(!configuration.getCapability().supportsProperty(propertyName)) {
             configuration.setProperty(propertyName, value);
+            return true ;
         } else {
             log.warn("Unsupported property " + propertyName);
+            return false ;
         }
     }
 
 
     /**
-     * Create a new container
+     * Instantiate a class with a given signature
      *
      * @param clazz
      * @param signature
-     * @param arguments
-     * @return
-     * @throws SmartFrogException
+     * @param aboolean
+     * @return the instantiated object
+     * @throws SmartFrogException SmartFrog error
      */
     private Object instantiate(Class clazz,
                                Class[] signature,
@@ -361,20 +378,20 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     /**
      * create a local configuration
      *
-     * @param name
+     * @param name  the configuration name
+     * @param dir the directory to use
      * @return
-     * @throws SmartFrogException
+     * @throws SmartFrogException SmartFrog error
+     * @throws RemoteException Network problems
      */
-    private LocalConfiguration createLocalConfiguration(String name,File dir) throws SmartFrogException,
-            RemoteException {
+    private LocalConfiguration createLocalConfiguration(String name,File dir)
+        throws SmartFrogException, RemoteException {
 /*
         Class argclass = File.class;
         Object arg = dir;
         Object instance = construct(name, argclass, arg);
 */
-        Class argclass = String.class;
-        Object arg = dir.getAbsolutePath();
-        Object instance = construct(name, argclass, arg);
+        Object instance = construct(name, String.class, dir.getAbsolutePath());
         return (LocalConfiguration) instance;
     }
 
@@ -383,8 +400,9 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * @param classname
      * @param argclass
      * @param arg
-     * @return
-     * @throws SmartFrogException
+     * @return the constructed instance
+     * @throws SmartFrogException SmartFrog error
+     * @throws RemoteException Network problems
      */
     private Object construct(String classname, Class argclass, Object arg) throws SmartFrogException, RemoteException {
         Object instance;
@@ -405,9 +423,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
      * This happens after the server is configured, but before it is started
      */
     protected void deployDeployables() {
-        Iterator it=deployables.iterator();
-        while (it.hasNext()) {
-            Deployable deployable = (Deployable) it.next();
+        for(Deployable deployable:deployables) {
             getConfiguration().addDeployable(deployable);
         }
     }
@@ -445,24 +461,13 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     }
 
     /**
-     * Liveness call in to check if this component is still alive. This method
-     * can be overriden to check other state of a component. An example is
-     * Compound where all children of the compound are checked. This basic check
-     * updates the liveness count if the ping came from its parent. Otherwise
-     * (if source non-null) the liveness count is decreased by the
-     * sfLivenessFactor attribute. If the count ever reaches 0 liveness failure
-     * on tha parent has occurred and sfLivenessFailure is called with source
-     * this, and target parent. Note: the sfLivenessCount must be decreased
-     * AFTER doing the test to correctly count the number of ping opportunities
-     * that remain before invoking sfLivenessFailure. If done before then the
-     * number of missing pings is reduced by one. E.g. if sfLivenessFactor is 1
-     * then a sfPing from the parent sets sfLivenessCount to 1. The sfPing from
-     * a non-parent would reduce the count to 0 and immediately fail.
+     * Liveness call in to check if this component is still alive. This
+     * is relayed to the container (if deployed). If we are pinged
+     * before/after the server is deployed, a LivenessException is raised.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link
+     * @throws SmartFrogLivenessException component is not live.
+     * @throws RemoteException for consistency with the {@link
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
      */
@@ -473,7 +478,6 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
             throw (SmartFrogLivenessException)SmartFrogLivenessException.forward(caughtException);
         }
 
-        int s = state;
         switch(state) {
             case STATE_UNCONFIGURED:
                 throw new SmartFrogLivenessException(
@@ -523,10 +527,14 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
         }
         //note that we are starting. The new thread moves to started when it begins.
         setState(STATE_STARTING);
-        thread = new Thread(this);
+        thread = new SmartFrogThread(this);
         thread.run();
     }
 
+    /**
+     * update our state variable
+     * @param state the new state
+     */
     private synchronized void setState(int state) {
         this.state=state;
     }
