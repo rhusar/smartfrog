@@ -28,7 +28,7 @@ For more information: www.smartfrog.org
     sfShouldTerminate false;
 
     action extends FailAbnormal {
-      message "fail abnormal component failed during deployment";
+      message "(raised an inner exception from FailAbnormal)";
     }
     exitText action:message;
   }
