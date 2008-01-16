@@ -1,11 +1,11 @@
 package org.smartfrog.services.www.cargo.delegates;
 
+import org.codehaus.cargo.container.deployable.Deployable;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.cargo.CargoServerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.codehaus.cargo.container.deployable.Deployable;
 
 import java.rmi.RemoteException;
 

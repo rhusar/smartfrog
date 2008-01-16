@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 20062008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -18,13 +18,10 @@
 
  */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/predicates.sf"
-#include "org/smartfrog/services/utils/concat/components.sf"
-#include "org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/utils/concat/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 //liveness and webserver
-#include "org/smartfrog/services/www/components.sf"
+#include "/org/smartfrog/services/www/components.sf"
 
 
 /**
@@ -45,9 +42,7 @@ CargoServerSchema extends Schema {
     extraClasspath extends OptionalVector;
 
     //list of [name,value] string elements.
-    //warning: if we do a better model of properties in smartfrog, this attribute may change
-    //to a nested component instead.
-    properties extends OptionalVector;
+    properties extends Vector;
 }
 
 /**
@@ -59,6 +54,7 @@ CargoServer extends ApplicationServer {
     serverHost "localhost";
     port 8080;
     logging "medium";
+    properties [];
     supportsServletContext false;
     supportsWAR true;
     supportsEAR false;
