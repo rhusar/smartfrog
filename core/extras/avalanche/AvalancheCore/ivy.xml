@@ -60,7 +60,11 @@
     <dependency org="org.smartfrog"
         name="sf-ant"
         rev="latest.integration"
-        conf="compile,runtime->default"/>
+	conf="compile,runtime->default"/>
+    <dependency org="org.apache.ant"
+        name="ant-jsch"
+        rev="${apache.ant.version}"
+        conf="runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-anubis"
         rev="latest.integration"
