@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
@@ -109,6 +110,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
      *  Maximum age in the cache
      */
     private int maxCacheAge;
+    public static final String NOT_FOUND_LOCALLY = "\nwhich was not found locally at ";
 
     public LibraryArtifactImpl() throws RemoteException {
     }
@@ -177,7 +179,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl
                 throw new SmartFrogDeploymentException(
                                 ERROR_NO_DOWNLOAD 
                                 + toString() 
-                                +"\nwhich was not found locally at "
+                                + NOT_FOUND_LOCALLY
                                 +localFile);
             }
             if (syncDownload) {

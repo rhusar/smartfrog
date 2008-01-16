@@ -382,25 +382,25 @@ LibraryArtifact extends FileUsingWorkflowComponent {
 LibraryArtifactErrors extends LibraryArtifact {
     
     //"The network policy prevents the download of ";
-    ERROR_NO_DOWNLOAD "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_DOWNLOAD" ;
+    ERROR_NO_DOWNLOAD CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_DOWNLOAD" ;
 
     //"Checksum mismatch on file " 
-    ERROR_CHECKSUM_FAILURE "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE" ;
+    ERROR_CHECKSUM_FAILURE CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE" ;
     
     /**
      * Error text when there is no repository entry anywhere
      */
-    ERROR_NO_OWNER "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_OWNER" ;
+    ERROR_NO_OWNER CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_OWNER" ;
    
     /**
      * Error text when repostiories == [] and a download was needed.
      */
-    ERROR_NO_REPOSITORIES "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_REPOSITORIES" ;
+    ERROR_NO_REPOSITORIES CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_REPOSITORIES" ;
 
     /**
      * Error when a file was not found in any repository
      */
-    ERROR_ARTIFACT_NOT_FOUND "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_ARTIFACT_NOT_FOUND" ;
+    ERROR_ARTIFACT_NOT_FOUND CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_ARTIFACT_NOT_FOUND" ;
     
 }
 
