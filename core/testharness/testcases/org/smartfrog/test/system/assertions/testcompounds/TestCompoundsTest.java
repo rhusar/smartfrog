@@ -45,13 +45,7 @@ public class TestCompoundsTest extends DeployingTestBase {
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
-    private TerminationRecord deployToAbnormalTermination(String test) throws Throwable {
-        application = deployExpectingSuccess(TestCompoundsTest.FILES + test +".sf", test);
-        TerminationRecord record = expectAbnormalTermination((TestBlock) application);
-        return record;
-    }
-
-    private TerminationRecord deployToNormalTermination(String test) throws Throwable {
+     private TerminationRecord deployToNormalTermination(String test) throws Throwable {
         application = deployExpectingSuccess(TestCompoundsTest.FILES + test + ".sf", test);
         TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
         return record;
@@ -60,6 +54,7 @@ public class TestCompoundsTest extends DeployingTestBase {
     public void testFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
                 "testFailureWrongMessageNested");
+        TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
     }
 
     public void testSmartFrogException() throws Throwable {
