@@ -37,6 +37,10 @@ public class FileDataSource extends AbstractRestletDataSource implements Restlet
         FileUsingComponent {
 
     private File file;
+    
+    /**
+     * time to live value, measured in milliseconds {@value}
+     */
     public static final String ATTR_TIME_TO_LIVE = "timeToLive";
     private int timeToLive;
 
