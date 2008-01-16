@@ -33,7 +33,7 @@ For more information: www.smartfrog.org
   	// use only if startLine is null;
   	String maxLinesStr = request.getParameter("maxLines");
 	SFAdapter adapter = new SFAdapter(factory);
-//	adapter.getHostReport(host, fileName, reportPath);
+	adapter.getHostReport(host, fileName, reportPath);
 
 	String homeDir = factory.getAvalancheHome();
         String logsDir = homeDir + File.separator + "logs";
