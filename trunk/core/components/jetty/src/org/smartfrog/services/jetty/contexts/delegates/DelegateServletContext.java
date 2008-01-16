@@ -121,13 +121,13 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         FileSystem.requireFileToExist(resourceBase, false, 0);
 
         //to get resources seen before the other bits of the tree, we patch the handlerSet.
-        Context context = new Context(
+        Context ctx = new Context(
                 null,                           //parent
                 null,                           //sessions
                 new ExtendedSecurityHandler(),  //security; can be null
                 new ExtendedServletHandler(),   //servlets
                 null); //error handler
-        setContext(context);
+        setContext(ctx);
 
         handlerSet = new HandlerCollection();
 
@@ -135,8 +135,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         resources.setResourceBase(resourceBase);
 
         //configure the context
-        context.setContextPath(contextPath);
-        context.setResourceBase(resourceBase);
+        ctx.setContextPath(contextPath);
+        ctx.setResourceBase(resourceBase);
         log.info("Deploying " + contextPath + " from " + resourceBase);
 
         //add the resources
