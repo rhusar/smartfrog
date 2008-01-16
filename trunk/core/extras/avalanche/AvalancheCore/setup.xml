@@ -181,6 +181,7 @@
 		
 		<!--Copy SFInstaller template to Avalanche SmartFrog boot dir-->
 		<copy file="boot/sfinstaller.vm" todir="${avalanche.home}/smartfrog/boot"/>
+		<copy file="boot/scp.sf" todir="${avalanche.home}/smartfrog/boot"/>
 	</target>
 
   <target name="createXMPPEnabledSmartFrog" depends="setupSmartFrog">
