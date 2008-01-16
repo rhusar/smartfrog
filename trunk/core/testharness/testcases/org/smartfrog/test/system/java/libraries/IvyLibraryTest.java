@@ -49,5 +49,8 @@ public class IvyLibraryTest extends DeployingTestBase {
         expectSuccessfulTestRun(FILES, "testLocalSmartFrog");
     }
     
+        public void testMissingLocalArtifactFails() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testMissingLocalArtifactFails");
+    }
     
 }

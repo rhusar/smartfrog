@@ -22,6 +22,8 @@
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/version.sf"
 
+
+
 /*
  These components test the ivy components
  */
@@ -55,8 +57,21 @@ LibraryTest extends ExpectDeploy {
 }
  
  
+LibraryTest extends ExpectDeploy {
+  description "test an ivy component";
+
+  action extends Compound {
+  }
+
+  undeployAfter 500;
+
+}
+  
+ 
 testLocalSmartFrog extends LibraryTest {
 
+    description "Try to locate the smartfrog.jar file that should have been built and published with ivy by the core";
+    
     action extends Compound {
         library extends LocallyPublished;
         smartfrog.jar extends SmartFrogJar {
@@ -64,5 +79,30 @@ testLocalSmartFrog extends LibraryTest {
         }
         
     }
+}
+ 
+
+ 
+ 
+ /**
+  * expect an error or an failed download
+  */
+ testMissingLocalArtifactFails extends ExpectDeployFailure {
+
+    description "force an ivy local publish failure";
+     //dont expect termination
+    expectTerminate false;
+    
+    action extends Compound {
+        library extends LocallyPublished;
+        commons-logging extends commons-logging-1.0.4 {
+            library LAZY PARENT:library;
+        }
+    }
+
+    exceptions [
+      ["",""],
+      ["",LibraryArtifactErrors:ERROR_NO_DOWNLOAD]
+      ];
 }
  
