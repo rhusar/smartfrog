@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/os/java/components.sf"
-//#include "/org/smartfrog/services/www/testwar-m2.sf"
+#include "/org/smartfrog/services/www/testwar-m2.sf"
 #include "/org/smartfrog/services/www/cargo/components.sf"
 
 /*
