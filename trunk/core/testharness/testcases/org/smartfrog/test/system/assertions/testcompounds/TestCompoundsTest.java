@@ -51,7 +51,7 @@ public class TestCompoundsTest extends DeployingTestBase {
         return record;
     }
 
-    public void testFailureWrongMessageNested() throws Throwable {
+    public void NotestFailureWrongMessageNested() throws Throwable {
         application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
                 "testFailureWrongMessageNested");
         TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
