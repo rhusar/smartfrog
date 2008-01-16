@@ -199,8 +199,6 @@ public class SFAdapter {
 			String reportPath = null;
 			if ( cd != null)
 				reportPath= cd.sfResolve("reportPath", reportPath, false);
-			
-
                         //currentState.setLogFile(logsDir+File.separator +appName+".out");
                         currentState.setLogFile(appName);
                         currentState.setLastUpdated(getDateTime());
@@ -557,35 +555,29 @@ public class SFAdapter {
                     }
                 }
 		String homeDir = this.avalancheFactory.getAvalancheHome();
-        	String sfDistDir = homeDir + File.separator + "smartfrog" + File.separator + "dist";
+		String sfDistDir  = homeDir + File.separator + "smartfrog" + File.separator + "dist";
+        	String scpFile = homeDir + File.separator + "smartfrog" + File.separator + "boot" + File.separator + "scp.sf";
         	String logsDir = homeDir + File.separator + "logs";
 		HashMap attrMap = new HashMap();
 		
-		Vector a = new Vector();
-		
-		Vector b = new Vector();
-	
-		attrMap.put("sfConfig:SCP:host", host);
-		attrMap.put("sfConfig:SCP:username", username);
-		attrMap.put("sfConfig:password", password);
-		
 		if (reportPath != null){
-			attrMap.put("sfConfig:recursive", true);
-			a.add(reportPath);
-			b.add(logsDir + File.separator + outputFile);
+			attrMap.put("sfConfig:SCP:file", username+":"+ password + "@"+ host+ ":" + reportPath + "/*");
+		 	File outputDir = new File(logsDir + File.separator + outputFile);
+		 	if (!outputDir.exists() && !outputDir.isDirectory())
+		 		outputDir.mkdir();
+			attrMap.put("sfConfig:SCP:localTodir" , logsDir + File.separator + outputFile);
 		}else {
-			a.add(avalancheInstallationDirectory + "/smartfrog/nohup.out");
-			b.add(logsDir + File.separator + outputFile +".out");
+			attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
+			
+			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
 		}
-		attrMap.put("sfConfig:remoteFiles", a);
-		attrMap.put("sfConfig:localFiles",b);
 		
 		SmartfrogAdapter adapter = new SmartFrogAdapterImpl(sfDistDir);
                 SmartFrogAdapterImpl.setLogFilePath(logsDir);
 
             	// run the description on local host for remote deployments.
           
-            	adapter.submit("org/smartfrog/services/ssh/examples/scpAuthInlinePassExample.sf", attrMap, new String[]{"localhost"});
+            	adapter.submit(scpFile, attrMap, new String[]{"localhost"});
 	} catch (SFParseException e) {
             throw new SFSubmitException(e);
         } catch (SFMultiHostSubmitException e) {
