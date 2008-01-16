@@ -210,7 +210,7 @@ public final class LogEntry implements Serializable, Cloneable {
     
     /**
      * Creates a full log string with the log level
-     * @return
+     * @return the full log string
      */
     public String logString() {
         if(level==LOG_LEVEL_STDERR || level==LOG_LEVEL_STDOUT) {
