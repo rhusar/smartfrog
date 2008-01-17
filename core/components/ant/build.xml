@@ -35,14 +35,12 @@ The build script for SmartFrog Ant component.
   <property file="build.properties" />
   <property name="ivy.enabled" value="true"/>
   <property name="is.component" value="true"  />
-  <property name="system.tests" value="false"/>
-  <property name="root.dir" location="../../"  />
+  <property name="system.tests" value="true"/>
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
 
 
 
