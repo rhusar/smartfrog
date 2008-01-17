@@ -347,6 +347,9 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-ant/ant-${apache.ant.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-ant/ant-launcher-${apache.ant.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
     </pack>
 
 
