@@ -555,10 +555,10 @@ fi
 
 %{libdir}/sf-ant-${smartfrog.version}.jar
 %{libdir}/ant-${apache.ant.version}.jar
-#%{libdir}/ant-launcher-${apache.ant.version}.jar
+%{libdir}/ant-launcher-${apache.ant.version}.jar
 %{linkdir}/sf-ant.jar
 %{linkdir}/ant.jar
-#no longer present %{linkdir}/ant-launcher.jar
+%{linkdir}/ant-launcher.jar
 
 
 %files anubis
