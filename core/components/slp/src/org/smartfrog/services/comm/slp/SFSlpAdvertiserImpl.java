@@ -86,8 +86,8 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         }
         serviceType = (String) sfResolve(serviceTypeRef);
         serviceAttributes = (Vector) sfResolve(serviceAttributeRef);
-        serviceLifetime = ((Integer) sfResolve(serviceLifetimeRef)).intValue();
-        advertiseReference = ((Boolean) sfResolve(advertiseReferenceRef)).booleanValue();
+        serviceLifetime = sfResolve(serviceLifetimeRef,0,true);
+        advertiseReference = sfResolve(advertiseReferenceRef,true,true);
 
         // convert attributes to ServiceLocationAttribute objects.
         Iterator iter = serviceAttributes.iterator();
@@ -145,6 +145,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         try {
             advertiser.deregister(serviceURL);
         } catch (ServiceLocationException ex) {
+            sfLog().error(ex);
         }
 
         super.sfTerminateWith(r);
@@ -233,6 +234,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
             serviceURL = new ServiceURL(serviceType + "://" + urlStr, serviceLifetime);
             url = true;
         } catch (Exception ex) {
+            sfLog().info(ex);
         }
 
         if (!url) {

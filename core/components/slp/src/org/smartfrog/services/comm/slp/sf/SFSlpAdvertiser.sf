@@ -37,7 +37,6 @@ SFSlpAdvertiser extends Prim {
         serviceAttributes extends Vector;
         advertiseReference extends Boolean;
         serviceLifetime extends Integer;
-
       }
 
 

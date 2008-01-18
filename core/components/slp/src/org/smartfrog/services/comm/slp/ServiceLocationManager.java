@@ -41,9 +41,9 @@ import java.util.Vector;
  */
 public class ServiceLocationManager {
     /** A vector of Locator objects. This vector holds the Locators that have been created through this SLM. */
-    private static Vector Locators = new Vector();
+    private static Vector<UserAgent> locators = new Vector<UserAgent>();
     /** A vector of Advertiser objects. This vector holds the Advertisers that have been created throug this SLM. */
-    private static Vector Advertisers = new Vector();
+    private static Vector<ServiceAgent> advertisers = new Vector<ServiceAgent>();
     /**
      * Properties for new Agents. The properties defined by this object will be used when creating new agents. Changing
      * this has no effect on running agents.
@@ -55,6 +55,7 @@ public class ServiceLocationManager {
     /**
      * Returns the minimum refresh interval advertised by all running DAs. This method is NOT implemented. (always
      * returns 0)
+     * @return the minimum refresh interval (
      */
     public static int getRefreshInterval() throws ServiceLocationException {
         return min_refresh_interval;
@@ -65,14 +66,14 @@ public class ServiceLocationManager {
      * vector.
      */
     public static synchronized Vector findScopes() throws ServiceLocationException {
-        Vector foundScopes = new Vector();
+        Vector<String> foundScopes = new Vector<String>();
 
         // find all known scopes...
-        for (Iterator it = Locators.iterator(); it.hasNext();) {
-            getScopesFrom(((Locator) it.next()).getScopes().iterator(), foundScopes);
+        for(Locator locator: locators) {
+            getScopesFrom(locator.getScopes().iterator(), foundScopes);
         }
-        for (Iterator it = Advertisers.iterator(); it.hasNext();) {
-            getScopesFrom(((Advertiser) it.next()).getScopes().iterator(), foundScopes);
+        for (Advertiser advertiser : advertisers) {
+            getScopesFrom(advertiser.getScopes().iterator(), foundScopes);
         }
 
         // return the scope list
@@ -90,6 +91,7 @@ public class ServiceLocationManager {
      *
      * @param locale The language locale for the Locator
      * @return A locator that can be used for issuing service requests.
+     * @throws ServiceLocationException if a new agent cannot be created
      */
     public static synchronized Locator getLocator(Locale locale) throws ServiceLocationException {
         /*
@@ -102,24 +104,16 @@ public class ServiceLocationManager {
         }
         properties.setProperty("net.slp.locale", locale.getLanguage());
 
-        Iterator iter = Locators.iterator();
-        UserAgent a;
-        while (iter.hasNext()) {
-            //System.out.println("SLM -> Has old locator");
-            a = (UserAgent) iter.next();
-            //System.out.println("SLM -> checking properties");
-            if (a.getProperties().equals(properties)) {
-                //System.out.println("SML -> Returning old locator");
-                return a;
+
+        for (UserAgent agent : locators) {
+            if (agent.getProperties().equals(properties)) {
+                return agent;
             }
         }
-
-        //System.out.println("SLM -> Returning new locator");
-
-        a = new UserAgent(properties);
-        Locators.add(a);
+        UserAgent agent = new UserAgent(properties);
+        locators.add(agent);
         //updateScopeList();
-        return a;
+        return agent;
     }
 
     /**
@@ -141,17 +135,14 @@ public class ServiceLocationManager {
         }
         properties.setProperty("net.slp.locale", locale.getLanguage());
 
-        Iterator iter = Advertisers.iterator();
-        ServiceAgent a;
-        while (iter.hasNext()) {
-            a = (ServiceAgent) iter.next();
-            if (a.getProperties().equals(properties)) return a;
+        for(ServiceAgent agent: advertisers) {
+            if (agent.getProperties().equals(properties)) return agent;
         }
 
-        a = new ServiceAgent(properties);
-        Advertisers.add(a);
+        ServiceAgent agent = new ServiceAgent(properties);
+        advertisers.add(agent);
         //updateScopeList();
-        return a;
+        return agent;
     }
 
     /**
@@ -163,7 +154,7 @@ public class ServiceLocationManager {
         properties = p;
     }
 
-    private static void getScopesFrom(Iterator iter, Vector result) {
+    private static void getScopesFrom(Iterator iter, Vector<String> result) {
         while (iter.hasNext()) {
             String s = (String) iter.next();
             if (!result.contains(s)) {
