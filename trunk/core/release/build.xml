@@ -312,7 +312,7 @@
     <property name="rpms.tar"
         location="${dist.rpm.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar" />
     <property name="rpms.tar.gz"
-      location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.gz" />
+      location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar.gz" />
     <property name="remote-smartfrogd" value="/etc/init.d/${rpm.daemon.name}" />
     <macrodef name="rpmpackage">
       <attribute name="package"/>
