@@ -30,7 +30,7 @@ public class JBossTest extends CargoTestBase {
     }
 
     public void testJBoss4() throws Throwable {
-        deployAppServer(FILE_BASE + "jboss/testJBoss4.sf",
+        deployAppServer(FILE_BASE + "jboss",
                 "testJBoss"
         );
 

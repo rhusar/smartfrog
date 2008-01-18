@@ -38,7 +38,7 @@ Jars extends Compound {
 
     sfSyncTerminate true;
 
-    library extends Maven2Library {
+    library extends IvyLibrary {
     }
 
     commons-logging extends JarArtifact {
@@ -49,14 +49,14 @@ Jars extends Compound {
     jetty extends JarArtifact {
         library LAZY PARENT:library;
         project "jetty";
-        version "4.2.12";
+        version "6.1.5";
     }
 
     servletapi extends JarArtifact {
         library LAZY PARENT:library;
         project "javax.servlet";
         artifact "servletapi";
-        version "2.3";
+        version "2.5";
     }
 
     classpath [
@@ -67,7 +67,7 @@ Jars extends Compound {
 }
 
 
-Jetty4 extends Jetty4CargoServer {
+Jetty extends Jetty4CargoServer {
   port ServerOptions:port;
   logging ServerOptions:logging;
 

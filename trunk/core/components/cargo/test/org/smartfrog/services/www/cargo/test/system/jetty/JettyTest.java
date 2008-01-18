@@ -23,14 +23,14 @@ import org.smartfrog.services.www.cargo.test.system.CargoTestBase;
 
 /**
  */
-public class Jetty4Test extends CargoTestBase {
+public class JettyTest extends CargoTestBase {
 
-    public Jetty4Test(String name) {
+    public JettyTest(String name) {
         super(name);
     }
 
     public void testJetty4() throws Throwable {
-        deployAppServer(FILE_BASE + "jetty/testJetty4.sf",
+        deployAppServer(FILE_BASE + "jetty",
                 "testJetty"
         );
     }

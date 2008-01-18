@@ -20,25 +20,16 @@
 
 package org.smartfrog.services.www.cargo.test.system;
 
-import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.www.LivenessPage;
-import org.smartfrog.services.www.cargo.CargoServer;
-
-import java.rmi.RemoteException;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
 
  */
-public abstract class CargoTestBase extends SmartFrogTestBase {
+public abstract class CargoTestBase extends DeployingTestBase {
 
 
-    /** Node of any deployed application */
-    private Prim application;
-    private CargoServer server;
+
 
 
 
@@ -54,44 +45,15 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
-     */
-    protected void setUp() throws Exception {
-        super.setUp();
-        //assertSystemPropertySet(CODEBASE_PROPERTY);
+
+
+    protected void deployAppServer(String packageName, String name) throws
+            Throwable {
+        expectSuccessfulTestRunOrSkip(packageName,name);
     }
 
-
-    /**
-     * Tears down the fixture, for example, close a network connection. This
-     * method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        //terminate the node if it is not null.
-        terminateApplication(application);
-    }
-
-    /**
-     * Get the deployed application, or null
-     *
-     * @return application, if deployed
-     */
-    public Prim getApplication() {
-        return application;
-    }
-
-    public void setApplication(Prim application) {
-        this.application = application;
-    }
-
-    public CargoServer getServer() {
-        return server;
-    }
-
-    protected void deployAppServer(String resource,String name) throws
+/*
+    protected void OlddeployAppServer(String resource,String name) throws
             Throwable {
         setApplication(deployExpectingSuccess(resource, name));
         Prim serverAsPrim = application.sfResolve("server", (Prim) null, true);
@@ -112,5 +74,5 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
 
     protected void checkWebSite() throws SmartFrogException, RemoteException{
         happyPage.checkPage();
-    }
+    }*/
 }
