@@ -528,12 +528,12 @@ public class TestCompoundImpl extends ConditionCompound
      */
     protected String checkExceptionsWereExpected(Throwable exception) {
         Throwable thrown = exception;
-        int expectedExeceptionCount=exceptions==null?0:exceptions.size();
+        int expectedExceptionCount=exceptions==null?0:exceptions.size();
         if(thrown==null) {
-            if(expectedExeceptionCount==0) {
+            if(expectedExceptionCount==0) {
                 return null;
             } else {
-                return ERROR_NO_EXCEPTIONS_FOUND +expectedExeceptionCount;
+                return ERROR_NO_EXCEPTIONS_FOUND +expectedExceptionCount;
             }
         } else {
             //now run through the exception list
