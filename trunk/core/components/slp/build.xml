@@ -87,10 +87,13 @@ Reference URL:http://ant.apache.org
 
   <target name="ready-to-test" depends="common.ready-to-test,parse">
     <condition property="system.tests.really.enabled">
+      <or>
       <and>
         <isset property="system.tests.enabled" />
         <isset property="run.failing.tests" />
-      </and>
+        </and>
+      <isset property="testcase" />
+      </or>
     </condition>
   </target>
 

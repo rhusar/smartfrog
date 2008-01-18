@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -56,13 +57,14 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     protected int discoveryInterval = 0;
     protected int discoveryDelay = 0;
     protected boolean returnEnumeration = false;
-    private Thread locatorThread = null;
+    private SmartFrogThread locatorThread = null;
     private Object wtSync = new Object();
     private volatile boolean amWaiting = true;
-    private boolean runThread = true;
+    private volatile boolean runThread = true;
     private LogSF slpLog = null;
     public static final String EXCEPTION_NO_SERVICE_TYPE = "SLP: No service type given";
     public static final String EXCEPTION_NO_SLP_SERVICE = "No SLP service found";
+    private Throwable discoveryException;
 
     public SFSlpLocatorImpl() throws RemoteException {
         super();
@@ -118,8 +120,8 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         }
 
         // start locator thread
-        locatorThread = new Thread() {
-            public void run() {
+        locatorThread = new SmartFrogThread() {
+            public void execute() throws Throwable {
                 locateServices();
             }
         };
@@ -154,6 +156,12 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
                     waitForDiscovery();
                 }
                 sfLog().debug("Discovery completed...");
+                if(discoveryException!=null) {
+                    throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(discoveryException);
+                }
+                if(discoveryResults==null) {
+                    throw new SmartFrogResolutionException("No discovery results");
+                }
                 if (returnEnumeration) {
                     // return the unmodified enumeration
                     return discoveryResults;
@@ -182,13 +190,12 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
                 }
                 stopWaiting();
             } catch (ServiceLocationException ex) {
+                discoveryException= ex;
                 // error during discovery.
                 if (slpLog != null) {
                     slpLog.error("Error during discovery", ex);
-                } else {
-                    sfLog().error("Error during discovery", ex);
                 }
-
+                sfLog().error("Error during discovery", ex);
                 // stop thread...
                 runThread = false;
                 stopWaiting();
@@ -230,7 +237,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
      *
      * @param sle an enumeration to use
      * @return the object discovered.
-     * @throws ServiceLocationException if discovery failed
+     * @throws SmartFrogResolutionException if discovery failed
      */
     protected Object getDiscoveredObject(ServiceLocationEnumeration sle) throws SmartFrogResolutionException {
 
@@ -238,9 +245,9 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
             ServiceURL url = (ServiceURL) sle.nextElement();
             // if the URL has a host part, we have a String or InetAddress.
             String host = url.getHost();
-            if (!host.equals("")) {
+            if (host.length()==0) {
                 String path = url.getURLPath();
-                if (!path.equals("")) {
+                if (path.length() == 0) {
                     return host + path; // String with hostname and path.
                 }
                 // No path: create InetAddress.

@@ -71,6 +71,7 @@ public class SlpPositiveTest extends SlpTestBase{
         } finally {
             terminateApplication(serviceProvider);
             terminateApplication(serviceRequestor);
+            terminateApplication(application);
         }
 
     }
@@ -78,8 +79,9 @@ public class SlpPositiveTest extends SlpTestBase{
     public void testCaseTCP41() throws Throwable {
         //	Prim applicationtcn41D = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCP41");
         Prim userAgent = null;
+        Prim serviceAgent= null;
         try {
-            application = deployExpectingSuccess(FILES + "tcp41_SA.sf", "tcp41_ServiceAgent");
+            serviceAgent = deployExpectingSuccess(FILES + "tcp41_SA.sf", "tcp41_ServiceAgent");
             userAgent = deployExpectingSuccess(FILES + "tcp41_UA.sf", "tcp41_UserAgent");
             Thread.sleep(SLEEP_DELAY);
             assertNotNull(userAgent);
@@ -94,8 +96,8 @@ public class SlpPositiveTest extends SlpTestBase{
         } finally {
             //		terminateApplication(applicationtcn41D);
             terminateApplication(userAgent);
+            terminateApplication(serviceAgent);
         }
-
 
     }
 }

@@ -46,7 +46,6 @@ public class SlpNegativeTest extends SlpTestBase {
 /* Testing without serviceType in Service Agant */
 
     public void testCaseTCN80() throws Throwable {
-//		application = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN80");
         deployExpectingException(FILES + "tcn80.sf",
                 "tcn80",
                 null,
@@ -59,7 +58,6 @@ public class SlpNegativeTest extends SlpTestBase {
 
     /* Testing without toAdvertise in Service Agant */
     public void testCaseTCN81() throws Throwable {
-//		application = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN81");
         deployExpectingException(FILES + "tcn81.sf",
                 "tcn81",
                 EXCEPTION_LIFECYCLE,
@@ -71,7 +69,6 @@ public class SlpNegativeTest extends SlpTestBase {
 
     /* Testing without serviceType in User Agant*/
     public void testCaseTCN82() throws Throwable {
-//		Prim applicationtcn70 = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN82");
         application = deployExpectingSuccess(FILES + "ServiceProvider.sf", "serviceAgentTCN70");
         deployExpectingException(FILES + "tcn82.sf",
                 "tcn170",
@@ -95,15 +92,20 @@ public class SlpNegativeTest extends SlpTestBase {
 
     // Testing service life time - Expecting failure  because of life time time out.
     public void testCaseTCN84() throws Throwable {
-        deployDirectoryAgent();
-        application = deployExpectingSuccess(FILES + "tcn84_SA.sf", "ServiceAgentTCN84");
-        Thread.sleep(SLEEP_DELAY);
-        deployExpectingException(FILES + "tcn84_UA.sf",
-                "UserAgentTCP84",
-                EXCEPTION_LIFECYCLE,
-                "sfDeploy",
-                EXCEPTION_RESOLUTION,
-                SFSlpLocatorImpl.EXCEPTION_NO_SLP_SERVICE);
+        Prim serviceAgent=null;
+        try {
+            deployDirectoryAgent();
+            serviceAgent = deployExpectingSuccess(FILES + "tcn84_SA.sf", "ServiceAgentTCN84");
+            Thread.sleep(SLEEP_DELAY);
+            deployExpectingException(FILES + "tcn84_UA.sf",
+                    "UserAgentTCP84",
+                    EXCEPTION_LIFECYCLE,
+                    "sfDeploy",
+                    EXCEPTION_RESOLUTION,
+                    SFSlpLocatorImpl.EXCEPTION_NO_SLP_SERVICE);
+        } finally {
+            terminateApplication(serviceAgent);
+        }
     }
 
 
