@@ -29,13 +29,17 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-#include "/org/smartfrog/services/www/cargo/test/system/tomcat/tomcat.sf"
-
-
+#include "/org/smartfrog/services/www/cargo/test/system/jetty/jetty.sf"
 
 
 sfConfig extends CargoTest {
-  servertype "tomcat";
-  server extends Tomcat;
+
+  servertype "jetty";
+
+  server extends Jetty {
+    home LAZY HomeDir;
+  }
+
 
 }
+

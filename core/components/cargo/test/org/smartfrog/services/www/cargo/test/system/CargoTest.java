@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.www.cargo.test.system;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 
 
 public class CargoTest extends CargoTestBase {

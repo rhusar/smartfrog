@@ -42,6 +42,7 @@ ServerOptions extends Prim {
  */
 AppServerWithWar extends AppServer {
 
+
   HomeDir extends TempDirWithCleanup {
     prefix "cargo";
   }
@@ -53,7 +54,26 @@ AppServerWithWar extends AppServer {
       contextPath "testwar";
   }
 
-  liveness extends LivenessPage {
+
+
+}
+
+
+CargoTest extends ExpectDeploy {
+
+  servertype TBD;
+
+  description ("This test deploys a " ++ servertype ++ " server using Cargo, then waits for a web page to be served up");
+
+  server TBD;
+
+  action extends AppServerWithWar {
+    server PARENT:server;
+  }
+
+  tests extends Sequence {
+     waitForServer extends WaitForPage {
+          timeout 30000
           host LAZY server:listener:ipaddr;
           port server:port;
           page LAZY deployedWar:contextPath;
@@ -61,5 +81,6 @@ AppServerWithWar extends AppServer {
           followRedirects true;
           enabled false;
   }
+}
 
 }
