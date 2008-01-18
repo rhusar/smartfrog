@@ -60,15 +60,8 @@ Reference URL:http://ant.apache.org
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
 
-
-  <!-- =================================================================== -->
-  <!-- Initialization target                                               -->
-  <!-- =================================================================== -->
-    <target name="init" depends="init-standard-output-dirs">
-      <echo message="==================================================================="/>
-      <echo message="= ${ant.project.name}"/>
-    </target>
-
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
 
 
   <!-- ========================================================== -->

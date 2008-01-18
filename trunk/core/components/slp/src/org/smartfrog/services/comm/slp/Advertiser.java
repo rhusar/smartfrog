@@ -50,7 +50,7 @@ public interface Advertiser {
                                   Vector serviceLocationAttributes) throws ServiceLocationException;
 
 
-    /** Return the language locale with which this object was created */
+    /** @return the language locale with which this object was created */
     public abstract Locale getLocale();
 
 
