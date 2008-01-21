@@ -111,6 +111,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             Object res = ((parent == null) || (name == null)) ? null: sfResolveHere(name,false);
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
+                sfLog().error("There's already a "+res.getClass()+" at "+name);
                 throw new SmartFrogDeploymentException(null,
                 		ComponentHelper.completeNameSafe(parent),
                             name, cmp, parms,MessageUtil.
