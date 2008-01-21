@@ -1,0 +1,136 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-ant">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+        Component to run Ant tasks under Smartfrog
+        Created 16-Nov-2006 by slo
+    </description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+<configurations defaultconfmapping="default">
+  <conf name="default" extends="master,runtime"
+      description="default configuration contains artifacts and runtime dependencies"/>
+  <conf name="build" visibility="private"
+      description="artifacts needed to build the application"/>
+  <conf name="compile" visibility="private"
+      description="artifacts needed to compile the application"/>
+  <conf name="daemon" visibility="private"
+      description="the classpath needed to run smartfrog daemons"/>
+  <conf name="test" extends="default,compile"
+      description="the classpath needed to run tests"/>
+  <conf name="master" description="contains the artifact but no dependencies"/>
+  <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+  <conf name="runtime" description="runtime but not the artifact"
+      extends="redist"/>
+  <conf name="ant-optional" 
+    description="ant and its optional JARs; no dependent artifacts; 
+     JARs with proprietary dependencies are omitted"
+      extends="redist"/>
+  <conf name="documentation"
+      description="all documentation artifacts"/>  
+</configurations> 
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+    <artifact name="sf-ant-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-ant-documentation" conf="documentation" ext="zip"/>    
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->services;runtime->services;daemon->services"/>
+    <dependency org="org.smartfrog"
+        name="sf-tasks" changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+    <dependency org="org.apache.ant"
+        name="ant"
+        rev="${apache.ant.version}"
+        conf="compile->master;redist->master"/>
+    <dependency org="org.apache.ant"
+        name="ant-launcher"
+        rev="${apache.ant.version}"
+        conf="redist->master"/>    
+   <!-- here are the optionals -->
+   <dependency org="org.apache.ant"
+        name="ant-antlr"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-bcel"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-bsf"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-log4j"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-oro"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-regexp"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-apache-resolver"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-commons-logging"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-commons-net"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jai"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jdepend"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jmf"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-jsch"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-junit"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-launcher"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+   <dependency org="org.apache.ant"
+        name="ant-nodeps"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
+  
+</dependencies>
+</ivy-module>

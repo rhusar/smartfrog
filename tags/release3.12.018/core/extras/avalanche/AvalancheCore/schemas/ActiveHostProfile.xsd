@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema 
+  targetNamespace="http://smartfrog.org/avalanche/core/ActiveHostProfile"
+  xmlns:xs='http://www.w3.org/2001/XMLSchema'
+  xmlns:this='http://smartfrog.org/avalanche/core/ActiveHostProfile'
+  xmlns:mc='http://smartfrog.org/avalanche/core/Module'
+  xmlns:mg='http://smartfrog.org/avalanche/core/ModuleGroup'>
+
+  <xs:import namespace="http://smartfrog.org/avalanche/core/Module"
+    schemaLocation="ModuleConfiguration.xsd"/>
+    
+  <xs:import namespace="http://smartfrog.org/avalanche/core/ModuleGroup"
+    schemaLocation="ModuleGroup.xsd"/>
+
+  <xs:element name="ActiveProfile" type="this:ActiveProfileType"/>
+
+  <xs:complexType name="ActiveProfileType">
+    <xs:sequence>
+      <xs:element name="hostId" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="hostState" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="messagesHistory" type="this:messageType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="moduleState" type="this:moduleStateType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="vmState" type="this:vmStateType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="vmMasterCopy" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="messageType">
+    <xs:sequence>
+      <xs:element name="time" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="msg" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="moduleStateType">
+    <xs:sequence>
+      <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="instanceName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="state" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="lastAction" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="lastUpdated" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="logFile" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="msg" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="reportPath" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="vmStateType">
+    <xs:sequence>
+      <xs:element name="vmPath" type="xs:string" minOccurs="1" maxOccurs="1" />
+      <xs:element name="vmLastCmd" type="xs:string" minOccurs="1" maxOccurs="1" />
+      <xs:element name="vmResponse" type="xs:string" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

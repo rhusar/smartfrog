@@ -1,0 +1,107 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this file declares the basic xunit listeners
+ */
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+
+
+/**
+ * Schema for test listeners
+ */
+TestListenerSchema extends Schema {
+   name extends String;
+}
+
+/**
+ * Schema for directory driven test listeners
+ */
+DirectoryBasedTestListenerSchema extends Schema {
+  outputDirectory extends FilenameType ;
+  name extends String;
+}
+
+
+/**
+ * this is a declaration of a test listener
+ */
+
+TestListener extends Prim {
+   testListenerSchema extends TestListenerSchema ;
+}
+
+
+/**
+ * The null listener
+ */
+NullListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.NullListenerImpl";
+    name "NullListener";
+}
+
+
+/**
+ * console listener just outputs to the console
+ */
+ConsoleListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.ConsoleListenerImpl";
+    name "ConsoleListener";
+}
+
+/**
+ * this is the one used for testing. It buffers stuff and can be queried about it
+ */
+BufferingListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.BufferingListenerImpl";
+    name "BufferingListener";
+}
+
+
+
+
+/**
+ * This component collects statistics about tests, but discards the values.
+ */
+StatisticsTestListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.StatisticsTestListenerImpl";
+    name "StatisticsTestListener";
+}
+
+
+/**
+ * the chain listener takes a list of secondary listeners, and relays to all of them.
+ */
+
+
+ChainListener extends TestListener {
+    sfClass "org.smartfrog.services.xunit.listeners.ChainListenerImpl";
+    name "ChainListener";
+    chainListenerSchema extends  Schema {
+        listeners extends Vector ;
+    }
+}
+
+
+
