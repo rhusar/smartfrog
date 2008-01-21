@@ -164,7 +164,7 @@
   <property name="jdocs" value="${doc.dir}/jdocs"/>
   <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
-  <property name="dist.metadata.dir" location="${dist.lib.dir}"/>
+  <property name="dist.metadata.dir" location="${dist.lib.dir}/metadata"/>
   <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
   <property name="dist.src.dir" location="${dist.dir}/${src}"/>
   <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
@@ -587,8 +587,10 @@
   unless="javadoc.disabled"
   description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------"/>
+    <echo>
+    ------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------
+    To skip this stage, set javadoc.disabled=true
+    </echo>
     <javadoc
       packagenames="org.smartfrog.*"
       sourcepath="${src.dir}"
