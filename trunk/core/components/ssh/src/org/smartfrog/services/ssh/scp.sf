@@ -93,8 +93,10 @@ For more information: www.smartfrog.org
  */
 
 ScpSessionFilePassword extends ScpSessionAuthPass {
+    passwordFile TBD;
 
     passwordProvider extends FilePassword {
+      passwordFile PARENT:passwordFile;
     }
 }
 
