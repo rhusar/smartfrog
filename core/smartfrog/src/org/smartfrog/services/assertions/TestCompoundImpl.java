@@ -414,9 +414,12 @@ public class TestCompoundImpl extends ConditionCompound
                         //the action prim terminated in a way that was not expected
                         //
                         String errorText = TEST_FAILED_WRONG_STATUS + exitType +
-                                '\n'
-                                + "and error text '" + exitText + "'\n"
-                                + "but got " + childStatus+"\n";
+                                '\n';
+
+                        if(exitText.length()>0) {
+                            errorText += "and exit text '" + exitText + "'\n";
+                        }
+                        errorText += "But got " + childStatus+"\n";
                         if(exceptionCheck!=null) {
                             errorText+=exceptionCheck;
                             errorText += "\n";
@@ -543,11 +546,16 @@ public class TestCompoundImpl extends ConditionCompound
                 }
                 String classname=tuple.get(0);
                 String text=tuple.get(1);
-                if(classname.length()>0 && !thrown.getClass().getCanonicalName().contains(classname)) {
-                    return "Did not find classname '"+classname+"' in "+thrown.getClass()+" "+thrown.getMessage();
+                String canonicalName = thrown.getClass().getCanonicalName();
+                if(thrown instanceof SmartFrogExtractedException) {
+                    SmartFrogExtractedException sfe=(SmartFrogExtractedException) thrown;
+                    canonicalName = sfe.getExceptionCanonicalName();
+                }
+                if(classname.length()>0 && !canonicalName.contains(classname)) {
+                    return "Did not find classname '"+classname+"' in "+ canonicalName +" "+thrown.getMessage();
                 }
                 if (text.length() > 0 && !thrown.getMessage().contains(text)) {
-                    return "Did not find text '" + text + "' in " + thrown.getClass() + " " + thrown.getMessage();
+                    return "Did not find text '" + text + "' in " + canonicalName + " " + thrown.getMessage();
                 }
                 //copy the next exception
                 thrown=thrown.getCause();

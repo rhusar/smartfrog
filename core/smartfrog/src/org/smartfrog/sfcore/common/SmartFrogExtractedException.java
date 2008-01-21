@@ -46,6 +46,11 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     /** {@value} */
     public static final String EXCEPTION_CLASSNAME = "ExceptionClassname";
 
+    /**
+     * {@value}
+     */
+    public static final String EXCEPTION_CANONICALNAME = "ExceptionCanonicalName";
+
     /** {@value} */
     public static final String EXCEPTION_LOCALIZED_MESSAGE = "ExceptionLocalizedMessage";
 
@@ -106,6 +111,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      */
     private void fillInFromThrowable(Throwable thrown) {
         add(EXCEPTION_CLASSNAME, thrown.getClass().getName());
+        add(EXCEPTION_CANONICALNAME, thrown.getClass().getCanonicalName());
         add(EXCEPTION_MESSAGE, thrown.getMessage());
         add(EXCEPTION_LOCALIZED_MESSAGE, thrown.getLocalizedMessage());
         add(EXCEPTION_STACK, thrown.getStackTrace());
@@ -159,6 +165,33 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
             return super.shortClassName();
         }
 
+    }
+
+    /**
+     * Get the classname of the underlying exception. If none was defined, return this class's own classname
+     * @return the classname
+     */
+    public String getExceptionClassname() {
+        Object classname = get(EXCEPTION_CLASSNAME);
+        if(classname!=null) {
+            return classname.toString();
+        } else {
+            return  getClass().getName();
+        }
+    }
+
+    /**
+     * Get the classname of the underlying exception. If none was defined, return this class's own classname
+     *
+     * @return the canonical classname
+     */
+    public String getExceptionCanonicalName() {
+        Object classname = get(EXCEPTION_CANONICALNAME);
+        if (classname != null) {
+            return classname.toString();
+        } else {
+            return getClass().getCanonicalName();
+        }
     }
 
     /**
