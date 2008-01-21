@@ -557,6 +557,7 @@ java.class.path=
     <echo>
     Creating Java Docs for ${javadoc.header} into
     [${dist.jdocs.dir}]
+    To skip this stage, set javadoc.disabled=true
     </echo>
     <echo level="verbose">
       language level=${javac.java.version}
