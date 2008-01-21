@@ -1,6 +1,6 @@
 #include "/org/smartfrog/examples/dynamicwebserver/sf/system.sf"
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/functions.sf"
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/functions.sf"
 
 // the host on which the load generators will run
 stressTestHost     "16.25.169.35";
