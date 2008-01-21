@@ -1,0 +1,80 @@
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/sfunit/components.sf"
+#include "/org/smartfrog/services/xunit/all.sf"
+#include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+
+
+sfUnit extends SFUnitTestSuite {
+  listener extends ConsoleListener;
+}
+
+
+antxml extends AntXmlTestListener {
+  outputDirectory PROPERTY test.reports.dir;
+}
+
+
+sfUnitAntXml extends sfUnit {
+  listener extends antxml;
+}
+
+SimpleTestCompound extends TestCompound {
+    action extends Sequence {
+    }
+}
+
+Failure extends FailAbnormal;
+
+FailingTestCompound extends TestCompound {
+    action extends Failure;
+}
+
+TestSFUnit extends ExpectTerminate {
+
+  action extends sfUnit {
+    etc extends SimpleTestCompound;
+  }
+
+}
+
+
+testSFUnit extends ExpectTerminate {
+  action extends sfUnit {
+    etc extends SimpleTestCompound;
+  }
+}
+
+
+testSFUnitAntXml extends ExpectTerminate {
+  action extends sfUnitAntXml {
+    etc extends SimpleTestCompound;
+  }
+}
+
+
+
+
+
+
+
+
