@@ -313,13 +313,14 @@ public abstract class SmartFrogTestBase extends TestCase {
                 return resultException;
             } else {
                 //clean up
+                String deployedAppString = deployedApp.toString();
                 if(deployedApp instanceof Prim) {
                     terminateApplication((Prim)deployedApp);
                 }
                 //then fail
                 fail("We expected an exception here:"
                         +(exceptionName!=null?exceptionName:"(anonymous)")
-                     +" but got this deployment "+deployedApp.toString());
+                     +" but got this deployment "+ deployedAppString);
             }
          } catch (Exception fault) {
             fail(fault.toString());
