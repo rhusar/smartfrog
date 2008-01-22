@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
   // Host is mising
 PasswordSshExec extends SSHSessionInlinePassword {
     password "secret";
-    host "localhost";
+    host testvalues:localhost;
     username "smartfrog";
  }
 
@@ -37,7 +37,7 @@ Tcn91 extends SSHSessionInlinePassword {
 Tcn92 extends SSHSessionInlinePassword {
     description "user name is missing";
     password "secret";
-    host "localhost";
+    host testvalues:localhost;
     commands ["mkdir Sep15", "mkdir sep15"];
  }
 
@@ -49,6 +49,6 @@ Tcn94 extends SSHSessionPasswordFile {
     description "missing password file";
     passwordFile "this-file-does-not-exist-probably-0a1b2c3d.txt";
     username "smartfrog";
-    host "localhost";
+    host testvalues:localhost;
     commands [];
  }

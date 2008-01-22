@@ -83,20 +83,24 @@ public class ScpNegativeTest
                 "error in schema: non-optional attribute 'remoteFiles' is missing");
     }
 
-    /*scp : transferType  missing*/
-    public void testCaseTCN89() throws Exception {
-        deployExpectingException(FILES + "tcn89.sf",
-                "tcn89",
-                EXCEPTION_LIFECYCLE,
-                "Unsupported action: \"post\"");
+    /*scp : wrong transferType */
+    public void testCaseTCN89() throws Throwable {
+        expectSuccessfulTestRun(FILES, "tcn89.sf");
     }
 
-
     public void testCaseTCNNonexistentHost() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES , "tcn_nonexistent_host.sf");
+        expectSuccessfulTestRunOrSkip(FILES, "tcn_nonexistent_host.sf");
     }
 
     public void testtcn_mismatched_file_listTest() throws Throwable {
         expectSuccessfulTestRun(FILES, "tcn_mismatched_file_list.sf");
+    }
+
+    public void test_invalid_timeout() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES , "test_invalid_timeout.sf");
+    }
+
+    public void test_host_timeout() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "test_host_timeout.sf");
     }
 }

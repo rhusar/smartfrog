@@ -32,7 +32,7 @@ SSHComponentSchema extends Schema {
     host extends String;
 
     //should failures be reported
-    failOnError extends OptionalBoolean;
+    failOnError extends Boolean;
 
     //for key authentication, the file containing the private key
     keyFile extends  OptionalFilenameType;
@@ -46,7 +46,7 @@ SSHComponentSchema extends Schema {
     //port to connect to
     port extends Integer;
 
-    //timeout in milliseconds
+    //timeout in milliseconds. 0 means forever
     timeout extends Integer;
 
     //should all certificates be trusted
