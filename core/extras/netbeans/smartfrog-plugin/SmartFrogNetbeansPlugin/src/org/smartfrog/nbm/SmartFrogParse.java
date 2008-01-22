@@ -60,7 +60,6 @@ public final class SmartFrogParse extends CookieAction {
             proc = Runtime.getRuntime().exec(procString);
         } catch (IOException ex) {
             ErrorManager.getDefault().notify(ErrorManager.EXCEPTION,ex);
-            ex.printStackTrace();
         }
         if (proc != null) {
         ExecSupport es = new ExecSupport();

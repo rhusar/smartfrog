@@ -20,7 +20,14 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.nbm.documents;
 
+import org.netbeans.spi.editor.errorstripe.UpToDateStatus;
+import org.netbeans.editor.Utilities;
+import org.openide.text.NbDocument;
 import org.smartfrog.nbm.SmartFrogSvcUtil;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.SFParser;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
@@ -33,12 +40,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Position;
 import javax.swing.text.StyledDocument;
-import org.netbeans.spi.editor.errorstripe.UpToDateStatus;
-import org.openide.text.NbDocument;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.SFParser;
+
 
 /**
  * SFChangeListener is responsible for determining that a smartfrog document needs to
@@ -264,6 +266,7 @@ public class SFChangeListener implements DocumentListener, Runnable {
             }
             
         } catch (InterruptedException ex) {
+            Utilities.annotateLoggable(ex);
             ex.printStackTrace();
         }
         

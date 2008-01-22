@@ -29,7 +29,7 @@ import javax.swing.*;
 public final class SmartFrogDeploySF extends CookieAction {
     
     protected void performAction(Node[] activatedNodes) {
-        SmartFrogFileTypeDataObject c = (SmartFrogFileTypeDataObject) activatedNodes[0].getCookie(SmartFrogFileTypeDataObject.class);
+        SmartFrogFileTypeDataObject c = activatedNodes[0].getCookie(SmartFrogFileTypeDataObject.class);
         SmartFrogDeployer.deployComponent(c,true);
     }
     
