@@ -60,82 +60,89 @@ public class JarSFFiles {
             try {
                 JarFile jf = new JarFile(f);
                 Enumeration<JarEntry> jEntries = jf.entries();
-                
+
                 while (jEntries.hasMoreElements()) {
                     JarEntry je = jEntries.nextElement();
                     String name = je.getName();
                     if (name.endsWith(".sf")) {
                         matches.add(name);
                         SfFileInfo sfInfo = new SfFileInfo(name);
-                        
-                        BufferedReader br= new BufferedReader(new InputStreamReader(jf.getInputStream(je)));
-                        String line = br.readLine();
-                        while (line!=null) {
-                            
-                            // check for extends which identifies a component
-                            int idx = line.indexOf("extends");
-                            if (idx>=0) {
-                                idx--;
-                                // find lastcharacter past prior whitespace
-                                boolean stop = false;
-                                while (!stop && idx >=0) {
-                                    if (Character.isWhitespace(line.charAt(idx))) {
-                                        idx--;
-                                    } else {
-                                        stop = true;
+
+                        BufferedReader br = null;
+                        try {
+                            br = new BufferedReader(new InputStreamReader(jf.getInputStream(je)));
+                            String line = br.readLine();
+                            while (line != null) {
+
+                                // check for extends which identifies a component
+                                int idx = line.indexOf("extends");
+                                if (idx >= 0) {
+                                    idx--;
+                                    // find lastcharacter past prior whitespace
+                                    boolean stop = false;
+                                    while (!stop && idx >= 0) {
+                                        if (Character.isWhitespace(line.charAt(idx))) {
+                                            idx--;
+                                        } else {
+                                            stop = true;
+                                        }
+                                    }
+
+                                    // find next whitespace working backwords
+                                    stop = false;
+                                    int idx2 = idx - 1;
+                                    while (!stop && idx2 >= 0) {
+                                        if (Character.isWhitespace(line.charAt(idx2))) {
+                                            stop = true;
+                                        } else {
+                                            idx2--;
+                                        }
+                                    }
+                                    String componentName = line.substring(idx2 + 1, idx + 1);
+                                    if (Character.isLetterOrDigit(componentName.charAt(0))) {
+                                        sfInfo.addComponent(componentName);
                                     }
                                 }
-                                
-                                // find next whitespace working backwords
-                                stop = false;
-                                int idx2 = idx-1;
-                                while (!stop && idx2>=0) {
-                                    if (Character.isWhitespace(line.charAt(idx2))) {
-                                        stop=true;
+
+                                // check for include which identifies an include statement
+                                idx = line.indexOf("include");
+                                if (idx >= 0) {
+                                    idx++;
+                                    // find first double quote prior whitespace
+                                    boolean stop = false;
+                                    while (!stop && idx < line.length()) {
+                                        if (line.charAt(idx) != '\"') {
+                                            idx++;
+                                        } else {
+                                            stop = true;
+                                        }
+                                    }
+                                    int firstQuote = idx + 1;
+                                    idx++;
+                                    // find trailing double quote
+                                    stop = false;
+                                    while (!stop && idx < line.length()) {
+                                        if (line.charAt(idx) == '\"') {
+                                            stop = true;
+                                        } else {
+                                            idx++;
+                                        }
+                                    }
+                                    if ((firstQuote > 0 && firstQuote < line.length()) && (idx > 0 && idx < line.length())) {
+                                        String dependentIncludeName = line.substring(firstQuote, idx);
+                                        sfInfo.addDependentInclude(dependentIncludeName);
                                     } else {
-                                        idx2--;
+                                        String problem = "line: " + line + ",," + firstQuote + ",," + idx;
                                     }
                                 }
-                                String componentName = line.substring(idx2+1,idx+1);
-                                if (Character.isLetterOrDigit(componentName.charAt(0))) {
-                                    sfInfo.addComponent(componentName);
-                                }
+                                globalSFList.put(name, sfInfo);
+
+                                line = br.readLine();
                             }
-                            
-                            // check for include which identifies an include statement
-                            idx = line.indexOf("include");
-                            if (idx>=0) {
-                                idx++;
-                                // find first double quote prior whitespace
-                                boolean stop = false;
-                                while (!stop && idx < line.length()) {
-                                    if (line.charAt(idx) != '\"') {
-                                        idx++;
-                                    } else {
-                                        stop = true;
-                                    }
-                                }
-                                int firstQuote = idx+1;
-                                idx++;
-                                // find trailing double quote
-                                stop = false;
-                                while (!stop && idx<line.length()) {
-                                    if (line.charAt(idx)=='\"') {
-                                        stop=true;
-                                    } else {
-                                        idx++;
-                                    }
-                                }
-                                if ( (firstQuote>0 && firstQuote<line.length()) && (idx > 0 && idx < line.length()) ) {
-                                    String dependentIncludeName = line.substring(firstQuote,idx);
-                                    sfInfo.addDependentInclude(dependentIncludeName);
-                                } else {
-                                    String problem = "line: " + line + ",," + firstQuote + ",," + idx;
-                                }
+                        } finally {
+                            if (br != null) {
+                                br.close();
                             }
-                            globalSFList.put(name,sfInfo);
-                            
-                            line = br.readLine();
                         }
                     }
                 }
@@ -191,7 +198,7 @@ public class JarSFFiles {
     }
     
     public SfFileInfo getSfFileInfo(String name) {
-        return this.globalSFList.get(name);
+        return globalSFList.get(name);
     }
     
     public ArrayList<String> getAllSFFilesInCP() {

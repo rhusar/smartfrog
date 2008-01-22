@@ -94,7 +94,6 @@ public class SmartFrogSyntax extends Syntax {
     
     private TokenID doParseToken() {
         char actChar;
-        String tbuf = new String(buffer);
         while (offset < stopOffset) {
             actChar = buffer[offset];
             switch (state) {
