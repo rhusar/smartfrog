@@ -63,7 +63,7 @@ SSHComponent extends WorkflowPrim {
     failOnError true;
     port 22;
     sfShouldTerminate true;
-    timeout 600000;
+    timeout 60000;
     trustAllCertificates true;
     //authentication policies
     authenticate_password "password";
@@ -74,9 +74,9 @@ SSHComponent extends WorkflowPrim {
       * define the default values for all SSH compounds
       */
 SshCompound extends Compound {
-    port 22;
+    port SSHComponent:port;
     //timeout is in milliseconds
-    timeout 0;
-    failOnError true;
-    trustAllCertificates true;
+    timeout SSHComponent:timeout;
+    failOnError SSHComponent:failOnError;
+    trustAllCertificates SSHComponent:trustAllCertificates;
 }
