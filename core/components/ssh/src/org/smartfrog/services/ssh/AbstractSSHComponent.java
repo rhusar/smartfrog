@@ -48,7 +48,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     protected UserInfoImpl userInfo;
     private static final Reference pwdProviderRef = new Reference(SSHComponent.ATTR_PASSWORD_PROVIDER);
     protected boolean trustAllCerts = true;
-    protected static final String TIMEOUT_MESSAGE = "Connection timed out";
+    protected static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
     private static final int SSH_PORT = 22;
     protected int timeout = 0;
     protected String host;
@@ -60,6 +60,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     protected Vector knownHosts;
     private volatile Session session = null;
+    protected static final String SESSION_IS_DOWN = "session is down";
 
     protected AbstractSSHComponent() throws RemoteException {
     }
@@ -192,8 +193,16 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         if(!usePublicKey) {
            session.setPassword(userInfo.getPassword());
         }
-        log.info("Connecting to " + host + " at Port:" + port +" as "+userInfo);
+        log.info("Connecting to " + getConnectionDetails());
         return session;
+    }
+
+    /**
+     * Provide a diagnostics string for use in error messages and the like
+     * @return
+     */
+    public String getConnectionDetails() {
+        return host + ":" + port + " as " + userInfo;
     }
 
     /**

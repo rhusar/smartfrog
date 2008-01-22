@@ -34,7 +34,7 @@ FullScpSession extends ScpSession {
 
     username LAZY PROPERTY user.name;
     password  "secret";
-    host "localhost";
+    host testvalues:localhost;
     localFiles [LAZY tempFile];
     remoteFiles ["/tmp/1.txt"];
     transferType "get";
@@ -44,7 +44,7 @@ FullScpSession extends ScpSession {
 
 tcn83 extends ScpSessionFilePassword {
     description "Password file is missing"
-    host "nohost.example.com";
+    host testvalues:nonexistentHost;
     username "kumar";
 
    //PasswordProvider:passwordFile "password.txt";
@@ -92,20 +92,26 @@ tcn87 extends ScpSessionAuthPass {
 
 tcn88 extends ScpSession {
     description "remote files are missing";
-    SCP:host "ebnt171.india.hp.com";
-    SCP:username "kumar";
+    host "ebnt171.india.hp.com";
+    username "kumar";
     SCP:passwordFile "password.txt";
     SCP:localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
     SCP:transferType "get";
 }
 
-tcn89 extends FullScpSession  {
-    description "unsupported transfer type";
+tcn89 extends ExpectDeployFailure {
+  description "ask for an unsupported transfer type, expect an error";
+  action extends FullScpSession  {
     transferType "POST";
+  }
+  //exitText CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.UNSUPPORTED_ACTION";
+  exceptions [
+      ["",CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.UNSUPPORTED_ACTION" ]
+    ];
 }
 
 tcn_nonexistent_host extends FullScpSession  {
-    host "nohost.example.com";
+    host testvalues:nonexistentHost;
 }
 
 tcn_nonexistent_hostTest extends ExpectDeployFailure {
@@ -128,7 +134,40 @@ tcn_mismatched_file_list extends ExpectDeployFailure {
 
     exitText CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH";
     Noexceptions [
-      [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH" ]
+      [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,
+        CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH" ]
     ];
+
+}
+
+test_invalid_timeout extends ExpectDeployFailure {
+
+    action extends FullScpSession  {
+      SCP:timeout -1;
+    }
+
+ exceptions [
+        ["",""],
+        ["com.jcraft.jsch.JSchException","invalid timeout value"]
+      ];
+      
+    Noexceptions [
+      [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,
+        CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.ERROR_FILE_COUNT_MISMATCH" ]
+    ];
+ }
+
+
+test_host_timeout extends ExpectDeployFailure {
+
+    action extends FullScpSession  {
+      SCP:port testvalues:badLocalPort;
+      SCP:timeout 10;
+    }
+
+    exceptions [
+        ["",""],
+        ["com.jcraft.jsch.JSchException",""]
+      ];
 
 }

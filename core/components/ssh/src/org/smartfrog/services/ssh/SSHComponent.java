@@ -57,6 +57,8 @@ public interface SSHComponent extends Remote {
      */
     String ATTR_PASSWORD = "password";
     /**
+     * Waits at most millis milliseconds for this operation to finish.
+     * A timeout of 0 means to wait forever.
      * {@value}
      */
     String ATTR_TIMEOUT = "timeout";
@@ -82,7 +84,9 @@ public interface SSHComponent extends Remote {
      * Use a key file: {@value}
      */
     String AUTHENTICATION_PUBLICKEY = "key";
-
+    /**
+     * {@value}
+     */
     String ATTR_FAIL_ON_ERROR = "failOnError";
     /**
      * {@value}

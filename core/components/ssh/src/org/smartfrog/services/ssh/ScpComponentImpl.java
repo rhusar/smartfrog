@@ -20,6 +20,7 @@
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -44,6 +45,7 @@ import java.util.Vector;
  */
 public class ScpComponentImpl extends AbstractSSHComponent implements ScpComponent {
 
+    private static final boolean DIRECTORIES_SUPPORTED=false;
     private static final String GET = "get";
     private static final String PUT = "put";
     /**
@@ -72,6 +74,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     public static final String ERROR_NOT_A_NORMAL_FILE = "Not a normal file:";
     public static final String INFO_NO_FILES_TO_PROCESS = "No files to process";
     public static final String ERROR_FILE_COUNT_MISMATCH = "Mismatch between the number of elements in the local file list (";
+    public static final String UNSUPPORTED_ACTION = "Unsupported action:";
 
     /**
      * Constructs an instance  object.
@@ -110,19 +113,19 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             //now that we are starting up, check the files.
             if (getFiles) {
                 //verify that the remote file list is not empty
-              /*  for (File file : localFiles) {
-                    if (file.exists() && file.isDirectory()) {
+                for (File file : localFiles) {
+                    if (!DIRECTORIES_SUPPORTED && file.exists() && file.isDirectory()) {
                         throw new SmartFrogLifecycleException(ERROR_OUTPUT_IS_A_DIRECTORY + file);
                     }
-                }*/
+                }
             } else {
                 for (File file : localFiles) {
                     if (!file.exists()) {
                         throw new SmartFrogLifecycleException(ERROR_MISSING_FILE_TO_UPLOAD + file);
                     }
-                  /*  if (!file.isFile()) {
+                    if (!DIRECTORIES_SUPPORTED && !file.isFile()) {
                         throw new SmartFrogLifecycleException(ERROR_NOT_A_NORMAL_FILE + file);
-                    }*/
+                    }
                 }
             }
         }
@@ -167,6 +170,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * Reads SmartFrog attributes.
      *
      * @throws SmartFrogResolutionException if failed to read any attribute or a mandatory attribute is not defined.
+     * @throws SmartFrogLifecycleException if the action is unsupported
      * @throws RemoteException in case of network/rmi error
      */
     private void readSFAttributes() throws SmartFrogException, RemoteException {
@@ -180,10 +184,16 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             getFiles = false;
         } else {
             throw new SmartFrogLifecycleException(
-                    "Unsupported action: \"" + transferType+"\"");
+                    UNSUPPORTED_ACTION +'"' + transferType+"\"");
         }
     }
 
+    /**
+     * Read the file lists in, and resolve the local list
+     * @throws SmartFrogResolutionException for resolution problems
+     * @throws RemoteException network problems
+     * @throws SmartFrogLifecycleException if there is a mismatch between the count of local and remote files
+     */
     private void readFileLists() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
         remoteFileList = sfResolve(REMOTE_FILES, remoteFileList, true);
         Vector locals = null;
@@ -224,39 +234,44 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
         public void run() {
             try {
                 try {
-                    if(localFiles.size()>0) {
+                    if (localFiles.size() > 0) {
                         // open ssh session
                         logDebugMsg("Getting SSH Session");
-                        setSession(openSession());
+                        Session newsession = openSession();
+                        setSession(newsession);
                         if (getFiles) {
                             log.info("Going to start scp to download files");
                             ScpFrom scpFrom = new ScpFrom(log);
-                            operation=scpFrom;
-			    scpFrom.doCopy(getSession(), remoteFileList, localFiles);
+                            operation = scpFrom;
+                            scpFrom.doCopy(getSession(), remoteFileList, localFiles);
                         } else {
                             log.info("Going to start scp to upload files");
                             ScpTo scpTo = new ScpTo(log);
-                            operation=scpTo;
+                            operation = scpTo;
                             scpTo.doCopy(getSession(), remoteFileList, localFiles);
                         }
                     } else {
                         log.info("Skipping scp operation: no files");
                     }
                     TerminationRecord termR = new TerminationRecord("normal",
-                            "SSH Session finished: ", sfCompleteName());
+                            "SSH Session to "+getConnectionDetails()+" finished: ", sfCompleteName());
                     new ComponentHelper(ScpComponentImpl.this).targetForWorkflowTermination(termR);
                 } catch (JSchException e) {
-                    if (e.getMessage().indexOf("session is down") >= 0) {
-                        throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE, e);
+                    String errortext = "When connecting to " + getConnectionDetails();
+                    log.error(errortext,e);
+                    if (e.getMessage().indexOf(SESSION_IS_DOWN) >= 0) {
+                        throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE
+                                + getConnectionDetails(), e);
                     } else {
-                        throw new SmartFrogLifecycleException(e);
+                        throw new SmartFrogLifecycleException(errortext,e);
                     }
                 } finally {
-                    operation=null;
+                    operation = null;
                 }
             } catch (Throwable thrown) {
-                TerminationRecord record = TerminationRecord.abnormal("SCP failed",sfCompleteNameSafe(),thrown);
                 setThrown(thrown);
+                TerminationRecord record = TerminationRecord.abnormal("SCP failed to connect to "
+                        + getConnectionDetails(),sfCompleteNameSafe(),thrown);
                 sfTerminate(record);
             }
 
