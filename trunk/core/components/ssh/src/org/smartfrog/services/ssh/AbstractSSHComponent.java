@@ -99,10 +99,10 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         // Mandatory attributes
         trustAllCerts = sfResolve(ATTR_TRUST_ALL_CERTIFICATES, trustAllCerts, true);
 
-        PasswordProvider pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
-        passphrase = pwdProvider.getPassword();
         //create the user info to get filled in.
         userInfo = new UserInfoImpl(sfLog(), trustAllCerts);
+        PasswordProvider pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
+        passphrase = pwdProvider.getPassword();
 
         if (usePublicKey) {
             //load in the key file
@@ -110,6 +110,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
             userInfo.setPassphrase(passphrase);
         } else {
             userInfo.setPassword(passphrase);
+            userInfo.setPassphrase(passphrase);
         }
         userName = sfResolve(ATTR_USER, userName, true);
         userInfo.setName(userName);

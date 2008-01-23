@@ -52,3 +52,22 @@ Tcn94 extends SSHSessionPasswordFile {
     host testvalues:localhost;
     commands [];
  }
+
+
+SshTestServer extends SSHSessionInlinePassword {
+    password PROPERTY test.ssh.pass;
+    host PROPERTY test.ssh.host;
+    username PROPERTY test.ssh.user;
+    sfTerminate true;
+ }
+
+
+testSshLogin extends ExpectTerminate {
+  condition extends IsPropertySet {
+    property "test.ssh.host";
+  }
+
+  action extends SshTestServer {
+    commands ["uname -a"];
+  }
+}

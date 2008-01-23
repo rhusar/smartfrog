@@ -50,6 +50,7 @@ For more information: www.smartfrog.org
 
     port SSHExec:port;
     timeout SSHExec:timeout;
+    commands TBD;
 
     SSHCmdExec extends SSHExec {
 
@@ -66,6 +67,9 @@ For more information: www.smartfrog.org
         port PARENT:ATTRIB port;
         // terminate if any command fails
         failOnError PARENT:ATTRIB failOnError;
+
+        //the commands
+        commands PARENT:ATTRIB commands ;
    }
 
     passwordProvider extends FilePassword {
