@@ -55,16 +55,19 @@ Tcn94 extends SSHSessionPasswordFile {
 
 
 SshTestServer extends SSHSessionInlinePassword {
-    password PROPERTY test.ssh.pass;
-    host PROPERTY test.ssh.host;
-    username PROPERTY test.ssh.user;
+    password OPTIONAL("") PROPERTY test.ssh.pass;
+    host OPTIONAL("") PROPERTY test.ssh.host;
+    username OPTIONAL("") PROPERTY test.ssh.user;
     sfTerminate true;
  }
 
 
 testSshLogin extends ExpectTerminate {
-  condition extends IsPropertySet {
-    property "test.ssh.host";
+  condition extends Not {
+    condition extends StringEquals {
+      left "";
+      right OPTIONAL("") PROPERTY "test.ssh.host";
+    }
   }
 
   action extends SshTestServer {

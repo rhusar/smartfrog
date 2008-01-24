@@ -26,6 +26,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -235,6 +236,21 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
             } finally {
                 session=null;
             }
+        }
+    }
+
+    /**
+     * Translate
+     * @param ex incoming exception
+     * @return a new lifecycle exception that includes connection details
+     */
+    public SmartFrogLifecycleException translateStartupException(JSchException ex) {
+        log.error("When connecting to " + getConnectionDetails(), ex);
+        if (ex.getMessage().indexOf(SESSION_IS_DOWN) >= 0) {
+            String message = TIMEOUT_MESSAGE + getConnectionDetails();
+            return new SmartFrogLifecycleException(message, ex);
+        } else {
+            return new SmartFrogLifecycleException(getConnectionDetails()+" -"+ex.getMessage(),ex);
         }
     }
 }

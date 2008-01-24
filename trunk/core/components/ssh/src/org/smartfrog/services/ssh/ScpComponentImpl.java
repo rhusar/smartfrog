@@ -257,13 +257,9 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                             "SSH Session to "+getConnectionDetails()+" finished: ", sfCompleteName());
                     new ComponentHelper(ScpComponentImpl.this).targetForWorkflowTermination(termR);
                 } catch (JSchException e) {
-                    String errortext = "When connecting to " + getConnectionDetails();
-                    log.error(errortext,e);
-                    if (e.getMessage().indexOf(SESSION_IS_DOWN) >= 0) {
-                        throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE
-                                + getConnectionDetails(), e);
-                    } else {
-                        throw new SmartFrogLifecycleException(errortext,e);
+                    SmartFrogLifecycleException lifecycleException = translateStartupException(e);
+                    if (getFailOnError()) {
+                        throw lifecycleException;
                     }
                 } finally {
                     operation = null;
