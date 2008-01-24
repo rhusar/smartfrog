@@ -583,9 +583,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogResolutionException occurred while resolving
      */
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
-        Reference rn = (Reference) r.copy();
-        rn.setData(false);
-        Object obj = sfResolve(r, 0);
+
+        Reference rn = r;
+        if (r.getData()!=false) {
+           //clone should be enough at this point.
+           rn = (Reference) r.clone();
+           rn.setData(false);
+        }
+
+        Object obj = sfResolve(rn, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
             try {

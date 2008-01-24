@@ -290,8 +290,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public Object sfResolve(Reference r) throws SmartFrogResolutionException, RemoteException {
         Reference rn = r;
         if (r.getData()!=false) {
-           rn = (Reference) r.copy();
-            rn.setData(false);
+            //clone should be enough at this point.
+           rn = (Reference) r.clone();
+           rn.setData(false);
         }
 
         Object obj = sfResolve(rn, 0);
