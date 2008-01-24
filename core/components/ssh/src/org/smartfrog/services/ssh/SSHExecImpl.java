@@ -103,7 +103,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 // ran out of time
                 waitThread = null;
                 if (failOnError) {
-                    throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE);
+                    throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE+getConnectionDetails());
                 } else {
                     log.error(TIMEOUT_MESSAGE);
                 }
@@ -129,21 +129,15 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             throw sfe;
         } catch (JSchException e) {
             log.error("When connecting to " + getConnectionDetails(),e);
-            if (e.getMessage().indexOf(SESSION_IS_DOWN) >= 0) {
-                String message = TIMEOUT_MESSAGE + getConnectionDetails();
-                if (getFailOnError()) {
-                    throw new SmartFrogLifecycleException(message, e);
-                }
-            } else {
-                if (getFailOnError()) {
-                    throw new SmartFrogLifecycleException(e);
-                }
+            SmartFrogLifecycleException lifecycleException = translateStartupException(e);
+            if (getFailOnError()) {
+                throw lifecycleException;
             }
         } catch (Exception e) {
             if (log.isTraceEnabled()) {
                 log.trace(e);
             }
-            throw SmartFrogLifecycleException.forward("When connecting to " + getConnectionDetails(),e);
+            throw SmartFrogLifecycleException.sfStart("When connecting to " + getConnectionDetails(),e,this);
         } finally {
             //clean up time
             if(channel!=null) {

@@ -56,7 +56,7 @@ public class SshExecNegativeTest
 	public void testCaseTCN93_commands_is_missing() throws Exception {
         deployExpectingException(FILES +"tcn93.sf",
                                  "tcn93",
-                                 EXCEPTION_LIFECYCLE,
+                                 null,
                                  null,
                                  EXCEPTION_RESOLUTION,
                                  "commands");
