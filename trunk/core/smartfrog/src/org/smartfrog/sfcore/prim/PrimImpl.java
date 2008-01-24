@@ -287,10 +287,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws SmartFrogResolutionException occurred while resolving
      * @throws RemoteException In case of network/rmi error
      */
-    public Object sfResolve(Reference r)
-        throws SmartFrogResolutionException, RemoteException {
-        Reference rn = (Reference) r.copy();
-        rn.setData(false);
+    public Object sfResolve(Reference r) throws SmartFrogResolutionException, RemoteException {
+        Reference rn = r;
+        if (r.getData()!=false) {
+           rn = (Reference) r.copy();
+            rn.setData(false);
+        }
+
         Object obj = sfResolve(rn, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
