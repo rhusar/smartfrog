@@ -51,5 +51,9 @@
         name="sf-tasks"
         rev="latest.integration"
         conf="build->default"/>
-	</dependencies>
+  <dependency org="java"
+    name="jna"
+    rev="${jna.version}"
+    conf="compile,runtime->default"/>
+  </dependencies>
 </ivy-module>
