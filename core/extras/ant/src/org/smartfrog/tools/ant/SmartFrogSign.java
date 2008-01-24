@@ -51,7 +51,6 @@ public class SmartFrogSign extends SignJar {
     public static final String ERROR_NO_SECURITY_SETTINGS = "No security settings provided";
     public static final String ERROR_COULD_NOT_APPLY_SETTINGS = "Could not apply security settings with ";
     public static final String MESSAGE_NO_SECURITY = "security empty or disabled: signing skipped";
-    public static final String E_NO_SETDESTDIR = "setDestDir is only supported on Ant1.7 and later";
 
 
     /**

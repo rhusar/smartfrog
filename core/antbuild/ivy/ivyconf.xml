@@ -32,7 +32,8 @@
     </filesystem>-->
     <filesystem name="team">
       ivys="true" artifacts="true"
-      m2compatible="true" >
+      m2compatible="true"
+      checkModified="true" >
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
       <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
     </filesystem>

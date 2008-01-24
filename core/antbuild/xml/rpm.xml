@@ -33,6 +33,8 @@
     -The artifact can be published with ivy, if that is what you want. This is left as an exercise
      for the reader.
 
+    -Security signing takes place if security.enabled is true
+
 
   </description>
 
@@ -57,7 +59,8 @@
   <import file="state.xml" />
   <import file="ivy-mixin.xml" />
   <import file="macros-mixin.xml" />
-
+  <import file="security-mixin.xml" />
+  
 
 
   <target name="check-rpm" depends="init">
@@ -239,6 +242,8 @@
         location="${core.install.dir}/lib"/>
     <m:newdir name="rpm.links.dir"
         location="${core.install.dir}/links"/>
+    <m:newdir name="rpm.signed.lib.dir"
+        location="${core.install.dir}/signedLib" />
   </target>
 
 
@@ -258,7 +263,10 @@
   <!--
   The tar is passed to rpm to create the artifacts
   -->
-  <target name="prepare-rpm" depends="copy-rpm-specs,rpm-extras">
+
+  <target name="ready-to-prepare-rpm" depends="copy-rpm-specs,rpm-extras"/>
+
+  <target name="prepare-rpm" depends="ready-to-prepare-rpm">
     <!-- to publish more than just opt content, override this -->
     <property name="rpm.tar.bundles" value="opt" />
     <exec executable="tar" failonerror="true" 
