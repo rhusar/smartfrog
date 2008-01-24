@@ -41,6 +41,7 @@
 %define bindir          %{basedir}/bin
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
+%define signedlib        %{basedir}/signedLib
 %define docs            %{basedir}/docs
 %define jdocs           ${rpm.javadocs.path} 
 %define srcdir          %{basedir}/src
@@ -147,6 +148,7 @@ This package provides Anubis, a partition-aware tuple space.
 The Anubis SmartFrog components can be used to build fault-tolerant distributed
 systems across a set of machines hosted on a single site. Multicast IP is used
 as a heartbeat mechanism.
+
 
 # -----------------------------------------------------------------------------
 
@@ -319,6 +321,8 @@ or track the availability of remote systems.
 
 This package uses smack-${smack.version}.jar for XMPP support.
 
+
+
 # -----------------------------------------------------------------------------
 
 %prep
@@ -472,6 +476,7 @@ rm -rf $RPM_BUILD_ROOT
 %{libdir}/sfExamples-${smartfrog.version}.jar
 %{libdir}/sfServices-${smartfrog.version}.jar
 
+
 #the links directory 
 %attr(755, ${rpm.username},${rpm.groupname}) %dir %{basedir}/links
 %{linkdir}/smartfrog.jar
@@ -482,7 +487,7 @@ rm -rf $RPM_BUILD_ROOT
 #other directories
 %{basedir}/testCA
 %{basedir}/private
-%{basedir}/signedLib
+%dir %{basedir}/signedLib
 
 #the log output directory
 #this is no longer world writeable, as the logging can fall back gracefully now 
@@ -566,6 +571,8 @@ fi
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
 
+
+
 %files database
 
 %{libdir}/sf-database-${smartfrog.version}.jar
@@ -594,6 +601,8 @@ fi
 %{linkdir}/sf-loggingservices.jar
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
+
+
 
 %files networking
 
@@ -691,8 +700,44 @@ fi
 #%{linkdir}/.jar
 
 # -----------------------------------------------------------------------------
+# this section declares support for signed artifacts of the different components.
+
+%package smartfrog-signed
+Group:         ${rpm.framework}
+Summary:        Signed SmartFrog artifacts
+Requires:       %{name} = %{version}-%{release}
+%description smartfrog-signed
+Contains JAR files signed by a private CA.
+%files smartfrog-signed
+#security
+%{signedlib}/smartfrog-${smartfrog.version}.jar
+%{signedlib}/sfExamples-${smartfrog.version}.jar
+%{signedlib}/sfServices-${smartfrog.version}.jar
+
+%package anubis-signed
+Group:         ${rpm.framework}
+Summary:        Signed Anubis artifacts
+Requires:       %{name}-anubis = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
+%description anubis-signed
+Contains JAR files signed by a private CA.
+%files anubis-signed
+%{signedlib}/sf-anubis-${smartfrog.version}.jar
+
+%package logging-signed
+Group:         ${rpm.framework}
+Summary:       Signed logging artifacts
+Requires:       %{name}-logging = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
+%description logging-signed
+Contains JAR files signed by a private CA.
+%files logging-signed
+%{signedlib}/sf-loggingservices-${smartfrog.version}.jar
+%{signedlib}/commons-logging-${commons-logging.version}.jar
+%{signedlib}/log4j-${log4j.version}.jar
+
+# -----------------------------------------------------------------------------
 
 %changelog
+* Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0018-2.el4
 # to get the date, run:   date +"%a %b %d %Y"
 * Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0013-1.el4
 - add the javadocs RPM

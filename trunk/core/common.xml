@@ -1668,18 +1668,71 @@ java.class.path=
   <!-- Security corner -->
   <!-- ========================================================== -->
 
-  <target name="init-security" depends="init" >
-    <!-- TODO -->
+  <target name="init-security" depends="init,declare-extended-smartfrog-tasks"
+      xmlns:sec="http://security.smartfrog.org/">
+    <!--this is a flag that turns security on or off. by default it is off-->
+    <!--this should be overridden with the real value-->
+    <property name="security.ca.password" value="pleasechange2" />
+    <property name="security.self.key" value="self" />
+
+    <!--this needs to be set up with the CA that I want-->
+    <property name="security.ca.dir" location="${smartfrog.home}/private/ca" />
+    <property name="security.code.keystore" location="${security.ca.dir}/codesigner.st"/>
+
+    <property name="security.keystore.type" value="JCEKS"/>
+
+    <fail>
+      <condition>
+        <and>
+          <isset property="${security.enabled}"/>
+          <not>
+            <available file="${security.code.keystore}" />
+          </not>
+        </and>
+      </condition>
+The file in the property security.code.keystore:
+  ${security.code.keystore}
+Does not exist.
+
+Check that it and the directory in security.ca.dir:
+  ${security.ca.dir}
+Exist.
+    </fail>
+
+    <property name="security.uri" value="http://security.smartfrog.org/" />
+
+    <!--the settins for our jar signings-->
+    <presetdef name="signjar2" uri="${security.uri}">
+        <signjar
+            preservelastmodified="true"
+            alias="${security.self.key}"
+            keystore="${security.code.keystore}"
+            storetype="${security.keystore.type}"
+            storepass="${security.ca.password}"
+            lazy="true"/>
+    </presetdef>
+    <!-- sign a jar when security.enabled is set and true -->
+    <macrodef name="maybe-sign-jar" uri="${security.uri}">
+      <attribute name="jar"/>
+      <sequential>
+        <sf-conditional if="security.enabled">
+          <sec:signjar2 jar="@{jar}"/>
+        </sf-conditional>
+      </sequential>
+    </macrodef>
   </target>
 
   <target name="sign-dependent-jars" depends="init-security"
-    description="sign all jars that we depend upon">
+    description="sign all jars that we depend upon"
+      xmlns:sec="http://security.smartfrog.org/">
     <!-- TODO -->
   </target>
 
   <target name="sign-target-jar"
-    description="sign our target jar" depends="package,init-security">
-    <!-- TODO -->
+    description="sign our target jar if security.enabled is true" 
+      depends="package,init-security"
+      xmlns:sec="http://security.smartfrog.org/">
+    <sec:maybe-sign-jar jar="${target.jar}" />
   </target>
 
   <target name="checksum-target-jar"

@@ -35,29 +35,34 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * This is a datatype for the smartfrog tasks, one that
- * takes security settings. It also contains the code to define those settings
- * on the commandline.
- * Date: 19-Apr-2004
- * Time: 16:46:05
+ * This is a datatype for the smartfrog tasks, one that takes security settings. It also contains the code to define
+ * those settings on the commandline. Date: 19-Apr-2004 Time: 16:46:05
  */
 public class Security extends DataType {
 
-    /** java security keystore */
+    /**
+     * java security keystore
+     */
     private File keystore;
-    /** java security policy file */
+    /**
+     * java security policy file
+     */
     private File policyFile;
 
-    /** sf security resource */
+    /**
+     * sf security resource
+     */
     private File securityProperties;
 
-    /** the identity to use */
+    /**
+     * the identity to use
+     */
     private String alias;
 
     /**
      * enabled flag. Security refs are enabled by default.
      */
-    private boolean enabled=true;
+    private boolean enabled = true;
 
     /**
      * error string used in JUnit test cases
@@ -71,6 +76,7 @@ public class Security extends DataType {
 
     /**
      * get the keystore
+     *
      * @return keystore or null
      */
     public File getKeystore() {
@@ -88,6 +94,7 @@ public class Security extends DataType {
 
     /**
      * Get the security properties
+     *
      * @return security properties file or null
      */
     public File getSecurityProperties() {
@@ -109,6 +116,7 @@ public class Security extends DataType {
 
     /**
      * Path to a file containing the security properties
+     *
      * @param securityProperties security properties
      */
     public void setSecurityFile(File securityProperties) {
@@ -121,9 +129,9 @@ public class Security extends DataType {
     }
 
     /**
-     * set a policy file containing security policy information.
-     * Optional.
-     * @param policyFile  policy file containing security policy information.
+     * set a policy file containing security policy information. Optional.
+     *
+     * @param policyFile policy file containing security policy information.
      */
     public void setPolicyFile(File policyFile) {
         this.policyFile = policyFile;
@@ -135,6 +143,7 @@ public class Security extends DataType {
 
     /**
      * set the alias to use when signing
+     *
      * @param alias signing alias
      */
     public void setAlias(String alias) {
@@ -143,15 +152,17 @@ public class Security extends DataType {
 
     /**
      * test for this security declaration being empty
+     *
      * @return true if it is completely undefined.
      */
     public boolean isEmpty() {
-        return keystore==null && policyFile==null && securityProperties==null
-                && alias==null;
+        return keystore == null && policyFile == null && securityProperties == null
+                && alias == null;
     }
 
     /**
      * Test for this security element being enabled
+     *
      * @return true if this security element is to be used, false otherwise.
      */
     public boolean isEnabled() {
@@ -160,6 +171,7 @@ public class Security extends DataType {
 
     /**
      * Set the enabled flag. Disabled security elements are effectively unused.
+     *
      * @param enabled true for security to be on
      */
     public void setEnabled(boolean enabled) {
@@ -168,10 +180,11 @@ public class Security extends DataType {
 
     /**
      * resolve any references, return the base security reference
+     *
      * @return the security instance that may be us, may be somebody else.
      */
     public Security resolve() {
-        if(getRefid()==null) {
+        if (getRefid() == null) {
             //check the syntax is good
             validateReferencesAndAttributes();
             return this;
@@ -182,7 +195,7 @@ public class Security extends DataType {
     /**
      * take a reference in a project and resolve it.
      *
-     * @param project project to resolve against
+     * @param project   project to resolve against
      * @param reference reference to resolve
      * @return the security object we were referrring to.
      * @throws BuildException if the reference is to an unsupported type.
@@ -190,7 +203,7 @@ public class Security extends DataType {
     public static Security resolveReference(Project project,
                                             Reference reference) {
         //create a temp security
-        Security security=new Security();
+        Security security = new Security();
         //bound to this project
         security.setProject(project);
         //with the refID attr
@@ -227,7 +240,7 @@ public class Security extends DataType {
      * verifies that attributes are free if the references are set
      */
     private void validateReferencesAndAttributes() {
-        if(getRefid()!=null && !isEmpty()) {
+        if (getRefid() != null && !isEmpty()) {
             throw new BuildException(ERROR_REFID_EXCLUSIVE);
         }
     }
@@ -247,13 +260,14 @@ public class Security extends DataType {
     public void validateForSigning() {
         assertValidFile(keystore, "Keystore");
         assertValidFile(securityProperties, "Security Properties");
-        if(alias==null) {
+        if (alias == null) {
             throw new BuildException(ERROR_NO_ALIAS);
         }
     }
 
     /**
      * apply whatever security settings are needed for a daemon.
+     *
      * @param task to apply properties to,
      */
     public void applySecuritySettings(SmartFrogTask task) {
@@ -273,6 +287,7 @@ public class Security extends DataType {
 
     /**
      * apply whatever settings are needed for signing a jar file
+     *
      * @param signJar task to configure
      * @throws IOException if something happens when reading/writing files
      */
@@ -287,14 +302,15 @@ public class Security extends DataType {
 
     /**
      * load the passfile into a properties structure
+     *
      * @return the loaded file
      * @throws IOException if something happens when reading/writing files
      */
     private Properties loadPassFile() throws IOException {
-        Properties securityProps=new Properties();
-        InputStream instream=null;
+        Properties securityProps = new Properties();
+        InputStream instream = null;
         try {
-            instream=new FileInputStream(securityProperties);
+            instream = new FileInputStream(securityProperties);
             securityProps.load(instream);
             return securityProps;
         } finally {
@@ -306,6 +322,6 @@ public class Security extends DataType {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Security: keystore="+keystore+" passfile="+securityProperties;
+        return "Security: keystore=" + keystore + " passfile=" + securityProperties;
     }
 }

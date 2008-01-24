@@ -3,7 +3,7 @@
     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     xmlns:iz="http://www.izforge.com/">
 <!--
-  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+  /** (C) Copyright 2007-2008 Hewlett-Packard Development Company, LP
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
@@ -63,6 +63,7 @@
 
 
     <newdir name="dist.rpm.dir" location="${dist.dir}/rpm" />
+    <newdir name="dist.signed.rpm.dir" location="${dist.dir}/signedrpm" />
     <property name="kernel.dir" location="../smartfrog"/>
     <newdir name="release.dir" location="${build.dir}/releases" />
     <property name="ssh.trust" value="true" />
@@ -266,7 +267,7 @@
   everything set up right, at least until ant gets the ability to set up
   symlinks in a <tar> file.
   -->
-  <target name="init-rpm" depends="check-rpm,ivy-properties">
+  <target name="init-rpm" depends="check-rpm,ivy-properties,use-smartfrog-tasks">
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
     <loadproperties srcFile="${rpm.metadata.dir}/rpm.properties"/>
@@ -291,8 +292,15 @@
         location="${rpm.image.dir}/RPMS" />
     <newdir name="rpm.noarch"
         location="${rpm.RPMS}/noarch" />
+    <newdir name="core.install.dir"
+        location="${rpm.root.dir}/${rpm.install.dir}" />
+    <newdir name="rpm.lib.dir"
+        location="${core.install.dir}/lib" />
+    <newdir name="rpm.signed.lib.dir"
+        location="${core.install.dir}/signedLib" />
+
     <property name="smartfrog.rpmfiles.tar"
-      location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
+        location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
     <property name="smartfrog.rpmfiles.tar.gz"
         location="${smartfrog.rpmfiles.tar}.gz"/>
     <property name="rpm.suffix"
@@ -308,12 +316,19 @@
     <property name="anubis.rpm"
         location="${dist.rpm.dir}/smartfrog-anubis-${rpm.suffix}" />
     <property name="logging.rpm"
-      location="${dist.rpm.dir}/smartfrog-logging-${rpm.suffix}" />
+        location="${dist.rpm.dir}/smartfrog-logging-${rpm.suffix}" />
     <property name="rpms.tar"
         location="${dist.rpm.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar" />
     <property name="rpms.tar.gz"
-      location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar.gz" />
+        location="${upload.dir}/smartfrog-rpm-bundle-${smartfrog.version}.tar.gz" />
+    <property name="rpms.signed.tar"
+      location="${dist.rpm.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar" />
+    <property name="rpms.signed.tar.gz"
+        location="${upload.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar.gz" />
     <property name="remote-smartfrogd" value="/etc/init.d/${rpm.daemon.name}" />
+
+    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}" />
+
     <macrodef name="rpmpackage">
       <attribute name="package"/>
       <sequential >
@@ -350,7 +365,7 @@
 
 
 
-  <target name="ready-to-rpm" depends="copy-rpm-specs,prepare-binary-rpm"/>
+  <target name="ready-to-rpm" depends="prepare-binary-rpm"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
   
@@ -364,17 +379,11 @@
         topDir="${rpm.image.dir}"
         cleanBuildDir="true"
         failOnError="true"/>
-    <copy todir="${dist.rpm.dir}">
-      <fileset dir="${rpm.noarch}" includes="*.rpm" />
-    </copy>
   </target>
 
   <target name="expand-core" depends="init-rpm,prepare-executables">
-    <newdir name="core.install.dir"
-      location="${rpm.root.dir}/${rpm.install.dir}" />
     <unzip src="${sf-core-install.zip}"
-      dest="${core.install.dir}" />
-    <property name="rpm.lib.dir" location="${core.install.dir}/lib" />
+    dest="${core.install.dir}" />
   </target>
 
   <target name="copy-scripts" depends="init-rpm" >
@@ -517,14 +526,57 @@
     
   </target>
 
+  <target name="ready-to-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security">
+
+  </target>
+
+  <!--we always copy the signed JARs-->
+  <target name="maybe-sign-rpm-jars" depends="ready-to-sign-rpm-jars"
+      xmlns:sec="http://security.smartfrog.org/">
+      <copy todir="${rpm.signed.lib.dir}" >
+        <fileset dir="${rpm.lib.dir}" >
+          <include name="smartfrog-*.jar" />
+          <include name="sfServices-*.jar" />
+          <include name="sfExamples-*.jar" />
+          <include name="sf-loggingservices-*.jar" />
+          <include name="sf-anubis-*.jar" />
+          <include name="commons-logging-*.jar" />
+          <include name="log4j-*.jar" />
+          <!--<include name="sf- -*.jar" />-->
+        </fileset>
+      </copy>
+    <sf-conditional if="security.enabled">
+      <echo>Signing the JAR files</echo>
+      <sec:signjar2 >
+        <fileset dir="${rpm.signed.lib.dir}" />
+      </sec:signjar2>
+    </sf-conditional>
+    <sf-conditional unless="security.enabled">
+      <echo level="warn">The signedLib JAR files are not being signed.
+      Do not use the -signed RPMs being created.</echo>
+    </sf-conditional>
+
+  </target>
+
+
+
+
+  <target name="copy-and-patch-rpm-scripts"
+    depends="copy-scripts">
+    <expandingcopy todir="${build.rpm.dir}/root/" >
+      <fileset dir="scripts" includes="**/*" />
+    </expandingcopy>
+  </target>
+
+  <target name="ready-to-prepare-binary-rpm"
+      depends="copy-and-patch-rpm-scripts,rpm-components,create-link-dir,rpm-javadocs,maybe-sign-rpm-jars" >
+
+  </target>
 
 
   <target name="prepare-binary-rpm"
       if="has.rpm.tools"
-      depends="copy-scripts,rpm-components,create-link-dir,rpm-javadocs" >
-    <expandingcopy todir="${build.rpm.dir}/root/" >
-      <fileset dir="scripts" includes="**/*" />
-    </expandingcopy>
+      depends="ready-to-prepare-binary-rpm" >
     <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}" />
     <exec executable="tar" failonerror="true" 
       dir="${build.rpm.dir}/root/">
@@ -552,19 +604,55 @@
   <target name="copy-rpms"
       if="has.rpm.tools"
       depends="init-rpm">
+    <copy todir="${dist.rpm.dir}">
+      <fileset dir="${rpm.noarch}">
+      <include name="*.rpm" />
+      <exclude name="*-signed*.rpm" unless="security.enabled" />
+      </fileset>
+    </copy>
     <copy todir="${upload.dir}" flatten="true">
-      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+      <fileset dir="${dist.rpm.dir}" >
+        <include name="*.rpm" />
+      </fileset>
     </copy>
   </target>
 
-  <target name="gzip-rpm"
-      depends="build-rpm"
+  <target name="ready-to-gzip-rpm" depends="build-rpm,copy-rpms">
+    <condition property="can.create.signed.rpms">
+      <and>
+        <isset property="security.enabled" />
+        <isset property="has.rpm.tools" />
+      </and>
+    </condition>
+    <echo level="verbose">can.create.signed.rpms=${can.create.signed.rpms}</echo>
+  </target>
+
+  <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms" />
+
+  <target name="gzip-unsigned-rpm-files"
+      depends="ready-to-gzip-rpm"
       if="has.rpm.tools"
-      description="create a gzip containing all the rpms">
+      description="create a gzip file containing the unsigned rpms">
     <tar destfile="${rpms.tar}">
-      <fileset dir="${dist.rpm.dir}" includes="*.rpm" />
+      <fileset dir="${dist.rpm.dir}" >
+        <include name="*.rpm" />
+        <exclude name="*-signed*.rpm" />
+      </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}" />
+  </target>
+
+  <target name="gzip-signed-rpms"
+      depends="ready-to-gzip-rpm"
+      if="can.create.signed.rpms"
+      description="create a gzip file containing the signed rpms">
+    <tar destfile="${rpms.signed.tar}">
+      <fileset dir="${dist.rpm.dir}" >
+        <include  name="*-signed*.rpm" />
+      </fileset>
+    </tar>
+    <gzip destfile="${rpms.signed.tar.gz}" src="${rpms.signed.tar}" />
+
   </target>
 
 
@@ -878,6 +966,9 @@
           timeout="${ssh.rpm.command.timeout}"
           />
     </presetdef>
+    <presetdef name="pause">
+      <sleep milliseconds="5000" />
+    </presetdef>
     <macrodef name="validate-rpm-result">
       <attribute name="result" />
       <sequential >
@@ -905,7 +996,11 @@
     <!--list of rpms-->
 
     <property name="rpms.list" value ="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit" />
+    <!--here are all the signed RPMs that are generated-->
+    <property name="rpms.signed.list" value ="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed" />
 
+    <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
+    <property name="rpms.dependent.list" value="" />
     <echo >
       remote server is ${rpm.ssh.server}
       remote directory is ${rpm.full.ssh.dir}
@@ -969,7 +1064,7 @@
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
-    <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list}"
+    <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.signed.list} ${rpms.dependent.list}"
         failonerror="false"/>
   </target>
 
@@ -1000,14 +1095,18 @@
   <target name="rpm-remote-initd" depends="rpm-ready-to-remote-install,rpm-remote-install"
       description="check that initd parses">
     <rootssh command="${remote-smartfrogd} start"/>
+    <pause />
     <rootssh command="${remote-smartfrogd} status"/>
+    <pause />
     <rootssh command="${remote-smartfrogd} start"/>
     <rootssh command="${remote-smartfrogd} status"/>
     <rootssh command="${remote-smartfrogd} stop"/>
     <rootssh command="${remote-smartfrogd} stop"/>
     <rootssh command="${remote-smartfrogd} restart"/>
+    <pause />
     <rootssh command="${remote-smartfrogd} status"/>
     <rootssh command="${remote-smartfrogd} restart"/>
+    <pause />
     <rootssh command="${remote-smartfrogd} status"/>
     <rootssh command="${remote-smartfrogd} stop"/>
   </target>  
@@ -1035,15 +1134,20 @@ rpm -qf ${rpm.install.dir}/signedLib ;
 rpm -qf /etc/profile.d/smartfrog.sh ;
 rpm -qf /etc/profile.d/smartfrog.csh ;
 rpm -qf ${rpm.install.dir}/docs ;
-rpm -qf ${rpm.javadocs.path}/index.html ;
 rpm -qf ${rpm.install.dir}/src ;
 rpm -qf ${rpm.install.dir}/src.zip ;
 rpm -qf ${rpm.install.dir}/lib/ant-${apache.ant.version}.jar; 
-rpm -qf ${rpm.install.dir}/links/ant.jar
+rpm -qf ${rpm.install.dir}/links/ant.jar;
+rpm -qf ${rpm.install.dir}/signedLib/smartfrog-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/sfServices-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/sfExamples-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/sf-anubis-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/sf-loggingservices-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/commons-logging-${commons-logging.version}.jar;
+rpm -qf ${rpm.install.dir}/signedLib/log4j-${log4j.version}.jar
 "
         outputProperty="rpm.queries.results"/>
 
-    <echo>${rpm.queries.results}</echo>
     <fail>
       <condition>
         <or>
@@ -1055,9 +1159,16 @@ rpm -qf ${rpm.install.dir}/links/ant.jar
       </condition> 
       One of the directories/files in the RPM is not declared as being owned by any RPM.
       This file/directory will not be managed correctly, or have the correct permissions
-      on a hardened linux
+      on a hardened linux.
+      ${rpm.queries.results}
     </fail>
-    
+
+    <sf-conditional >
+     <rootssh
+      failonerror="true"
+      command="rpm -qf ${rpm.javadocs.path}/index.html" />
+    </sf-conditional>
+
 
   </target> 
   
