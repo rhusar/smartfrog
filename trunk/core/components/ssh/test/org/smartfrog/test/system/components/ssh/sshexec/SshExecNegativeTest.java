@@ -53,7 +53,7 @@ public class SshExecNegativeTest
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 	/*sshexec : command missing*/
-	public void testCaseTCN93_commands_is_missing() throws Exception {
+	public void NotestCaseTCN93_commands_is_missing() throws Exception {
         deployExpectingException(FILES +"tcn93.sf",
                                  "tcn93",
                                  null,

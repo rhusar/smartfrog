@@ -103,4 +103,7 @@ public class ScpNegativeTest
     public void test_host_timeout() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "test_host_timeout.sf");
     }
+    public void test_public_key_timeout() throws Throwable {
+        expectSuccessfulTestRun(FILES, "test_public_key_timeout");
+    }
 }

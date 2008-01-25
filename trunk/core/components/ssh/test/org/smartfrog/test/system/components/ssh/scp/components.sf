@@ -38,9 +38,33 @@ FullScpSession extends ScpSession {
     localFiles [LAZY tempFile];
     remoteFiles ["/tmp/1.txt"];
     transferType "get";
-
-
 }
+
+/**
+ * This defines a public key session
+ */
+PublicKeyScpSession extends ScpSessionPublicKeyInlinePassword {
+  //this is the temp file
+  privateKey PrivateKeyFile;
+  //this is a reference to it
+  keyFile LAZY privateKey;
+  //this is the password
+  password testKey:passphrase;
+}
+
+
+FullPublicKeyScpSession extends PublicKeyScpSession {
+
+    tempFile extends TempFileWithCleanup {
+        suffix "txt";
+    }
+    username LAZY PROPERTY user.name;
+    host testvalues:localhost;
+    localFiles [LAZY tempFile];
+    remoteFiles ["/tmp/1.txt"];
+    transferType "get";
+}
+
 
 tcn83 extends ScpSessionFilePassword {
     description "Password file is missing"
@@ -171,3 +195,21 @@ test_host_timeout extends ExpectDeployFailure {
       ];
 
 }
+
+test_public_key_timeout extends ExpectDeployFailure {
+
+    action extends FullPublicKeyScpSession  {
+      SCP:port testvalues:badLocalPort;
+      SCP:timeout 10;
+    }
+
+/*
+    exceptions [
+        ["",""],
+        ["com.jcraft.jsch.JSchException",""]
+      ];
+*/
+
+}
+
+
