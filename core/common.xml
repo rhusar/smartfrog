@@ -1668,6 +1668,16 @@ java.class.path=
   <!-- Security corner -->
   <!-- ========================================================== -->
 
+  <target name="assert-secure"
+    description="halt the build if security is not turned on" unless="security.enabled">
+    <fail>
+      This is not a secure build. To make a secure build
+      1. set security.enabled=true
+      2. Create a CA and point the property security.ca.dir at the location.
+         Currently this property is ${security.ca.dir}
+    </fail>
+  </target>
+
   <target name="init-security" depends="init,declare-extended-smartfrog-tasks"
       xmlns:sec="http://security.smartfrog.org/">
     <!--this is a flag that turns security on or off. by default it is off-->

@@ -91,7 +91,7 @@
 
 
   <!--the entry point: build the rpm-->
-  <target name="rpm" depends="build-rpm"
+  <target name="rpm" depends="postprocess-rpm"
       description="Create the RPMs"/>
   <target name="dist" depends="rpm"
       description="Default action is to create the RPMs"/>
@@ -161,6 +161,16 @@
         location="${build.rpm.dir}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar"/>
     <property name="target.rpm.tar.gz"
         location="${dist.lib.dir}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar.gz"/>
+
+    <property name="built-signed.rpm"
+        location="${rpm.noarch}/smartfrog-${rpm.module.name}-signed-${rpm.suffix}"/>
+    <property name="target-signed.rpm"
+        location="${dist.lib.dir}/smartfrog-${rpm.module.name}-signed-${rpm.suffix}"/>
+    <property name="target-signed.rpm.tar"
+        location="${build.rpm.dir}/smartfrog-${rpm.module.name}-signed-${smartfrog.version}.tar"/>
+    <property name="target-signed.rpm.tar.gz"
+        location="${dist.lib.dir}/smartfrog-${rpm.module.name}-signed-${smartfrog.version}.tar.gz"/>
+
 
     <macrodef name="rpmpackage">
       <attribute name="package"/>
@@ -293,14 +303,29 @@
         topDir="${rpm.image.dir}"
         failOnError="true"/>
     <copy todir="${dist.lib.dir}" file="${built.rpm}"/>
-    <!--tar up the release-->
-    <m:tar destfile="${target.rpm.tar}">
-      <fileset file="${built.rpm}"/>
-    </m:tar>
+
     <!--and gzip it. This is what gets published-->
     <gzip src="${target.rpm.tar}" destfile="${target.rpm.tar.gz}"/>
 
   </target>
+
+  <target name="copy-rpm" depends="build-rpm" >
+    <!--tar up the release-->
+    <copy todir="${dist.lib.dir}" file="${built.rpm}"/>
+  </target>
+
+  <target name="package-rpm" depends="copy-rpm" >
+    <!--tar up the release-->
+    <m:tar destfile="${target.rpm.tar}">
+      <fileset file="${target.rpm}"/>
+    </m:tar>
+    <gzip destfile="${target.rpm.tar.gz}" src="${target.rpm.tar}"/>
+  </target>
+
+  <target name="postprocess-rpm" depends="package-rpm" >
+
+  </target>
+
 
   <target name="expand-rpm-debian" depends="rpm"
       description="expand the rpm on a debian system, but do not install it">

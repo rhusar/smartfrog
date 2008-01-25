@@ -738,6 +738,7 @@ Contains JAR files signed by a private CA.
 
 %changelog
 * Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0018-2.el4
+- add ability to generate signed RPM files
 # to get the date, run:   date +"%a %b %d %Y"
 * Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0013-1.el4
 - add the javadocs RPM

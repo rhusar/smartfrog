@@ -5,6 +5,16 @@
   <import file="state.xml" />
 
 
+  <target name="assert-secure" depends="initialized"
+      description="halt the build if security is not turned on" unless="security.enabled">
+    <fail>
+      This is not a secure build. To make a secure build
+      1. set security.enabled=true
+      2. Create a CA and point the property security.ca.dir at the location.
+      Currently this property is ${security.ca.dir}
+    </fail>
+  </target>
+
   <target name="init-security" depends="initialized,smartfrog-tasks">
     <property name="keystore.dir" location="${user.home}/.secret"/>
     <mkdir dir="${keystore.dir}"/>
