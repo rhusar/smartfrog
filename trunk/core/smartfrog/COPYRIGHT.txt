@@ -1,4 +1,4 @@
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+(C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ Some parts of this project are dervied from software
 produced by the Apache Software Foundation, for which the following
 copyright terms apply:
 
-Copyright 2001-2004 The Apache Software Foundation.
+Copyright 2000-2008 The Apache Software Foundation.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -39,3 +39,5 @@ File to which this apply are:
   org.smartfrog.sfcore.common.Diagnostics
   org.smartfrog.sfcore.logging.LogToStreamsImpl
   org.smartfrog.services.database.core.TransactionImpl
+  org.smartfrog.services.os.IsOSCondition
+  org.smartfrog.services.database.core.TransactionImpl    
