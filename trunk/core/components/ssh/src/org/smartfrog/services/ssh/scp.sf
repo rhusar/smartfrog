@@ -134,7 +134,7 @@ ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
 
 
 /**
- * a public key scp session with a file password
+ * a public key scp session with an inline password
  */
 
 ScpSessionPublicKeyInlinePassword extends ScpSessionPublicKey {
