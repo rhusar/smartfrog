@@ -38,9 +38,6 @@ import org.apache.tools.ant.BuildException;
 
 public class ConditionalSequence extends Sequential {
 	private String ifAttr="",unlessAttr="";
-    private Boolean ifTrue;
-    //false is anything but true
-    private Boolean ifFalse;
 
     public void setIf(String arg) {
         ifAttr = arg;
@@ -50,29 +47,14 @@ public class ConditionalSequence extends Sequential {
         unlessAttr = arg;
     }
 
-    public void setIfTrue(Boolean ifTrue) {
-        this.ifTrue = ifTrue;
-    }
-
-    public void setIfFalse(Boolean ifFalse) {
-        this.ifFalse = ifFalse;
-    }
-
     /**
      * Execute all nestedTasks if the conditions permit it
      *
      * @throws BuildException if one of the nested tasks fails.
      */
     public void execute() throws BuildException {
-
-        //true if unset. if set, must eval to true
-        boolean ifTrueTrue = ifTrue == null || ifTrue.booleanValue();
-        //true if unset or evals to true
-        boolean ifAttrSet = ifAttr.length() == 0 || getProject().getProperty(ifAttr) != null;
-        //false unless actually defined
-        boolean unlessAttrSet = unlessAttr.length() > 0 && getProject().getProperty(unlessAttr) != null;
-        boolean ifFalseFalse = ifFalse != null && !ifFalse.booleanValue();
-        if (ifAttrSet && ifTrueTrue && ifFalseFalse && !unlessAttrSet) {
+        if ((ifAttr.length() == 0 || getProject().getProperty(ifAttr) != null) &&
+                (unlessAttr.length() == 0 || getProject().getProperty(unlessAttr) == null)) {
             super.execute();
         }
     }
