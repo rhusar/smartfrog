@@ -221,6 +221,7 @@
         <include name="ant-jsch*.jar" />
         <include name="sf-vmware*.jar" />
         <include name="sf-xmpp*.jar" />
+        <include name="jna*.jar"/>
       </fileset>
     </copy>
 
