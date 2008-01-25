@@ -180,10 +180,10 @@ sfConfig extends Parallel {
             SSHCmdExec:logFile "${logDir}${daemon.name}.log";
 	    SSHCmdExec:timeout 70000;
 	    SSHCmdExec:failOnError false;
-	    #if ($daemon.isLinux())            
+	    #if ($daemon.isLinux())
 			#if ($securityOn)
 				#if ($dynamicLoadingOn)
-					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
+					commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
 							 "gunzip -f release.tar.gz", 
 				 			 "tar -xf release.tar",
@@ -202,7 +202,7 @@ sfConfig extends Parallel {
 				 			 "cd ${daemon.installdir}/${daemon.releasename}",
                         	 			 "nohup sfDaemon -headless"];  
 				#else 
-					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
+					commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
 							 "gunzip -f release.tar.gz", 
 							 "tar -xf release.tar",
@@ -222,7 +222,7 @@ sfConfig extends Parallel {
 				#end
 			#else
 				#if ($dynamicLoadingOn)
-					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
+					commands ["mkdir -p ${daemon.installdir}",
 								cd ${daemon.installdir}",
 							 "gunzip -f release.tar.gz", 
 					 		 "tar -xf release.tar",
@@ -233,7 +233,7 @@ sfConfig extends Parallel {
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 							 "nohup sfDaemon -headless"]; 
 				#else
-					SSHCmdExec:commands ["mkdir -p ${daemon.installdir}",
+					commands ["mkdir -p ${daemon.installdir}",
 								"cd ${daemon.installdir}",
 							 "gunzip -f release.tar.gz", 
 				        		 "tar -xf release.tar",
