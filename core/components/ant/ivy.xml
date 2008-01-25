@@ -44,6 +44,10 @@
     <artifact name="sf-ant-documentation" conf="documentation" ext="zip"/>    
   </publications>
   <dependencies>
+    <dependency org="org.apache.ant"
+        name="ant-nodeps"
+        rev="${apache.ant.version}"
+        conf="ant-optional->master"/>
     <dependency org="org.smartfrog"
         name="smartfrog"
         changing="true"
@@ -123,14 +127,7 @@
         name="ant-junit"
         rev="${apache.ant.version}"
         conf="ant-optional->master"/>
-   <dependency org="org.apache.ant"
-        name="ant-launcher"
-        rev="${apache.ant.version}"
-        conf="ant-optional->master"/>
-   <dependency org="org.apache.ant"
-        name="ant-nodeps"
-        rev="${apache.ant.version}"
-        conf="ant-optional->master"/>
+
   
 </dependencies>
 </ivy-module>
