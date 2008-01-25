@@ -50,7 +50,7 @@ For more information: www.smartfrog.org
 
     port SSHExec:port;
     timeout SSHExec:timeout;
-    commands TBD;
+    commands [];
 
     SSHCmdExec extends SSHExec {
 

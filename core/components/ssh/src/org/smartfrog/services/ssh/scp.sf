@@ -120,6 +120,29 @@ ScpSessionPublicKey extends ScpSessionAuthPass {
     SCP:keyFile keyFile;
 }
 
+/**
+ * a public key scp session with a file password
+ */
+
+ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
+    passwordFile TBD;
+
+    passwordProvider extends FilePassword {
+      passwordFile PARENT:passwordFile;
+    }
+}
+
+
+/**
+ * a public key scp session with a file password
+ */
+
+ScpSessionPublicKeyInlinePassword extends ScpSessionPublicKey {
+    password TBD;
+    passwordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
+    }
+}
 
 ScpSessionAuthPubKey extends ScpSessionPublicKey ;
 
