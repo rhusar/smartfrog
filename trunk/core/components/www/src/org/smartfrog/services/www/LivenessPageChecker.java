@@ -388,6 +388,11 @@ public class LivenessPageChecker implements LivenessPage {
         return mimeTypeMap != null ? mimeTypeMap.get(mimeType) : null;
     }
 
+    /**
+     * Compare the supplied error code with the min/max codes for this checker
+     * @param responseCode the response code to check
+     * @return true iff it is out of range.
+     */
     public boolean isStatusOutOfRange(int responseCode) {
         return (responseCode < minimumResponseCode)
                 || (responseCode > maximumResponseCode);
