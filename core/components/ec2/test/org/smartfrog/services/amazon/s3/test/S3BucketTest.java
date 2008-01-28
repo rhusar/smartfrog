@@ -47,11 +47,14 @@ public class S3BucketTest extends DeployingTestBase {
             fail("not set: "+AWSKEY);
         }
     }
-    
-    public void testCreateBucket() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testCreateBucket");
-    }
+
     public void testDeployGetBucket() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testDeployGetBucket");
+        expectSuccessfulTestRunOrSkip(FILES, "testDeployGetBucket");
+    }
+    public void testCreateBucket() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testCreateBucket");
+    }
+    public void testDeleteBucket() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testDeleteBucket");
     }
 }

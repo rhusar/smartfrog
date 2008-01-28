@@ -56,10 +56,13 @@ RemoteResource extends Prim {
   maximumResponseCode HttpCodes:END_2XX;
   
 
+  fetchErrorText true;
   followRedirects true;
   connectTimeout -1;
   //read timeout in milliseconds
   readTimeout 30000;
+
+  mimeType [];
 
   //not yet implemented
   resultXPath "";

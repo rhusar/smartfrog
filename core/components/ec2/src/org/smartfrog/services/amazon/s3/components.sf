@@ -28,7 +28,6 @@
  */
 S3Resource extends AWSResource {
   host "https://s3.amazonaws.com/";
-
 }
 
 /**
