@@ -363,18 +363,29 @@ public class LivenessPageChecker implements LivenessPage {
 
         } catch (IOException exception) {
             //String text = maybeGetErrorText(connection);
-            String message = "Failed to read " + targetURL.toString() + "\n"
-                    + "\n" + exception.getMessage();
+            String message = "Failed to read " + targetURL.toString() + '\n'
+                    + '\n' + exception.getMessage();
             logAndRaise(message);
         }
     }
 
+    /**
+     * Tests for the mime type being in range
+     * @param mimeType the supplied mime type
+     * @return true if there are no mime types specified for this checker, or the type is in the list of supported types
+     * (no regexp matching yet)
+     */
     public boolean isMimeTypeInRange(String mimeType) {
-        return (lookupMimeType(mimeType)==null);
+        return mimeTypeMap==null || lookupMimeType(mimeType)!=null;
     }
 
+    /**
+     * Look up the mime type in the mime type map.
+     * @param mimeType the mime type
+     * @return null if there is no match (or no mime map), the actual value if there is one
+     */
     public String lookupMimeType(String mimeType) {
-        return mimeTypeMap.get(mimeType);
+        return mimeTypeMap != null ? mimeTypeMap.get(mimeType) : null;
     }
 
     public boolean isStatusOutOfRange(int responseCode) {
@@ -728,14 +739,13 @@ public class LivenessPageChecker implements LivenessPage {
      *
      * @param mimeTypes vector of supported mime types
      */
-    public void setMimeTypes(Vector mimeTypes) {
+    public void setMimeTypes(Vector<String> mimeTypes) {
         if (mimeTypes == null || mimeTypes.isEmpty()) {
             mimeTypeMap = null;
         } else {
             mimeTypeMap = new HashMap<String, String>(mimeTypes.size());
-            for (Object mimeType : mimeTypes) {
-                String type = (mimeType.toString()).intern();
-                mimeTypeMap.put(type, type);
+            for (String mimeType : mimeTypes) {
+                mimeTypeMap.put(mimeType, mimeType);
             }
         }
     }

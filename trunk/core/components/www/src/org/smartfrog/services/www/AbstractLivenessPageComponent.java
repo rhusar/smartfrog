@@ -88,16 +88,16 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
             buildLivenessPageQueryString();
         }
 
-        Vector mimeTypes = sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
+        Vector<String> mimeTypes = ListUtils.resolveStringList(this, new Reference(ATTR_MIME_TYPES),true);
         livenessPage.setMimeTypes(mimeTypes);
         livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
                 0,true));
         livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
                 0, true));
         livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
-                livenessPage.getFollowRedirects(), false));
+                livenessPage.getFollowRedirects(), true));
         livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
-                livenessPage.getFetchErrorText(), false));
+                livenessPage.getFetchErrorText(), true));
 
         //header vector
         Vector<Vector<String>> headers;
