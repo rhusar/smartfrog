@@ -20,12 +20,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.restlet.client;
 
 import org.restlet.Client;
+import org.restlet.util.Series;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Parameter;
 import org.restlet.resource.Representation;
 import org.smartfrog.services.restlet.datasources.InprocDataSource;
 import org.smartfrog.services.restlet.datasources.RestletDataSource;
@@ -56,6 +58,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     private String username;
     private String password;
     private Protocol protocol;
+    private boolean followRedirects;
     public static final String UNSUPPORTED_MEDIA_TYPE = "Unsupported media type:";
     public static final String UNKNOWN_VERB = "Unknown verb: ";
     public static final String ATTR_DATASOURCE = "datasource";
@@ -63,6 +66,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
 
     private Vector<Vector<Object>> startActions, terminateActions, livenessActions;
     private LogSF log;
+    private int readTimeout;
 
     public RemoteRestletResourceImpl() throws RemoteException {
     }
@@ -96,6 +100,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         buildLivenessChecker();
         buildAuthentication();
         protocol = Protocol.valueOf(getLivenessPage().getTargetURL().getProtocol());
+        followRedirects = getLivenessPage().getFollowRedirects();
+        readTimeout = sfResolve(ATTR_READ_TIMEOUT,0,true);
 
         startActions= ListUtils.resolveNTupleList(this,
                 new Reference(ATTR_STARTACTIONS),3,true);
@@ -188,6 +194,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected Request buildRequest(Method method, Representation localData) {
         // Send an authenticated request
         Request request = new Request(method, getURL(), localData);
+        //request.
         if(challengeScheme!=null) {
                 request.setChallengeResponse(createChallengeResponse());
         }
@@ -236,6 +243,10 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      */
     protected Response handle(Request request) {
         Client client = createClient();
+        //add redirection support
+        Series<Parameter> params = client.getContext().getParameters();
+        params.add("followRedirects",Boolean.toString(followRedirects));
+        params.add("readTimeout",Integer.toString(readTimeout));
         return client.handle(request);
     }
 
@@ -275,7 +286,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
                     "Status code " + responseCode
                         + " is out of range of "
                         + minResponseCode
-                        +"-"
+                        + '-'
                         +maxResponseCode,
                     response,
                     this);

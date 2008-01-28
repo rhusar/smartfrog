@@ -77,6 +77,9 @@ public interface RemoteRestletResource extends HttpAttributes {
      * SF constant {@value}
      */
     String HEAD = "options";
-
+    /**
+     * SF constant {@value}
+     */
+    String ATTR_READ_TIMEOUT ="readTimeout";
 
 }
