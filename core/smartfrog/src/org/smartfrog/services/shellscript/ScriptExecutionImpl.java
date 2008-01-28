@@ -531,14 +531,10 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     public void line(String line, String filterName) {
         if (filterName.indexOf("out") != -1) {
             results.stdOut.add(line);
-            if (results.verbose) {
-                sfLog().out(line);
-            }
+            if (results.verbose) { sfLog().out(line); }
         } else {
             results.stdErr.add(line);
-            if (results.verbose) {
-                sfLog().err(line);
-            }
+            if (results.verbose) {  sfLog().err(line); }
         }
         if (sfLog().isTraceEnabled()) {
             sfLog().trace("LINE " + line + ", " + filterName + ", "

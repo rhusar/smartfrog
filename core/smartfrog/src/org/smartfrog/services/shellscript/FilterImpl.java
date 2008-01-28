@@ -256,34 +256,29 @@ public class FilterImpl extends Thread {
       }
   }
 
-
-  boolean found = false;
   // Compares line with filters[] set
-  protected void filter(String line, String lineFilters[]) {
-      found = false;
+  protected synchronized void filter(String line, String lineFilters[]) {
       if (listener == null) return;
       if (lineFilters!=null) {
           for (int i = 0; i<lineFilters.length; ++i) {
               //sfLog.trace("Comparing: "+ line +", "+filters[i]);
+
               if (line.indexOf(lineFilters[i])==-1) {
                   //No match
+                  listener.line(line, getName());
                   continue;
               }
-              // it tells you the write filter!
               positiveFilter(line, i, getName());
-              found =true;
           }
-      }
-      if ((!found) || (passPositives)) {
-          listener.line(line, getName());          
       }
   }
 
-  protected void positiveFilter(String line, int filterIndex, String filterName) {
+  protected synchronized void positiveFilter(String line, int filterIndex, String filterName) {
       if (listener == null) return;
-
+      if ((passPositives)) {
+         listener.line(line, getName());
+      }
       listener.found(line, filterIndex, getName());
-
   }
 }
 //------------------- end FILTER -------------------------------
