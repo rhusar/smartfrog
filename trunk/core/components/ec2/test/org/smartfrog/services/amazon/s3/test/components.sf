@@ -71,18 +71,39 @@ ProbeForBucket extends WaitForPage {
   timeout ROOT:timeout;
 }
 
+
+/*
+ * Our AWS condition
+ */
+
+IsAwsEnabled extends IsPropertySet {
+    property "test.awsid";
+  }
+
+
+
 /**
  A test using a bucket
  */
 
-BucketTest extends ExpectDeploy {
+ExpectDeployOnAWS extends ExpectDeploy {
 
   description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
 
-  condition extends IsPropertySet {
-    property "test.awsid";
-  }
-  
+  condition extends IsAwsEnabled ;
+
+
+}
+
+
+/**
+ A test using a bucket
+ */
+
+BucketTest extends ExpectDeployOnAWS {
+
+  description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
+ 
   action extends  Compound {
 
     datasource extends TextDataSource { text "";}
@@ -105,7 +126,30 @@ testDeployGetBucket extends BucketTest {
 
   tests extends Sequence {
 
-    -- extends ProbeForBucket;
+    probe extends ProbeForBucket;
+  }
+
+}
+
+testDeleteBucket extends BucketTest {
+
+  description "try to delete a bucket that has just been created";
+
+  tests extends Sequence {
+
+    delete extends DeleteBucket;
+  }
+
+}
+
+testDeleteNonexistentBucket extends ExpectDeployOnAWS {
+
+  description "try to delete a bucket that may or may not exist";
+
+  tests extends Sequence {
+
+    delete extends DeleteBucket;
+    delete2 extends DeleteBucket;
   }
 
 }

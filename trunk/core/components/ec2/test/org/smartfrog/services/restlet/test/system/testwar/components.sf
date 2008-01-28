@@ -145,17 +145,15 @@ JettyHTTPS extends LocalJettyServer {
       tests:operations  extends Sequence {
 
         get extends GetRestResource {
+          sfShouldTerminate true;
           port PARENT:PARENT:PARENT:port;
           page PARENT:PARENT:PARENT:contextPath;
-          maximumResponseCode HttpCodes:OK;
-          minimumResponseCode maximumResponseCode;
         }
       }
 
   }
 
-
-  testErrorPage extends WarTest  {
+  testErrorPageMinMax extends WarTest  {
 
     description ##test that error page of the WAR returns the error we want,
         and that the restlet client can be controlled to ask for different error codes#;
@@ -163,6 +161,7 @@ JettyHTTPS extends LocalJettyServer {
     tests:operations  extends Sequence {
 
         get extends GetRestResource {
+          sfShouldTerminate true;
           port PARENT:ATTRIB port;
           page ((PARENT:ATTRIB contextPath) ++ "/error");
           errorCode 419;
@@ -172,6 +171,27 @@ JettyHTTPS extends LocalJettyServer {
         }
       }
 
+  }
+
+  testErrorPage extends WarTest  {
+
+    description ##test that error page of the WAR returns the error we want,
+        and that the restlet client can be controlled to ask for different error codes#;
+
+    tests:operations  extends Sequence {
+
+        get extends GetRestResource {
+          sfShouldTerminate true;
+          port PARENT:ATTRIB port;
+          page ((PARENT:ATTRIB contextPath) ++ "/error");
+          errorCode 419;
+          queries [["status",errorCode]];
+          maximumResponseCode errorCode;
+          minimumResponseCode errorCode;
+          startActions [[GET,errorCode,errorCode]];
+          livenessActions [[HEAD,errorCode,errorCode]];
+         }
+      }
 
   }
 

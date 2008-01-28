@@ -28,6 +28,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Parameter;
+import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.smartfrog.services.restlet.datasources.InprocDataSource;
 import org.smartfrog.services.restlet.datasources.RestletDataSource;
@@ -293,12 +294,19 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         }
         Representation responseData = response.getEntity();
         if (responseData != null) {
-            String type = responseData.getMediaType().getName();
-            if (!checker.isMimeTypeInRange(type)) {
-                throw new RestletOperationException(request,
-                        UNSUPPORTED_MEDIA_TYPE + type,
-                        response,
-                        this);
+            MediaType mediaType = responseData.getMediaType();
+            if(mediaType==null) {
+                //we have a null media type here. That may or may not be expected.
+                log.debug("No media type in the response");
+                
+            } else {
+                String type = mediaType.getName();
+                if (!checker.isMimeTypeInRange(type)) {
+                    throw new RestletOperationException(request,
+                            UNSUPPORTED_MEDIA_TYPE + type,
+                            response,
+                            this);
+                }
             }
         }
     }
