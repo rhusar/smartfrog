@@ -34,6 +34,7 @@ TestBucket extends  TransientS3Bucket {
     username ROOT:login;
     password ROOT:password;
     connectTimeout timeout;
+    //followRedirects false;
 }
 
 TransientBucket extends TestBucket {
@@ -108,7 +109,7 @@ BucketTest extends ExpectDeployOnAWS {
 
     datasource extends TextDataSource { text "";}
 
-    bucket extends Testbucket  {
+    bucket extends TestBucket  {
       datasource LAZY PARENT:datasource ;
     }
 
