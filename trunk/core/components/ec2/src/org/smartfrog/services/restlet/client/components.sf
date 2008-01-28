@@ -58,6 +58,8 @@ RemoteResource extends Prim {
 
   followRedirects true;
   connectTimeout -1;
+  //read timeout in milliseconds
+  readTimeout 30000;
 
   //not yet implemented
   resultXPath "";
