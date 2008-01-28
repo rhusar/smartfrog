@@ -84,6 +84,7 @@ public class RestletOperationException extends SmartFrogException {
      * Constructs a SmartFrogException with specified message. Also initializes
      * the exception context with component details.
      *
+     * @param url the URL at the end of the wire
      * @param message  message
      * @param response the response in question
      * @param sfObject The Component that has encountered the exception
