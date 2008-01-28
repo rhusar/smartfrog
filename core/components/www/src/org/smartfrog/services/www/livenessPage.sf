@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -74,6 +74,9 @@ For more information: www.smartfrog.org
      //headers
      headers extends Vector;
 
+     //list of allowed mime types
+     mimeType extends Vector;
+
      //response code below which the fetch is an error
      minimumResponseCode extends Integer;
      //error code above which an error has occurred,
@@ -121,20 +124,21 @@ For more information: www.smartfrog.org
  LivenessPage extends WorkflowPrim {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
-     fetchErrorText true;
-     minimumResponseCode HttpCodes:START_2XX;
-     maximumResponseCode HttpCodes:END_2XX;
-     enabled true;
-     followRedirects true;
      checkFrequency 1000;
      checkOnStartup false;
      checkOnLiveness true;
      connectTimeout -1;
+     enabled true;
+     fetchErrorText true;
+     followRedirects true;
      headers [];
      host "127.0.0.1";
      protocol "http";
-     port 80;
+     maximumResponseCode HttpCodes:END_2XX;
+     minimumResponseCode HttpCodes:START_2XX;
+     mimeType [];
      page "/";
+     port 80;
 
  }
 
