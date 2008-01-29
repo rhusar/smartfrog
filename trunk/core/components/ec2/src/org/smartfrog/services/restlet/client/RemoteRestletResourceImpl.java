@@ -342,32 +342,82 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     }
 
 
+    /**
+     * Issue a GET operation
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response get(int minResponseCode, int maxResponseCode) throws RestletOperationException {
         return handleAndValidate(Method.GET, null, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Issue a HEAD operation
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response head(int minResponseCode, int maxResponseCode) throws RestletOperationException {
         return handleAndValidate(Method.HEAD, null, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Issue an OPTIONS operation
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response options(int minResponseCode, int maxResponseCode) throws RestletOperationException {
         return handleAndValidate(Method.OPTIONS, null, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Issue a DELETE operation
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response delete(int minResponseCode, int maxResponseCode) throws RestletOperationException {
         return handleAndValidate(Method.DELETE, null, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Issue a POST operation
+     * @param data any data to include
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response post(Representation data, int minResponseCode, int maxResponseCode)
             throws RestletOperationException {
         return handleAndValidate(Method.POST, data, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Issue a PUT operation
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RestletOperationException for an exception happening
+     */
     protected Response put(Representation data, int minResponseCode, int maxResponseCode)
             throws RestletOperationException {
         return handleAndValidate(Method.PUT, data, minResponseCode, maxResponseCode);
     }
 
+    /**
+     * Run through a list of operations and execute them
+     * @param operations the operations to run -can be null
+     * @throws RemoteException network problems
+     * @throws SmartFrogException for anything not working
+     * @throws RestletOperationException for an exception happening in this library
+     */
     protected void execute(Vector<Vector<Object>> operations)
             throws RemoteException, SmartFrogException {
         if (operations == null) {
@@ -381,6 +431,16 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         }
     }
 
+    /**
+     * execute an operation based on the chosen verb
+     * @param verb verb string
+     * @param minResponseCode  minimum allowed response code
+     * @param maxResponseCode maximum allowed response code
+     * @return the response
+     * @throws RemoteException network problems
+     * @throws SmartFrogException for anything not working
+     * @throws RestletOperationException for an exception happening in this library
+     */
     protected Response execute(String verb, int minResponseCode, int maxResponseCode)
             throws RemoteException, SmartFrogException {
         Response response = null;
@@ -424,7 +484,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         try {
             inprocDataSource = (InprocDataSource) restletDataSource;
         } catch (ClassCastException e) {
-            throw new SmartFrogException(ERROR_DIFFERENT_JVM, this);
+            throw new RestletOperationException(ERROR_DIFFERENT_JVM, this);
         }
         Representation localData = inprocDataSource.loadRepresentation();
         return localData;
