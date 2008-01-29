@@ -20,29 +20,30 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.restlet.client;
 
 import org.restlet.Client;
-import org.restlet.util.Series;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Parameter;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 import org.smartfrog.services.restlet.datasources.InprocDataSource;
 import org.smartfrog.services.restlet.datasources.RestletDataSource;
+import org.smartfrog.services.restlet.overrides.ProxyEnabledClient;
 import org.smartfrog.services.www.AbstractLivenessPageComponent;
 import org.smartfrog.services.www.LivenessPageChecker;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.LogSF;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -59,6 +60,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     private String password;
     private Protocol protocol;
     private boolean followRedirects;
+    private boolean useSystemProxySettings;
     public static final String UNSUPPORTED_MEDIA_TYPE = "Unsupported media type:";
     public static final String UNKNOWN_VERB = "Unknown verb: ";
     public static final String ATTR_DATASOURCE = "datasource";
@@ -100,7 +102,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         protocol = Protocol.valueOf(getLivenessPage().getTargetURL().getProtocol());
         followRedirects = getLivenessPage().getFollowRedirects();
         readTimeout = sfResolve(ATTR_READ_TIMEOUT, 0, true);
-
+        useSystemProxySettings = sfResolve(ATTR_USE_SYSTEM_PROXY_SETTINGS,true, true);
         startActions = ListUtils.resolveNTupleList(this,
                 new Reference(ATTR_STARTACTIONS), 3, true);
         livenessActions = ListUtils.resolveNTupleList(this,
@@ -198,6 +200,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         if (challengeScheme != null) {
             request.setChallengeResponse(createChallengeResponse());
         }
+
         return request;
     }
 
@@ -227,7 +230,11 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      * @return the client
      */
     protected Client createClient() {
-        return new Client(getProtocol());
+        ProxyEnabledClient client = new ProxyEnabledClient(getProtocol());
+        if(useSystemProxySettings) {
+            client.bindToSystemProxySettings();
+        }
+        return client;
     }
 
     /**
@@ -241,16 +248,17 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
 
     /**
      * Create a client and handle the request
-     *
+     * @param client the client to work with
      * @param request the request
      * @return the response
      */
-    protected Response handle(Request request) {
-        Client client = createClient();
+    protected Response handle(Client client,Request request) {
+
         //add redirection support
         Series<Parameter> params = client.getContext().getParameters();
         params.add("followRedirects", Boolean.toString(followRedirects));
         params.add("readTimeout", Integer.toString(readTimeout));
+
         return client.handle(request);
     }
 
@@ -259,6 +267,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      *
      * @param method method to run
      * @param data   any data
+     * @param minResponseCode allowed min response code
+     * @param maxResponseCode allowed max response code
      * @return the response
      * @throws RestletOperationException for validation failures and errors
      */
@@ -267,21 +277,23 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
                                          int maxResponseCode)
             throws RestletOperationException {
         Request request = buildRequest(method, data);
-        Response response = handle(request);
-        validate(request, response, minResponseCode, maxResponseCode);
+        Client client = createClient();
+        Response response = handle(client,request);
+        validate(client,request, response, minResponseCode, maxResponseCode);
         return response;
     }
 
     /**
      * Check that the response was valid
-     *
+     * @param client        the client that dealt with the request.
      * @param request         the request issues
      * @param response        the response we check
      * @param minResponseCode allowed min response code
      * @param maxResponseCode allowed max response code
      * @throws RestletOperationException for validation failures and errors
      */
-    protected void validate(Request request, Response response,
+    protected void validate(Client client,
+                            Request request, Response response,
                             int minResponseCode,
                             int maxResponseCode)
             throws RestletOperationException {
@@ -293,7 +305,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
                 throw new RestletOperationException(request,
                         "Internal Restlet Error "+status.toString()+'\n'
                                 +status.getDescription() + '\n'
-                                +status.getUri(),
+                                +status.getUri()
+                        +" over "+client.toString(),
                         response,
                         this);
             }
@@ -304,7 +317,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
                             + " is out of range of "
                             + minResponseCode
                             + '-'
-                            + maxResponseCode,
+                            + maxResponseCode
+                            + "\n over " + client.toString(),
                     response,
                     this);
         }

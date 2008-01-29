@@ -50,22 +50,43 @@
         rev="latest.integration"
         conf="compile,runtime,daemon->master;test->default;testwar->testwar"/>
 
-    <dependency org="org.smartfrog"
-        name="sf-jetty"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+    <!--XML content-->
     <dependency org="org.smartfrog"
         name="sf-xml"
         changing="true"
         rev="latest.integration"
         conf="compile,runtime,daemon->default"/>
+    <!--httpclient needs commons logging; logging services pulls it in-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+    <!--jetty for testing-->
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
     <dependency org="org.smartfrog"
         name="sf-testharness"
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
 
+
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        rev="latest.integration"
+        changing="true"
+        conf="build->default"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-xunit"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
 
     <!--restlet api-->
     <dependency org="org.restlet"
@@ -82,6 +103,20 @@
         name="com.noelios.restlet.ext.net"
         rev="${restlet.version}"
         conf="compile,redist->default"/>
+    <dependency org="com.noelios.restlet"
+        name="com.noelios.restlet.ext.httpclient"
+        rev="${restlet.version}"
+        conf="compile,redist->default">
+      <exclude org="commons-httpclient"/>
+      </dependency>
+
+    <!--httpclient is used underneath...we need this, but not its logging-->
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;test,runtime,redist->default">
+        <exclude org="commons-logging"/>
+    </dependency>
 
     <!--file upload-->
     <dependency org="org.restlet"
@@ -93,18 +128,6 @@
         rev="${commons-fileupload.version}"
         conf="compile,redist->default"/>
 
-
-    <dependency org="org.smartfrog"
-        name="sf-tasks"
-        rev="latest.integration"
-        changing="true"
-        conf="build->default"/>
-
-    <dependency org="org.smartfrog"
-        name="sf-xunit"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
 
   </dependencies>
 </ivy-module>

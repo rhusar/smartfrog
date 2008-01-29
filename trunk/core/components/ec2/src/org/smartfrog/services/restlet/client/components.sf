@@ -57,10 +57,12 @@ RemoteResource extends Prim {
   
 
   fetchErrorText true;
-  followRedirects true;
+  //turned off as PUT redirects aren't handled yet
+  followRedirects false;
   connectTimeout -1;
   //read timeout in milliseconds
   readTimeout 30000;
+  useSystemProxySettings true;
 
   mimeType [];
 

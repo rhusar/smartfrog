@@ -54,7 +54,7 @@ public interface RemoteRestletResource extends HttpAttributes {
     /**
      * SF constant {@value}
      */
-    String GET= "get";
+    String GET = "get";
 
     /**
      * SF attribute - {@value}
@@ -80,6 +80,11 @@ public interface RemoteRestletResource extends HttpAttributes {
     /**
      * SF constant {@value}
      */
-    String ATTR_READ_TIMEOUT ="readTimeout";
+    String ATTR_READ_TIMEOUT = "readTimeout";
+
+    /**
+     * SF constant {@value}
+     */
+    String ATTR_USE_SYSTEM_PROXY_SETTINGS = "useSystemProxySettings";
 
 }

@@ -22,7 +22,6 @@
 package org.smartfrog.services.restlet.datasources;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 

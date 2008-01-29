@@ -20,8 +20,8 @@
 
 package org.smartfrog.services.restlet.datasources;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.restlet.resource.Representation;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
