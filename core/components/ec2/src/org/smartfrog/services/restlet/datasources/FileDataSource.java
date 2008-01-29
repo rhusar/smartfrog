@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.restlet.datasources;
 
-import org.restlet.resource.Representation;
 import org.restlet.resource.FileRepresentation;
+import org.restlet.resource.Representation;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
