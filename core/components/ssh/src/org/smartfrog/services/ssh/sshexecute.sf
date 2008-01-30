@@ -81,7 +81,7 @@ For more information: www.smartfrog.org
   */
 SSHSessionPasswordFile extends BaseSshSessionAuthPass {
     passwordFile TBD;
-    passwordProvider:passwordFile LAZY passwordFile;
+    passwordProvider:passwordFile LAZY PARENT:passwordFile;
 }
 
 /**

@@ -253,9 +253,9 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                     } else {
                         log.info("Skipping scp operation: no files");
                     }
-                    TerminationRecord termR = new TerminationRecord("normal",
+                    TerminationRecord termR = TerminationRecord.normal(
                             "SSH Session to "+getConnectionDetails()+" finished: ", sfCompleteName());
-                    new ComponentHelper(ScpComponentImpl.this).targetForWorkflowTermination(termR);
+                    new ComponentHelper(ScpComponentImpl.this).sfSelfDetachAndOrTerminate(termR);
                 } catch (JSchException e) {
                     SmartFrogLifecycleException lifecycleException = translateStartupException(e);
                     if (getFailOnError()) {

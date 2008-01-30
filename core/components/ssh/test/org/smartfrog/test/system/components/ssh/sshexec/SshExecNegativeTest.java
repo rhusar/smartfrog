@@ -19,13 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.test.system.components.ssh.sshexec;
 
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  * JUnit test class for test cases related to "SSH" component
  */
 public class SshExecNegativeTest
-        extends SmartFrogTestBase {
+        extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/ssh/sshexec/";
 
@@ -72,4 +72,7 @@ public class SshExecNegativeTest
     }
 
 
+    public void test_vm_commands() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES,"test_vm_commands");
+    }
 }
