@@ -808,7 +808,7 @@ public class SFSystem implements MessageKeys {
                 //we don't want a system exit any more
                 rootProcess.systemExitOnTermination(false);
                 //terminate
-                rootProcess.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+                rootProcess.sfTerminate(TerminationRecord.normal(
                         message,
                         (rootProcess).sfCompleteName()));
             }

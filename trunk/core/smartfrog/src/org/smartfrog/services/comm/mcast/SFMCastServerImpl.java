@@ -93,9 +93,8 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
         TerminationRecord termR;
                 String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
                 if ((onlyInRoot)&& (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
-                    termR = new TerminationRecord(TerminationRecord.NORMAL,
-                                                  "Not deployed in rootProcess",
-                                                  this.sfCompleteName());
+                    termR = TerminationRecord.normal("Not deployed in rootProcess",
+                                                  sfCompleteName());
 
                     TerminatorThread terminator = new TerminatorThread(this,
                     termR);

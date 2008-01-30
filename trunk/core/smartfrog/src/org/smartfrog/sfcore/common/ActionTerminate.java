@@ -65,9 +65,7 @@ public class ActionTerminate extends ConfigurationAction{
                 isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
             }
             try {
-                targetC.sfTerminate(new TerminationRecord(TerminationRecord.
-                    NORMAL,
-                    "External Management Action",
+                targetC.sfTerminate(TerminationRecord.normal("External Management Action",
                     targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);

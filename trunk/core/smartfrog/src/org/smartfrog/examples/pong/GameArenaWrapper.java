@@ -122,8 +122,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
             // add a listener to catch the window closing event
             gameFrame.addWindowListener(new WindowAdapter() {
                     public void windowClosing(WindowEvent e) {
-                        GameArenaWrapper.this.sfTerminate(new TerminationRecord(
-                                "normal", "Window closed", null));
+                        GameArenaWrapper.this.sfTerminate(TerminationRecord.normal( "Window closed", null));
                     }
                 });
 

@@ -738,8 +738,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                         if (prs.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
                             //Terminating main daemon
                             try {
-                                TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
-                                        "sfDaemon display closed", null);
+                                TerminationRecord tr = TerminationRecord.normal("sfDaemon display closed", null);
                                 System.out.println("Terminating Daemon");
                                 new TerminatorThread((SFProcess.
                                         getRootLocator().
@@ -761,9 +760,9 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                             if (pr != null) {
                                 try {
                                     // Terminate SubProcess
-                                    TerminationRecord tr = new TerminationRecord
-                                            ("normal", "Display '" + prs + "' subprocess closed"
-                                                    , null);
+                                    TerminationRecord tr = TerminationRecord.normal(
+                                            "Display '" + prs + "' subprocess closed",
+                                                    null);
                                     new TerminatorThread(pr, tr).detach().start();
                                 } catch (Exception rex) {
                                     //ignore
@@ -771,9 +770,9 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                             } else {
                                 // Terminate sfDisplayCompound
                                 try {
-                                    TerminationRecord tr = new TerminationRecord
-                                            ("normal", "User termination", null);
-                                    this.sfObj.sfDetachAndTerminate(tr);
+                                    TerminationRecord tr = TerminationRecord.normal(
+                                            "User termination", null);
+                                    sfObj.sfDetachAndTerminate(tr);
                                 } catch (Exception ex) {
                                     sfLog().error(ex);
                                 }
@@ -790,7 +789,7 @@ public class Display extends JFrame implements ActionListener, KeyListener, Font
                 } else {
                     // Terminate sfDisplayCompound
                     try {
-                        TerminationRecord tr = new TerminationRecord("normal", "Display close by user", null);
+                        TerminationRecord tr = TerminationRecord.normal("Display closed by user", null);
                         this.sfObj.sfDetachAndTerminate(tr);
                     } catch (Exception ex) {
                         if (sfLog().isErrorEnabled()) sfLog().error(ex);

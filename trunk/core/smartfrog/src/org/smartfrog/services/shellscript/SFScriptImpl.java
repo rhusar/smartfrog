@@ -125,7 +125,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
          checkResult(startScript, cd);
      }
      if (this.autoTerminate){
-       TerminationRecord termR = new TerminationRecord(TerminationRecord.NORMAL, "Script '"+this.sfCompleteNameSafe() + "' done." , null);
+       TerminationRecord termR = TerminationRecord.normal("Script '"+this.sfCompleteNameSafe() + "' done." , null);
        TerminatorThread terminator = new TerminatorThread(this,termR);
        terminator.start();
      }

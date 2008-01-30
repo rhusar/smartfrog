@@ -366,7 +366,7 @@ public class SFProcess implements MessageKeys {
         if ((processCompound != null)&& processCompound.sfIsRoot()) {
             //Terminate process compound but without system exit
             processCompound.systemExitOnTermination(false);
-            TerminationRecord termR = new TerminationRecord("normal",
+            TerminationRecord termR = TerminationRecord.normal(
                    "Restarting ProcessCompound: "+
                     processCompound.sfCompleteName(), terminatorCompleteName);
                 processCompound.sfAddAttribute("sfSyncTerminate",Boolean.TRUE);

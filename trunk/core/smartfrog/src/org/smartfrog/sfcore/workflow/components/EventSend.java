@@ -69,7 +69,7 @@ public class EventSend extends EventPrimImpl implements Prim {
 
         Runnable terminator = new Runnable() {
             public void run() {
-                sfTerminate(new TerminationRecord("normal", null, null));
+                sfTerminate(TerminationRecord.normal(null, null));
             }
         };
 

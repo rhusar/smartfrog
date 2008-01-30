@@ -58,8 +58,7 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
             if (SFProcess.processCompound != null) {
                 try {
                     log.out("Terminating sfDaemon gracefully!!");
-                    SFProcess.processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
-                            "sfDaemon forced to terminate ",
+                    SFProcess.processCompound.sfTerminate(TerminationRecord.normal("sfDaemon forced to terminate ",
                             SFProcess.processCompound.sfCompleteName()));
                 } catch (RemoteException re) {
                     //log and ignore
