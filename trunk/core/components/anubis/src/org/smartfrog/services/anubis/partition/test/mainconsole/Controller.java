@@ -106,7 +106,7 @@ public class Controller
     }
 
     public synchronized void terminate() {
-        sfTerminate(new TerminationRecord("normal",
+        sfTerminate(TerminationRecord.normal(
                 "Termination from within Partition Manager test console",
                 componentReference) );
     }

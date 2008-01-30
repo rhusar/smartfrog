@@ -145,14 +145,14 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
 
             // check if it should terminate by itself
             if (shouldTerminate) {
-                TerminationRecord termR = new TerminationRecord("normal",
+                TerminationRecord termR = TerminationRecord.normal(
                     "FTP finished: ", sfCompleteName());
                 TerminatorThread terminator = new TerminatorThread(this, termR);
                 terminator.start();
             }
         } catch (FTPConnectionClosedException e) {
             throw new SmartFrogLifecycleException("Server Closed Connection" +
-                e);
+                e,e);
         } catch (IOException ioe) {
             throw new SmartFrogLifecycleException(ioe);
         } finally {

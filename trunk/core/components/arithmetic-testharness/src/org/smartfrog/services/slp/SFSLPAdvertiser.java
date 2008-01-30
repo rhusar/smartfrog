@@ -151,7 +151,7 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
         Thread killer  = new Thread(new Runnable() {
           public void run() {
             try {
-              sfDetachAndTerminate( new TerminationRecord("normal","Advertisement done",sfCompleteName()));
+              sfDetachAndTerminate(TerminationRecord.normal("Advertisement done",sfCompleteName()));
             } catch (Exception ex) {
               ex.printStackTrace();
             }
@@ -212,9 +212,8 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
       }
   } else {
       // terminate if no advertiser could be found
-      this.sfTerminate( new TerminationRecord(  "abnormal",
-                                                "Advertiser not implemented.",
-                                                this.sfCompleteName()) );
+      sfTerminate(TerminationRecord.abnormal("Advertiser not implemented.",
+                                                sfCompleteName()) );
     }
   }
   /**

@@ -355,7 +355,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     public static void stopBaseSFDaemon(InetAddress host) throws SmartFrogException {
         try {
-            TerminationRecord tr = new TerminationRecord("Process Terminated", null, null);
+            TerminationRecord tr = TerminationRecord.normal("Process Terminated", null);
             sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(host, 3800);
             TerminatorThread terminator = new TerminatorThread(sfDaemon, tr).detach().quietly();
             terminator.start();
