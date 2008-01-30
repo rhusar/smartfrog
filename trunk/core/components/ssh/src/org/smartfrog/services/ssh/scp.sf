@@ -96,7 +96,7 @@ ScpSessionFilePassword extends ScpSessionAuthPass {
     passwordFile TBD;
 
     passwordProvider extends FilePassword {
-      passwordFile PARENT:passwordFile;
+      passwordFile LAZY PARENT:passwordFile;
     }
 }
 
@@ -128,7 +128,7 @@ ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
     passwordFile TBD;
 
     passwordProvider extends FilePassword {
-      passwordFile PARENT:passwordFile;
+      passwordFile LAZY PARENT:passwordFile;
     }
 }
 
