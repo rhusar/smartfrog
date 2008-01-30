@@ -67,9 +67,7 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
                 isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
             }
             try {
-                targetC.sfDetachAndTerminate(new TerminationRecord(
-                    TerminationRecord.NORMAL,
-                    "External Management Action",
+                targetC.sfDetachAndTerminate(TerminationRecord.normal("External Management Action",
                     targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);

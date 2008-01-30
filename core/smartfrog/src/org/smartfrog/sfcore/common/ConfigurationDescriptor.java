@@ -1110,9 +1110,7 @@ public class ConfigurationDescriptor implements MessageKeys {
                (getActionType() == Action.DEPLOY) && !isResultTerminated){
             try {
              this.isResultTerminated=true;
-             ((Prim)resultObject).sfTerminate(new TerminationRecord(TerminationRecord.
-                    NORMAL,
-                    "Multiple deployment failed", null));
+             ((Prim)resultObject).sfTerminate(TerminationRecord.normal("Multiple deployment failed", null));
             } catch (RemoteException ex) {
               this.resultTerminationMessage = ex.toString();
             }
