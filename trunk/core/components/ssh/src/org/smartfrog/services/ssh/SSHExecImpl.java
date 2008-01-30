@@ -5,14 +5,16 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -27,9 +29,9 @@ import java.util.Vector;
 public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
 
     private FileOutputStream fout = null;
-    protected Vector commandsList;
+    protected Vector<String> commandsList;
     private SmartFrogThread waitThread = null;
-    protected String logFile = null;
+    protected File logFile = null;
 
     /**
      * Create an instance
@@ -75,7 +77,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             }
             // Execute commands
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             for (Object aCommandsList : commandsList) {
                 String cmd = aCommandsList.toString();
                 buffer.append(cmd);
@@ -105,15 +107,15 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 if (failOnError) {
                     throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE+getConnectionDetails());
                 } else {
-                    log.error(TIMEOUT_MESSAGE);
+                    log.error(TIMEOUT_MESSAGE + getConnectionDetails());
                 }
             } else {
                 int exitStat = channel.getExitStatus();
                 if (exitStat != 0) {
-                    String msg = "Remote commands: " +
+                    String msg = "Remote commands to "  + getConnectionDetails() +
                             " failed with exit status " + exitStat;
                     if (failOnError) {
-                        throw new SmartFrogException(msg);
+                        throw new SmartFrogLifecycleException(msg);
                     }
                 }
             }
@@ -124,7 +126,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             TerminationRecord termR = TerminationRecord.normal(
                     "SSH Session to "+getConnectionDetails()+" finished: ",
                     sfCompleteName());
-            new ComponentHelper(this).targetForWorkflowTermination(termR);
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(termR);
         } catch (SmartFrogException sfe) {
             throw sfe;
         } catch (JSchException e) {
@@ -159,10 +161,10 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
         // Mandatory attributes
-        commandsList = sfResolve(SSHExec.ATTR_COMMANDS, commandsList, true);
+        commandsList = ListUtils.resolveStringList(this,new Reference(ATTR_COMMANDS),true);
 
         //optional attributes
-        logFile = sfResolve(SSHExec.ATTR_LOG_FILE, logFile, false);
+        logFile = FileSystem.lookupAbsoluteFile(this,ATTR_LOG_FILE,logFile,null,false,null);
     }
 
 
