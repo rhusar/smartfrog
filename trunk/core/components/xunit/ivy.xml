@@ -56,7 +56,7 @@
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
 
     <!-- ant is pulled in to test the AntXML; if junitreport can handle it,
          then it must be OK -->
