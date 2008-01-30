@@ -87,7 +87,7 @@ public class ComponentWrapper implements Restful
 			try
 			{
 				Reference rootReference = result.getRootProcessCompound().sfCompleteName();
-				TerminationRecord tr = new TerminationRecord("HTTP/DELETE", "REST HTTP DELETE Requested", rootReference);
+				TerminationRecord tr = TerminationRecord.normal("REST HTTP DELETE Requested", rootReference);
 
 				((Prim) result.getSubject()).sfDetachAndTerminate(tr);
 

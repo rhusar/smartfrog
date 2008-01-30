@@ -192,7 +192,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             }
             // check if it should terminate by itself
             if (shouldTerminate) {
-                TerminationRecord termR = new TerminationRecord("normal",
+                TerminationRecord termR = TerminationRecord.normal(
                     "Telnet Session finished: ", sfCompleteName());
                 TerminatorThread terminator = new TerminatorThread(this, termR);
                 terminator.start();

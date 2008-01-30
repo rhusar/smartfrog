@@ -88,7 +88,7 @@ public class Test
     }
 
     public void terminate() {
-        sfTerminate(new TerminationRecord("normal",
+        sfTerminate(TerminationRecord.normal(
                 "Termination from within Anubis Locator test console",
                 componentReference) );
     }

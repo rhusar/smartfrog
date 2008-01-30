@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.NoSuchObjectException;
+import java.net.MalformedURLException;
 import javax.management.ObjectName;
 import javax.management.MBeanParameterInfo;
 import org.smartfrog.sfcore.prim.Prim;
@@ -279,11 +280,11 @@ public class Utilities {
                 return (new SimpleDateFormat()).parse(strValue);
             } catch (Exception e) {}
         } else if (type.equals("org.smartfrog.sfcore.prim.TerminationRecord")) {
-            return (new TerminationRecord("abnormal", strValue, null));
+            return (TerminationRecord.abnormal(strValue, null));
         } else if (type.equals("java.net.URL")) {
             try {
               return new java.net.URL(strValue);
-            } catch (Exception e) {}
+            } catch (MalformedURLException e) {}
         } else {
             try {
               Class clazz = Class.forName(type);

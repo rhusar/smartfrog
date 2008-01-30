@@ -82,11 +82,11 @@ public class PrimAdvertiser extends SFSLPAdvertiser implements Prim{
         sfContext().put("sfAdvertisementServiceURL",serviceURLPrefix+encodedRef);
         // resume normal advertisement :
         // construct the SLP serviceURL.
-        serviceURL = this.buildServiceURL();
+        serviceURL = buildServiceURL();
         // advertise it
         try {
           if (register) {
-            adv.register( serviceURL, this.buildAttributes());
+            adv.register( serviceURL, buildAttributes());
           } else {
             adv.deregister( serviceURL );
           }
@@ -97,9 +97,9 @@ public class PrimAdvertiser extends SFSLPAdvertiser implements Prim{
       }
     } else {
       // terminate if no advertiser could be found
-      this.sfTerminate( new TerminationRecord(  "abnormal",
+      sfTerminate(TerminationRecord.abnormal(
                                                 "Advertiser not implemented.",
-                                                this.sfCompleteName())        );
+                                                sfCompleteName())        );
     }
   }
 

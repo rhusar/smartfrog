@@ -132,7 +132,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
             sendConfiguredMessage();
         }
         if(runAsWorkFlowComponent  ) {
-            TerminationRecord termR = new TerminationRecord("normal",
+            TerminationRecord termR = TerminationRecord.normal(
                 "Emailer finished: ",sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this,termR);
             terminator.start();
