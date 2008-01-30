@@ -40,8 +40,6 @@ ExecSchema extends Schema {
     detach extends OptionalBoolean;
     terminate extends OptionalBoolean;
     restart extends OptionalBoolean;
-
-    passPositives extends OptionalBoolean;
 }
 
 Exec extends DATA {

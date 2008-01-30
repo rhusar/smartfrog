@@ -221,9 +221,7 @@ public class FilterImpl extends Thread {
             try {
               buffer.wait();
             } catch (InterruptedException e) {
-              if (sfLog.isErrorEnabled()){
-                sfLog.error("interrupted while waiting for more output", e);
-              }
+              if (sfLog.isErrorEnabled()){ sfLog.error("interrupted while waiting for more output", e);  }
             }
 //            finally {
 //              continue;
@@ -232,9 +230,7 @@ public class FilterImpl extends Thread {
         }
       }
     } catch (Throwable t) {
-      if (sfLog.isErrorEnabled()){
-        sfLog.error("failed to read input buffer", t);
-      }
+      if (sfLog.isErrorEnabled()){ sfLog.error("failed to read input buffer", t); }
     }
 
     stopBufferFiller();
@@ -246,38 +242,40 @@ public class FilterImpl extends Thread {
           //log.info("run"+ID + " -- stopping buffer filler");
           bufferFiller.stopRequest();
           bufferFiller.join();
-          if (sfLog.isDebugEnabled()) {
-              sfLog.debug("buffer filler stopped");
-          }
+          if (sfLog.isDebugEnabled()) { sfLog.debug("buffer filler stopped"); }
       } catch (Exception e) {
-          if (sfLog.isErrorEnabled()) {
-              sfLog.error("problems stoped buffer filler", e);
-          }
+          if (sfLog.isErrorEnabled()) { sfLog.error("problems stoped buffer filler", e); }
       }
   }
 
   // Compares line with filters[] set
   protected synchronized void filter(String line, String lineFilters[]) {
       if (listener == null) return;
+      boolean found =false;
       if (lineFilters!=null) {
           for (int i = 0; i<lineFilters.length; ++i) {
-              //sfLog.trace("Comparing: "+ line +", "+filters[i]);
-
+              if (sfLog.isTraceEnabled()) { sfLog.trace(" searching:'"+ line +"' for '"+ lineFilters[i]+"'"); }
               if (line.indexOf(lineFilters[i])==-1) {
                   //No match
-                  listener.line(line, getName());
                   continue;
               }
+              if (sfLog.isTraceEnabled()) { sfLog.trace(" found while searching:'"+ line +"' for '"+ lineFilters[i]+"'"); }
               positiveFilter(line, i, getName());
+              found =true;
           }
       }
+      if (!found) if (sfLog.isTraceEnabled()) { sfLog.trace(" Non Positive: send copy to listener.line "+ line +", "+getName()); }
+      if (!found) listener.line(line, getName());
   }
 
   protected synchronized void positiveFilter(String line, int filterIndex, String filterName) {
+      if (sfLog.isTraceEnabled()) { sfLog.trace ("Positive: "+ line +", "+filterIndex+", "+filterName); }
       if (listener == null) return;
       if ((passPositives)) {
+         if (sfLog.isDebugEnabled()) { sfLog.debug ("Positive: send copy to listener.line "+ line +", "+filterIndex+", "+filterName); }
          listener.line(line, getName());
       }
+      if (sfLog.isDebugEnabled()) { sfLog.debug("Positive: send copy to listener.found "+ line +", "+filterIndex+", "+filterName); }
       listener.found(line, filterIndex, getName());
   }
 }
