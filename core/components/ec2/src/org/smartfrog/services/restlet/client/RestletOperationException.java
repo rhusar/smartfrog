@@ -23,11 +23,16 @@ package org.smartfrog.services.restlet.client;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Form;
 import org.restlet.resource.Representation;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -36,6 +41,7 @@ public class RestletOperationException extends SmartFrogException {
 
     private int status;
     private String text;
+    private Map<String,String> headers;
 
     /**
      * Constructs a SmartFrogException with specified message.
@@ -140,6 +146,11 @@ public class RestletOperationException extends SmartFrogException {
         } catch (IOException e) {
             text=null;
         }
+        Form form=(Form)response.getAttributes().get("org.restlet.http.headers");
+        headers = new HashMap<String, String>(form.size());
+        for(String header: form.getNames()) {
+            headers.put(header,form.getFirstValue(header));
+        }
     }
 
     public int getStatus() {
@@ -148,5 +159,29 @@ public class RestletOperationException extends SmartFrogException {
 
     public String getText() {
         return text;
+    }
+
+    /**
+     * Gets a string representation of the exception.
+     *
+     * @param nm Message separator (ex. "\n");
+     * @return String this object to String.
+     */
+    public String toString(String nm) {
+        StringBuilder builder=new StringBuilder(super.toString(nm));
+        builder.append(nm);
+        builder.append("Headers:");
+        builder.append(nm);
+        if(headers!=null) {
+            for(String header:headers.keySet()) {
+                        builder.append(header);
+                        builder.append(":");
+                        builder.append(headers.get(header));
+                        builder.append(nm);
+                    }
+        }
+        builder.append(text);
+        builder.append(nm);
+        return builder.toString();
     }
 }
