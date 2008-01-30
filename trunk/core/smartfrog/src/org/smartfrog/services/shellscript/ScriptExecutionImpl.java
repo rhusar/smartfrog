@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.shellscript;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.Random;
 
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -227,6 +229,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
   private static String TYPE_DONE ="done";
   private static String TYPE_NEXT_CMD ="next_cmd";
+    
+  String randomEchoKey = Long.toString (new Date().getTime());
 
   /** String name for line return. */
   private static String LR = System.getProperty("line.separator"); //"" + ((char) 10);
@@ -241,6 +245,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private LogSF  sflog = LogFactory.sfGetProcessLog();
 
   public ScriptExecutionImpl(String name, Cmd cmd, Prim prim) throws RemoteException {
+      randomEchoKey = randomEchoKey + randomString(9999,10);
+      if (sflog.isDebugEnabled()) sflog.debug("Random Echo Key "+ randomEchoKey);
       // RunProcessImpl
       this.name = name;
       this.cmd = cmd;
@@ -253,7 +259,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       }
 
       if (cmd.getFilterOutListener()==null) {
-          String filters[] = {TYPE_DONE+" "+name, TYPE_NEXT_CMD+" "+name};
+          String filters[] = {TYPE_DONE+" "+randomEchoKey, TYPE_NEXT_CMD+" "+randomEchoKey};
           cmd.setFilterOutListener(this, filters);
       }
       if (cmd.getFilterErrListener()==null) {
@@ -269,6 +275,30 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     this(name, cmd,null);
   }
 
+  public static String randomString(int seed, int length) {
+     Random rn = new Random();
+     //Generate Random number
+     byte b[] = new byte[length];
+     int min = 'a';
+     int max = 'z';
+     int n = 0;
+     int x = 0;
+     for (int i = 0; i < length; i++) {
+        n = max - min + 1;
+        x = rn.nextInt() % n;
+        if (x < 0) {
+          x = -x;
+        }
+        b[i] = (byte) (min + x);
+     }
+
+      try {
+          return new String(b,"UTF-8");
+      } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          return "abcd";
+      }
+  }
 
   /**
    * Runs an echo command unless cmd.echoCommand is null.
@@ -278,7 +308,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
 
-    String echoMark = "ScriptExecEcho - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
+    String echoMark = "ScriptExecEcho - "+type+" "+randomEchoKey+ " ["+dateFormatter.format(new Date())+"]";
 
     if (cmd.getExitErrorCommand()!=null) {
         echoMark = echoMark + " Exit code#: "+cmd.getExitErrorCommand();
@@ -528,28 +558,32 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
   //Filter listener interface implementation
 
-    public void line(String line, String filterName) {
-        if (filterName.indexOf("out") != -1) {
-            results.stdOut.add(line);
-            if (results.verbose) { sfLog().out(line); }
-        } else {
-            results.stdErr.add(line);
-            if (results.verbose) {  sfLog().err(line); }
-        }
-        if (sfLog().isTraceEnabled()) {
-            sfLog().trace("LINE " + line + ", " + filterName + ", "
-                    + filterName.indexOf("out") + ", "
-                    + filterName.indexOf("err"));
-        }
+    public synchronized void line(String line, String filterName) {
+
+        if (sfLog().isDebugEnabled()) { sfLog().debug("(.line()) Non-POSITIVE in LINE " + line + ", " + filterName); }
+
+            if (filterName.indexOf("out") != -1) {
+                results.stdOut.add(line);
+                if (results.verbose) { sfLog().out(line); }
+            } else {
+                results.stdErr.add(line);
+                if (results.verbose) {  sfLog().err(line); }
+            }
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace("LINE " + line + ", " + filterName + ", "
+                        + filterName.indexOf("out") + ", "
+                        + filterName.indexOf("err"));
+            }
+
     }
 
     public synchronized void found(String line, int filterIndex, String filterName) {
-        if (sfLog().isTraceEnabled()) {
-            sfLog().trace("FOUND LINE " + line + ", " + filterIndex + ", " + filterName);
-        }
+        if (sfLog().isDebugEnabled()) { sfLog().debug("(.found()) POSITIVE in LINE " + line + ", " + filterIndex + ", " + filterName); }
+
+
         if (filterIndex == 0) {
             //Finished
-            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_DONE + " " + name) != -1) {
+            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_DONE + " " + randomEchoKey) != -1) {
                 return; // This is the echo command itself, ignore
             }
 
@@ -559,30 +593,21 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
             if (index != -1) {
                 try {
                     exitCode = new Integer(line.substring(index + 12).trim());
-                    if (sfLog().isDebugEnabled()) {
-                       sfLog().debug("FOUND exit code: " + exitCode );
-                    }
+                    if (sfLog().isDebugEnabled()) { sfLog().debug("FOUND exit code: " + exitCode ); }
                 } catch (NumberFormatException ex) {
-                    if (sfLog().isWarnEnabled()) {
-                        sfLog().warn(ex);
-                    }
+                    if (sfLog().isWarnEnabled()) { sfLog().warn(ex); }
                 }
             }
-//            //remove the ScriptExecEcho output from stdout...
-//            //New attribute passPositives controls this now directly on the filter.            
-//            int last = results.stdOut.lastIndexOf(line);
-//            results.stdOut.remove(last);
 
             createNewScriptResults(exitCode);
         } else if (filterIndex == 1) {
             //Next command will follow
-            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_NEXT_CMD + " " + name) != -1)
+            if (line.indexOf(cmd.getEchoCommand() + " " + "ScriptExecEcho - " + TYPE_NEXT_CMD + " " + randomEchoKey) != -1)
                 return; // This is the echo command itself, ignore
-
         } else {
-            if (sfLog().isWarnEnabled())
-                sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+            if (sfLog().isWarnEnabled()) sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
         }
+      
     }
 
     /**
@@ -593,6 +618,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     private synchronized ScriptResults createNewScriptResults(Integer exitCode) {
         ScriptResultsImpl finishedResults = results;
         results = new ScriptResultsImpl(sfLog());
+        if (sfLog().isDebugEnabled()) { sfLog().debug("Results ready - NotifyAll()"); }  
         finishedResults.ready(exitCode);
         return finishedResults;
     }
