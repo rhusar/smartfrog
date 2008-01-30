@@ -81,7 +81,7 @@ For more information: www.smartfrog.org
   */
 SSHSessionPasswordFile extends BaseSshSessionAuthPass {
     passwordFile TBD;
-    passwordProvider:passwordFile PARENT:ATTRIB passwordFile;
+    passwordProvider:passwordFile LAZY passwordFile;
 }
 
 /**
@@ -103,5 +103,5 @@ SSHSessionInlinePassword extends BaseSshSessionAuthPass {
 SSHSessionPublicKey extends BaseSshSessionAuthPass {
     keyFile TBD;
     SSHCmdExec:authentication SSHComponent:authenticate_key;
-    SSHCmdExec:keyFile keyFile;
+    SSHCmdExec:keyFile LAZY keyFile;
 }
