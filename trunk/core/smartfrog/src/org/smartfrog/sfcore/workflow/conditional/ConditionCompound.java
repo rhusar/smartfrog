@@ -23,8 +23,6 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
@@ -68,6 +66,8 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
     /**
      * Override point: where the condition is deployed at startup.
      * The default action is to call {@link #deployCondition()}
+     * @throws SmartFrogException in case of problems creating the child
+     * @throws RemoteException In case of network/rmi error
      */
     protected void deployConditionAtStartup() throws SmartFrogException, RemoteException{
         deployCondition();
@@ -106,9 +106,8 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * Evaluate the condition by delegating to the underlying condition.
      * throws an exception if there is no deployed condition.
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         if(condition==null) {
@@ -131,7 +130,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * recommends it.
      */
     protected synchronized void finish() {
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.normal(name));
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.normal(getName()));
     }
 
 
