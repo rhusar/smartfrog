@@ -116,6 +116,7 @@
         rev="${commons-httpclient.version}"
         conf="compile->master;test,runtime,redist->default">
         <exclude org="commons-logging"/>
+        <exclude org="junit"/>
     </dependency>
 
     <!--file upload-->
