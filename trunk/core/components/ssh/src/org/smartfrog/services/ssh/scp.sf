@@ -84,6 +84,7 @@ For more information: www.smartfrog.org
             transferType PARENT:ATTRIB transferType;
             localFiles PARENT:ATTRIB localFiles;
             remoteFiles PARENT:ATTRIB remoteFiles;
+            resultRange PARENT:ATTRIB:resultRange;
         }
     }
 

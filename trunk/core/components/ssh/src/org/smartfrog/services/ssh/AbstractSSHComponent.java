@@ -36,7 +36,9 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * This base class handles all SSH authentication issues for any component that needs SSH auth. <p/> Created 22-Oct-2007
+ * This base class handles all SSH authentication issues for any component that needs SSH auth.
+ *
+ *  <p/> Created 22-Oct-2007
  * 16:04:14
  */
 
@@ -55,7 +57,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     protected String host;
     protected int port = SSH_PORT;
 
-    protected boolean failOnError = true;
     protected boolean shouldTerminate = true;
     protected String userName;
 
@@ -119,7 +120,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         host = sfResolve(ATTR_HOST, host, true);
         shouldTerminate = sfResolve(ATTR_SHOULD_TERMINATE, shouldTerminate, false);
         port = sfResolve(ATTR_PORT, port, true);
-        failOnError = sfResolve(ATTR_FAIL_ON_ERROR, failOnError, true);
 
         //optional attributes
         timeout = sfResolve(ATTR_TIMEOUT, timeout, false);
@@ -127,9 +127,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     }
 
-    protected boolean getFailOnError() {
-        return failOnError;
-    }
 
     /**
      * Logs debug message
@@ -201,7 +198,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     /**
      * Provide a diagnostics string for use in error messages and the like
-     * @return
+     * @return the connection info
      */
     public String getConnectionDetails() {
         return host + ":" + port + " as " + userInfo;

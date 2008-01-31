@@ -31,8 +31,6 @@ SSHComponentSchema extends Schema {
     //host to connect to
     host extends String;
 
-    //should failures be reported
-    failOnError extends Boolean;
 
     //for key authentication, the file containing the private key
     keyFile extends  OptionalFilenameType;
@@ -57,12 +55,15 @@ SSHComponentSchema extends Schema {
 }
 
 
+/**
+ * The base component uses the password, though it can be overridden
+ */
 SSHComponent extends WorkflowPrim {
     sshSchema extends SSHComponentSchema ;
-    authentication authenticate_password;
-    failOnError true;
-    port 22;
     sfShouldTerminate true;
+    authentication authenticate_password;
+    port 22;
+    //timeout is in milliseconds
     timeout 60000;
     trustAllCertificates true;
     //authentication policies
@@ -70,13 +71,12 @@ SSHComponent extends WorkflowPrim {
     authenticate_key "key";
 }
 
-     /**
-      * define the default values for all SSH compounds
-      */
+ /**
+  * This is a normal Compound component,
+  * define the default values for all SSH compounds
+  */
 SshCompound extends Compound {
     port SSHComponent:port;
-    //timeout is in milliseconds
     timeout SSHComponent:timeout;
-    failOnError SSHComponent:failOnError;
     trustAllCertificates SSHComponent:trustAllCertificates;
 }
