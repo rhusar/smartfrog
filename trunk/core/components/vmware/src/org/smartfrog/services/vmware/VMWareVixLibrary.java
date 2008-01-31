@@ -1,17 +1,14 @@
 package org.smartfrog.services.vmware;
 
-import com.sun.jna.win32.StdCallLibrary;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Callback;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 
 /**
  * VMWare VIX API library wrapper. For remarks or more detailed information please see http://pubs.vmware.com/vix-api/ReferenceGuide/.
  */
-public interface VMWareVixLibrary extends StdCallLibrary {
+public interface VMWareVixLibrary extends Library {
     // load the library
-    public VMWareVixLibrary instance = (VMWareVixLibrary) Native.loadLibrary("vix", VMWareVixLibrary.class);
+    public VMWareVixLibrary instance = (VMWareVixLibrary) Native.loadLibrary("vmware-vix", VMWareVixLibrary.class);
 
     public static interface VixEventProc extends Callback {
         /**
@@ -32,7 +29,7 @@ public interface VMWareVixLibrary extends StdCallLibrary {
     // enums and constants
 
     /**
-     * The API version. Is set to 2 in the original header but that's wrong, the VIX API is still at version 1.
+     * The API version. Is set to 3 in the original header but that's wrong, the VIX API is still at version 1.
      */
     public static final int     VIX_API_VERSION = 1;
 
@@ -40,143 +37,428 @@ public interface VMWareVixLibrary extends StdCallLibrary {
         public static final int VIX_INVALID_HANDLE = 0;
     }
 
-    /*
-     * These are the types of handles.
+    /**
+     * These are the types of handles used as values for VixHandle variables. Handle types are returned by the Vix_GetHandleType() function. Handles are used to manage the entities they represent (such as virtual machines) and to retrieve properties representing information about the entities.
      */
     public static class VixHandleType {
+                                /**
+                                 * Indicates that no value has been assigned to this handle. Recommended for initializing handle variables.
+                                 */
         public static final int VIX_HANDLETYPE_NONE = 0,
+                                /**
+                                 * The handle represents a host. This handle type is created when you call VixHost_Connect().
+                                 */
                                 VIX_HANDLETYPE_HOST = 2,
+                                /**
+                                 * The handle represents a virtual machine. This handle type is created when you call VixVM_Open().
+                                 */
                                 VIX_HANDLETYPE_VM = 3,
                                 VIX_HANDLETYPE_NETWORK = 5,
+                                /**
+                                 * The handle represents an active job. Job handles are return values from asynchronous operations, including VixHost_Connect() and VixVM_Open().
+                                 */
                                 VIX_HANDLETYPE_JOB = 6,
+                                /**
+                                 * The handle represents a snapshot. This handle type is created when you call snapshot functions such as VixVM_GetCurrentSnapshot(). Use these handles to revert or remove snapshots.
+                                 */
                                 VIX_HANDLETYPE_SNAPSHOT = 7,
                                 VIX_HANDLETYPE_METADATA_CONTAINER = 11;
     }
 
-    /*
+    /**
      * The error codes are returned by all public VIX routines.
      */
     public static class VixError {
         public static final int VIX_OK = 0,
 
                                 // General errors
+                                /**
+                                 * Unknown error.
+                                 */
                                 VIX_E_FAIL = 1,
+                                /**
+                                 * Memory allocation failed: out of memory. 
+                                 */
                                 VIX_E_OUT_OF_MEMORY = 2,
+                                /**
+                                 * One of the parameters was invalid.
+                                 */
                                 VIX_E_INVALID_ARG = 3,
+                                /**
+                                 * A file was not found.
+                                 */
                                 VIX_E_FILE_NOT_FOUND = 4,
+                                /**
+                                 * This function cannot be performed because the handle is executing another function.
+                                 */
                                 VIX_E_OBJECT_IS_BUSY = 5,
+                                /**
+                                 * The operation is not supported for the specified parameters.
+                                 */
                                 VIX_E_NOT_SUPPORTED = 6,
+                                /**
+                                 * A file access error occurred on the host or guest operating system.
+                                 */
                                 VIX_E_FILE_ERROR = 7,
+                                /**
+                                 * An error occurred while writing a file; the disk is full. Data has not been saved. Free some space and try again.
+                                 */
                                 VIX_E_DISK_FULL = 8,
+                                /**
+                                 * An error occurred while accessing a file: wrong file type.
+                                 */
                                 VIX_E_INCORRECT_FILE_TYPE = 9,
+                                /**
+                                 * The operation was cancelled.
+                                 */
                                 VIX_E_CANCELLED = 10,
+                                /**
+                                 * The file is write-protected.
+                                 */
                                 VIX_E_FILE_READ_ONLY = 11,
+                                /**
+                                 * The file already exists.
+                                 */
                                 VIX_E_FILE_ALREADY_EXISTS = 12,
+                                /**
+                                 * You do not have access rights to this file.
+                                 */
                                 VIX_E_FILE_ACCESS_ERROR = 13,
+                                /**
+                                 * The file system does not support sufficiently large files.
+                                 */
                                 VIX_E_REQUIRES_LARGE_FILES = 14,
+                                /**
+                                 * The file is already in use.
+                                 */
                                 VIX_E_FILE_ALREADY_LOCKED = 15,
+                                /**
+                                 * The command is not supported on remote objects.
+                                 */
                                 VIX_E_NOT_SUPPORTED_ON_REMOTE_OBJECT = 20,
+                                /**
+                                 * The file is too big for the filesystem.
+                                 */
                                 VIX_E_FILE_TOO_BIG = 21,
+                                /**
+                                 * The file name is not valid.
+                                 */
                                 VIX_E_FILE_NAME_INVALID = 22,
+                                /**
+                                 * Already exists.
+                                 */
                                 VIX_E_ALREADY_EXISTS = 23,
 
                                 // Handle Errors
+                                /**
+                                 * The handle is not a valid VIX object.
+                                 */
                                 VIX_E_INVALID_HANDLE = 1000,
+                                /**
+                                 * The operation is not supported on this type of handle.
+                                 */
                                 VIX_E_NOT_SUPPORTED_ON_HANDLE_TYPE = 1001,
+                                /**
+                                 * Too many handles are open.
+                                 */
                                 VIX_E_TOO_MANY_HANDLES = 1002,
 
                                 // XML errors
+                                /**
+                                 * Invalid file - a required section of the file is missing.
+                                 */
                                 VIX_E_NOT_FOUND = 2000,
+                                /**
+                                 * Invalid file - an object has the wrong type.
+                                 */
                                 VIX_E_TYPE_MISMATCH = 2001,
+                                /**
+                                 * Invalid file - contents may be corrupt.
+                                 */
                                 VIX_E_INVALID_XML = 2002,
 
                                 // VM Control Errors
+                                /**
+                                 * Timeout error while waiting for the guest tools to start.
+                                 */
                                 VIX_E_TIMEOUT_WAITING_FOR_TOOLS = 3000,
+                                /**
+                                 * The command is not recognized by the virtual machine.
+                                 */
                                 VIX_E_UNRECOGNIZED_COMMAND = 3001,
+                                /**
+                                 * The requested operation is not supported on this guest operating system.
+                                 */
                                 VIX_E_OP_NOT_SUPPORTED_ON_GUEST = 3003,
+                                /**
+                                 * A program could not run on the guest operating system.
+                                 */
                                 VIX_E_PROGRAM_NOT_STARTED = 3004,
+                                /**
+                                 * Cannot power on a read-only virtual machine.
+                                 */
                                 VIX_E_CANNOT_START_READ_ONLY_VM = 3005,
+                                /**
+                                 * The virtual machine needs to be powered on.
+                                 */
                                 VIX_E_VM_NOT_RUNNING = 3006,
+                                /**
+                                 * The virtual machine should not be powered on. It appears to be running already.
+                                 */
                                 VIX_E_VM_IS_RUNNING = 3007,
+                                /**
+                                 * Cannot connect to the virtual machine.
+                                 */
                                 VIX_E_CANNOT_CONNECT_TO_VM = 3008,
+                                /**
+                                 * Cannot execute scripts.
+                                 */
                                 VIX_E_POWEROP_SCRIPTS_NOT_AVAILABLE = 3009,
+                                /**
+                                 * No operating system installed in the virtual machine.
+                                 */
                                 VIX_E_NO_GUEST_OS_INSTALLED = 3010,
+                                /**
+                                 * Not enough physical memory is available to power on this virtual machine.
+                                 */
                                 VIX_E_VM_INSUFFICIENT_HOST_MEMORY = 3011,
+                                /**
+                                 * An error occurred while suspending the virtual machine.
+                                 */
                                 VIX_E_SUSPEND_ERROR = 3012,
+                                /**
+                                 * This virtual machine is configured to run with 2 CPUs, but the host only has 1 CPU. The virtual machine cannot be powered on.
+                                 */
                                 VIX_E_VM_NOT_ENOUGH_CPUS = 3013,
+                                /**
+                                 * Insufficient permissions in host operating system.
+                                 */
                                 VIX_E_HOST_USER_PERMISSIONS = 3014,
+                                /**
+                                 * Authentication failure or insufficient permissions in guest operating system.
+                                 */
                                 VIX_E_GUEST_USER_PERMISSIONS = 3015,
+                                /**
+                                 * Guest tools is not running.
+                                 */
                                 VIX_E_TOOLS_NOT_RUNNING = 3016,
+                                /**
+                                 * Guest operations are not allowed on this virtual machine.
+                                 */
                                 VIX_E_GUEST_OPERATIONS_PROHIBITED = 3017,
+                                /**
+                                 * Guest operations are not allowed for the anonymous user on this virtual machine.
+                                 */
                                 VIX_E_ANON_GUEST_OPERATIONS_PROHIBITED = 3018,
+                                /**
+                                 * Guest operations are not allowed for administrative user on this virtual machine.
+                                 */
                                 VIX_E_ROOT_GUEST_OPERATIONS_PROHIBITED = 3019,
+                                /**
+                                 * The virtual machine configuration must specify guest account name to be used for anonymous guest operations.
+                                 */
                                 VIX_E_MISSING_ANON_GUEST_ACCOUNT = 3023,
+                                /**
+                                 * The virtual machine cannot authenticate users with guest.
+                                 */
                                 VIX_E_CANNOT_AUTHENTICATE_WITH_GUEST = 3024,
+                                /**
+                                 * The command is not recognized by the Guest OS tools.
+                                 */
                                 VIX_E_UNRECOGNIZED_COMMAND_IN_GUEST = 3025,
+                                /**
+                                 * Guest operations are not allowed for console user on this virtual machine.
+                                 */
                                 VIX_E_CONSOLE_GUEST_OPERATIONS_PROHIBITED = 3026,
+                                /**
+                                 * The command can only be run by console user.
+                                 */
                                 VIX_E_MUST_BE_CONSOLE_USER = 3027,
 
                                 // VM Errors
+                                /**
+                                 * The virtual machine cannot be found.
+                                 */
                                 VIX_E_VM_NOT_FOUND = 4000,
+                                /**
+                                 * The operation is not supported for this virtual machine version.
+                                 */
                                 VIX_E_NOT_SUPPORTED_FOR_VM_VERSION = 4001,
+                                /**
+                                 * Cannot read the virtual machine configuration file.
+                                 */
                                 VIX_E_CANNOT_READ_VM_CONFIG = 4002,
+                                /**
+                                 * Cannot perform this operation on a template virtual machine.
+                                 */
                                 VIX_E_TEMPLATE_VM = 4003,
+                                /**
+                                 * The virtual machine has already been loaded.
+                                 */
                                 VIX_E_VM_ALREADY_LOADED = 4004,
+                                /**
+                                 * The virtual machine is already up-to-date.
+                                 */
                                 VIX_E_VM_ALREADY_UP_TO_DATE = 4006,
 
                                 // Property Errors
+                                /**
+                                 * Unrecognized handle property identifier.
+                                 */
                                 VIX_E_UNRECOGNIZED_PROPERTY = 6000,
+                                /**
+                                 * Invalid property value.
+                                 */
                                 VIX_E_INVALID_PROPERTY_VALUE = 6001,
+                                /**
+                                 * Cannot change a read-only property.
+                                 */
                                 VIX_E_READ_ONLY_PROPERTY = 6002,
+                                /**
+                                 * This handle is missing a required property.
+                                 */
                                 VIX_E_MISSING_REQUIRED_PROPERTY = 6003,
 
                                 // Completion Errors
+                                /**
+                                 * The index parameter does not correspond to a result set.
+                                 */
                                 VIX_E_BAD_VM_INDEX = 8000,
 
                                 // Snapshot errors
+                                /**
+                                 * The snapshot is incompatable with the current host.
+                                 */
                                 VIX_E_SNAPSHOT_INVAL = 13000,
+                                /**
+                                 * Unable to open snapshot file.
+                                 */
                                 VIX_E_SNAPSHOT_DUMPER = 13001,
+                                /**
+                                 * Disk problem.
+                                 */
                                 VIX_E_SNAPSHOT_DISKLIB = 13002,
+                                /**
+                                 * A file by that name does not exist.
+                                 */
                                 VIX_E_SNAPSHOT_NOTFOUND = 13003,
+                                /**
+                                 * A file by that name already exists.
+                                 */
                                 VIX_E_SNAPSHOT_EXISTS = 13004,
+                                /**
+                                 * Snapshots are not allowed on this virtual machine.
+                                 */
                                 VIX_E_SNAPSHOT_VERSION = 13005,
+                                /**
+                                 * Insufficient permissions.
+                                 */
                                 VIX_E_SNAPSHOT_NOPERM = 13006,
+                                /**
+                                 * Something is wrong with the configuration file.
+                                 */
                                 VIX_E_SNAPSHOT_CONFIG = 13007,
+                                /**
+                                 * The state of the virtual machine has not changed since the last snapshot operation.
+                                 */
                                 VIX_E_SNAPSHOT_NOCHANGE = 13008,
+                                /**
+                                 * Unable to save snapshot file.
+                                 */
                                 VIX_E_SNAPSHOT_CHECKPOINT = 13009,
+                                /**
+                                 * A snapshot operation is already in progress.
+                                 */
                                 VIX_E_SNAPSHOT_LOCKED = 13010,
+                                /**
+                                 * The snapshot files are in an inconsistent state.
+                                 */
                                 VIX_E_SNAPSHOT_INCONSISTENT = 13011,
+                                /**
+                                 * The filename is too long.
+                                 */
                                 VIX_E_SNAPSHOT_NAMETOOLONG = 13012,
+                                /**
+                                 * Cannot snapshot all metadata files.
+                                 */
                                 VIX_E_SNAPSHOT_VIXFILE = 13013,
+                                /**
+                                 * One or more of the disks are busy.
+                                 */
                                 VIX_E_SNAPSHOT_DISKLOCKED = 13014,
+                                /**
+                                 * The virtual disk is used multiple times.
+                                 */
                                 VIX_E_SNAPSHOT_DUPLICATEDDISK = 13015,
+                                /**
+                                 * Powered on snapshot are not allowed on virtual machines with indpendent disks.
+                                 */
                                 VIX_E_SNAPSHOT_INDEPENDENTDISK = 13016,
+                                /**
+                                 * The name does not uniquely identify one snapshot.
+                                 */
                                 VIX_E_SNAPSHOT_NONUNIQUE_NAME = 13017,
 
                                 // Guest Errors
+                                /**
+                                 * The object is not a file.
+                                 */
                                 VIX_E_NOT_A_FILE = 20001,
+                                /**
+                                 * The object is not a directory.
+                                 */
                                 VIX_E_NOT_A_DIRECTORY = 20002,
+                                /**
+                                 * No such process.
+                                 */
                                 VIX_E_NO_SUCH_PROCESS = 20003,
+                                /**
+                                 * File name too long.
+                                 */
                                 VIX_E_FILE_NAME_TOO_LONG = 20004;
     }
 
-    /*
-     * VIX Property Type
+    /**
+     * These are the possible types for Vix properties. Property types are returned by the Vix_GetPropertyType() function.
      */
     public static class VixPropertyType {
+                                /**
+                                 * Indicates that no property type has been assigned to this variable. Recommended for initializing property type variables.
+                                 */
         public static final int VIX_PROPERTYTYPE_ANY = 0,
+                                /**
+                                 * The property type is 'int'.
+                                 */
                                 VIX_PROPERTYTYPE_INTEGER = 1,
+                                /**
+                                 * The property type is 'char *'.
+                                 */
                                 VIX_PROPERTYTYPE_STRING = 2,
+                                /**
+                                 * The property type is Boolean.
+                                 */
                                 VIX_PROPERTYTYPE_BOOL = 3,
+                                /**
+                                 * The property type is VixHandle.
+                                 */
                                 VIX_PROPERTYTYPE_HANDLE = 4,
+                                /**
+                                 * The property type is 'int64'.
+                                 */
                                 VIX_PROPERTYTYPE_INT64 = 5,
+                                /**
+                                 * The property type is 'char *". When returned as a job property, the blob is returned as two values: first an 'int' containing the blob size in bytes, then a pointer to the blob.
+                                 */
                                 VIX_PROPERTYTYPE_BLOB = 6;
     }
 
-    /*
-     * VIX Property ID's
+    /**
+     * These are the possible IDs for Vix properties. To retrieve a property from a handle, pass the ID for the property you want.
      */
     public static class VixPropertyID {
+                                /**
+                                 * Indicates that no value has been assigned to this property variable. Recommended for initializing property variables.
+                                 */
         public static final int VIX_PROPERTY_NONE = 0,
 
                                 // Properties used by several handle types.
@@ -187,28 +469,73 @@ public interface VMWareVixLibrary extends StdCallLibrary {
                                 VIX_PROPERTY_HOST_API_VERSION = 51,
 
                                 // VIX_HANDLETYPE_VM properties
+                                /**
+                                 * The number of virtual CPUs configured for the virtual machine.
+                                 */
                                 VIX_PROPERTY_VM_NUM_VCPUS = 101,
+                                /**
+                                 * The path to the virtual machine configuration file.
+                                 */
                                 VIX_PROPERTY_VM_VMX_PATHNAME = 103,
+                                /**
+                                 * The path to the virtual machine team.
+                                 */
                                 VIX_PROPERTY_VM_VMTEAM_PATHNAME = 105,
+                                /**
+                                 * The memory size of the virtual machine.
+                                 */
                                 VIX_PROPERTY_VM_MEMORY_SIZE = 106,
                                 VIX_PROPERTY_VM_READ_ONLY = 107,
+                                /**
+                                 * Whether the virtual machine is a member of a team.
+                                 */
                                 VIX_PROPERTY_VM_IN_VMTEAM = 128,
+                                /**
+                                 * The power state of the virtual machine, such as VIX_POWERSTATE_POWERED_ON.
+                                 */
                                 VIX_PROPERTY_VM_POWER_STATE = 129,
+                                /**
+                                 * The state of the VMware Tools suite in the guest.
+                                 */
                                 VIX_PROPERTY_VM_TOOLS_STATE = 152,
+                                /**
+                                 * Whether the virtual machine is running.
+                                 */
                                 VIX_PROPERTY_VM_IS_RUNNING = 196,
                                 VIX_PROPERTY_VM_SUPPORTED_FEATURES = 197,
 
                                 // Result properties; these are returned by various procedures
+                                /**
+                                 * The most recent error encountered by the job.
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_ERROR_CODE = 3000,
                                 VIX_PROPERTY_JOB_RESULT_VM_IN_GROUP = 3001,
+                                /**
+                                 * A user message blocking the virtual machine.
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_USER_MESSAGE = 3002,
                                 VIX_PROPERTY_JOB_RESULT_EXIT_CODE = 3004,
                                 VIX_PROPERTY_JOB_RESULT_COMMAND_OUTPUT = 3005,
+                                /**
+                                 * A handle resulting from an asynchronous operation.
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_HANDLE = 3010,
                                 VIX_PROPERTY_JOB_RESULT_GUEST_OBJECT_EXISTS = 3011,
+                                /**
+                                 * The time it took to execute a program with VixVM_RunProgramInGuest().
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_GUEST_PROGRAM_ELAPSED_TIME = 3017,
+                                /**
+                                 * The exit code resulting from VixVM_RunProgramInGuest().
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_GUEST_PROGRAM_EXIT_CODE = 3018,
+                                /**
+                                 * For VixJob_GetNthProperties(), the name of an item found.
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_ITEM_NAME = 3035,
+                                /**
+                                 * For VixJob_GetNthProperties(), the description of an item found.
+                                 */
                                 VIX_PROPERTY_JOB_RESULT_FOUND_ITEM_DESCRIPTION = 3036,
                                 VIX_PROPERTY_JOB_RESULT_SHARED_FOLDER_COUNT = 3046,
                                 VIX_PROPERTY_JOB_RESULT_SHARED_FOLDER_HOST = 3048,
@@ -278,24 +605,63 @@ public interface VMWareVixLibrary extends StdCallLibrary {
         public static final int VIX_VMDELETE_DISK_FILES = 0x0002;
     }
 
-    /*
-     * This is the state of an individual VM.
+    /**
+     * These are the possible values reported for VIX_PROPERTY_VM_POWER_STATE. They represent runtime information about the state of the virtual machine. To test the value of the property, use the Vix_GetProperties() function.
      */
     public static class VixPowerState {
+                                /**
+                                 * Indicates that VixVM_PowerOff() has been called, but the operation itself has not completed.
+                                 */
         public static final int VIX_POWERSTATE_POWERING_OFF = 0x0001,
+                                /**
+                                 * Indicates that the virtual machine is not running.
+                                 */
                                 VIX_POWERSTATE_POWERED_OFF = 0x0002,
+                                /**
+                                 * Indicates that VixVM_PowerOn() has been called, but the operation itself has not completed.
+                                 */
                                 VIX_POWERSTATE_POWERING_ON = 0x0004,
+                                /**
+                                 * Indicates that the virtual machine is running.
+                                 */
                                 VIX_POWERSTATE_POWERED_ON = 0x0008,
+                                /**
+                                 * Indicates that VixVM_Suspend() has been called, but the operation itself has not completed.
+                                 */
                                 VIX_POWERSTATE_SUSPENDING = 0x0010,
+                                /**
+                                 * Indicates that the virtual machine is suspended. Use VixVM_PowerOn() to resume the virtual machine.
+                                 */
                                 VIX_POWERSTATE_SUSPENDED = 0x0020,
+                                /**
+                                 * Indicates that the virtual machine is running and the VMware Tools suite is active. See also the VixToolsState property.
+                                 */
                                 VIX_POWERSTATE_TOOLS_RUNNING = 0x0040,
+                                /**
+                                 * Indicates that VixVM_Reset() has been called, but the operation itself has not completed.
+                                 */
                                 VIX_POWERSTATE_RESETTING = 0x0080,
+                                /**
+                                 * Indicates that a virtual machine state change is blocked, waiting for user interaction.
+                                 */
                                 VIX_POWERSTATE_BLOCKED_ON_MSG = 0x0100;
     }
 
+    /**
+     * These are the possible values reported for VIX_PROPERTY_VM_TOOLS_STATE. They represent runtime information about the VMware Tools suite in the guest operating system. To test the value of the property, use the Vix_GetProperties() function.
+     */
     public static class VixToolsState {
+                                /**
+                                 * Indicates that Vix is unable to determine the VMware Tools status.
+                                 */
         public static final int VIX_TOOLSSTATE_UNKNOWN = 0x0001,
+                                /**
+                                 * Indicates that VMware Tools is running in the guest operating system.
+                                 */
                                 VIX_TOOLSSTATE_RUNNING = 0x0002,
+                                /**
+                                 * Indicates that VMware Tools is not installed in the guest operating system.
+                                 */
                                 VIX_TOOLSSTATE_NOT_INSTALLED = 0x0004;
     }
 
