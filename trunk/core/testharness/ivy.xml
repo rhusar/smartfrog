@@ -52,7 +52,7 @@
         conf="build->default"/>    
     <dependency org="junit"
         name="junit"
-        rev="${junit.version}"
+        rev="${junit3.version}"
         conf="compile,redist->default"/>
 
     <!--log4j is not forced into the redists, nor the compile-->
