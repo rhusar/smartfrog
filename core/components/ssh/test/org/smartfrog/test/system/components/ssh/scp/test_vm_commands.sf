@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,11 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/test/system/components/ssh/sshexec/components.sf"
+#include "/org/smartfrog/test/system/components/ssh/scp/components.sf"
 
 /**
  *
  */
 
- sfConfig extends testSshLogin;
+ sfConfig extends test_vm_commands;
 

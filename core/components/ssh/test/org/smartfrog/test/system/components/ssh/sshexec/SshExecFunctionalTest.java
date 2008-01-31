@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -34,8 +34,14 @@ public class SshExecFunctionalTest extends DeployingTestBase {
         super(name);
     }
 
-
     public void testSshLogin() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES,"testSshLogin");
+        expectSuccessfulTestRunOrSkip(FILES, "testSshLogin");
+    }
+
+    public void testLoginBadPassword() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testLoginBadPassword");
+    }
+    public void testLoginBadUser() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES,"testLoginBadUser");
     }
 }

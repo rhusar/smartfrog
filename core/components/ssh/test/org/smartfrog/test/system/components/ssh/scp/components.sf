@@ -213,7 +213,7 @@ test_public_key_timeout extends ExpectDeployFailure {
 }
 
 
-  vmcommands extends ScpSessionPublicKeyFilePassword{
+  vmcommands extends ScpSessionPublicKeyFilePassword {
     host "vm-D0.sup.hpl.hp.com";
     username "root";
     keyfile "/home/rebeca/scratch/test/key";
