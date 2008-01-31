@@ -133,10 +133,13 @@ TestCompound extends ActionCompound {
   //dont expect termination
   expectTerminate false;
 
-  exitType "normal";
+  exitType EXIT_TYPE_NORMAL;
   exitText "";
   exceptions [];
   forcePing false;
+
+  EXIT_TYPE_NORMAL "normal";
+  EXIT_TYPE_ABNORMAL "abnormal";
 }
 
 /**
@@ -182,7 +185,6 @@ DeploySequence extends TestCompound {
 ExpectTerminate extends TestCompound {
   description "Expect the deployed action to terminate itself normally, as a successful workflow";
   expectTerminate true;
-  exitType "normal";
 }
 
 /**
@@ -192,7 +194,7 @@ FailingTestCompound extends ExpectTerminate {
 
   description "The deployment is expected to fail";
 
-  exitType "abnormal";
+  exitType EXIT_TYPE_ABNORMAL;
 }
 
 
