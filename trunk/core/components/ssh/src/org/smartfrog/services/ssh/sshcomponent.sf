@@ -46,6 +46,7 @@ SSHComponentSchema extends Schema {
 
     //timeout in milliseconds. 0 means forever
     timeout extends Integer;
+    connectTimeout extends Integer;
 
     //should all certificates be trusted
     trustAllCertificates extends Boolean;
@@ -65,6 +66,7 @@ SSHComponent extends WorkflowPrim {
     port 22;
     //timeout is in milliseconds
     timeout 60000;
+    connectTimeout timeout;
     trustAllCertificates true;
     //authentication policies
     authenticate_password "password";
