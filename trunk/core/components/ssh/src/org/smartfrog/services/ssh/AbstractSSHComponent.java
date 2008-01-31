@@ -51,19 +51,26 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     protected UserInfoImpl userInfo;
     private static final Reference pwdProviderRef = new Reference(SSHComponent.ATTR_PASSWORD_PROVIDER);
     protected boolean trustAllCerts = true;
-    protected static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
     private static final int SSH_PORT = 22;
     protected int timeout = 0;
+    protected int connectTimeout = 0;
     protected String host;
     protected int port = SSH_PORT;
-
-    protected boolean shouldTerminate = true;
     protected String userName;
 
     protected Vector knownHosts;
-    private volatile Session session = null;
-    protected static final String SESSION_IS_DOWN = "session is down";
 
+    private volatile Session session = null;
+
+    protected static final String TIMEOUT_MESSAGE = "Connection timed out connecting to ";
+    protected static final String SESSION_IS_DOWN = "session is down";
+    private static final String AUTH_FAIL = "Auth fail";
+    private static final String AUTH_CANCEL = "Auth cancel";
+
+    /**
+     * Only subclasses can instantiate this
+     * @throws RemoteException if the superclass constructor raises it
+     */
     protected AbstractSSHComponent() throws RemoteException {
     }
 
@@ -95,7 +102,8 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         } else if (AUTHENTICATION_PASSWORD.equals(policy)) {
             usePublicKey = false;
         } else {
-            throw new SmartFrogResolutionException("Unsupported value for attribute " + ATTR_AUTHENTICATION + ": " + policy);
+            throw new SmartFrogResolutionException("Unsupported value for attribute "
+                    + ATTR_AUTHENTICATION + ": " + policy);
         }
 
         // Mandatory attributes
@@ -118,11 +126,10 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         userInfo.setName(userName);
         
         host = sfResolve(ATTR_HOST, host, true);
-        shouldTerminate = sfResolve(ATTR_SHOULD_TERMINATE, shouldTerminate, false);
         port = sfResolve(ATTR_PORT, port, true);
 
-        //optional attributes
-        timeout = sfResolve(ATTR_TIMEOUT, timeout, false);
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
+        connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, connectTimeout, true);
         knownHosts = sfResolve(ATTR_KNOWN_HOSTS,knownHosts,false);
 
     }
@@ -140,15 +147,6 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     }
 
     /**
-     * Logs ignored exception
-     *
-     * @param e debug message
-     */
-    private void ignore(Exception e) {
-        log.ignore("Ignoring Exception", e);
-    }
-
-    /**
      * Create a JSch connection using the current security policies.
      *
      * @return a jsch instance which will have any keyfile settings applied
@@ -159,6 +157,8 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         if (usePublicKey) {
             jsch.addIdentity(keyFile);
         }
+        //set the logger up to our logging.
+        JSch.setLogger(new JschLogger(log));
         return jsch;
     }
 
@@ -172,10 +172,10 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      */
     protected Session openSession() throws JSchException {
         JSch jsch = createJschInstance();
-        Session session = createSession(jsch);
-        session.setTimeout(timeout);
-        session.connect();
-        return session;
+        Session newSession = createSession(jsch);
+        newSession.setTimeout(timeout);
+        newSession.connect(connectTimeout);
+        return newSession;
     }
 
     /**
@@ -186,14 +186,14 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      * @throws JSchException if things go wrong
      */
     protected Session createSession(JSch jsch) throws JSchException {
-        Session session;
-        session = jsch.getSession(userInfo.getName(), host, port);
-        session.setUserInfo(userInfo);
+        Session newSession;
+        newSession = jsch.getSession(userInfo.getName(), host, port);
+        newSession.setUserInfo(userInfo);
         if(!usePublicKey) {
-           session.setPassword(userInfo.getPassword());
+           newSession.setPassword(userInfo.getPassword());
         }
         log.info("Connecting to " + getConnectionDetails());
-        return session;
+        return newSession;
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      * @return the connection info
      */
     public String getConnectionDetails() {
-        return host + ":" + port + " as " + userInfo;
+        return host + ':' + port + " as " + userInfo;
     }
 
     /**
@@ -237,17 +237,47 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     }
 
     /**
-     * Translate
+     * Translate an exception into a SmartFrogLifecycle one.
+     * IF the exception is a JSchException, it is left to
+     * {@link #translateStartupException(JSchException)} to handle
+     * @param thrown incoming exception
+     * @return a lifecycle exception
+     */
+    protected SmartFrogLifecycleException forward(Throwable thrown) {
+        if(thrown instanceof JSchException) {
+            return translateStartupException((JSchException) thrown);
+        } else {
+            return (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
+        }
+    }
+
+
+    /**
+     * Translate a jsch exception into a SmartFrog one, including better diagnostics.
+     * This is brittle as it searches for specific error text in the exception.
      * @param ex incoming exception
      * @return a new lifecycle exception that includes connection details
      */
-    public SmartFrogLifecycleException translateStartupException(JSchException ex) {
-        log.error("When connecting to " + getConnectionDetails(), ex);
-        if (ex.getMessage().indexOf(SESSION_IS_DOWN) >= 0) {
-            String message = TIMEOUT_MESSAGE + getConnectionDetails();
-            return new SmartFrogLifecycleException(message, ex);
+    protected SmartFrogLifecycleException translateStartupException(JSchException ex) {
+        String message;
+        String faulttext = ex.getMessage();
+        if (faulttext.contains(SESSION_IS_DOWN)) {
+            message = TIMEOUT_MESSAGE + getConnectionDetails();
+        } else if (faulttext.contains(AUTH_FAIL) || faulttext.contains(AUTH_CANCEL)) {
+            message = "Unable to authenticate with the far end" + getConnectionDetails()
+                    + "\nThis can be caused by: "
+                    + "\n -Unknown username "+userName
+                    + "\n -wrong password"
+                    + (usePublicKey?
+                      "\n -key-based authentication failure":
+                      "\n -server not supporting password authentication")
+                    + (trustAllCerts?
+                      "\n -server not trusted":
+                      "")
+                    + "\n -server not supporting login by that user";
         } else {
-            return new SmartFrogLifecycleException(getConnectionDetails()+" -"+ex.getMessage(),ex);
+            message=getConnectionDetails()+" -"+ faulttext;
         }
+        return new SmartFrogLifecycleException(message, ex);
     }
 }

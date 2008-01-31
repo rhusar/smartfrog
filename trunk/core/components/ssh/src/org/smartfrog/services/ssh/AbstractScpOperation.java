@@ -37,6 +37,9 @@ public abstract class AbstractScpOperation {
     protected final int BUFFER_SIZE = 1024;
     protected LogSF log;
 
+    /**
+     * This flag is set to halt a child thread at work
+     */
     protected volatile boolean haltOperation=false;
 
     /**

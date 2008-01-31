@@ -63,6 +63,11 @@ public interface SSHComponent extends Remote {
      */
     String ATTR_TIMEOUT = "timeout";
     /**
+     * Waits at most millis milliseconds for this operation to finish. A timeout
+     * of 0 means to wait forever. {@value}
+     */
+    String ATTR_CONNECT_TIMEOUT = "connectTimeout";
+    /**
      * {@value}
      */
     String ATTR_TRUST_ALL_CERTIFICATES = "trustAllCertificates";
@@ -85,11 +90,6 @@ public interface SSHComponent extends Remote {
      */
     String AUTHENTICATION_PUBLICKEY = "key";
 
-    /**
-     * {@value}
-     */
-
-    String ATTR_SHOULD_TERMINATE = ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE;
     /**
      * {@value}
      */

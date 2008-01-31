@@ -28,10 +28,14 @@ public interface SSHExec extends SSHComponent {
     /**
      * {@value}
      */
-    public static String ATTR_COMMANDS = "commands";
+    String ATTR_COMMANDS = "commands";
     /**
      * {@value}
      */
-    String ATTR_RESULT_RANGE = "resultRange";
+    String ATTR_EXIT_CODE_MIN = "exitCodeMin";
+    /**
+     * {@value}
+     */
+    String ATTR_EXIT_CODE_MAX = "exitCodeMax";
 }
 

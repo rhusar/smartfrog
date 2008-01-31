@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,8 @@
  For more information: www.smartfrog.org
 
  */
+
+
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.JSchException;
@@ -45,7 +47,6 @@ import java.util.Vector;
  */
 public class ScpComponentImpl extends AbstractSSHComponent implements ScpComponent {
 
-    private static final boolean DIRECTORIES_SUPPORTED=false;
     private static final String GET = "get";
     private static final String PUT = "put";
     /**
@@ -114,7 +115,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             if (getFiles) {
                 //verify that the remote file list is not empty
                 for (File file : localFiles) {
-                    if (!DIRECTORIES_SUPPORTED && file.exists() && file.isDirectory()) {
+                    if (file.exists() && file.isDirectory()) {
                         throw new SmartFrogLifecycleException(ERROR_OUTPUT_IS_A_DIRECTORY + file);
                     }
                 }
@@ -123,7 +124,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                     if (!file.exists()) {
                         throw new SmartFrogLifecycleException(ERROR_MISSING_FILE_TO_UPLOAD + file);
                     }
-                    if (!DIRECTORIES_SUPPORTED && !file.isFile()) {
+                    if (!file.isFile()) {
                         throw new SmartFrogLifecycleException(ERROR_NOT_A_NORMAL_FILE + file);
                     }
                 }
@@ -143,11 +144,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        synchronized(this) {
-            if(worker!=null) {
-                worker.ping(true);
-            }
-        }
+        SmartFrogThread.ping(worker);
     }
 
     /**
@@ -224,6 +221,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             }
         }
 
+
+
         /**
          * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
          * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
@@ -231,8 +230,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
          *
          * @throws Throwable if anything went wrong
          */
-        public void run() {
-            try {
+        public void execute() throws Throwable {
                 try {
                     if (localFiles.size() > 0) {
                         // open ssh session
@@ -261,14 +259,26 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                 } finally {
                     operation = null;
                 }
-            } catch (Throwable thrown) {
-                setThrown(thrown);
-                TerminationRecord record = TerminationRecord.abnormal("SCP failed to connect to "
-                        + getConnectionDetails(),sfCompleteNameSafe(),thrown);
+        }
+
+        /**
+         * Runs the {@link #execute()} method, catching any exception it throws and
+         * storing it away for safe keeping.
+         * After the run, the notify object is notified and the component
+         * then gets to terminated if there was an error.
+         */
+        public void run() {
+            super.run();
+            if(getThrown()!=null) {
+                TerminationRecord record = TerminationRecord.abnormal(
+                        "SCP failed to connect to "
+                                + getConnectionDetails(),
+                        sfCompleteNameSafe(),
+                        getThrown());
                 sfTerminate(record);
             }
-
         }
+
     }
 }
 

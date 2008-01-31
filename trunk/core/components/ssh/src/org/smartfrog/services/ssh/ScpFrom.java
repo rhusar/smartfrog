@@ -153,9 +153,10 @@ public class ScpFrom extends AbstractScpOperation {
                             OutputStream out,
                             InputStream in) throws IOException {
         byte[] buf = new byte[BUFFER_SIZE];
-        FileOutputStream fos = new FileOutputStream(localFile);
+        FileOutputStream fos=null;
         int bytesRead;
         try {
+            fos = new FileOutputStream(localFile);
             while (true) {
                 // read file in the chunk of 1 kb
                 bytesRead = in.read(buf, 0,

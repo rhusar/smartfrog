@@ -32,12 +32,15 @@ For more information: www.smartfrog.org
     sshSchema extends SSHComponentSchema  {
         commands extends OptionalVector;
         logFile extends OptionalFilenameType;
-        //a tuple of min-max values
-        resultRange extends Vector;
+        //min-max values for the response
+        exitCodeMin extends Integer;
+        exitCodeMax extends Integer;
     }
     authentication SSHComponent:authenticate_password;
-    resultRange [0,0];
-
+    exitCodeMax 0;
+    exitCodeMin 0;
+    //the component terminates at the end of deployment, by default
+    sfShouldTerminate true;
  }
 
 
@@ -55,7 +58,8 @@ For more information: www.smartfrog.org
     port SSHExec:port;
     timeout SSHExec:timeout;
     commands [];
-    resultRange SSHExec:resultRange;
+    exitCodeMax 0;
+    exitCodeMin 0;
 
     SSHCmdExec extends SSHExec {
 
@@ -71,7 +75,8 @@ For more information: www.smartfrog.org
 
         port PARENT:ATTRIB port;
         // terminate if any command fails
-        resultRange PARENT:ATTRIB:resultRange;
+        exitCodeMax PARENT:ATTRIB exitCodeMax;
+        exitCodeMin PARENT:ATTRIB exitCodeMin;
 
         //the commands
         commands PARENT:ATTRIB commands ;
