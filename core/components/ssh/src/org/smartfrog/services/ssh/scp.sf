@@ -37,7 +37,7 @@ For more information: www.smartfrog.org
      */
     ScpOperation extends SSHComponent {
         sfClass "org.smartfrog.services.ssh.ScpComponentImpl";
-        sshSchema extends ScpSchema;
+        //sshSchema extends ScpSchema;
 
         //get files from the remote server
         get_files "GET";
@@ -84,7 +84,6 @@ For more information: www.smartfrog.org
             transferType PARENT:ATTRIB transferType;
             localFiles PARENT:ATTRIB localFiles;
             remoteFiles PARENT:ATTRIB remoteFiles;
-            resultRange PARENT:ATTRIB:resultRange;
         }
     }
 
@@ -97,7 +96,7 @@ ScpSessionFilePassword extends ScpSessionAuthPass {
     passwordFile TBD;
 
     passwordProvider extends FilePassword {
-      passwordFile LAZY PARENT:passwordFile;
+      passwordFile LAZY PARENT:ATTRIB passwordFile;
     }
 }
 
@@ -107,7 +106,7 @@ ScpSessionFilePassword extends ScpSessionAuthPass {
 ScpSessionInlinePassword extends ScpSessionAuthPass {
     password TBD;
     passwordProvider extends InlinePassword {
-        password LAZY PARENT:ATTRIB password;
+        password PARENT:ATTRIB password;
     }
 }
 
@@ -129,7 +128,7 @@ ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
     passwordFile TBD;
 
     passwordProvider extends FilePassword {
-      passwordFile LAZY PARENT:passwordFile;
+      passwordFile LAZY PARENT:ATTRIB passwordFile;
     }
 }
 
@@ -141,7 +140,7 @@ ScpSessionPublicKeyFilePassword extends ScpSessionPublicKey {
 ScpSessionPublicKeyInlinePassword extends ScpSessionPublicKey {
     password TBD;
     passwordProvider extends InlinePassword {
-        password LAZY PARENT:ATTRIB password;
+        password PARENT:ATTRIB password;
     }
 }
 
