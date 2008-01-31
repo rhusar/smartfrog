@@ -268,7 +268,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       runProcess = new RunProcessImpl(name, cmd, prim);
       results = new ScriptResultsImpl(sfLog());
       ((RunProcessImpl)runProcess).start();
-      runProcess.waitForReady(200);
+      runProcess.waitForReady(4*200);
   }
 
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {

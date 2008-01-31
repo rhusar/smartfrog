@@ -52,6 +52,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     public static final int STATE_STARTING = 1;
     public static final int STATE_STARTED = 2;
     public static final int STATE_PROCESSING = 3;
+    public static final int STATE_FAILED = 4;
 
     private int state = 0;
 
@@ -88,22 +89,35 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     }
 
 
-
+    /**
+     * Will try 4 times. The time to wait is divided in four periods
+     * @param time
+     */
     public void waitForReady(long time){
+
+      int periods = 4;
+      int numberOfTries = periods;
 
       //@TODO change to use notify()
 
-      while (!ready()) {
+      while (!ready() && !(state==STATE_INACTIVE) && (numberOfTries > 0)) {
         if (sfLog.isDebugEnabled()) {
           sfLog.debug("WaitForReady");
         }
+        numberOfTries --;
         try {
-          Thread.sleep(time);
+          Thread.sleep(time/periods);
         } catch (InterruptedException ex) {
         }
       }
+
       if (sfLog.isDebugEnabled()){
-          sfLog.debug("WaitForReady- Ready");
+          if (ready())  sfLog.debug("WaitForReady- Ready");
+          if (state==STATE_INACTIVE)  sfLog.debug("Finished WaitForReady-STATE_INACTIVE");
+      }
+      if (numberOfTries<1) {
+          sfLog.warn("Finished WaitForReady-time out: " + time);
+          setState(STATE_INACTIVE);
       }
     }
 
@@ -295,13 +309,14 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                   String message = null;
                   if (endState == STATE_STARTED) {
                     message ="Application executed, but finished without starting processing";
-                  } else if (endState == STATE_STARTING) {
-                    message = "Application failed to execute";
                   } else if (exitValue != 0) {
                     message = "Application finished prematurely due to an application/system error";
+                  } else if (endState == STATE_STARTING) {
+                    message = "Application failed to execute";
                   } else {
                     message = "Unexpected application state: " + state;
                   }
+                  setState(STATE_INACTIVE);
                   if (sfLog.isWarnEnabled()) {
                     sfLog.warn(message);
                   }
