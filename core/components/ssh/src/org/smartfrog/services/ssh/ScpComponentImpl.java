@@ -257,10 +257,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                             "SSH Session to "+getConnectionDetails()+" finished: ", sfCompleteName());
                     new ComponentHelper(ScpComponentImpl.this).sfSelfDetachAndOrTerminate(termR);
                 } catch (JSchException e) {
-                    SmartFrogLifecycleException lifecycleException = translateStartupException(e);
-                    if (getFailOnError()) {
-                        throw lifecycleException;
-                    }
+                    throw translateStartupException(e);
                 } finally {
                     operation = null;
                 }

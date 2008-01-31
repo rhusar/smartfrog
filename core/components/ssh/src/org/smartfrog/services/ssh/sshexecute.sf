@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -31,9 +31,13 @@ For more information: www.smartfrog.org
     sfClass "org.smartfrog.services.ssh.SSHExecImpl";
     sshSchema extends SSHComponentSchema  {
         commands extends OptionalVector;
-        logFile extends OptionalString;
+        logFile extends OptionalFilenameType;
+        //a tuple of min-max values
+        resultRange extends Vector;
     }
     authentication SSHComponent:authenticate_password;
+    resultRange [0,0];
+
  }
 
 
@@ -51,6 +55,7 @@ For more information: www.smartfrog.org
     port SSHExec:port;
     timeout SSHExec:timeout;
     commands [];
+    resultRange SSHExec:resultRange;
 
     SSHCmdExec extends SSHExec {
 
@@ -66,7 +71,7 @@ For more information: www.smartfrog.org
 
         port PARENT:ATTRIB port;
         // terminate if any command fails
-        failOnError PARENT:ATTRIB failOnError;
+        resultRange PARENT:ATTRIB:resultRange;
 
         //the commands
         commands PARENT:ATTRIB commands ;

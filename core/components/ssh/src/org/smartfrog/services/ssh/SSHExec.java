@@ -25,6 +25,13 @@ package org.smartfrog.services.ssh;
  * @author Ashish Awasthi
  */
 public interface SSHExec extends SSHComponent {
+    /**
+     * {@value}
+     */
     public static String ATTR_COMMANDS = "commands";
+    /**
+     * {@value}
+     */
+    String ATTR_RESULT_RANGE = "resultRange";
 }
 

@@ -104,19 +104,15 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             if (waitThread.isAlive()) {
                 // ran out of time
                 waitThread = null;
-                if (failOnError) {
-                    throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE+getConnectionDetails());
-                } else {
-                    log.error(TIMEOUT_MESSAGE + getConnectionDetails());
-                }
+                String message = TIMEOUT_MESSAGE + getConnectionDetails();
+                log.error(message);
+                throw new SmartFrogLifecycleException(message);
             } else {
                 int exitStat = channel.getExitStatus();
                 if (exitStat != 0) {
                     String msg = "Remote commands to "  + getConnectionDetails() +
                             " failed with exit status " + exitStat;
-                    if (failOnError) {
                         throw new SmartFrogLifecycleException(msg);
-                    }
                 }
             }
             waitThread = null;
@@ -131,10 +127,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             throw sfe;
         } catch (JSchException e) {
             log.error("When connecting to " + getConnectionDetails(),e);
-            SmartFrogLifecycleException lifecycleException = translateStartupException(e);
-            if (getFailOnError()) {
-                throw lifecycleException;
-            }
+            throw translateStartupException(e);
         } catch (Exception e) {
             if (log.isTraceEnabled()) {
                 log.trace(e);

@@ -84,10 +84,7 @@ public interface SSHComponent extends Remote {
      * Use a key file: {@value}
      */
     String AUTHENTICATION_PUBLICKEY = "key";
-    /**
-     * {@value}
-     */
-    String ATTR_FAIL_ON_ERROR = "failOnError";
+
     /**
      * {@value}
      */
