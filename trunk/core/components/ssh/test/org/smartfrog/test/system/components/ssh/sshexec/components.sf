@@ -58,19 +58,34 @@ SshTestServer extends SSHSessionInlinePassword {
     password OPTIONAL("") PROPERTY test.ssh.pass;
     host OPTIONAL("") PROPERTY test.ssh.host;
     username OPTIONAL("") PROPERTY test.ssh.user;
-    sfTerminate true;
+    sfShouldTerminate true;
+    timeout 5000;
  }
 
-
-testSshLogin extends ExpectTerminate {
-  condition extends Not {
+SshTestPropertiesSet  extends Not {
     condition extends StringEquals {
       left "";
       right OPTIONAL("") PROPERTY "test.ssh.host";
     }
   }
 
+testSshLogin extends ExpectTerminate {
+  description "this logs in and prints 'hello' out";
+  condition extends SshTestPropertiesSet;
+
   action extends SshTestServer {
-    commands ["uname -a"];
+    commands ["echo hello"];
   }
+}
+
+testLoginBadUser extends testSshLogin {
+  description "set an invalid user and expect to get a diagnostics message";
+  action:username "Not a valid user";
+  exitType EXIT_TYPE_ABNORMAL;
+}
+
+testLoginBadUser extends testSshLogin {
+  description "set an invalid password and expect to get a diagnostics message";
+  action:password "Not a valid password";
+  exitType EXIT_TYPE_ABNORMAL;
 }

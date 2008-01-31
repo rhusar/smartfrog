@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -72,7 +72,4 @@ public class SshExecNegativeTest
     }
 
 
-    public void test_vm_commands() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES,"test_vm_commands");
-    }
 }
