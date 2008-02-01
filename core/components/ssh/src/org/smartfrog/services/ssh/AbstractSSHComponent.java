@@ -264,7 +264,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         if (faulttext.contains(SESSION_IS_DOWN)) {
             message = TIMEOUT_MESSAGE + getConnectionDetails();
         } else if (faulttext.contains(AUTH_FAIL) || faulttext.contains(AUTH_CANCEL)) {
-            message = "Unable to authenticate with the far end" + getConnectionDetails()
+            message = "Unable to authenticate with the server" + getConnectionDetails()
                     + "\nThis can be caused by: "
                     + "\n -Unknown username "+userName
                     + "\n -wrong password"
