@@ -52,12 +52,15 @@ import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.OutputStreamLog;
+import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -181,20 +184,22 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
         @Override
         public void execute() throws Throwable {
             ChannelShell channel = null;
-            FileOutputStream fout=null;
+            OutputStream outputStream=null;
             ComponentHelper helper = new ComponentHelper(SSHExecImpl.this);
             String sessionInfo = "SSH Session to " + getConnectionDetails();
             try {
                 //start the logging
                 if (logFile != null) {
                     try {
-                        fout = new FileOutputStream(logFile, false);
+                        outputStream = new FileOutputStream(logFile, false);
                     } catch (FileNotFoundException e) {
                         throw new SmartFrogLifecycleException(
                                 sessionInfo + " failed to create log file "
                                         + logFile,
                                 e);
                     }
+                } else {
+                    outputStream=new OutputStreamLog(log, LogLevel.LOG_LEVEL_INFO);
                 }
                 // open ssh session
                 logDebugMsg(sessionInfo);
@@ -214,8 +219,8 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
                 channel = (ChannelShell) getSession().openChannel("shell");
-                channel.setOutputStream(fout);
-                channel.setExtOutputStream(fout);
+                channel.setOutputStream(outputStream);
+                channel.setExtOutputStream(outputStream);
                 channel.setInputStream(bais);
                 channel.connect();
 
@@ -245,18 +250,17 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                             + " failed with exit status " + exitCode
                             + " out of the range ["
                             + exitCodeMin
-                            + ',' + exitCodeMax + ']';
+                            + ','
+                            + exitCodeMax + ']';
                     throw new SmartFrogLifecycleException(msg);
                 }
 
                 // check if it should terminate by itself
-                if (!isTerminationRequested()) {
-                    log.info("Normal termination :" + sfCompleteNameSafe());
-                    TerminationRecord termR = TerminationRecord.normal(
-                            sessionInfo + " finished: ",
-                            sfCompleteName());
-                    helper.sfSelfDetachAndOrTerminate(termR);
-                }
+                log.info("Normal termination :" + sfCompleteNameSafe());
+                TerminationRecord termR = TerminationRecord.normal(
+                        sessionInfo + " finished: ",
+                        sfCompleteName());
+                helper.sfSelfDetachAndOrTerminate(termR);
             } catch (Throwable ex) {
                 SmartFrogLifecycleException lifecycleException = forward(ex);
                 log.error(sessionInfo, lifecycleException);
@@ -270,7 +274,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                     channel.disconnect();
                 } else {
                     //if there's no channel, we may not have closed the output stream
-                    FileSystem.close(fout);
+                    FileSystem.close(outputStream);
                 }
             }
         }
