@@ -486,6 +486,11 @@ For more information: www.smartfrog.org
           <exclude name="xunit/build.xml" unless="java1.5+"/>
           <exclude name="xml/build.xml" unless="java1.5+"/>
           <exclude name="xmpp/build.xml" unless="java1.5+"/>
+
+          <!--Java 1.6+ code-->
+          <exclude name="vmware/build.xml" unless="java1.6+"/>
+
+
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
           <exclude name="documentation/build.xml" unless="forrest.enabled"/>
