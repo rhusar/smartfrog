@@ -216,7 +216,7 @@ test_public_key_timeout extends ExpectDeployFailure {
   vmcommands extends ScpSessionPublicKeyFilePassword {
     host "vm-D0.sup.hpl.hp.com";
     username "root";
-    keyfile "/home/rebeca/scratch/test/key";
+    keyFile "/home/rebeca/scratch/test/key";
     passwordFile "/home/rebeca/scratch/test/passphrase";
     localFiles ["/home/rebeca/scratch/test/one",
               "/home/rebeca/scratch/test/two"];
@@ -232,8 +232,9 @@ test_vm_commands extends ExpectDeployFailure {
     }
 
     exceptions [
+        [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
         ["",""],
-        ["com.jcraft.jsch.JSchException",""]
+        ["java.io.FileNotFoundException",""]
       ];
 
 }

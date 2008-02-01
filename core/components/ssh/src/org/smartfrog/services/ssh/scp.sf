@@ -37,7 +37,7 @@ For more information: www.smartfrog.org
      */
     ScpOperation extends SSHComponent {
         sfClass "org.smartfrog.services.ssh.ScpComponentImpl";
-        //sshSchema extends ScpSchema;
+        scpSchema  extends ScpSchema  ;
 
         //get files from the remote server
         get_files "GET";
@@ -117,7 +117,7 @@ ScpSessionInlinePassword extends ScpSessionAuthPass {
 ScpSessionPublicKey extends ScpSessionAuthPass {
     keyFile TBD;
     SCP:authentication SSHComponent:authenticate_key;
-    SCP:keyFile keyFile;
+    SCP:keyFile PARENT:ATTRIB keyFile;
 }
 
 /**
