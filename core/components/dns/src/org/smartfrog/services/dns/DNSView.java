@@ -20,10 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
+import org.xbill.DNS.Resolver;
+
 import java.net.InetAddress;
 import java.util.Vector;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.SimpleResolver;
 
 
 

@@ -20,13 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.util.Iterator;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 
 

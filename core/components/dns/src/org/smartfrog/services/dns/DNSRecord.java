@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dns;
 
 import org.xbill.DNS.Name;
-import org.xbill.DNS.Update;
 import org.xbill.DNS.Resolver;
+import org.xbill.DNS.Update;
 
 
 

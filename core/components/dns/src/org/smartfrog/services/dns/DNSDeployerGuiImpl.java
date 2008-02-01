@@ -21,23 +21,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dns;
 
 
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Container;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.BorderFactory;
-import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.BoxLayout;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import javax.swing.JDialog;
-import javax.swing.WindowConstants;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 /**

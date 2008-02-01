@@ -20,18 +20,19 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.Context;
-import java.net.InetAddress;
-import java.util.Vector;
-import java.util.Iterator;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+
 import java.io.PrintWriter;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.Stack;
+import java.util.Vector;
 
 
 

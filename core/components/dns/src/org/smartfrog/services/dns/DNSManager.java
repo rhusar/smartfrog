@@ -20,9 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.rmi.RemoteException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * A remote interface to interact with the DNS manager.

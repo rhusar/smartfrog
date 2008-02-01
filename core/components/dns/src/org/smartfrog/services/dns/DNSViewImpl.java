@@ -20,17 +20,18 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.util.Vector;
-import java.net.InetAddress;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.util.Iterator;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import java.net.UnknownHostException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.Context;
+
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.Vector;
 
 
 

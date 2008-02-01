@@ -20,16 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.File;
 import java.io.PrintWriter;
-import org.smartfrog.sfcore.componentdescription.CDVisitor;
-import org.smartfrog.sfcore.common.Context;
+import java.rmi.RemoteException;
 
 
 

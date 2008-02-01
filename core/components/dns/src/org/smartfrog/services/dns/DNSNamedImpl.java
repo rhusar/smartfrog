@@ -20,19 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.DClass;
-import org.xbill.DNS.Type;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.SimpleResolver;
-import java.rmi.RemoteException;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Type;
+
+import java.rmi.RemoteException;
 
 
 

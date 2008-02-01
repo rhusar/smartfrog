@@ -21,17 +21,18 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dns;
 
 
-import org.smartfrog.sfcore.reference.Reference;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.Message;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Update;
-import org.xbill.DNS.Rcode;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.xbill.DNS.Message;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.Update;
+
 import java.util.Stack;
 
 /**

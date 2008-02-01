@@ -20,11 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
-import java.io.PrintWriter;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import java.io.PrintWriter;
 
 
 
