@@ -185,6 +185,7 @@ DeploySequence extends TestCompound {
 ExpectTerminate extends TestCompound {
   description "Expect the deployed action to terminate itself normally, as a successful workflow";
   expectTerminate true;
+  exitType EXIT_TYPE_NORMAL;
 }
 
 /**
