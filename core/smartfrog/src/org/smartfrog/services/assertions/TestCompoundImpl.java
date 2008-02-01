@@ -437,7 +437,7 @@ public class TestCompoundImpl extends ConditionCompound
                         //now look at the record, and if it is abnormal, convert it
                         //to a normal status, preserving the message
                         testSucceeded = true;
-                        sfLog().info("Action terminated abnormally, as expected");
+                        sfLog().info("Action terminated as expected");
                         if (!childStatus.isNormal()) {
                             exitRecord = TerminationRecord.normal(
                                     childStatus.description,
