@@ -82,7 +82,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
       if (autoStart) {
           runProcess = new RunProcessImpl(name, cmd, this);
           ((RunProcessImpl) runProcess).start();
-          runProcess.waitForReady(4*200);
+          runProcess.waitForReady(200);
           if (sfLog().isInfoEnabled()) sfLog().info("Process started");
       }
   }
@@ -192,7 +192,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
         }
          // RunProcessImpl
          runProcess = new RunProcessImpl (name, cmd);
-         runProcess.waitForReady(4*200);
+         runProcess.waitForReady(200);
          sfLog().info("Restart done");
 
      }
