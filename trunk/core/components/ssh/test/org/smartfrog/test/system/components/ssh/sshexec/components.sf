@@ -72,9 +72,11 @@ SshTestPropertiesSet  extends Not {
 testSshLogin extends ExpectTerminate {
   description "this logs in and prints 'hello' out";
   condition extends SshTestPropertiesSet;
-
+  exitType EXIT_TYPE_NORMAL;
   action extends SshTestServer {
-    commands ["echo hello"];
+    commands [
+      "echo hello",
+      "exit"];
   }
 }
 
@@ -82,10 +84,18 @@ testLoginBadUser extends testSshLogin {
   description "set an invalid user and expect to get a diagnostics message";
   action:username "Not a valid user";
   exitType EXIT_TYPE_ABNORMAL;
+  exceptions [
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
+  ];
 }
 
 testLoginBadUser extends testSshLogin {
   description "set an invalid password and expect to get a diagnostics message";
   action:password "Not a valid password";
   exitType EXIT_TYPE_ABNORMAL;
+  exceptions [
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
+  ];
 }
