@@ -376,25 +376,6 @@ cp -dpr . $RPM_BUILD_ROOT
 
 # -----------------------------------------------------------------------------
 
-
-%post 
-
-
-
-
-%preun
-#about to uninstall, but all the files are already present
-#%{bindir}/smartfrog -a rootProcess:TERMINATE:::localhost: -e -quietexit
-
-#%postun
-#at uninstall time, we delete 
-#the links
-#if [ "$1" = "0" ] ; then
-
-#fi
-
-# -----------------------------------------------------------------------------
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -750,7 +731,7 @@ Contains JAR files signed by a private CA.
 - use RHEL-specific distribution tags
 - change permissions on profile.d scripts
 - set up symbolic links using rpmbuild instead of custom post install scripts.
-* Mon Sep 17 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.12.003-1
+* Mon Sep 17 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.003-1
 - all cleanup is skipped during upgrades, so that rpm --upgrade should now work properly.
 - link removal is moved to the pre-uninstall phase, so that chkconfig and install_initd have the
   daemon file (with metadata in its comments) to work on
@@ -758,20 +739,20 @@ Contains JAR files signed by a private CA.
 - chkconfig is used where present (RHEL and Fedora systems)
 - /usr/lib/lsb/install_initd is used where present (SuSE systems, and others
   with Linux Standard Base installed) 
-* Wed Jul 25 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.0005-1
+* Wed Jul 25 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.0005-1
 - daemon RPM now runs "smartfrogd stop" before uninstalling
 - smartfrog RPM tries to terminate any running smartfrog process before uninstalling
 - anubis RPM provides the anubis JAR
 - logging RPM provides logging services and dependent JARs
 - links without version information added to the dir /opt/smartfrog/links subdirectory for each JAR.
-* Fri Jul 20 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.003-5
+* Fri Jul 20 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.003-5
 - daemon RPM now runs "smartfrogd shutdown" before uninstalling 
-* Tue Jul 03 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.001-4
+* Tue Jul 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.001-4
 - moved scripts to smartfrog.rpm
 - moved directories
-* Fri Jun 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.001-3
+* Fri Jun 22 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.001-3
 - fixing permissions of the log directory; creating a new user on demand
-* Tue May 22 2007 Steve Loughran <steve_l@users.sourceforge.net> 3.11.000-1
+* Tue May 22 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.11.000-1
 - Built from contributions and the JPackage template
 
 
