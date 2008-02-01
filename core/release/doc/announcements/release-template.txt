@@ -49,13 +49,28 @@ This release is available as:
 * the original core smartfrog distribution as .zip and .tar.gz (deprecated)
 
 
-The RPM installation is for RPM-based Linux systems. It comprises three RPM
-files, smartfrog, smartfrog-daemon and smartfrog-demo:
+The RPM installation is for RPM-based Linux systems. The archive contains the
+following RPM files:
 
 smartfrog:        the core SmartFrog distribution.
 smartfrog-daemon: the shell scripts to add the smartfrog distribution to the
                   path, and to run the daemon on start-up.
 smartfrog-demo:   example code and documentation.
+smartfrog-javadocs: javadocs for the project
+
+smartfrog-ant:    Ant task and build file execution
+smartfrog-anubis: Distributed partition-aware tuple space
+smartfrog-database: Database access
+smartfrog-jmx:    JMX integration though MX4J
+smartfrog-junit:  Junit 3.8.2 test execution
+smartfrog-logging: Logging through Log4J and commons-logging
+smartfrog-networking: SSH, SCP, FTP and email
+smartfrog-quartz:  Scheduled operations
+smartfrog-scripting: Scripted components
+smartfrog-www:      Web support: Deployment and liveness pages
+smartfrog-xml:      XML Support
+smartfrog-xmpp:     XMPP/Jabber communications
+smartfrog-xunit:    Distributed testing and reporting
 
 All the JAR files are also published to a repository that is compatible with
 Apache Maven and Ivy. Add http://smartfrog.sourceforge.net/repository/
