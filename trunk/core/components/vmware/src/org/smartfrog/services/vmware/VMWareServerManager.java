@@ -34,6 +34,7 @@ package org.smartfrog.services.vmware;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -42,34 +43,33 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.nio.charset.Charset;
 
 
 // TODO: think of a better approach to error handling when getting an image module failed
 public class VMWareServerManager extends PrimImpl implements VMWareServerManagerServices {
-
-    /** The list of images this manager controls. */
-    private ArrayList<VMWareImageModule> listImgModules = new ArrayList<VMWareImageModule>();
-
     /** The folder where all vm images are stored which are under control of the daemon. */
     private String vmImagesFolder;
     private String vmMasterFolder;
 
     /** Used to communicate with the vmware server. */
-    private VMWareCommunicator vmComm = new VMWareCommunicator();
-    private static final Charset BUFFER_ENCODING = Charset.defaultCharset();
-    private static final String VMDK = ".vmdk";
+    private VMWareCommunicator vmComm = null;
 
     public VMWareServerManager() throws RemoteException {
 
     }
 
-
-
-
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+
+        // create the jna wrapper library
+        try {
+            this.vmComm = new VMWareCommunicator();
+        } catch (Exception e) {
+            sfLog().error("Error while creating the VMware communicator.", e);
+            throw new SmartFrogLifecycleException("Error while creating the VMware communicator.", e);
+        }
+
         // get the vm image folders
         setVmImagesFolder(FileSystem.lookupAbsolutePath(this,ATTR_COPY_IMAGES_DIR,null,null,true,null));
         setVmMasterFolder(FileSystem.lookupAbsolutePath(this, ATTR_MASTER_IMAGES_DIR, null, null, true, null));
@@ -78,8 +78,12 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         generateModulesFromImgFolder();
 
         // start all virtual machines
-        for (VMWareImageModule img : listImgModules) {
-            img.startUp();  // TODO: error handling
+        for (VMWareImageModule img : vmComm.getImageModuleList()) {
+            try {
+                img.startUp();
+            } catch (SmartFrogException e) {
+                sfLog().err(e);
+            }
         }
 
         sfLog().info("VMWareServerManager started.");
@@ -124,36 +128,18 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             File[] files = folder.listFiles(new vmxFileFilter());
             if (files != null) {
                 for (File curFile : files) {
-                    // create a new image module and add it to the list if successful
-                    VMWareImageModule newImg = VMWareImageModule.createImageModule(curFile.getAbsolutePath());
-                    if (newImg != null) {
-                        listImgModules.add(newImg);
-                    }
+                    try {
+                        // create a new image module and add it to the list if successful
+                        VMWareImageModule newImg = this.vmComm.createImageModule(curFile.getAbsolutePath());
 
-                    // register it with the vm in case some aren't yet
-                    newImg.registerVM();
+                        // register it with the vm in case some aren't yet
+                        newImg.registerVM();
+                    } catch (Exception e) {
+                        sfLog().trace(e);
+                    }
                 }
             }
         }
-    }
-
-    /**
-     * Unregisters a virtual machine with the vmware server.
-     *
-     * @param inVMPath The full path to the machine.
-     * @return true if the upgrade worked
-     */
-    public boolean unregisterVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
-
-        // check if it worked
-        if (tmp != null) {
-            return tmp.unregisterVM();
-        }
-
-        // an error occurred
-        return false;
     }
 
     /**
@@ -162,17 +148,22 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMPath The full path to the machine.
      * @return true if the vm started
      */
-    public boolean startVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+    public String startVM(String inVMPath) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
 
-        // check if it worked
-        if (tmp != null) {
-            return tmp.startUp();
+            // check if it worked
+            if (tmp != null) {
+                tmp.startUp();
+                return "success";
+            }
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to start \"" + inVMPath + "\"", e);
         }
 
         // an error occured
-        return false;
+        return "Failed to start \"" + inVMPath + "\". Please review the logfile for detailed information.";
     }
 
     /**
@@ -208,100 +199,40 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException,SmartFrogException {
         String copyVMX;
-        // first copy the master .vmx file
+        
         copyVMX = getVmImagesFolder() + File.separator + inVMCopyName;
         if (!copyVMX.endsWith(vmxFileFilter.VMX)) {
             copyVMX += vmxFileFilter.VMX;
         }
-        File fileVMX = new File(copyVMX);
-        FileWriter out = null;
-        try {
 
-            copy(getVmMasterFolder() + File.separator + inVMMaster, copyVMX);
-            // read all of the .vmx file
-            String buffer = FileSystem.readFile(fileVMX, BUFFER_ENCODING).toString();
-            String[] strLines = buffer.replace("\r", "").split("\n");
+        this.vmComm.copyVirtualMachine(getVmMasterFolder() + File.separator + inVMMaster, getVmImagesFolder() + File.separator + inVMCopyName);
 
-            // extract the name of the new vm
-            String strNewName = fileVMX.getName().replace(vmxFileFilter.VMX, "");
-
-            // open the vmx file to write the changes
-            out = new FileWriter(fileVMX);
-
-            // parse the lines
-            int iHDDIndex = 0;
-            for (String line : strLines) {
-                if (line.startsWith("scsi") && line.contains(".fileName = ")) {
-                    // get the old name
-                    String strOld = line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\""));
-
-                    // in case there are more than one hdd append an index
-                    String strNewHDD = strNewName + iHDDIndex;
-
-                    // replace it
-                    line = line.replace(strOld, strNewHDD + VMDK);
-
-                    // copy the .vmdk files
-                    File folder = new File(getVmMasterFolder());
-                    strOld = strOld.replace(VMDK, "");
-                    File[] files = folder.listFiles();
-                    for (File file : files) {
-                        String destPath = getVmImagesFolder() + File.separator + file.getName()
-                                .replace(strOld, strNewHDD);
-                        File destFile = new File(destPath);
-                        if ((file.getName().startsWith(strOld + "-f") && file.getName().endsWith(VMDK))) {
-                            // copy the file
-                            FileSystem.fCopy(file, destFile);
-                        } else if (file.getName().equals(strOld + VMDK)) {
-                            // it's the .vmdk config file
-                            // read it's content
-                            String strBuffer = FileSystem.readFile(file, BUFFER_ENCODING).toString();
-                            // replace the old names
-                            strBuffer = strBuffer.replace(strOld, strNewHDD);
-                            FileSystem.writeTextFile(destFile, strBuffer, BUFFER_ENCODING);
-                        }
-                    }
-
-                    ++iHDDIndex;
-                } else if (line.startsWith("displayName = ")) {
-                    // replace the display name
-                    line = "displayName = \"" + strNewName + "\"";
-                }
-                out.write(line + "\n");
-            }
-
-            // close the vmx file
-            out.flush();
-            out.close();
-            out=null;
-            // set execution rights if were using linux
-            chmod(fileVMX, "755");
-        } catch (IOException e) {
-            throw SmartFrogException.forward("Failed to copy " + inVMMaster + " to " + inVMCopyName,
-                    e);
-        } finally {
-            FileSystem.close(out);
-        }
-
+        VMWareImageModule newImg = this.vmComm.createImageModule(getVmImagesFolder() + File.separator + inVMCopyName + File.separator + inVMMaster);
+        newImg.rename(inVMCopyName);
 
         // register the file with the vmware server
-        if (!registerVM(copyVMX)) {
-            throw new SmartFrogException("Failed to register the VM");
-        }
+        newImg.registerVM();
+
+        // TODO: remove created image on error
     }
 
-    private void chmod(File fileVMX, String mask) throws SmartFrogException {
-        String command = "chmod " + mask + fileVMX.getPath();
+    /**
+     * Delete a instance of a master copy.
+     *
+     * @param inVMPath
+     * @throws java.rmi.RemoteException network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  other problems
+     * @returns "success" or an error message
+     */
+    public String deleteCopy(String inVMPath) throws RemoteException {
         try {
-            if (!System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-                Process ps = Runtime.getRuntime().exec(command);
-                ps.waitFor();
-            }
-        } catch (IOException e) {
-            throw SmartFrogException.forward("Failed to execute "+command,e);
-        } catch (InterruptedException e) {
-            throw SmartFrogException.forward("Failed to execute " + command, e);
+            this.vmComm.deleteVirtualMachine(inVMPath);
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to delete \"" + inVMPath + "\"", e);
+            return "Failed to suspend \"" + inVMPath + "\". Please review the logfile for detailed information.";
         }
+        return "success"; // TODO: better error messages
     }
 
     /**
@@ -319,252 +250,171 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     }
 
     /**
-     * Delete a instance of a master copy.
-     *
-     * @param inVMPath
-     * @throws java.rmi.RemoteException
-     */
-    public boolean deleteCopy(String inVMPath) throws RemoteException {
-        // first stop the vm
-        stopVM(inVMPath);
-
-        // then unregister it
-        unregisterVM(inVMPath);
-
-        // remove the image module
-        removeMachineModule(inVMPath);
-
-        // then get the file
-        File file = new File(inVMPath);
-
-        // then delete it
-        if (file.exists() && file.isFile() && file.getName().endsWith(vmxFileFilter.VMX)) {
-            return file.delete();
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Starts a virtual machine. Has to be powered off or suspended.
      *
      * @param inVMPath The full path to the machine.
+     * @returns Returns "success" or an error message.
      */
-    public boolean stopVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+    public String stopVM(String inVMPath) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
 
-        // check if it worked
-        if (tmp != null) {
-            return tmp.shutDown();
+            // check if it worked
+            if (tmp != null) {
+                tmp.shutDown();
+                return "success";
+            }
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to stop \"" + inVMPath + "\"", e);
         }
 
         // an error occurred
-        return false;
+        return "Failed to stop \"" + inVMPath + "\". Please review the logfile for detailed information.";
     }
 
     /**
      * Suspends a virtual machine. Has to be running.
      *
      * @param inVMPath The full path to the machine.
+     * @returns Returns "success" or an error message.
      */
-    public boolean suspendVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+    public String suspendVM(String inVMPath) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
 
-        // check if it worked
-        if (tmp != null) {
-            return tmp.suspend();
+            // check if it worked
+            if (tmp != null) {
+                tmp.suspend();
+                return "success";
+            }
+
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to suspend \"" + inVMPath + "\"", e);
         }
 
         // an error occurred
-        return false;
+        return "Failed to suspend \"" + inVMPath + "\". Please review the logfile for detailed information.";
     }
 
     /**
      * Resets a virtual machine.
-     *
      * @param inVMPath The full path to the machine.
+     * @return "success" or an error message.
      */
-    public boolean resetVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+    public String resetVM(String inVMPath) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
 
-        // check if it worked
-        if (tmp != null) {
-            return tmp.reset();
+            // check if it worked
+            if (tmp != null) {
+                tmp.reset();
+                return "success";
+            }
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to reset \"" + inVMPath + "\"", e);
         }
 
         // an error occurred
-        return false;
+        return "Failed to reset \"" + inVMPath + "\". Please review the logfile for detailed information.";
     }
 
     /**
      * Gets the power state of a virtual machine.
-     *
      * @param inVMPath The full path to the machine.
+     * @return The status code or STATUS_ERROR.
      */
     public int getPowerState(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
 
-        // check if it worked
-        if (tmp != null) {
-            return tmp.getPowerState();
+            // check if it worked
+            if (tmp != null)
+                return tmp.getPowerState();
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to get the power state of \"" + inVMPath + "\"", e);
         }
 
         // an error occurred
-        return VMWareImageModule.STATUS_ERROR;
+        return -1;
     }
 
-//      VMFox code
-//          to be used when VMFox is running correctly
-//    /**
-//     * Gets the tools state of a virtual machine.
-//     *
-//     * @param inVMPath The full path to the machine.
-//     * @return
-//     */
-//    public int getToolsState(String inVMPath) throws RemoteException {
-//        // get a machine module
-//        VMWareImageModule tmp = getMachineModule(inVMPath);
-//
-//        // check if it worked
-//        if (tmp != null)
-//            return tmp.getToolsState();
-//
-//        // an error occurred
-//        return VMWareImageModule.STATUS_ERROR;
-//    }
-
+    /**
+     * Gets the list of vmware images currently under control of the vmware manager.
+     * @return Returns a new-line-separated list of the paths of the images.
+     * @throws RemoteException
+     */
     public String getControlledMachines() throws RemoteException {
+        return getControlledMachines("\n");
+    }
+
+    /**
+     * Gets the list of vmware images currently under control of the vmware manager.
+     * @param inSeparator The separator which should be used.
+     * @return Rrturns a list of the paths of the images separated by inSeparator.
+     * @throws RemoteException
+     */
+    public String getControlledMachines(String inSeparator) throws RemoteException {
         String strResult = "";
 
-        for (VMWareImageModule mod : listImgModules) {
-            strResult += mod.getVMPath() + "\n";
+        for (VMWareImageModule mod : vmComm.getImageModuleList()) {
+            strResult += mod.getVMPath() + inSeparator;
         }
 
         return strResult;
     }
 
     /**
-     * Gets an existing machine module or attempts to create a new one.
-     *
-     * @param inVMPath The path to the .vmx file.
-     * @return Returns an VMWareImageModule or null if inVMPath isn't valid.
-     */
-    private VMWareImageModule getMachineModule(String inVMPath) {
-        // parse the list of image modules
-        for (VMWareImageModule imgMod : listImgModules) {
-            if (imgMod.getVMPath().equals(inVMPath)) {
-                return imgMod;
-            }
-        }
-
-        // no module found, create a new one
-        VMWareImageModule newMod = VMWareImageModule.createImageModule(inVMPath);
-
-        // if valid add it to the list
-        if (newMod != null) {
-            listImgModules.add(newMod);
-        }
-
-        return newMod;
-    }
-
-    /**
-     * Removes a vm image module.
-     *
-     * @param inVMPath
-     */
-    private void removeMachineModule(String inVMPath) {
-        // find the appropriate module
-        for (VMWareImageModule mod : listImgModules) {
-            if (mod.getVMPath().equals(inVMPath)) {
-                listImgModules.remove(mod);
-                break;
-            }
-        }
-    }
-
-    /**
      * Shuts down the VMWare Server and all running machines as well.
-     *
+     * @return "success" or an error message.
      */
-    public boolean shutdownVMWareServerService() throws RemoteException {
+    public String shutdownVMWareServerService() throws RemoteException {
         // shutdown the vmware server service, which will automatically shut down all vms
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            try {
+        try {
+            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
                 Runtime.getRuntime().exec("net.exe stop VMWare");
-            } catch (IOException e) {
-                return false;
-            }
-        } else {
-            try {
+            } else {
                 Runtime.getRuntime().exec("/etc/init.d/vmware stop");
-            } catch (IOException e) {
-                return false;
             }
+        } catch (IOException e) {
+            sfLog().error("Failed to shut down vmware server", e);
+            return "Failed to shut down vmware server. Please review the logfile for detailed information.";
         }
 
-        return true;
+        return "success";
     }
 
     /** Starts the vmware server service. */
-    public boolean startVMWareServerService() throws RemoteException {
-        // start the vmware server service
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            try {
-                Runtime.getRuntime().exec("net.exe start VMWare");
-            } catch (IOException e) {
-                sfLog().error("failed to start vmware", e);
-                return false;
+    public String startVMWareServerService() throws RemoteException {
+        try {
+            // start the vmware server service
+            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                    Runtime.getRuntime().exec("net.exe start VMWare");
+            } else {
+                    Runtime.getRuntime().exec("/etc/init.d/vmware start");
             }
-        } else {
-            try {
-                Runtime.getRuntime().exec("/etc/init.d/vmware start");
-            } catch (IOException e) {
-                sfLog().error("failed to start vmware",e);
-                return false;
-            }
+        } catch (IOException e) {
+            sfLog().error("Failed to start vmware server", e);
+            return "Failed to start vmware server. Please review the logfile for detailed information.";
         }
 
-        return true;
+        return "success";
     }
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
         // shut down every virtual machine manually to be indepentant of the vmserver service behaviour
-        for (VMWareImageModule img : listImgModules) {
-            img.shutDown();     // TODO: error handling
-        }
+        this.vmComm.disconnect();
 
         // shut down the vmware server service
-        try {
-            shutdownVMWareServerService();
-        } catch (RemoteException e) {
-            sfLog().ignore(e);
-        }
-    }
-
-    /**
-     * Registes a virtual machine with the vmware server.
-     *
-     * @param inVMPath The full path to the machine.
-     * @return true if it worked
-     *
-     */
-    public boolean registerVM(String inVMPath) throws RemoteException {
-        // get a machine module
-        VMWareImageModule tmp = getMachineModule(inVMPath);
-
-        // check if it worked
-        if (tmp != null) {
-            return tmp.registerVM();
-        }
-
-        // an error occurred
-        return false;
+//        try {
+//            shutdownVMWareServerService();
+//        } catch (RemoteException e) {
+//            sfLog().error(e);
+//        }
     }
 }
