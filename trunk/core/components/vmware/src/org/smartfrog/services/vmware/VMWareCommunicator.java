@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.Pointer;
+import com.sun.jna.Native;
 
 /**
  * This class manages the communication with the vmware server service.
@@ -112,22 +113,30 @@ public class VMWareCommunicator {
 
     /**
      * Default constructor.
+     * @param inVixLibraryPath Path where the vix library can be found.
+     * @param inVixLibraryName Name of the vix library.
      * @throws Exception Loading the VIX library may result in exceptions.
      */
-    public VMWareCommunicator() throws Exception {
-        this.vixLib = VMWareVixLibrary.instance;
+    public VMWareCommunicator(String inVixLibraryPath, String inVixLibraryName) throws Exception {
+        // set the system property "jna.library.path" to the given path
+        System.setProperty("jna.library.path", inVixLibraryPath);
+
+        // load the library
+        this.vixLib = (VMWareVixLibrary)Native.loadLibrary(inVixLibraryName, VMWareVixLibrary.class);
     }
 
     /**
      * Constructor.
+     * @param inVixLibraryPath Path where the vix library can be found.
+     * @param inVixLibraryName Name of the vix library.
      * @param inUser Username of the target machines user (which is running the vmware server).
      * @param inPass Password of the target machines user.
      * @param inHost Hostname of the target machine.
      * @param inPort Port to connect to on the target machine.
      * @throws Exception Loading the VIX library may result in exceptions.
      */
-    public VMWareCommunicator(String inUser, String inPass, String inHost, int inPort) throws Exception {
-        this();
+    public VMWareCommunicator(String inVixLibraryPath, String inVixLibraryName, String inUser, String inPass, String inHost, int inPort) throws Exception {
+        this(inVixLibraryPath, inVixLibraryName);
         this.strUserName    = inUser;
         this.strPassword    = inPass;
         this.strHostname    = inHost;
@@ -334,7 +343,7 @@ public class VMWareCommunicator {
                     writer.close();
 
                     // set execution flag
-                    newFile.setExecutable(true, false);
+                    // newFile.setExecutable(true, false);
                 }
             }
         } catch (IOException e) {
