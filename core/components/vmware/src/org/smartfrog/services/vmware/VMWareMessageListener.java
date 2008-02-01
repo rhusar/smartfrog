@@ -66,8 +66,6 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      */
     private XmppListenerImpl refXmppListener;
     public static final String ATTR_LISTENER = "listener";
-    public static final String SUCCESS = "success";
-    private static final String FAILURE = "failure";
     private static final String VMRESPONSE = "vmresponse";
     private static final String VMPATH = "vmpath";
     public static final String VMMASTERPATH = "vmmasterpath";
@@ -145,10 +143,6 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         return new VMWareMessageFilter();
     }
 
-    private String  outcome(boolean value) {
-        return value? SUCCESS : FAILURE;
-    }
-
     public void processPacket(Packet packet) {
         sfLog().info("VMWare Message Listener: Received packet: " + packet);
         // get the extension
@@ -180,108 +174,72 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                     if (command.equals("start"))
                     {
                         // attempt to start the machine
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.startVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, manager.startVM(strPath));
                     }
                     else if (command.equals("stop"))
                     {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.stopVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, manager.stopVM(strPath));
                     }
                     else if (command.equals("suspend"))
                     {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.suspendVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, manager.suspendVM(strPath));
                     }
                     else if (command.equals("reset"))
                     {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.resetVM(strPath)));
-                    }
-                    else if (command.equals("register"))
-                    {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.registerVM(strPath)));
-                    }
-                    else if (command.equals("unregister"))
-                    {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.unregisterVM(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strPath));
                     }
                     else if (command.equals("list"))
                     {
                         response.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
                     }
-//      VMFox code
-//                    else if (strCommand.equals("toolsstate"))
-//                    {
-//                        int iState = refServerManager.getToolsState(strPath);
-//                        switch (iState)
-//                        {
-//                            case VMWareImageModule.TOOLS_STATUS_NOT_INSTALLED:
-//                                newExt.getPropertyBag().put("vmresponse", "Tools not installed.");
-//                                break;
-//                            case VMWareImageModule.TOOLS_STATUS_RUNNING:
-//                                newExt.getPropertyBag().put("vmresponse", "Tools running.");
-//                                break;
-//                            case VMWareImageModule.TOOLS_STATUS_UNKNOWN:
-//                                newExt.getPropertyBag().put("vmresponse", "Tools state unknown.");
-//                                break;
-//                            default:
-//                                newExt.getPropertyBag().put("vmresponse", "failure");
-//                                break;
-//                        }
-//                    }
                     else if (command.equals("powerstate"))
                     {
                         int iState = manager.getPowerState(strPath);
                         switch (iState)
                         {
-                            case VMWareImageModule.POWER_STATUS_BLOCKED_ON_MSG:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_BLOCKED_ON_MSG:
                                 response.getPropertyBag().put(VMRESPONSE, "Blocked on message.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_POWERED_OFF:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF:
                                 response.getPropertyBag().put(VMRESPONSE, "Powered off.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_POWERED_ON:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_ON:
                                 response.getPropertyBag().put(VMRESPONSE, "Powered on.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_POWERING_OFF:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_OFF:
                                 response.getPropertyBag().put(VMRESPONSE, "Powering off.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_POWERING_ON:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_ON:
                                 response.getPropertyBag().put(VMRESPONSE, "Powering on.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_RESETTING:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_RESETTING:
                                 response.getPropertyBag().put(VMRESPONSE, "Resetting.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_SUSPENDED:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED:
                                 response.getPropertyBag().put(VMRESPONSE, "Suspended.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_SUSPENDING:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDING:
                                 response.getPropertyBag().put(VMRESPONSE, "Suspending.");
                                 break;
-                            case VMWareImageModule.POWER_STATUS_TOOLS_RUNNING:
+                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_TOOLS_RUNNING:
                                 response.getPropertyBag().put(VMRESPONSE, "Tools running.");
                                 break;
                             default:
-                                response.getPropertyBag().put(VMRESPONSE, FAILURE);
+                                response.getPropertyBag().put(VMRESPONSE, "unkown powerstate: " + iState);
                                 break;
                         }
-                    }
-                    else if (command.equals("stopvmwareservice"))
-                    {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.shutdownVMWareServerService()));
-                    }
-                    else if (command.equals("startvmwareservice"))
-                    {
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.startVMWareServerService()));
                     }
                     else if (command.equals("create"))
                     {
                         // create a vmware from a master model
                         manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath);
-                        response.getPropertyBag().put(VMRESPONSE,SUCCESS);
-                        response.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath);
+                        response.getPropertyBag().put(VMRESPONSE, "success");
+                        response.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath + File.separator + strPath + ".vmx");
                     }
                     else if (command.equals("delete"))
                     {
                         // delete a vmware
-                        response.getPropertyBag().put(VMRESPONSE, outcome(manager.deleteCopy(strPath)));
+                        response.getPropertyBag().put(VMRESPONSE, manager.deleteCopy(strPath));
                     }
                     else if (command.equals("getmasters"))
                     {
@@ -301,7 +259,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
     }
 
     private void ProcessException(String command, XMPPEventExtension newExt, Throwable thrown) {
-        sfLog().error(" Failing command "+ command, thrown);
-        newExt.getPropertyBag().put(VMRESPONSE, FAILURE);
+        sfLog().error("Failing command "+ command, thrown);
+        newExt.getPropertyBag().put(VMRESPONSE, "failure");
     }
 }

@@ -31,45 +31,39 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 package org.smartfrog.services.vmware;
 
-import java.io.File;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.filesystem.FileSystem;
+
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.sun.jna.ptr.IntByReference;
 
 public class VMWareImageModule {
-
     /**
      * The path to the vmware image file.
      */
     private String  strImagePath    = "";
-    private String  strLastError    = "";
 
     /**
-     * Class to communicate with the vmware server
+     * Reference to the communicator class
      */
-    private VMWareCommunicator vmComm = new VMWareCommunicator();
+    private VMWareCommunicator vmComm = null;
 
-    public static final int STATUS_ERROR                    = -1;
-    public static final int POWER_COND_NONE                 = 0x0000;
-
-    // power status of a vm, using the original bit flag values
-    public static final int POWER_STATUS_POWERING_OFF       = 0x0001;
-    public static final int POWER_STATUS_POWERED_OFF        = 0x0002;
-    public static final int POWER_STATUS_POWERING_ON        = 0x0004;
-    public static final int POWER_STATUS_POWERED_ON         = 0x0008;
-    public static final int POWER_STATUS_SUSPENDING         = 0x0010;
-    public static final int POWER_STATUS_SUSPENDED          = 0x0020;
-    public static final int POWER_STATUS_TOOLS_RUNNING      = 0x0040;
-    public static final int POWER_STATUS_RESETTING          = 0x0080;
-    public static final int POWER_STATUS_BLOCKED_ON_MSG     = 0x0100;
-
-    // tools status flags
-    public static final int TOOLS_STATUS_UNKNOWN            = 0x0001;
-    public static final int TOOLS_STATUS_RUNNING            = 0x0002;
-    public static final int TOOLS_STATUS_NOT_INSTALLED      = 0x0004;
+    /**
+     * The vmware handle of this image.
+     */
+    private IntByReference iVMHandle = new IntByReference(VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE);
 
     /**
      * Constructor.
+     * @param inImagePath The path to the image.
+     * @param inComm Reference to the vmware communicator class.
      */
-    private VMWareImageModule(String inImagePath) {
-        strImagePath = inImagePath;
+    private VMWareImageModule(String inImagePath, VMWareCommunicator inComm) {
+        this.strImagePath   = inImagePath;
+        this.vmComm         = inComm;
     }
 
     /**
@@ -82,290 +76,286 @@ public class VMWareImageModule {
     }
 
     /**
+     * Gets the handle of this virtual machine image.
+     * @return The vm handle.
+     */
+    public IntByReference getVMHandle() {
+        return this.iVMHandle;
+    }
+
+    /**
      * Creates a new VMWare Image Module if the path is valid.
      * @param inImagePath Valid path to a .vmx file.
+     * @param inComm Reference to the vmware communicator class.
      * @return A new instance on success or null on failure.
      */
-    public static VMWareImageModule createImageModule(String inImagePath) {
-        // the retured object
+    public static VMWareImageModule createImageModule(String inImagePath, VMWareCommunicator inComm)
+    {
         VMWareImageModule newModule = null;
 
         // validate the path
         File file = new File(inImagePath);
         if (file.exists() && file.getName().endsWith(".vmx"))
-            newModule = new VMWareImageModule(inImagePath);
+        {
+            newModule = new VMWareImageModule(inImagePath, inComm);
+        }
 
         return newModule;
     }
 
-//      VMFox code
-//          to be used when VMFox is running correctly
-//    /**
-//     * Executes a command (or doesn't) based on the power state conitions.
-//     * If no condition is required use: powerCondExecVMFoxCommand(POWER_COND_NONE, true, [command]);
-//     * @param inFlags The flags which are required. (Use POWER_STATUS_ flags and combine them bitwise.)
-//     * @param inStrict Determines whether all bits of the flag have to be set (true) or not (false).
-//     * @param inCommand The command which should be executed.
-//     * @return True if it was executed and no error occured, false otherwise.
-//     */
-//    private boolean powerCondExecVMFoxCommand(int inFlags, boolean inStrict, String inCommand)
-//    {
-//        // check the flags
-//        int iResult = getPowerState() & inFlags;
-//
-//        // determine wether the conditions have been fulfilled
-//        if ((inStrict ? (iResult == inFlags) : (iResult != 0)))
-//        {
-//            try {
-//                String strOutput = vmComm.execVMcmd(inCommand);
-//
-//                if (strOutput.length() == 0)
-//                    return true;
-//                else
-//                    strLastError = strOutput;
-//            } catch (IOException e) {
-//                // TODO: error logging
-//            }
-//        }
-//        return false;
-//    }
-
-    /**
-     * Executes a command (or doesn't) based on the power state conitions.
-     * If no condition is required use: powerCondExecVMFoxCommand(POWER_COND_NONE, true, [command]);
-     * @param inFlags The flags which are required. (Use POWER_STATUS_ flags and combine them bitwise.)
-     * @param inStrict Determines whether all bits of the flag have to be set (true) or not (false).
-     * @param inCommand The command which should be executed.
-     * @return True if it was executed and no error occured, false otherwise.
-     */
-    private boolean powerCondExecVMFoxCommand(int inFlags, boolean inStrict, String inCommand)
-    {
-        // check the flags
-        int iResult = getPowerState() & inFlags;
-
-        // determine wether the conditions have been fulfilled
-        if ((inStrict ? (iResult == inFlags) : (iResult != 0)))
-        {
-            try {
-                String strOutput = vmComm.execVMcmd("vmrun", inCommand);
-
-                if (strOutput.length() == 0)
-                    return true;
-                else
-                    strLastError = strOutput;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-     /**
-     *
-     * @return the last error message
-     */
-    public String getLastErrorMessage() {
-        return strLastError;
-    }
-
-//      VMFox code
-//          to be used when VMFox is running correctly
-//    /**
-//     * @return the powerstate of this machine
-//     */
-//    public int getPowerState()
-//    {
-//        try {
-//            String strOutput = vmComm.execVMcmd(strImagePath + " powerstate");
-//
-//            // parse the output status id
-//            return Integer.parseInt(strOutput);
-//        } catch (IOException e) {
-//            // TODO: error logging
-//        }
-//
-//        return STATUS_ERROR;
-//    }
-
     /**
      * Get the power state of this VM
-     * @return a POWER_STATUS value
+     * @return
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
-    public int getPowerState()
-    {
-        try {
-            // execute the command
-            String strOutput = vmComm.execVMcmd("vmware-cmd", strImagePath + " getstate");
-
-            if (strOutput.trim().endsWith("on"))
-                return POWER_STATUS_POWERED_ON;
-            else if (strOutput.trim().endsWith("off"))
-                return POWER_STATUS_POWERED_OFF;
-            else
-                // don't know which are the other output strings
-                return STATUS_ERROR;
-        } catch (Exception e) {
-            return STATUS_ERROR;
-        }
+    public int getPowerState() throws SmartFrogException {
+        return this.vmComm.getPowerState(this);
     }
-
-//      VMFox code
-//          to be used when VMFox is running correctly
-//    /**
-//     * @return the tools state of this machine
-//     */
-//    public int getToolsState()
-//    {
-//        try {
-//            String strOutput = vmComm.execVMcmd(strImagePath + " toolsstate");
-//
-//            // parse the output status id
-//            return Integer.parseInt(strOutput);
-//        } catch (IOException e) {
-//            // TODO: error logging
-//        }
-//
-//        return STATUS_ERROR;
-//    }
-
-// VMFox code
-//    /**
-//     * Starts the machine. Has to be powered off or suspended.
-//     * @return True if the start command has been given and no error occured, false otherwise.
-//     */
-//    public boolean startUp() {
-//        // only try to start the machine if it's powered off or suspended
-//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
-//                                            false,
-//                                            strImagePath + " start");
-//    }
-//
-//    /**
-//     * Shuts this virtual machine down. Has to be powered on.
-//     * @return True if the shutdown command has been given and no error occured, false otherwise.
-//     */
-//    public boolean shutDown() {
-//        // only try to shutdown if the machine is running
-//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
-//                                            true,
-//                                            strImagePath + " stop");
-//    }
-//
-//    /**
-//     * Suspends the virtual machine. Has to be running.
-//     * @return True if the suspend command has been given and no error occured, false otherwise.
-//     */
-//    public boolean suspend() {
-//        // only try to suspend if the machine is running
-//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
-//                                            true,
-//                                            strImagePath + " suspend");
-//    }
-//
-//    /**
-//     * Resets a virtual machine.
-//     * @return True if the reset command has been given and no error occured, false otherwise.
-//     */
-//    public boolean reset() {
-//        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
-//                                            true,
-//                                            strImagePath + " reset");
-//  }
 
     /**
      * Starts the machine. Has to be powered off or suspended.
-     * @return True if the start command has been given and no error occured, false otherwise.
+     * @throws SmartFrogException
      */
-    public boolean startUp() {
-        // only try to start the machine if it's powered off or suspended
-        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
-                                            false,
-                                            "start " + strImagePath);
+    public void startUp() throws SmartFrogException {
+        this.vmComm.startVM(this);
     }
 
     /**
-     * Shuts this virtual machine down. Has to be powered on.
-     * @return True if the shutdown command has been given and no error occured, false otherwise.
+     * Shuts down this virtual machine. Has to be powered on.
+     * @throws SmartFrogException
      */
-    public boolean shutDown() {
-        // only try to shutdown if the machine is running
-        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
-                                            true,
-                                            "stop " + strImagePath);
+    public void shutDown() throws SmartFrogException {
+        this.vmComm.stopVM(this);
     }
 
     /**
      * Suspends the virtual machine. Has to be running.
-     * @return True if the suspend command has been given and no error occured, false otherwise.
+     * @throws SmartFrogException
      */
-    public boolean suspend() {
-        // only try to suspend if the machine is running
-        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_ON,
-                                            true,
-                                            "suspend " + strImagePath);
+    public void suspend() throws SmartFrogException {
+        this.vmComm.suspendVM(this);
     }
 
     /**
      * Resets a virtual machine.
-     * @return True if the reset command has been given and no error occured, false otherwise.
+     * @throws SmartFrogException
      */
-    public boolean reset() {
-        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
-                                            true,
-                                            "reset " + strImagePath);
+    public void reset() throws SmartFrogException {
+        this.vmComm.resetVM(this);
     }
-
-//      VMFox code
-//          to be used when VMFox is running correctly
-//    /**
-//     * Registers a virtual machine.
-//     * @return True if the register command has been given and no error occured, false otherwise.
-//     */
-//    public boolean registerVM() {
-//        return powerCondExecVMFoxCommand(   POWER_COND_NONE,
-//                                            true,
-//                                            strImagePath + " register");
-//    }
-//
-//    /**
-//     * Unregisters a virtual machine. Has to be shut down or suspended.
-//     * @return True if the unregister command has been given and no error occured, false otherwise.
-//     */
-//    public boolean unregisterVM() {
-//        return powerCondExecVMFoxCommand(   POWER_STATUS_POWERED_OFF | POWER_STATUS_SUSPENDED,
-//                                            false,
-//                                            strImagePath + " unregister");
-//    }
 
     /**
      * Registers a virtual machine.
-     * @return True if the register command has been given and no error occured, false otherwise.
+     * @throws SmartFrogException
      */
-    public boolean registerVM() {
-        try {
-            String strOutput = vmComm.execVMcmd("vmware-cmd", "-s register " + strImagePath);
-            if (strOutput.replace("\r","").replace("\n","").trim().endsWith(" = 1"))
-                return true;
-            else
-                return false;
-        } catch (Exception e) {
-            return false;
-        }
+    public void registerVM() throws SmartFrogException {
+        this.vmComm.registerVM(this);
     }
 
     /**
      * Unregisters a virtual machine. Has to be shut down or suspended.
-     * @return True if the unregister command has been given and no error occured, false otherwise.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
-    public boolean unregisterVM() {
+    public void unregisterVM() throws SmartFrogException {
+        this.vmComm.unregisterVM(this);
+    }
+
+    /**
+     * Gets the value of a key of the .vmx configuration file.
+     * @param inKey
+     * @return Returns the value of the key.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    public String getAttribute(final String inKey) throws SmartFrogException
+    {
         try {
-            String strOutput = vmComm.execVMcmd("vmware-cmd", "-s unregister " + strImagePath);
-            if (strOutput.replace("\r","").replace("\n","").trim().endsWith(" = 1"))
-                return true;
-            else
-                return false;
+            // open the .vmx file
+            File vmxFile = new File(this.strImagePath);
+            BufferedReader reader = new BufferedReader(new FileReader(vmxFile));
+
+            // create pattern
+            Pattern pattern = Pattern.compile("^\\s*" + Matcher.quoteReplacement(inKey) + "\\s*=\\s*\"(.*)\"\\s*$");
+
+            // read the content and search for the attribute
+            String strLine;
+            while((strLine = reader.readLine()) != null)
+            {
+                // match the line
+                Matcher matcher = pattern.matcher(strLine);
+                if (matcher.matches()) {
+                    reader.close();
+                    return matcher.group(1);
+                }
+            }
+
+            reader.close();
+
+            // attribute not found
+            return "";
+        } catch (IOException e) {
+            throw new SmartFrogException("Error while getting attribute.", e);
+        }
+    }
+
+    /**
+     * Sets the given attribute to the given value. NOTE: Setting non-existing values will have no effect and won't cause errors.
+     * @param inKey
+     * @param inValue
+     * @return Returns "success" or an error message.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    public String setAttribute(final String inKey, final String inValue) throws SmartFrogException
+    {
+        try {
+            // the old value of the attribute, if it existed before
+            String strOldVal = "";
+
+            // open the .vmx file to read from
+            File vmxFile = new File(this.strImagePath);
+            BufferedReader reader = new BufferedReader(new FileReader(vmxFile));
+
+            // create a new file to write to
+            File newFile = new File(vmxFile.getAbsolutePath() + "_new");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
+
+            // prepare the pattern
+            Pattern pattern = Pattern.compile("^\\s*" + Matcher.quoteReplacement(inKey) + "\\s*=\\s*\"(.*)\"\\s*$");
+
+            // parse the file
+            boolean bFound = false;
+            String strLine;
+            while((strLine = reader.readLine()) != null)
+            {
+                if (!bFound) {
+                    // while the attribute has not yet been found keep matching
+                    Matcher matcher = pattern.matcher(strLine);
+                    if (matcher.matches()) {
+                        // write the new value
+                        writer.write(Matcher.quoteReplacement(inKey) + " = \"" + inValue + "\"\n");
+
+                        // set the return value
+                        strOldVal = matcher.group(1);
+                        bFound = true;
+                    }
+                    else writer.write(strLine + "\n");
+                } else {
+                    // attribute has been replaced, just keep copying
+                    writer.write(strLine + "\n");
+                }
+            }
+
+            // add the attribute if it hasn't been in the file before
+            if (!bFound)
+                writer.write(Matcher.quoteReplacement(inKey) + " = \"" + inValue + "\"\n");
+
+            // close the new file
+            writer.close();
+
+            // close and delete the old file
+            reader.close();
+            vmxFile.delete();
+
+            // rename the new file
+            newFile.renameTo(vmxFile);
+
+            return strOldVal;
+        } catch (IOException e) {
+            throw new SmartFrogException("Error while setting attribute.", e);
+        }
+    }
+
+    /**
+     * Deletes this virtual machine.
+     * @return
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    public void delete() throws SmartFrogException
+    {
+        try {
+            // get the power state
+            int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
+            try {
+                iPowerState = this.getPowerState();
+            } catch (VIXException e) {
+                // ignore the file not found exception which will be thrown if
+                // virtual machine has not been registered with the vmware server
+                if (e.getErrorCode() != VMWareVixLibrary.VixError.VIX_E_FILE_NOT_FOUND)
+                    throw e;
+            }
+
+            // shut down the vm if it's not powered off or suspended
+            if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
+                iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
+                this.shutDown();
+
+            // get the folder of the virtual machine
+            File folder = (new File(this.strImagePath)).getParentFile();
+
+            // get the files in this folder and delete them
+            File[] files = folder.listFiles();
+            for (File curFile : files)
+                if (!curFile.delete())
+                    throw new SmartFrogException("Could not delete \"" + curFile.getAbsolutePath() + "\"");
+
+            // delete the folder
+            if (!folder.delete())
+                throw new SmartFrogException("Could not delete \"" + folder.getAbsolutePath() + "\"");
+
+        } catch (SmartFrogException e) {
+            throw new SmartFrogException(this.strImagePath + ": Failed to delete.", e);
+        }
+    }
+
+    /**
+     * Renames this virtual machine.
+     * @param inNewName The new name for this virtual machine.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    public void rename(String inNewName) throws SmartFrogException
+    {
+        try {
+            // get the power state
+            int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
+            try {
+                iPowerState = this.getPowerState();
+            } catch (VIXException e) {
+                // ignore the file not found exception which will be thrown if
+                // virtual machine has not been registered with the vmware server
+                if (e.getErrorCode() != VMWareVixLibrary.VixError.VIX_E_FILE_NOT_FOUND)
+                    throw e;
+            }
+
+            // shut down the vm if it's not powered off or suspended
+            if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
+                iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
+                this.shutDown();
+
+            // just rename the folder of the virtual machine and change the display name
+            // the reason for this are the virtual machine disks: there is little to
+            // none documentation about their structure/content. even the -######.vmdk
+            // files contain a little amount of configuration information additionally
+            // to the data
+
+            // set the display name
+            this.setAttribute("displayName", inNewName);
+
+            File vmxFile = new File(strImagePath);
+            File vmFolder = vmxFile.getParentFile();
+
+            // set the execution rights
+            vmxFile.setExecutable(true, false);
+
+            // rename the .vmx file
+            vmxFile.renameTo(new File(vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx"));
+
+            // rename the folder
+            vmFolder.renameTo(new File(vmFolder.getParent() + File.separator + inNewName));
+
+            // refresh the path to this vm
+            this.strImagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
+
         } catch (Exception e) {
-            return false;
+            throw new SmartFrogException(this.strImagePath + ": Failed to rename.", e);
         }
     }
 }
