@@ -52,7 +52,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     public static final int STATE_STARTING = 1;
     public static final int STATE_STARTED = 2;
     public static final int STATE_PROCESSING = 3;
-    public static final int STATE_FAILED = 4;
 
     private int state = 0;
 
@@ -100,16 +99,28 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
       //@TODO change to use notify()
 
-      while (!ready() && !(state==STATE_INACTIVE) && (numberOfTries > 0)) {
+//      while (!ready() && !(state==STATE_INACTIVE) && (numberOfTries > 0)) {
+//        if (sfLog.isDebugEnabled()) {
+//          sfLog.debug("WaitForReady");
+//        }
+//        numberOfTries --;
+//        try {
+//          Thread.sleep(time/periods);
+//        } catch (InterruptedException ex) {
+//        }
+//      }
+
+      while (!ready() ) {
         if (sfLog.isDebugEnabled()) {
           sfLog.debug("WaitForReady");
         }
-        numberOfTries --;
+
         try {
           Thread.sleep(time/periods);
         } catch (InterruptedException ex) {
         }
       }
+
 
       if (sfLog.isDebugEnabled()){
           if (ready())  sfLog.debug("WaitForReady- Ready");
@@ -244,10 +255,15 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
         try {
             synchronized (cmd) {
-                if (sfLog.isDebugEnabled()){ sfLog.debug(cmd.toString());  }
-                process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(), cmd.getFile());
+                if (sfLog.isDebugEnabled()){
+                    sfLog.debug(cmd.toString());
+                }
+                process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(),
+                                       cmd.getFile());
                 setState(STATE_STARTED);
-                if (sfLog.isTraceEnabled()){ sfLog.trace("attaching data output stream"); }
+                if (sfLog.isTraceEnabled()){
+                   sfLog.trace("attaching data output stream");
+                }
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
@@ -263,14 +279,18 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             if (process!=null) {
                 setState(STATE_PROCESSING);
                 cmd.notify();
-                if (sfLog.isTraceEnabled()){ sfLog.trace("waiting for application to exit"); }
+                if (sfLog.isTraceEnabled()){
+                      sfLog.trace("waiting for application to exit");
+                }
                 processStarted();
                 exitValue = process.waitFor();
                 processFinished();
 
             } else {
                 cmd.notify();
-                if (sfLog.isWarnEnabled()){ sfLog.warn("process null"); }
+                if (sfLog.isWarnEnabled()){
+                      sfLog.warn("process null");
+                }
             }
           } //synchronized
 
@@ -316,7 +336,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                   } else {
                     message = "Unexpected application state: " + state;
                   }
-                  setState(STATE_INACTIVE);
+                  //setState(STATE_INACTIVE);
                   if (sfLog.isWarnEnabled()) {
                     sfLog.warn(message);
                   }
