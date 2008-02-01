@@ -20,11 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import java.net.InetAddress;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import java.rmi.RemoteException;
 
 /**
  * A remote interface representing an active modification to DNS.

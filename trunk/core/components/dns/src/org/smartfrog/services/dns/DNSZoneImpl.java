@@ -21,19 +21,20 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dns;
 
 
-import java.util.Vector;
-import java.io.File;
-import java.io.IOException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import java.io.PrintWriter;
-import org.smartfrog.sfcore.componentdescription.CDVisitor;
-import java.io.FileOutputStream;
-import java.util.Iterator;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.componentdescription.CDVisitor;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Stack;
+import java.util.Vector;
 
 
 /**

@@ -20,30 +20,30 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.util.List;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import java.util.Vector;
-import java.util.Enumeration;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.SimpleResolver;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.ARecord;
-import java.util.Comparator;
-import java.util.TreeSet;
-import java.net.InetAddress;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.Type;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.Vector;
 
 
 

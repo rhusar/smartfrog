@@ -20,10 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.net.InetAddress;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TXTRecord;
+
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.Random;

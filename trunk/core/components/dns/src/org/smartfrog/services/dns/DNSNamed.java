@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dns;
 
 import org.smartfrog.sfcore.prim.Prim;
+
 import java.rmi.RemoteException;
-import java.net.InetAddress;
 
 
 

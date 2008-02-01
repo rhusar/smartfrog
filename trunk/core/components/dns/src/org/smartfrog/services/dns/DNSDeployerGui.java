@@ -20,12 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-
-
-
-
-
 /**
  * Triggers an interaction with the user to select a service instance.
  *

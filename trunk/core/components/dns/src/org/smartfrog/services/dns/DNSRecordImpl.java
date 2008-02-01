@@ -20,23 +20,24 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.xbill.DNS.DClass;
-import org.xbill.DNS.Type;
-import org.xbill.DNS.Name;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.PTRRecord;
-import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.Update;
-import java.net.InetAddress;
-import org.xbill.DNS.Resolver;
-import java.util.List;
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.TXTRecord;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import java.net.UnknownHostException;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.PTRRecord;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.Update;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 
 
 

@@ -20,21 +20,21 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import java.net.UnknownHostException;
-import java.net.InetAddress;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.xbill.DNS.Resolver;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.Reference;
+import org.xbill.DNS.Resolver;
+
+import java.net.InetAddress;
 
 
 

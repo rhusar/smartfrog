@@ -20,12 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.util.Enumeration;
-
-
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import java.util.Enumeration;
 
 
 

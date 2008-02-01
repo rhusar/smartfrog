@@ -20,8 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.dns;
 
-import java.net.InetAddress;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+
+import java.net.InetAddress;
 
 
 
