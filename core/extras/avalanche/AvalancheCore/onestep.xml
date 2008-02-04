@@ -25,19 +25,7 @@
     </subant>
   </target>
 
-  <target name="csSetupLibrary" depends="csAllJars">
-    <subant target="setup-library">
-      <fileset dir="." includes="${onestep.build.file}"/>
-    </subant>
-  </target>
-
-  <target name="csDist" depends="csSetupLibrary">
-    <subant target="dist">
-      <fileset dir="." includes="${onestep.build.file}"/>
-    </subant>
-  </target>
-
-  <target name="cleanSetup" depends="csDist" description="Cleans and builds avalanche and avalanche-gui.">
+  <target name="cleanSetup" depends="csAllJars" description="Cleans and builds avalanche and avalanche-gui.">
     <subant target="setup">
       <fileset dir="." includes="${onestep.setup.file}"/>
     </subant>
