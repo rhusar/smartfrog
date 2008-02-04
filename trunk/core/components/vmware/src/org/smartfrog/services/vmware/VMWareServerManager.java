@@ -74,7 +74,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         }
 
         // create the jna wrapper library
-        sfLog().info("Loading: " + strVixLibPath + strVixLibName);
         try {
             this.vmComm = new VMWareCommunicator(strVixLibPath, strVixLibName);
         } catch (Exception e) {
@@ -87,16 +86,16 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         setVmMasterFolder(FileSystem.lookupAbsolutePath(this, ATTR_MASTER_IMAGES_DIR, null, null, true, null));
 
         // generate the control modules for the vm images
-        generateModulesFromImgFolder();
+        loadExistingVMImages();
 
         // start all virtual machines
-        for (VMWareImageModule img : vmComm.getImageModuleList()) {
-            try {
-                img.startUp();
-            } catch (SmartFrogException e) {
-                sfLog().err(e);
-            }
-        }
+//        for (VMWareImageModule img : vmComm.getImageModuleList()) {
+//            try {
+//                img.startUp();
+//            } catch (SmartFrogException e) {
+//                sfLog().err(e);
+//            }
+//        }
 
         sfLog().info("VMWareServerManager started.");
     }
@@ -126,28 +125,27 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         }
     }
 
-    // TODO: add createVMImage functionality
-
     /**
-     * Should only be called in sfStart()! Generates a VMWareImageModule for each .vmx file in the designated vm images
-     * folder.
+     * Should only be called in <code>sfStart()</code>!
+     * Generates a <code>VMWareImageModule</code> for each vm image in a subfolder of <code>vmImagesFolder</code>
      */
-    private void generateModulesFromImgFolder() {
+    private void loadExistingVMImages() {
         // get the folder
-        File folder = new File(getVmImagesFolder());
+        File folder = new File(this.vmImagesFolder);
         if (folder.exists()) {
-            // get the files in the folder
-            File[] files = folder.listFiles(new vmxFileFilter());
-            if (files != null) {
-                for (File curFile : files) {
-                    try {
-                        // create a new image module and add it to the list if successful
-                        VMWareImageModule newImg = this.vmComm.createImageModule(curFile.getAbsolutePath());
-
-                        // register it with the vm in case some aren't yet
-                        newImg.registerVM();
-                    } catch (Exception e) {
-                        sfLog().trace(e);
+            // get all subfolders
+            File[] files = folder.listFiles();
+            for (File cur : files) {
+                if (cur.isDirectory()) {
+                    // check if there is a valid (Avalanche conform :D) vmware image in this folder
+                    File img = new File(cur.getAbsolutePath() + File.separator + cur.getName() + ".vmx");
+                    if (img.exists()) {
+                        // create a VMWareImageModule
+                        try {
+                            this.vmComm.createImageModule(img.getAbsolutePath());
+                        } catch (FileNotFoundException e) {
+                            sfLog().error("loadExistingVMImages: Failed to load virtual machine: ",e);
+                        }
                     }
                 }
             }
@@ -187,12 +185,13 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public String getMasterImages() throws RemoteException {
         String strResult = "";
 
-        // get the files
+        // get the master folder
         File folder = new File(getVmMasterFolder());
         if (folder.exists()) {
+            // get the folders of the master images
             File[] files = folder.listFiles();
             for (File f : files) {
-                if (f.getName().endsWith(vmxFileFilter.VMX)) {
+                if (f.isDirectory()) {
                     strResult += f.getName() + "\n";
                 }
             }
@@ -203,29 +202,29 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
 
     /**
-     * Create a new instance of a master copy.
-     *
-     * @param inVMMaster
-     * @param inVMCopyName
+     * Create a new copy of a master image.
+     * @param inVMMaster Name of the master image.
+     * @param inVMCopyName Name of the new copy.
      * @throws java.rmi.RemoteException
      */
-    public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException,SmartFrogException {
-        String copyVMX;
-        
-        copyVMX = getVmImagesFolder() + File.separator + inVMCopyName;
-        if (!copyVMX.endsWith(vmxFileFilter.VMX)) {
-            copyVMX += vmxFileFilter.VMX;
+    public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException, SmartFrogException {
+        try {
+            // compose the locations
+            String strMasterName = getVmMasterFolder() + File.separator + inVMMaster + File.separator + inVMMaster + ".vmx";
+            String strCopyDest = getVmImagesFolder() + File.separator + inVMCopyName;
+
+            // do the copy
+            this.vmComm.copyVirtualMachine(strMasterName, strCopyDest);
+
+            // create a new image module for the copy
+            VMWareImageModule newImg = this.vmComm.createImageModule(strCopyDest + File.separator + inVMMaster + ".vmx");
+
+            // rename the copy
+            if (newImg != null)
+                newImg.rename(inVMCopyName);
+        } catch (FileNotFoundException e) {
+            sfLog().error("Failed to create a copy of a master image: ", e);
         }
-
-        this.vmComm.copyVirtualMachine(getVmMasterFolder() + File.separator + inVMMaster, getVmImagesFolder() + File.separator + inVMCopyName);
-
-        VMWareImageModule newImg = this.vmComm.createImageModule(getVmImagesFolder() + File.separator + inVMCopyName + File.separator + inVMMaster);
-        newImg.rename(inVMCopyName);
-
-        // register the file with the vmware server
-        newImg.registerVM();
-
-        // TODO: remove created image on error
     }
 
     /**
@@ -275,7 +274,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * Suspends a virtual machine. Has to be running.
      *
      * @param inVMPath The full path to the machine.
-     * @returns Returns "success" or an error message.
+     * @return Returns "success" or an error message.
      */
     public String suspendVM(String inVMPath) throws RemoteException {
         try {

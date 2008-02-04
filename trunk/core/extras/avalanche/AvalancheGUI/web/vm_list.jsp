@@ -42,11 +42,7 @@ For more information: www.smartfrog.org
         <script language="JavaScript" type="text/javascript">
             oneVoiceWritePageMenu("VMList", "header",
                     "Create a virtual machine",
-                    "javascript:window.location.href='vm_setup.jsp?host=<%=strHost%>'",
-                    "Start VMWare Server Service",
-                    "javascript:window.location.href='vm_actions.jsp?action=startvmwareservice&host=<%=strHost%>'",
-                    "Stop VMWare Server Service",
-                    "javascript:window.location.href='vm_actions.jsp?action=stopvmwareservice&host=<%=strHost%>'"
+                    "javascript:window.location.href='vm_setup.jsp?host=<%=strHost%>'"
                     );
         </script>
     </div>

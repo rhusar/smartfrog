@@ -244,12 +244,12 @@ public class VMWareCommunicator {
      * @param inPath The path to the virtual machine image. (to the .vmx file)
      * @return The newly created image module or null.
      */
-    public VMWareImageModule createImageModule(String inPath) {
+    public VMWareImageModule createImageModule(String inPath) throws FileNotFoundException {
         // try to create the new image module
         VMWareImageModule newImg = VMWareImageModule.createImageModule(inPath, this);
 
-        // if the creation has been successful add the module to the list
         if (newImg != null) {
+            // if the creation has been successful add the module to the list
             this.listImageModule.add(newImg);
         }
 
@@ -512,16 +512,13 @@ public class VMWareCommunicator {
                                                             null);
 
             // wait for the job to complete
-            System.err.println("Before wait.");
             long lErr = this.vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
-            System.err.println("Error: " + lErr);
 
             // release the job handle
             this.vixLib.Vix_ReleaseHandle(iJobHandle);
 
             convertToException(lErr, true);
 
-            System.err.println("After Exception.");
         } catch(VIXException e) {
             // don't convert vix exceptions into smartfrog exceptions
             throw e;

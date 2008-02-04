@@ -31,9 +31,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/services/os/components.sf"
-#include "/org/smartfrog/services/os/java/library.sf"
-#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 #include "/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf"
 
 VMWareServerManager extends Prim {

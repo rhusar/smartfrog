@@ -68,10 +68,6 @@ For more information: www.smartfrog.org
                     ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
                 } else if (strAction.equals("getmasters")) {
                     ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
-                } else if (strAction.equals("stopvmwareservice")) {
-                    ServerSetup.sendVMCommand(strHost, null, null, "stopvmwareservice");
-                } else if (strAction.equals("startvmwareservice")) {
-                    ServerSetup.sendVMCommand(strHost, null, null, "startvmwareservice");
                 } else if (strAction.equals("getstate")) {
                     for (String str : strVMPathes)
                         ServerSetup.sendVMCommand(strHost, str, null, "powerstate");

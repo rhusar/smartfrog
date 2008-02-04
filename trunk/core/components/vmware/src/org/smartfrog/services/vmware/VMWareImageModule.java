@@ -89,18 +89,16 @@ public class VMWareImageModule {
      * @param inComm Reference to the vmware communicator class.
      * @return A new instance on success or null on failure.
      */
-    public static VMWareImageModule createImageModule(String inImagePath, VMWareCommunicator inComm)
+    public static VMWareImageModule createImageModule(String inImagePath, VMWareCommunicator inComm) throws FileNotFoundException
     {
-        VMWareImageModule newModule = null;
-
         // validate the path
         File file = new File(inImagePath);
         if (file.exists() && file.getName().endsWith(".vmx"))
         {
-            newModule = new VMWareImageModule(inImagePath, inComm);
+            return new VMWareImageModule(inImagePath, inComm);
         }
 
-        return newModule;
+        throw new FileNotFoundException(inImagePath);
     }
 
     /**
@@ -288,6 +286,9 @@ public class VMWareImageModule {
                 iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
                 this.shutDown();
 
+            // unregister the vm
+            this.unregisterVM();
+
             // get the folder of the virtual machine
             File folder = (new File(this.strImagePath)).getParentFile();
 
@@ -330,6 +331,9 @@ public class VMWareImageModule {
                 iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
                 this.shutDown();
 
+            // unregister the vm
+            this.unregisterVM();
+
             // just rename the folder of the virtual machine and change the display name
             // the reason for this are the virtual machine disks: there is little to
             // none documentation about their structure/content. even the -######.vmdk
@@ -353,6 +357,9 @@ public class VMWareImageModule {
 
             // refresh the path to this vm
             this.strImagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
+
+            // register the vm again
+            this.registerVM();
 
         } catch (Exception e) {
             throw new SmartFrogException(this.strImagePath + ": Failed to rename.", e);
