@@ -343,7 +343,7 @@ public class VMWareImageModule {
             File vmFolder = vmxFile.getParentFile();
 
             // set the execution rights
-            // vmxFile.setExecutable(true, false);
+            vmxFile.setExecutable(true, false);
 
             // rename the .vmx file
             vmxFile.renameTo(new File(vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx"));

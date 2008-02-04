@@ -31,14 +31,25 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 
 #include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/os/components.sf"
+#include "/org/smartfrog/services/os/java/library.sf"
+#include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 #include "/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf"
 
 VMWareServerManager extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareServerManager";
+
     copyImages ((ENVPROPERTY SFHOME) ++ "/vmcopyimages");
     masterImages ((ENVPROPERTY SFHOME) ++ "/vmmasterimages");
-    //copyImages ((LAZY PROPERTY smartfrog.home) ++ "/vmcopyimages");
-    //masterImages ((LAZY PROPERTY smartfrog.home) ++ "/vmmasterimages");
+
+    // the folder where the vix library can be found
+    vixLibraryPathWin "[vmware vix folder]/";
+    // the name of the library without the .dll ending
+    vixLibraryNameWin "vix";
+    // the folder where the vix library can be found
+    vixLibraryPathLinux "/usr/lib/";
+    // the name of the vix library without pre- and suffix (lib[vixLibraryName].so)
+    vixLibraryNameLinux "vmware-vix";
 }
 
 VMWareMessageListener extends Prim {

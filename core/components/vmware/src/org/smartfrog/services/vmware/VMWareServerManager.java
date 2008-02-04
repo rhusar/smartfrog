@@ -38,19 +38,19 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.rmi.RemoteException;
-import java.nio.charset.Charset;
 
 
-// TODO: think of a better approach to error handling when getting an image module failed
 public class VMWareServerManager extends PrimImpl implements VMWareServerManagerServices {
     /** The folder where all vm images are stored which are under control of the daemon. */
     private String vmImagesFolder;
     private String vmMasterFolder;
+
+    private static String ATTR_VIXLIBRARYPATH_WIN = "vixLibraryPathWin";
+    private static String ATTR_VIXLIBRARYNAME_WIN = "vixLibraryNameWin";
+    private static String ATTR_VIXLIBRARYPATH_LINUX = "vixLibraryPathLinux";
+    private static String ATTR_VIXLIBRARYPNAME_LINUX = "vixLibraryNameLinux";
 
     /** Used to communicate with the vmware server. */
     private VMWareCommunicator vmComm = null;
@@ -62,9 +62,21 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
+        // get the vix properties
+        String strVixLibPath, strVixLibName;
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+            strVixLibPath = (String) sfResolve(ATTR_VIXLIBRARYPATH_WIN, true);
+            strVixLibName = (String) sfResolve(ATTR_VIXLIBRARYNAME_WIN, true);
+        }
+        else {
+            strVixLibPath = (String) sfResolve(ATTR_VIXLIBRARYPATH_LINUX, true);
+            strVixLibName = (String) sfResolve(ATTR_VIXLIBRARYPNAME_LINUX, true);
+        }
+
         // create the jna wrapper library
+        sfLog().info("Loading: " + strVixLibPath + strVixLibName);
         try {
-            this.vmComm = new VMWareCommunicator();
+            this.vmComm = new VMWareCommunicator(strVixLibPath, strVixLibName);
         } catch (Exception e) {
             sfLog().error("Error while creating the VMware communicator.", e);
             throw new SmartFrogLifecycleException("Error while creating the VMware communicator.", e);
@@ -233,20 +245,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             return "Failed to suspend \"" + inVMPath + "\". Please review the logfile for detailed information.";
         }
         return "success"; // TODO: better error messages
-    }
-
-    /**
-     * Copies a file.
-     *
-     * @param from source
-     * @param to dest
-     * @throws IOException on failure to copy
-     */
-    private void copy(String from, String to) throws IOException {
-        sfLog().info("VMWareServerManager creating copy. From: " + from + " to: " + to);
-        File fromFile = new File(from);
-        File toFile = new File(to);
-        FileSystem.fCopy(fromFile,toFile);
     }
 
     /**
