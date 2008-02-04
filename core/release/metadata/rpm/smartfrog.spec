@@ -394,7 +394,6 @@ rm -rf $RPM_BUILD_ROOT
 #ROOT directory
 %dir %{basedir}
 %{basedir}/build.xml
-%doc %{basedir}/changes.txt
 %doc %{basedir}/COPYRIGHT.txt
 %doc %{basedir}/LICENSE.txt
 %{basedir}/parsertargets
