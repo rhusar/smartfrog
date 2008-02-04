@@ -252,7 +252,6 @@
     <include name="parsertargets"/>
     <include name="COPYRIGHT.txt"/>
     <include name="LICENSE.txt"/>
-    <include name="changes.txt"/>
     <include name="readme.txt"/>
     <include name="sf-build-version.properties"/>
     <!--notice how this pulls in the directory, but not its contents-->

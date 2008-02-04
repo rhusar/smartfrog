@@ -714,7 +714,6 @@
     <copy tofile="${dist.dir}/parsertargets" file="parsertargets"/>
     <copy tofile="${dist.dir}/COPYRIGHT.txt" file="COPYRIGHT.txt"/>
     <copy tofile="${dist.dir}/LICENSE.txt" file="LICENSE.txt"/>
-    <copy tofile="${dist.dir}/changes.txt" file="changes.txt"/>
     <copy tofile="${dist.dir}/readme.txt" file="readme.txt"/>
   </target>
 
@@ -1181,7 +1180,6 @@ ${ivy.reports.dir}
     <include name="parsertargets"/>
     <include name="COPYRIGHT.txt"/>
     <include name="LICENSE.txt"/>
-    <include name="changes.txt"/>
     <include name="readme.txt"/>
     <include name="sf-build-version.properties"/>
     <patternset refid="excluded.cruft"/>
