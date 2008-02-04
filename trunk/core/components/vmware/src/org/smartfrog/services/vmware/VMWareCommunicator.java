@@ -15,10 +15,7 @@ package org.smartfrog.services.vmware;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.filesystem.FileSystem;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 import com.sun.jna.ptr.IntByReference;
@@ -343,7 +340,7 @@ public class VMWareCommunicator {
                     writer.close();
 
                     // set execution flag
-                    // newFile.setExecutable(true, false);
+                    newFile.setExecutable(true, false);
                 }
             }
         } catch (IOException e) {

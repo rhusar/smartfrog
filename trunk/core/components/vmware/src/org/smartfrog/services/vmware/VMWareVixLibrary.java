@@ -7,9 +7,6 @@ import com.sun.jna.ptr.IntByReference;
  * VMWare VIX API library wrapper. For remarks or more detailed information please see http://pubs.vmware.com/vix-api/ReferenceGuide/.
  */
 public interface VMWareVixLibrary extends Library {
-    // load the library
-    public VMWareVixLibrary instance = (VMWareVixLibrary) Native.loadLibrary("vmware-vix", VMWareVixLibrary.class);
-
     public static interface VixEventProc extends Callback {
         /**
          * Procedures of this type are called when an event happens on a handle.
