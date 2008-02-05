@@ -65,7 +65,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /** Maintains a temporal list of the children that have to be driven
      * through their sfDeploy and sfStart lifecycle methods.*/
-    private Vector<Prim> lifecycleChildren = new Vector<Prim>();
+    protected Vector<Prim> lifecycleChildren = new Vector<Prim>();
 
     /**
      * Whether termination should be synchronous. Determined by the
