@@ -159,6 +159,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @return true if the vm started
      */
     public String startVM(String inVMPath) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
             // get a machine module
             VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
@@ -166,14 +169,15 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             // check if it worked
             if (tmp != null) {
                 tmp.startUp();
-                return "success";
             }
+            else strResponse = "Failed to start \"" + inVMPath + "\": Image module not existing.";
+
         } catch (SmartFrogException e) {
             sfLog().error("Failed to start \"" + inVMPath + "\"", e);
+            strResponse = "Exception while starting \"" + inVMPath + "\": " + e.toString();
         }
 
-        // an error occured
-        return "Failed to start \"" + inVMPath + "\". Please review the logfile for detailed information.";
+        return strResponse;
     }
 
     /**
@@ -207,12 +211,15 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @param inVMCopyName Name of the new copy.
      * @throws java.rmi.RemoteException
      */
-    public void createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException, SmartFrogException {
-        try {
-            // compose the locations
-            String strMasterName = getVmMasterFolder() + File.separator + inVMMaster + File.separator + inVMMaster + ".vmx";
-            String strCopyDest = getVmImagesFolder() + File.separator + inVMCopyName;
+    public String createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException {
+        // error string
+        String strResponse = "success";
 
+        // compose the locations
+        String strMasterName = getVmMasterFolder() + File.separator + inVMMaster + File.separator + inVMMaster + ".vmx";
+        String strCopyDest = getVmImagesFolder() + File.separator + inVMCopyName;
+
+        try {
             // do the copy
             this.vmComm.copyVirtualMachine(strMasterName, strCopyDest);
 
@@ -220,39 +227,48 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             VMWareImageModule newImg = this.vmComm.createImageModule(strCopyDest + File.separator + inVMMaster + ".vmx");
 
             // rename the copy
-            if (newImg != null)
-                newImg.rename(inVMCopyName);
-        } catch (FileNotFoundException e) {
-            sfLog().error("Failed to create a copy of a master image: ", e);
+            newImg.rename(inVMCopyName);
+
+        } catch (Exception e) {
+            sfLog().error("Failed to create a copy of \"" + strMasterName + "\"", e);
+            strResponse = "Exception while creating a copy of \"" + strMasterName + "\": " + e.toString();
         }
+
+        return strResponse;
     }
 
     /**
-     * Delete a instance of a master copy.
-     *
+     * Deletes a virtual machine. (Including the files.)
      * @param inVMPath
      * @throws java.rmi.RemoteException network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  other problems
-     * @returns "success" or an error message
+     * @return "success" or an error message
      */
     public String deleteCopy(String inVMPath) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
-            this.vmComm.deleteVirtualMachine(inVMPath);
+            if(!this.vmComm.deleteVirtualMachine(inVMPath))
+                strResponse = "Failed to delete \"" + inVMPath + "\": Image module not existing.";
+
         } catch (SmartFrogException e) {
             sfLog().error("Failed to delete \"" + inVMPath + "\"", e);
-            return "Failed to suspend \"" + inVMPath + "\". Please review the logfile for detailed information.";
+            strResponse = "Exception while deleting \"" + inVMPath + "\": " + e.toString();
         }
-        return "success"; // TODO: better error messages
+
+        return strResponse;
     }
 
     /**
-     * Starts a virtual machine. Has to be powered off or suspended.
+     * Shuts down a virtual machine. Has to be powered on.
      *
      * @param inVMPath The full path to the machine.
      * @returns Returns "success" or an error message.
      */
-    public String stopVM(String inVMPath) throws RemoteException {
+    public String shutDownVM(String inVMPath) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
             // get a machine module
             VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
@@ -260,14 +276,15 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             // check if it worked
             if (tmp != null) {
                 tmp.shutDown();
-                return "success";
             }
+            else strResponse = "Failed to shut down \"" + inVMPath + "\": Image module not existing.";
         } catch (SmartFrogException e) {
-            sfLog().error("Failed to stop \"" + inVMPath + "\"", e);
+            sfLog().error("Failed to shut down \"" + inVMPath + "\"", e);
+            strResponse = "Exception while shutting down \"" + inVMPath + "\": " + e.toString();
         }
 
         // an error occurred
-        return "Failed to stop \"" + inVMPath + "\". Please review the logfile for detailed information.";
+        return strResponse;
     }
 
     /**
@@ -277,6 +294,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @return Returns "success" or an error message.
      */
     public String suspendVM(String inVMPath) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
             // get a machine module
             VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
@@ -284,15 +304,15 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             // check if it worked
             if (tmp != null) {
                 tmp.suspend();
-                return "success";
             }
+            else strResponse = "Failed to suspend \"" + inVMPath + "\": Image module not existing.";
 
         } catch (SmartFrogException e) {
             sfLog().error("Failed to suspend \"" + inVMPath + "\"", e);
+            strResponse = "Exception while suspending \"" + inVMPath + "\": " + e.toString();
         }
 
-        // an error occurred
-        return "Failed to suspend \"" + inVMPath + "\". Please review the logfile for detailed information.";
+        return strResponse;
     }
 
     /**
@@ -301,6 +321,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @return "success" or an error message.
      */
     public String resetVM(String inVMPath) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
             // get a machine module
             VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
@@ -308,14 +331,16 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             // check if it worked
             if (tmp != null) {
                 tmp.reset();
-                return "success";
             }
+            else strResponse = "Failed to reset \"" + inVMPath + "\": Image module not existing.";
+
         } catch (SmartFrogException e) {
             sfLog().error("Failed to reset \"" + inVMPath + "\"", e);
+            strResponse = "Exception while resetting \"" + inVMPath + "\": " + e.toString();
         }
 
         // an error occurred
-        return "Failed to reset \"" + inVMPath + "\". Please review the logfile for detailed information.";
+        return strResponse;
     }
 
     /**
@@ -336,7 +361,29 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         }
 
         // an error occurred
-        return -1;
+        return 0;
+    }
+
+    /**
+     * Gets the tools state of a virtual machine.
+     *
+     * @param inVMPath The full path to the machine.
+     * @return
+     */
+    public int getToolsState(String inVMPath) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+
+            // check if it worked
+            if (tmp != null)
+                return tmp.getToolsState();
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to get the tools state of \"" + inVMPath + "\"", e);
+        }
+
+        // an error occurred
+        return 0;
     }
 
     /**
@@ -369,6 +416,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      * @return "success" or an error message.
      */
     public String shutdownVMWareServerService() throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         // shutdown the vmware server service, which will automatically shut down all vms
         try {
             if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
@@ -378,14 +428,17 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             }
         } catch (IOException e) {
             sfLog().error("Failed to shut down vmware server", e);
-            return "Failed to shut down vmware server. Please review the logfile for detailed information.";
+            strResponse = "Exception while shutting down vmware server: " + e.toString();
         }
 
-        return "success";
+        return strResponse;
     }
 
     /** Starts the vmware server service. */
     public String startVMWareServerService() throws RemoteException {
+        // error string
+        String strResponse = "success";
+
         try {
             // start the vmware server service
             if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
@@ -395,10 +448,10 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             }
         } catch (IOException e) {
             sfLog().error("Failed to start vmware server", e);
-            return "Failed to start vmware server. Please review the logfile for detailed information.";
+            strResponse = "Exception while starting vmware server: " + e.toString();
         }
 
-        return "success";
+        return strResponse;
     }
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {

@@ -71,6 +71,9 @@ For more information: www.smartfrog.org
                 } else if (strAction.equals("getstate")) {
                     for (String str : strVMPathes)
                         ServerSetup.sendVMCommand(strHost, str, null, "powerstate");
+                } else if (strAction.equals("gettoolsstate")) {
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "toolsstate");
                 }
             }
         } catch (Exception e) {
