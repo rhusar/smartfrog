@@ -87,7 +87,7 @@ public class VMWareImageModule {
      * Creates a new VMWare Image Module if the path is valid.
      * @param inImagePath Valid path to a .vmx file.
      * @param inComm Reference to the vmware communicator class.
-     * @return A new instance on success or null on failure.
+     * @return A new instance.
      */
     public static VMWareImageModule createImageModule(String inImagePath, VMWareCommunicator inComm) throws FileNotFoundException
     {
@@ -108,6 +108,15 @@ public class VMWareImageModule {
      */
     public int getPowerState() throws SmartFrogException {
         return this.vmComm.getPowerState(this);
+    }
+
+    /**
+     * Get the tools state of this VM
+     * @return
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    public int getToolsState() throws SmartFrogException {
+        return this.vmComm.getToolsState(this);
     }
 
     /**

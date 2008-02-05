@@ -242,7 +242,7 @@ public class VMWareCommunicator {
     /**
      * Creates a VMWareImageModule from an existing virtual machine image.
      * @param inPath The path to the virtual machine image. (to the .vmx file)
-     * @return The newly created image module or null.
+     * @return The newly created image module.
      */
     public VMWareImageModule createImageModule(String inPath) throws FileNotFoundException {
         // try to create the new image module
@@ -327,21 +327,26 @@ public class VMWareCommunicator {
 
             // get the files of the source
             File srcFile = new File(inSourceImage);
-            File[] files = srcFile.getParentFile().listFiles();
-            for (File curFile : files) {
-                // copy the file
-                File newFile = new File(destFolder.getAbsolutePath() + File.separator + curFile.getName());
-                FileSystem.fCopy(curFile, newFile);
+            if (srcFile.exists()) {
+                File[] files = srcFile.getParentFile().listFiles();
+                for (File curFile : files) {
+                    // copy the file
+                    File newFile = new File(destFolder.getAbsolutePath() + File.separator + curFile.getName());
+                    FileSystem.fCopy(curFile, newFile);
 
-                // if it's a .vmx file set the creation of a new uuid
-                if (curFile.getAbsolutePath().endsWith(".vmx")) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(newFile, true));
-                    writer.write("uuid.action = \"create\"\n");
-                    writer.close();
+                    // if it's a .vmx file set the creation of a new uuid
+                    if (curFile.getAbsolutePath().endsWith(".vmx")) {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(newFile, true));
+                        writer.write("uuid.action = \"create\"\n");
+                        writer.close();
 
-                    // set execution flag
-                    newFile.setExecutable(true, false);
+                        // set execution flag
+                        newFile.setExecutable(true, false);
+                    }
                 }
+            }
+            else {
+                throw new SmartFrogException("Source image does not exist: " + inSourceImage);
             }
         } catch (IOException e) {
             throw new SmartFrogException("Error while copying VM", e);
@@ -387,12 +392,12 @@ public class VMWareCommunicator {
     }
 
     /**
-     * Gets a specific state of a virtual machine.
+     * Gets a single porperty of a virtual machine.
      * @param inImg The virtual machine module.
      * @param inVixPropertyID Must be of type VMWareVixLibrary.VixPropertyID
      * @return
      */
-    public int getState(VMWareImageModule inImg, int inVixPropertyID) throws SmartFrogException {
+    public int getProperty(VMWareImageModule inImg, int inVixPropertyID) throws SmartFrogException {
         try {
             // ensure there is a valid connection and vm handle
             this.acquireVMHandle(inImg);
@@ -423,7 +428,7 @@ public class VMWareCommunicator {
      * @return The power state.
      */
     public int getPowerState(VMWareImageModule inImg) throws SmartFrogException {
-        return this.getState(inImg, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_VM_POWER_STATE);
+        return this.getProperty(inImg, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_VM_POWER_STATE);
     }
 
     /**
@@ -433,7 +438,7 @@ public class VMWareCommunicator {
      * @throws SmartFrogException
      */
     public int getToolsState(VMWareImageModule inImg) throws SmartFrogException {
-        return this.getState(inImg, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_VM_TOOLS_STATE);
+        return this.getProperty(inImg, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_VM_TOOLS_STATE);
     }
 
     /**
@@ -505,7 +510,6 @@ public class VMWareCommunicator {
             this.connect();
 
             // register the virtual machine
-            System.err.println(String.format("%d, %s", this.iHostHandle.getValue(), inImg.getVMPath()));
             int iJobHandle = this.vixLib.VixHost_RegisterVM(this.iHostHandle.getValue(),
                                                             inImg.getVMPath(),
                                                             null,

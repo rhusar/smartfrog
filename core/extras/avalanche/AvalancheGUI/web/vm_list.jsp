@@ -72,6 +72,8 @@ For more information: www.smartfrog.org
             oneVoiceWritePageMenu("VMList", "footer",
                         "Delete selected VMs",
                         "javascript:perform('delete', '<%=strHost%>')",
+                        "Get tools state of selected VMs",
+                        "javascript:perform('gettoolsstate', '<%=strHost%>')",
                         "Get state of selected VMs",
                         "javascript:perform('getstate', '<%=strHost%>')",
                         "Stop selected VMs",

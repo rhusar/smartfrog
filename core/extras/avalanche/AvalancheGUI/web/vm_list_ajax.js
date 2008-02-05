@@ -103,26 +103,11 @@ function updateVmList(inHost) {
 
                                 // Cell: Response
                                 var statusCell = row.insertCell(4);
-                                var statusColour = document.createElement("div");
-                                if (usingIE) {
-                                    statusColour.style.styleFloat = "left";
-                                } else {
-                                    statusColour.setAttribute("style", "float:left;");
-                                }
-                                statusColour.style.display = "block";
-                                statusColour.style.height = "10px";
-                                statusColour.style.width = "10px";
                                 var statusMessage = document.createElement("div");
                                 statusMessage.setAttribute("style", "float:left;");
                                 statusMessage.style.styleFloat = "left";
                                 statusMessage.style.display = "block";
-                                if (vms[i].childNodes[2].firstChild.data == "success") {
-                                    statusColour.style.backgroundColor = "#00FF00";
-                                } else {
-                                    statusColour.style.backgroundColor = "#FF0000";
-                                }
                                 statusMessage.appendChild(document.createTextNode(vms[i].childNodes[2].firstChild.data));
-                                statusCell.appendChild(statusColour);
                                 statusCell.appendChild(statusMessage);
                             }
                             select(allSelectedVMs);
