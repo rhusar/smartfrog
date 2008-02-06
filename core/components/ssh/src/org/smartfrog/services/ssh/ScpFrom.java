@@ -21,14 +21,12 @@ package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +35,8 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Class to copy securely from a remote machine. 
@@ -47,33 +46,38 @@ import java.util.Vector;
  */
 public class ScpFrom extends AbstractScpOperation {
 
+    private static final String EXEC = "exec";
+
     /**
      * Constucts ScpFrom using log object.
      * @param sfLog log
      */
     public ScpFrom(LogSF sfLog) {
-        super(sfLog);
+        super(sfLog, null);
     }
+
     /**
      * Downloads files from a remote machine.
      * @param session current session
-     * @param remoteFiles vector of remote file names
+     * @param remoteFilenames vector of remote file names
      * @param localFiles vector of corresponding local file names
      * @throws IOException in case not able to transfer files
      * @throws JSchException for JSCH problems.
+     * @throws InterruptedIOException if the operation was halted
      */
-    public void doCopy (Session session, Vector remoteFiles,Vector<File> localFiles)
+    public void doCopy (Session session, List<String> remoteFilenames, 
+                        List<File> localFiles)
                                  throws IOException, JSchException {
-        String cmdPrefix = "scp -f ";
-        for (int index = 0; index < remoteFiles.size(); index++) {
+        Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
+        for (File localFile : localFiles) {
             if (haltOperation) {
                 throw new InterruptedIOException();
             }
+            String remoteFile = remoteFilenameIterator.next();
+            String cmdPrefix = "scp -f ";
             Channel channel = null;
             try {
-                File localFile = localFiles.elementAt(index);
-                String remoteFile = (String) remoteFiles.elementAt(index);
-                channel = session.openChannel("exec");
+                channel = session.openChannel(EXEC);
                 String command = cmdPrefix + remoteFile;
                 ((ChannelExec) channel).setCommand(command);
                 // get I/O streams from channel

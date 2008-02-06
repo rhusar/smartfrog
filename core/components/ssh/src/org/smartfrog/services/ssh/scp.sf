@@ -47,6 +47,8 @@ For more information: www.smartfrog.org
         //default transfer is a get
         transferType get_files;
 
+        //this value gets added as we go along
+        transferCount extends OptionalInteger;
     }
 
     /**
@@ -148,3 +150,20 @@ ScpSessionAuthPubKey extends ScpSessionPublicKey ;
 
 
 
+/**
+ * This component does a bulk upload using full java.util.regex expression
+ * Patterns. All files are placed into the remote directory specified. 
+ */
+ScpBulkUpload extends SSHComponent {
+    sfClass "org.smartfrog.services.ssh.ScpBulkUploadImpl";
+    scpSchema  extends FilesSchema  {
+      remoteDir extends String;
+      //this value gets added as we go along
+      transferCount extends OptionalInteger;
+    }
+
+  pattern Files:pattern;
+  includeHiddenFiles Files:includeHiddenFiles;
+  caseSensitive Files:caseSensitive;
+
+}

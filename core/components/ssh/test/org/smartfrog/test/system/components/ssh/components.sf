@@ -86,3 +86,19 @@ PublicKeyFile extends TempFileWithCleanup {
      suffix "txt";
      text testKey:publicKey;
 }
+
+
+SshTestProperties extends Compound {
+    password OPTIONAL("") PROPERTY test.ssh.pass;
+    host OPTIONAL("") PROPERTY test.ssh.host;
+    username OPTIONAL("") PROPERTY test.ssh.user;
+    timeout OPTIONAL(5000) IPROPERTY test.ssh.timeout;
+ }
+
+
+SshTestPropertiesSet  extends Not {
+    condition extends StringEquals {
+      left "";
+      right OPTIONAL("") PROPERTY "test.ssh.host";
+    }
+  }

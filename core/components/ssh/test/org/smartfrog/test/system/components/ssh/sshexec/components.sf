@@ -53,21 +53,16 @@ Tcn94 extends SSHSessionPasswordFile {
     commands [];
  }
 
-
+/**
+ * bind to a test SSH server
+ */
 SshTestServer extends SSHSessionInlinePassword {
-    password OPTIONAL("") PROPERTY test.ssh.pass;
-    host OPTIONAL("") PROPERTY test.ssh.host;
-    username OPTIONAL("") PROPERTY test.ssh.user;
+    password SshTestProperties:password;
+    host SshTestProperties:host;
+    username SshTestProperties:username;
     sfShouldTerminate true;
-    timeout 5000;
+    timeout SshTestProperties:timeout;
  }
-
-SshTestPropertiesSet  extends Not {
-    condition extends StringEquals {
-      left "";
-      right OPTIONAL("") PROPERTY "test.ssh.host";
-    }
-  }
 
 testSshLogin extends ExpectTerminate {
   description "this logs in and prints 'hello' out";

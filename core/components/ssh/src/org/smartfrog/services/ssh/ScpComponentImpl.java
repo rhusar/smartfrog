@@ -21,8 +21,6 @@
 
 package org.smartfrog.services.ssh;
 
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -31,7 +29,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
@@ -47,12 +44,6 @@ import java.util.Vector;
  */
 public class ScpComponentImpl extends AbstractSSHComponent implements ScpComponent {
 
-    private static final String GET = "get";
-    private static final String PUT = "put";
-    /**
-     * Type of transfer. "get": download, "put": upload
-     */
-    private String transferType = "get";
     /**
      * true if files are to be fetched,
      */
@@ -60,7 +51,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     /**
      * Vector of remote file names
      */
-    private Vector remoteFileList = null;
+    private Vector<String> remoteFileList = null;
     /**
      * Vector of local file names
      */
@@ -70,6 +61,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * The worker thread is here
      */
     private ScpWorkerThread worker;
+
     public static final String ERROR_OUTPUT_IS_A_DIRECTORY = "output file bound to a directory: ";
     public static final String ERROR_MISSING_FILE_TO_UPLOAD = "Missing file to upload: ";
     public static final String ERROR_NOT_A_NORMAL_FILE = "Not a normal file:";
@@ -108,11 +100,11 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
 
         super.sfStart();
         readFileLists();
-        if (localFiles.size() == 0) {
+        if (localFiles.isEmpty()) {
             log.info(INFO_NO_FILES_TO_PROCESS);
         } else {
             //now that we are starting up, check the files.
-            if (getFiles) {
+            if (isGetFiles()) {
                 //verify that the remote file list is not empty
                 for (File file : localFiles) {
                     if (file.exists() && file.isDirectory()) {
@@ -130,7 +122,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
                 }
             }
         }
-        worker = new ScpWorkerThread();
+        worker = new ScpWorkerThread(this,log,
+                isGetFiles(), localFiles, remoteFileList);
         worker.start();
     }
 
@@ -153,12 +146,9 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * @param tr Termination record
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
-        
-        if(worker!=null) {
-            worker.haltOperation();
-        }
+        SmartFrogThread.requestThreadTermination(worker);
+        worker=null;
         super.sfTerminateWith(tr);
-
     }
 
     /**----------------SmartFrog Life Cycle Methods End ---------------------*/
@@ -171,114 +161,91 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
      * @throws RemoteException in case of network/rmi error
      */
     private void readSFAttributes() throws SmartFrogException, RemoteException {
+        readTransferType();
+    }
 
-
-        transferType = sfResolve(TRANSFER_TYPE, transferType, true).toLowerCase(Locale.ENGLISH);
+    /**
+     * Read and validate the transfer type
+     * @throws SmartFrogResolutionException if failed to read any attribute or a mandatory attribute is not defined.
+     * @throws SmartFrogLifecycleException if the transfer type is unsupported
+     * @throws RemoteException in case of network/rmi error
+     */
+    protected void readTransferType() throws
+            SmartFrogResolutionException,
+            RemoteException,
+            SmartFrogLifecycleException {
+        String transferType = sfResolve(TRANSFER_TYPE, "", true).toLowerCase(
+                Locale.ENGLISH);
         log.debug("Transfer Type :=" + transferType);
-        if (GET.equals(transferType)) {
-            getFiles = true;
-        } else if (PUT.equals(transferType)) {
-            getFiles = false;
+        if (OPERATION_GET.equals(transferType)) {
+            setGetFiles(true);
+        } else if (OPERATION_PUT.equals(transferType)) {
+            setGetFiles(false);
         } else {
             throw new SmartFrogLifecycleException(
-                    UNSUPPORTED_ACTION +'"' + transferType+"\"");
+                    UNSUPPORTED_ACTION +'"' + transferType+ '"');
         }
     }
 
     /**
      * Read the file lists in, and resolve the local list
-     * @throws SmartFrogResolutionException for resolution problems
+     * Subclasses can override this, as long as the localFiles and remoteFiles lists
+     * are full at the end of the operation, and they have the same number of files.
+     * @throws SmartFrogException for resolution problems
      * @throws RemoteException network problems
      * @throws SmartFrogLifecycleException if there is a mismatch between the count of local and remote files
      */
-    private void readFileLists() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
-        remoteFileList = sfResolve(REMOTE_FILES, remoteFileList, true);
-        Vector locals = null;
-        Reference localsRef = new Reference(LOCAL_FILES);
-        locals = sfResolve(localsRef, locals, true);
+    protected void readFileLists() throws
+            SmartFrogException,
+            RemoteException {
+        localFiles = FileSystem.resolveFileList(this, new Reference(LOCAL_FILES),
+                null, true);
 
         //convert the list of local files into
-        int fileCount = locals.size();
-        int remoteFileCount = remoteFileList.size();
-
-        if (fileCount != remoteFileCount) {
-            throw new SmartFrogLifecycleException(ERROR_FILE_COUNT_MISMATCH
-                    + fileCount + ") and the remote list (" + remoteFileCount + ")");
+        Vector vector = sfResolve(REMOTE_FILES, (Vector) null, true);
+        remoteFileList = new Vector<String>(vector.size());
+        for (Object o : vector) {
+            remoteFileList.add(o.toString());
         }
-        localFiles = FileSystem.resolveFileList(locals,null,this,localsRef);
+        validateFileLists();
     }
 
     /**
-     * This is the worker thread we use to do our work
+     * Check that the file lists are valid, that they have the same number
+     * of elements.
+     * @throws SmartFrogLifecycleException if there is a size mismatch
      */
-    private class ScpWorkerThread extends SmartFrogThread {
-
-        private AbstractScpOperation operation;
-
-        public synchronized void haltOperation() {
-            if(operation!=null) {
-                operation.haltOperation();
-            }
+    protected void validateFileLists() throws SmartFrogLifecycleException {
+        int fileCount = localFiles.size();
+        int remoteFileCount = remoteFileList.size();
+        if (fileCount != remoteFileCount) {
+            throw new SmartFrogLifecycleException(ERROR_FILE_COUNT_MISMATCH
+                    + fileCount + ") and the remote list (" + remoteFileCount + ')');
         }
+    }
 
+    public boolean isGetFiles() {
+        return getFiles;
+    }
 
+    public void setGetFiles(boolean getFiles) {
+        this.getFiles = getFiles;
+    }
 
-        /**
-         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
-         * of <code>Thread</code> should override this method.
-         *
-         * @throws Throwable if anything went wrong
-         */
-        public void execute() throws Throwable {
-                try {
-                    if (localFiles.size() > 0) {
-                        // open ssh session
-                        logDebugMsg("Getting SSH Session");
-                        Session newsession = openSession();
-                        setSession(newsession);
-                        if (getFiles) {
-                            log.info("Going to start scp to download files");
-                            ScpFrom scpFrom = new ScpFrom(log);
-                            operation = scpFrom;
-                            scpFrom.doCopy(getSession(), remoteFileList, localFiles);
-                        } else {
-                            log.info("Going to start scp to upload files");
-                            ScpTo scpTo = new ScpTo(log);
-                            operation = scpTo;
-                            scpTo.doCopy(getSession(), remoteFileList, localFiles);
-                        }
-                    } else {
-                        log.info("Skipping scp operation: no files");
-                    }
-                    TerminationRecord termR = TerminationRecord.normal(
-                            "SSH Session to "+getConnectionDetails()+" finished: ", sfCompleteName());
-                    new ComponentHelper(ScpComponentImpl.this).sfSelfDetachAndOrTerminate(termR);
-                } catch (JSchException e) {
-                    throw translateStartupException(e);
-                } finally {
-                    operation = null;
-                }
-        }
+    public Vector<String> getRemoteFileList() {
+        return remoteFileList;
+    }
 
-        /**
-         * Runs the {@link #execute()} method, catching any exception it throws and
-         * storing it away for safe keeping.
-         * After the run, the notify object is notified and the component
-         * then gets to terminated if there was an error.
-         */
-        public void run() {
-            super.run();
-            if(getThrown()!=null) {
-                TerminationRecord record = TerminationRecord.abnormal(
-                        "SCP failed to connect to "
-                                + getConnectionDetails(),
-                        sfCompleteNameSafe(),
-                        getThrown());
-                sfTerminate(record);
-            }
-        }
+    public void setRemoteFileList(Vector<String> remoteFileList) {
+        this.remoteFileList = remoteFileList;
+    }
 
+    public Vector<File> getLocalFiles() {
+        return localFiles;
+    }
+
+    public void setLocalFiles(Vector<File> localFiles) {
+        this.localFiles = localFiles;
     }
 }
 

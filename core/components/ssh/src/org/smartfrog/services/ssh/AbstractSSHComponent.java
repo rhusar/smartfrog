@@ -152,7 +152,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      * @return a jsch instance which will have any keyfile settings applied
      * @throws JSchException if the operation fails
      */
-    protected JSch createJschInstance() throws JSchException {
+    public JSch createJschInstance() throws JSchException {
         JSch jsch = new JSch();
         if (usePublicKey) {
             jsch.addIdentity(keyFile);
@@ -165,18 +165,24 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
     /**
      * Gets a SSH session after connecting to remote host over SSH.
-     *
+     * the value is saved in setSssion
      * @return SSH Session
      * @throws JSchException if unable to open SSH session
      * @see Session
      */
-    protected Session openSession() throws JSchException {
+    public synchronized Session openSession() throws JSchException {
+        if(session!=null) {
+            throw new JSchException("existing sessin is in use");
+        }
         JSch jsch = createJschInstance();
         Session newSession = createSession(jsch);
         newSession.setTimeout(timeout);
         newSession.connect(connectTimeout);
+        setSession(newSession);
         return newSession;
     }
+
+
 
     /**
      * Create a session with the current user policies applied
@@ -227,6 +233,13 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         super.sfTerminateWith(tr);
+        endSession();
+    }
+
+    /**
+     * end any active session and set the session variable to null
+     */
+    public synchronized void endSession() {
         if (getSession() != null) {
             try {
                 getSession().disconnect();
