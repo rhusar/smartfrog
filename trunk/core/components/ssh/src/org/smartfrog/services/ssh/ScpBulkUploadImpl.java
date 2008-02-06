@@ -24,6 +24,7 @@ package org.smartfrog.services.ssh;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.filesystem.files.FilesImpl;
 import org.smartfrog.services.filesystem.files.Fileset;
 
@@ -56,6 +57,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
             SmartFrogException,
             RemoteException {
         fileset = FilesImpl.resolveFileset(this);
+        FilesImpl.checkAndUpdateFileCount(this, fileset);
         String remoteDir = sfResolve(ATTR_REMOTE_DIR, "", true);
         //this is the list of files to work with
         File[] files = fileset.listFiles();
@@ -66,6 +68,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
             local.add(file);
             remote.add(remoteDir + '/' + file.getName());
         }
+
         setLocalFiles(local);
         setRemoteFileList(remote);
         validateFileLists();

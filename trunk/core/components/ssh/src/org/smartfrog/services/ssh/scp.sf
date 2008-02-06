@@ -166,5 +166,8 @@ ScpBulkUpload extends SSHComponent {
   pattern Files:pattern;
   includeHiddenFiles Files:includeHiddenFiles;
   caseSensitive Files:caseSensitive;
+  fileCount -1;
+  minFileCount -1;
+  maxfileCount -1;
 
 }
