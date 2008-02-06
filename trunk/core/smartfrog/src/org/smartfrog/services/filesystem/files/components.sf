@@ -32,17 +32,21 @@ For more information: www.smartfrog.org
  *  "\\w*.txt"   -any word (A-Za-z0-9).txt, or ".txt"
  *
  */
-Files extends Prim {
-  schema extends Schema {
-    dir extends FilenameType;
-    pattern extends String;
-    //should name checks be case sensitive or not
-    caseSensitive includes Boolean;
-    //should hidden files be included
-    includeHiddenFiles extends Boolean;
-  }
-  sfClass "org.smartfrog.services.filesystem.files.FilesImpl";
 
+ FilesSchema extends Schema {
+    files extends OptionalCD;
+    dir extends OptionalFilenameType;
+    pattern extends OptionalString;
+    //should name checks be case sensitive or not
+    caseSensitive extends OptionalBoolean;
+    //should hidden files be included
+    includeHiddenFiles extends OptionalBoolean;
+  }
+  
+Files extends Prim {
+
+  sfClass "org.smartfrog.services.filesystem.files.FilesImpl";
+  filesSchema extends FilesSchema;
   /**
    *
    */
