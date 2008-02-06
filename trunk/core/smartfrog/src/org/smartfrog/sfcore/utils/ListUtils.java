@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Collection;
 import java.rmi.RemoteException;
 
 /**
@@ -283,13 +286,50 @@ public final class ListUtils {
         }
         Vector<Vector<String>> result=new Vector<Vector<String>>(tupleList.size());
         for (Vector<Object> tuple: tupleList) {
-            Vector<String> newEntry=new Vector<String>(2);
             String name = tuple.get(0).toString();
             String value = tuple.get(1).toString();
-            newEntry.add(name);
-            newEntry.add(value);
-            result.add(newEntry);
+            result.add(tuple(name,value));
         }
         return result;
     }
+
+    /**
+     * Convert the properties to to a string tuple list
+     * @param properties the properties to work on
+     * @return the properties as a list of [name,value] tuples, sorted on name
+     */
+    public static Vector<Vector<String>> propertiesToTuples(Properties properties) {
+        Vector<Vector<String>> propertyTupleList = new Vector<Vector<String>>(properties.size());
+        List<String> keyList = new ArrayList<String>((Collection<? extends String>) properties.keySet());
+        Collections.sort(keyList);
+        for(Object keyO:keyList) {
+            String key = keyO.toString();
+            String value = properties.getProperty(key);
+            Vector<String> tuple = tuple(key, value);
+            propertyTupleList.add(tuple);
+        }
+        return propertyTupleList;
+    }
+
+    /**
+     * Turn a pair of entries into a string tuple
+     * @param left left entry of the pair
+     * @param right right entry of the pair
+     * @return a vector of the two values
+     */
+    public static Vector<String> tuple(String left, String right) {
+        Vector<String> tuple = new Vector<String>(2);
+        tuple.add(left);
+        tuple.add(right);
+        return tuple;
+    }
+
+    public static String left(Vector<String> tuple) {
+        return tuple.get(0);
+    }
+
+    public static String right(Vector<String> tuple) {
+        return tuple.get(1);
+    }
+
 }
