@@ -41,6 +41,10 @@ For more information: www.smartfrog.org
     caseSensitive extends OptionalBoolean;
     //should hidden files be included
     includeHiddenFiles extends OptionalBoolean;
+    // This is a count of files. If set to a number >=0, it asserts how many files are expected.
+    // If clear, or negative it is set on deployment as a log of how many files were found.
+    fileCount extends OptionalInteger;
+
   }
   
 Files extends Prim {
@@ -53,4 +57,5 @@ Files extends Prim {
   pattern "\\w+";
   includeHiddenFiles false;
   caseSensitive true;
+  fileCount -1;
 }
