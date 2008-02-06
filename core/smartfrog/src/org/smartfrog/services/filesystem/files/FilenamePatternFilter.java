@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.io.FilenameFilter;
 import java.io.File;
+import java.io.Serializable;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.regex.Matcher;
@@ -34,7 +35,7 @@ import java.util.regex.Matcher;
  *
  */
 
-public class FilenamePatternFilter implements FilenameFilter {
+public class FilenamePatternFilter implements FilenameFilter, Serializable {
 
 
     private String pattern;

@@ -19,6 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.filesystem.files;
 
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.io.File;
@@ -28,6 +31,11 @@ import java.io.File;
  */
 
 public interface Files extends Remote {
+
+    /**
+     * A LAZY reference to another source of files:  {@value}
+     */
+    String ATTR_FILES="files";
 
     /**
      * SF component attribute {@value}
@@ -53,9 +61,16 @@ public interface Files extends Remote {
      * Note that filesystem race conditions do not guarantee all the files listed still exist...check before acting
      * @return a list of files that match the pattern, or an empty list for no match
      * @throws RemoteException when the network plays up
+     * @throws SmartFrogException if something else went wrong
      */
 
-    File[] listFiles() throws RemoteException ;
+    File[] listFiles() throws RemoteException, SmartFrogException;
 
-    
+    /**
+     * Get the base directory of these files (may be null)
+     * @return the base directory
+     * @throws RemoteException when the network plays up
+     * @throws SmartFrogException if something else went wrong
+     */
+    File getBaseDir() throws RemoteException, SmartFrogException;
 }

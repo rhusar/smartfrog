@@ -183,8 +183,8 @@ public final class FileSystem {
         }
         if (dir.isDirectory()) {
             File[] files = dir.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                recursiveDelete(files[i]);
+            for (File file : files) {
+                recursiveDelete(file);
             }
         }
         dir.delete();
@@ -472,21 +472,6 @@ public final class FileSystem {
         }
         return results;
     }
-
-    /**
-     * Look up the absolutePath attribute of any FileUsingComponent, then turn it into a file. Note that the RPC method
-     * is not used; only sf attributes. Thus the coupling is much looser.
-     *
-     * @param component component to resolve against
-     * @return file representing the path.
-     * @throws SmartFrogResolutionException If the attribute is not defined.
-     * @throws RemoteException In case of network/rmi error
-     */
-    private static File resolveAbsolutePath(FileUsingComponent component)
-            throws SmartFrogResolutionException, RemoteException {
-        return resolveAbsolutePath((Prim) component);
-    }
-
 
     /**
      * Recursive directory scanner for files with particular extensions. Search criteria expressed with a regular
@@ -919,7 +904,7 @@ public final class FileSystem {
      * @param suffix suffix, e,g. ".ext";
      * @param dir    parent dir; can be null
      * @return the directory.
-     * @throws org.smartfrog.sfcore.common.SmartFrogException a wrapper for any IOException.
+     * @throws  SmartFrogException a wrapper for any IOException.
      */
     public static File createTempFile(final String prefix, final String suffix, final String dir) throws SmartFrogException {
         File file;
@@ -954,7 +939,7 @@ public final class FileSystem {
      * @param prefix prefix -required.
      * @param suffix suffix, e,g. ".ext";
      * @return the directory.
-     * @throws org.smartfrog.sfcore.common.SmartFrogException a wrapper for any IOException.
+     * @throws SmartFrogException a wrapper for any IOException.
      */
     public static File createTempDir(String prefix, String suffix, String parent)
             throws SmartFrogException {
@@ -1042,7 +1027,7 @@ public final class FileSystem {
      * @param file  file to read
      * @param limit limit on the buffer size
      * @return the buffer
-     * @throws IOException
+     * @throws IOException on IO failure
      */
     public static byte[] readBinaryFile(File file, int limit) throws IOException {
         // open the file
