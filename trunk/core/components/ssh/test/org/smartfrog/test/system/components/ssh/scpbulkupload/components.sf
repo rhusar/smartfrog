@@ -28,17 +28,19 @@ BulkUploadTestCompound extends SshTestProperties {
 
   temp1 extends TempFileWithCleanup {
        dir LAZY tempdir;
-       suffix "txt";
+       suffix ".txt";
        text "t1";
 
   }
 
   temp2  extends temp1;
   temp3  extends temp1 {
-    suffix "tmp";
+    suffix ".tmp";
   }
 
-
+    passwordProvider extends InlinePassword {
+        password SshTestProperties:password;
+    }
 
 }
 
@@ -59,20 +61,25 @@ testBulkUpload extends ExpectDeploy {
 
   upload extends ScpBulkUpload {
 
-    remoteDir "";
-    baseDir PARENT:PARENT:action:tempdir;
+    remoteDir SshTestProperties:remoteDir ;
+    dir LAZY PARENT:PARENT:action:tempdir;
+    passwordProvider LAZY PARENT:PARENT:action:passwordProvider;
     pattern "\\w+.txt";
-
     host SshTestProperties:host;
     username SshTestProperties:username;
     timeout SshTestProperties:timeout;
     sfShouldTerminate true;
-    passwordProvider extends InlinePassword {
-        password SshTestProperties:password;
-    }
+
   }
 
-  
+  assertCount extends Assert {
+      attribute "transferCount";
+      attributeEquals "2";
+      //what if the component is unreachable?
+      reference LAZY upload;
+  }
+
+
 }
 
 }
