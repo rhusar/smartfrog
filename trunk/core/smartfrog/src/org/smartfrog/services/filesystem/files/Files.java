@@ -55,11 +55,23 @@ public interface Files extends Remote {
      */
     String ATTR_INCLUDEHIDDENFILES = "includeHiddenFiles";
 
+
+    /**
+     * This is a count of files. If set, it asserts how many files are expected. If clear, it is set on deployment as a
+     * log of how many files were found.
+     */
+    String ATTR_FILECOUNT = "fileCount";
+
     /**
      * This is a count of files. If set, it asserts how many files are expected.
      * If clear, it is set on deployment as a log of how many files were found.
      */
-    String ATTR_FILECOUNT = "fileCount";
+    String ATTR_MINFILECOUNT = "minFileCount";
+
+    /**
+     * This is a count of the max number of files that the pattern should match. If <0, there is no limit.
+     */
+    String ATTR_MAXFILECOUNT = "maxfileCount";
 
     /**
      * Return a list of files that match the current pattern. This may be a compute-intensive

@@ -45,6 +45,15 @@ For more information: www.smartfrog.org
     // If clear, or negative it is set on deployment as a log of how many files were found.
     fileCount extends OptionalInteger;
 
+    /**
+     * This is a count of files. If set, the minumum number of files expected
+     */
+    minFileCount extends OptionalInteger;
+
+    /**
+     * This is a count of the max number of files that the pattern should match. If <0, there is no limit.
+     */
+    maxfileCount extends OptionalInteger;
   }
   
 Files extends Prim {
@@ -58,4 +67,6 @@ Files extends Prim {
   includeHiddenFiles false;
   caseSensitive true;
   fileCount -1;
+  minFileCount -1;
+  maxfileCount -1;
 }
