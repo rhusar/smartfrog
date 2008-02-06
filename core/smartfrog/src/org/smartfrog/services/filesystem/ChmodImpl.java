@@ -83,12 +83,26 @@ public class ChmodImpl extends PrimImpl implements Chmod {
             strOptions = strOctalNotation;
         }
         else {
-            if (!strUserPermissions.equals(""))
+            boolean bComma = false;
+            if (!strUserPermissions.equals("")) {
                 strOptions += "u" + strUserPermissions;
-            if (!strGroupPermissions.equals(""))
-                strOptions += ",g" + strGroupPermissions;
-            if (!strOtherPermissions.equals(""))
-                strOptions += ",o" + strOtherPermissions;
+                bComma = true;
+            }
+            if (!strGroupPermissions.equals("")) {
+                // multiple user classes have to be comma-separated
+                if (bComma)
+                    strOptions += "'";
+
+                strOptions += "g" + strGroupPermissions;
+                bComma = true;
+            }
+            if (!strOtherPermissions.equals("")) {
+                // multiple user classes have to be comma-separated
+                if (bComma)
+                    strOptions += "'";
+                
+                strOptions += "o" + strOtherPermissions;
+            }
         }
 
         // compose the command string
