@@ -391,4 +391,15 @@ public class SmartFrogThread extends Thread {
                 thread.requestAndWaitForThreadTermination(timeout);
     }
 
+
+    /**
+     * Request the thread to terminate
+     *
+     * @param thread  thread to terminate, can be null
+     */
+    public static void requestThreadTermination(SmartFrogThread thread) {
+        if (thread != null) {
+            thread.requestTermination();
+        }
+    }
 }
