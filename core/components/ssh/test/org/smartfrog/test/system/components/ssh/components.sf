@@ -93,6 +93,7 @@ SshTestProperties extends Compound {
     host OPTIONAL("") PROPERTY test.ssh.host;
     username OPTIONAL("") PROPERTY test.ssh.user;
     timeout OPTIONAL(5000) IPROPERTY test.ssh.timeout;
+    remoteDir OPTIONAL("/tmp") PROPERTY test.remote.dir;
  }
 
 
