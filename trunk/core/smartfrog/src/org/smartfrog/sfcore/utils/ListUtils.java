@@ -300,7 +300,7 @@ public final class ListUtils {
      */
     public static Vector<Vector<String>> propertiesToTuples(Properties properties) {
         Vector<Vector<String>> propertyTupleList = new Vector<Vector<String>>(properties.size());
-        List<String> keyList = new ArrayList<String>((Collection<? extends String>) properties.keySet());
+        List keyList = new ArrayList(properties.keySet());
         Collections.sort(keyList);
         for(Object keyO:keyList) {
             String key = keyO.toString();
