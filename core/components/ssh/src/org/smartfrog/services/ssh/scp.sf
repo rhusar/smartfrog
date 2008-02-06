@@ -30,6 +30,8 @@ For more information: www.smartfrog.org
         localFiles extends Vector;
         remoteFiles extends Vector;
         transferType extends String;
+        //this value gets added as we go along
+        transferCount extends OptionalInteger;
     }
 
     /**
@@ -47,8 +49,7 @@ For more information: www.smartfrog.org
         //default transfer is a get
         transferType get_files;
 
-        //this value gets added as we go along
-        transferCount extends OptionalInteger;
+
     }
 
     /**
