@@ -59,29 +59,27 @@ testBulkUpload extends ExpectDeploy {
 
   tests extends Sequence {
 
-  upload extends ScpBulkUpload {
+    upload extends ScpBulkUpload {
 
-    remoteDir SshTestProperties:remoteDir ;
-    dir LAZY PARENT:PARENT:action:tempdir;
-    passwordProvider LAZY PARENT:PARENT:action:passwordProvider;
-    pattern "\\w+.txt";
-    host SshTestProperties:host;
-    username SshTestProperties:username;
-    timeout SshTestProperties:timeout;
-    sfShouldTerminate true;
-
-  }
-
-  assertCount extends Assert {
-      attribute "transferCount";
-      attributeEquals "2";
-      //what if the component is unreachable?
-      reference LAZY upload;
+      remoteDir SshTestProperties:remoteDir ;
+      dir LAZY PARENT:PARENT:action:tempdir;
+      passwordProvider LAZY PARENT:PARENT:action:passwordProvider;
+      pattern "\\w+.txt";
+      host SshTestProperties:host;
+      username SshTestProperties:username;
+      timeout SshTestProperties:timeout;
       sfShouldTerminate true;
+
+    }
+
+    assertCount extends Assert {
+        attribute "transferCount";
+        attributeEquals "2";
+        //what if the component is unreachable?
+        reference LAZY upload;
+        sfShouldTerminate true;
+    }
+
   }
 
-
 }
-
-}
-
