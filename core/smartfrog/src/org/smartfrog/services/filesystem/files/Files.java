@@ -56,6 +56,12 @@ public interface Files extends Remote {
     String ATTR_INCLUDEHIDDENFILES = "includeHiddenFiles";
 
     /**
+     * This is a count of files. If set, it asserts how many files are expected.
+     * If clear, it is set on deployment as a log of how many files were found.
+     */
+    String ATTR_FILECOUNT = "fileCount";
+
+    /**
      * Return a list of files that match the current pattern. This may be a compute-intensive
      * operation, so cache the result.
      * Note that filesystem race conditions do not guarantee all the files listed still exist...check before acting
