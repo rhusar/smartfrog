@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,37 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.ssh;
+package org.smartfrog.test.system.components.ssh.scpbulkupload;
 
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * SmartFrog Interface for SCP component. Used to upload/download files 
- * to/from a remote machine securely over SSH.
- * @author Ashish Awasthi
+ *
+ * Created 22-Jan-2008 16:42:12
+ *
  */
-public interface ScpComponent extends SSHComponent {
 
-    /**
-     * {@value}
-     */
-    String LOCAL_FILES = "localFiles";
-    /**
-     * {@value}
-     */
-    String REMOTE_FILES = "remoteFiles";
-    /**
-     * {@value}
-     */
-    String TRANSFER_TYPE = "transferType";
+public class ScpBulkUploadFunctionalTest extends DeployingTestBase {
+    private static final String FILES = "org/smartfrog/test/system/components/ssh/scpbulkupload";
 
-    /**
-     * this counder gets added as we go along
-     * {@value}
-     */
-    String ATTR_TRANSFER_COUNT ="transferCount";
+    public ScpBulkUploadFunctionalTest(String name) {
+        super(name);
+    }
+
+    public void testBulkUpload() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testBulkUpload");
+    }
 
 
-    String OPERATION_GET = "get";
-    String OPERATION_PUT = "put";
 }
-

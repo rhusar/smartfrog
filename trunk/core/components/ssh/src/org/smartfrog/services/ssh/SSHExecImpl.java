@@ -204,7 +204,6 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 // open ssh session
                 logDebugMsg(sessionInfo);
                 Session newsession = openSession();
-                setSession(newsession);
 
                 // Execute commands
 

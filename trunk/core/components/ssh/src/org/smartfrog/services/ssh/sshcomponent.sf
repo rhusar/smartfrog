@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/passwords/components.sf"
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+#include "/org/smartfrog/services/filesystem/files/components.sf"
 
 /**
  this is the base schema for SSH and SCP operations

@@ -24,6 +24,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
@@ -32,7 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.util.Vector;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Class to upload files to a remote host over SSH Session.
@@ -47,40 +49,68 @@ public class ScpTo extends AbstractScpOperation {
      * @param sfLog log to use
      */
     public ScpTo(LogSF sfLog) {
-        super(sfLog);
+        super(sfLog, null);
     }
+
     /**
      * Uploads files to a remote machine.
-     * @param session to use
-     * @param remoteFiles vector of remote file names
-     * @param localFiles vector of corresponding local file names
-     * @throws IOException in case not able to transfer files
+     *
+     * @param session         to use
+     * @param remoteFilenames vector of remote file names
+     * @param localFiles      vector of corresponding local file names
+     *
+     * @throws IOException in case we were not able to transfer files
+     * @throws JSchException low level jsch exceptions
+     * @throws InterruptedIOException if the operation was halted
+     * @throws SmartFrogException for other problems
      */
-    public void doCopy (Session session, Vector remoteFiles, 
-           Vector<File> localFiles) throws IOException, JSchException {
-        String cmdPrefix = "scp -t ";
-        for (int index = 0; index < remoteFiles.size(); index++) {
+    public void doCopy(Session session,
+                       List<String> remoteFilenames,
+                       List<File> localFiles)
+            throws IOException, JSchException, SmartFrogException {
+        Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
+        for (File localFile : localFiles) {
             if (haltOperation) {
                 throw new InterruptedIOException();
             }
-            Channel channel = null;
-            try {
-                File localFile = localFiles.elementAt(index);
-                String remoteFile = (String) remoteFiles.elementAt(index);
-                channel = session.openChannel("exec");
-                String command = cmdPrefix + remoteFile.trim();
-                log.info ("Scp command := " + command);
-                ((ChannelExec) channel).setCommand(command);
-                // get I/O streams from channel
-                OutputStream out = channel.getOutputStream();
-                InputStream in = channel.getInputStream();
-                channel.connect();
-                checkAck(in);
-                doScpTo(in, out, localFile);
-            } finally {
-                if (channel != null) {
-                    channel.disconnect();
-                }
+            String remoteFile = remoteFilenameIterator.next();
+            uploadOneFile(session, localFile, remoteFile);
+        }
+    }
+
+    /**
+     * Upload one file in the current session
+     *
+     * @param session session to use
+     * @param localFile local file to upload
+     * @param remoteFile remote filename
+     *
+     * @throws IOException in case we were not able to transfer files
+     * @throws JSchException low level jsch exceptions
+     * @throws SmartFrogException for other problems
+     */
+    protected void uploadOneFile(Session session,
+                                 File localFile,
+                                 String remoteFile)
+            throws JSchException, IOException, SmartFrogException {
+        Channel channel = null;
+        String cmdPrefix = "scp -t ";
+        try {
+            beginTransfer(localFile,remoteFile);
+            channel = session.openChannel("exec");
+            String command = cmdPrefix + remoteFile.trim();
+            log.info("Scp command := " + command);
+            ((ChannelExec) channel).setCommand(command);
+            // get I/O streams from channel
+            OutputStream out = channel.getOutputStream();
+            InputStream in = channel.getInputStream();
+            channel.connect();
+            checkAck(in);
+            doScpTo(in, out, localFile);
+            endTransfer(localFile, remoteFile);
+        } finally {
+            if (channel != null) {
+                channel.disconnect();
             }
         }
     }
@@ -90,17 +120,18 @@ public class ScpTo extends AbstractScpOperation {
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
      * @param localFile local file name
+     * @throws IOException in case we were not able to transfer files
      */
     private void doScpTo(InputStream in, OutputStream out, 
                             File localFile) throws IOException {
         int fileSize = (int) localFile.length();
         String lFilePart=localFile.getName();
         StringBuffer cmdBuff = new StringBuffer("C0644")
-                                    .append(" ")
+                                    .append(' ')
                                     .append(fileSize)
-                                    .append(" ")
+                                    .append(' ')
                                     .append(lFilePart)
-                                    .append("\n");
+                                    .append('\n');
         // send command over OutputStream
         String cmd = cmdBuff.toString();
         log.info ("Writing "+ cmd + " to output stream");
@@ -122,8 +153,9 @@ public class ScpTo extends AbstractScpOperation {
      */
     private void sendFile (File file, InputStream in, OutputStream out)
                                  throws IOException {
-        FileInputStream fis = new FileInputStream(file);
+        FileInputStream fis=null;
         try {
+            fis = new FileInputStream(file);
             byte[] buf=new byte[BUFFER_SIZE];
             log.info ("Sending "+ file.getName() + " of size: "+ file.length());
             while(!haltOperation) {

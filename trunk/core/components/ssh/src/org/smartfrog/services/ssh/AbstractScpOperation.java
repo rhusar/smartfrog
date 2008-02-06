@@ -20,10 +20,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.ssh;
 
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * Abstract parent class for ScpTo and ScpFrom.
@@ -31,11 +34,13 @@ import java.io.OutputStream;
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
  * 
  */
-public abstract class AbstractScpOperation {
+public abstract class AbstractScpOperation implements ScpProgressCallback {
 
     protected final byte LINE_FEED = 0x0a;
     protected final int BUFFER_SIZE = 1024;
     protected LogSF log;
+    protected ScpProgressCallback progress;
+    
 
     /**
      * This flag is set to halt a child thread at work
@@ -45,9 +50,11 @@ public abstract class AbstractScpOperation {
     /**
     * Constucts an instance.
      * @param log log a log of the owner
+     * @param callback
     */
-    protected AbstractScpOperation(LogSF log) {
+    protected AbstractScpOperation(LogSF log, ScpProgressCallback callback) {
         this.log = log;
+        this.progress = callback;
     }
     /**
      * Write acknowlegement by writing char '0' to output stream of the channel.
@@ -60,6 +67,42 @@ public abstract class AbstractScpOperation {
         out.write(buf);
         out.flush();
     }
+
+
+    /**
+     * Called when a transfer begins
+     *
+     * @param localFile  local file name
+     * @param remoteFile remote filename
+     *
+     * @throws RemoteException when the network plays up
+     * @throws SmartFrogException if something else went wrong
+     */
+    public void beginTransfer(File localFile, String remoteFile) throws
+            SmartFrogException, RemoteException {
+        if(progress!=null) {
+            progress.beginTransfer(localFile,remoteFile);
+        }
+    }
+
+
+    /**
+     * Called when a transfer ends
+     *
+     * @param localFile  local file name
+     * @param remoteFile remote filename
+     *
+     * @throws RemoteException when the network plays up
+     * @throws SmartFrogException if something else went wrong
+     */
+    public void endTransfer(File localFile, String remoteFile) throws
+            SmartFrogException, RemoteException {
+        if (progress != null) {
+            progress.endTransfer(localFile, remoteFile);
+        }
+
+    }
+
 
     /**
      * halt the operation
