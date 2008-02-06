@@ -22,11 +22,10 @@ package org.smartfrog.services.filesystem.files;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -65,18 +64,7 @@ public class FilesImpl extends PrimImpl implements Files {
             throws SmartFrogException, RemoteException {
         super.sfStart();
         fileset = resolveFileset(this);
-        //deal with the file count
-        int filecount = sfResolve(ATTR_FILECOUNT, -1, false);
-        File[] files = listFiles();
-        int length = files.length;
-        if (filecount >= 0 && length != filecount) {
-            throw new SmartFrogDeploymentException(
-                    ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files"
-                            + "when resolving " + fileset, this);
-        } else if (filecount < 0) {
-            sfReplaceAttribute(ATTR_FILECOUNT, filecount);
-        }
-
+        checkAndUpdateFileCount(this,fileset);
     }
 
     /**
@@ -120,5 +108,35 @@ public class FilesImpl extends PrimImpl implements Files {
                 PATTERN_ATTRIBUTE,
                 CASE_ATTRIBUTE,
                 HIDDEN_ATTRIBUTE);
+
+    }
+
+    /**
+     * check and update file count attributes
+     * @param component component to work on
+     * @param fileset the fileset to check
+     * @throws SmartFrogRuntimeException for resolution problems
+     * @throws RemoteException network problems
+     */
+    public static void checkAndUpdateFileCount(Prim component,Fileset fileset)
+            throws SmartFrogRuntimeException, RemoteException {
+        //deal with the file count
+        int filecount = component.sfResolve(ATTR_FILECOUNT, -1, false);
+        int minFilecount = component.sfResolve(ATTR_MINFILECOUNT, -1, false);
+        int maxFilecount = component.sfResolve(ATTR_MAXFILECOUNT, -1, false);
+
+        File[] files = fileset.listFiles();;
+        int length = files.length;
+        if ((filecount >= 0 && length != filecount)
+                || (minFilecount>=0 && length<minFilecount)
+                || (maxFilecount>=0 && length>maxFilecount)) {
+            throw new SmartFrogDeploymentException(
+                    ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files"
+                            + "when resolving " + fileset, component);
+        }
+
+        if (filecount < 0) {
+            component.sfReplaceAttribute(ATTR_MAXFILECOUNT, filecount);
+        }
     }
 }
