@@ -46,6 +46,55 @@
     Please upgrade to Ant1.7 or later and build this project again
   </fail>
 
+  <!-- CLOVER -->
+  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
+	
+  <target name="with.clover">
+   <clover-setup/>
+  </target>
+ 
+  <target name="-check.clover">
+	<available property="clover.installed" classname="com.cenqua.clover.CloverInstr" />
+  </target>
+
+  <target name="guard.noclover" depends="-check.clover" unless="clover.installed">
+		<fail message="The target you are attempting to run requires Clover, which doesn't appear to be installed"/>
+  </target>
+
+  <target name="clover.report" depends="with.clover">
+
+  <!-- generate a historypoint for the current coverage -->
+  <clover-historypoint historyDir="clover_hist"/>
+
+  <!-- generate a report with both current and historical data -->
+
+  <clover-html-report outdir="clover_html" historyDir="clover_hist"/>
+  </target>
+
+  <target name="clover.summary" depends="with.clover">
+   <clover-pdf-report outfile="coverage.pdf"/>
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <target name="test.with.clover"
+    depends="with.clover,run-tests,clover.report,clover.summary,reports"
+    description="compile and run all the tests with clover reports included"
+   />
+  
+  
+  <!-- CLOVER  End-->
+  
+  <!-- Ivy quick and dirty test -->
+  
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">   	
+    <ivy:retrieve />  
+  </target>
+  <!-- Ivy quick and dirty test End-->
+  
+  
   <!-- ========================================================== -->
   <!-- this is the simple definitions part of the common init -->
   <!-- IT must contain -->
