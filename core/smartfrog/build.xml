@@ -964,7 +964,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="2.0.0-alpha-2" />
+    <property name="ivy.version" value="2.0.0-beta1" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
@@ -1005,6 +1005,10 @@
   <target name="ivy-retrieve" depends="ivy-resolve" if="ivy.found">
     <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
   </target>
+  
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">   	
+    <ivy:retrieve />  
+  </target>
 
   <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
     <ivy:report todir="${ivy.reports.dir}"/>
@@ -1030,6 +1034,8 @@ ${ivy.reports.dir}
   </target>
 
 
+   
+  
   <target name="published" depends="ivy-publish,m2-install"
       description="Publish artifacts to the local repositories"
       />
@@ -1228,6 +1234,20 @@ ${ivy.reports.dir}
     <bulkpdf dir="${doc.dir}" />
     <bulkpdf dir="${doc.dir}/components" />
   </target>
+  
+  <!-- CLOVER -->
+  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
+	
+  <target name="with.clover">
+   <clover-setup/>
+  </target>
+  
+  <target name="dist.with.clover"
+      depends="clean, with.clover, ready-to-dist,published"
+      description="Prepares distribution package,and publishes it the local repository ready for clover code coverage">
+  </target>
+  <!-- CLOVER  end-->
+  
 </project>
 
 <!-- End of file -->
