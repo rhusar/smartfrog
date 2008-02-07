@@ -65,8 +65,12 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
         Vector<File> local = new Vector<File>(files.length);
         Vector<String> remote = new Vector<String>(files.length);
         for (File file : files) {
-            local.add(file);
-            remote.add(remoteDir + '/' + file.getName());
+            if(file.isFile()) {
+                local.add(file);
+                remote.add(remoteDir + '/' + file.getName());
+            } else {
+                log.info("Skipping directory "+file);
+            }
         }
 
         setLocalFiles(local);
