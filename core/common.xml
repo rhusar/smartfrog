@@ -784,10 +784,13 @@ java.class.path=
     <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
   </target>
 
+  <target name="ivy.redist.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="redist.classpath" conf="redist"/>
+    <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
+  </target>
+
   <target name="ivy-classpaths"
-    depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath" />
-
-
+      depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath,ivy.redist.classpath"/>
 
 
   <!-- ========================================================== -->
@@ -1325,17 +1328,36 @@ java.class.path=
   <target name="fromclean" depends="clean,dist"
       description="create a clean distribution"/>
 
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- copy all dependencies -->
   <!-- ========================================================== -->
-  <target name="install-dependencies" depends="package"
-      if="smartfrog.dist.lib.dir">
-    <copy-useful-files src="${lib.dir}"
-        pattern="**/*.jar"
-        dest="${smartfrog.dist.lib.dir}"
-        failonerror="false"/>
+  <target name="install-ivy-dependencies" depends="package,declare-classpaths"
+      if="ivy.enabled">
+    <mkdir dir="${smartfrog.dist.lib.dir}"/>
+    <!--TODO now pull in all runtime dependencies-->
+    <copypath destDir="${smartfrog.dist.lib.dir}"
+      pathref="redist.classpath">
+      <flattenmapper/>
+    </copypath>
   </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- copy all dependencies -->
+  <!-- ========================================================== -->
+  <target name="install-dependencies" depends="install-ivy-dependencies"
+      unless="ivy.enabled">
+  <!--copy the lib stuff-->
+  <mkdir dir="${smartfrog.dist.lib.dir}"/>
+  <copy-useful-files src="${lib.dir}"
+      pattern="**/*.jar"
+      dest="${smartfrog.dist.lib.dir}"
+      failonerror="false"/>
+   </target>
+
+
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
