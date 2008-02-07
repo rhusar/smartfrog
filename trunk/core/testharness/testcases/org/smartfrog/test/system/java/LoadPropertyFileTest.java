@@ -49,7 +49,8 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
                 "testLoadProperty.sf", "testLoadProperty");
         LoadPropertyFile instance = (LoadPropertyFile) application.sfResolve("test1", true);
         Vector list = null;
-        list = (Vector) ((Prim) instance).sfResolve(LoadPropertyFile.ATTR_PROPERTIES, true);
+        Prim prim = (Prim) instance;
+        list = prim.sfResolve(LoadPropertyFile.ATTR_PROPERTIES, (Vector)null,true);
         assertEquals(4, list.size());
         assertTupleEquals(list, "prop1", "prop1");
         assertTupleEquals(list, "prop2", "prop2");
@@ -58,7 +59,6 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
     }
 
     private void assertTupleEquals(List list,String name,String expected) {
-        Iterator it=list.iterator();
         for (Object aList : list) {
             List tuple = (List) aList;
             if (name.equals(tuple.get(0))) {
