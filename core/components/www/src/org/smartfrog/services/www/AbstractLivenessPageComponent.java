@@ -21,7 +21,6 @@
 package org.smartfrog.services.www;
 
 import org.smartfrog.services.passwords.PasswordHelper;
-import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;

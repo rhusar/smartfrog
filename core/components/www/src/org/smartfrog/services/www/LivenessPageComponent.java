@@ -22,17 +22,11 @@ package org.smartfrog.services.www;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Vector;
 
 
 /**
