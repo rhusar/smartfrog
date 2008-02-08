@@ -23,8 +23,6 @@ import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;

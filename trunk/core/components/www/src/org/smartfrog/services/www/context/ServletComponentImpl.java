@@ -24,7 +24,6 @@ import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;

@@ -21,7 +21,6 @@ package org.smartfrog.services.www;
 
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**

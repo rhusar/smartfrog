@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.www.context;
 
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.JavaWebApplication;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;

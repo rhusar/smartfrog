@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.www.diagnostics;
 
-import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

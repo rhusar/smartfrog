@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.www;
 
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 /**
  * Things to help web applications.
