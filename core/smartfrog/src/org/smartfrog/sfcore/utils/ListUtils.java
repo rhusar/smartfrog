@@ -332,4 +332,37 @@ public final class ListUtils {
         return tuple.get(1);
     }
 
+    /**
+     * flatten a string list, validating type as we go. recurses as much as we
+     * need to. At its most efficient if no flattening is needed.
+     *
+     * @param src source list
+     * @param listName name of the list, for reporting errors
+     * @return a flatter list
+     * @throws SmartFrogInitException if there is an element that is not of the right type
+     */
+    public static List<String> flattenStringList(List src, String listName)
+            throws SmartFrogInitException {
+        if (src == null) {
+            return new ArrayList<String>(0);
+        }
+        List<String> dest = new ArrayList<String>(src.size());
+        for(Object element:src) {
+            if (element instanceof List) {
+                List<String> l2 = flattenStringList((List) element, listName);
+                for (String s:l2) {
+                    dest.add(s);
+                }
+            } else if (!(element instanceof String)) {
+                throw new SmartFrogInitException("An element in "
+                        +
+                        listName +
+                        " is not string or a list: " +
+                        element.toString() + " class=" + element.getClass());
+            } else {
+                dest.add((String) element);
+            }
+        }
+        return dest;
+    }
 }
