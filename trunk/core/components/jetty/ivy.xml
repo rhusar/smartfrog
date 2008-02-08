@@ -49,7 +49,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,test,daemon->default,servletapi;testwar->testwar"/>
+        conf="compile,redist,test,daemon->default,servletapi;testwar->testwar"/>
 
 
     <!-- depend on logging services, to pick up commons-logging and bindings -->
