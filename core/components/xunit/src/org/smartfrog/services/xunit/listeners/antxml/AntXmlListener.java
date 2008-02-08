@@ -30,6 +30,7 @@ import org.smartfrog.services.xunit.serial.LogEntry;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.BufferedOutputStream;
@@ -191,13 +192,7 @@ public class AntXmlListener implements FileListener,XMLConstants {
             out.flush();
             out.close();
         } finally {
-            if(out!=null) {
-                try {
-                    out.close();
-                } catch (IOException ignored) {
-                    
-                }
-            }
+            FileSystem.close(out);
         }
     }
     

@@ -98,9 +98,14 @@ StatisticsTestListener extends TestListener {
 ChainListener extends TestListener {
     sfClass "org.smartfrog.services.xunit.listeners.ChainListenerImpl";
     name "ChainListener";
+
     chainListenerSchema extends  Schema {
+      //this is a list of deployed listeners
         listeners extends Vector ;
     }
+    listeners [];
+
+    //you can also add any child as a listener; it will be deployed and added to the list
 }
 
 

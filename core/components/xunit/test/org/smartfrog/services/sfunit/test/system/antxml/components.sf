@@ -24,9 +24,17 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 
 
-sfUnit extends SFUnitTestSuite {
-  listener extends ConsoleListener;
+//these are components we run underneath
+SimpleTestCompound extends ExpectTerminate {
+    action extends Sequence {
+    }
 }
+
+
+FailingTestCompound extends TestCompound {
+    action extends FailAbnormal;
+}
+
 
 
 antxml extends AntXmlTestListener {
@@ -34,41 +42,39 @@ antxml extends AntXmlTestListener {
 }
 
 
-sfUnitAntXml extends sfUnit {
-  listener extends antxml;
-}
+testRunnerAntXml extends TestRunner {
+  description "lots of tests";
 
-SimpleTestCompound extends TestCompound {
-    action extends Sequence {
+  sfShouldTerminate true;
+
+  listener extends ChainListener {
+    console extends ConsoleListener;
+
+    dataDir extends Mkdir {
+      parentDir PROPERTY test.data.dir;
+      dir "sfdata";
     }
-}
 
-Failure extends FailAbnormal;
-
-FailingTestCompound extends TestCompound {
-    action extends Failure;
-}
-
-TestSFUnit extends ExpectTerminate {
-
-  action extends sfUnit {
-    etc extends SimpleTestCompound;
+    ant extends antxml {
+      outputDirectory LAZY dataDir;
+    }
   }
 
-}
+  tests1 extends SFUnitTestSuite {
+    name "tests1";
+    description "run some basic tests";
+    one extends SimpleTestCompound;
+    two extends FailingTestCompound;
 
-
-testSFUnit extends ExpectTerminate {
-  action extends sfUnit {
-    etc extends SimpleTestCompound;
   }
 }
 
-
-testSFUnitAntXml extends ExpectTerminate {
-  action extends sfUnitAntXml {
-    etc extends SimpleTestCompound;
+testSFUnitAntXmlNested extends ExpectTerminate {
+  action extends testRunnerAntXml {
   }
+}
+
+testSFUnitAntXml extends testRunnerAntXml {
 }
 
 
