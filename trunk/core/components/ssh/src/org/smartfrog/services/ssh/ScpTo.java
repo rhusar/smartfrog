@@ -77,7 +77,7 @@ public class ScpTo extends AbstractScpOperation {
             String remoteFile = remoteFilenameIterator.next();
             count+=uploadOneFile(session, localFile, remoteFile);
         }
-        log.info("Uploaded "+localFiles.size()+" files -"+count+" bytes");
+        log.info("Uploaded "+localFiles.size()+" files; -"+count+" bytes");
     }
 
     /**
