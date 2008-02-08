@@ -24,6 +24,8 @@ import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.compound.CompoundImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ import java.util.Vector;
  * created 21-Apr-2006 11:27:58
  */
 
-public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
+public class ChainListenerImpl extends CompoundImpl implements TestListenerFactory {
 
     /**
      * The name of a factory
@@ -83,6 +85,13 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
             TestListenerFactory factory = (TestListenerFactory) elt;
             factories.add(factory);
         }
+        //the children are live, so let's add them to the listener list.
+        for (Prim child : sfChildList()) {
+            if (child instanceof TestListenerFactory) {
+                factories.add((TestListenerFactory) child);
+            }
+        }
+
     }
 
     /**

@@ -146,7 +146,6 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         //now start anything that is not a test
         for (Prim elem:sfChildList()) {
-
             if (!(elem instanceof TestBlock)) {
                 elem.sfStart();
             }
