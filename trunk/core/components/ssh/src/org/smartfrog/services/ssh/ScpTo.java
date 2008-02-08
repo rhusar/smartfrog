@@ -69,13 +69,15 @@ public class ScpTo extends AbstractScpOperation {
                        List<File> localFiles)
             throws IOException, JSchException, SmartFrogException {
         Iterator<String> remoteFilenameIterator = remoteFilenames.listIterator();
+        int count = 0;
         for (File localFile : localFiles) {
             if (haltOperation) {
                 throw new InterruptedIOException();
             }
             String remoteFile = remoteFilenameIterator.next();
-            uploadOneFile(session, localFile, remoteFile);
+            count+=uploadOneFile(session, localFile, remoteFile);
         }
+        log.info("Uploaded "+localFiles.size()+" files -"+count+" bytes");
     }
 
     /**
@@ -84,17 +86,18 @@ public class ScpTo extends AbstractScpOperation {
      * @param session session to use
      * @param localFile local file to upload
      * @param remoteFile remote filename
-     *
+     * @return number of bytes uploaded
      * @throws IOException in case we were not able to transfer files
      * @throws JSchException low level jsch exceptions
      * @throws SmartFrogException for other problems
      */
-    protected void uploadOneFile(Session session,
+    protected int uploadOneFile(Session session,
                                  File localFile,
                                  String remoteFile)
             throws JSchException, IOException, SmartFrogException {
         Channel channel = null;
         String cmdPrefix = "scp -t ";
+        int count=0;
         try {
             beginTransfer(localFile,remoteFile);
             channel = session.openChannel("exec");
@@ -106,13 +109,14 @@ public class ScpTo extends AbstractScpOperation {
             InputStream in = channel.getInputStream();
             channel.connect();
             checkAck(in);
-            doScpTo(in, out, localFile);
+            count=doScpTo(in, out, localFile);
             endTransfer(localFile, remoteFile);
         } finally {
             if (channel != null) {
                 channel.disconnect();
             }
         }
+        return count;
     }
 
     /**
@@ -120,9 +124,10 @@ public class ScpTo extends AbstractScpOperation {
      * @param in Input Stream of the channel
      * @param out Output Stream of the channel
      * @param localFile local file name
+     * @return number of bytes uploaded
      * @throws IOException in case we were not able to transfer files
      */
-    private void doScpTo(InputStream in, OutputStream out, 
+    private int doScpTo(InputStream in, OutputStream out,
                             File localFile) throws IOException {
         int fileSize = (int) localFile.length();
         String lFilePart=localFile.getName();
@@ -139,7 +144,7 @@ public class ScpTo extends AbstractScpOperation {
         out.write(cmd.getBytes());
         out.flush();
         checkAck(in);
-        sendFile(localFile, in, out);
+        return sendFile(localFile, in, out);
     }
     /**
      * Writes file content to output stream of the ssh channel.
@@ -150,10 +155,12 @@ public class ScpTo extends AbstractScpOperation {
      * @param file file to send
      * @param in input stream for acknowledgements
      * @param out output stream outpu stream
+     * @return number of bytes uploaded
      */
-    private void sendFile (File file, InputStream in, OutputStream out)
+    private int sendFile (File file, InputStream in, OutputStream out)
                                  throws IOException {
         FileInputStream fis=null;
+        int count=0;
         try {
             fis = new FileInputStream(file);
             byte[] buf=new byte[BUFFER_SIZE];
@@ -163,7 +170,8 @@ public class ScpTo extends AbstractScpOperation {
                 if(bytesRead <= 0) {
                     break;
                 }
-                out.write(buf, 0, bytesRead); 
+                out.write(buf, 0, bytesRead);
+                count+=bytesRead;
             }
             if (haltOperation) {
                 throw new InterruptedIOException();
@@ -174,6 +182,7 @@ public class ScpTo extends AbstractScpOperation {
         } finally {
             FileSystem.close(fis);
         }
+        return count;
     }
 }
 
