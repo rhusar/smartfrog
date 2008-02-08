@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -124,7 +125,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         List nestedClasses = (List) sfResolve(ATTR_CLASSES,
                 (List) null,
                 false);
-        classes = flattenStringList(nestedClasses,
+        classes = ListUtils.flattenStringList(nestedClasses,
                 ATTR_CLASSES);
 
         singleTest = sfResolve(ATTR_SINGLE_TEST, singleTest, false);
@@ -136,7 +137,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         //TODO: represent as tuples
 
         if (propList != null && !propList.isEmpty()) {
-            List<String> properties = flattenStringList(propList, ATTR_SYSPROPS);
+            List<String> properties = ListUtils.flattenStringList(propList, ATTR_SYSPROPS);
             String[] values = new String[0];
             values = properties.toArray(values);
             int len = values.length;
@@ -590,11 +591,22 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
         return testInfo;
     }
 
+    /**
+     * Create a test info report from a test
+     * @param test test that ran
+     * @return a test information struct
+     */
     public static TestInfo createTestInfo(Test test) {
         return createTestInfo(test, null);
     }
 
 
+    /**
+     * Create a test info report from a test
+     * @param test test that ran
+     * @param fault fault information -can be null
+     * @return a test information struct
+     */
     public static TestInfo createTestInfo(Test test, Throwable fault) {
         TestInfo testInfo = new TestInfo(fault);
         String classname = test.getClass().getName();
