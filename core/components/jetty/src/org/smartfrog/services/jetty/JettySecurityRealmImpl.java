@@ -98,6 +98,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             mapping.setConstraint(cons);
             mappings[entry]=mapping;
         }
+        jettyHelper.getServer().addUserRealm(realm);
         security = new SecurityHandler();
         security.setAuthenticator(new BasicAuthenticator());
         security.setConstraintMappings(mappings);
@@ -119,6 +120,7 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             Server server = jettyHelper.getServer();
             if(server!=null) {
                 server.removeHandler(security);
+                server.removeUserRealm(realm);
             }
         }
     }
