@@ -22,6 +22,7 @@ package org.smartfrog.services.assertions;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestBlock extends Remote {
+public interface TestBlock extends EventRegistration {
 
 
     /**
