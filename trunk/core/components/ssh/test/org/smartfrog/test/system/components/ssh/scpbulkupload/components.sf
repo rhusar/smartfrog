@@ -68,8 +68,8 @@ testBulkUpload extends ExpectDeploy {
       host SshTestProperties:host;
       username SshTestProperties:username;
       timeout SshTestProperties:timeout;
+      fileCount 2;
       sfShouldTerminate true;
-
     }
 
     assertCount extends Assert {
@@ -78,6 +78,18 @@ testBulkUpload extends ExpectDeploy {
         //what if the component is unreachable?
         reference LAZY upload;
         sfShouldTerminate true;
+    }
+  }
+}
+
+testBulkUploadSkipsDirectories  extends ExpectDeploy {
+  description "verifies that directories get skipped";
+
+  action extends BulkUploadTestCompound {
+
+    subdir extends Mkdir {
+      parentDir LAZY PARENT:tempdir;
+      dir "tempdir.txt";
     }
 
   }
