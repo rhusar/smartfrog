@@ -115,8 +115,7 @@ public class TestCompoundImpl extends ConditionCompound
      * Deploys and reads the basic configuration of the component. Overrides EventCompoundImpl.sfDeploy.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                         In case of any error while deploying the component
+     * @throws SmartFrogException In case of any error while deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -139,9 +138,19 @@ public class TestCompoundImpl extends ConditionCompound
     }
 
     /**
+     * Override point: is the condition required. IF not, there is no attempt to deploy it at startup
+     *
+     * @return false, always
+     */
+    @Override
+    protected boolean isConditionRequired() {
+        return false;
+    }
+
+    /**
      * Startup is complex, as a failure is not always unexpected.
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException unable start up
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -278,8 +287,8 @@ public class TestCompoundImpl extends ConditionCompound
      * @param childname   the name of the component
      * @param description the component description to use (a copy is made before deployment)
      * @return the new child
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException unable start up
      */
     protected Prim deployComponentDescriptionThrowing(String childname, ComponentDescription description)
             throws SmartFrogException, RemoteException {
