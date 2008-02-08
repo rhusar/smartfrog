@@ -22,6 +22,7 @@ package org.smartfrog.test;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
 import org.smartfrog.services.assertions.TestBlock;
@@ -78,10 +79,12 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     /**
      * Start listening; unsubscribe the event sink and bind to a new application
      * @param prim the event source
-     * @throws RemoteException for subscription problems
+     * @throws RemoteException for network problems
+     * @throws SmartFrogRuntimeException for subscription problems
      */
-    private synchronized void startListening(Prim prim) throws RemoteException {
+    private synchronized void startListening(Prim prim) throws RemoteException, SmartFrogRuntimeException {
         stopListening();
+
         eventSink=new TestEventSink(prim);
     }
 
