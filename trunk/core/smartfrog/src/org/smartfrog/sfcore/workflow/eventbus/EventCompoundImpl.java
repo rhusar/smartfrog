@@ -87,6 +87,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * If action or actions atributes are present then it behaves like compound and loads all eager components.
      * @throws SmartFrogDeploymentException for deployment problems
     */
+    @Override
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
       if (isOldNotationSupported() && sfContext().containsKey(ATTR_ACTIONS)){
           oldNotation=true;
@@ -348,7 +349,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             try {
                 sink.deregister(this);
             } catch (RemoteException ex) {
-                sfLog().ignore("when deregestering "+sink,ex);
+                sfLog().ignore("when deregistering "+sink,ex);
             }
         }
 
@@ -425,10 +426,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
     /**
-     * Helper method to deploy and start any component of a given name. It's template is replaced in the graph
+     * Helper method to deploy and start any component of a given name. Its template is replaced in the graph
      * by the running component
      *
-     * @param childname     attribute to look up
+     * @param childname  attribute to look up
      * @param required flag to indicate the component is required
      * @return the component or null if there was no attribute and required was false.
      * @throws SmartFrogResolutionException unable to resolve the child and required==true
@@ -438,7 +439,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     protected Prim deployChildCD(String childname, boolean required)
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
         ComponentDescription cd = null;
-        cd = sfResolve(childname, cd, false);
+        cd = sfResolve(childname, cd, required);
         if (cd != null) {
             return sfCreateNewChild(childname, cd, null);
         } else {
