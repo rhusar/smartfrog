@@ -22,6 +22,7 @@ package org.smartfrog.services.assertions.events;
 import org.smartfrog.services.assertions.TestFailureException;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
@@ -85,6 +86,8 @@ public class TestEventSink implements EventSink {
     public static final String ERROR_TEST_RUN_TIMEOUT = "Timeout waiting for a test run to complete";
     /** error message : {@value} */
     private static final String ERROR_PREMATURE_TERMINATION = "Test component terminated before starting up";
+    public static final String ERROR_WRONG_TYPE
+            = "Cannot cast a component to an EventRegistration instance, as it is of the wrong type: ";
 
 
     /**
@@ -109,8 +112,12 @@ public class TestEventSink implements EventSink {
      * @param application the application (which must implement{@link EventRegistration})
      * @throws RemoteException if something goes wrong with the subscription
      */
-    public TestEventSink(Prim application) throws RemoteException {
-        this((EventRegistration) application);
+    public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
+        if(!(application instanceof EventRegistration)) {
+            throw new SmartFrogRuntimeException(ERROR_WRONG_TYPE
+                    + application.getClass(), application);
+        }
+        subscribe((EventRegistration) application);
     }
 
     /**
@@ -129,11 +136,7 @@ public class TestEventSink implements EventSink {
             registration.deregister(this);
             shouldUnexport=true;
         }
-        if(shouldUnexport) {
-            return UnicastRemoteObject.unexportObject(this,true);
-        } else {
-            return true;
-        }
+        return !shouldUnexport || UnicastRemoteObject.unexportObject(this, true);
     }
 
 
