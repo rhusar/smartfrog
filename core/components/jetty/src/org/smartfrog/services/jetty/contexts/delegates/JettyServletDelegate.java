@@ -11,13 +11,14 @@ import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -36,15 +37,14 @@ public class JettyServletDelegate
 
     private Prim owner;
 
-    private Reference nameRef = new Reference(ServletComponent.ATTR_NAME);
-    private Reference pathSpecRef = new Reference(ServletComponent.ATTR_PATH_SPEC);
-    private Reference classNameRef = new Reference(ServletComponent.ATTR_CLASSNAME);
-    private Reference initParamsRef = new Reference(ServletComponent.ATTR_INIT_PARAMS);
+    private static final Reference nameRef = new Reference(ServletComponent.ATTR_NAME);
+    private static final Reference pathSpecRef = new Reference(ServletComponent.ATTR_PATH_SPEC);
+    private static final Reference classNameRef = new Reference(ServletComponent.ATTR_CLASSNAME);
+    private static final Reference initParamsRef = new Reference(ServletComponent.ATTR_INIT_PARAMS);
 
     private String name = null;
     private String pathSpec = null;
     private String className = null;
-    private Vector initParams = null;
 
     private ServletHolder holder = null;
     private String absolutePath;
@@ -81,12 +81,17 @@ public class JettyServletDelegate
      */
     private void bind(Prim prim, DelegateServletContext ctx) throws RemoteException, SmartFrogException {
         try {
+            assert prim!=null:"no prim parameter";
+            assert ctx != null : "no DelegateServletContext parameter";
             name = prim.sfResolve(nameRef, name, true);
             pathSpec = prim.sfResolve(pathSpecRef, pathSpec, true);
             className = prim.sfResolve(classNameRef, className, true);
 
             Context servletContext;
             servletContext = ctx.getServletContext();
+            if (servletContext == null) {
+                throw new SmartFrogDeploymentException("No servlet context is currently live");
+            }
 
             holder = servletContext.addServlet(pathSpec, className);
             holder.setDisplayName(name);
@@ -98,15 +103,9 @@ public class JettyServletDelegate
             holder.setInitOrder(initOrder);
 
             //apply initialisation params
-            initParams = prim.sfResolve(initParamsRef, initParams, false);
-            if (initParams != null) {
-                for (Enumeration en = initParams.elements();
-                     en.hasMoreElements();) {
-                    Vector element = (Vector) en.nextElement();
-                    String key = element.firstElement().toString();
-                    String value = element.lastElement().toString();
-                    holder.setInitParameter(key, value);
-                }
+            Vector<Vector<String>> paramTuples = ListUtils.resolveStringTupleList(prim, initParamsRef, true);
+            for(Vector<String> tuple:paramTuples) {
+                holder.setInitParameter(tuple.firstElement(), tuple.get(1));
             }
 
             //update our path attribute
