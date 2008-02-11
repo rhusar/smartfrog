@@ -162,7 +162,7 @@ ServletSchema extends Schema {
     className extends String;
     //mappings.
     mappings extends OptionalVector;
-    //initialisation parameters
+    //initialisation parameters as a list of [name,value] pairs
     initParams extends OptionalVector;
     //init order for the servlet;
     //Holders with order<0, are initialized on use.
@@ -181,7 +181,7 @@ Servlet extends ServletContextComponent {
     sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
     //order of initialisation; -1 means on demand.
     initOrder -1;
-
+    initParams [];
 }
 
 
