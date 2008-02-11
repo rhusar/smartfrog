@@ -36,9 +36,6 @@ import java.net.ConnectException;
 
 public class IvyLibraryTest extends DeployingTestBase {
     public static final String FILES = "org/smartfrog/test/system/java/libraries/";
-    private static final String CONNECTION_REFUSED = "refused";
-    private static final String EXCEPTION_JUNIT_ASSERTION_FAILED = "junit.framework.AssertionFailedError";
-
 
     public IvyLibraryTest(String name) {
         super(name);
