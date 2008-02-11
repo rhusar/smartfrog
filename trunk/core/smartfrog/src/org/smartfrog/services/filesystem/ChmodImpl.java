@@ -114,7 +114,7 @@ public class ChmodImpl extends PrimImpl implements Chmod {
         commands.add("chmod");
 
         if (recursively) {
-            commands.add("-R ");
+            commands.add("-R");
         }
 
 
@@ -138,6 +138,8 @@ public class ChmodImpl extends PrimImpl implements Chmod {
             }
             commands.add(modeString);
         }
+
+        commands.add(target);
 
         // execute the command
         String[] commandArray = commands.toArray(new String[commands.size()]);
