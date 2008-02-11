@@ -60,9 +60,6 @@ public class ServletComponentImpl extends ServletContextComponentImpl
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        //here we are bound to our context
-        ServletContextIntf servletContext = getServletContext();
-        delegate = servletContext.addServlet(this);
 
     }
 
@@ -76,6 +73,9 @@ public class ServletComponentImpl extends ServletContextComponentImpl
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        //here we are bound to our context
+        ServletContextIntf servletContext = getServletContext();
+        delegate = servletContext.addServlet(this);
         delegate.start();
     }
 
