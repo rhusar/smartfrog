@@ -44,18 +44,6 @@ SmartFrogJar extends SmartFrogArtifact {
 LocallyPublished extends IvyLocallyPublishedLibrary {
 } 
 
-
- 
-LibraryTest extends ExpectDeploy {
-  description "test an ivy component";
-
-  action extends Compound {
-  }
-
-  undeployAfter 500;
-
-}
- 
  
 LibraryTest extends ExpectDeploy {
   description "test an ivy component";
