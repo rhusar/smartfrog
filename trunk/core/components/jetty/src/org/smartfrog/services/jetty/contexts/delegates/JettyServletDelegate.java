@@ -93,7 +93,7 @@ public class JettyServletDelegate
                 throw new SmartFrogDeploymentException("No servlet context is currently live");
             }
 
-            holder = servletContext.addServlet(pathSpec, className);
+            holder = servletContext.addServlet(className, pathSpec);
             holder.setDisplayName(name);
 
             //get and apply init order
