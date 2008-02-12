@@ -206,7 +206,8 @@ public class LivenessPageComponent extends AbstractLivenessPageComponent
         try {
             livenessPage.onPing();
             return true;
-        } catch (SmartFrogLivenessException  ignored) {
+        } catch (SmartFrogLivenessException ignored) {
+            sfLog().ignore("Ignoring liveness page error ",ignored);
             return false;
         }
     }

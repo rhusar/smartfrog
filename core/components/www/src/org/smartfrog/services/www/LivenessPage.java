@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
 
 public interface LivenessPage extends HttpAttributes {
 
+
     /**
      * Check the page, regardless of whether the component is enabled or not.
      * This is the programmatic option.

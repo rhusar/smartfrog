@@ -62,7 +62,7 @@ public interface HttpAttributes extends Remote {
     /**
      * component attribute, value {@value}
      */
-    String ATTR_REGEXP = "regexp";
+    String ATTR_RESPONSE_REGEXP = "responseRegexp";
     /**
      * component attribute, value {@value}
      */
@@ -79,6 +79,7 @@ public interface HttpAttributes extends Remote {
      * component attribute, value {@value}
      */
     String ATTR_PASSWORD = "password";
+    
     /**
      * SF attribute - {@value}
      */
@@ -91,4 +92,6 @@ public interface HttpAttributes extends Remote {
      * SF attribute - {@value}
      */
     String ATTR_RESULTTEXT = "resultText";
+    /** {@value} */
+    String ATTR_LOGRESPONSE = "logResponse";
 }

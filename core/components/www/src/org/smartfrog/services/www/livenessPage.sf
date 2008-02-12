@@ -67,7 +67,8 @@ For more information: www.smartfrog.org
 
       //if the username is set, the password is needed 
      username extends OptionalString;
-     password extends OptionalString;
+     //a password provider can be used, or a string value
+     username extends Optional;
 
    //and any of
 
@@ -113,6 +114,12 @@ For more information: www.smartfrog.org
      checkOnStartup extends Boolean;
      //check on liveness
      checkOnLiveness extends Boolean;
+
+     //print the response
+     logResponse extends Boolean;
+
+     //a regular expression to validate the content, if not empty
+     responseRegexp extends String;
  }
 
  /*
@@ -133,13 +140,14 @@ For more information: www.smartfrog.org
      followRedirects true;
      headers [];
      host "127.0.0.1";
+     logResponse false;
      protocol "http";
      maximumResponseCode HttpCodes:END_2XX;
      minimumResponseCode HttpCodes:START_2XX;
      mimeType [];
      page "/";
      port 80;
-
+     responseRegexp "";
  }
 
 
@@ -147,15 +155,16 @@ For more information: www.smartfrog.org
  * This is the variant for use in a workflow sequence; it blocks
  * the sequence until the page arrives.
  *
- * In WaitForPage, checkFrequency becomes the time in seconds between
+ * In WaitForPage, checkFrequency becomes the time in milliseconds between
  * polls on the page
  */
-  
+  WaitForPageSchema extends Schema {
+    //timeout in milliseconds
+    timeout extends Integer;
+  }
+
   WaitForPage extends LivenessPage {
-    WaitForPageSchema extends Schema {
-      //timeout in milliseconds
-      timeout extends Integer;
-    }
+    waitForPageSchema extends WaitForPageSchema; 
     sfClass "org.smartfrog.services.www.WaitForPageImpl";
     checkFrequency 500;
     fetchErrorText false;
