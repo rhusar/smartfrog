@@ -138,7 +138,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                 return pc.sfDeployComponentDescription(null, parent, target, null);
             }
         }catch (Exception ex){
-            if (sflog.isErrorEnabled()) sflog.error(ex);
+            // if (sflog.isErrorEnabled()) sflog.error(ex); // don't log errors here
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward("PrimHostDeployerImpl.deploy",ex);
         }
     }
