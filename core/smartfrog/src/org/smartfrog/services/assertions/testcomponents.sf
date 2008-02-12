@@ -66,6 +66,9 @@ TestCompound extends ActionCompound {
     description extends String {
       description "description of the test";
     }
+    links extends OptionalVector {
+      description "list of URLs for the test reports";
+    }
     undeployAfter extends Integer {
       description "time in milliseconds to undeploy the action and assertions; use -1 for no limit";
     }

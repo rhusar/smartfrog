@@ -49,7 +49,7 @@ AssertSchema extends Schema {
 
     //the name of a reference which does not have to be defined, but when it
     //is, the evaluatesTrue and evaluatesFalse checks apply
-    reference extends OptionalCD;
+    reference extends Optional;
     //name of a boolean test() method that returns true when called on the reference
     evaluatesTrue extends OptionalString;
     //name of a boolean test() method that returns false when called on the reference
