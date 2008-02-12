@@ -341,7 +341,6 @@ public class ComponentHelper {
      * mark this task for termination by spawning a separate thread to do it.
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
      * the thread blocks until sfStart has finished.
-     * Note that we detach before terminating; this stops our timely end propagating.
      * <i>Important.</i> This operation is implicitly harmless to use during termination. It will
      * not interfere with a component that is already closing down, nor with its notification options.
      */
