@@ -17,8 +17,10 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
@@ -33,15 +35,14 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.regex.Matcher;
 
 
 /**
- * Model a liveness page.
- * <p/>
- * This is not quite a SmartFrog component, but rather a general purpose class for
- * importing into other things, as needed.
- * <p/>
- * Created 20-Apr-2004 16:11:51
+ * Model a liveness page. <p/> This is not quite a SmartFrog component, but rather a general purpose class for importing
+ * into other things, as needed. <p/> Created 20-Apr-2004 16:11:51
  */
 public class LivenessPageChecker implements LivenessPage {
 
@@ -87,6 +88,7 @@ public class LivenessPageChecker implements LivenessPage {
     protected URL targetURL = null;
 
     private String urlAsString;
+
     private URI uri;
 
     /**
@@ -103,8 +105,7 @@ public class LivenessPageChecker implements LivenessPage {
     protected int minimumResponseCode = 200;
 
     /**
-     * max response code; anything above 299 is an error. That includes
-     * not-modified
+     * max response code; anything above 299 is an error. That includes not-modified
      */
     protected int maximumResponseCode = 299;
 
@@ -121,24 +122,42 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * our log
      */
-    protected Log log;
+    protected LogSF log;
+
+    private boolean logResponse;
 
     /**
-     * Mime types
+     * Owner: may be null
      */
+    private Prim owner;
+
+    /**
+    * Mime types
+    */
     protected HashMap<String, String> mimeTypeMap;
     private String errorMessage;
+
+    /** headers */
     private Vector<Vector<String>> headers;
     private int connectTimeout;
+
+    /** regexp or empty string */
+    private String responseRegexp="";
+    private Pattern responsePattern;
+    public static final String ERROR_NO_CONNECTION = "unable to connect to URL";
+    public static final String ERROR_NO_MATCH = "Response body does not match regular expression ";
+    public static final String ERROR_UNABLE_TO_COMPILE = "Unable to compile ";
+    private static final String FAILED_TO_REPLACE_ATTRIBUTE = "failed to replace attribute ";
+    private static final String BAD_URL = "Bad URL: ";
 
     /**
      * create a new liveness page
      *
      * @param protocol protocol http or https
-     * @param host hostname/ip address
-     * @param port port to use
-     * @param page page on the web site
-     * @throws RemoteException for RMI/Networking problems
+     * @param host     hostname/ip address
+     * @param port     port to use
+     * @param page     page on the web site
+     * @throws RemoteException              for RMI/Networking problems
      * @throws SmartFrogDeploymentException deployment problems
      */
     public LivenessPageChecker(
@@ -157,9 +176,8 @@ public class LivenessPageChecker implements LivenessPage {
      * Creates a new LivenessPageChecker object.
      *
      * @param url A URL to check
-     * @throws SmartFrogDeploymentException if the url generated a {@link
-     * MalformedURLException}
-     * @throws SmartFrogLogException log setup problems
+     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
+     * @throws SmartFrogLogException        log setup problems
      */
     public LivenessPageChecker(String url)
             throws SmartFrogLogException, SmartFrogDeploymentException {
@@ -171,7 +189,7 @@ public class LivenessPageChecker implements LivenessPage {
      * Creates a new LivenessPageChecker object.
      *
      * @param owner owner component
-     * @param url A URL to check
+     * @param url   A URL to check
      * @throws SmartFrogLogException log setup problems
      */
     public LivenessPageChecker(Prim owner, URL url) throws SmartFrogLogException {
@@ -196,6 +214,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogLogException log setup problems
      */
     private void bind(Prim owner) throws SmartFrogLogException {
+        this.owner=owner;
         if (owner != null) {
             log = LogFactory.getLog(owner);
         }
@@ -206,46 +225,58 @@ public class LivenessPageChecker implements LivenessPage {
      * bind to a url string
      *
      * @param target URL to bind to
-     * @throws SmartFrogDeploymentException if the url generated a {@link
-     * MalformedURLException}
+     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
      */
     public synchronized void bindToURL(String target) throws SmartFrogDeploymentException {
-        try {
-            targetURL = new URL(target);
-            uri=targetURL.toURI();
-            urlAsString=target;
-        } catch (MalformedURLException e) {
-            throw new SmartFrogDeploymentException("bad URL" + target, e);
-        } catch (URISyntaxException e) {
-            throw new SmartFrogDeploymentException("bad URL" + target, e);
-        }
+        bindToURL(target,target);
     }
 
     /**
+     * bind to a url string
+     *
+     * @param target URL to bind to
+     * @param sanitizedTarget the same URL without any password strings
+     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
+     */
+    public synchronized void bindToURL(String target,String sanitizedTarget) throws SmartFrogDeploymentException {
+        try {
+            targetURL = new URL(target);
+            uri = targetURL.toURI();
+            urlAsString = sanitizedTarget;
+        } catch (MalformedURLException e) {
+            throw new SmartFrogDeploymentException(BAD_URL + target, e);
+        } catch (URISyntaxException e) {
+            throw new SmartFrogDeploymentException(BAD_URL + target, e);
+        }
+    }
+    /**
      * make a URL from the various things
      *
-     * @throws SmartFrogDeploymentException if the url generated a {@link
-     * MalformedURLException}
+     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
      */
     protected void makeURL() throws SmartFrogDeploymentException {
-        StringBuilder target = new StringBuilder();
-        target.append(protocol);
-        target.append("://");
+        StringBuilder url= new StringBuilder();
+        url.append(protocol);
+        url.append("://");
+        StringBuilder safeURL=new StringBuilder();
+        safeURL.append(url);
         if (username != null) {
-            target.append(username);
-            target.append(':');
+            url.append(username);
+            url.append(':');
             if (password != null) {
-                target.append(password);
+                url.append(password);
             }
-            target.append('@');
+            url.append('@');
         }
+
+        StringBuilder target = new StringBuilder();
         target.append(host);
         target.append(':');
         target.append(port);
         String fullpath;
         if (path != null) {
             fullpath = path;
-            if (page != null) {
+            if (page != null && page.length()>0) {
                 //add a page
                 if (!fullpath.endsWith("/") && !page.startsWith("/")) {
                     //maybe a / char
@@ -264,14 +295,14 @@ public class LivenessPageChecker implements LivenessPage {
         if (queries != null) {
             target.append(queries);
         }
-        bindToURL(target.toString());
+        url.append(target);
+        safeURL.append(target);
+        bindToURL(url.toString(),safeURL.toString());
     }
 
     /**
-     * call this after configuring the class; does any preparation and turns
-     * any {@link MalformedURLException} into a {@link
-     * SmartFrogDeploymentException}. If the target URL is already defined, does
-     * nothing.
+     * call this after configuring the class; does any preparation and turns any {@link MalformedURLException} into a
+     * {@link SmartFrogDeploymentException}. If the target URL is already defined, does nothing.
      *
      * @throws SmartFrogDeploymentException if the URL is bad
      */
@@ -313,7 +344,7 @@ public class LivenessPageChecker implements LivenessPage {
         boolean logDebug = log != null && log.isDebugEnabled();
         try {
             if (logDebug) {
-                log.debug("connecting to " + targetURL);
+                log.debug("connecting to " + urlAsString);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setInstanceFollowRedirects(followRedirects);
@@ -337,13 +368,13 @@ public class LivenessPageChecker implements LivenessPage {
 
             String response = connection.getResponseMessage();
             if (logDebug) {
-                log.debug("response=" + response);
+                log.debug("response=\n" + response);
             }
 
             if (isStatusOutOfRange(responseCode)) {
                 String text = maybeGetErrorText(connection);
                 String message = "endpoint " + toString()
-                        + " returned error " + response
+                        + " returned error:\n" + response +"\n"
                         + text;
                 logAndRaise(message);
             }
@@ -363,7 +394,7 @@ public class LivenessPageChecker implements LivenessPage {
 
         } catch (IOException exception) {
             //String text = maybeGetErrorText(connection);
-            String message = "Failed to read " + targetURL.toString() + '\n'
+            String message = "Failed to read " + urlAsString + '\n'
                     + '\n' + exception.getMessage();
             logAndRaise(message);
         }
@@ -371,16 +402,18 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Tests for the mime type being in range
+     *
      * @param mimeType the supplied mime type
      * @return true if there are no mime types specified for this checker, or the type is in the list of supported types
-     * (no regexp matching yet)
+     *         (no regexp matching yet)
      */
     public boolean isMimeTypeInRange(String mimeType) {
-        return mimeTypeMap==null || lookupMimeType(mimeType)!=null;
+        return mimeTypeMap == null || lookupMimeType(mimeType) != null;
     }
 
     /**
      * Look up the mime type in the mime type map.
+     *
      * @param mimeType the mime type
      * @return null if there is no match (or no mime map), the actual value if there is one
      */
@@ -390,6 +423,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Compare the supplied error code with the min/max codes for this checker
+     *
      * @param responseCode the response code to check
      * @return true iff it is out of range.
      */
@@ -399,8 +433,7 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * Log the error message and raise an exception.
-     * The error text is also saved to {@link #errorMessage}
+     * Log the error message and raise an exception. The error text is also saved to {@link #errorMessage}
      *
      * @param message message to report
      * @throws SmartFrogLivenessException always
@@ -413,27 +446,48 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Override point.
-     *
+     * Default implementation checks the regular expression and adds its first group as the group1 attribute 
      * @param responseCode response http code
-     * @param response response line
-     * @param body body of the response
+     * @param response     response line
+     * @param body         body of the response
      * @throws SmartFrogLivenessException if need be
      */
     private void postProcess(int responseCode, String response, String body)
             throws SmartFrogLivenessException {
+        if(logResponse) {
+            log.info(body);
+        }
+        if (responsePattern != null) {
+            Matcher matcher = responsePattern.matcher(body);
+            if (!matcher.matches()) {
+                throw new SmartFrogLivenessException(ERROR_NO_MATCH + responseRegexp
+                        + "\n" + body);
+            }
+            if (owner != null && matcher.groupCount() > 0) {
+                String group1 = matcher.group(1);
+                log.info("Matched response: "+group1);
+                try {
+                    owner.sfReplaceAttribute("group1", group1);
+                } catch (SmartFrogRuntimeException e) {
+                    log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
+                } catch (RemoteException e) {
+                    log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
+                }
+
+            }
+        }
     }
 
 
     /**
-     * fetch error text if configured to do so, otherwise return an empty
-     * string
+     * fetch error text if configured to do so, otherwise return an empty string
      *
      * @param connection a connection that can be null if it so chooses.
      * @return "" or remote error text
      */
     protected String maybeGetErrorText(HttpURLConnection connection) {
         if (connection == null) {
-            return "unable to connect to URL";
+            return ERROR_NO_CONNECTION;
         }
         if (fetchErrorText) {
             return getInputOrErrorText(connection);
@@ -443,13 +497,11 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * this call assumes that the connection is open, we now go to get the text
-     * from the connection, be it good text or error text. If something goes
-     * wrong partway through a fetch, we return all that we had.
+     * this call assumes that the connection is open, we now go to get the text from the connection, be it good text or
+     * error text. If something goes wrong partway through a fetch, we return all that we had.
      *
      * @param connection current connection
-     * @return null if there was no input from either stream, or something went
-     *         wrong with the read.
+     * @return null if there was no input from either stream, or something went wrong with the read.
      */
     protected String getInputOrErrorText(HttpURLConnection connection) {
         InputStream instream = null;
@@ -498,8 +550,8 @@ public class LivenessPageChecker implements LivenessPage {
      * @return a string representation of the object.
      */
     public String toString() {
-        return urlAsString + " "
-                + minimumResponseCode + "< response <" + maximumResponseCode
+        return urlAsString + " ["
+                + minimumResponseCode + "< response <" + maximumResponseCode+"]"
                 + (enabled ? "" : "(disabled)");
     }
 
@@ -675,8 +727,7 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * query the enabled flag.
-     * Overrides other options
+     * query the enabled flag. Overrides other options
      *
      * @return current value
      */
@@ -685,8 +736,7 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * set the enabled flag.
-     * overrides other options
+     * set the enabled flag. overrides other options
      *
      * @param enabled new value
      */
@@ -699,8 +749,43 @@ public class LivenessPageChecker implements LivenessPage {
         return urlAsString;
     }
 
+    /**
+     * Get the URL as a URI
+     * @return the active URL as a URI; null if we havent bound yet.
+     */
     public URI getUri() {
         return uri;
+    }
+
+
+    public String getResponseRegexp() {
+        return responseRegexp;
+    }
+
+    /**
+     * Set the response regular expression
+     * @param responseRegexp the regular expression
+     * @throws SmartFrogDeploymentException if the syntax would not compile
+     */
+    public void setResponseRegexp(String responseRegexp) throws SmartFrogDeploymentException {
+        this.responseRegexp = responseRegexp;
+        if(responseRegexp!=null && responseRegexp.length()>0) {
+            try {
+                responsePattern=Pattern.compile(responseRegexp);
+            } catch (PatternSyntaxException e) {
+                throw new SmartFrogDeploymentException(ERROR_UNABLE_TO_COMPILE +responseRegexp,e);
+            }
+        } else {
+            responsePattern=null;
+        }
+    }
+
+    public boolean isLogResponse() {
+        return logResponse;
+    }
+
+    public void setLogResponse(boolean logResponse) {
+        this.logResponse = logResponse;
     }
 
     /**

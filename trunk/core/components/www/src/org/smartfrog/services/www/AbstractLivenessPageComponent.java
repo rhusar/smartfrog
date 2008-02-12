@@ -97,6 +97,9 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
                 livenessPage.getFollowRedirects(), true));
         livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
                 livenessPage.getFetchErrorText(), true));
+        //regular expression: this may raise an exception
+        livenessPage.setResponseRegexp(sfResolve(ATTR_RESPONSE_REGEXP,"", true));
+        livenessPage.setLogResponse(sfResolve(ATTR_LOGRESPONSE, false, false));
 
         //header vector
         Vector<Vector<String>> headers;

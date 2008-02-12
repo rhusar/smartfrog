@@ -26,7 +26,7 @@
  */
 
 
-HttpCodes extends {
+HttpCodes extends DATA {
 
   CONTINUE 100;
 
@@ -79,4 +79,21 @@ HttpCodes extends {
   SERVICE_UNAVAILABLE 503;
   GATEWAY_TIMEOUT 504;
   HTTP_VERSION_NOT_SUPPORTED 505;
+}
+
+/**
+ * Some http headers that you cannot deploy
+ */
+HttpHeaders extends DATA {
+  CacheControl "Cache-Control";
+  ContentEncoding "Content-Encoding";
+  ContentLocation "Content-Location";
+  ContentMD5 "Content-MD5";
+  ContentRange "Content-Range";
+  ContentType "Content-Type"
+  ETag "ETag";
+  Expires "Expires";
+  LastModified "Last-Modified";
+  UserAgent "User-Agent";
+
 }
