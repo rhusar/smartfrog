@@ -1,4 +1,4 @@
-/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,26 +23,34 @@ import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * the test has started
- * Created 16-Jul-2007 13:21:23
+ * This is an even to push into the event queue to indicate that the test has been interrupted.
+ * It breaks the waiting.
+ * <p/>
+ * Created 11-Feb-2008 15:12:41
  *
  */
 
-public class TestStartedEvent extends LifecycleEvent {
+public class TestInterruptedEvent extends LifecycleEvent {
 
-
-
-    public TestStartedEvent() {
+    /**
+     * Simple constructor
+     */
+    public TestInterruptedEvent() {
     }
 
-    public TestStartedEvent(Prim component) {
+    /**
+     * Set the event to a component
+     *
+     * @param component component the event came from
+     */
+    public TestInterruptedEvent(Prim component) {
         super(component);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String getEventName() {
-        return "TestStartedEvent";
+        return "TestInterruptedEvent";
     }
-
-
 }
