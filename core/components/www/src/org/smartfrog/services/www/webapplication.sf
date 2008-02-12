@@ -58,7 +58,7 @@ ApplicationServer extends WebServer {
 ApplicationServerContextSchema extends Schema {
 
     //application server. required.
-    server extends CD;
+    server extends Compulsory;
     //late binding information
     absolutePath extends OptionalString;
 }
