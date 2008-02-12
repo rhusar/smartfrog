@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -36,6 +36,8 @@ public interface XmppClient extends Xmpp {
      * a message to send when this component starts. {@value}
      */
     String ATTR_MESSAGE = "message";
+
+
 
     /**
      * Post a message to the default destination.

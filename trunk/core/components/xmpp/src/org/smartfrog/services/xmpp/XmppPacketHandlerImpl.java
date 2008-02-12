@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -31,20 +31,24 @@ import org.smartfrog.sfcore.prim.Prim;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 
-/** The packet handler logs everything and print it out Created 14-Aug-2007 13:51:30 */
+/**
+ * The packet handler logs everything and print it out Created 14-Aug-2007 13:51:30
+ */
 
 public class XmppPacketHandlerImpl extends PrimImpl implements
-        XmppMessageHandler, LocalXmppPacketHandler, PacketFilter,Remote {
+        XmppMessageHandler, LocalXmppPacketHandler, PacketFilter, Remote {
 
     private XmppListenerImpl listener;
 
-    public static final String ERROR_WRONG_TYPE_OR_PROCESS = "The listener must be an instance of XmppListenerImpl in the same process";
+    public static final String ERROR_WRONG_TYPE_OR_PROCESS
+            = "The listener must be an instance of XmppListenerImpl in the same process";
 
     public XmppPacketHandlerImpl() throws RemoteException {
     }
 
     /**
      * The base implementation returns this; children are free to override it
+     *
      * @return this
      */
     public PacketFilter getFilter() {
@@ -54,6 +58,7 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
 
     /**
      * Get the current listener
+     *
      * @return the listener
      */
     protected XmppListenerImpl getListener() {
@@ -62,6 +67,7 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
 
     /**
      * Get the active connection (may be null)
+     *
      * @return the active connection (may be null)
      */
     protected XMPPConnection getConnection() {
@@ -69,20 +75,20 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
     }
 
     /**
-    * Can be called to start components. Subclasses should override to provide functionality Do not block in this
-    * call, but spawn off any main loops!
-    *
-    * @throws SmartFrogException failure while starting
-    * @throws RemoteException    In case of network/rmi error
-    */
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim owner=null;
-        owner=sfResolve(ATTR_LISTENER,owner,true);
-        if(!(owner instanceof XmppListenerImpl)) {
+        Prim owner = null;
+        owner = sfResolve(ATTR_LISTENER, owner, true);
+        if (!(owner instanceof XmppListenerImpl)) {
             throw new SmartFrogDeploymentException(ERROR_WRONG_TYPE_OR_PROCESS);
         }
-        listener=(XmppListenerImpl) owner;
+        listener = (XmppListenerImpl) owner;
         listener.registerPacketHandler(this);
     }
 
@@ -94,9 +100,9 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(listener!=null) {
+        if (listener != null) {
             listener.unregisterPacketHandler(this);
-            listener=null;
+            listener = null;
         }
     }
 

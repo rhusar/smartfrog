@@ -1,4 +1,4 @@
-/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,39 +17,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.xmpp;
+package org.smartfrog.services.xmpp.presence;
 
-import org.jivesoftware.smack.packet.Message;
-
-import java.io.Serializable;
+import org.smartfrog.services.xmpp.Xmpp;
 
 /**
- *
- * Created 14-Aug-2007 17:36:40
- *
+ * This is a presence component that does nothing but tell the world that it exists.
+ * When deployed, it becomes present, when undeployed, it becomes absent.
+ * Created 12-Feb-2008 12:19:46
  */
 
-public class WireMessage implements Serializable {
 
-    private String subject;
-    private String thread;
-    private String body;
-    private String packetID;
-    private String to;
-    private String type;
-
-
-    public WireMessage() {
-    }
-
-
-    public WireMessage(Message m) {
-        subject=m.getSubject();
-
-        body=m.getBody();
-        packetID=m.getPacketID();
-        thread=m.getThread();
-        to = m.getTo();
-        type = m.getType().toString();
-    }
+public interface XmppPresence extends Xmpp {
 }

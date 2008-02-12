@@ -27,7 +27,7 @@ import java.rmi.RemoteException;
 import java.rmi.Remote;
 
 /**
- *
+ *  A message handler that only accepts messages
  * Created 14-Aug-2007 13:51:30
  *
  */
@@ -47,7 +47,38 @@ public class XmppMessageHandlerImpl extends XmppPacketHandlerImpl implements Rem
      * @return true if and only if <tt>packet</tt> passes the filter.
      */
     public boolean accept(Packet packet) {
+        return packetIsMessage(packet);
+    }
+
+    /**
+     * Test for a received package being a message
+     * @param packet
+     * @return true iff the packet is a message
+     */
+    protected static boolean packetIsMessage(Packet packet) {
         return packet instanceof Message;
     }
 
+    /**
+     * Convert the package to a message and relay to {@link #processMessage(Message)}
+     *
+     * @param packet the packet to process.
+     * @throws IllegalArgumentException if the packet is not a message
+     */
+    public void processPacket(Packet packet) {
+        if(!packetIsMessage(packet)) {
+            //sanity check in  case a subclass overrides the accept cal;;
+            throw new IllegalArgumentException("Not a message "+packet);
+        }
+        processMessage((Message) packet);
+    }
+
+    /**
+     * A single thread is responsible for invoking all listeners, so it's very important that implementations of this
+     * method not block for any extended period of time.
+     * @param message message to process
+     */
+    public void processMessage(Message message) {
+        sfLog().info(message);
+    }
 }
