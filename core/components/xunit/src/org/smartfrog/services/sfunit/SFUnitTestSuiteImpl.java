@@ -22,12 +22,18 @@ package org.smartfrog.services.sfunit;
 import org.smartfrog.services.xunit.base.RunnerConfiguration;
 import org.smartfrog.services.xunit.base.AbstractTestSuite;
 import org.smartfrog.services.assertions.TestBlock;
+import org.smartfrog.services.assertions.TestTimeoutException;
+import org.smartfrog.services.assertions.events.TestEventSink;
+import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -48,9 +54,10 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
     private volatile TerminationRecord status;
     private RunnerConfiguration configuration;
     private ComponentHelper helper;
-    private List<TestBlock> testChildren;
-    private Iterator<TestBlock> testChildrenIterator;
-    private Prim activeTest;
+    SFUnitChildTester testThread;
+    private long startupTimeout;
+    private long testTimeout;
+    private ArrayList<TestSuiteRun> testSuites;
 
     public SFUnitTestSuiteImpl() throws RemoteException {
     }
@@ -151,7 +158,20 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             }
         }
 
+        startupTimeout = sfResolve(ATTR_STARTUP_TIMEOUT,0L,true);
+        testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
         //so here everything is started; the tests are ready to run.
+    }
+
+    /**
+     * Deregisters from all current registrations.
+     *
+     * @param status Termination  Record
+     */
+    @Override
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        SmartFrogThread.requestThreadTermination(testThread);
     }
 
     /**
@@ -188,83 +208,31 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         boolean successful = true;
 
         List<Prim> children = sfChildList();
-		testChildren = new ArrayList<TestBlock>(children.size());
-
-
-        for (Prim child:children) {
+        testSuites = new ArrayList<TestSuiteRun>(children.size());
+        for (Prim child : children) {
             if (child instanceof TestBlock) {
                 TestBlock testBlock = (TestBlock) child;
-                testChildren.add(testBlock);
+                testSuites.add(new TestSuiteRun(testBlock));
             }
         }
-        //now create the iterator.
-        testChildrenIterator = testChildren.iterator();
-        //start by running the next child
-        runNextChildTest();
+        testThread=new SFUnitChildTester(testSuites);
+        testThread.start();
+
         return successful;
     }
 
-    /**
-     * Test one testblock.
-     *
-     * TestC
-     * <ol>
-     * <li> Subscribing to lifecycle events</li>
-     * <li> Starting it.</li>
-     * <li> Waiting for it to finish </li>
-     * <li> Logging whether it failed or not</li>
-     * </ol>
-     *
-     * @param testBlock component to test
-     * @return true if the test worked
-     * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
-     */
-    private synchronized boolean testOneChild(TestBlock testBlock) throws SmartFrogException, RemoteException {
-        activeTest = (Prim) testBlock;
-        Exception caught;
-        try {
-            sfLog().info("Starting "+activeTest.sfCompleteName().toString());
-            activeTest.sfStart();
-            //now we wait for the child to terminate
-            //TODO: block, without breaking synchronization
-            return true;
-        } catch (SmartFrogException e) {
-            caught = e;
-        } catch (RemoteException e) {
-            caught = e;
-        }
-        sfLog().info(caught);
-        return false;
-    }
 
 
     /**
-     * Deploy a child; return false if there were none left
-     *
-     * @return whether the test was run or not
-     * @throws SmartFrogException smartfrog problems
-     * @throws RemoteException network problems
-     */
-    private boolean runNextChildTest() throws SmartFrogException, RemoteException {
-        if (testChildrenIterator.hasNext()) {
-            testOneChild(testChildrenIterator.next());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Handle child termination. 
-     * Sequence behaviour for a normal child termination is 
+     * Handle child termination.
+     * Sequence behaviour for a normal child termination is
      * <ol>
      *  <li> to start the next component.</li>
      *  <li> if it is the last - terminate normally. </li>
      *  <li> If starting the next component raised an
-     * error, terminate abnormally</li> 
-     * </ol> 
-     * 
+     * error, terminate abnormally</li>
+     * </ol>
+     *
      * Abnormal child terminations are relayed up.
      *
      * @param record exit record of the component
@@ -272,54 +240,18 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
      * @return true whenever a child component is not started
      */
     protected boolean onChildTerminated(TerminationRecord record, Prim comp) {
-        if (activeTest == comp) {
-            //cast it
-            TestBlock test = (TestBlock) activeTest;
-            //get the results
-            boolean success=false;
-            boolean isSkipped=false;
-            boolean isFailed=false;
-            Exception caught=null;
-            try {
-                success = test.isSucceeded();
-                isSkipped = test.isSkipped();
-                isFailed = test.isFailed();
-            } catch (RemoteException e) {
-                caught = e;
-            } catch (SmartFrogException e) {
-                caught = e;
-            }
-            if(caught!=null) {
-                sfLog().error("Unreachable or terminated child -assuming failure");
-                success=false;
-                isFailed = true;
-            }
-            succeeded &=success;
-            isFailed |= isFailed;
-            //if we failed, we didn't succeed. Just to make sure :)
-            succeeded &=!isFailed;
-            skipped |= isSkipped;
+        if(comp instanceof TestBlock) {
+            //its a test block. so let the test block handling handle it
 
-            //now, report things
-            if(getConfiguration().getKeepGoing()) {
-                //TODO:    
-            }
-            //after the eval, remove it from the graph
+            //we just remove it from liveness
             try {
                 sfRemoveChild(comp);
-                //deploy the next child
-                boolean deployed = runNextChildTest();
-                //signal false if we do not want to terminate
-                return !deployed;
+            } catch (SmartFrogRuntimeException e) {
+                sfLog().error(e);
             } catch (RemoteException e) {
-                caught = e;
-            } catch (SmartFrogException e) {
-                caught = e;
+                sfLog().error(e);
             }
-            //terminate with an error if we caught something
-            TerminationRecord newRecord = TerminationRecord.abnormal("Failed to start next test", sfCompleteName, caught);
-            sfTerminate(newRecord);
-            //and notify the caller we are handling it ourselves
+            //and notify the caller we want to keep going
             return false;
         } else {
             //something else terminated
@@ -327,5 +259,135 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             return true;
         }
 
+    }
+
+    /**
+     * This is our class to store test run details
+     */
+    private static class TestSuiteRun {
+        TestBlock target;
+        TestEventSink events;
+        Exception caught;
+        TerminationRecord status;
+        SFUnitChildTester testThread;
+
+        private TestSuiteRun() {
+        }
+
+        public TestSuiteRun(TestBlock testBlock) {
+            target=testBlock;
+        }
+    }
+
+    /**
+     * This is the worker thread that runs tests and waits for responses. It is initially single threaded.
+     */
+    private class SFUnitChildTester extends SmartFrogThread {
+
+        private List<TestSuiteRun> testRuns;
+        private boolean parallel = false;
+        private TestSuiteRun currentTest;
+
+        /**
+         * Create a basic thread
+         *
+         * @see Thread#Thread(ThreadGroup,Runnable,String)
+         */
+        private SFUnitChildTester(List<TestSuiteRun> testRuns) {
+            this.testRuns = testRuns;
+        }
+
+        /**
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses of
+         * <code>Thread</code> should override this method.
+         *
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            for(TestSuiteRun testRun:testRuns) {
+                if(isTerminationRequested()) {
+                    break;
+                }
+                currentTest=testRun;
+                testOneChild(currentTest);
+            }
+        }
+
+        /**
+         * Request termination by triggering the superclass termination logic, and forcing an
+         * interruption into the test queue
+         */
+        public synchronized void requestTermination() {
+            super.requestTermination();
+            if(currentTest!=null && currentTest.events!=null) {
+                try {
+                    currentTest.events.interrupt();
+                } catch (RemoteException e) {
+                    sfLog().ignore("failed to interrupt",e);
+                }
+            }
+        }
+
+        /**
+         * Test one testblock.
+         *
+         * TestC <ol> <li> Subscribing to lifecycle events</li> <li> Starting it.</li> <li> Waiting for it to finish
+         * </li> <li> Logging whether it failed or not</li> </ol>
+         *
+         * @param testRun the test run to execute
+         * @return true if the test worked
+         * @throws SmartFrogException smartfrog problems
+         * @throws RemoteException    network problems
+         */
+        private synchronized boolean testOneChild(TestSuiteRun testRun) throws SmartFrogException, RemoteException {
+            Prim testPrim;
+            synchronized (this) {
+                TestBlock testBlock=testRun.target;
+                testRun.events=new TestEventSink(testBlock);
+                currentTest = testRun;
+                testPrim = (Prim) testBlock;
+            }
+            boolean success = false;
+            boolean isSkipped = false;
+            boolean isFailed = false;
+            ComponentHelper ch=new ComponentHelper(testPrim);
+            String testName = ch.completeNameSafe().toString();
+            sfLog().info("Starting " + testName);
+            try {
+                LifecycleEvent event = testRun.events.runTestsToCompletion(startupTimeout, testTimeout);
+                if (event instanceof TestCompletedEvent) {
+                    TestCompletedEvent test = (TestCompletedEvent) event;
+                    success = test.isSucceeded();
+                    isSkipped = test.isSkipped();
+                    isFailed = test.isFailed();
+                } else {
+                    //got a termination before the tests completed.
+                    sfLog().error("terminated "+ testName+" -assuming failure");
+                    success = false;
+                    isFailed = true;
+                }
+                //record the output status
+                testRun.status=event.getStatus();
+            } catch (TestTimeoutException e) {
+                //test timed out
+                success = false;
+                isFailed = true;
+
+            } catch (InterruptedException e) {
+                //test was interrupted
+                success = false;
+                isFailed = true;
+            } finally {
+                ch.targetForTermination();
+            }
+
+            succeeded &= success;
+            failed |= isFailed;
+            //if we failed, we didn't succeed. Just to make sure :)
+            succeeded &= !isFailed;
+            skipped |= isSkipped;
+            return succeeded;
+        }
     }
 }

@@ -31,6 +31,9 @@ For more information: www.smartfrog.org
   SFUnitTestSuite extends TestSuite {
     sfClass "org.smartfrog.services.sfunit.SFUnitTestSuiteImpl";
     sfShouldTerminate true;
+    testTimeout 1000;
+    startupTimeout 1000;
+    parallel false;
   }
 
 

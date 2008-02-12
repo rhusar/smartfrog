@@ -65,6 +65,7 @@ testRunnerAntXml extends TestRunner {
     description "run some basic tests";
     one extends SimpleTestCompound;
     two extends FailingTestCompound;
+    sfShouldTerminate true;
 
   }
 }
