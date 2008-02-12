@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import java.rmi.Remote;
 public interface XmppMessageHandler extends Remote {
 
     /**
-     * {@value}
+     * required reference to a listener: {@value}
      */
     static String ATTR_LISTENER="listener";
 

@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import java.rmi.RemoteException;
 
 /**
- * The Xmpp client can post
+ * The Xmpp client can post messages
  */
 public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
 
@@ -44,8 +44,7 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws SmartFrogException
-     *                                  failure while starting
+     * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
@@ -69,10 +68,8 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      * @param text text to send
      *
      * @throws RemoteException on networking trouble
-     * @throws SmartFrogException
-     *                                  if there is no default destination, or
-     *                                  something went wrong with the
-     *                                  communications
+     * @throws SmartFrogException if there is no default destination, or
+     *                            something went wrong with the communications
      */
     public void post(String text)
             throws RemoteException, SmartFrogException {
@@ -86,9 +83,7 @@ public class XmppClientImpl extends AbstractXmppPrim implements XmppClient {
      * @param text      text to send
      *
      * @throws RemoteException on networking trouble
-     * @throws SmartFrogException
-     *                                  if something went wrong with the
-     *                                  communications
+     * @throws SmartFrogException if something went wrong with the communications
      */
     public void post(String recipient, String text)
             throws RemoteException, SmartFrogException {

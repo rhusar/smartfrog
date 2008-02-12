@@ -1,13 +1,33 @@
-/**
-(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+Disclaimer of Warranty
 
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+The Software is provided "AS IS," without a warranty of any kind. ALL
+EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES,
+INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE HEREBY
+EXCLUDED. SmartFrog is not a Hewlett-Packard Product. The Software has
+not undergone complete testing and may contain errors and defects. It
+may not function properly and is subject to change or withdrawal at
+any time. The user must assume the entire risk of using the
+Software. No support or maintenance is provided with the Software by
+Hewlett-Packard. Do not install the Software if you are not accustomed
+to using experimental software.
 
-You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Limitation of Liability
 
-For more information: www.smartfrog.org
+TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL HEWLETT-PACKARD
+OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR
+FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES,
+HOWEVER CAUSED REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+OR RELATED TO THE FURNISHING, PERFORMANCE, OR USE OF THE SOFTWARE, OR
+THE INABILITY TO USE THE SOFTWARE, EVEN IF HEWLETT-PACKARD HAS BEEN
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FURTHERMORE, SINCE THE
+SOFTWARE IS PROVIDED WITHOUT CHARGE, YOU AGREE THAT THERE HAS BEEN NO
+BARGAIN MADE FOR ANY ASSUMPTIONS OF LIABILITY OR DAMAGES BY
+HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
+ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
+
 */
 package org.smartfrog.services.xmpp;
 
@@ -71,7 +91,7 @@ public class MonitoringEventDefaultImpl implements MonitoringEvent, Serializable
 		this.msg = m ;
 	}
 	public void addToPropertyBag(String key, String value){
-		this.propertyBag.put(key, value);
+		propertyBag.put(key, value);
 	}
 	public String getTimestamp() {
 		return timestamp;

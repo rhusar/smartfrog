@@ -22,6 +22,7 @@ package org.smartfrog.services.xmpp;
 import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -35,6 +36,8 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
     private String server, login, password, resource, serviceName;
     private int port;
     private boolean presence, requireEncryption, useTLS;
+    public static final String ERROR_NO_SECURE_CONNECTION = "Failed to set up a secure connection to ";
+    private String status;
 
     protected AbstractXmppPrim() throws RemoteException {
     }
@@ -44,9 +47,8 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -59,6 +61,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
             password = sfResolve(ATTR_PASSWORD, password, true);
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
+        status = sfResolve(ATTR_STATUS,"",true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
         resource = sfResolve(ATTR_RESOURCE, resource, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
@@ -135,7 +138,12 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
             connection.login(login, password, resource, presence);
             //check the encryption status
             if(requireEncryption && !connection.isSecureConnection()) {
-                throw new SmartFrogException("Failed to set up a secure connection to "+ serverInfo);
+                throw new SmartFrogException(ERROR_NO_SECURE_CONNECTION + serverInfo);
+            }
+            if(presence) {
+                Presence presenceMessage=new Presence(Presence.Type.AVAILABLE);
+                presenceMessage.setStatus(status);
+                connection.sendPacket(presenceMessage);
             }
             return connection;
         } catch (XMPPException e) {

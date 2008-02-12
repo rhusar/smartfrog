@@ -17,27 +17,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.xmpp;
+package org.smartfrog.services.xmpp.handlers;
 
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Message;
+import org.smartfrog.services.xmpp.XmppPacketHandlerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
- * Created 14-Aug-2007 16:35:25
+ * Created 14-Aug-2007 14:19:36
  *
  */
 
-public class RelayHandlerImpl extends XmppMessageHandlerImpl {
+public class HistoryPacketHandlerImpl extends XmppPacketHandlerImpl implements Remote {
 
-    private Vector<String> recipients;
-    public static final String ATTR_TO = "to";
+    private List<Packet> messages;
+    private int limit;
+    public static final String ATTR_LIMIT = "limit";
 
-    public RelayHandlerImpl() throws RemoteException {
+    public HistoryPacketHandlerImpl() throws RemoteException {
     }
 
 
@@ -50,29 +53,34 @@ public class RelayHandlerImpl extends XmppMessageHandlerImpl {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Object to = sfResolve(ATTR_TO,true);
-        if(to instanceof Vector) {
-            recipients=(Vector<String>) to;
-        } else {
-            recipients=new Vector<String>(1);
-            recipients.add(to.toString());
+        limit=sfResolve(ATTR_LIMIT,limit,true);
+        clear();
+    }
+
+    public void clear() {
+        messages=new LinkedList<Packet>();
+    }
+
+    public synchronized int getSize() {
+        return messages.size();
+    }
+
+    public synchronized void add(Packet message) {
+        messages.add(message);
+        if(limit >= 0 && messages.size()>limit) {
+            messages.remove(0);
         }
     }
 
+
     /**
-     * Process the next packet sent to this packet listener.<p>
-     *
-     * A single thread is responsible for invoking all listeners, so it's very important that implementations of this
-     * method not block for any extended period of time.
+     * Process the next packet by adding the message
      *
      * @param packet the packet to process.
      */
     public void processPacket(Packet packet) {
-        super.processPacket(packet);
-        Message m=(Message) packet;
-        for(String to:recipients) {
-            getListener().sendMessage(to, m.getSubject(), m.getBody(), null);
-        }
-
+        add(packet);
     }
+
+
 }
