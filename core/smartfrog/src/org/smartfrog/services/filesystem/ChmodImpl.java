@@ -35,6 +35,7 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
@@ -121,21 +122,21 @@ public class ChmodImpl extends PrimImpl implements Chmod {
         if (octalNotation.length() != 0) {
             commands.add(octalNotation);
         } else {
-            boolean comma = false;
             String modeString = "";
             if (userPermissions.length() != 0) {
                 modeString = 'u' + userPermissions;
-                comma = true;
             }
             if (groupPermissions.length() != 0) {
                 // multiple user classes have to be comma-separated
-                modeString = (comma ? "," : "") + 'g' + groupPermissions;
-                comma = true;
+                modeString += (modeString.length()!=0 ? "," : "") + 'g' + groupPermissions;
             }
             if (otherPermissions.length() != 0) {
                 // multiple user classes have to be comma-separated
-                modeString = (comma ? "," : "") + 'o' + otherPermissions;
+                modeString += (modeString.length() != 0 ? "," : "") + 'o' + otherPermissions;
             }
+
+            //sanity check
+            assert modeString.length()==0 || modeString.charAt(0)!=',':" bad modes: '"+modeString+"'";
             commands.add(modeString);
         }
 
@@ -148,7 +149,7 @@ public class ChmodImpl extends PrimImpl implements Chmod {
             details+=s;
             details+=" ";
         }
-        sfLog().debug(details);
+        sfLog().info(details);
         try {
             Runtime.getRuntime().exec(commandArray);
         }
