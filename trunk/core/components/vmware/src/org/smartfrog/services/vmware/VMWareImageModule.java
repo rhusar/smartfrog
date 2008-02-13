@@ -51,6 +51,9 @@ public class VMWareImageModule {
      */
     private VMWareCommunicator vmComm = null;
 
+    private String  strGuestOSUser = "";
+    private String  strGuestOSPasswd = "";
+
     /**
      * The vmware handle of this image.
      */
@@ -81,6 +84,38 @@ public class VMWareImageModule {
      */
     public IntByReference getVMHandle() {
         return this.iVMHandle;
+    }
+
+    /**
+     * Gets the user name for the guest OS.
+     * @return The user name for the guest OS.
+     */
+    public String getGuestOSUser() {
+        return strGuestOSUser;
+    }
+
+    /**
+     * Sets the user name for the guest OS.
+     * @param strGuestOSUser The user name for the guest OS.
+     */
+    public void setGuestOSUser(String strGuestOSUser) {
+        this.strGuestOSUser = strGuestOSUser;
+    }
+
+    /**
+     * Gets the user password for the guest OS.
+     * @return The user password for the guest OS.
+     */
+    public String getGuestOSPasswd() {
+        return strGuestOSPasswd;
+    }
+
+    /**
+     * Sets the user password for the guest OS.
+     * @param strGuestOSPasswd The user password for the guest OS.
+     */
+    public void setGuestOSPasswd(String strGuestOSPasswd) {
+        this.strGuestOSPasswd = strGuestOSPasswd;
     }
 
     /**
@@ -319,10 +354,13 @@ public class VMWareImageModule {
     /**
      * Renames this virtual machine.
      * @param inNewName The new name for this virtual machine.
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      */
     public void rename(String inNewName) throws SmartFrogException
     {
+        if (inNewName.equals(""))
+            throw new SmartFrogException("An empty string is not a valid name.");
+
         try {
             // get the power state
             int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
@@ -373,5 +411,18 @@ public class VMWareImageModule {
         } catch (Exception e) {
             throw new SmartFrogException(this.strImagePath + ": Failed to rename.", e);
         }
+    }
+
+    /**
+     * Copies a file from the host OS to the guest OS within the VM.
+     * @param inSourceFile The file on the host OS.
+     * @param inTargetFile The file on the guest OS.
+     * @throws SmartFrogException
+     */
+    public void copyFileFromHostToGuestOS(String inSourceFile, String inTargetFile) throws SmartFrogException {
+        if (this.strGuestOSUser.equals(""))
+            throw new SmartFrogException(this.strImagePath + ": Username required for copying files from host to guest OS.");
+
+        this.vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
     }
 }

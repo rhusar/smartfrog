@@ -733,4 +733,103 @@ public class VMWareCommunicator {
     public void resetVM(VMWareImageModule inImg) throws SmartFrogException {
         this.resetVM(inImg, VMWareVixLibrary.VixVMPowerOpOptions.VIX_VMPOWEROP_NORMAL);
     }
+
+    /**
+     * Establishes the user credentials for the in-guest-OS operations.
+     * @param inImg The virtual machine module.
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     */
+    private void loginInGuestOS(VMWareImageModule inImg) throws SmartFrogException {
+        try {
+            // ensure that a connection is established
+            this.acquireVMHandle(inImg);
+
+            // resets the virtual machine
+            int iJobHandle = this.vixLib.VixVM_LoginInGuest(inImg.getVMHandle().getValue(),
+                                                            inImg.getGuestOSUser(),
+                                                            inImg.getGuestOSPasswd(),
+                                                            0,
+                                                            null,
+                                                            null);
+
+            // wait for the job to complete
+            long lErr = this.vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+
+            // release the job handle
+            this.vixLib.Vix_ReleaseHandle(iJobHandle);
+
+            convertToException(lErr, true);
+        } catch(VIXException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while creating user credentials for VM", e);
+        }
+    }
+
+    /**
+     * Removes the user credentials previously created by <code>loginInGuestOS()</code>.
+     * @param inImg The virtual machine module.
+     * @throws SmartFrogException
+     */
+    private void logoutFromGuestOS(VMWareImageModule inImg) throws SmartFrogException {
+        try {
+            // ensure that a connection is established
+            this.acquireVMHandle(inImg);
+
+            // resets the virtual machine
+            int iJobHandle = this.vixLib.VixVM_LogoutFromGuest( inImg.getVMHandle().getValue(),
+                                                                null,
+                                                                null);
+
+            // wait for the job to complete
+            long lErr = this.vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+
+            // release the job handle
+            this.vixLib.Vix_ReleaseHandle(iJobHandle);
+
+            convertToException(lErr, true);
+        } catch(VIXException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while removing user credentials for VM", e);
+        }
+    }
+
+    public void copyFileFromHostToGuestOS (VMWareImageModule inImg, String inSourceFile, String inTargetFile) throws SmartFrogException {
+        try {
+            // ensure that user credentials are established
+            this.loginInGuestOS(inImg);
+
+            // resets the virtual machine
+            int iJobHandle = this.vixLib.VixVM_CopyFileFromHostToGuest( inImg.getVMHandle().getValue(),
+                                                                        inSourceFile,
+                                                                        inTargetFile,
+                                                                        0,
+                                                                        VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+                                                                        null,
+                                                                        null);
+
+            // wait for the job to complete
+            long lErr = this.vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+
+            // release the job handle
+            this.vixLib.Vix_ReleaseHandle(iJobHandle);
+
+            convertToException(lErr, true);
+
+            // delete the user credentials again
+            // seems not to be existant in the vix library delivered with vmware server
+            // his.logoutFromGuestOS(inImg);
+        } catch(VIXException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while copying file from host to guest OS", e);
+        }
+    }
 }
