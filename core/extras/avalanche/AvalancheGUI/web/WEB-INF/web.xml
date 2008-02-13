@@ -63,6 +63,11 @@ For more information: www.smartfrog.org
 		<description>Name of the WebApp used</description>
 	</context-param>
 	<context-param>
+		<param-name>securityOn</param-name>
+		<param-value>false</param-value>
+		<description>Default is false</description>
+	</context-param>
+	<context-param>
 		<param-name>xmppServer</param-name>
 		<param-value>16.25.169.46</param-value>
 		<description>XMPP Server Address</description>
