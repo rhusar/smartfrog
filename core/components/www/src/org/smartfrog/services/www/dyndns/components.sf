@@ -59,9 +59,7 @@ members.dyndns.org
 
   //the hostname for the deployed entity
   hostname TBD;
-  //demand that these two are filled in
-  username TBD;
-  password TBD;
+  authenticationRequired true;
 
   host "members.dyndns.org";
 

@@ -65,10 +65,12 @@ For more information: www.smartfrog.org
      //    name&users&error=500
      queries extends OptionalVector;
 
-      //if the username is set, the password is needed 
+      //a flag to set to turn require authentication
+     authenticationRequired extends Boolean;
+      //if the username is set, the password is needed
      username extends OptionalString;
      //a password provider can be used, or a string value
-     username extends Optional;
+     password extends Optional;
 
    //and any of
 
@@ -131,6 +133,8 @@ For more information: www.smartfrog.org
  LivenessPage extends WorkflowPrim {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
+
+     authenticationRequired false;
      checkFrequency 1000;
      checkOnStartup false;
      checkOnLiveness true;

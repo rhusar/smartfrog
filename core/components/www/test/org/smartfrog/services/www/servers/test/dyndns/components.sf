@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 
 test.dyndns.user OPTIONAL("test") PROPERTY test.dyndns.user;
 test.dyndns.password OPTIONAL("test") PROPERTY test.dyndns.password;
-test.dyndns.host OPTIONAL("test.dnsalias.com") PROPERTY test.dyndns.host;
+test.dyndns.host OPTIONAL("test.dnsalias.net") PROPERTY test.dyndns.host;
 
 
 dyndns.present (test.dyndns.user != "")

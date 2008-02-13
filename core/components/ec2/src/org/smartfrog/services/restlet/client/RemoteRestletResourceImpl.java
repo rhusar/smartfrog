@@ -180,7 +180,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         String auth = sfResolve(ATTR_AUTHORIZATION, "", true);
         if (auth.length() != 0) {
             challengeScheme = ChallengeScheme.valueOf(auth);
-            username = resolveUsername();
+            username = resolveUsername(false);
             password = resolvePassword();
         }
 
@@ -210,7 +210,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      * @return the URL
      */
     public String getURL() {
-        return getLivenessPage().getUrlAsString();
+        return getLivenessPage().getTargetURL().toString();
     }
 
     /**
