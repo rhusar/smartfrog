@@ -81,7 +81,8 @@ public class TemplateGen {
     /**
      * Log directory for telnet/ssh sessions logs.
      */
-    static String logDir = ".";
+    //static String logDir = ".";
+    static String logDir;
     
     static String avEventServer = null;
 
@@ -117,8 +118,8 @@ public class TemplateGen {
     /**
      * File object for the temporary file.
      */
-    static File tempFile = new File("." + System.getProperty("file.separator") + temp);
-    // static File tempFile = null;
+   // static File tempFile = new File("." + System.getProperty("file.separator") + temp);
+    static File tempFile = null;
 
     /**
      * File object for the template file.
@@ -281,8 +282,9 @@ public class TemplateGen {
      * @throws Exception Error while instantiating the template.
      */
     void instantiateTemplate(PrintStream out) throws Exception {
-
-        Velocity.init();
+	Properties p = new Properties();
+	p.setProperty("file.resource.loader.path", logDir);
+        Velocity.init(p);
         VelocityContext context = new VelocityContext();
         context.put("allDaemons", allDaemons);
         context.put("dynamicLoadingOn", new Boolean(dynamicLoadingOn));
@@ -297,11 +299,12 @@ public class TemplateGen {
 	}
 
         file = new File(templateFileName);
+   	tempFile = new File(logDir + System.getProperty("file.separator") + System.getProperty("file.separator") + temp);
         if (file.exists()) {
             file.renameTo(tempFile);
         }
         template = Velocity.getTemplate(temp);
-        //  template = Velocity.getTemplate(templateFileName.toString());
+        //template = Velocity.getTemplate(templateFileName);
         BufferedWriter writer=null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(out));
