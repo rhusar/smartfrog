@@ -78,7 +78,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         }
         String filename = FileSystem.lookupAbsolutePath(this,
                 ATTR_FILENAME,
-                (String) null,
+                null,
                 parentDir,
                 true,
                 null);
@@ -92,8 +92,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         //now test our state
 
         mustExist = getBool(ATTR_MUST_EXIST, false, false);
-        mustRead = getBool(ATTR_MUST_WRITE, false, false);
-        mustWrite = getBool(ATTR_MUST_READ, false, false);
+        mustRead = getBool(ATTR_MUST_READ, false, false);
+        mustWrite = getBool(ATTR_MUST_WRITE, false, false);
         mustBeDir = getBool(ATTR_MUST_BE_DIR, false, false);
         mustBeFile = getBool(ATTR_MUST_BE_FILE, false, false);
         testOnStartup = getBool(ATTR_TEST_ON_STARTUP, false, false);
@@ -211,9 +211,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -230,19 +229,22 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
+        super.sfStart();
         if (testOnStartup) {
             testFileState();
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"File "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "File "+getFile()
+                        .getAbsolutePath(),sfCompleteNameSafe(),null);
     }
 
     /**
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link
+     * @throws RemoteException for consistency with the {@link
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
      */
