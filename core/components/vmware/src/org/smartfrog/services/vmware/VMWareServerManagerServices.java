@@ -40,10 +40,25 @@ import java.rmi.RemoteException;
 public interface VMWareServerManagerServices extends Remote {
 
     /** {@value} */
-    String ATTR_MASTER_IMAGES_DIR="masterImages";
+    final String ATTR_MASTER_IMAGES_DIR = "masterImages";
 
     /** {@value} */
-    String ATTR_COPY_IMAGES_DIR = "copyImages";
+    final String ATTR_COPY_IMAGES_DIR = "copyImages";
+
+    /** {@value} */
+    final String ATTR_VIXLIBRARYPATH_WIN = "vixLibraryPathWin";
+
+    /** {@value} */
+    final String ATTR_VIXLIBRARYNAME_WIN = "vixLibraryNameWin";
+
+    /** {@value} */
+    final String ATTR_VIXLIBRARYPATH_LINUX = "vixLibraryPathLinux";
+
+    /** {@value} */
+    final String ATTR_VIXLIBRARYPNAME_LINUX = "vixLibraryNameLinux";
+
+    /** {@value} */
+    final String ATTR_SERVER_INSTALLED = "serverInstalled";
 
     /**
      * Starts a virtual machine. Has to be powered off or suspended.
@@ -86,14 +101,15 @@ public interface VMWareServerManagerServices extends Remote {
      *
      * @param inVMPath The full path to the machine.
      * @throws RemoteException network problems
-     * @return The power state or STATUS_ERROR
+     * @return The power state or 0
      */
     public int getPowerState(String inVMPath) throws RemoteException;
 
     /**
      * Gets the tools state of a virtual machine.
      * @param inVMPath The full path to the machine.
-     * @return
+     * @return The state of the tools or 0.
+     * @throws java.rmi.RemoteException
      */
     public int getToolsState(String inVMPath) throws RemoteException;
 
@@ -103,20 +119,6 @@ public interface VMWareServerManagerServices extends Remote {
      * @return "success" or an error message
      */
     public String getControlledMachines() throws RemoteException;
-
-    /**
-     * Shuts down the VMWare Server and all running machines as well.
-     * @throws RemoteException network problems
-     * @return "success" or an error message
-     */
-    public String shutdownVMWareServerService() throws RemoteException;
-
-    /**
-     * Starts the VMWare Server and all machines in the designated vm folder.
-     * @throws RemoteException network problems
-     * @return "success" or an error message
-     */
-    public String startVMWareServerService() throws RemoteException;
 
     /**
      * Return a list of the vmware images in the master folder.
@@ -141,4 +143,23 @@ public interface VMWareServerManagerServices extends Remote {
      * @return "success" or an error message
      */
     public String deleteCopy(String inVMPath) throws RemoteException;
+
+    /**
+     * Changes the display name of a virtual machine.
+     * @param inVMPath The path to the .vmx file.
+     * @param inNewName The new name for the machine.
+     * @return "success" or an error message.
+     * @throws RemoteException
+     */
+    public String renameVM(String inVMPath, String inNewName) throws RemoteException;
+
+    /**
+     * Copies a file from the host OS into the guest OS of the specified VM.
+     * @param inVMPath The vm which contains the guest OS.
+     * @param inSourceFile The path on the host OS.
+     * @param inTargetFile The path on the guest OS.
+     * @return "success" or an error message.
+     * @throws RemoteException
+     */
+    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException;
 }

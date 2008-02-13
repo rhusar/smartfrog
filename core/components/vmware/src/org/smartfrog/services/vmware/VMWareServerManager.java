@@ -35,6 +35,7 @@ package org.smartfrog.services.vmware;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -47,16 +48,31 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     private String vmImagesFolder;
     private String vmMasterFolder;
 
-    private static String ATTR_VIXLIBRARYPATH_WIN = "vixLibraryPathWin";
-    private static String ATTR_VIXLIBRARYNAME_WIN = "vixLibraryNameWin";
-    private static String ATTR_VIXLIBRARYPATH_LINUX = "vixLibraryPathLinux";
-    private static String ATTR_VIXLIBRARYPNAME_LINUX = "vixLibraryNameLinux";
-
     /** Used to communicate with the vmware server. */
     private VMWareCommunicator vmComm = null;
 
     public VMWareServerManager() throws RemoteException {
 
+    }
+
+    /**
+     * Called after instantiation for deployment purposes. Heart monitor is
+     * started and if there is a parent the deployed component is added to the
+     * heartbeat. Subclasses can override to provide additional deployment
+     * behavior.
+     * Attributees that require injection are handled during sfDeploy().
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+
+        // check wether the VMware Server is installed on this system
+        boolean installed = sfResolve(ATTR_SERVER_INSTALLED, false, true);
+        if (!installed)
+            throw new SmartFrogDeploymentException("VMware Server is not installed on this system");
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -65,12 +81,12 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         // get the vix properties
         String strVixLibPath, strVixLibName;
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            strVixLibPath = (String) sfResolve(ATTR_VIXLIBRARYPATH_WIN, true);
-            strVixLibName = (String) sfResolve(ATTR_VIXLIBRARYNAME_WIN, true);
+            strVixLibPath = sfResolve(ATTR_VIXLIBRARYPATH_WIN, "", true);
+            strVixLibName = sfResolve(ATTR_VIXLIBRARYNAME_WIN, "", true);
         }
         else {
-            strVixLibPath = (String) sfResolve(ATTR_VIXLIBRARYPATH_LINUX, true);
-            strVixLibName = (String) sfResolve(ATTR_VIXLIBRARYPNAME_LINUX, true);
+            strVixLibPath = sfResolve(ATTR_VIXLIBRARYPATH_LINUX, "", true);
+            strVixLibName = sfResolve(ATTR_VIXLIBRARYPNAME_LINUX, "", true);
         }
 
         // create the jna wrapper library
@@ -78,7 +94,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             this.vmComm = new VMWareCommunicator(strVixLibPath, strVixLibName);
         } catch (Exception e) {
             sfLog().error("Error while creating the VMware communicator.", e);
-            throw new SmartFrogLifecycleException("Error while creating the VMware communicator.", e);
+            throw new SmartFrogDeploymentException("Error while creating the VMware communicator.", e);
         }
 
         // get the vm image folders
@@ -260,6 +276,67 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     }
 
     /**
+     * Changes the display name of a virtual machine.
+     *
+     * @param inVMPath  The path to the .vmx file.
+     * @param inNewName The new name for the machine.
+     * @return "success" or an error message.
+     * @throws java.rmi.RemoteException
+     */
+    public String renameVM(String inVMPath, String inNewName) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.rename(inNewName);
+            }
+            else strResponse = "Failed to rename \"" + inVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to rename \"" + inVMPath + "\"", e);
+            strResponse = "Exception while renaming \"" + inVMPath + "\": " + e.toString();
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    /**
+     * Copies a file from the host OS into the guest OS of the specified VM.
+     *
+     * @param inVMPath     The vm which contains the guest OS.
+     * @param inSourceFile The path on the host OS.
+     * @param inTargetFile The path on the guest OS.
+     * @return "success" or an error message.
+     * @throws java.rmi.RemoteException
+     */
+    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException {
+        // error string
+        String strResponse = "success";
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.copyFileFromHostToGuestOS(inSourceFile, inTargetFile);
+            }
+            else strResponse = "Failed to copy file from host OS to guest OS in \"" + inVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to copy file from host OS to guest OS in \"" + inVMPath + "\"", e);
+            strResponse = "Exception while copying file from host OS to guest OS in \"" + inVMPath + "\": " + e.toString();
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    /**
      * Shuts down a virtual machine. Has to be powered on.
      *
      * @param inVMPath The full path to the machine.
@@ -411,60 +488,10 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return strResult;
     }
 
-    /**
-     * Shuts down the VMWare Server and all running machines as well.
-     * @return "success" or an error message.
-     */
-    public String shutdownVMWareServerService() throws RemoteException {
-        // error string
-        String strResponse = "success";
-
-        // shutdown the vmware server service, which will automatically shut down all vms
-        try {
-            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-                Runtime.getRuntime().exec("net.exe stop VMWare");
-            } else {
-                Runtime.getRuntime().exec("/etc/init.d/vmware stop");
-            }
-        } catch (IOException e) {
-            sfLog().error("Failed to shut down vmware server", e);
-            strResponse = "Exception while shutting down vmware server: " + e.toString();
-        }
-
-        return strResponse;
-    }
-
-    /** Starts the vmware server service. */
-    public String startVMWareServerService() throws RemoteException {
-        // error string
-        String strResponse = "success";
-
-        try {
-            // start the vmware server service
-            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-                    Runtime.getRuntime().exec("net.exe start VMWare");
-            } else {
-                    Runtime.getRuntime().exec("/etc/init.d/vmware start");
-            }
-        } catch (IOException e) {
-            sfLog().error("Failed to start vmware server", e);
-            strResponse = "Exception while starting vmware server: " + e.toString();
-        }
-
-        return strResponse;
-    }
-
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
         // shut down every virtual machine manually to be indepentant of the vmserver service behaviour
         this.vmComm.disconnect();
-
-        // shut down the vmware server service
-//        try {
-//            shutdownVMWareServerService();
-//        } catch (RemoteException e) {
-//            sfLog().error(e);
-//        }
     }
 }
