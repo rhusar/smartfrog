@@ -23,6 +23,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/propertyfile.sf"
 #include "/org/smartfrog/services/os/components.sf"
 
+#include "/org/smartfrog/services/vmware/vmwarecondition.sf"
+
 createTestEnv extends Compound {
     testDir extends TempDirWithCleanup {
 
@@ -81,12 +83,12 @@ createTestEnv extends Compound {
 //}
 
 testChmodWorks extends ExpectDeploy {
-    condition IsUnix;
+    condition VMWareServerInstalled;
     
     description "removes all flags and then sets readflags and tries to read the file";
     undeployAfter 500;
 
-    actions extends createTestEnv {
+    action extends createTestEnv {
 
     }
 
@@ -98,12 +100,12 @@ testChmodWorks extends ExpectDeploy {
 
         loadFileFailure extends ExpectDeployFailure {
             loadFailure extends LoadPropertyFile {
-                resource LAZY PARENT:PARENT:PARENT:action:restFile1;            
+                resource LAZY PARENT:PARENT:PARENT:action:testFile1;
             }
         }
 
         setReadRights extends Chmod {
-            file LAZY PARENT:PARENT:action:restFile1;
+            file LAZY PARENT:PARENT:action:testFile1;
             userPermissions "+r";
             groupPermissions "+r";
             otherPermissions "+r";
