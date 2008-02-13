@@ -8,30 +8,36 @@ set SFHOME=%AVALANCHE_HOME%\smartfrog\dist
 
 if defined XMPP_HOME goto continue2
 echo SET XMPP_HOME to the installation directory of XMPP Server
-set XMPP_HOME=C:\installed\openfire
 
 :continue2
-if defined TOMCAT_HOME goto start
+if defined TOMCAT_HOME goto security
 echo SET TOMCAT_HOME to the installation directory of TOMCAT
-set TOMCAT_HOME=C:\installed\apache-tomcat-5.5.20
-:start
+:security
 set CATALINA_HOME=%TOMCAT_HOME%
-rem set PATH=%SFHOME%\bin\security;%XMPP_HOME%\bin;%TOMCAT_HOME%\bin;%PATH%
+if "%SECURITY_ON%"=="false" goto start
+set SFSECURITY_ON=ENABLED
+set SFSECURERESOURCES_OFF=ENABLED
+
+:start
 set PATH=%SFHOME%\bin;%XMPP_HOME%\bin;%TOMCAT_HOME%\bin;%PATH%
 
-rem cd %SFHOME_BASE%
-rem call ant initCA
-rem call ant signJars
-rem call ant newDaemon
-rem move %SFHOME_BASE%\dist\private\host???? %SFHOME_BASE%\dist\private\host1
-rem copy %SFHOME_BASE%\dist\private\host1 %SFHOME%\private\host1
-rem copy %SFHOME_BASE%\dist\signedLib\*.* %SFHOME%\signedLib
-
-
-rem start sfDaemon.bat -f org/smartfrog/services/quartz/scheduler/SchedulerSetup.sf
-start sfDaemon.bat 
+start sfDaemon.bat
 start openfire.exe
-call startup.bat
+set SECURITY_POLICY_FILE=%SFHOME%\private\sf.no.security.policy
+set CLASSPATH=%JAVA_HOME%\lib\tools.jar
+set CLASSPATH=%CLASSPATH%;%CATALINA_HOME%\bin\bootstrap.jar
+set SFSECURITY=
+if "%SECURITY_ON%"=="false" goto catalina
+if not defined SFPRIVATE set SFPRIVATE=%SFHOME%\private
+if not defined SFHOSTNAME set SFHOSTNAME=host1
+set AVALANCHE_ROOT=%cd%
+set SECURITY_POLICY_FILE=%SFHOME%\private\sf.policy
+set SFSECURITY=-Dorg.smartfrog.sfcore.security.keyStoreName="%SFPRIVATE%\%SFHOSTNAME%\mykeys.st" -Dorg.smartfrog.sfcore.security.propFile="%SFPRIVATE%\%SFHOSTNAME%\SFSecurity.properties" -Dorg.smartfrog.sfcore.security.secureResourcesOff=true -Davalanche.home=%AVALANCHE_HOME% -Davalanche.root=%AVALANCHE_ROOT%
+set CLASSPATH=%CLASSPATH%;%CATALINA_HOME%\common\lib\smartfrog.jar 
+rem  -Dorg.smartfrog.sfcore.security.debug=true  -Dsun.rmi.loader.loglevel=VERBOSE
+: catalina
+java -classpath %CLASSPATH% -Djava.security.manager -Djava.security.policy=="%SECURITY_POLICY_FILE%" %SFSECURITY%  -Dcatalina.base="%CATALINA_HOME%" -Dcatalina.home="%CATALINA_HOME%" org.apache.catalina.startup.Bootstrap start
+rem call startup.bat
 
 
 endlocal
