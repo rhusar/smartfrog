@@ -36,8 +36,10 @@ import org.smartfrog.tools.eclipse.model.Util;
  */
 class SfProcessRunnerExt
     extends ISfRunnerExt
-{
-    private Shell mShell;
+ 
+    {
+    
+	private Shell mShell;
 
     private String mFilePath;
 
@@ -75,8 +77,9 @@ class SfProcessRunnerExt
     {
         String batchDir = "bin"; //$NON-NLS-1$
         String dir = SmartFrogPreferencePage.getSmartFrogLocation() +
-            ISmartFrogConstants.FILE_SEPARATOR + batchDir +
-            ISmartFrogConstants.FILE_SEPARATOR;
+          
+        ISmartFrogConstants.FILE_SEPARATOR + batchDir +
+        ISmartFrogConstants.FILE_SEPARATOR;
 
 //        String cmdStart = CMD_SFPROCESS_START;
 //        String cmdStop = CMD_SFPROCESS_TERMINATE;
@@ -92,8 +95,14 @@ class SfProcessRunnerExt
     	if (null == classpath)
     	    return null;
 	// removing binPathName from classpath
-    //	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
-        classpath = mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
+     classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
+    	
+      //   classpath = mClassPath + SmartFrogPlugin.getmClassPath(mselectedIFile) ;
+    	
+    	System.out.println("sf- process cp............................." + classpath);
+    	
+    
+    	
 	String cmdsStart[] = new String[8];
         cmdsStart[0]= JAVA;
         cmdsStart[1] = "-cp";
@@ -119,7 +128,7 @@ class SfProcessRunnerExt
         cmdsStart +=mProcessName+":DEPLOY:\"" + mFile +"\"::"+ mHostName+": ";
         cmdsStart += "-e";
 	*/
-//        cmdsStart[cmdGeneral.length+1] = mHostName;
+//      cmdsStart[cmdGeneral.length+1] = mHostName;
 //		cmdsStart[cmdGeneral.length+2] = mProcessName;
 //		cmdsStart[cmdGeneral.length+3] = mFile ;
 	
@@ -138,9 +147,9 @@ class SfProcessRunnerExt
         cmdsStop[2] = classpath;
         cmdsStop[3] = SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile;
         cmdsStop[4] = SfSystemClass;
-	cmdsStop[5] = "-a";
-	cmdsStop[6] = mProcessName+":TERMINATE:::"+mHostName+": ";
-	cmdsStop[7] =  "-e";
+        cmdsStop[5] = "-a";
+        cmdsStop[6] = mProcessName+":TERMINATE:::"+mHostName+": ";
+        cmdsStop[7] =  "-e";
 	
 	/*	String cmdsStop = "";//new String[cmdGeneral.length+3];
         for (int i=0;  i < cmdGeneral.length; i++)
