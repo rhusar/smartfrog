@@ -1762,11 +1762,13 @@ Exist.
     <!-- TODO -->
   </target>
 
+  
   <target name="sign-target-jar"
-    description="sign our target jar if security.enabled is true" 
+    description="sign our target jar if security.sign.target.jar is true and security.sign.target.jar" 
       depends="package,init-security"
+      if="security.sign.target.jar"
       xmlns:sec="http://security.smartfrog.org/">
-    <sec:maybe-sign-jar jar="${target.jar}" />
+      <sec:signjar2 jar="${target.jar}" />
   </target>
 
   <target name="checksum-target-jar"
