@@ -263,9 +263,7 @@ public class LivenessPageChecker implements LivenessPage {
         if (username != null) {
             url.append(username);
             url.append(':');
-            if (password != null) {
-                url.append(password);
-            }
+            url.append(password);
             url.append('@');
         }
 
@@ -297,7 +295,8 @@ public class LivenessPageChecker implements LivenessPage {
         }
         url.append(target);
         safeURL.append(target);
-        bindToURL(url.toString(),safeURL.toString());
+        //bindToURL(url.toString(),safeURL.toString());
+        bindToURL(url.toString());
     }
 
     /**
@@ -344,7 +343,7 @@ public class LivenessPageChecker implements LivenessPage {
         boolean logDebug = log != null && log.isDebugEnabled();
         try {
             if (logDebug) {
-                log.debug("connecting to " + urlAsString);
+                log.debug("Connecting to " + urlAsString);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setInstanceFollowRedirects(followRedirects);
@@ -373,9 +372,10 @@ public class LivenessPageChecker implements LivenessPage {
 
             if (isStatusOutOfRange(responseCode)) {
                 String text = maybeGetErrorText(connection);
-                String message = "endpoint " + toString()
-                        + " returned error:\n" + response +"\n"
-                        + text;
+                String message = "Endpoint " + toString()
+                        + " returned error: "+ responseCode
+                        +"\n" + response
+                        +"\n" + text;
                 logAndRaise(message);
             }
 

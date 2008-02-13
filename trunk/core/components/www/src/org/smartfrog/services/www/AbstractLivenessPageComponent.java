@@ -133,8 +133,9 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
      */
     protected void buildLivenessPageAuthentication()
             throws SmartFrogException, RemoteException {
-        String username = resolveUsername();
-        if (username != null && username.length()>0) {
+        boolean required=sfResolve(ATTR_AUTH_REQUIRED,false,true);
+        String username = resolveUsername(false);
+        if (required || (username != null && username.length()>0)) {
             String password = resolvePassword();
             livenessPage.setUsername(username);
             livenessPage.setPassword(password);
@@ -154,13 +155,14 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
     /**
      * Resolve the username
+     * @param required flag to set to true if the username is required
      * @return the username or null
      * @throws SmartFrogResolutionException for failure to resolve
      * @throws RemoteException network trouble
      */
-    protected String resolveUsername()
+    protected String resolveUsername(boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        String username = sfResolve(ATTR_USERNAME, (String) null, false);
+        String username = sfResolve(ATTR_USERNAME, (String) null, required);
         return username;
     }
 

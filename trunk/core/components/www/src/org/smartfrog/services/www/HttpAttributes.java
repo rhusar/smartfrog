@@ -94,4 +94,6 @@ public interface HttpAttributes extends Remote {
     String ATTR_RESULTTEXT = "resultText";
     /** {@value} */
     String ATTR_LOGRESPONSE = "logResponse";
+    /** {@value} */
+    String ATTR_AUTH_REQUIRED = "authenticationRequired";
 }
