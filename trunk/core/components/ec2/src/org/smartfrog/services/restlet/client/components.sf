@@ -88,6 +88,8 @@ RemoteResource extends Prim {
   
   //HTTP1.1 says that DELETE should also return 2XX responses.
   DELETE_ACTION [DELETE,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  //and a backwards compatible variant allows people to delete idempotently
+  DELETE_ACTION_4XX [DELETE,HttpCodes:START_2XX,HttpCodes:END_4XX];
 }
 
 GetRestResource extends RemoteResource {
@@ -103,8 +105,12 @@ PostRestResource extends RemoteResource {
   startActions [POST_ACTION];
 }
 
+DeleteRestResource extends RemoteResource {
+  startActions [DELETE_ACTION_4XX];
+}
+
 PutRestResource extends RemoteResource {
-  startActions [POST_ACTION];
+  startActions [PUT_ACTION];
 }
 
 /**
