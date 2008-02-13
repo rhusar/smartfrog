@@ -40,32 +40,30 @@
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.rmi.RemoteException;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.security.SFSecurity;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.InetAddress;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.Vector;
 
 
 /**
@@ -83,12 +81,11 @@ public final class Diagnostics {
 
     /**
      * return the list of jar files existing in "dir".
+     * @param dir directory
      * @return the list of jar files existing in "dir" or
      * <tt>null</tt> if an error occurs.
      *
      * Derived from Ant Diagnostics class
-     * @param dir directory
-     * @return array of files (or null for no such directory)
      */
     public static File[] listLibraries(String dir) {
         if (dir == null) {
@@ -339,8 +336,9 @@ public final class Diagnostics {
             Diagnostics.header(out, "sfContext");
             out.append(prim.sfContext().toString()); //out.append("\n");
           } catch (RemoteException ex2) {
-            out.append(" Error:" + ex2.getMessage());
-            out.append("\n");
+            out.append(" Error:");
+            out.append(ex2.getMessage());
+            out.append('\n');
           }
 
           if (prim instanceof Compound) {
@@ -378,7 +376,7 @@ public final class Diagnostics {
      */
     private static void doReportCompound(StringBuffer out, Compound compound) {
       Enumeration enu = null;
-      StringBuffer childrenInfo = new StringBuffer();
+      StringBuilder childrenInfo = new StringBuilder();
       Prim child = null;
       try {
         Diagnostics.header(out, "sfChildren");
@@ -412,7 +410,7 @@ public final class Diagnostics {
      * @param out the StringBuffer to print the report to.
      */
     public static void doReport(StringBuffer out) {
-       doReport ( out, (Prim)null);
+       doReport ( out, null);
     }
 
     /**
@@ -420,7 +418,7 @@ public final class Diagnostics {
      * @param out the StringBuffer to print the report to.
      */
     public static void doShortReport(StringBuffer out) {
-       doShortReport (out, (Prim)null);
+       doShortReport (out, null);
     }
 
     //  Derived from Ant Diagnostics class
@@ -457,7 +455,7 @@ public final class Diagnostics {
         			value = "Access to this property blocked by a security manager";
         		}
         		out.append(key).append(" : ").append(value);
-        		out.append("\n");
+        		out.append('\n');
         	}
         } catch (SecurityException  e) {
         	out.append("Access to System.getProperties() blocked by a security manager\n");
@@ -583,10 +581,10 @@ public final class Diagnostics {
          InetAddress newLocalhost = InetAddress.getByName(localhostName);
          time2=System.currentTimeMillis()-time;
          if (localhost.equals(newLocalhost)){
-             out.append(" [Successful], "+time2+"ms");
+             out.append(" [Successful], ").append(time2).append("ms");
              failed = false;
          } else {
-             out.append(" [Failed], "+time2+"ms");
+             out.append(" [Failed], ").append(time2).append("ms");
          }
        } catch (Exception ex1) {
            time2=System.currentTimeMillis()-time;
@@ -669,7 +667,7 @@ public final class Diagnostics {
       if (codebaseString!=null) {
           out.append(""+codebaseString.replace(System.getProperty("path.separator").charAt(0), '\n'));
       } else {
-         out.append(""+"Not defined, using default\n");
+         out.append("Not defined, using default\n");
       }
     }
 
