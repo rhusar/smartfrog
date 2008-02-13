@@ -24,9 +24,7 @@ import org.jivesoftware.smack.packet.Message;
 import java.io.Serializable;
 
 /**
- *
  * Created 14-Aug-2007 17:36:40
- *
  */
 
 public class WireMessage implements Serializable {
@@ -37,19 +35,66 @@ public class WireMessage implements Serializable {
     private String packetID;
     private String to;
     private String type;
+    private String from;
 
 
     public WireMessage() {
     }
 
 
-    public WireMessage(Message m) {
-        subject=m.getSubject();
+    public WireMessage(Message message) {
+        from = message.getFrom();
+        subject = message.getSubject();
+        body = message.getBody();
+        packetID = message.getPacketID();
+        thread = message.getThread();
+        to = message.getTo();
+        type = message.getType().toString();
+    }
 
-        body=m.getBody();
-        packetID=m.getPacketID();
-        thread=m.getThread();
-        to = m.getTo();
-        type = m.getType().toString();
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getThread() {
+        return thread;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getPacketID() {
+        return packetID;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("From ").append(from);
+        builder.append("\nTo ").append(to);
+        builder.append("\nID ").append(packetID);
+        builder.append("\nType ").append(type);
+        builder.append("\nSubject ").append(subject);
+        builder.append("\nThread ").append(thread);
+        builder.append("\nBody ").append(body);
+        return builder.toString();
     }
 }

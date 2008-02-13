@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.xmpp;
 
+import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -44,24 +45,26 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
         server = sfResolve(ATTR_SERVER, server, true);
         serviceName = sfResolve(ATTR_SERVICE_NAME, server, true);
-        if (login == null)
+        if (login == null) {
             login = sfResolve(ATTR_LOGIN, login, true);
-        if (password == null)
+        }
+        if (password == null) {
             password = sfResolve(ATTR_PASSWORD, password, true);
+        }
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
-        status = sfResolve(ATTR_STATUS,"",true);
+        status = sfResolve(ATTR_STATUS, "", true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
         resource = sfResolve(ATTR_RESOURCE, resource, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
@@ -121,12 +124,11 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
      * Create a connection to the server with a login, based on our state
      *
      * @return a logged in connection
-     *
      * @throws SmartFrogException if something went wrong
      */
     public XMPPConnection login() throws SmartFrogException {
         XMPPConnection connection = null;
-        String serverInfo= server + ":" + port + " as " + login;
+        String serverInfo = server + ":" + port + " as " + login;
         String connectionInfo = "connecting to " + serverInfo;
         sfLog().debug(connectionInfo);
         try {
@@ -137,19 +139,20 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
             }
             connection.login(login, password, resource, presence);
             //check the encryption status
-            if(requireEncryption && !connection.isSecureConnection()) {
+            if (requireEncryption && !connection.isSecureConnection()) {
                 throw new SmartFrogException(ERROR_NO_SECURE_CONNECTION + serverInfo);
             }
-            if(presence) {
-                Presence presenceMessage=new Presence(Presence.Type.AVAILABLE);
+            configureRoster(connection);
+
+            //set the presence information up
+            if (presence) {
+                Presence presenceMessage = new Presence(Presence.Type.AVAILABLE);
                 presenceMessage.setStatus(status);
                 connection.sendPacket(presenceMessage);
             }
             return connection;
         } catch (XMPPException e) {
-            if (connection != null) {
-                connection.close();
-            }
+            closeConnection(connection);
             throw new SmartFrogException(
                     connectionInfo,
                     e);
@@ -157,6 +160,32 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
             throw new SmartFrogException(
                     connectionInfo,
                     e);
+        }
+    }
+
+    /**
+     * Override point: configure the roster of this connection. The default implementation rejects all requests
+     *
+     * @param connection connection to configure
+     */
+    protected void configureRoster(XMPPConnection connection) {
+        //refuse new requests
+        Roster roster = connection.getRoster();
+        roster.setSubscriptionMode(Roster.SUBSCRIPTION_REJECT_ALL);
+    }
+
+    /**
+     * Shut down a connection. Can take up to 150 mS; the thread sleeps during this time
+     *
+     * @param connection connection to close; can be null
+     */
+    protected static void closeConnection(XMPPConnection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (IllegalStateException ignored) {
+                //ignored
+            }
         }
     }
 

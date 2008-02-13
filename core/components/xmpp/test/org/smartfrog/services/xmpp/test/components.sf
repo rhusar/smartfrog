@@ -33,28 +33,55 @@ IsXmppPresent extends BooleanValue {
   value (xmpp.password != "");
 }
 
+Settings extends DATA {
+  domain "@gmail.com";
+  login1 "smartfrog.one";
+  password1 xmpp.password;
+  address1 (login1 ++ domain);
+  login2 "smartfrog.two";
+  password2 xmpp.password;
+  address2 (login2 ++ domain);
+}
 
   PostMessage extends GoogleChatClientWorkflow {
-      to "smartfrog.two@gmail.com";
-      login "smartfrog.two";
-      password xmpp.password;
+      to Settings:address2;
+      login Settings:login1;
+      password Settings:password1;
       message "hello, world";
   }
 
   listener2 extends GoogleChatListener {
-      login "smartfrog.two";
-      password xmpp.password;
+      login Settings:login2;
+      password Settings:password2;
   }
 
-testGmailXmpp extends ExpectDeploy {
+  checker extends GoogleChatPresenceChecker {
+    login Settings:login1;
+    password Settings:password1;
+    target Settings:address2;
+  }
+
+
+ExpectXmppTestDeploy extends  ExpectDeploy {
   condition extends IsXmppPresent;
+  undeployAfter 60000;
+}
+
+ExpectXmppTestFail extends  ExpectDeployFailure {
+  condition extends IsXmppPresent;
+  undeployAfter ExpectXmppTestDeploy:undeployAfter;
+}
+
+testGmailXmpp extends ExpectXmppTestDeploy {
 
   description "test xmpp deployment -requires test.xmpp.password to be set to the appropriate password";
 
   action extends Compound {
     Listener extends listener2;
-    historyPacketHandler extends HistoryPacketHandler {
+    
+    history extends HistoryPacketHandler {
       listener LAZY Listener;
+      dumpOnTerminate true;
     }
   }
 
@@ -65,9 +92,51 @@ testGmailXmpp extends ExpectDeploy {
     post2 extends PostMessage {
       message "second message";
     }
+    sleep extends Delay {
+      time 2000;
+    }
+    checkMessage extends HistoryAssertion {
+      history LAZY PARENT:PARENT:action:history;
+      textRegexp post2:message;
+    }
   }
 }
 
+/**
+ Test the presence over gmail
+ */
+testGmailRecipientAbsent extends ExpectXmppTestFail {
+  description "expect the other account to be absent";
+  action extends Compound {
+    check extends checker {
+      delay 1000;
+    }
+  }
+
+  exceptions [["",XmppPresenceChecker:ERROR_NOT_PRESENT]];
+
+}
+
+/**
+ Test the presence over gmail
+ */
+testGmailRecipientPresent extends ExpectXmppTestDeploy {
+  description "expect the other account to be present";
+  action extends Compound {
+   Listener extends listener2;
+
+    history extends HistoryPacketHandler {
+      listener LAZY Listener;
+      dumpOnTerminate true;
+    }
+
+    check extends checker {
+      delay 1000;
+    }
+  }
+
+
+}
 
 
 

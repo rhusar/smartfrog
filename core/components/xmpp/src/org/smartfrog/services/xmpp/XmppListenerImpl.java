@@ -23,18 +23,18 @@ package org.smartfrog.services.xmpp;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The listener listens for messages.
@@ -92,15 +92,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
 
     /**
-     * Liveness call in to check if this component is still alive. This method can be overriden to check other state of
-     * a component. An example is Compound where all children of the compound are checked. This basic check updates the
-     * liveness count if the ping came from its parent. Otherwise (if source non-null) the liveness count is decreased
-     * by the sfLivenessFactor attribute. If the count ever reaches 0 liveness failure on tha parent has occurred and
-     * sfLivenessFailure is called with source this, and target parent. Note: the sfLivenessCount must be decreased
-     * AFTER doing the test to correctly count the number of ping opportunities that remain before invoking
-     * sfLivenessFailure. If done before then the number of missing pings is reduced by one. E.g. if sfLivenessFactor is
-     * 1 then a sfPing from the parent sets sfLivenessCount to 1. The sfPing from a non-parent would reduce the count to
-     * 0 and immediately fail.
+     * Liveness call in to check if this component is still alive. Checks the connection
      *
      * @param source source of call
      * @throws SmartFrogLivenessException component is terminated
@@ -150,15 +142,8 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if (isConnected()) {
-            try {
-                connection.close();
-            } catch (Exception e) {
-                //ignore this
-            } finally {
-                connection = null;
-            }
-        }
+        closeConnection(connection);
+        connection = null;
     }
 
 
@@ -209,9 +194,10 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
     /**
      * Reconnect to a server
+     *
      * @return true if the reconnection worked
      * @throws SmartFrogLivenessException if we could not reconnect
-     * @throws IllegalStateException if we are already connected
+     * @throws IllegalStateException      if we are already connected
      */
     private synchronized boolean reconnect() throws SmartFrogLivenessException {
         if (isConnected()) {
@@ -329,6 +315,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
 
     /**
      * Send a message if we are connected
+     *
      * @param message the message to send
      * @return true if it was sent
      */

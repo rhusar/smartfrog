@@ -32,4 +32,4 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/services/xmpp/test/components.sf"
 
-sfConfig extends testGmailXmpp;
+sfConfig extends testGmailRecipientAbsent;

@@ -55,7 +55,7 @@ XmppSchema extends Schema {
         description "should presence information be provided";
     }
     status extends String {
-      description "The presence message to set (if not null);
+      description "The presence message to set (if not null)";
     }
     requireEncryption extends Boolean {
         description ##should we require an encrypted connection
@@ -218,96 +218,5 @@ XmppMessageHandler extends XmppPacketHandler {
   sfClass "org.smartfrog.services.xmpp.XmppMessageHandlerImpl";
 }
 
-/**
- * executes the action once for every incoming message that matches the filter
- */
-/*
-XmppWorkflowHandler extends ActionCompound {
-  listener TBD;
-}*/
-
-
-/**
- * a component that adds messages to the history
- */
-HistoryPacketHandler extends XmppPacketHandler {
-  sfClass "org.smartfrog.services.xmpp.handlers.HistoryPacketHandlerImpl";
-  //a limit of -1 means "no limit"; anything else limits the size
-  limit 100;
-}
-
-
-/**
- * this component relays the message to someone else
- */
-RelayHandler extends XmppMessageHandler {
-  sfClass "org.smartfrog.services.xmpp.handlers.RelayHandlerImpl";
-  //give the name of the recipient, or a list of recipients
-  to TBD;
-}
-
-
-/*
- * this component echoes the message back
- */
-RelayHandler extends XmppMessageHandler {
-  sfClass "org.smartfrog.services.xmpp.handlers.EchoHandlerImpl";
-  //give the name of the recipient, or a list of recipients
-  to TBD;
-}
-
-/**
- * This component is a condition; it can be used in Conditional workflows
- * to act on
- */
-XmppPresenceChecker extends XmppListener {
-
-    xmppPresenceCheckerSchema extends Schema {
-    /**
-    The address could be "domain/resource", "user@domain" or "user@domain/resource".
-    */
-        target extends String {
-            description "account to monitor";
-        }
-        terminateWhenTargetOffline extends Boolean {
-          description "should we terminat ourselves when the target is offline?";
-        }
-
-        subscriptionMode extends Integer {
-          description "subscription mode for responding to roster subscription requests";
-        }
-        startupDelay extends Integer {
-          description "time in milliseconds before assuming that no presence info => absence"
-
-        }
-    }
-
-    sfClass "org.smartfrog.services.xmpp.presence.XmppPresenceCheckerImpl";
-    terminateWhenTargetOffline false;
-
-    /*
-     * Automatically accept all subscription and unsubscription requests.
-     * This is inherently insecure.
-     */
-    SUBSCRIPTION_ACCEPT_ALL 0;
-
-    /*
-     * Automatically reject all subscription requests.
-     */
-    SUBSCRIPTION_REJECT_ALL 1;
-
-    /*
-     * Manual subscription would require a subclass to handle the relevant packets
-     */
-    SUBSCRIPTION_MANUAL 2;
-
-    /**
-     * The default mode rejects all subscription modes
-     */
-    subscriptionMode SUBSCRIPTION_REJECT_ALL;
-
-    /**
-     * Give the component 10s to start up before it assumes someone is missing
-     */
-    startupDelay 10000;
-}
+#include "/org/smartfrog/services/xmpp/handlers/components.sf"
+#include "/org/smartfrog/services/xmpp/presence/components.sf"

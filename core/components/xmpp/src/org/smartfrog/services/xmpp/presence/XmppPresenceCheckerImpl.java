@@ -19,13 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.xmpp.presence;
 
-import org.smartfrog.services.xmpp.XmppListenerImpl;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterListener;
+import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Presence;
+import org.smartfrog.services.xmpp.XmppListenerImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -39,9 +40,10 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
 
     private String target;
     private int subscriptionMode;
-    private Roster roster;
     private int startupDelay;
     private long connectDelay;
+    private boolean checkOnLiveness;
+    public static final String ERROR_NOT_PRESENT = "Not present :";
 
     public XmppPresenceCheckerImpl() throws RemoteException {
     }
@@ -57,23 +59,34 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         target = sfResolve(ATTR_TARGET, "", true);
         subscriptionMode = sfResolve(ATTR_SUBSCRIPTION_MODE, 0, true);
-        startupDelay = sfResolve(ATTR_STARTUP_DELAY, 0, true);
+        startupDelay = sfResolve(ATTR_DELAY, 0, true);
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         setConnectDelay();
         super.sfStart();
     }
 
     /**
-     * Register or reregister all packet handlers
+     * Override point: configure the roster of this connection.
+     *
+     * @param connection connection to configure
      */
     @Override
-    protected synchronized void registerAllHandlers() {
-        super.registerAllHandlers();
+    protected void configureRoster(XMPPConnection connection) {
         setConnectDelay();
         //register our roster
-        roster = getConnection().getRoster();
+        Roster roster = connection.getRoster();
         roster.setSubscriptionMode(subscriptionMode);
         roster.addRosterListener(this);
         roster.reload();
+    }
+
+    /**
+     * Get the current roster
+     *
+     * @return the roster; will be null if not connected
+     */
+    protected Roster getRoster() {
+        return getConnection() != null ? getConnection().getRoster() : null;
     }
 
     private void setConnectDelay() {
@@ -95,7 +108,7 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
         if (!isConnected()) {
             return true;
         } else {
-            Presence presence = roster.getPresence(target);
+            Presence presence = getRoster().getPresence(target);
             boolean absent;
             absent = presence == null || !(presence.getType().equals(Presence.Type.AVAILABLE));
             return !absent || now < connectDelay;
@@ -111,7 +124,16 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
     @Override
     protected void innerPing() throws SmartFrogLivenessException {
         super.innerPing();
-        //now check the target
+        //now check the availability of the remote person
+        try {
+            if (checkOnLiveness && !evaluate()) {
+                throw new SmartFrogLivenessException(ERROR_NOT_PRESENT + target);
+            }
+        } catch (RemoteException e) {
+            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+        } catch (SmartFrogException e) {
+            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+        }
     }
 
     /**
