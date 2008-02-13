@@ -61,8 +61,7 @@ public class SfProcessStopperAction
      */
     public void dispose()
     {
-        //noop
-    }
+     }
 
     /*
      * (non-Javadoc)
