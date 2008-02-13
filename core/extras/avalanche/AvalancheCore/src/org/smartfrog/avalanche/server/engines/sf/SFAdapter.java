@@ -75,6 +75,7 @@ public class SFAdapter {
 
     protected AvalancheFactory avalancheFactory;
     protected Scheduler sched;
+    protected String securityOn = null;
     private Vector<String> machines = new Vector<String>();
     public static Hashtable allValues = new Hashtable();
     public static final String AVALANCHE_SERVER = "_Avalanche_server";
@@ -82,12 +83,14 @@ public class SFAdapter {
     public SFAdapter(AvalancheFactory factory) {
         super();
         this.avalancheFactory = factory;
+	securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
     }
 
     public SFAdapter(AvalancheFactory factory, Scheduler scheduler) {
         super();
         this.avalancheFactory = factory;
         this.sched = scheduler;
+	securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
     }
 
     /**
@@ -370,8 +373,14 @@ public class SFAdapter {
                 basePath[i] = sfBaseJars[i].getAbsolutePath();
             }
 
-            SmartFrogAdapterImpl adapter = new SmartFrogAdapterImpl(sfDistDir);
+           // SmartFrogAdapterImpl adapter = new SmartFrogAdapterImpl(sfDistDir, false);
+            SmartFrogAdapterImpl adapter = null;
 
+	    if (securityOn.equals("true")) {
+            		 adapter = new SmartFrogAdapterImpl(sfDistDir, true);
+		} else {
+			 adapter = new SmartFrogAdapterImpl(sfDistDir, false);
+		}
             //	adapter.addClasspath(basePath);	// sf core jars
             //	adapter.addClasspath(classpath);	// add classpath for components
 
@@ -571,8 +580,16 @@ public class SFAdapter {
 			
 			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
 		}
-		
-		SmartfrogAdapter adapter = new SmartFrogAdapterImpl(sfDistDir);
+	
+	 // SmartFrogAdapterImpl adapter = new SmartFrogAdapterImpl(sfDistDir, false);
+            SmartFrogAdapterImpl adapter = null;
+
+	    if (securityOn.equals("true")) {
+            		 adapter = new SmartFrogAdapterImpl(sfDistDir, true);
+		} else {
+			// adapter1 = new SmartFrogAdapterImpl("C:\\sf\\2008\\jan25\\svn\\smartfrog\\dist", false);
+			 adapter = new SmartFrogAdapterImpl(sfDistDir, false);
+		}	
                 SmartFrogAdapterImpl.setLogFilePath(logsDir);
 
             	// run the description on local host for remote deployments.
