@@ -595,15 +595,16 @@ public final class Diagnostics {
        return failed;
      }
 
-     /** * Report simple remote network diagnostics for list of URIs
-         * @param out the stream to print the report to.
-         * @parm url URI for a host to reach
-         * @return failed. It reports if the test failed or not.
+    /**
+     * Report simple remote network diagnostics for list of URIs
+     *
+     * @param out the stream to print the report to.
+     * @param listURI list of URIs for a host to reach
      */
-     private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
-         for (int i=listURI.length; i>0;i--) {
-            doReportRemoteNetwork(out,listURI[i-1]);
-         }
+    private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
+        for (int i = listURI.length; i > 0; i--) {
+            doReportRemoteNetwork(out, listURI[i - 1]);
+        }
     }
 
     /**
