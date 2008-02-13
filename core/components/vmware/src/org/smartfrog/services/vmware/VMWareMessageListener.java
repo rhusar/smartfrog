@@ -277,11 +277,11 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                         // list the master copies
                         response.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
                     }
-                    else if (command.equals("copyhosttoguest")) {
-                        String strSrc = ext.getPropertyBag().get("source");
-                        String strDest = ext.getPropertyBag().get("dest");
-                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strPath, strSrc, strDest));
-                    }
+//                    else if (command.equals("copyhosttoguest")) {
+//                        String strSrc = ext.getPropertyBag().get("source");
+//                        String strDest = ext.getPropertyBag().get("dest");
+//                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strPath, strSrc, strDest));
+//                    }
                 } catch (Exception e) {
                     ProcessException(command, response, e);
                 }
