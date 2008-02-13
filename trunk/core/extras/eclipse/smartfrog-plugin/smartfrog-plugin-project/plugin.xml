@@ -8,8 +8,9 @@
    class="org.smartfrog.tools.eclipse.SmartFrogPlugin">
 
    <runtime>
-      <library name="smart_frog_plugin.jar">
-         <export name="*"/>
+    <library name="org.smartfrog.tools.jar">
+      <!--library name="smart_frog_plugin.jar">
+         <export name="*"/-->
       </library>
    </runtime>
 

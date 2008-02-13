@@ -44,6 +44,23 @@
     <property name="javadoc.build.dest" value="${work.folder}/javadoc"/>
     <property name="javadoc.pkgs" value="com.hp.*"/>
 
+    <property name="license.files.dir" value="../shared/licenses"/>
+ <property name="buildid.template" value="../shared/misc/buildid.txt"/>
+ 
+ 
+   <!-- Doc plugin properties -->
+    <property name="bin.full.name" value="${bin.plugin.external.name}"/>
+    <property name="bin.plugin.zip" value="${bin.plugin.zip.name}"/>
+    <property name="bin.plugin.zip.root.dir" value="${bin.full.name}"/>
+    <property name="bin.plugin.tar" value="${doc.plugin.tar.name}"/>
+    <property name="bin.plugin.tar.root.dir" value="${bin.full.name}"/>
+    <property name="doc.plugin.guts.dir" value="doc"/>
+
+    <!-- Miscellaneous properties -->
+    <property name="buildid.template.file" value="${buildid.template}"/>
+
+
+
     <!-- +++++++++++++++++++++++++++++++++++++++ -->
 
     <target name="unzip.dependencies"
