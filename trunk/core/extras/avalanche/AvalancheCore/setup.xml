@@ -52,8 +52,9 @@
   <property name="avalanche.types.lib" location="${dist.dependencies.dir}/avalanche-types.jar" />
 
   <property name="lib" location="${dist.dependencies.dir}"/>
+  <!--property name="security.on" value="true"/-->
   
-<!--  <import file="build.xml"/>-->
+  <!--  <import file="build.xml"/>-->
   <target name="env_diag">
       <fail unless="env.JAVA_HOME">Environment variable 'JAVA_HOME' not set.</fail>
       <fail unless="env.TOMCAT_HOME">Environment variable 'TOMCAT_HOME' not set.</fail>
@@ -193,7 +194,7 @@
     
     <!--Copy smartFrog jars-->
     <copy todir="${avalanche.home}/temp/smartfrog/dist">
-      <fileset dir="${smartfrog.home}/dist"/>
+      <fileset dir="${smartfrog.home}/dist" />
     </copy>
 
     <delete dir="${avalanche.home}/temp/smartfrog/dist/docs"/>
@@ -220,35 +221,91 @@
         <include name="ant-launcher*.jar" />
         <include name="ant-jsch*.jar" />
         <include name="sf-vmware*.jar" />
-        <include name="sf-xmpp*.jar" />
-        <include name="jna*.jar"/>
+	<include name="sf-xmpp*.jar" />
+	<include name="jna*.jar"/>
       </fileset>
     </copy>
 
     <copy file="dist/lib/client/sfXmppClient.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
 		<copy file="dist/lib/shared.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-<!--		<copy file="${dist.dependencies.dir}/commons-logging*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/smack*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/smackx*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/xercesImpl*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/xml-apis*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/sf-quartz*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/ant*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>
-		<copy file="${dist.dependencies.dir}/ant-launcher*.jar" todir="${avalanche.home}/temp/smartfrog/dist/lib"/>-->
-
     <copy file="boot/smartfrog/dist/bin/sfDaemon" todir="${avalanche.home}/temp/smartfrog/dist/bin"
         overwrite="true"/>
     <copy file="boot/smartfrog/dist/bin/setSFProperties" todir="${avalanche.home}/temp/smartfrog/dist/bin"
         overwrite="true"/>
   </target>
 
-	<target name="securitySetup">
+	<target name="securitySetup" if="security.on">
 		
-		<!--Copy Dependent jars to Avalanche SmartFrog dist dir-->
-		<copy todir="${avalanche.home}/smartfrog/dist/signedLib">
-			<fileset dir="${avalanche.home}/smartfrog/dist/lib" includes="*.jar"/>
+    <copy file="boot/smartfrog/dist/lib/commons-logging.properties" todir="${avalanche.home}/temp/smartfrog/dist/signedLib"/>
+    <copy file="boot/smartfrog/dist/lib/log4j.properties" todir="${avalanche.home}/temp/smartfrog/dist/signedLib"/>
+    <copy file="boot/smartfrog/dist/lib/log4j.xml" todir="${avalanche.home}/temp/smartfrog/dist/signedLib"/>
+
+    <copy file="boot/smartfrog/dist/lib/commons-logging.properties" todir="${avalanche.home}/smartfrog/dist/signedLib"/>
+    <copy file="boot/smartfrog/dist/lib/log4j.properties" todir="${avalanche.home}/smartfrog/dist/signedLib"/>
+    <copy file="boot/smartfrog/dist/lib/log4j.xml" todir="${avalanche.home}/smartfrog/dist/signedLib"/>
+
+    <copy todir="${avalanche.home}/temp/smartfrog/dist/signedLib" >
+      <fileset dir="${dist.dependencies.dir}" >
+        <include name="commons-logging*.jar" />
+        <include name="smack*.jar" />
+        <include name="smackx*.jar" />
+        <include name="xercesImpl*.jar" />
+        <include name="xml-apis*.jar" />
+        <include name="ant*.jar" />
+        <include name="ant-launcher*.jar" />
+        <include name="ant-jsch*.jar" />
+      </fileset>
+   </copy>
+
+   <mkdir dir="${smartfrog.home}/dist/lib/avalanche"/>
+   <mkdir dir="${smartfrog.home}/dist/signedLib/client"/>
+
+   <copy todir="${avalanche.home}/smartfrog/dist/signedLib">
+      <fileset dir="${dist.dependencies.dir}" >
+        <exclude name="sf-quartz*.jar" />
+        <exclude name="sf-vmware*.jar" />
+        <exclude name="sf-xmpp*.jar" />
+        <exclude name="sf-ant*.jar" />
+        <exclude name="sf-anubis*.jar" />
+        <exclude name="sf-installer*.jar" />
+        <exclude name="sf-jmx*.jar" />
+        <exclude name="sf-loggingservices*.jar" />
+        <exclude name="sf-net*.jar" />
+        <exclude name="sf-ssh*.jar" />
+        <exclude name="smartfrog*.jar" />
+        <exclude name="sfServices*.jar" />
+	<exclude name="sfExamples*.jar" />
+	<exclude name="smack*.jar" />
+        <exclude name="je*.jar" />
+        <exclude name="quartz*.jar" />
+      </fileset>
+    </copy>
+    
+   <copy todir="${smartfrog.home}/dist/lib/avalanche" >
+      <fileset dir="${dist.dependencies.dir}" >
+        <include name="sf-quartz*.jar" />
+        <include name="sf-vmware*.jar" />
+        <include name="sf-xmpp*.jar" />
+        <include name="sf-ant*.jar" />
+        <include name="sf-anubis*.jar" />
+        <include name="sf-installer*.jar" />
+        <include name="sf-jmx*.jar" />
+        <include name="sf-loggingservices*.jar" />
+        <include name="sf-net*.jar" />
+        <include name="sf-ssh*.jar" />
+        <include name="smack*.jar" />
+        <include name="je*.jar" />
+        <include name="quartz*.jar" />
+      </fileset>
 		</copy>
 		
+    <copy todir="${smartfrog.home}/dist/lib/avalanche">
+	<fileset dir="dist/lib" includes="*.jar"/>
+    </copy>
+
+    <copy todir="${smartfrog.home}/dist/lib/avalanche">
+	<fileset dir="dist/lib/client" includes="*.jar"/>
+    </copy>
 		
 		<copy file="security.xml" todir="${smartfrog.home}"/>
 		<exec dir="bin" executable="cmd" os="Windows XP, Windows NT">
@@ -262,12 +319,51 @@
 			<arg line="security"/>
 		</exec>
 
-		<delete file="${smartfrog.home}\security.xml"/>
+		<copy todir="${avalanche.home}/temp/smartfrog/dist/signedLib" >
+			<fileset dir="${smartfrog.home}/dist/signedLib" >
+        		 	<include name="sf-quartz*.jar" />
+        			<include name="sf-vmware*.jar" />
+				<include name="sf-xmpp*.jar" />
+				<include name="shared.jar"/>
+				<include name="smartfrog.jar"/>
+				<include name="sfServices.jar"/>
+				<include name="sfExamples.jar"/>
+      			</fileset>
+		</copy>
+
+		
+		
+		<copy file="${smartfrog.home}/dist/signedLib/client/sfXmppClient.jar" todir="${avalanche.home}/temp/smartfrog/dist/signedLib"/>
+
+		<copy todir="${avalanche.home}/smartfrog/dist/signedLib" >
+			<fileset dir="${smartfrog.home}/dist/signedLib" includes="*.jar"/>
+		</copy>
+
+		<copy todir="${avalanche.home}/smartfrog/dist/signedLib" >
+			<fileset dir="${smartfrog.home}/dist/signedLib/client" includes="*.jar"/>
+		</copy>
+
+		<copy todir="${avalanche.home}/smartfrog/lib" overwrite="true">
+			<fileset dir="${smartfrog.home}/dist/signedLib/client" includes="*.jar"/>
+		</copy>
+
+		<copy file="avalanche.policy" tofile="${avalanche.home}/smartfrog/dist/private/sf.policy" overwrite="true"/>	
+		
+		<copy todir="${avalanche.home}/temp/smartfrog/dist/private" >
+			<fileset dir="${avalanche.home}/smartfrog/dist/private"/>
+		</copy>
+
+		<delete file="${smartfrog.home}/security.xml"/>
+		<delete dir="${smartfrog.home}/dist/lib/avalanche"/> 
+		<delete dir="${smartfrog.home}/dist/signedLib/client"/> 
+		<delete>
+			<fileset dir="${smartfrog.home}/dist/signedLib" includes="*.jar"/>
+		</delete>	
+		<delete dir="${smartfrog.home}/dist/private/host1"/> 
 
 	</target>
 
-	<!--target name="setup" depends="createXMPPEnabledSmartFrog, securitySetup, setupUI" /-->
-	<target name="setup" depends="env_diag, createXMPPEnabledSmartFrog, setupUI" />
+	<target name="setup" depends="env_diag, createXMPPEnabledSmartFrog, securitySetup, setupUI" />
 
 	<target name="createbundle" depends="init.scripts.pattern">
 		<zip destfile="${avalanche.home}/temp/smartfrog.zip">
@@ -331,29 +427,60 @@
 		</copy>
 
 		<!--Copy smartFrog jars-->
+		<!--copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
+			<fileset dir="${smartfrog.home}/dist/lib" includes="*.jar"/>
+			<fileset dir="${avalanche.home}/smartfrog/dist/signedLib" includes="*.jar"/>
+		</copy-->
+
+		<!--Copy Avalanche server jars to Avalanche SmartFrog dist dir-->
+		<!--copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
+			<fileset dir="dist/lib" includes="*.jar"/>
+		</copy-->
+		
+		
+		
+		<!--Copy Avalanche client jars to Avalanche SmartFrog lib dir-->
+    <!--copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
+      <fileset dir="dist/lib/client" includes="*.jar"/>
+    </copy-->
+    	    <antcall target="copyLibs"/>
+	    <antcall target="copysignedLibs"/>
+	</target>
+	
+	<target name="copyLibs" unless="security.on">
+		<!--Copy smartFrog jars-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
 			<fileset dir="${smartfrog.home}/dist/lib" includes="*.jar"/>
-			<!--fileset dir="${avalanche.home}/smartfrog/dist/signedLib" includes="*.jar"/-->
 		</copy>
 
 		<!--Copy Avalanche server jars to Avalanche SmartFrog dist dir-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
 			<fileset dir="dist/lib" includes="*.jar"/>
 		</copy>
-		
+
+		<!--Copy Avalanche client jars to Avalanche SmartFrog lib dir-->
+    		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
+      			<fileset dir="dist/lib/client" includes="*.jar"/>
+		</copy>
+
 		<!--Copy Dependent jars to Avalanche SmartFrog dist dir-->
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
 			<fileset dir="${lib}" includes="*.jar"/>
 		</copy>
-		
-		<!--Copy Avalanche client jars to Avalanche SmartFrog lib dir-->
-    <copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
-      <fileset dir="dist/lib/client" includes="*.jar"/>
-    </copy>
-		 
+	</target>
+
+	<target name="copysignedLibs" if="security.on">
+		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
+			<fileset dir="${avalanche.home}/smartfrog/dist/signedLib" includes="*.jar"/>
+		</copy>
+
+		<copy file="${avalanche.home}/smartfrog/dist/signedLib/smartfrog.jar" todir="${tomcat.home}/common/lib"/>
 	</target>
 	
 	<target name="start" depends="createbundle">
+		<condition property="security.enabled" value="true" else="false">
+			<isset property="security.on"/>
+		</condition>
 	<!-- target name="start" -->
 		<exec dir="bin" executable="cmd" os="Windows XP, Windows NT">
 			<arg value="/c"/>
@@ -362,6 +489,8 @@
       <env key="SFHOME_BASE" path="${smartfrog.home}"/>
       <env key="XMPP_HOME" path="${xmpp.home}"/>
       <env key="TOMCAT_HOME" path="${tomcat.home}"/>
+      <env key="AVALANCHE_HOME" path="${avalanche.home}"/>
+      <env key="SECURITY_ON" value="${security.enabled}"/>
 		</exec>
 
 		<exec dir="bin" executable="sh" os="Linux">

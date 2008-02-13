@@ -1,0 +1,35 @@
+
+
+grant {
+
+   // permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\server\\data\\bdb\\*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.home}/data/bdb/*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.home}/smartfrog/boot/work/*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.home}/smartfrog/dist/signedLib", "read,write";
+    permission java.io.FilePermission "file:{avalanche.home}/logs/*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.home}/smartfrog/boot/*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.root}/bin/*", "read,write";
+    permission java.io.FilePermission "file:{avalanche.root}/bin/velocity.log", "read,write";
+   // permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\server\\smartfrog\\boot\\work\\*" , "read,write"; 
+  //  permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\AvalancheCore\\bin\\*" , "read, write"; 
+  //  permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\AvalancheCore\\bin\\velocity.log" , "read, write"; 
+   // permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\server\\smartfrog\\dist\\signedLib" , "read"; 
+  //  permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\server\\logs\\*" , "read,write"; 
+   // permission java.io.FilePermission "C:\\sf\\2008\\jan25\\svn\\extras\\avalanche\\server\\smartfrog\\boot\\*" , "read, write"; 
+    permission java.lang.RuntimePermission "createSecurityManager";
+    permission java.lang.RuntimePermission "setSecurityManager";
+    permission java.security.SecurityPermission "getPolicy";
+    permission java.lang.RuntimePermission "getProtectionDomain";
+    permission java.lang.RuntimePermission "setIO";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.misc";
+    //permission java.net.SocketPermission "16.181.41.84:3800", "listen,connect,resolve";
+    permission java.net.SocketPermission "localhost:3800", "listen,connect,resolve";
+   // permission java.net.SocketPermission "localhost:1024-", "listen,resolve";
+    permission java.net.SocketPermission "localhost:5222", "connect,resolve";
+    permission java.net.SocketPermission "localhost:5223", "connect,resolve";
+    permission java.util.PropertyPermission "*", "read, write";
+    permission java.security.AllPermission "SF_PERMISSION_NAME", "read,write"; 
+    
+};
+
+
