@@ -1,0 +1,89 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+/**
+ * This component is a condition; it can be used in Conditional workflows
+ * to act on
+ */
+XmppPresenceChecker extends XmppListener {
+
+    xmppPresenceCheckerSchema extends Schema {
+    /**
+    The address could be "domain/resource", "user@domain" or "user@domain/resource".
+    */
+        target extends String {
+            description "account to monitor";
+        }
+        checkOnLiveness extends Boolean;
+
+        terminateWhenTargetOffline extends Boolean {
+          description "should we terminat ourselves when the target is offline?";
+        }
+
+        subscriptionMode extends Integer {
+          description "subscription mode for responding to roster subscription requests";
+        }
+        delay extends Integer {
+          description "time in milliseconds before assuming that no presence info => absence"
+
+        }
+    }
+
+    sfClass "org.smartfrog.services.xmpp.presence.XmppPresenceCheckerImpl";
+
+    checkOnLiveness true;
+
+    terminateWhenTargetOffline true;
+
+    /*
+     * Automatically accept all subscription and unsubscription requests.
+     * This is inherently insecure.
+     */
+    SUBSCRIPTION_ACCEPT_ALL 0;
+
+    /*
+     * Automatically reject all subscription requests.
+     */
+    SUBSCRIPTION_REJECT_ALL 1;
+
+    /*
+     * Manual subscription would require a subclass to handle the relevant packets
+     */
+    SUBSCRIPTION_MANUAL 2;
+
+    /**
+     * The default mode rejects all subscription modes
+     */
+    subscriptionMode SUBSCRIPTION_REJECT_ALL;
+
+    /**
+     * Give the component 10s to start up before it assumes someone is missing
+     */
+    delay 10000;
+
+    ERROR_NOT_PRESENT CONSTANT "org.smartfrog.services.xmpp.presence.XmppPresenceCheckerImpl.ERROR_NOT_PRESENT";
+}
+
+
+GoogleChatPresenceChecker extends XmppPresenceChecker {
+    server GoogleChatClient:server;
+    serviceName GoogleChatClient:serviceName;
+}

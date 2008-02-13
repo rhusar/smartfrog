@@ -38,17 +38,23 @@ public interface XmppPresenceChecker extends Xmpp {
     /**
      * {@value}
      */
+    String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
+
+    /**
+     * {@value}
+     */
     String ATTR_TERMINATEWHENTARGETOFFLINE = "terminateWhenTargetOffline";
 
     /**
      * Subscription mode
+     *
      * @link org.jivesoftware.smack.Roster
      */
-    String ATTR_SUBSCRIPTION_MODE= "subscriptionMode";
+    String ATTR_SUBSCRIPTION_MODE = "subscriptionMode";
 
     /**
-     * Time (in milliseconds) to give for roster startup before the absence of
-     * someone's availability is deemed to be an error
+     * Time (in milliseconds) to give for roster startup before the absence of someone's availability is deemed to be an
+     * error
      */
-    String ATTR_STARTUP_DELAY="startupDelay";
+    String ATTR_DELAY = "delay";
 }

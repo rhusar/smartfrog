@@ -19,15 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.xmpp.handlers;
 
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
 
 /**
- *
  * Created 14-Aug-2007 14:16:04
- *
  */
 
 public class XmppWorkflowHandlerImpl extends EventCompoundImpl implements Compound {

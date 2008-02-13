@@ -19,17 +19,18 @@
  */
 package org.smartfrog.services.xmpp;
 
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.XMPPConnection;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * The packet handler logs everything and print it out Created 14-Aug-2007 13:51:30
@@ -126,5 +127,15 @@ public class XmppPacketHandlerImpl extends PrimImpl implements
      */
     public void processPacket(Packet packet) {
         sfLog().info(packet);
+    }
+
+    /**
+     * Test for a received package being a message
+     *
+     * @param packet
+     * @return true iff the packet is a message
+     */
+    protected static boolean packetIsMessage(Packet packet) {
+        return packet instanceof Message;
     }
 }
