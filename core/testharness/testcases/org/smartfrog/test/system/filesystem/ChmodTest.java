@@ -37,7 +37,18 @@ public class ChmodTest extends DeployingTestBase {
 //        expectSuccessfulTestRun(FILES, "testChmodFailsRecursively");
 //    }
     
-    public void testChmodWorks() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testChmodWorks");
+    public void testRemoveAllRights() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testRemoveAllRights");
+    }
+
+    public void testRestoreReadPermissions() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testRestoreReadPermissions");
+    }
+
+    public void testRestoreWritePermissions() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testRestoreWritePermissions");
+    }
+    public void testRestoreRWPermissions() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testRestoreRWPermissions");
     }
 }

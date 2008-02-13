@@ -20,4 +20,4 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/test/system/filesystem/chmodTests.sf"
 
-sfConfig extends testChmodWorks;
+sfConfig extends testRemoveAllRights;

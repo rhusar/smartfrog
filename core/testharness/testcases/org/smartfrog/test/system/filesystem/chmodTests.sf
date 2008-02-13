@@ -23,7 +23,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/os/java/propertyfile.sf"
 #include "/org/smartfrog/services/os/components.sf"
 
-#include "/org/smartfrog/services/vmware/vmwarecondition.sf"
 
 createTestEnv extends Compound {
     testDir extends TempDirWithCleanup {
@@ -42,6 +41,13 @@ createTestEnv extends Compound {
         dir LAZY testSubDir;
     }
 }
+
+    NoCanRead extends FileOrDirMustExist {
+      mustRead false;
+      mustWrite false;
+      testOnStartup true;
+      sfShouldTerminate true;
+    }
 
 //testChmodFails extends ExpectDeployFailure {
 //    condition IsUnix;
@@ -82,37 +88,77 @@ createTestEnv extends Compound {
 //    }
 //}
 
-testChmodWorks extends ExpectDeploy {
-    condition VMWareServerInstalled;
+testRemoveAllRights extends ExpectDeploy {
+    condition IsUnix;
     
-    description "removes all flags and then sets readflags and tries to read the file";
+    description "removes all flags and then asserts the file is unreadable";
     undeployAfter 500;
+
+    testfile LAZY action:testFile1;
 
     action extends createTestEnv {
 
     }
 
     tests extends Sequence {
+
         rmAllRights extends Chmod {
-            file LAZY PARENT:PARENT:action:testFile1;
-            octalCode "000";
+          file testfile ;
+          octalCode "000";
+          sfShouldTerminate true;
         }
 
-        loadFileFailure extends ExpectDeployFailure {
-            loadFailure extends LoadPropertyFile {
-                resource LAZY PARENT:PARENT:PARENT:action:testFile1;
-            }
+        noCanRead extends NoCanRead  {
+          filename testfile;
         }
 
-        setReadRights extends Chmod {
-            file LAZY PARENT:PARENT:action:testFile1;
-            userPermissions "+r";
-            groupPermissions "+r";
-            otherPermissions "+r";
+        readTests extends Sequence;
+        writeTests extends Sequence;
+    }
+}
+
+testRestoreReadPermissions extends testRemoveAllRights {
+
+ description "restores permissions and asserts that this holds";
+
+  tests:readTests  extends Sequence {
+
+        setReadable extends Chmod {
+          sfShouldTerminate true;
+          file testfile;
+          userPermissions "+r";
+          groupPermissions "+r";
+          otherPermissions "+r";
         }
 
-        loadFile extends LoadPropertyFile {
-            resource LAZY PARENT:PARENT:action:testFile1;
+        CanRead extends NoCanRead {
+          filename testfile;
+          mustRead true;
         }
     }
+}
+
+testRestoreWritePermissions extends testRemoveAllRights {
+
+ description "restores permissions and asserts that this holds";
+
+  tests:writeTests extends Sequence {
+
+        setWriteable extends Chmod {
+          sfShouldTerminate true;
+          file testfile;
+          userPermissions  "+w";
+          groupPermissions "+w";
+          otherPermissions "+w";
+        }
+
+        CanWrite extends NoCanRead {
+          filename testfile;
+          mustWrite true;
+        }
+    }
+}
+
+testRestoreRWPermissions extends testRestoreWritePermissions {
+  tests:readTests testRestoreReadPermissions:tests:readTests ;
 }
