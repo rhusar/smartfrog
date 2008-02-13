@@ -30,7 +30,9 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     static ProcessCompound sfDaemon = null;
     private static String iniFile = null;
     private static String sfDefault = null;
-    private static String sfDefaultSecurity = null;
+    private static String sfSecurity = null;
+    private static String sfkeyStoreName = null;
+    private static String sfpropFile = null;
     private boolean SFDYNAMICCLASSLOADING_ON = false;
     private String dyClassLoading_codebase = "";
     private static final String fileSeparator = File.separator;
@@ -53,13 +55,13 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
     /* Constructor which takes SFHOME as argument */
-    public SmartFrogAdapterImpl(String sfHomePath) throws Exception {
-        setSFHOME(sfHomePath);
+    public SmartFrogAdapterImpl(String sfHomePath, boolean SecurityOn) throws Exception {
+	    	setSFHOME(sfHomePath, SecurityOn);
         try {
             String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
             cal = Calendar.getInstance(TimeZone.getDefault());
             sdf = new SimpleDateFormat(DATE_FORMAT);
-            getSFDaemon();
+            getSFDaemon(SecurityOn);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
@@ -72,24 +74,32 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
     // contacts a running daemon or starts a new one
-    private ProcessCompound getSFDaemon() throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
+    private ProcessCompound getSFDaemon(boolean SecurityOn) throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
         try {  // there is a Daemon  running in local system
-            setSFDaemonEnv();
-            sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
+            	setSFDaemonEnv(SecurityOn);
+		if (SecurityOn)
+			SFSystem.initSystem();
+            	sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
         } catch (ConnectException cEx) {  // there is no Daemon  running in local system
-            setSFDaemonEnv();
+           // setSFDaemonEnv(SecurityOn);
             sfDaemon = SFSystem.runSmartFrog();
         }
         return sfDaemon;
     }
 
-    private void setSFDaemonEnv() {
+    private void setSFDaemonEnv(boolean SecurityOn) {
         //system properties
         System.setProperty("org.smartfrog.sfcore.processcompound.sfProcessName", "rootProcess");
         System.setProperty("org.smartfrog.iniFile", iniFile);
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault", sfDefault);
-        System.setProperty("java.security.policy", sfDefaultSecurity);
-        System.setSecurityManager(new SecurityManager());
+        System.setProperty("java.security.policy", sfSecurity);
+        if (SecurityOn) {
+        	System.setProperty("org.smartfrog.sfcore.security.keyStoreName", sfkeyStoreName);
+        	System.setProperty("org.smartfrog.sfcore.security.propFile", sfpropFile);
+        	System.setProperty("org.smartfrog.sfcore.security.secureResourcesOff", "true");
+	} else
+		System.setSecurityManager(new SecurityManager());
+
         // smartfrog dist jar files.
         File[] sfBaseJars = (new File(distPath)).listFiles(new FilenameFilter() {
             public boolean accept(File f, String s) {
@@ -107,19 +117,20 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
             // System.out.println("baseClasssPath :"+baseClasssPath);
         }
 
-        if (sfLog().isDebugEnabled()) {
+      /*  if (sfLog().isDebugEnabled()) {
             sfLog().debug("sfBaseJars length :" + sfBaseJars.length);
-        }
+        }*/
         System.setProperty("java.class.path", System.getProperty("java.class.path") + pathSeparator + baseClasssPath);
+	System.out.println("CLASSPATH" + System.getProperty("java.class.path"));
 
         if (logFilePath !=null)
         {
            System.setProperty("org.smartfrog.sfcore.logging.LogToFileImpl.path",logFilePath);
-            System.setProperty("org.smartfrog.sfcore.logging.LogImpl.localLoggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
+          //  System.setProperty("org.smartfrog.sfcore.logging.LogImpl.localLoggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
+            System.setProperty("org.smartfrog.sfcore.logging.LogImpl.loggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
         }
-
-
     }
+
 
     private ComponentDescription submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
 
@@ -308,13 +319,22 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
 
-    private void setSFHOME(String homePath) {
-        distPath = homePath + fileSeparator + "lib" + fileSeparator;
-        iniFile = homePath + fileSeparator + "bin" + fileSeparator + "default.ini";
-        sfDefault = homePath + fileSeparator + "bin" + fileSeparator + "default.sf";
-        sfDefaultSecurity = homePath + fileSeparator + "private" + fileSeparator + "sf.no.security.policy";
+    private void setSFHOME(String homePath, boolean SecurityOn) {
+	if (SecurityOn) {
+		distPath = homePath + fileSeparator + "signedLib" + fileSeparator;
+        	iniFile = "org/smartfrog/default.ini";
+        	sfDefault = "org/smartfrog/default.sf";
+		sfSecurity = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator +  fileSeparator + "sf.policy";
+        	sfkeyStoreName = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator +  fileSeparator + "host1" + fileSeparator +  fileSeparator + "mykeys.st";
+        	sfpropFile = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator + fileSeparator + "host1" + fileSeparator +  fileSeparator + "SFSecurity.properties";
+	}
+	else {
+		distPath = homePath + fileSeparator + "lib" + fileSeparator;
+        	iniFile = homePath + fileSeparator + "bin" + fileSeparator + "default.ini";
+        	sfDefault = homePath + fileSeparator + "bin" + fileSeparator + "default.sf";
+        	sfSecurity = homePath + fileSeparator + "private" + fileSeparator + "sf.no.security.policy";
+	}
     }
-
 
     public static Map getAllAttribute(String descriptionFileName) throws Exception {
         InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
@@ -355,7 +375,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     public static void stopBaseSFDaemon(InetAddress host) throws SmartFrogException {
         try {
-            TerminationRecord tr = TerminationRecord.normal("Process Terminated", null);
+            TerminationRecord tr = new TerminationRecord("Process Terminated", null, null);
             sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(host, 3800);
             TerminatorThread terminator = new TerminatorThread(sfDaemon, tr).detach().quietly();
             terminator.start();
