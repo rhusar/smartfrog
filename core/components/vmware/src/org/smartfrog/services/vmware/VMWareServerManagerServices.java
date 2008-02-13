@@ -153,13 +153,13 @@ public interface VMWareServerManagerServices extends Remote {
      */
     public String renameVM(String inVMPath, String inNewName) throws RemoteException;
 
-    /**
-     * Copies a file from the host OS into the guest OS of the specified VM.
-     * @param inVMPath The vm which contains the guest OS.
-     * @param inSourceFile The path on the host OS.
-     * @param inTargetFile The path on the guest OS.
-     * @return "success" or an error message.
-     * @throws RemoteException
-     */
-    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException;
+//    /**
+//     * Copies a file from the host OS into the guest OS of the specified VM.
+//     * @param inVMPath The vm which contains the guest OS.
+//     * @param inSourceFile The path on the host OS.
+//     * @param inTargetFile The path on the guest OS.
+//     * @return "success" or an error message.
+//     * @throws RemoteException
+//     */
+//    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException;
 }
