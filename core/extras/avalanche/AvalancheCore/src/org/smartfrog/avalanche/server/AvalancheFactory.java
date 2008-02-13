@@ -32,6 +32,7 @@ public abstract class AvalancheFactory {
 	public static final int BDB = 2;
 	public static String AVALANCHE_SERVER_NAME = "AVALANCHE_SERVER_NAME" ;
 	public static String XMPP_SERVER_NAME = "XMPP_SERVER_NAME" ;
+	public static String SECURITY_ON = "SECURITY_ON" ;
 	private static AvalancheFactory xindiceFactory = new XindiceFactoryImpl();
 	private static AvalancheFactory bdbFactory = new BDBFactoryImpl();
 	private Map attributes = new HashMap(); 
