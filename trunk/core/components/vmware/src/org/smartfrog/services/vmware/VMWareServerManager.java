@@ -305,36 +305,36 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return strResponse;
     }
 
-    /**
-     * Copies a file from the host OS into the guest OS of the specified VM.
-     *
-     * @param inVMPath     The vm which contains the guest OS.
-     * @param inSourceFile The path on the host OS.
-     * @param inTargetFile The path on the guest OS.
-     * @return "success" or an error message.
-     * @throws java.rmi.RemoteException
-     */
-    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException {
-        // error string
-        String strResponse = "success";
-
-        try {
-            // get a machine module
-            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
-
-            // check if it worked
-            if (tmp != null) {
-                tmp.copyFileFromHostToGuestOS(inSourceFile, inTargetFile);
-            }
-            else strResponse = "Failed to copy file from host OS to guest OS in \"" + inVMPath + "\": Image module not existing.";
-        } catch (SmartFrogException e) {
-            sfLog().error("Failed to copy file from host OS to guest OS in \"" + inVMPath + "\"", e);
-            strResponse = "Exception while copying file from host OS to guest OS in \"" + inVMPath + "\": " + e.toString();
-        }
-
-        // an error occurred
-        return strResponse;
-    }
+//    /**
+//     * Copies a file from the host OS into the guest OS of the specified VM.
+//     *
+//     * @param inVMPath     The vm which contains the guest OS.
+//     * @param inSourceFile The path on the host OS.
+//     * @param inTargetFile The path on the guest OS.
+//     * @return "success" or an error message.
+//     * @throws java.rmi.RemoteException
+//     */
+//    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException {
+//        // error string
+//        String strResponse = "success";
+//
+//        try {
+//            // get a machine module
+//            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+//
+//            // check if it worked
+//            if (tmp != null) {
+//                tmp.copyFileFromHostToGuestOS(inSourceFile, inTargetFile);
+//            }
+//            else strResponse = "Failed to copy file from host OS to guest OS in \"" + inVMPath + "\": Image module not existing.";
+//        } catch (SmartFrogException e) {
+//            sfLog().error("Failed to copy file from host OS to guest OS in \"" + inVMPath + "\"", e);
+//            strResponse = "Exception while copying file from host OS to guest OS in \"" + inVMPath + "\": " + e.toString();
+//        }
+//
+//        // an error occurred
+//        return strResponse;
+//    }
 
     /**
      * Shuts down a virtual machine. Has to be powered on.
