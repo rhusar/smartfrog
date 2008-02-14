@@ -48,7 +48,7 @@
  <property name="buildid.template" value="../shared/misc/buildid.txt"/>
  
  
-   <!-- Doc plugin properties -->
+   <!-- bin plugin properties -->
     <property name="bin.full.name" value="${bin.plugin.external.name}"/>
     <property name="bin.plugin.zip" value="${bin.plugin.zip.name}"/>
     <property name="bin.plugin.zip.root.dir" value="${bin.full.name}"/>
@@ -90,11 +90,18 @@
                 <exclude name="**/SVN/**"/>
                 <!-- key directories -->
                 <include name="SmartFrog/**"/>
+                <include name="src/**"/>
                 <include name="icons/**"/>
+                <include name="bin/**"/>
+
                 <!-- key files -->
                 <include name="plugin.properties"/>
                 <include name="plugin.xml"/>
                 <include name="about.html"/>
+                <include name="META-INF/**"/>
+
+                
+                
             </fileset>
             
         </copy>
