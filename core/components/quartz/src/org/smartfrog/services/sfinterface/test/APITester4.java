@@ -42,7 +42,7 @@ public class APITester4 {
 	    m.put("sfConfig:newComponentExtraAtributes",v);
             String logFilepath = "c:\\temp";
             //  SmartFrogAdapterImpl.setLogFilePath(logFilepath);
-            SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2005\\oct18\\core\\smartfrog\\dist");
+            SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2005\\oct18\\core\\smartfrog\\dist", false);
         //    Map cd1 = sfAdap.submit("D:\\cvs\\forge\\2005\\oct18\\core\\smartfrog\\src\\org\\smartfrog\\services\\sfinterface\\test\\example_asyndepl1.sf", m, new String[]{"ebnt171", "localhost"});
           // Map cd1 = SmartFrogAdapterImpl.getAllAttribute("org/smartfrog/services/sfinterface/template.sf");
 	     Map cd1 = sfAdap.submit("org/smartfrog/services/sfinterface/template.sf", m, new String[]{"ebnt171", "localhost"});
