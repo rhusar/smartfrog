@@ -1122,7 +1122,7 @@
         todir="${build.dir}"/>
     <!--commandResource="${build.dir}/rpm-queries.txt"-->
 
-    <condition name="secureLibs"
+    <condition property="secureLibs"
         value="rpm -qf ${rpm.install.dir}/signedLib/smartfrog-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/signedLib/sfServices-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/signedLib/sfExamples-${smartfrog.version}.jar;
