@@ -4,6 +4,9 @@ Bundle-Name: org.smartfrog.tools
 Bundle-SymbolicName: org.smartfrog.tools; singleton:=true
 Bundle-Version: 1.0.1
 Bundle-Activator: org.smartfrog.tools.eclipse.SmartFrogPlugin
+Bundle-ClassPath: org.smartfrog.tools.jar,
+bin\,
+.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
