@@ -38,6 +38,6 @@ import java.rmi.Remote;
  * */
 public interface Collector extends Remote {
     //public final String POLLINGPERIOD = "pollingPeriod";
-    public final String DATASOURCE = "dataSource";
+    String DATASOURCE = "dataSource";
 
 }

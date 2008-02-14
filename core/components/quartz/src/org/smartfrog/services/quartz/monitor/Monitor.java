@@ -43,15 +43,15 @@ import java.rmi.RemoteException;
 
 public interface Monitor extends Remote {
     /* Attributes for CPUMonitor component */
-    public final String DELAY = "delay";
+     String DELAY = "delay";
 
-    public int getCurrent() throws RemoteException;
+     int getCurrent() throws RemoteException;
 
-    public int getAverageLastMinute() throws RemoteException;
+     int getAverageLastMinute() throws RemoteException;
 
-    public int getAverageLast10Minutes() throws RemoteException;
+     int getAverageLast10Minutes() throws RemoteException;
 
-    public int getAverageLast30Minutes() throws RemoteException;
+     int getAverageLast30Minutes() throws RemoteException;
 
-    public int getAverageLast60Minutes() throws RemoteException;
+     int getAverageLast60Minutes() throws RemoteException;
 }

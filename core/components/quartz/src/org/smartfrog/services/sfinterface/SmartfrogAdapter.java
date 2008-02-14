@@ -87,13 +87,6 @@ public interface SmartfrogAdapter {
     public Map submit(String descriptionFile)
             throws SFParseException, SFSubmitException, SmartFrogRuntimeException;
 
-
-
-	
-
-
-   
-
     public void enableDyanamicClassLoading(String codebase);
 
     public void disableDyanamicClassLoading();
