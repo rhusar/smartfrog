@@ -1,3 +1,23 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
 package org.smartfrog.services.sfinterface;
 
 
@@ -39,7 +59,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     private static final String pathSeparator = System.getProperty("path.separator");
     private String distPath;
     private static long appCounter = 1;
-    private static String logFilePath=null;
+    private static String logFilePath = null;
 
 
     /* Empty constructor - when Smartfrog Daemon is running in the local system */
@@ -56,7 +76,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     /* Constructor which takes SFHOME as argument */
     public SmartFrogAdapterImpl(String sfHomePath, boolean SecurityOn) throws Exception {
-	    	setSFHOME(sfHomePath, SecurityOn);
+        setSFHOME(sfHomePath, SecurityOn);
         try {
             String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
             cal = Calendar.getInstance(TimeZone.getDefault());
@@ -74,14 +94,16 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
     // contacts a running daemon or starts a new one
-    private ProcessCompound getSFDaemon(boolean SecurityOn) throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
+    private ProcessCompound getSFDaemon(boolean SecurityOn)
+            throws RemoteException, SFGeneralSecurityException, SmartFrogException, Exception {
         try {  // there is a Daemon  running in local system
-            	setSFDaemonEnv(SecurityOn);
-		if (SecurityOn)
-			SFSystem.initSystem();
-            	sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
+            setSFDaemonEnv(SecurityOn);
+            if (SecurityOn) {
+                SFSystem.initSystem();
+            }
+            sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(null, 3800);
         } catch (ConnectException cEx) {  // there is no Daemon  running in local system
-           // setSFDaemonEnv(SecurityOn);
+            // setSFDaemonEnv(SecurityOn);
             sfDaemon = SFSystem.runSmartFrog();
         }
         return sfDaemon;
@@ -94,11 +116,12 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         System.setProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault", sfDefault);
         System.setProperty("java.security.policy", sfSecurity);
         if (SecurityOn) {
-        	System.setProperty("org.smartfrog.sfcore.security.keyStoreName", sfkeyStoreName);
-        	System.setProperty("org.smartfrog.sfcore.security.propFile", sfpropFile);
-        	System.setProperty("org.smartfrog.sfcore.security.secureResourcesOff", "true");
-	} else
-		System.setSecurityManager(new SecurityManager());
+            System.setProperty("org.smartfrog.sfcore.security.keyStoreName", sfkeyStoreName);
+            System.setProperty("org.smartfrog.sfcore.security.propFile", sfpropFile);
+            System.setProperty("org.smartfrog.sfcore.security.secureResourcesOff", "true");
+        } else {
+            System.setSecurityManager(new SecurityManager());
+        }
 
         // smartfrog dist jar files.
         File[] sfBaseJars = (new File(distPath)).listFiles(new FilenameFilter() {
@@ -117,26 +140,29 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
             // System.out.println("baseClasssPath :"+baseClasssPath);
         }
 
-      /*  if (sfLog().isDebugEnabled()) {
+        /*  if (sfLog().isDebugEnabled()) {
             sfLog().debug("sfBaseJars length :" + sfBaseJars.length);
         }*/
-        System.setProperty("java.class.path", System.getProperty("java.class.path") + pathSeparator + baseClasssPath);
-	System.out.println("CLASSPATH" + System.getProperty("java.class.path"));
+        System.setProperty("java.class.path",
+                System.getProperty("java.class.path") + pathSeparator + baseClasssPath);
+        System.out.println("CLASSPATH" + System.getProperty("java.class.path"));
 
-        if (logFilePath !=null)
-        {
-           System.setProperty("org.smartfrog.sfcore.logging.LogToFileImpl.path",logFilePath);
-          //  System.setProperty("org.smartfrog.sfcore.logging.LogImpl.localLoggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
-            System.setProperty("org.smartfrog.sfcore.logging.LogImpl.loggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
+        if (logFilePath != null) {
+            System.setProperty("org.smartfrog.sfcore.logging.LogToFileImpl.path", logFilePath);
+            //  System.setProperty("org.smartfrog.sfcore.logging.LogImpl.localLoggerClass","org.smartfrog.sfcore.logging.LogToFileImpl");
+            System.setProperty("org.smartfrog.sfcore.logging.LogImpl.loggerClass",
+                    "org.smartfrog.sfcore.logging.LogToFileImpl");
         }
     }
 
 
-    private ComponentDescription submitTemplate(String descriptionFile, Map attributes, String host) throws SFSubmitException {
+    private ComponentDescription submitTemplate(String descriptionFile, Map attributes, String host)
+            throws SFSubmitException {
 
         String AppName = null;
-        AppName = "App_" + sdf.format(cal.getTime()).replace(' ', '_').replace(':', '_') + appCounter++;
-	ComponentDescription cd = null;
+        AppName = "App_" + sdf.format(cal.getTime()).replace(' ', '_').replace(':', '_') +
+                        appCounter++;
+        ComponentDescription cd = null;
         try {
             if (sfDaemon != null) {
                 //deploy(AppName, descriptionFile, attributes, host);
@@ -154,7 +180,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         } catch (RemoteException ex1) {
             throw new SFSubmitException(AppName, ex1);
         }
-	return cd;
+        return cd;
     }
 
 
@@ -167,9 +193,12 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
      */
     public static boolean isActive(String host) {
         try {  // there is a Daemon  running in the given system
-            sfDaemon = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(host), 3800);
-            if (sfDaemon != null)
+            sfDaemon =
+                    SFProcess.getRootLocator()
+                            .getRootProcessCompound(InetAddress.getByName(host), 3800);
+            if (sfDaemon != null) {
                 return true;
+            }
         } catch (Exception cEx) {
             // there is no Daemon  running in the given node
             return false;
@@ -183,17 +212,18 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
      * smartfrog daemon running on these hosts.
      *
      * @param descriptionFile .sf file to submit on the repository.
-     * @param attributes      Attributes to replace in the description file dynamically.
-     * @param hosts           String[]
-     * @throws SFParseException          if the SF in the inputStream is invalid, or if map doesnt
-     *                                   contain some mendatory attribute.
+     * @param attributes Attributes to replace in the description file dynamically.
+     * @param hosts String[]
+     * @throws SFParseException if the SF in the inputStream is invalid, or if map doesnt
+     * contain some mendatory attribute.
      * @throws SFMultiHostSubmitException if the file and attributes are proper but runtime
-     *                                   submission fails on one or more nodes due to any error.
-     *                                   <p/>
-     *                                   org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
+     * submission fails on one or more nodes due to any error.
+     * <p/>
+     * org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
      */
-    public Map submit(String descriptionFile, Map attributes, String[] hosts) throws SFParseException,
-        SFMultiHostSubmitException {
+    public Map submit(String descriptionFile, Map attributes, String[] hosts)
+            throws SFParseException,
+            SFMultiHostSubmitException {
 
         SFMultiHostSubmitException multiHostException = null;
         Map resultSet = new HashMap();
@@ -207,7 +237,7 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
                 if (sfLog().isInfoEnabled()) {
                     sfLog().info("host : " + hostN);
                 }
-             resultSet.put(hostN, submit(descriptionFile, attributes, hostN));
+                resultSet.put(hostN, submit(descriptionFile, attributes, hostN));
             } catch (Throwable thr) {
                 if (multiHostException == null) {
                     multiHostException = new SFMultiHostSubmitException(resultSet.toString());
@@ -225,28 +255,27 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
 
-
     public Map submit(String descriptionFile, Map attributes, Map hosts) throws SFParseException,
-        SFMultiHostSubmitException {
+            SFMultiHostSubmitException {
 
         SFMultiHostSubmitException multiHostException = null;
         Map resultSet = new HashMap();
         String hostN = "";
 
 
-         for (Iterator e = hosts.keySet().iterator(); e.hasNext();) {
-                String key_AppID = (String)e.next();
-                String value_Host = (String)attributes.get(key_AppID);
-             try {
-                 resultSet.put(key_AppID, submit(descriptionFile, attributes, value_Host));
-             } catch (SFSubmitException e1) {
-                 e1.printStackTrace();
-             } catch (SmartFrogRuntimeException e1) {
-                 e1.printStackTrace();
-             }
-         }
+        for (Iterator e = hosts.keySet().iterator(); e.hasNext();) {
+            String key_AppID = (String) e.next();
+            String value_Host = (String) attributes.get(key_AppID);
+            try {
+                resultSet.put(key_AppID, submit(descriptionFile, attributes, value_Host));
+            } catch (SFSubmitException e1) {
+                e1.printStackTrace();
+            } catch (SmartFrogRuntimeException e1) {
+                e1.printStackTrace();
+            }
+        }
 
-     if (sfLog().isInfoEnabled()) {
+        if (sfLog().isInfoEnabled()) {
             sfLog().info("Multihost Result: " + resultSet.toString());
         }
         if (multiHostException != null) {
@@ -256,16 +285,18 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         return resultSet;
 
     }
+
     /**
      * Submit a complete description to the local smartfrog daemon running in a different JVM.
      *
      * @param descriptionFile file to submit
-     * @throws SFParseException  if the description file is invalid
+     * @throws SFParseException if the description file is invalid
      * @throws SFSubmitException if the submission or execution of the component fails.
-     *                           <p/>
-     *                           org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
+     * <p/>
+     * org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
      */
-    public Map submit(String descriptionFile) throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
+    public Map submit(String descriptionFile)
+            throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
         return this.submit(descriptionFile, new HashMap(), "localhost");
     }
 
@@ -273,12 +304,13 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
      * submits a deployment request on a localhost,
      *
      * @param descriptionFile description file to submit.
-     * @param attributes      map of dynamically resolved attributes.
-     * @throws SFParseException  if the file is invalid.
+     * @param attributes map of dynamically resolved attributes.
+     * @throws SFParseException if the file is invalid.
      * @throws SFSubmitException if the execution of the description fails.
-     *                           org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
+     * org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
      */
-    public Map submit(String descriptionFile, Map attributes) throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
+    public Map submit(String descriptionFile, Map attributes)
+            throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
         //TODO: Check who deploys the daemon onto localhost
         return this.submit(descriptionFile, attributes, "localhost");
     }
@@ -287,57 +319,88 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
      * Submits a deployment request on a single host.
      *
      * @param descriptionFile .sf file content to submit.
-     * @param attributes      map of all dynamically resolved attributes.
-     * @param host            host to submit this description.
-     * @throws SFParseException  if the description is invalid.
+     * @param attributes map of all dynamically resolved attributes.
+     * @param host host to submit this description.
+     * @throws SFParseException if the description is invalid.
      * @throws SFSubmitException if the submission itself fails, this is not when the
-     *                           description is successfully sent to host and while execution some error comes. This
-     *                           exception is throws only if the description could not be sent successfully to host.
-     *                           org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
+     * description is successfully sent to host and while execution some error comes. This
+     * exception is throws only if the description could not be sent successfully to host.
+     * org.smartfrog.services.avalanche.repository.smartfrog.SmartfrogAdapter method
      */
-    public Map submit(String descriptionFile, Map attributes, String host) throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
+    public Map submit(String descriptionFile, Map attributes, String host)
+            throws SFParseException, SFSubmitException, SmartFrogRuntimeException {
 
         Map resultSet = new HashMap();
         String status = "Success";
-	String appName = null;
-	ComponentDescription cd = null;
-	
+        String appName = null;
+        ComponentDescription cd = null;
+
         try {
-             //appName = submitTemplate(descriptionFile, attributes, host);
-             cd = submitTemplate(descriptionFile, attributes, host);
-	     appName = cd.sfResolve("compName", appName, true);
+            //appName = submitTemplate(descriptionFile, attributes, host);
+            cd = submitTemplate(descriptionFile, attributes, host);
+            appName = cd.sfResolve("compName", appName, true);
         } catch (Exception exp) {
             status = "Deployment Failed with Exception " + exp.getCause();
-	    appName = exp.getMessage();
+            appName = exp.getMessage();
         }
         resultSet.put("STATUS", status);
-	if( appName != null)
-        	resultSet.put("APP_NAME", appName);
-	if( cd != null)
-        	resultSet.put("CD", cd);
+        if (appName != null) {
+            resultSet.put("APP_NAME", appName);
+        }
+        if (cd != null) {
+            resultSet.put("CD", cd);
+        }
         return resultSet;
     }
 
 
     private void setSFHOME(String homePath, boolean SecurityOn) {
-	if (SecurityOn) {
-		distPath = homePath + fileSeparator + "signedLib" + fileSeparator;
-        	iniFile = "org/smartfrog/default.ini";
-        	sfDefault = "org/smartfrog/default.sf";
-		sfSecurity = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator +  fileSeparator + "sf.policy";
-        	sfkeyStoreName = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator +  fileSeparator + "host1" + fileSeparator +  fileSeparator + "mykeys.st";
-        	sfpropFile = homePath + fileSeparator +  fileSeparator + "private" + fileSeparator + fileSeparator + "host1" + fileSeparator +  fileSeparator + "SFSecurity.properties";
-	}
-	else {
-		distPath = homePath + fileSeparator + "lib" + fileSeparator;
-        	iniFile = homePath + fileSeparator + "bin" + fileSeparator + "default.ini";
-        	sfDefault = homePath + fileSeparator + "bin" + fileSeparator + "default.sf";
-        	sfSecurity = homePath + fileSeparator + "private" + fileSeparator + "sf.no.security.policy";
-	}
+        if (SecurityOn) {
+            distPath = homePath + fileSeparator + "signedLib" + fileSeparator;
+            iniFile = "org/smartfrog/default.ini";
+            sfDefault = "org/smartfrog/default.sf";
+            sfSecurity =
+                    homePath +
+                            fileSeparator +
+                            fileSeparator +
+                            "private" +
+                            fileSeparator +
+                            fileSeparator +
+                            "sf.policy";
+            sfkeyStoreName =
+                    homePath +
+                            fileSeparator +
+                            fileSeparator +
+                            "private" +
+                            fileSeparator +
+                            fileSeparator +
+                            "host1" +
+                            fileSeparator +
+                            fileSeparator +
+                            "mykeys.st";
+            sfpropFile =
+                    homePath +
+                            fileSeparator +
+                            fileSeparator +
+                            "private" +
+                            fileSeparator +
+                            fileSeparator +
+                            "host1" +
+                            fileSeparator +
+                            fileSeparator +
+                            "SFSecurity.properties";
+        } else {
+            distPath = homePath + fileSeparator + "lib" + fileSeparator;
+            iniFile = homePath + fileSeparator + "bin" + fileSeparator + "default.ini";
+            sfDefault = homePath + fileSeparator + "bin" + fileSeparator + "default.sf";
+            sfSecurity =
+                    homePath + fileSeparator + "private" + fileSeparator + "sf.no.security.policy";
+        }
     }
 
     public static Map getAllAttribute(String descriptionFileName) throws Exception {
-        InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
+        InputStream descriptionStream =
+                org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
         SFParser parser = new SFParser(SFParser.getLanguageFromUrl(descriptionFileName));
         Phases phases = parser.sfParse(descriptionStream);
         phases = phases.sfResolvePhases();
@@ -348,7 +411,8 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
     public static Map getAllAttribute(String descriptionFileName, String tag) throws Exception {
-        InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
+        InputStream descriptionStream =
+                org.smartfrog.SFSystem.getInputStreamForResource(descriptionFileName);
         SFParser parser = new SFParser(SFParser.getLanguageFromUrl(descriptionFileName));
         Phases phases = parser.sfParse(descriptionStream);
         phases = phases.sfResolvePhases();
@@ -361,7 +425,6 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
 
     public static void setLogFilePath(String filePath) {
         logFilePath = filePath;
-
     }
 
     public void enableDyanamicClassLoading(String codebase) {
@@ -400,10 +463,12 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
 
-    private void deploy(String name, String descriptionFile, Map attributes, String host) throws SmartFrogException, RemoteException {
+    private void deploy(String name, String descriptionFile, Map attributes, String host)
+            throws SmartFrogException, RemoteException {
         Phases phases = null;
         try {
-            InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFile);
+            InputStream descriptionStream =
+                    org.smartfrog.SFSystem.getInputStreamForResource(descriptionFile);
             SFParser parser = new SFParser(SFParser.getLanguageFromUrl(descriptionFile));
             phases = parser.sfParse(descriptionStream);
             addAttributesToCD(attributes, phases);
@@ -422,16 +487,18 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         try {
 
             cd.sfAddAttribute("sfProcessHost", host);
-            if (sfLog().isDebugEnabled()) sfLog().debug("New CD : " + cd.toString());
+            if (sfLog().isDebugEnabled()) {
+                sfLog().debug("New CD : " + cd.toString());
+            }
             // Object prim = sfDaemon.sfCreateNewApp(name, cd, null);
 
             CompoundImpl cmp = new CompoundImpl();
 
             // Parallel Implementation
 
-            SubmitterThread st = new SubmitterThread(cmp.sfDeployComponentDescription(name, null, cd, null));
+            SubmitterThread st =
+                    new SubmitterThread(cmp.sfDeployComponentDescription(name, null, cd, null));
             st.start();
-
 
 
         } catch (Exception ex) {
@@ -441,7 +508,8 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
     }
 
     //Placement done by the compiler
-    private void addAttributesToCD(Map attributes, Phases phases) throws SmartFrogResolutionException,
+    private void addAttributesToCD(Map attributes, Phases phases)
+            throws SmartFrogResolutionException,
             SmartFrogRuntimeException {
         if (attributes != null) {
             sfLog().info("Attribute Replacement Started\n");
@@ -452,25 +520,30 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
                 sfLog().info("value = " + value);
                 //NOTE: I don't like to do the Reference conversion here. Ideally the conversion should be done in the Map objects.
                 Reference keyRef = Reference.fromString(key.toString());
-                sfLog().info("Attribute : KeyRef:" + keyRef.toString() + "  ; value:" + value.toString());
+                sfLog().info("Attribute : KeyRef:" +
+                        keyRef.toString() +
+                        "  ; value:" +
+                        value.toString());
                 phases.sfReplaceAttribute(keyRef, value);
 
             }
         }
     }
-    private void addExtraArrtibutes(Vector attr , ComponentDescription cd)
-    {
+
+    private void addExtraArrtibutes(Vector attr, ComponentDescription cd) {
 
     }
 
 
-    public ComponentDescription asynchDeploy(String compName, String descriptionFile,Map attributes,String host) throws SmartFrogException, RemoteException {
-          Phases phases = null;
+    public ComponentDescription asynchDeploy(String compName, String descriptionFile, Map attributes, String host)
+            throws SmartFrogException, RemoteException {
+        Phases phases = null;
         try {
-            InputStream descriptionStream = org.smartfrog.SFSystem.getInputStreamForResource(descriptionFile);
+            InputStream descriptionStream =
+                    org.smartfrog.SFSystem.getInputStreamForResource(descriptionFile);
             SFParser parser = new SFParser(SFParser.getLanguageFromUrl(descriptionFile));
             phases = parser.sfParse(descriptionStream);
-            addAttributesToCD(attributes, phases); 
+            addAttributesToCD(attributes, phases);
         } catch (Exception e) {
             sfLog().err("", e);
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
@@ -480,20 +553,21 @@ public class SmartFrogAdapterImpl implements SmartfrogAdapter {
         cd = phases.sfAsComponentDescription();
 
         try {
-         cd.sfAddAttribute("sfProcessHost", host);
-         cd.sfAddAttribute("compName", compName);
+            cd.sfAddAttribute("sfProcessHost", host);
+            cd.sfAddAttribute("compName", compName);
             if (sfLog().isInfoEnabled()) {
-            sfLog().info("\n*************************************************\n*** Ashync. Deploying:\n" +
-                    cd.toString() + compName +
-                    "\n*************************************************\n");
-        }
-      sfDaemon.sfCreateNewApp(compName, cd, null);
-        }catch(Exception ex) {
+                sfLog().info(
+                        "\n*************************************************\n*** Ashync. Deploying:\n" +
+                                cd.toString() + compName +
+                                "\n*************************************************\n");
+            }
+            sfDaemon.sfCreateNewApp(compName, cd, null);
+        } catch (Exception ex) {
             sfLog().error("", ex);
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(ex);
         }
-    return cd;
+        return cd;
     }
- 
+
 
 }

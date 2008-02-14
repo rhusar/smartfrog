@@ -49,11 +49,8 @@ public class SchedulerImpl extends PrimImpl implements Prim {
             RemoteException {
         super.sfStart();
         try {
-
             log.info("Initializing");
-
             SchedulerFactory schedFact = new StdSchedulerFactory();
-
             scheduler = schedFact.getScheduler();
             log.info("Initialization Complete");
             scheduler.start();
