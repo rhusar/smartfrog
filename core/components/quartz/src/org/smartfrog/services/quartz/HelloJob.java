@@ -70,7 +70,7 @@ public class HelloJob implements Job {
 
             // System.err.println("Instance " + instName + " of DumbJob says: " + jobSays);
             // Call Submition API
-            SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2006\\aug21\\core\\smartfrog\\dist");
+            SmartfrogAdapter sfAdap = new SmartFrogAdapterImpl("D:\\cvs\\forge\\2006\\aug21\\core\\smartfrog\\dist", false);
             Map cd1 = sfAdap.submit(application, null, new String[]{hostname});
 
             // Say Hello to the World and display the date/time
