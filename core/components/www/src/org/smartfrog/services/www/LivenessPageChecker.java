@@ -454,7 +454,7 @@ public class LivenessPageChecker implements LivenessPage {
      */
     private void postProcess(int responseCode, String response, String body)
             throws SmartFrogLivenessException {
-        if(logResponse) {
+        if (logResponse) {
             log.info(body);
         }
         if (responsePattern != null) {
@@ -463,28 +463,28 @@ public class LivenessPageChecker implements LivenessPage {
                 throw new SmartFrogLivenessException(ERROR_NO_MATCH + responseRegexp
                         + "\n" + body);
             }
-            if (owner != null && matcher.groupCount() > 0) {
-                String group1 = matcher.group(1);
-                log.info("Matched response: "+group1);
-                try {
-                    owner.sfReplaceAttribute("group1", group1);
-                } catch (SmartFrogRuntimeException e) {
-                    log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
-                } catch (RemoteException e) {
-                    log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
+            try {
+                if (owner != null) {
+                    for (int i = 0; i < matcher.groupCount(); i++) {
+                        String group = matcher.group(1);
+                        log.info("Matched response group" + i + ": " + group);
+                        owner.sfReplaceAttribute("group" + i, group);
+                    }
                 }
-
+            } catch (SmartFrogRuntimeException e) {
+                log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
+            } catch (RemoteException e) {
+                log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
             }
         }
     }
 
-
-    /**
-     * fetch error text if configured to do so, otherwise return an empty string
-     *
-     * @param connection a connection that can be null if it so chooses.
-     * @return "" or remote error text
-     */
+/**
+* fetch error text if configured to do so, otherwise return an empty string
+*
+* @param connection a connection that can be null if it so chooses.
+* @return "" or remote error text
+*/
     protected String maybeGetErrorText(HttpURLConnection connection) {
         if (connection == null) {
             return ERROR_NO_CONNECTION;
