@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="www" default="default"
-         xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
@@ -40,66 +40,68 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="true" />
+  <!--temporarily disabled until security is sorted-->
+  <property name="system.tests" value="false"/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  
-  
+
 
   <!-- make the WAR file -->
   <target name="war.init" depends="init-standard-output-dirs">
     <property name="target.war.name"
-              value="sf-www-testwar-${smartfrog.version}.war"/>
+        value="sf-www-testwar-${smartfrog.version}.war"/>
     <property name="testwar.war"
-              location="${dist.dir}/lib/${target.war.name}"/>
+        location="${dist.dir}/lib/${target.war.name}"/>
     <property name="test.testwar.war"
-        value="${testwar.war}" />    
+        value="${testwar.war}"/>
     <property name="testwar.dir"
-              location="testwar"/>
+        location="testwar"/>
     <property name="testwar.lib.dir"
-              location="${testwar.dir}/lib"/>
+        location="${testwar.dir}/lib"/>
     <property name="testwar.src.dir"
-              location="${testwar.dir}/src"/>
+        location="${testwar.dir}/src"/>
     <property name="build.testwar.dir"
-              location="${build.dir}/testwar/classes"/>
-    <mkdir dir="${build.testwar.dir}" />
+        location="${build.dir}/testwar/classes"/>
+    <mkdir dir="${build.testwar.dir}"/>
     <property name="war.dir"
-              location="${testwar.dir}/resources"/>
+        location="${testwar.dir}/resources"/>
     <property name="web.xml"
-              location="${testwar.dir}/WEB-INF/web.xml"/>
+        location="${testwar.dir}/WEB-INF/web.xml"/>
   </target>
 
   <target name="war.classpath" depends="ivy-resolve,war.init">
-    <ivy:cachepath pathid="war.classpath" conf="war" />
+    <ivy:cachepath pathid="war.classpath" conf="war"/>
   </target>
 
-  <target name="war.javac" depends="war.classpath" >
+  <target name="war.javac" depends="war.classpath">
     <sf-javac srcdir="${testwar.src.dir}" destdir="${build.testwar.dir}"
         classpathref="war.classpath"/>
   </target>
-  
-  
+
+
   <!-- make the WAR file -->
-  <target name="war" depends="war.javac" description="make the test WAR file" >
-    <war destFile="${testwar.war}" webxml="${web.xml}" >
+  <target name="war" depends="war.javac" description="make the test WAR file">
+    <war destFile="${testwar.war}" webxml="${web.xml}">
       <!--  WAR file, includes WEB-INF stuff-->
-      <classes dir="${build.testwar.dir}" />
-      <fileset dir="${war.dir}" includes="**/*" />
+      <classes dir="${build.testwar.dir}"/>
+      <fileset dir="${war.dir}" includes="**/*"/>
       <lib dir="${testwar.lib.dir}"
-        includes="*.jar" />
+          includes="*.jar"/>
     </war>
   </target>
 
 
   <target name="ready-to-publish-all"
-    depends="common.ready-to-publish-all,war" />
+      depends="common.ready-to-publish-all,war"/>
 
   <target name="ready-to-test"
-      depends="common.ready-to-test,war" >
-    <property name="test.jdk.home" location="${env.JAVA_HOME}" />   
+      depends="common.ready-to-test,war">
+    <property name="test.jdk.home" location="${env.JAVA_HOME}"/>
   </target>
+
+
 </project>
