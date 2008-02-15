@@ -1,0 +1,111 @@
+/** (C) Copyright Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+**/
+
+#include "/org/smartfrog/services/ant/test/system/components.sf"
+
+
+TestProperties extends AntWorkflowRun {
+  echoTask extends echo {
+    message "hello world!";
+  }
+
+  echoMedTask extends echo {
+    message "--------------------------------";
+  }
+
+  setProperty extends property {
+    name "sfhome";
+    value "SFHOME is <${env.SFHOME}>";
+  }
+
+
+  echoSFHOMETask extends echo {
+    message "${sfhome}";
+   }
+
+  setCwdProperty extends property {
+    name "cwd";
+    location ".";
+  }
+
+  -- extends echo {
+    message "cwd=${cwd}";
+   }
+
+  testProperty extends property {
+    name "test.value";
+    value "47";
+  }
+
+  
+  setPath1 extends property {
+    name "env.PATH";
+    value "${env.Path}";
+  }
+
+  setPath2 extends property {
+    name "path";
+    value "${env.PATH}";
+  }
+
+  setPath3 extends property {
+    name "pathtext";
+    value "path=${path}";
+  }
+
+  echoPath extends echo {
+    message "${pathtext}";
+   }
+
+}
+
+sfConfig extends ExpectBuildSuccess {
+
+  action extends Compound {
+  }
+
+  tests extends Sequence {
+    antRun extends TestProperties {
+      propertyTarget LAZY action;
+    }
+
+    sfHome extends AssertPropertySet {
+      propertyTarget LAZY action;
+      name "sfhome";
+    }
+
+
+    java.version extends sfHome {
+      name "java.version";
+    }
+
+    antHome extends sfHome {
+      name "ant.home";
+    }
+
+    test.property extends AssertPropertyEquals {
+      propertyTarget LAZY action;
+      name "test.value";
+      value TestProperties:testProperty:value;
+    }
+
+
+  }
+
+}

@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<project name="jetty" default="default">
+
+<!--
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+     Build file for Jetty.
+     After deploying point your browser at http://localhost:8080 to see the web
+     site.
+
+     There is also a debug servlet that can change the debug setting of a
+     running server.  It is configured by the component HttpServerAdmin and is 
+     run on port 8081 as part of the standard Jetty demo.
+     
+     
+</description>
+
+  <property name="is.component" value="true"  />
+   <!-- override point -->
+  <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+  <property name="ivy.enabled" value="true"/>
+  <!--
+  <property name="system.tests" value="false" />
+  -->
+  <property name="system.tests" value="true" /> 
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+  
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+  
+  <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
+  <property name="deploy.sf" value="${example.path}/example1.sf"/>
+
+
+  
+    <!-- ========================================================== -->
+    <!-- parse the file -->
+    <!-- ========================================================== -->
+    <target name="parse" depends="ready-to-test"
+        description="parse the deployment descriptor">
+
+      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+    </target>
+
+
+
+
+
+  <target name="ready-to-test" depends="common.ready-to-test,testwar">
+    <property name="test.jetty.home"
+        location="${test.src.dir}/files/jettyhome"/>
+    <property name="test.demo.webapp"
+        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
+    <echo level="verbose" >
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
+    </echo>
+  </target>
+
+  <!--pick up the test war from Ivy-->
+  <target name="testwar" depends="ivy-retrieve">
+    <property name="test.testwar.war"
+        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war" />
+    <fail>
+      <condition >
+        <not><available file="${test.testwar.war}"/></not>
+      </condition>
+      Not found: ${test.testwar.war}
+    </fail>
+  </target>
+
+</project>

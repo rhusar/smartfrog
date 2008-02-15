@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-m32">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>Alpine SOAP stack</description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="test" extends="compile,master,optional"
+        description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+    <conf name="optional" description="optional extras"/>
+    <conf name="all" description="everything" extends="default,optional"/>
+    <conf name="daemon" visibility="private" extends="default"
+          description="the classpath needed to run smartfrog daemons"/>
+    <conf name="documentation"
+          description="all documentation artifacts"/>
+  </configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+    <artifact name="sf-m32-javadocs" conf="documentation" ext="zip"/>
+    <artifact name="sf-m32-documentation" conf="documentation" ext="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+    <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->master;runtime->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile->default;runtime->runtime;redist->master"/>
+    <dependency org="xom"
+        name="xom"
+        rev="${xom.version}"
+        conf="compile->master;redist->master"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="test,runtime->default;redist->master"/>
+    <dependency org="javax.servlet"
+        name="servlet-api"
+        rev="${servletapi.version}"
+        conf="compile->master"/>
+    <dependency org="commons-logging"
+        name="commons-logging"
+        rev="${commons-logging.version}"
+        conf="compile->master;redist->master"/>
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;test,runtime,redist->default">
+      <exclude org="commons-logging"/>
+      <exclude org="junit"/>
+    </dependency>
+
+    <!--optionals-->
+    <dependency org="log4j"
+        name="log4j"
+        rev="${log4j.version}"
+        conf="optional->default"/>
+    <dependency org="jaxen"
+        name="jaxen"
+        rev="${jaxen.version}"
+        conf="optional->master"/>
+    <dependency org="xalan"
+        name="xalan"
+        rev="${xalan.version}"
+        conf="optional->default"/>
+
+    <!--test-->
+
+    <dependency org="junit"
+                name="junit"
+                rev="${junit.version}"
+                conf="test->default"/>
+
+    <dependency org="httpunit"
+                name="httpunit"
+                rev="${httpunit.version}"
+                conf="test->default">
+      <exclude org="rhino"/>
+      <exclude org="xerces"/>
+    </dependency>
+  </dependencies>
+</ivy-module>

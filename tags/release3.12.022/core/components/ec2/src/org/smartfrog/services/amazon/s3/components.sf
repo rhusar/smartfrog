@@ -1,0 +1,75 @@
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+#include "/org/smartfrog/services/amazon/aws/components.sf"
+
+
+/**
+ * Resources extends Services with a stable HTTP interface. You can also
+ * Control their policy w.r.t whether they should execute common operations
+ * During startup, liveness and termination
+ */
+S3Resource extends AWSResource {
+  host "https://s3.amazonaws.com/";
+}
+
+/**
+ * A bucket that must exist on startup. It is not created
+ */
+
+
+S3Bucket extends S3Resource {
+  name TBD;
+  url (host ++ name);
+  startActions [];
+  livenessActions [];
+  terminateActions [];
+  //Amazon S3 return 404 on a delete, it makes responses idempotent.
+  //by defining a new delete action we can encode this
+  S3_DELETE_ACTION [DELETE,HttpCodes:NOT_FOUND,HttpCodes:NOT_FOUND];
+}
+
+/**
+ * This does create a bucket on demand
+ */
+
+TransientS3Bucket extends S3Bucket {
+  startActions [PUT_ACTION];
+  livenessActions [HEAD_ACTION];
+  terminateActions [S3_DELETE_ACTION];
+}
+
+
+DeleteS3BucketOnStartup extends S3Bucket {
+  startActions [S3_DELETE_ACTION];
+}
+
+
+DeleteS3BucketOnTermination extends S3Bucket {
+  terminateActions [S3_DELETE_ACTION];
+}
+
+/**
+ * This does create a bucket on demand
+ */
+
+PersistentS3Bucket extends TransientS3Bucket {
+  terminateActions [];
+}

@@ -1,0 +1,96 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/test/system/components/ssh/components.sf"
+
+  // Host is mising
+PasswordSshExec extends SSHSessionInlinePassword {
+    password "secret";
+    host testvalues:localhost;
+    username "smartfrog";
+ }
+
+
+Tcn91 extends SSHSessionInlinePassword {
+    description "no host";
+    password "secret";
+    username "smartfrog";
+    commands ["mkdir Sep15", "mkdir sep15"];
+ }
+
+Tcn92 extends SSHSessionInlinePassword {
+    description "user name is missing";
+    password "secret";
+    host testvalues:localhost;
+    commands ["mkdir Sep15", "mkdir sep15"];
+ }
+
+Tcn93 extends PasswordSshExec {
+    description "commands is missing";
+}
+
+Tcn94 extends SSHSessionPasswordFile {
+    description "missing password file";
+    passwordFile "this-file-does-not-exist-probably-0a1b2c3d.txt";
+    username "smartfrog";
+    host testvalues:localhost;
+    commands [];
+ }
+
+/**
+ * bind to a test SSH server
+ */
+SshTestServer extends SSHSessionInlinePassword {
+    password SshTestProperties:password;
+    host SshTestProperties:host;
+    username SshTestProperties:username;
+    sfShouldTerminate true;
+    timeout SshTestProperties:timeout;
+ }
+
+testSshLogin extends ExpectTerminate {
+  description "this logs in and prints 'hello' out";
+  condition extends SshTestPropertiesSet;
+  exitType EXIT_TYPE_NORMAL;
+  action extends SshTestServer {
+    commands [
+      "echo hello",
+      "exit"];
+  }
+}
+
+testLoginBadUser extends testSshLogin {
+  description "set an invalid user and expect to get a diagnostics message";
+  action:username "Not a valid user";
+  exitType EXIT_TYPE_ABNORMAL;
+  exceptions [
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"Unable to authenticate"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
+  ];
+}
+
+testLoginBadUser extends testSshLogin {
+  description "set an invalid password and expect to get a diagnostics message";
+  action:password "Not a valid password";
+  exitType EXIT_TYPE_ABNORMAL;
+  exceptions [
+    [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,"wrong password"],
+    ["com.jcraft.jsch.JSchException","Auth cancel"]
+  ];
+}

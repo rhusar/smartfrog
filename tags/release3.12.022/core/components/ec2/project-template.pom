@@ -1,0 +1,49 @@
+<!-- This POM file is authored by the SmartFrog project.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!--
+   ${pom.comments}
+  -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.smartfrog</groupId>
+  <artifactId>sf-ec2</artifactId>
+  <packaging>jar</packaging>
+  <version>${smartfrog.version}</version>
+  <description>SmartFrog EC2/Restlet components</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sfServices</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.smartfrog</groupId>
+      <artifactId>sf-www</artifactId>
+      <version>${smartfrog.version}</version>
+    </dependency>
+    <!--restlet api-->
+    <dependency>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <!--this is the implementation and java.net integration-->
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>com.noelios.restlet.ext.net</artifactId>
+      <version>${restlet.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commons-fileupload.version}</version>
+    </dependency>
+  </dependencies>
+</project>

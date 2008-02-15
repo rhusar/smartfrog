@@ -1,0 +1,160 @@
+/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
+
+/* envisaged set
+  TestCondition   //test and set a property if it is set
+ AssertCondition //fail if a condition fails
+ WaitForCondition   //block until a condition is reached
+ LivenessCondition  //run a test every liveness ping, fail if the condition evaluates false.
+
+-some sample conditions
+ LivenessPage  //web page
+ Socket           //socket on host
+ NSLookup  //hostname lookup
+ Time  //testfor a specific before/after time
+ FileExists   //file exists (plus min size)
+ SelectCondition //jdbc operation succeeds
+ ExecCondition// run an exec and assert the result matches expectations
+ ScriptCondition //scripted test.
+ Booleans: and/or/not/xor
+ Equals: equality
+ Resolve: resolve a reference; fail if it is not there
+ ResourceExists: look for a resource on the classpath
+ ..etc.
+ */
+
+
+/**
+ * The BooleanValue condition returns whatever is in the ATTR_VALUE attribute
+ * at the time of evaluation. it is re-evaluated every test, so in a WaitFor operation
+ * it can be linked to something else that is changing
+ */
+
+BooleanValue extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.BooleanValue";
+  value TBD;
+}
+
+True extends BooleanValue {
+  value true;
+}
+
+
+False extends BooleanValue {
+  value false;
+}
+
+/**
+ * The RunningFor condition will pass once the component has been started for
+ * the specified amount of time. It is useful in an And statement in which a test
+ * should be delayed until a certain period of time has expired.
+ */
+RunningFor extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.RunningForImpl";
+  days 0;
+  hours 0;
+  minutes 0;
+  seconds 0;
+  milliseconds 0;
+}
+
+/**
+ * template for any two-argument condition
+ */
+TwoArgumentCondition extends ConditionPrim {
+  left TBD;
+  right TBD;
+}
+
+/**
+ * Perform object equality.
+ */
+Equals extends TwoArgumentCondition {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.Equals";
+}
+
+/**
+ * Perform string value equality. both arguments have toString() called, so this can
+ * evaluate the state of other components
+ * Strings can opt for case-insensitive comparisions. This is done in the English locale, regardless
+ * of the deployment locale. 
+ */
+
+StringEquals extends TwoArgumentCondition {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.StringEquals";
+  caseSensitive true;
+}
+
+
+IsPropertySet extends ConditionPrim {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsPropertySet";
+  schema extends Schema {
+    //a string that has the name of the property
+    property extends String;
+  }
+}
+
+
+/**
+ * Not evaluates true if its nested condition evaluates to false
+ */
+
+Not extends Conditional {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.NotCompoundCondition";
+  conditionalSchema extends ConditionalSchema;
+}
+
+
+/***
+ * Compound conditions evaluate to true only if the composite of all child conditions do so
+ */
+CompoundCondition extends EventCompound {
+
+}
+
+/**
+ * Everything is deployed, but the evaluation stops as soon as the accumulated result is false
+ */
+And extends CompoundCondition {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.AndCompoundCondition";
+}
+
+/**
+ * Everything is deployed, but the evaluation stops as soon as the accumulated result is true
+ */
+Or extends CompoundCondition {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.OrCompoundCondition";
+}
+
+/**
+ * Exclusive or. This can not be short-circuited.
+ */
+Xor extends CompoundCondition {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.XorCompoundCondition";
+}
+
+
+
+
+
+
+

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project name="parse" default="teardown">
+
+<description>
+ Tests for the parse. 
+ 
+ command line invocation
+ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f  undeploy.xml testResource
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f undeploy.xml testNoParams
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f undeploy.xml testResource
+</description>
+
+    <import file="test-common.xml" />
+
+    <!-- at the end of every execution, we force a cleanup -->
+    <target name="teardown">
+      <sf-stopdaemon failonerror="false" />
+    </target>
+    
+    <target name="testNoParams">
+      <sf-undeploy />
+    </target>
+    
+    <target name="testNoFailure">
+      <sf-undeploy failonerror="false"/>
+    </target>
+    
+    <target name="testEmptyApplication">
+      <sf-undeploy application=""/>
+    </target>    
+
+    
+    <target name="testBadHost">
+      <sf-undeploy host="no-such-hostname" application="test"/>
+    </target>
+
+
+    <target name="testStopDaemon">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" failonerror="true">
+        </sf-startdaemon>
+        <sequential>
+          <sf-block/>
+          <fail if="block.timeout">No daemon started</fail>
+          <sf-undeploy application="rootProcess" timeout="${medium.timeout}"/>
+        </sequential>
+      </parallel>
+    </target>
+
+    
+</project>      

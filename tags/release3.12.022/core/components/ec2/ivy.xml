@@ -1,0 +1,134 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-ec2">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+        Amazon S3 and EC2 integration
+        Created 30-Nov-2007 by slo
+    </description>
+  </info>
+<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+<configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="compile,default"
+        description="the classpath needed to run tests" />
+  <conf name="testwar"
+      description="the test WAR File" visibility="private"/>  
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+</configurations> 
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime,daemon->services"/>
+
+    <!--we pull in www stuff -->
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->master;test->default;testwar->testwar"/>
+
+    <!--XML content-->
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->default"/>
+    <!--httpclient needs commons logging; logging services pulls it in-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+    <!--jetty for testing-->
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
+
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        rev="latest.integration"
+        changing="true"
+        conf="build->default"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-xunit"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
+    <!--restlet api-->
+    <dependency org="org.restlet"
+        name="org.restlet"
+        rev="${restlet.version}"
+        conf="compile,redist->default"/>
+
+    <!--this is the implementation and java.net integration-->
+    <dependency org="com.noelios.restlet"
+        name="com.noelios.restlet"
+        rev="${restlet.version}"
+        conf="compile,redist->default"/>
+    <dependency org="com.noelios.restlet"
+        name="com.noelios.restlet.ext.net"
+        rev="${restlet.version}"
+        conf="compile,redist->default"/>
+    <dependency org="com.noelios.restlet"
+        name="com.noelios.restlet.ext.httpclient"
+        rev="${restlet.version}"
+        conf="compile,redist->default">
+      <exclude org="commons-httpclient"/>
+      </dependency>
+
+    <!--httpclient is used underneath...we need this, but not its logging-->
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;test,runtime,redist->default">
+        <exclude org="commons-logging"/>
+        <exclude org="junit"/>
+    </dependency>
+
+    <!--file upload-->
+    <dependency org="org.restlet"
+        name="org.restlet.ext.fileupload"
+        rev="${restlet.version}"
+        conf="compile,redist->default"/>
+    <dependency org="commons-fileupload"
+        name="commons-fileupload"
+        rev="${commons-fileupload.version}"
+        conf="compile,redist->default"/>
+
+
+  </dependencies>
+</ivy-module>

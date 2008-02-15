@@ -1,0 +1,20 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+
+. "$SFHOME/bin/setSFProperties"
+
+if [ $1 == "-d" ];then
+	java org.smartfrog.services.sfinstaller.TemplateGen -d -h hosts.all -o examples\DLtest.sf -t sfInstaller.vm
+elif [ $1 == "-s" ];then
+	java org.smartfrog.services.sfinstaller.TemplateGen -s -h hosts.all -o examples\sectest.sf -t sfInstaller.vm
+elif [ $1 == "-s" ] && [ $2 == "-d" ];then
+	java org.smartfrog.services.sfinstaller.TemplateGen -s -d -h hosts.all -o examples\secDLtest.sf -t sfInstaller.vm
+else
+	java org.smartfrog.services.sfinstaller.TemplateGen -h hosts.all -o examples/test.sf -t sfInstaller.vm
+fi
