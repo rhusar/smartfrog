@@ -21,18 +21,18 @@
 
 package org.smartfrog.examples.dynamicwebserver.apache;
 
+import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.util.Vector;
-
-import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
@@ -45,20 +45,20 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         DataSource, Runnable {
 
-    String location = "";
-    String baseConfigLocation = "";
-    String configLocation = "";
-    String apachectlLocation = "";
-    boolean manageDaemon = true;
+    private String location = "";
+    private String baseConfigLocation = "";
+    private String configLocation = "";
+    private String apachectlLocation = "";
+    private boolean manageDaemon = true;
 
-    int interCheckTime;
+    private int interCheckTime;
 
-    Vector envVars;
-    boolean terminated = false;
+    private Vector envVars;
+    private boolean terminated = false;
     private boolean apacheState = false;
     private boolean shouldRefresh = false;
-    Thread thread;
-    int threadCount = 0;
+    private Thread thread;
+    private int threadCount = 0;
 
     /**
      * Standard Remotable constructor

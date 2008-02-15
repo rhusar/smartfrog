@@ -20,20 +20,20 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Vector;
-
-import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
@@ -71,7 +71,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     private volatile boolean stopping = false; // Used to signal the Balancer server thread to terminate
     private int port; // port number to register balancer server socket
     private int hostsPort; // port number for connections to remote hosts
-    private Vector hosts; // initial set of hosts to include in the balancer set
+    private Vector<String> hosts; // initial set of hosts to include in the balancer set
     private int connectionCount = 0;  // number of connections made since last time this was accessed through getdata()
 
     /**
@@ -149,8 +149,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //
         // If any remote hosts were defined in hosts, add them to the list
         if (hosts != null) {
-            for (Enumeration hostlist = hosts.elements(); hostlist.hasMoreElements();) {
-                String hostname = (String) hostlist.nextElement();
+            for(String hostname:hosts) {
                 addServer(hostname, hostsPort);
             }
         }
@@ -226,7 +225,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         // Optional attributes.
         //
 
-        hosts = sfResolve(HOSTS, hosts, false);
+        hosts = ListUtils.resolveStringList(this,new Reference(HOSTS), false);
         port = sfResolve(PORT, port, false);
         hostsPort = sfResolve(HOSTSPORT, hostsPort, false);
 
@@ -252,16 +251,6 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         start();
 
         // Any error - propagate and hance fail to deploy
-    }
-
-    /**
-     * Standard sfStart().
-     *
-     * @exception SmartFrogException error while starting
-     * @throws RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
     }
 
     /**

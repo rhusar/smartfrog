@@ -20,13 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -41,8 +40,8 @@ import java.util.Vector;
  */
 class ServerSelector {
     private static int roundRobinServerIndex = 0; // Index to use for selecting server
-    private Hashtable serversMap = new Hashtable(); // Mapping from server hostname to corresponding Server instance
-    private Vector servers = new Vector(); // Set of servers to choose from
+    private Hashtable<String,Server> serversMap = new Hashtable<String, Server>(); // Mapping from server hostname to corresponding Server instance
+    private Vector<Server> servers = new Vector<Server>(); // Set of servers to choose from
     private static String name="ServerSelector";
 
     ServerSelector(String name) {
@@ -120,10 +119,8 @@ class ServerSelector {
      * Close all of the servers and all associated threads.
      */
     synchronized void close() {
-        Vector tempServers = (Vector) servers.clone();
-
-        for (Enumeration serverEnum = tempServers.elements(); serverEnum.hasMoreElements();) {
-            Server server = (Server) serverEnum.nextElement();
+        Vector<Server> tempServers = (Vector <Server>)servers.clone();
+        for(Server server:tempServers) {
             removeServer(server.getHostname());
         }
     }
@@ -158,7 +155,7 @@ class ServerSelector {
      * @param hostname name of the new server
      */
     synchronized void removeServer(String hostname) {
-        Server server = (Server) serversMap.remove(hostname);
+        Server server = serversMap.remove(hostname);
 
         if (server != null) {
             // If this is a server we know about, remove it from the system
