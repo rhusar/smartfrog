@@ -900,7 +900,10 @@
         verbose="${ssh.verbose}">
       <fileset refid="upload.fileset"/>
     </scp>
-    <ssh-remote command="chmod a+r ${ssh.dir}/*"/>
+    <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.jar"/>
+    <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.zip"/>
+    <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.tar"/>
+    <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.gz"/>
   </target>
 
   <target name="ftp-upload" depends="upload-init" if="ftp.enabled">
