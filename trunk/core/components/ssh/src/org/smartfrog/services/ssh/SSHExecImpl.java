@@ -41,35 +41,31 @@
 package org.smartfrog.services.ssh;
 
 import com.jcraft.jsch.ChannelShell;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.LogLevel;
+import org.smartfrog.sfcore.logging.OutputStreamLog;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.OutputStreamLog;
-import org.smartfrog.sfcore.logging.LogLevel;
-import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * SmartFrog component to executes a command on a remote machine via ssh. It is
- * a wrapper around jsch
- * <p/>
- * Super class for SSH component implementaion for user/password and
- * public/private key authentication mechanisms.
+ * SmartFrog component to executes a command on a remote machine via ssh. It is a wrapper around jsch <p/> Super class
+ * for SSH component implementaion for user/password and public/private key authentication mechanisms.
  *
  * @author Ritu Sabharwal
  * @see <a href="http://www.jcraft.com/jsch/">jsch</a>
@@ -93,9 +89,8 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
     /**
      * Reads SmartFrog attributes and deploys SSHExecImpl component.
      *
-     * @throws SmartFrogException in case of error in deploying or reading the
-     * attributes
-     * @throws RemoteException in case of network/emi error
+     * @throws SmartFrogException in case of error in deploying or reading the attributes
+     * @throws RemoteException    in case of network/emi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -107,9 +102,8 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
     /**
      * Connects to remote host over SSH and executes commands.
      *
-     * @throws SmartFrogException in case of error while connecting to remote
-     * host or executing commands
-     * @throws RemoteException in case of network/emi error
+     * @throws SmartFrogException in case of error while connecting to remote host or executing commands
+     * @throws RemoteException    in case of network/emi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
@@ -123,10 +117,8 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
      * {@inheritDoc}
      *
      * @param source source of call
-     *
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness}
-     * interface
+     * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -149,9 +141,8 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
     /**
      * Reads SmartFrog attributes.
      *
-     * @throws SmartFrogException if failed to read any attribute or a mandatory
-     * attribute is not defined.
-     * @throws RemoteException in case of network/rmi error
+     * @throws SmartFrogException if failed to read any attribute or a mandatory attribute is not defined.
+     * @throws RemoteException    in case of network/rmi error
      */
     protected void readSFAttributes()
             throws SmartFrogException, RemoteException {
@@ -184,7 +175,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
         @Override
         public void execute() throws Throwable {
             ChannelShell channel = null;
-            OutputStream outputStream=null;
+            OutputStream outputStream = null;
             ComponentHelper helper = new ComponentHelper(SSHExecImpl.this);
             String sessionInfo = "SSH Session to " + getConnectionDetails();
             try {
@@ -199,7 +190,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                                 e);
                     }
                 } else {
-                    outputStream=new OutputStreamLog(log, LogLevel.LOG_LEVEL_INFO);
+                    outputStream = new OutputStreamLog(log, LogLevel.LOG_LEVEL_INFO);
                 }
                 // open ssh session
                 logDebugMsg(sessionInfo);
@@ -226,10 +217,10 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 log.info("Executing commands:" + buffer.toString());
 
                 // wait for it to finish. This is pretty ugly
-                long timeLimit=System.currentTimeMillis()+timeout;
-                while (!channel.isEOF() && !isTerminationRequested()) {
-                    long now= System.currentTimeMillis();
-                    if(timeout>0 && now>timeLimit) {
+                long timeLimit = System.currentTimeMillis() + timeout;
+                while (!channel.isClosed() && !isTerminationRequested()) {
+                    long now = System.currentTimeMillis();
+                    if (timeout > 0 && now > timeLimit) {
                         //we have a timeout
                         String message = TIMEOUT_MESSAGE + getConnectionDetails();
                         log.error(message);
@@ -238,7 +229,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                     sleep(SPIN_DELAY_MILLIS);
                 }
 
-                if(isTerminationRequested()) {
+                if (isTerminationRequested()) {
                     //we've been asked to die
                     return;
                 }
@@ -264,7 +255,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
                 SmartFrogLifecycleException lifecycleException = forward(ex);
                 log.error(sessionInfo, lifecycleException);
                 TerminationRecord tr = helper.createTerminationRecord(null,
-                        sessionInfo,sfCompleteName(), lifecycleException);
+                        sessionInfo, sfCompleteName(), lifecycleException);
                 helper.targetForWorkflowTermination(tr);
                 throw lifecycleException;
             } finally {
