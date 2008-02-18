@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,11 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
 SlowStart extends ActionCompound {
-    sfClass "org.smartfrog.sfcore.workflow.combinators.Retry";
-    retrySchema extends Schema {
+    sfClass "org.smartfrog.sfcore.workflow.combinators.SlowStart";
+    slowstartSchema extends Schema {
         delay extends Integer {
           description "delay in milliseconds";
         }
     }
-    delay 1;
+    delay 1000;
 }
