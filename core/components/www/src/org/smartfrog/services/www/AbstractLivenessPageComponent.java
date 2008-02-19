@@ -23,6 +23,7 @@ package org.smartfrog.services.www;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
@@ -44,6 +45,7 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
      * reuse in other components.
      */
     protected LivenessPageChecker livenessPage;
+    public static final String EMPTY_USERNAME = "Empty "+ATTR_USERNAME+" attribute on a component which requires a username";
 
 
     protected AbstractLivenessPageComponent() throws RemoteException {
@@ -134,8 +136,9 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
     protected void buildLivenessPageAuthentication()
             throws SmartFrogException, RemoteException {
         boolean required=sfResolve(ATTR_AUTH_REQUIRED,false,true);
-        String username = resolveUsername(false);
-        if (required || (username != null && username.length()>0)) {
+        String username = resolveUsername(required);
+
+        if (username != null && username.length()>0) {
             String password = resolvePassword();
             livenessPage.setUsername(username);
             livenessPage.setPassword(password);
@@ -163,6 +166,9 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
     protected String resolveUsername(boolean required)
             throws SmartFrogResolutionException, RemoteException {
         String username = sfResolve(ATTR_USERNAME, (String) null, required);
+        if (required && username.length() == 0) {
+            throw new SmartFrogResolutionException(sfCompleteName(), EMPTY_USERNAME);
+        }
         return username;
     }
 
