@@ -249,11 +249,33 @@ public class LivenessPageChecker implements LivenessPage {
             throw new SmartFrogDeploymentException(BAD_URL + target, e);
         }
     }
+
     /**
-     * make a URL from the various things
-     *
-     * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
+     *  concatenate paths, ensuring only one / between them.
+     * @param first first string, or ""
+     * @param second second string or ""
+     * @return first/second, even if first has a trailing / and second a leading /
      */
+    protected String concatPaths(String first,String second) {
+        String f, s;
+        f = first != null ? first : "";
+        int fl = first.length();
+        if (fl > 0 && first.charAt(fl - 1) == '/') {
+            f = first.substring(0, fl - 2);
+        }
+
+        s = second != null ? second : "";
+        if (second.length() > 0 && second.charAt(0) == '/') {
+            s = second.substring(1);
+        }
+        return f + '/' + s;
+    }
+
+    /**
+    * make a URL from the various things
+    *
+    * @throws SmartFrogDeploymentException if the url generated a {@link MalformedURLException}
+    */
     protected void makeURL() throws SmartFrogDeploymentException {
         StringBuilder url= new StringBuilder();
         url.append(protocol);
@@ -271,23 +293,8 @@ public class LivenessPageChecker implements LivenessPage {
         target.append(host);
         target.append(':');
         target.append(port);
-        String fullpath;
-        if (path != null) {
-            fullpath = path;
-            if (page != null && page.length()>0) {
-                //add a page
-                if (!fullpath.endsWith("/") && !page.startsWith("/")) {
-                    //maybe a / char
-                    fullpath += "/";
-                }
-                fullpath += page;
-            }
-        } else {
-            fullpath = page;
-        }
-        if (!fullpath.startsWith("/")) {
-            target.append('/');
-        }
+        String fullpath=concatPaths("",path);
+        fullpath = concatPaths(fullpath, page);
         target.append(fullpath);
 
         if (queries != null) {
@@ -374,8 +381,8 @@ public class LivenessPageChecker implements LivenessPage {
                 String text = maybeGetErrorText(connection);
                 String message = "Endpoint " + toString()
                         + " returned error: "+ responseCode
-                        +"\n" + response
-                        +"\n" + text;
+                        + '\n' + response
+                        + '\n' + text;
                 logAndRaise(message);
             }
 

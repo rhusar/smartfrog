@@ -22,6 +22,9 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      */
     private ApplicationServerContext delegate;
 
+    static final Reference SERVER = new Reference(ATTR_SERVER);
+
+
     /**
      * constructor
      * @throws RemoteException from the superclass
@@ -66,16 +69,15 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      */
     protected void bindToServer()
             throws SmartFrogResolutionException, RemoteException {
-        final Reference sref = new Reference(ATTR_SERVER);
-        final Prim prim = sfResolve(sref,
+        final Prim prim = sfResolve(SERVER,
                 (Prim) null,
                 true);
-        if(prim instanceof JavaWebApplicationServer) {
+        if (prim instanceof JavaWebApplicationServer) {
             server = (JavaWebApplicationServer) prim;
         } else {
             //wrong class type. Throw it with something better than a
             //class cast exception
-            throw SmartFrogResolutionException.illegalClassType(sref,
+            throw SmartFrogResolutionException.illegalClassType(SERVER,
                     sfCompleteNameSafe(),
                     prim, prim.getClass().toString(),
                     JavaWebApplicationServer.class.toString());
