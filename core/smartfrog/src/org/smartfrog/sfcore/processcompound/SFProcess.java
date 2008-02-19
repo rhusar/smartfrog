@@ -528,20 +528,27 @@ public class SFProcess implements MessageKeys {
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogException wrapped Exception
      */
-
+    private static InetAddress hostInetAddress = null;
     public static InetAddress sfDeployedHost() throws SmartFrogException {
+        
+        if( hostInetAddress != null ) {
+            return hostInetAddress;
+        }
+        
         try {
             String hostName = System.getProperty("java.rmi.server.hostname");
             try {
                 if (hostName!=null) {
-                    return java.net.InetAddress.getByName(hostName);
+                    hostInetAddress = java.net.InetAddress.getByName(hostName);
+                    return hostInetAddress;
                 }
             } catch (UnknownHostException ex) {
                if (sfLog().isIgnoreEnabled()){
                  sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
                }
             }
-            return java.net.InetAddress.getLocalHost();
+            hostInetAddress = java.net.InetAddress.getLocalHost();
+            return hostInetAddress;
         } catch (Exception ex) {
           if (sfLog().isIgnoreEnabled()){
             sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
