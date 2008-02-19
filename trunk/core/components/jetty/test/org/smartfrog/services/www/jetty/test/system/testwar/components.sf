@@ -73,9 +73,52 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
         tests extends Sequence {
             wait extends waitForPage {
                 port PARENT:PARENT:action:port;
-                page PARENT:PARENT:action:contextPath;
-                maximumResponseCode 200;
-                minimumResponseCode 200;
+                path PARENT:PARENT:action:contextPath;
+                maximumResponseCode HttpCodes:OK;
+                minimumResponseCode HttpCodes:OK;
             }
         }
     }
+
+TestSecurity extends TestWarDeployed {
+  contextPath "/testwar";
+  password "secret";
+
+  action extends TestWarServer {
+      contextPath PARENT:contextPath;
+	    security extends AdminSecurityRealm {
+        server LAZY PARENT:server;
+        adminPassword PARENT:ATTRIB password;
+        name "testRealm";
+      	contextPath PARENT:contextPath;
+    }
+  }
+
+
+  //we dont care which number comes back, only that we get a number
+  tests extends Sequence {
+    wait extends waitForPage  {
+      //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
+      url "";
+      host "localhost";
+      port test.jetty.port.1;
+      path contextPath;
+      //username "admin";
+      password PARENT:ATTRIB password;
+      minimumResponseCode HttpCodes:START_2XX;
+      maximumResponseCode HttpCodes:END_2XX;
+    }
+  }
+
+}
+
+testSecurityUnauth extends TestSecurity {
+
+
+
+  //patch the wait operation
+  tests:wait:password "wrong-password";
+  tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
+  tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
+
+}

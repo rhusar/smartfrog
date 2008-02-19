@@ -59,7 +59,7 @@ public class JettyFunctionalTest extends JettyTestBase {
 
         assertTrue("Not found" + file, file.exists());
         assertTrue("Not found" + jettyfile, jettyfile.exists());
-        assertFalse("Shound not be a directory " + file, file.isDirectory());
+        assertFalse("Should not be a directory " + file, file.isDirectory());
         assertTrue("Should be a directory " + jettyfile,
                 jettyfile.isDirectory());
     }
@@ -73,8 +73,11 @@ public class JettyFunctionalTest extends JettyTestBase {
         expectSuccessfulTestRun(FUNCTIONAL_FILES, "tcp20test");
     }
 
-
     public void testSecurity() throws Throwable {
         expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurity");
+    }
+    
+    public void testSecurityUnauth() throws Throwable {
+        expectSuccessfulTestRun(FUNCTIONAL_FILES, "testSecurityUnauth");
     }
 }

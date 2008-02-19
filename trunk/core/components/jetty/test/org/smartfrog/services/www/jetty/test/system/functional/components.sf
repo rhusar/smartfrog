@@ -100,7 +100,22 @@ TestSecurity extends JettyTestCompound {
     wait extends waitForAnyHttpResponse  {
       url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
       port action:port;
+      minimumResponseCode HttpCodes:START_2XX;
+      maximumResponseCode HttpCodes:END_2XX;
     }
+  }
+
+}
+
+testSecurityUnauth extends TestSecurity {
+
+
+
+  //patch the login
+  tests:wait extends waitForAnyHttpResponse  {
+      url ( "http://localhost:" ++ test.jetty.port.1 ++ "/");
+      minimumResponseCode HttpCodes:UNAUTHORIZED;
+      maximumResponseCode HttpCodes:FORBIDDEN;
   }
 
 }
@@ -117,6 +132,65 @@ TestNioConnector extends JettyTestCompound {
       }
    }
 
+}
+
+
+TestRealm extends JettyTestCompound {
+  description "SFOS-628 JettySecurityRealmImpl does not use the realm";
+  
+  links [["http://jira.smartfrog.org/jira/browse/SFOS-628"]];
+
+  password "secret";
+
+	action extends LocalJettyServer {
+
+    testRealm extends JettySecurityRealm {
+    	name "testRealm";
+    	users [["test", "password", "testRole"]];
+    	server LAZY PARENT:server;
+    	contextPath "/";
+    }
+    
+  }
+
+
+  //we dont care which number comes back, only that we get a number
+  tests extends Sequence {
+    wait extends waitForAnyHttpResponse  {
+      url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
+      port action:port;
+    }
+  }
+
+}
+
+ServerOnJetty extends Compound {
+    port TBD;
+	home TBD;
+
+	jettyServer extends CoreJettyServer {
+        jettyhome LAZY PARENT:home;
+        port PARENT:port;
+    }
+
+
+
+    webApp extends WebApplication	{
+    	contextPath "webApp";
+    	filename "../test-project/target/test-project.war";
+    	server LAZY jettyServer;
+    }
+
+    listener extends JettyListener {
+    	serverHost "localhost";
+    	listenerPort PARENT:port;
+        server LAZY jettyServer;
+    }
+}
+
+sfConfig extends ServerOnJetty {
+    home "/var/lib/jetty";
+    port 10080;
 }
 
 
