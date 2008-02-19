@@ -40,8 +40,7 @@
   <property file="build.properties"/>
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <!--temporarily disabled until security is sorted-->
-  <property name="system.tests" value="false"/>
+  <property name="system.tests" value="true"/>
 
   <echo message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
