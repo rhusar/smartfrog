@@ -66,17 +66,17 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
 
         String url = sfResolve(ATTR_URL, (String) null, false);
 
-        if (url != null) {
+        if (url != null && url.length()>0) {
             livenessPage.bindToURL(url);
         } else {
             livenessPage.setHost(sfResolve(ATTR_HOST,
                     livenessPage.getHost(),
-                    false));
+                    true));
             livenessPage.setPort(sfResolve(ATTR_PORT,
                     livenessPage.getPort(),
-                    false));
+                    true));
             livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
-                    livenessPage.getProtocol(), false));
+                    livenessPage.getProtocol(), true));
             livenessPage.setPath(sfResolve(ATTR_PATH,
                 livenessPage.getPath(),
                 false));

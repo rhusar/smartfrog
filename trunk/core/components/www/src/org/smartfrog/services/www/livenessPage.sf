@@ -55,9 +55,11 @@ For more information: www.smartfrog.org
      host extends OptionalString;
      //protocol, default http
      protocol extends OptionalString;
+
+     //path can be something like the web application, or a directory
      path extends OptionalString;
 
-     //page
+     //the page is appended to it, if set, and a / is placed between then
      page extends OptionalString;
      //query list of things that get turned into queries -without escaping.
      //vectors inside are treated as name=value pairs
@@ -149,7 +151,7 @@ For more information: www.smartfrog.org
      maximumResponseCode HttpCodes:END_2XX;
      minimumResponseCode HttpCodes:START_2XX;
      mimeType [];
-     page "/";
+     path "/";
      port 80;
      responseRegexp "";
  }
