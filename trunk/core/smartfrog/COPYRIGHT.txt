@@ -41,5 +41,6 @@ File to which this apply are:
   org.smartfrog.services.database.core.TransactionImpl
   org.smartfrog.services.os.IsOSCondition
   org.smartfrog.services.database.core.TransactionImpl
+  org.smartfrog.services.www.Base64Converter
 All .pom and .ivy files containing artifact and dependency metadata are also published under
 an Apache license, to aid incorporation into the centrally managed artifact repositories.
