@@ -1475,6 +1475,10 @@ java.class.path=
     <presetdef name="sf-system-test">
       <sf-functionaltest testTimeout="600" shutdownTime="10">
         <application>
+          <condition name="daemon.already.live">
+            <telnet port="${smartfrog.daemon.port}" />
+          </condition>
+          <sf-conditional unless="daemon.already.live">
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
@@ -1483,6 +1487,7 @@ java.class.path=
               <propertyref prefix="test."/>
             </syspropertyset>
           </sf-startdaemon-debug>
+          </sf-conditional>
         </application>
         <probe>
           <socket port="${smartfrog.daemon.port}" server="localhost"/>
