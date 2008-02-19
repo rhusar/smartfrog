@@ -1476,7 +1476,7 @@ java.class.path=
       <sf-functionaltest testTimeout="600" shutdownTime="10">
         <application>
           <condition property="daemon.already.live">
-            <socket host="localhost" port="${smartfrog.daemon.port}" />
+            <socket server="localhost" port="${smartfrog.daemon.port}" />
           </condition>
           <sf-conditional unless="daemon.already.live">
           <sf-startdaemon-debug failonerror="false"
