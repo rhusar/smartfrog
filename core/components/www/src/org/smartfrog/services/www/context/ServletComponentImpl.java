@@ -22,9 +22,11 @@ package org.smartfrog.services.www.context;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.os.java.LoadClassImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 
@@ -39,6 +41,7 @@ public class ServletComponentImpl extends ServletContextComponentImpl
      * our delegate
      */
     private ServletContextComponentDelegate delegate;
+    private static final Reference REF_CLASSNAME = new Reference(ATTR_CLASSNAME);
 
     /**
      * constructor
@@ -75,6 +78,13 @@ public class ServletComponentImpl extends ServletContextComponentImpl
         super.sfStart();
         //here we are bound to our context
         ServletContextIntf servletContext = getServletContext();
+
+        //validate our classpath
+        String classname=sfResolve(REF_CLASSNAME,"",true);
+        Class clazz = LoadClassImpl.loadClass(this, classname);
+        Object instance = LoadClassImpl.createInstance(clazz);
+
+        //create and bind the delegate
         delegate = servletContext.addServlet(this);
         delegate.start();
     }
