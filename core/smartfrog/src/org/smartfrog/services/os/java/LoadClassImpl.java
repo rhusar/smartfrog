@@ -26,24 +26,26 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.List;
 
 /**
- * Class to force load another class (and keep it in memory till we undeploy.
- * Liveness checks verify that the class loaded properly.
- * A flag can also force instantiate an instance if they have an empty constructor.
- * Otherwise, just the class gets loaded.
- * created 20-Sep-2005 11:28:38
+ * Class to force load another class (and keep it in memory till we undeploy. Liveness checks verify that the class
+ * loaded properly. A flag can also force instantiate an instance if they have an empty constructor. Otherwise, just the
+ * class gets loaded. created 20-Sep-2005 11:28:38
  */
 
 public class LoadClassImpl extends PrimImpl implements LoadClass {
     public static final String ERROR_NO_PUBLIC_CONSTRUCTOR = "No public empty constructor for class ";
     public static final String MESSAGE_CREATING_AN_INSTANCE = "Creating an instance of ";
+    private static final Reference REF_CLASSES = new Reference(ATTR_CLASSES);
 
     public LoadClassImpl() throws RemoteException {
     }
@@ -58,7 +60,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
     private Object[] objectInstances = new Object[0];
 
 
-    private Vector classes;
+    private List<String> classes;
 
     private boolean create = false;
 
@@ -71,17 +73,16 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         log = LogFactory.getOwnerLog(this);
-        classes = sfResolve(ATTR_CLASSES, classes, true);
+        classes = ListUtils.resolveStringList(this, REF_CLASSES, true);
         create = sfResolve(ATTR_CREATE, create, true);
         retain = sfResolve(ATTR_RETAIN, retain, true);
         int size = classes.size();
@@ -93,21 +94,20 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
         objectInstances = new Object[instanceSize];
 
         int count = 0;
-        for(Object instance:classes) {
-            String classname = instance.toString();
-            log.debug("Loading class "+classname);
+        for (String classname : classes) {
+            log.debug("Loading class " + classname);
             Class clazz = loadClass(this, classname);
             classInstances[count] = clazz;
             count++;
         }
         if (create) {
             for (int i = 0; i < classInstances.length; i++) {
-                Class clazz=classInstances[i];
+                Class clazz = classInstances[i];
                 log.debug("Creating class " + clazz.getName());
                 objectInstances[i] = createInstance(clazz);
             }
         }
-        if(!retain) {
+        if (!retain) {
             cleanup();
         }
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
@@ -117,8 +117,8 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -188,7 +188,7 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
     /**
      * Load a class using the classloader of a nominated component
      *
-     * @param owner owner component
+     * @param owner     owner component
      * @param classname name of the class to load
      * @return the class
      * @throws RemoteException    for network trouble
