@@ -281,22 +281,15 @@ public class LivenessPageChecker implements LivenessPage {
         StringBuilder url= new StringBuilder();
         url.append(protocol);
         url.append("://");
-        StringBuilder safeURL=new StringBuilder();
-        safeURL.append(url);
-        StringBuilder target = new StringBuilder();
-        target.append(host);
-        target.append(':');
-        target.append(port);
+        url.append(host);
+        url.append(':');
+        url.append(port);
         String fullpath=concatPaths("",path);
         fullpath = concatPaths(fullpath, page);
-        target.append(fullpath);
-
+        url.append(fullpath);
         if (queries != null) {
-            target.append(queries);
+            url.append(queries);
         }
-        url.append(target);
-        safeURL.append(target);
-        //bindToURL(url.toString(),safeURL.toString());
         bindToURL(url.toString());
         if (username != null) {
             String up = username + ':' + password;
