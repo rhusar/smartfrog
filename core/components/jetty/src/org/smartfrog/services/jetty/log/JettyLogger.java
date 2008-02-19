@@ -52,8 +52,7 @@ public class JettyLogger implements Logger {
     }
 
     /**
-     * Mutator used to turn debug on programatically. Implementations operation in which case an appropriate warning
-     * message shall be generated.
+     * Mutator used to turn debug on programatically.
      */
     public void setDebugEnabled(boolean enabled) {
         log.setLevel(enabled? LogSF.LOG_LEVEL_DEBUG: LogSF.LOG_LEVEL_INFO);
