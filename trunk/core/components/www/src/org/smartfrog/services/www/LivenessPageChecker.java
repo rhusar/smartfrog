@@ -22,6 +22,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -261,7 +262,7 @@ public class LivenessPageChecker implements LivenessPage {
         f = first != null ? first : "";
         int fl = first.length();
         if (fl > 0 && first.charAt(fl - 1) == '/') {
-            f = first.substring(0, fl - 2);
+            f = first.substring(0, fl - 1);
         }
 
         s = second != null ? second : "";
@@ -282,13 +283,6 @@ public class LivenessPageChecker implements LivenessPage {
         url.append("://");
         StringBuilder safeURL=new StringBuilder();
         safeURL.append(url);
-        if (username != null) {
-            url.append(username);
-            url.append(':');
-            url.append(password);
-            url.append('@');
-        }
-
         StringBuilder target = new StringBuilder();
         target.append(host);
         target.append(':');
@@ -304,6 +298,14 @@ public class LivenessPageChecker implements LivenessPage {
         safeURL.append(target);
         //bindToURL(url.toString(),safeURL.toString());
         bindToURL(url.toString());
+        if (username != null) {
+            String up = username + ':' + password;
+            String encoding;
+            Base64Converter encoder = new Base64Converter();
+            encoding = encoder.encode(up.getBytes());
+            headers.addElement(ListUtils.tuple("Authorization",
+                    "Basic " + encoding));
+        }
     }
 
     /**
