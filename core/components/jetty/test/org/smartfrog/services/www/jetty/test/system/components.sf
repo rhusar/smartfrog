@@ -106,8 +106,8 @@ waitForPage extends WaitForPage {
 }
 
 waitForAnyHttpResponse extends waitForPage {
-    maximumResponseCode 404;
-    minimumResponseCode 200;
+    maximumResponseCode HttpCodes:NOT_FOUND;
+    minimumResponseCode HttpCodes:OK;
 }
 
 /**
