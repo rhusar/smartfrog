@@ -368,11 +368,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             return SFProcess.sfDeployedHost();
         } catch (Exception ex) {
-          if (sfLog().isIgnoreEnabled()){
-            sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+          String message = MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP);
+          if (sfLog().isErrorEnabled()){
+            sfLog().error(message,ex);
           }
+          throw  new java.rmi.RemoteException( null,SmartFrogException.forward(message,ex));
         }
-        return null;
     }
 
     /**
@@ -722,7 +723,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfStartLivenessSender();
 
             // add location information attributes
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
+            try {
+                sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
+            } catch (Exception e) {
+                if (sfLog().isWarnEnabled()){ sfLog().warn("Failed to get a valid value for "+SmartFrogCoreKeys.SF_HOST+" attribute.", e); }
+            }
             sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
 
         } catch (Exception sfex) {
