@@ -92,7 +92,7 @@ testCheckLines extends testReadCSVFile {
 testCheckHeader extends testReadCSVFile {
   description "say there is one header line, expect it to be skipped";
   action:reader:headerLines 1;
-  tests:parser:minCount 3;
+  tests:parser:minCount 2;
   tests:parser:lines [
     ["l1e1","",",","e4"],
     ["l2e1","l2 e2","l2'e3,","l2;e4"]
