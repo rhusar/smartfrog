@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.www.context;
 
+import org.smartfrog.services.os.java.LoadClassImpl;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.os.java.LoadClassImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
