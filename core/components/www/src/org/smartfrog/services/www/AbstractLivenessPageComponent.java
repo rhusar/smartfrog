@@ -23,7 +23,6 @@ package org.smartfrog.services.www;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ListUtils;
