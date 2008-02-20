@@ -64,11 +64,14 @@ PasswordChecker extends Prim {
         expected extends OptionalString;
         //if true, the attribute 'password' is set.
         publish extends Boolean;
+        //pattern to match; "" means anything is allowed
+        pattern extends String;
     }
 
     minimumSize 0;
     maximumSize -1;
     publish false;
+    pattern "";
 }
 
 
