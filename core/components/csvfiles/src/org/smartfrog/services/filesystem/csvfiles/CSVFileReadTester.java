@@ -117,7 +117,7 @@ public class CSVFileReadTester extends PrimImpl {
                 if (sfLog().isInfoEnabled()) {
                     sfLog().info(merge(line));
                 }
-                if (lines.size() >= count) {
+                if (lines.size() > count) {
                     Vector<String> expected = lines.elementAt(count);
                     compareLine(count, line, expected);
                 }
@@ -166,10 +166,12 @@ public class CSVFileReadTester extends PrimImpl {
             for (int i = 0; i < size; i++) {
                 String expectedElt = expected.elementAt(i);
                 String actualElt = line[i];
-                if (!actualElt.equals(expected)) {
+                if (!expectedElt.equals(actualElt)) {
                     throw new SmartFrogException(
-                            "Line " + element + " does not match expected element " + i + " \"" + expectedElt + "\":"
-                                    + merged);
+                            "Line " + element + " does not match expected element " + i
+                                    + " expected=\"" + expectedElt + "\""
+                                    + " actual=\"" + actualElt + "\""
+                                    +":\n" + merged);
                 }
             }
 
