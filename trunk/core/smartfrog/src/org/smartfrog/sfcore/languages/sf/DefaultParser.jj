@@ -1002,5 +1002,3 @@ Token Name() : {
   | res = <WORD> )
   {return res;}
 }
-
-
