@@ -33,27 +33,68 @@ import java.rmi.RemoteException;
  */
 
 public class PasswordHelper {
+    /**
+     * Start of the 'not a password' error: {@value}
+     */
     public static final String ERROR_NOT_A_PASSWORD = "Not a password: ";
+
+
+    /**
+     * Extract a password from an attribute
+     * @param component the component used
+     * @param refname the string value of the reference
+     * @param required is the password required
+     * @return the password the extracted password
+     * @throws SmartFrogException failure to get the password
+     * @throws SmartFrogResolutionException if the value is not a string or a password provider
+     * @throws RemoteException network problems
+     */
 
     public static String resolvePassword(Prim component,String refname,boolean required)
             throws SmartFrogException, RemoteException {
         return resolvePassword(component,new Reference(refname),required); 
     }
 
+    /**
+     * Extract a password from an attribute
+     * @param component the component used
+     * @param reference the reference it came from
+     * @param required is the password required
+     * @return the password the extracted password
+     * @throws SmartFrogException failure to get the password
+     * @throws SmartFrogResolutionException if the value is not a string or a password provider
+     * @throws RemoteException network problems
+     */
+
     public static String resolvePassword(Prim component, Reference reference, boolean required)
             throws SmartFrogException, RemoteException {
         Object value = component.sfResolve(reference, required);
-        if(value==null) {
+        return extractPassword(component, reference, value);
+    }
+
+    /**
+     * Extract a password from a resolved entry
+     * @param component the component used
+     * @param reference the reference it came from
+     * @param entry the entry to extract the password from
+     * @return the password the extracted password
+     * @throws SmartFrogException failure to get the password
+     * @throws SmartFrogResolutionException if the value is not a string or a password provider
+     * @throws RemoteException network problems
+     */
+    public static String extractPassword(Prim component, Reference reference, Object entry)
+            throws SmartFrogException, RemoteException {
+        if (entry == null) {
             return null;
         }
-        if(value instanceof String) {
-            return value.toString();
+        if (entry instanceof String) {
+            return entry.toString();
         }
-        if(value instanceof PasswordProvider) {
-            PasswordProvider pp=(PasswordProvider) value;
+        if (entry instanceof PasswordProvider) {
+            PasswordProvider pp = (PasswordProvider) entry;
             return pp.getPassword();
         }
-        throw new SmartFrogResolutionException(ERROR_NOT_A_PASSWORD +value,component);
+        throw new SmartFrogResolutionException(reference, component.sfCompleteName(), ERROR_NOT_A_PASSWORD + entry);
     }
 
 }
