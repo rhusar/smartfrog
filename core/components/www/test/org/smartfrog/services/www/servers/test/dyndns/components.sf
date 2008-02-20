@@ -59,7 +59,7 @@ testCheckIpAddr extends ExpectDeploy {
     assertGroup1Exists extends Assert {
       sfShouldTerminate true;
       reference LAZY PARENT:check;
-      attribute "group";
+      attribute "group1";
     }
 
   }
