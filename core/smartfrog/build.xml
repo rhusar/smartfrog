@@ -773,6 +773,7 @@
     <delete dir="${dist.dir}" failonerror="false"/>
     <delete dir="${src.dir}/documentation" failonerror="false"/>
 	<!-- remove parser source files -->
+	 <!-- sf parser source files -->
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserConstants.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserTokenManager.java" failonerror="false"/>
@@ -780,6 +781,7 @@
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/ParseException.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/Token.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/TokenMgrError.java" failonerror="false"/>
+	 <!-- csf parser source files -->
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserConstants.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserTokenManager.java" failonerror="false"/>
