@@ -48,6 +48,7 @@ Secrets extends Compound {
 
 CheckPassword extends PasswordChecker {
   expected pass;
+  pattern ".*";
   sfShouldTerminate true;
 }
 
@@ -67,6 +68,7 @@ testInline extends testDeploy {
     passwordProvider LAZY action:SecretInline;
   }
 }
+
 
 testFile extends testDeploy {
   tests extends CheckPassword {
