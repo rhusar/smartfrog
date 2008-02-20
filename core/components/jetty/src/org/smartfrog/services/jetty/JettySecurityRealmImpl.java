@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.passwords.PasswordHelper;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.Constraint;
@@ -41,6 +43,10 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
     protected JettyHelper jettyHelper = new JettyHelper(this);
     protected HashUserRealm realm;
     protected SecurityHandler security;
+    public static final String ERROR_USER_ELEMENT_TOO_SHORT = "User element too short";
+    public static final String ERROR_CONSTRAINT_LIST_LENGTH_WRONG = "Constraint list length wrong: entry#";
+    private static final Reference CONSTRAINTS = new Reference(ATTR_CONSTRAINTS);
+    private static final Reference USERS = new Reference(ATTR_USERS);
 
     public JettySecurityRealmImpl() throws RemoteException {
     }
@@ -59,15 +65,15 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
         Vector users = null, constraints = null;
         String name = sfResolve(ATTR_NAME, "", true);
         realm = new HashUserRealm(name);
-        users = sfResolve(ATTR_USERS, users, true);
+        users = sfResolve(USERS, users, true);
         for (Object user : users) {
             Vector v = (Vector) user;
             if (v.size() < 3) {
-                throw new SmartFrogResolutionException("User element too short", this);
+                throw new SmartFrogResolutionException(sfCompleteName(), USERS,ERROR_USER_ELEMENT_TOO_SHORT);
             }
             String username = v.elementAt(0).toString();
             Object passwordEntry = v.elementAt(1);
-            String password = passwordEntry.toString();
+            String password = PasswordHelper.extractPassword(this, USERS, passwordEntry);
             realm.put(username, password);
             //add the roles
             for (int role = 2; role < v.size(); role++) {
@@ -75,13 +81,14 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             }
         }
         //now the constraints
-        constraints = sfResolve(ATTR_CONSTRAINTS, constraints, true);
+        constraints = sfResolve(CONSTRAINTS, constraints, true);
         ConstraintMapping[] mappings = new ConstraintMapping[constraints.size()];
         for (int entry = 0; entry < constraints.size(); entry++) {
             Vector oneConstraint = (Vector) constraints.elementAt(entry);
             int roleCount = oneConstraint.size() - 2;
             if (roleCount <= 0) {
-                throw new SmartFrogResolutionException("Constraint list length wrong: entry " + entry, this);
+                throw new SmartFrogResolutionException(sfCompleteName(), CONSTRAINTS,
+                        ERROR_CONSTRAINT_LIST_LENGTH_WRONG + entry);
             }
             String path = oneConstraint.elementAt(0).toString();
             String constraintName = oneConstraint.elementAt(1).toString();
@@ -97,14 +104,11 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             mapping.setConstraint(cons);
             mappings[entry] = mapping;
         }
-        jettyHelper.getServer().addUserRealm(realm);
         security = new SecurityHandler();
         security.setAuthenticator(new BasicAuthenticator());
         security.setConstraintMappings(mappings);
-        //this may actually be something we have to add to the component
         jettyHelper.getServer().addLifeCycle(security);
-
-
+        jettyHelper.getServer().addUserRealm(realm);
     }
 
 
