@@ -86,6 +86,7 @@ TestSecurity extends TestWarDeployed {
 
   action extends TestWarServer {
       contextPath PARENT:contextPath;
+
 	    security extends AdminSecurityRealm {
         server LAZY PARENT:server;
         adminPassword PARENT:ATTRIB password;
@@ -113,12 +114,46 @@ TestSecurity extends TestWarDeployed {
 }
 
 testSecurityUnauth extends TestSecurity {
-
-
+  description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
   //patch the wait operation
   tests:wait:password "wrong-password";
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
   tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
+
+}
+
+
+TestRealm extends TestWarDeployed {
+  description "SFOS-628 JettySecurityRealmImpl does not use the realm";
+  links [
+    ["http://jira.smartfrog.org/jira/browse/SFOS-628"]
+  ];
+  contextPath "/testwar";
+  password "password";
+
+	action extends TestWarServer {
+    contextPath PARENT:contextPath;
+
+    //security here is applied to the whole realm
+    testRealm extends JettySecurityRealm {
+    	name "testRealm";
+    	users [
+    	  ["test", PARENT:ATTRIB password, "testRole"]
+    	];
+    	server LAZY PARENT:server;
+    	contextPath "/";
+    }
+
+  }
+
+
+  //we dont care which number comes back, only that we get a number
+  tests extends Sequence {
+    wait extends waitForAnyHttpResponse  {
+      url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
+      port action:port;
+    }
+  }
 
 }
