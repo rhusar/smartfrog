@@ -43,7 +43,7 @@ public class DynDnsTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testRegisterIpAddr");
     }
 
-    public void testRegisterIpAddrHttps() throws Throwable {
+    public void NotestRegisterIpAddrHttps() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testRegisterIpAddrHttps");
     }
 
