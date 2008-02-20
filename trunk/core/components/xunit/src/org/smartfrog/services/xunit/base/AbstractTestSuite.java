@@ -19,20 +19,17 @@
  */
 package org.smartfrog.services.xunit.base;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 /**
  * This is an abstract base class for test suites.
