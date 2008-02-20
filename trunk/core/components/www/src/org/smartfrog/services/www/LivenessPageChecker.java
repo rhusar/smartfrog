@@ -467,8 +467,9 @@ public class LivenessPageChecker implements LivenessPage {
             }
             try {
                 if (owner != null) {
-                    for (int i = 0; i < matcher.groupCount(); i++) {
-                        String group = matcher.group(1);
+                    //we use <= because there is always, implicitly, a group 0
+                    for (int i = 0; i <= matcher.groupCount(); i++) {
+                        String group = matcher.group(i);
                         log.info("Matched response group" + i + ": " + group);
                         owner.sfReplaceAttribute("group" + i, group);
                     }
