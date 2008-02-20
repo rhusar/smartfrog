@@ -233,6 +233,15 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         if (testOnStartup) {
             testFileState();
         }
+        onComponentStarted();
+        triggerTerminationInStartup();
+    }
+
+    /**
+     * Override point: trigger termination in startup.
+     * If subclassed, the polling for sfShouldTerminate can be delayed
+     */
+    protected void triggerTerminationInStartup() {
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
                 "File "+getFile()
                         .getAbsolutePath(),sfCompleteNameSafe(),null);
@@ -258,10 +267,22 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     }
 
     /**
-     * do our file state test
-     *
-     * @throws SmartFrogLivenessException if a test failed
+     * Override point: base implementation is empty.
+     * This method is called in sfStart() after the file state tests are successful, and before
+     * we look for propertys that request termination of the the component
+     * @throws SmartFrogException SF problems
+     * @throws RemoteException network problems.
      */
+    protected void onComponentStarted() throws SmartFrogException,
+            RemoteException {
+
+    }
+
+    /**
+    * do our file state test
+    *
+    * @throws SmartFrogLivenessException if a test failed
+    */
     protected void testFileState() throws SmartFrogLivenessException {
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("liveness check will look for " + getFile().toString());
