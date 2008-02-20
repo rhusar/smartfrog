@@ -203,8 +203,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     }
 
     /**
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * clear the properties
+     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws RemoteException network trouble
      */
     private void clearProperties() throws SmartFrogException,
             RemoteException {
@@ -236,7 +237,6 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     /**
      * Unset a property in this JVM
-     * Not supported on java1.4
      * @param name name of the property
      * @throws SmartFrogException may wrap a security exception
      * @throws RemoteException network trouble
@@ -244,23 +244,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     public void unsetProperty(String name)
             throws SmartFrogException, RemoteException {
         try {
-          // use introspection for Java1.5 time use
-            Class clazz=System.class;
-            Class[] params={String.class};
-            Method method = clazz.getMethod("clearProperty", params);
-            Object[] args={name};
-            method.invoke(null,args);
-
-            //   System.clearProperty(name);
+            System.clearProperty(name);
         } catch (SecurityException e) {
-            throw SmartFrogException.forward("clearing " + name, e);
-        } catch (NoSuchMethodException e) {
-            log.warn("This JVM doesn't support System.clearProperty; unable to unset properties");
-        } catch (InvocationTargetException e) {
-            throw SmartFrogException.forward("clearing " + name, e);
-        } catch (IllegalAccessException e) {
-            throw SmartFrogException.forward("clearing " + name, e);
+            throw SmartFrogException.forward("Failed to clear property "+name, e);
         }
-
     }
 }
