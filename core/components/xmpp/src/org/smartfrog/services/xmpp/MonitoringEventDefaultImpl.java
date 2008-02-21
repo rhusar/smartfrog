@@ -67,28 +67,28 @@ public class MonitoringEventDefaultImpl implements MonitoringEvent, Serializable
 	public String getMsg(){
 		return msg;
 	}
-	public Map getPropertyBag(){
+	public Map<String, String> getPropertyBag(){
 		return propertyBag;
 	}
 	
-	public void setModuleId(String id){
-		this.moduleId = id ;
+	public void setModuleId(String moduleId){
+		this.moduleId = moduleId ;
 	}
-	public void setHost(String h){
-		this.host = h ;
+	public void setHost(String host){
+		this.host = host ;
 	}
-	public void setModuleState(String state){
-		this.moduleState = state ;
+	public void setModuleState(String moduleState){
+		this.moduleState = moduleState ;
 	}
-	public void setInstanceName(String name){
-		this.instanceName = name ;
+	public void setInstanceName(String instanceName){
+		this.instanceName = instanceName ;
 	}
-	public void setMessageType(int msgtype){
-		this.messageType = msgtype;
+	public void setMessageType(int messageType){
+		this.messageType = messageType;
 	}
 
-	public void setMsg(String m){
-		this.msg = m ;
+	public void setMsg(String msg){
+		this.msg = msg ;
 	}
 	public void addToPropertyBag(String key, String value){
 		propertyBag.put(key, value);
@@ -96,16 +96,16 @@ public class MonitoringEventDefaultImpl implements MonitoringEvent, Serializable
 	public String getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(String t) {
-		this.timestamp = t;
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getLastAction() {
 		return lastAction;
 	}
 
-	public void setLastAction(String action) {
-		this.lastAction = action; 
+	public void setLastAction(String lastAction) {
+		this.lastAction = lastAction;
 	}
 	
 	public String toString(){
