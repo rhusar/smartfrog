@@ -62,8 +62,7 @@ For more information: www.smartfrog.org
 	<echo message="   Java: ${java.version} ${java.vendor} "/>
 	<echo message="         ${java.home} "/>
     <echo message="   OS: ${os.name} ${os.version}"/>
- 	<echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} " />	
-	<echo message="          https:${https.proxyHost}:${https.proxyPort} "/>	
+ 	<echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>	
     <echo message=" ======================================================="/>	             
     <echo message="  "/>	
 	
