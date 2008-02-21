@@ -18,11 +18,14 @@ public class WarSecurityTest extends JettyTestBase {
         expectSuccessfulTestRun(FILES, "testSecurity");
     }
 
-    public void testSecurityUnauth() throws Throwable {
+    public void NotestSecurityUnauth() throws Throwable {
         expectSuccessfulTestRun(FILES, "testSecurityUnauth");
     }
 
     public void testRealm() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRealm");
+    }
+    public void NotestRealmUnauth() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testRealmUnauth");
     }
 }

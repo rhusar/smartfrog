@@ -150,10 +150,27 @@ TestRealm extends TestWarDeployed {
 
   //we dont care which number comes back, only that we get a number
   tests extends Sequence {
-    wait extends waitForAnyHttpResponse  {
-      url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ "/");
-      port action:port;
+
+    wait extends waitForPage  {
+      //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
+      host "localhost";
+      port test.jetty.port.1;
+      path contextPath;
+      //username "admin";
+      password PARENT:ATTRIB password;
+      minimumResponseCode HttpCodes:START_2XX;
+      maximumResponseCode HttpCodes:END_2XX;
     }
+
   }
 
-}
+
+testRealmUnauth extends TestRealm {
+  description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
+
+  //patch the wait operation
+  tests:wait:password "wrong-password";
+  tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
+  tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
+
+}}
