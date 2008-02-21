@@ -20,6 +20,11 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 
 
+/**
+ * This component reads the contents of a CSV file; it allows you to specify the separator, quote character and number
+ * of header lines to skip.
+ * The component does not do any post-startup operations on the file, other than open it.
+ */
 CSVFileToRead extends File {
     sfClass "org.smartfrog.services.filesystem.csvfiles.CSVFileReadImpl";
     headerLines 0;
@@ -30,7 +35,25 @@ CSVFileToRead extends File {
     mustRead true;
     testOnStartup true;
     testOnLiveness false;
+   /**
+     * min number of lines {@value}
+     */
+    minCount 0;
+    /**
+     * max number of lines {@value}
+     */
+    maxCount -1;
+    /**
+     * minimum width; -1 for do not check {@value}
+     */
+    minWidth 0;
+    /**
+     * max width; -1 for do not check {@value}
+     */
+    maxWidth -1;
 }
+
+
 
 CSVFileToReadTester extends Prim {
   sfClass "org.smartfrog.services.filesystem.csvfiles.CSVFileReadTester";
@@ -40,3 +63,18 @@ CSVFileToReadTester extends Prim {
   minCount 0;
   maxCount -1;
 }
+
+
+CSVColumnReader extends Prim {
+  sfClass "org.smartfrog.services.filesystem.csvfiles.CSVColumnReader";
+  sfShouldTerminate true;
+  source TBD;
+  column 1;
+  trimFields true;
+  skipEmptyFields true;
+  skipNarrowLines false;
+  target LAZY THIS;
+  targetAttribute "result";
+}
+
+

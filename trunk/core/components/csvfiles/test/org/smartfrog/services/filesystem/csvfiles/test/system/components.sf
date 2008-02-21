@@ -23,8 +23,8 @@ For more information: www.smartfrog.org
 
 TestCSVFile extends TempFileWithCleanup {
   text ##"h1","h2","h3","h4"
-"l1e1","",",","e4"
-"l2e1","l2 e2","l2'e3,","l2;e4"
+"l1e1","",",","e4 "
+" l2e1 ","l2 e2","l2'e3,","l2;e4"
 #;
 }
 
@@ -52,25 +52,10 @@ testCSVFileCreated extends ExpectDeploy {
   }
 }
 
-testReadCSVFile extends ExpectDeploy {
+testReadCSVFile extends testCSVFileCreated {
   description "check the number of lines read";
 
-  action extends Compound {
-
-    sourceFile TestCSVFile;
-    //the reader
-    reader extends CSVFileToRead {
-      filename LAZY sourceFile;
-    }
-
-  }
-
   tests extends Sequence {
-
-    //a short pause
-    sleep extends Delay {
-      time 2000;
-    }
 
     parser extends CSVFileToReadTester {
       source LAZY action:reader;
@@ -80,12 +65,16 @@ testReadCSVFile extends ExpectDeploy {
   }
 }
 
+TestLine1 ["h1","h2","h3","h4"];
+TestLine2 ["l1e1","",",","e4 "];
+TestLine3 [" l2e1 ","l2 e2","l2'e3,","l2;e4"];
+
 testCheckLines extends testReadCSVFile {
   description "check the values of the lines";
   tests:parser:lines [
-    ["h1","h2","h3","h4"],
-    ["l1e1","",",","e4"],
-    ["l2e1","l2 e2","l2'e3,","l2;e4"]
+    TestLine1,
+    TestLine2,
+    TestLine3
   ];
 }
 
@@ -94,7 +83,47 @@ testCheckHeader extends testReadCSVFile {
   action:reader:headerLines 1;
   tests:parser:minCount 2;
   tests:parser:lines [
-    ["l1e1","",",","e4"],
-    ["l2e1","l2 e2","l2'e3,","l2;e4"]
+    TestLine2,
+    TestLine3
   ];
+}
+
+testCSVFileSelfChecking extends testReadCSVFile {
+  action:reader:minCount 3;
+  action:reader:maxCount 3;
+}
+
+
+
+testReadColumn extends testCSVFileCreated {
+  description "read to a column and assert its value";
+
+
+  tests extends Sequence {
+
+    parser extends CSVColumnReader {
+      source LAZY action:reader;
+      column 1;
+      target LAZY PARENT;
+    }
+
+    checkResultExists extends Assert {
+      sfShouldTerminate true;
+      reference LAZY PARENT;
+      attribute "result";
+      attributeVectorIndex 1;
+      attributeVectorValue "h1";
+    }
+
+    checkResult2 extends checkResultExists {
+      attributeVectorIndex 2;
+      attributeVectorValue "l1e1";
+    }
+    checkResult2 extends checkResultExists {
+      attributeVectorIndex 2;
+      attributeVectorValue "l2e1";
+    }
+
+
+  }
 }

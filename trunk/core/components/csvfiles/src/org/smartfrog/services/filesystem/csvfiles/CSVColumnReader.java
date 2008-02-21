@@ -20,11 +20,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.filesystem.csvfiles;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -33,32 +35,55 @@ import java.util.Vector;
  * component to test the file read operations; lets you validate headers and such like Created 20-Feb-2008 15:50:56
  */
 
-public class CSVFileReadTester extends PrimImpl {
+public class CSVColumnReader extends PrimImpl {
 
     private CSVFileRead source;
     private ReaderThread reader;
-    private int minCount, maxCount;
-    private Vector<Vector<String>> lines;
 
     /**
      * Source component
      */
     public static final String ATTR_SOURCE = "source";
-    /**
-     * {@value} : array of lines to check
-     */
-    public static final String ATTR_LINES = "lines";
 
     /**
-     * min number of lines {@value}
+     * Column number
      */
-    public static final String ATTR_MINCOUNT = "minCount";
+    public static final String ATTR_COLUMN = "column";
     /**
-     * max number of lines {@value}
+     * optional target prim to set the attribute on
      */
-    public static final String ATTR_MAXCOUNT = "maxCount";
+    public static final String ATTR_TARGET = "target";
+    /**
+     * name of the attribute to set
+     */
+    public static final String ATTR_TARGET_ATTRIBUTE = "targetAttribute";
 
-    public CSVFileReadTester() throws RemoteException {
+    /**
+     * skip empty "" entries?
+     */
+    public static final String ATTR_SKIP_EMPTY_FIELDS = "skipEmptyFields";
+
+    /**
+     * skip empty "" entries?
+     */
+    public static final String ATTR_SKIP_NARROW_LINES = "skipNarrowLines";
+    /**
+     * {@value}
+     */
+    private static final String ATTR_TRIM_FIELDS = "trimFields";
+    /**
+     * the attribute we set
+     */
+    public static final String ATTR_RESULT = "result";
+    private Prim target;
+    private boolean skipEmptyFields;
+    private String targetAttribute;
+    private int column;
+    private boolean skipNarrowLines;
+    private boolean trimFields;
+
+
+    public CSVColumnReader() throws RemoteException {
     }
 
     /**
@@ -70,11 +95,13 @@ public class CSVFileReadTester extends PrimImpl {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim src = sfResolve(ATTR_SOURCE, (Prim) null, true);
-        source = (CSVFileRead) src;
-        lines = (Vector<Vector<String>>) sfResolve(ATTR_LINES, lines, true);
-        minCount = sfResolve(ATTR_MINCOUNT, 0, true);
-        maxCount = sfResolve(ATTR_MAXCOUNT, 0, true);
+        source = (CSVFileRead) sfResolve(ATTR_SOURCE, (Prim) null, true);
+        target = sfResolve(ATTR_TARGET, (Prim) null, false);
+        targetAttribute = sfResolve(ATTR_TARGET_ATTRIBUTE, "", target!=null);
+        trimFields = sfResolve(ATTR_TRIM_FIELDS, false, true);
+        skipEmptyFields = sfResolve(ATTR_SKIP_EMPTY_FIELDS, false, true);
+        skipNarrowLines = sfResolve(ATTR_SKIP_NARROW_LINES, false, true);
+        column = sfResolve(ATTR_COLUMN, 0, true);
         reader = new ReaderThread(source);
         reader.start();
     }
@@ -94,7 +121,7 @@ public class CSVFileReadTester extends PrimImpl {
 
     private class ReaderThread extends SmartFrogThread {
         /**
-         *  data source
+         * data source
          */
         private CSVFileRead source;
 
@@ -114,6 +141,7 @@ public class CSVFileReadTester extends PrimImpl {
          */
         public void execute() throws Throwable {
             String[] line;
+            Vector<String> result=new Vector<String>();
             int count = 0;
             source.start();
             while ((line = source.getNextLine()) != null) {
@@ -121,23 +149,31 @@ public class CSVFileReadTester extends PrimImpl {
                     //bail out completely
                     return;
                 }
-                if (sfLog().isInfoEnabled()) {
-                    sfLog().info(CSVFileReadImpl.merge(line));
+                int w = line.length;
+                if (w < column) {
+                    //too narrow for this column
+                    if (skipNarrowLines) {
+                        continue;
+                    } else {
+                        throw new SmartFrogDeploymentException("Too narrow, line #" + count + ": "
+                                + CSVFileReadImpl.merge(line), CSVColumnReader.this);
+                    }
                 }
-                if (lines.size() > count) {
-                    Vector<String> expected = lines.elementAt(count);
-                    compareLine(count, line, expected);
+                String columnValue=line[column-1];
+                if(trimFields) {
+                    columnValue=columnValue.trim();
                 }
-                count++;
-                if (maxCount >= 0 && count > maxCount) {
-                    throw new SmartFrogException("Too many lines", CSVFileReadTester.this);
+                if(columnValue.length()==0 && skipEmptyFields) {
+                    continue;
                 }
+                result.add(columnValue);
             }
-            if (count < minCount) {
-                throw new SmartFrogException("Too few lines -expected " + minCount + " but got " + count,
-                        CSVFileReadTester.this);
+            //end of lines set the results
+            sfReplaceAttribute(ATTR_RESULT,result);
+            if(target!=null) {
+                target.sfReplaceAttribute(targetAttribute,result);
             }
-            //end of lines
+
         }
 
         /**
@@ -151,38 +187,9 @@ public class CSVFileReadTester extends PrimImpl {
                     "CSV file read",
                     sfCompleteNameSafe(),
                     getThrown());
-            new ComponentHelper(CSVFileReadTester.this).targetForWorkflowTermination(tr);
+            new ComponentHelper(CSVColumnReader.this).targetForWorkflowTermination(tr);
         }
 
-        /**
-         * compare two lines, fail if they mismatch
-         *
-         * @param element  element number
-         * @param line     line read in
-         * @param expected expected line
-         * @throws SmartFrogException if there is a count mismatch, or a value is not as expected
-         */
-        private void compareLine(int element, String[] line, Vector<String> expected) throws SmartFrogException {
-            String merged = CSVFileReadImpl.merge(line);
-            int size = expected.size();
-            int actual = line.length;
-            if (actual != size) {
-                throw new SmartFrogException("Line " + element + " is wrong width; expected " + size + " but got "
-                        + actual + " elements\n" + merged);
-            }
-            for (int i = 0; i < size; i++) {
-                String expectedElt = expected.elementAt(i);
-                String actualElt = line[i];
-                if (!expectedElt.equals(actualElt)) {
-                    throw new SmartFrogException(
-                            "Line " + element + " does not match expected element " + i
-                                    + " expected=\"" + expectedElt + "\""
-                                    + " actual=\"" + actualElt + "\""
-                                    +":\n" + merged);
-                }
-            }
-
-        }
 
     }
 
