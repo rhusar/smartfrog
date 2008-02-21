@@ -117,6 +117,7 @@ public class TestEventSink implements EventSink {
      *
      * @param application the application (which must implement{@link EventRegistration})
      * @throws RemoteException if something goes wrong with the subscription
+     * @throws SmartFrogRuntimeException if the class is the wrong time
      */
     public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
         if (!(application instanceof EventRegistration)) {
@@ -289,7 +290,8 @@ public class TestEventSink implements EventSink {
      */
     public synchronized LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
         LifecycleEvent event;
-        boolean isInstance;
+        boolean isNotInstance;
+        TimeoutTracker timedout = new TimeoutTracker(timeout);
         do {
             event = waitForEvent(timeout);
             if (event == null) {
@@ -298,9 +300,9 @@ public class TestEventSink implements EventSink {
             if(event instanceof TestInterruptedEvent) {
                 throw new InterruptedException();
             }
-            isInstance = !clazz.isInstance(event);
+            isNotInstance = !clazz.isInstance(event);
 
-        } while (isInstance);
+        } while (isNotInstance && !timedout.isTimedOut());
         return event;
     }
 
@@ -365,16 +367,17 @@ public class TestEventSink implements EventSink {
             throws SmartFrogException, RemoteException, InterruptedException {
         invokeDeploy();
         invokeStart();
+        TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
         do {
             event = waitForEvent(LifecycleEvent.class, timeout);
+            if (event == null) {
+                throw new TestTimeoutException(ERROR_STARTUP_TIMEOUT, timeout);
+            }
             if (event instanceof TerminatedEvent) {
                 throw new TestFailureException(ERROR_PREMATURE_TERMINATION, event);
             }
-        } while (event != null && !(event instanceof StartedEvent));
-        if (event == null) {
-            throw new TestTimeoutException(ERROR_STARTUP_TIMEOUT, timeout);
-        }
+        } while (!(event instanceof StartedEvent) && !timedout.isTimedOut());
         return (StartedEvent) event;
     }
 
@@ -393,12 +396,14 @@ public class TestEventSink implements EventSink {
             throws SmartFrogException, InterruptedException, RemoteException {
         startApplication(startupTimeout);
         LifecycleEvent event;
+        TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
         do {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
                 throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + "\n" + dumpHistory(), executeTimeout);
             }
-        } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent));
+        } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
+                && !timedout.isTimedOut());
         return event;
     }
 
@@ -409,7 +414,7 @@ public class TestEventSink implements EventSink {
      * @return the history of recevied events.
      */
     public String dumpHistory() {
-        StringBuffer buffer = new StringBuffer("Event history has " + history.size() + " events\n");
+        StringBuilder buffer = new StringBuilder("Event history has " + history.size() + " events\n");
         for (LifecycleEvent event : history) {
             buffer.append(event.toString());
             buffer.append('\n');
