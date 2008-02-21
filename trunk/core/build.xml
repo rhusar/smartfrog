@@ -55,15 +55,16 @@ For more information: www.smartfrog.org
 	<property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
 	<property name="version" value="ALL"/>
-	<echo message="  "/>
     <echo message="  "/>
     <echo message=" ======================================================="/>
     <echo message=" Build info - Project: ${Name.System} ${version}"/>
-    <echo message="   ${Name.Company}"/>
-	<echo message="      Java: ${java.version} ${java.vendor} "/>
-	<echo message="            ${java.home} "/>
-    <echo message="      OS: ${os.name} ${os.version}"/>	                   	
-    <echo message=" ======================================================="/>
+    <echo message="  ${Name.Company}"/>
+	<echo message="   Java: ${java.version} ${java.vendor} "/>
+	<echo message="         ${java.home} "/>
+    <echo message="   OS: ${os.name} ${os.version}"/>
+ 	<echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} " />	
+	<echo message="          https:${https.proxyHost}:${https.proxyPort} "/>	
+    <echo message=" ======================================================="/>	             
     <echo message="  "/>	
 	
     <!-- work out our java version by introspection -->
