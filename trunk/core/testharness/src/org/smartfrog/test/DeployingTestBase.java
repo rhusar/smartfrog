@@ -170,12 +170,14 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
                         null);
         ApplicationLoaderThread loader=new ApplicationLoaderThread(configurationDescriptor, true);
         loader.start();
-        if(!loader.waitForNotification(startupTimeout)) {
+        loader.waitForNotification(startupTimeout);
+        Object loaded = loader.getLoaded();
+        if(loader.isAlive() && !loader.isFinished()) {
             loader.interrupt();
             loader.stop();
             throw new SmartFrogRuntimeException("Time out loading the configuration descriptor " + testURL);
         }
-        Object loaded = loader.getLoaded();
+
         //throw any deployment exception
         lookForThrowableInDeployment(loaded);
         //or any exception during startup
