@@ -45,11 +45,19 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
     private char separator;
     private char quote;
     private int headerLines;
+    private int count = 0;
     public static final String ERROR_STRING_TOO_LONG = "String too long";
     public static final String ERROR_STRING_TOO_SHORT = "String too short";
     private static final Reference SEPARATOR = new Reference(ATTR_SEPARATOR);
     private static final Reference QUOTE = new Reference(ATTR_QUOTE_CHAR);
     public static final String ERROR_CSV_READER_IS_NOT_OPEN = "CSV reader is not open";
+    private int maxCount;
+    private int minCount;
+    private int minWidth;
+    private int maxWidth;
+    public static final String ERROR_LINE_WIDTH_WRONG = "Line Width is out of the range [";
+    public static final String ERROR_TOO_MANY_LINES = "Too many lines, stopped at line ";
+    public static final String ERROR_TOO_FEW_LINES = "Too few lines -expected ";
 
 
     public CSVFileReadImpl() throws RemoteException {
@@ -68,7 +76,11 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
         separator = resolveSingleChar(SEPARATOR);
         quote = resolveSingleChar(QUOTE);
         headerLines = sfResolve(ATTR_HEADER_LINES, 0, true);
-        reset();
+        minCount = sfResolve(ATTR_MINCOUNT, 0, true);
+        maxCount = sfResolve(ATTR_MAXCOUNT, 0, true);
+        minWidth = sfResolve(ATTR_MINWIDTH, 0, true);
+        maxWidth = sfResolve(ATTR_MAXWIDTH, 0, true);
+        start();
     }
 
     /**
@@ -80,8 +92,15 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        closeQuietely();
+    }
+
+    /**
+     * Close without leaving any error messages
+     */
+    protected void closeQuietely() {
         try {
-            reset();
+            close();
         } catch (RemoteException e) {
             sfLog().ignore(e);
         } catch (SmartFrogException e) {
@@ -114,24 +133,45 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
      *
      * @return the next line, all broken up, or null for no new lines.
      * @throws RemoteException    network problems
-     * @throws SmartFrogException parsing/file IO problems
+     * @throws SmartFrogDeploymentException parsing/file IO problems, or wrong dimensions of the array
      */
     public synchronized String[] getNextLine() throws RemoteException, SmartFrogException {
         if (reader == null) {
             throw new SmartFrogLifecycleException(ERROR_CSV_READER_IS_NOT_OPEN);
         }
         try {
-            return reader.readNext();
+            String[] result = reader.readNext();
+            if(result==null) {
+                if(count<minCount) {
+                    throw new SmartFrogDeploymentException(ERROR_TOO_FEW_LINES + minCount + " but got " + count,
+                            this);
+                }
+
+            } else {
+                count++;
+                if(maxCount>=0 && count>maxCount) {
+                    throw new SmartFrogDeploymentException(ERROR_TOO_MANY_LINES + count+ ":\n"
+                            + merge(result),
+                            this);
+                }
+                int width=result.length;
+                if (width < minWidth || (maxWidth >= 0 && width > maxWidth)) {
+                    throw new SmartFrogDeploymentException(ERROR_LINE_WIDTH_WRONG + minWidth + "," + maxWidth + "]: " + width
+                    + '\n' +merge(result),
+                            this);
+                }
+            }
+            return result;
         } catch (IOException e) {
-            throw new SmartFrogException("Reading from " + getFile(), e);
+            throw new SmartFrogDeploymentException("Reading from " + getFile(), e,this);
         }
     }
 
     /**
      * Close the reader. harmless if we are already closed
      *
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException parsing/file IO problems
      */
     public synchronized void close() throws RemoteException, SmartFrogException {
         if (reader != null) {
@@ -151,7 +191,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
      * @throws RemoteException    network problems
      * @throws SmartFrogException parsing/file IO problems
      */
-    public synchronized void reset() throws RemoteException, SmartFrogException {
+    public synchronized void start() throws RemoteException, SmartFrogException {
 
         File csvfile = getFile();
         if (csvfile == null) {
@@ -160,9 +200,28 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
         try {
             sfLog().info("Reading CSV file "+csvfile);
             reader = new CSVReader(new FileReader(csvfile), separator, quote, headerLines);
+            count = 0;
         } catch (FileNotFoundException e) {
             throw new SmartFrogDeploymentException(ERROR_NO_FILE + csvfile.getAbsolutePath());
         }
 
+    }
+
+    /**
+     * Merge a string array to a CSV text line
+     *
+     * @param line the line to merge
+     * @return the line back in CSV form
+     */
+    public static String merge(String[] line) {
+        StringBuilder b = new StringBuilder();
+        boolean first = true;
+        for (String entry : line) {
+            b.append(first ? "\"" : ", \"");
+            first = false;
+            b.append(entry);
+            b.append("\"");
+        }
+        return b.toString();
     }
 }

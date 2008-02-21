@@ -33,10 +33,30 @@ import java.rmi.RemoteException;
 
 public interface CSVFileRead extends FileIntf {
 
+    /** {@value} */
     String ATTR_HEADER_LINES = "headerLines";
+    /** {@value} */
     String ATTR_SEPARATOR = "separator";
+    /** {@value} */
     String ATTR_QUOTE_CHAR = "quoteChar";
 
+    /**
+     * min number of lines {@value}
+     */
+    public static final String ATTR_MINCOUNT = "minCount";
+    /**
+     * max number of lines {@value}
+     */
+    public static final String ATTR_MAXCOUNT = "maxCount";
+
+    /**
+     * minimum width; -1 for do not check {@value}
+     */
+    public static final String ATTR_MINWIDTH = "minWidth";
+    /**
+     * max width; -1 for do not check {@value}
+     */
+    public static final String ATTR_MAXWIDTH = "maxWidth";
 
     /**
      * Get the next line
@@ -51,12 +71,12 @@ public interface CSVFileRead extends FileIntf {
      * @throws RemoteException network problems
      * @throws SmartFrogException parsing/file IO problems
      */
-    void reset() throws RemoteException, SmartFrogException;
+    void start() throws RemoteException, SmartFrogException;
 
     /**
      * Close the reader. harmless if we are already closed
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException network problems
+     * @throws SmartFrogException parsing/file IO problems
      */
     void close() throws RemoteException, SmartFrogException;
 }

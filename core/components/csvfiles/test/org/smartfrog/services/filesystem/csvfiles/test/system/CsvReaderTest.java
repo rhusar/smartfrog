@@ -50,4 +50,11 @@ public class CsvReaderTest extends DeployingTestBase {
     public void testCheckHeader() throws Throwable {
         expectSuccessfulTestRun(FILES, "testCheckHeader");
     }
+    public void testCSVFileSelfChecking() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testCSVFileSelfChecking");
+    }
+
+    public void testReadColumn() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testReadColumn");
+    }
 }
