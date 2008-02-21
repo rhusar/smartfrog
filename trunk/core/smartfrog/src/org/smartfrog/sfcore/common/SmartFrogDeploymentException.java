@@ -86,6 +86,17 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
     }
 
     /**
+     * Constructs a SmartFrogDeploymentException with specified message and cause.
+     * Also initializes  the exception context with component details.
+     * @param message exception message
+     * @param cause   exception causing this exception
+     * @param sfObject The Component that has encountered the exception
+     */
+    public SmartFrogDeploymentException(String message, Throwable cause, Prim sfObject) {
+        super(message, cause,sfObject);
+    }
+
+    /**
      * Constructs a SmartFrogDeploymentException with specified message.
      * Also initializes the exception context with component details.
      *
