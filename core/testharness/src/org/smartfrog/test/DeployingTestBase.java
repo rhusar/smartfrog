@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestEventSink;
@@ -155,23 +156,65 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      *
      * @param appName application name
      * @param testURL URL of the application
+     * @param startupTimeout
      * @return the loaded CD, which is not yet deployed or started
      * @throws Throwable in the event of trouble.
      */
-    private Prim loadApplication(String appName, String testURL) throws Throwable {
-        ConfigurationDescriptor cfgDesc =
+    private Prim loadApplication(String appName, String testURL, int startupTimeout) throws Throwable {
+        ConfigurationDescriptor configurationDescriptor =
                 new ConfigurationDescriptor(appName,
                         testURL,
                         ConfigurationDescriptor.Action.LOAD,
                         hostname,
                         null);
-        Object loaded = SFSystem.runConfigurationDescriptor(cfgDesc, true);
+        ApplicationLoaderThread loader=new ApplicationLoaderThread(configurationDescriptor, true);
+        loader.start();
+        if(!loader.waitForNotification(startupTimeout)) {
+            throw new SmartFrogRuntimeException("Time out loading the configuration descriptor "+testURL);
+        }
+        Object loaded = loader.getLoaded();
+        //throw any deployment exception
         lookForThrowableInDeployment(loaded);
+        //or any exception during startup
+        loader.rethrow();
         return (Prim) loaded;
     }
 
+    /**
+     * Load a thread in the background
+     */
+    private static class ApplicationLoaderThread extends SmartFrogThread {
+
+        private Object loaded;
+        private ConfigurationDescriptor configuration;
+        private boolean throwException;
+
+        /**
+         * Create a thread
+         * @param configuration config to load
+         * @param throwException should exceptions be thrown
+         */
+        ApplicationLoaderThread(ConfigurationDescriptor configuration, boolean throwException) {
+            this.configuration = configuration;
+            this.throwException = throwException;
+        }
+
+        /**
+         * load the configuration
+         *
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            loaded=SFSystem.runConfigurationDescriptor(configuration, throwException);
+        }
+
+        public Object getLoaded() {
+            return loaded;
+        }
+    }
+
     public String createUrlString(String packageName, String filename) {
-        StringBuffer buffer = new StringBuffer(packageName);
+        StringBuilder buffer = new StringBuilder(packageName);
         if (!packageName.endsWith("/")) {
             buffer.append('/');
         }
@@ -198,7 +241,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
     protected LifecycleEvent runTestDeployment(String packageName, String filename, int startupTimeout,
                                                int executeTimeout) throws Throwable {
         String urlstring = createUrlString(packageName, filename);
-        application = loadApplication(filename, urlstring);
+        application = loadApplication(filename, urlstring, startupTimeout);
         startListening(application);
         LifecycleEvent event = getEventSink().runTestsToCompletion(startupTimeout, executeTimeout);
         return event;
