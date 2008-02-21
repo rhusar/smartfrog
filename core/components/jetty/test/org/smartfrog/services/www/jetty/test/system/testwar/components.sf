@@ -91,7 +91,7 @@ TestSecurity extends TestWarDeployed {
         server LAZY PARENT:server;
         adminPassword PARENT:ATTRIB password;
         name "testRealm";
-      	contextPath PARENT:contextPath;
+      	contextPath PARENT:ATTRIB contextPath;
     }
   }
 
@@ -100,7 +100,6 @@ TestSecurity extends TestWarDeployed {
   tests extends Sequence {
     wait extends waitForPage  {
       //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
-      url "";
       host "localhost";
       port test.jetty.port.1;
       path contextPath;
@@ -148,7 +147,6 @@ TestRealm extends TestWarDeployed {
   }
 
 
-  //we dont care which number comes back, only that we get a number
   tests extends Sequence {
 
     wait extends waitForPage  {
@@ -163,6 +161,8 @@ TestRealm extends TestWarDeployed {
     }
 
   }
+  
+}
 
 
 testRealmUnauth extends TestRealm {
@@ -173,4 +173,4 @@ testRealmUnauth extends TestRealm {
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
   tests:wait:maximumResponseCode HttpCodes:FORBIDDEN;
 
-}}
+}
