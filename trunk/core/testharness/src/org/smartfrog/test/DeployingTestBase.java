@@ -156,9 +156,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      *
      * @param appName application name
      * @param testURL URL of the application
-     * @param startupTimeout
+     * @param startupTimeout time in milliseconds before assuming a load timeout
      * @return the loaded CD, which is not yet deployed or started
      * @throws Throwable in the event of trouble.
+     * @throws SmartFrogRuntimeException for a timeout in loading
      */
     private Prim loadApplication(String appName, String testURL, int startupTimeout) throws Throwable {
         ConfigurationDescriptor configurationDescriptor =
@@ -170,7 +171,9 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         ApplicationLoaderThread loader=new ApplicationLoaderThread(configurationDescriptor, true);
         loader.start();
         if(!loader.waitForNotification(startupTimeout)) {
-            throw new SmartFrogRuntimeException("Time out loading the configuration descriptor "+testURL);
+            loader.interrupt();
+            loader.stop();
+            throw new SmartFrogRuntimeException("Time out loading the configuration descriptor " + testURL);
         }
         Object loaded = loader.getLoaded();
         //throw any deployment exception
@@ -197,6 +200,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         ApplicationLoaderThread(ConfigurationDescriptor configuration, boolean throwException) {
             this.configuration = configuration;
             this.throwException = throwException;
+            setDaemon(true);
         }
 
         /**
@@ -213,6 +217,12 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         }
     }
 
+    /**
+     * combine the package and filename to URL. Appends .sf if needed
+     * @param packageName package containing the file
+     * @param filename the filename
+     * @return a concatenated package with .sf at the end
+     */
     public String createUrlString(String packageName, String filename) {
         StringBuilder buffer = new StringBuilder(packageName);
         if (!packageName.endsWith("/")) {
