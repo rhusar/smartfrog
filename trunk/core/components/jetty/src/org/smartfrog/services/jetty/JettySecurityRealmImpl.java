@@ -105,7 +105,8 @@ public class JettySecurityRealmImpl extends PrimImpl implements JettySecurityRea
             mappings[entry] = mapping;
         }
         security = new SecurityHandler();
-        security.setAuthenticator(new BasicAuthenticator());
+        BasicAuthenticator authenticator = new BasicAuthenticator();
+        security.setAuthenticator(authenticator);
         security.setConstraintMappings(mappings);
         jettyHelper.getServer().addLifeCycle(security);
         jettyHelper.getServer().addUserRealm(realm);
