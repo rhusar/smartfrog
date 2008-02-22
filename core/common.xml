@@ -2157,16 +2157,25 @@ ${ivy.reports.dir}
   <target name="init-clover" depends="init">
     <property name="clover.dir" location="${core.dir}/clover" />
     <property name="clover.jar" location="${clover.dir}/clover.jar" />
-    <available property="clover.present" file="${clover.jar}"/>
-    <taskdef resource="cloverlib.xml" classpath="${clover.jar}"/>
-    <available property="clover.installed" classname="com.cenqua.clover.CloverInstr" />
+    <path id="clover.classpath">
+      <fileset file="${clover.jar}" />
+    </path>
+    <available property="clover.present"
+        file="${clover.jar}"/>
   </target>
 
-  <target name="with.clover" depends="init-clover">
+  <target name="define-clover" depends="init-clover" if="clover.present" >
+    <taskdef resource="cloverlib.xml" classpathref="clover.classpath"/>
+    <condition property="clover.installed">
+      <typefound name="clover-setup"/>
+    </condition>
+  </target>
+
+  <target name="with.clover" depends="define-clover">
     <clover-setup/>
   </target>
 
-  <target name="-check.clover" depends="init-clover">
+  <target name="-check.clover" depends="define-clover">
   </target>
 
   <target name="guard.noclover" depends="-check.clover" unless="clover.installed">
