@@ -2162,9 +2162,15 @@ ${ivy.reports.dir}
     </path>
     <available property="clover.present"
         file="${clover.jar}"/>
+    <!--check to see if clover is already installed in this process-->
+    <condition property="clover.installed">
+      <typefound name="clover-setup"/>
+    </condition>
   </target>
 
-  <target name="define-clover" depends="init-clover" if="clover.present" >
+  <!--If we have clover, and it is not already installed, then install it-->
+  <target name="define-clover" depends="init-clover"
+      if="clover.present" unless="clover.installed">
     <taskdef resource="cloverlib.xml" classpathref="clover.classpath"/>
     <condition property="clover.installed">
       <typefound name="clover-setup"/>
