@@ -33,6 +33,7 @@ public interface TestProperties {
      * Name of the property that defines the port for RMI callbacks {@value}
      */
     String PROPERTY_TEST_RMI_CALLBACKS_PORT = "test.rmi.callbacks.port";
+
     int TIMEOUT = 30000;
     /**
      * Default startup timeout: {@value}
