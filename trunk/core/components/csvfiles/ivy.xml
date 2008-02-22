@@ -47,17 +47,9 @@
         name="sf-testharness"
         rev="latest.integration"
         conf="test->default"/>
-    <dependency org="org.smartfrog"
-        name="sf-jetty"
-        rev="latest.integration"
-        conf="redist->redist;runtime,compile->default"/>
     <dependency org="net.sf.opencsv"
         name="opencsv"
         rev="${opencsv.version}"
-        conf="compile,redist->default"/>
-    <dependency org="jdom"
-        name="jdom"
-        rev="${jdom.version}"
         conf="compile,redist->default"/>
   </dependencies>
 </ivy-module>
