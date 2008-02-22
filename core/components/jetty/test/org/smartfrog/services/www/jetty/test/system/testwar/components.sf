@@ -91,7 +91,7 @@ TestSecurity extends TestWarDeployed {
         server LAZY PARENT:server;
         adminPassword PARENT:ATTRIB password;
         name "testRealm";
-      	contextPath PARENT:ATTRIB contextPath;
+      	contextPath PARENT:contextPath;
     }
   }
 
@@ -148,6 +148,10 @@ TestRealm extends TestWarDeployed {
 
 
   tests extends Sequence {
+
+    sleep extends Delay {
+      time 10000;
+    }
 
     wait extends waitForPage  {
       //url ( "http://admin:"++password ++ "@localhost:" ++ test.jetty.port.1 ++ contextPath);
