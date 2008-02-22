@@ -25,9 +25,18 @@ TestCSVFile extends TempFileWithCleanup {
   text ##"h1","h2","h3","h4"
 "l1e1","",",","e4 "
 " l2e1 ","l2 e2","l2'e3,","l2;e4"
+this,line,"has, less",spaces
 #;
 }
 
+
+TestLine1 ["h1","h2","h3","h4"];
+TestLine2 ["l1e1","",",","e4 "];
+TestLine3 [" l2e1 ","l2 e2","l2'e3,","l2;e4"];
+TestLine4 ["this","line","has, less","spaces"];
+
+TestLineCount 4;
+TestLinesMinusHeaders (TestLineCount - 1);
 
 testCSVFileCreated extends ExpectDeploy {
   description "check the number of lines read";
@@ -59,38 +68,38 @@ testReadCSVFile extends testCSVFileCreated {
 
     parser extends CSVFileToReadTester {
       source LAZY action:reader;
-      minCount 3;
-      maxCount 3;
+      minCount TestLineCount;
+      maxCount minCount;
     }
   }
 }
 
-TestLine1 ["h1","h2","h3","h4"];
-TestLine2 ["l1e1","",",","e4 "];
-TestLine3 [" l2e1 ","l2 e2","l2'e3,","l2;e4"];
 
 testCheckLines extends testReadCSVFile {
   description "check the values of the lines";
   tests:parser:lines [
     TestLine1,
     TestLine2,
-    TestLine3
+    TestLine3,
+    TestLine4
   ];
 }
 
 testCheckHeader extends testReadCSVFile {
   description "say there is one header line, expect it to be skipped";
-  action:reader:headerLines 1;
-  tests:parser:minCount 2;
+  headers 1;
+  action:reader:headerLines headers;
+  tests:parser:minCount (TestLineCount - headers);
   tests:parser:lines [
     TestLine2,
-    TestLine3
+    TestLine3,
+    TestLine4 
   ];
 }
 
 testCSVFileSelfChecking extends testReadCSVFile {
-  action:reader:minCount 3;
-  action:reader:maxCount 3;
+  action:reader:minCount TestLineCount;
+  action:reader:maxCount TestLineCount;
 }
 
 
@@ -119,9 +128,15 @@ testReadColumn extends testCSVFileCreated {
       attributeVectorIndex 2;
       attributeVectorValue "l1e1";
     }
-    checkResult2 extends checkResultExists {
-      attributeVectorIndex 2;
+
+    checkResult3 extends checkResultExists {
+      attributeVectorIndex 3;
       attributeVectorValue "l2e1";
+    }
+
+   checkResult4 extends checkResultExists {
+      attributeVectorIndex 4;
+      attributeVectorValue "this";
     }
 
 
