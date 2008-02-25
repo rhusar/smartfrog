@@ -21,11 +21,8 @@ package org.smartfrog.services.filesystem.csvfiles;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -33,17 +30,12 @@ import java.util.Vector;
  * component to test the file read operations; lets you validate headers and such like Created 20-Feb-2008 15:50:56
  */
 
-public class CSVFileReadTester extends PrimImpl {
+public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
 
-    private CSVFileRead source;
-    private ReaderThread reader;
     private int minCount, maxCount;
     private Vector<Vector<String>> lines;
 
-    /**
-     * Source component
-     */
-    public static final String ATTR_SOURCE = "source";
+
     /**
      * {@value} : array of lines to check
      */
@@ -71,40 +63,25 @@ public class CSVFileReadTester extends PrimImpl {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Prim src = sfResolve(ATTR_SOURCE, (Prim) null, true);
-        source = (CSVFileRead) src;
+        CSVFileRead source = (CSVFileRead) src;
         lines = (Vector<Vector<String>>) sfResolve(ATTR_LINES, lines, true);
         minCount = sfResolve(ATTR_MINCOUNT, 0, true);
         maxCount = sfResolve(ATTR_MAXCOUNT, 0, true);
-        reader = new ReaderThread(source);
-        reader.start();
+        setReader(new ReaderThread(source));
+        getReader().start();
     }
 
 
-    /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        SmartFrogThread.requestThreadTermination(reader);
 
-    }
-
-    private class ReaderThread extends SmartFrogThread {
+    private class ReaderThread extends CSVReaderThread {
+ 
         /**
-         *  data source
-         */
-        private CSVFileRead source;
-
-        /**
-         * Create a basic thread
-         *
+         * Create a reader
+         * @param source CSV source
          * @see Thread#Thread(ThreadGroup,Runnable,String)
          */
         private ReaderThread(CSVFileRead source) {
-            this.source = source;
+            super(CSVFileReadTester.this, source);
         }
 
         /**
@@ -140,19 +117,6 @@ public class CSVFileReadTester extends PrimImpl {
             //end of lines
         }
 
-        /**
-         * Runs the {@link #execute()} method, catching any exception it throws and storing it away for safe keeping
-         * After the run, the notify object is notified, and we trigger a workflow termination
-         */
-        public void run() {
-            super.run();
-            TerminationRecord tr = new TerminationRecord(
-                    getThrown() == null ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                    "CSV file read",
-                    sfCompleteNameSafe(),
-                    getThrown());
-            new ComponentHelper(CSVFileReadTester.this).targetForWorkflowTermination(tr);
-        }
 
         /**
          * compare two lines, fail if they mismatch
@@ -176,8 +140,8 @@ public class CSVFileReadTester extends PrimImpl {
                 if (!expectedElt.equals(actualElt)) {
                     throw new SmartFrogException(
                             "Line " + element + " does not match expected element " + i
-                                    + " expected=\"" + expectedElt + "\""
-                                    + " actual=\"" + actualElt + "\""
+                                    + " expected=\"" + expectedElt + '\"'
+                                    + " actual=\"" + actualElt + '\"'
                                     +":\n" + merged);
                 }
             }
