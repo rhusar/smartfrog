@@ -28,10 +28,10 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * component to read a column of a CSV into a single vector and attach it to a componennt
+ * component to test the file read operations; lets you validate headers and such like Created 20-Feb-2008 15:50:56
  */
 
-public class CSVColumnReader extends AbstractCSVProcessor implements Remote {
+public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
 
     /**
      * Column number
@@ -71,7 +71,7 @@ public class CSVColumnReader extends AbstractCSVProcessor implements Remote {
     private boolean trimFields;
 
 
-    public CSVColumnReader() throws RemoteException {
+    public CSVArrayReader() throws RemoteException {
     }
 
     /**
@@ -95,20 +95,18 @@ public class CSVColumnReader extends AbstractCSVProcessor implements Remote {
     }
 
 
-
     /**
      * do the work in a thread which triggers workflow events afterwards
      */
     private class ReaderThread extends CSVReaderThread {
-
-
 
         /**
          * Create a basic thread
          * @param source the data source
          */
         private ReaderThread(CSVFileRead source) {
-            super(CSVColumnReader.this,source);
+            super(CSVArrayReader.this,source);
+
         }
 
         /**
@@ -133,7 +131,7 @@ public class CSVColumnReader extends AbstractCSVProcessor implements Remote {
                         continue;
                     } else {
                         throw new SmartFrogDeploymentException("Too narrow, line #" + count + ": "
-                                + CSVFileReadImpl.merge(line), CSVColumnReader.this);
+                                + CSVFileReadImpl.merge(line), CSVArrayReader.this);
                     }
                 }
                 String columnValue=line[column-1];
