@@ -196,7 +196,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         Vector<String> commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
         if (log.isDebugEnabled()) {
             fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
-            StringBuffer buffer=new StringBuffer();
+            StringBuilder buffer=new StringBuilder();
             buffer.append("Running in dir ");
             buffer.append(workDirFile);
             buffer.append('\n');
@@ -343,8 +343,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Reads SF description = initial configuration.
      * Override this to read/set properties before we read ours, but remember to call
      * the superclass afterwards
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException resolution problems
+     * @throws RemoteException network problems
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
 
@@ -434,7 +434,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @param  cmd  command to be exceuted
      */
     public void execCmd(String cmd) {
-        if (cmd==null) return;
+        if (cmd == null) {
+            return;
+        }
         cmd = cmd + lineReturn;
 
         if (delayBetweenCmds > 0) {
@@ -469,13 +471,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      */
     public  void execBatch(Vector commands) {
 
-        if ((commands==null)||(commands.isEmpty())) return;
+        if ((commands == null) || (commands.isEmpty())) {
+            return;
+        }
 
         if (sfLog().isDebugEnabled()) sfLog().debug("Executing Batch: " + commands);
-        Object element;
-
-        for (Enumeration e = commands.elements(); e.hasMoreElements();) {
-            element = e.nextElement();
+        for (Object element:commands) {
             if (element instanceof String) {
                 execCmd((String) element);
             } else {
@@ -500,14 +501,14 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *@param  typeAttrib  all var attributes
      *@return a vector containing all Replace Var Attributes or null.
      */
-    private Vector readVarData(String typeAttrib) {
+    private Vector<String> readVarData(String typeAttrib) {
         if (typeAttrib==null) return null;
 
         if (sfLog().isTraceEnabled()) sfLog().trace(" runShell.readVarData()");
 
         Object key;
         Object value;
-        Vector data = new Vector();
+        Vector<String> data = new Vector<String>();
 
         for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
             key = e.nextElement();
@@ -518,20 +519,15 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                         value = (sfResolve((String) key));
 
                         if (value instanceof Vector) {
-                            Object element;
-
-                            for (Enumeration enu = ((Vector) value).elements();
-                                    enu.hasMoreElements();) {
-                                element = enu.nextElement();
-
+                            for(Object element: ((Vector) value)) {
                                 if (element instanceof String) {
-                                    data.add(element);
+                                    data.add((String) element);
                                     if (sfLog().isTraceEnabled())
                                         sfLog().trace("runShell.readVarData().Adding(Vect): " + element);
                                 }
                             }
                         } else if (value instanceof String) {
-                            data.add(value);
+                            data.add((String) value);
                             if (sfLog().isTraceEnabled())
                                 sfLog().trace("runShell.readVarData().Adding(Str):  " +value);
                         }
@@ -643,8 +639,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         if (!attributes.isEmpty()) {
             attributes.trimToSize();
-            for (Object attribute : attributes) {
-                String attr = (String) attribute;
+            for (String attr : attributes) {
                 if (!isEmptyArg(attr)) {
                     cmd.add(attr);
                 }
