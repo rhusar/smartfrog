@@ -22,21 +22,20 @@ package org.smartfrog.services.os.runshell;
 
 import org.smartfrog.services.display.PrintErrMsgInt;
 import org.smartfrog.services.display.PrintMsgInt;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.utils.generic.OutputStreamIntf;
 import org.smartfrog.services.utils.generic.StreamGobbler;
 import org.smartfrog.services.utils.generic.StreamIntf;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.logging.Log;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -44,7 +43,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 
