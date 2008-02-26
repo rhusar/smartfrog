@@ -347,10 +347,10 @@
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="createParser" depends="init">
+  <target name="createParser" depends="init"> 
     <!-- Javacc the parser files - both sf and csf -->
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
   <!-- =================================================================== -->
