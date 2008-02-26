@@ -33,6 +33,7 @@ RemoteResource extends Prim {
   HTTP_NTLM "HTTP_NTLM"
   HTTP_DIGEST "HTTP_DIGEST";
   authorization NO_AUTH;
+  authenticationRequired false;
 
   username "";
   //can be a property or a reference to a password provider
@@ -66,8 +67,10 @@ RemoteResource extends Prim {
 
   mimeType [];
 
+  protocol "http";
   //not yet implemented
   resultXPath "";
+  responseRegexp "";
   
 
   //data source
