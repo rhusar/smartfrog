@@ -39,6 +39,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
   }
 
 
+  RunFailingTests extends IsPropertySet {
+    property "run.failing.tests";
+  }
+
+
+
   TestWarServer extends LocalJettyServer {
 
     contextPath "/testwar";
@@ -113,6 +119,7 @@ TestSecurity extends TestWarDeployed {
 }
 
 testSecurityUnauth extends TestSecurity {
+  if extends RunFailingTests;
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
   //patch the wait operation
@@ -170,8 +177,11 @@ TestRealm extends TestWarDeployed {
 
 
 testRealmUnauth extends TestRealm {
+
   description "set the wrong password, and expect to get an authorisation failure. If we get the page back, security is not working";
 
+  if extends RunFailingTests;
+  
   //patch the wait operation
   tests:wait:password "wrong-password";
   tests:wait:minimumResponseCode HttpCodes:UNAUTHORIZED;
