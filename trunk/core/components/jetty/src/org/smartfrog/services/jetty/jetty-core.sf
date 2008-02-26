@@ -177,7 +177,7 @@ JettyListener extends JettySocketConnector {
   * SSL Support. A password provider is used for password support
   */
 JettySSLSocketConnector extends JettySocketConnector {
-    sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpll";
+    sfClass "org.smartfrog.services.jetty.listeners.SSLJettySocketConnectorImpl";
     port 443;
     jettySSLSocketConnectorSchema extends Schema {
        //path/reference to a keystore
