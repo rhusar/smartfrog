@@ -147,7 +147,9 @@ For more information: www.smartfrog.org
      headers [];
      host "127.0.0.1";
      logResponse false;
-     protocol "http";
+     HTTP "http";
+     HTTPS "https";
+     protocol HTTP;
      maximumResponseCode HttpCodes:END_2XX;
      minimumResponseCode HttpCodes:START_2XX;
      mimeType [];

@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/restlet/test/system/testwar/ports.sf"
 #include "/org/smartfrog/services/filesystem/file.sf"
+#include "/org/smartfrog/services/restlet/test/system/testwar/ports.sf"
 #include "/org/smartfrog/services/restlet/test/system/components.sf"
 
 /**
@@ -146,6 +146,7 @@ JettyHTTPS extends LocalJettyServer {
 
         get extends GetRestResource {
           sfShouldTerminate true;
+          host hostname;
           port PARENT:PARENT:PARENT:port;
           page PARENT:PARENT:PARENT:contextPath;
         }
