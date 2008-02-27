@@ -1,3 +1,22 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
 package org.smartfrog.sfcore.common;
 
 import java.io.Serializable;
@@ -8,6 +27,11 @@ import java.io.Serializable;
  */
 public class SFByteArray implements Serializable {
     private byte[] array;
+    private static final String HEX = "HEX";
+    private static final String DEC = "DEC";
+    private static final String OCT = "OCT";
+    private static final String BIN = "BIN";
+    private static final String B64 = "B64";
 
     /**
      * Constructor for an instance of the class for use by the parser - includes line and character info
@@ -39,7 +63,7 @@ public class SFByteArray implements Serializable {
      * @throws SmartFrogParseException if the data cannot be converted
      */
     public SFByteArray(String data, String type, int line, int column) throws SmartFrogParseException {
-        if (type.equals("HEX")) {
+        if (type.equals(HEX)) {
             if (data.length() != ((data.length() >> 1) << 1))
                 throw new SmartFrogParseException(new StringBuffer()
                         .append("HEX data at line:").append(line)
@@ -47,7 +71,7 @@ public class SFByteArray implements Serializable {
                         .append(" must have even number of characters")
                         .toString());
             processHEXString(data, line, column);
-        } else if (type.equals("DEC")) {
+        } else if (type.equals(DEC)) {
             if ((data.length()%3) != 0)
                 throw new SmartFrogParseException(new StringBuffer()
                         .append("DEC data at line:").append(line)
@@ -55,7 +79,7 @@ public class SFByteArray implements Serializable {
                         .append(" must have a number of characters divisible by 3")
                         .toString());
             processDECString(data, line, column);
-        } else if (type.equals("OCT")) {
+        } else if (type.equals(OCT)) {
             if ((data.length()%3)!= 0)
                 throw new SmartFrogParseException(new StringBuffer()
                         .append("OCT data at line:").append(line)
@@ -63,7 +87,7 @@ public class SFByteArray implements Serializable {
                         .append(" must have a number of characters divisible by 3")
                         .toString());
             processOCTString(data, line, column);
-        } else if (type.equals("BIN")) {
+        } else if (type.equals(BIN)) {
              if ((data.length() % 8) != 0)
                 throw new SmartFrogParseException(new StringBuffer()
                         .append("BIN data at line:").append(line)
@@ -71,7 +95,7 @@ public class SFByteArray implements Serializable {
                         .append(" must have a number of characters divisible by 8")
                         .toString());
             processBINString(data, line, column);
-        } else if (type.equals("B64")) {
+        } else if (type.equals(B64)) {
             throw new SmartFrogParseException("B64 byte arrays are not yet supported in SmartFrog");
         } else {
             throw new SmartFrogParseException("Illegal byte array type on construction " + type);
@@ -236,8 +260,8 @@ public class SFByteArray implements Serializable {
      */
     private String processArray() {
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
-            int j = (array[i] < 0)? 256 + array[i] : array[i] ;  // deal with caste-up sign-extending!
+        for (byte anArray : array) {
+            int j = (anArray < 0) ? 256 + anArray : anArray;  // deal with cast-up sign-extending!
             int k = (j >> 4);
             int l = (j - (k << 4));
             s.append(indexstring[k]);

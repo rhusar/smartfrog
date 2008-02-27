@@ -19,10 +19,12 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
+
 import java.rmi.RemoteException;
 
 /**
@@ -45,7 +47,7 @@ public class ActionDiagnostics extends ConfigurationAction {
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+            SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }

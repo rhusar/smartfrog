@@ -269,8 +269,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return boolean true if the attribute exists
      */
     public boolean contains (Object value) {
-        if (cxt == null) return false;
-        return cxt.contains(value);
+        return cxt != null && cxt.contains(value);
     }
     /**
      * Checks if some attribute exists in exception context.
@@ -279,8 +278,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return boolean true if the attribute exists
      */
     public boolean containsKey (Object value) {
-        if (cxt == null) return false;
-        return cxt.containsKey(value);
+        return cxt != null && cxt.containsKey(value);
     }
 
     /**
@@ -322,7 +320,7 @@ public class SmartFrogException extends Exception implements Serializable {
      */
     public String toString (String nm) {
         StringBuilder strb = new StringBuilder();
-        strb.append (shortClassName() +":: ");
+        strb.append(shortClassName()).append(":: ");
         if (getMessage()!=null){
             if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {
                strb.append (getCauseMessage(nm));

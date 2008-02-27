@@ -19,16 +19,16 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.compound.Compound;
-
 
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -85,7 +85,7 @@ public class ActionDeploy extends ConfigurationAction {
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+            SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }

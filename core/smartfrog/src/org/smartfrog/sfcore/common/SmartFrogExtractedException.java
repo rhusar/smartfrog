@@ -213,7 +213,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      * form that the far end can hande.
      */
     public static Throwable convert(Throwable thrown) {
-        if(thrown==null) {
+        if (thrown == null) {
             return null;
         }
         boolean convert;
@@ -222,16 +222,17 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
             convert = false;
         } else {
             String classname = thrown.getClass().getName();
-            convert = !classname.startsWith("java.") && !classname.startsWith("javax.");
+            convert = !classname.startsWith("java.") && !classname.startsWith(
+                    "javax.");
         }
 
 
         Throwable cause = thrown.getCause();
         Throwable exception;
-        boolean hasCause=cause!=null && cause!=thrown;
-        if(hasCause) {
+        boolean hasCause = cause != null && cause != thrown;
+        if (hasCause) {
             //if we have a cause, recursively convert us
-            Throwable newCause=convert(cause);
+            Throwable newCause = convert(cause);
             if (!convert && newCause == cause) {
                 //no change in the child, and we are of an allowed type
                 exception = thrown;
@@ -241,12 +242,12 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
             }
         } else {
             //no children. This is the base of the cause tree.
-            if(!convert) {
+            if (!convert) {
                 //and return unchanged.
                 exception = thrown;
             } else {
                 //we need to remarshall us
-                exception = createFromThrowable(thrown,null);
+                exception = createFromThrowable(thrown, null);
             }
         }
         return exception;

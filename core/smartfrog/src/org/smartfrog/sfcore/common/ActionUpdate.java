@@ -19,13 +19,13 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.Update;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
-
 
 import java.rmi.RemoteException;
 
@@ -44,29 +44,30 @@ public class ActionUpdate extends ConfigurationAction {
      *
      * @param url             URL of resource to parse
      * @param component       reference for the component to update.
+     * @param context context, may be null
      * @param deployReference reference to resolve in ComponentDescription.
      *                        If ref is null the whole result ComponentDescription is returned.
      * @return Prim Reference to deployed component
      * @throws SmartFrogException
      *                                  failure in some part of the process
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws  RemoteException In case of network/rmi error
      */
     public static Update update(String url, Update component,
-                                Context c, Reference deployReference) throws SmartFrogException, RemoteException {
+                                Context context, Reference deployReference) throws SmartFrogException, RemoteException {
 
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+             SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
 
-        if (c == null) c = new ContextImpl();
+        if (context == null) context = new ContextImpl();
 
         //select the language first from the context, then from the URL itself
         String language;
-        language = (String) c.get(KEY_LANGUAGE);
+        language = (String) context.get(KEY_LANGUAGE);
         if (language == null) {
             language = url;
         }
@@ -95,7 +96,8 @@ public class ActionUpdate extends ConfigurationAction {
      * @return Object Reference to deployed component
      * @throws SmartFrogException
      *                                  failure in some part of the process
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException for execution problems
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
             throws SmartFrogException, RemoteException {

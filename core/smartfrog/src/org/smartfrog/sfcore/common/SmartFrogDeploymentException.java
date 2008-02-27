@@ -21,11 +21,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.io.Serializable;
 
 /**
  * A SmartFrogDeploymentException is thrown if the attempt at creating the
@@ -222,7 +222,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
                                 ? (get(SOURCE)+ " failed to deploy ") : "" ));
         strb.append ((((this.containsKey(OBJECT_NAME)))? ("'"+get(OBJECT_NAME)
                                  +"' component") : "unnamed component" ));
-        strb.append ((super.getMessage() == null)  ? "" : ". "+super.getMessage().toString());
+        strb.append ((super.getMessage() == null)  ? "" : ". "+super.getMessage());
        return strb.toString();
     }
 
@@ -236,7 +236,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      */
     public String toString(String nm) {
         StringBuilder strb = new StringBuilder();
-        strb.append (""+ shortClassName() +": ");
+        strb.append("").append(shortClassName()).append(": ");
 
         if (getMessage()!=null){
             if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {

@@ -21,11 +21,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 
+import org.smartfrog.SFSystem;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Vector;
-import org.smartfrog.SFSystem;
 
 
 /**
@@ -86,7 +87,7 @@ public class ParseOptionSet {
     public String fileName =null;
 
     /** List of files to be parsed. */
-    public Vector filesList=null;
+    public Vector<String> filesList=null;
 
     /** Flag indicating to show status parsing report or not. */
     public boolean statusReport=false;
@@ -186,9 +187,9 @@ public class ParseOptionSet {
      * @param url String url
      * @return Vector of parsed lines
      */
-    private synchronized Vector loadListOfFiles(String url) {
+    private synchronized Vector<String> loadListOfFiles(String url) {
       String thisLine;
-      Vector list=new Vector();
+      Vector<String> list=new Vector<String>();
         LineNumberReader file=null;
         try {
           //Do not allow other threads to read from the input
@@ -228,16 +229,19 @@ public class ParseOptionSet {
      * @return string representation
      */
     public String toString (){
-       StringBuffer strb = new StringBuffer();
+       StringBuilder strb = new StringBuilder();
        strb.append("SFParse options:");
-       strb.append("\n - Verbose:       "+ verbose);
-       strb.append("\n - Quiet:         "+  quiet);
-       strb.append("\n - Description:   "+ description);
-       strb.append("\n - File:          "+ fileName);
-       strb.append("\n   * load from file:"+ loadDescriptionsFromFile);
-       strb.append("\n   * filesList:   "+ filesList);
-       strb.append("\n - Help:          "+ help);
-       strb.append("\n - Status report: "+ statusReport);
+       strb.append("\n - Verbose:       ").append(verbose);
+       strb.append("\n - Quiet:         ").append(quiet);
+       strb.append("\n - Description:   ").append(description);
+       strb.append("\n - File:          ").append(fileName);
+       strb.append("\n   * load from file:").append(loadDescriptionsFromFile);
+       strb.append("\n   * filesList:   ");
+       for (String file : filesList) {
+           strb.append("\n     ").append(file);
+       }
+       strb.append("\n - Help:          ").append(help);
+       strb.append("\n - Status report: ").append(statusReport);
        return strb.toString();
     }
 }

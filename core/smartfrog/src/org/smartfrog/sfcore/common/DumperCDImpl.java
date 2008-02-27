@@ -22,25 +22,22 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
-import java.rmi.RemoteException;
-import java.rmi.MarshalledObject;
-import java.rmi.server.RemoteObject;
-import java.util.Date;
-import java.util.Enumeration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
+import java.util.Enumeration;
 
 /**
  * @since 3.11.001
@@ -71,7 +68,7 @@ public class DumperCDImpl implements Dumper {
 
     public DumperCDImpl(Prim from){
         try {
-            java.rmi.server.UnicastRemoteObject.exportObject(this);
+            UnicastRemoteObject.exportObject(this);
             rootRef = from.sfCompleteName();
         } catch (RemoteException e) {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
@@ -93,15 +90,17 @@ public class DumperCDImpl implements Dumper {
      * @param from Owner of context to place in CD
      * @param stateCopy context for the new component description node
      */
-    public void modifyCD(Reference from, Context stateCopy ) throws Exception, RemoteException {
+    public void modifyCD(Reference from, Context stateCopy ) throws Exception {
         try {
             //Remove non re-deployable keys
-            for (int i=0; i< sfKeysToBeRemoved.length; i++){
-                if (stateCopy.sfContainsAttribute(sfKeysToBeRemoved[i])) {
+            for (String aSfKeysToBeRemoved : sfKeysToBeRemoved) {
+                if (stateCopy.sfContainsAttribute(aSfKeysToBeRemoved)) {
                     try {
-                        stateCopy.sfRemoveAttribute(sfKeysToBeRemoved[i]);
+                        stateCopy.sfRemoveAttribute(aSfKeysToBeRemoved);
                     } catch (SmartFrogContextException e) {
-                        if (sfLog().isWarnEnabled()) sfLog().warn(e);
+                        if (sfLog().isWarnEnabled()) {
+                            sfLog().warn(e);
+                        }
                     }
                 }
             }
@@ -152,7 +151,7 @@ public class DumperCDImpl implements Dumper {
       * @return The string representation of the description
       *
       * @throws Exception attribute not found after timeout
-      * @throws RemoteException if there is any network or remote error
+      * @throws SmartFrogException if there is any network or remote error
      *
       */
      public ComponentDescription getComponentDescription ( long waitTimeout) throws SmartFrogException {
@@ -265,7 +264,7 @@ public class DumperCDImpl implements Dumper {
     /** This modifies the default set of sfKeys that are removed from every context.
      * @todo once the visits are started this method should not allow any updates. In any case,
      * the updates are ignored once the visits start
-     * @param keysToBeRemoved
+     * @param keysToBeRemoved keys to pull
      */
     public void sfKeysToBeRemoved (String[] keysToBeRemoved) {
         this.sfKeysToBeRemoved = keysToBeRemoved;
@@ -310,7 +309,7 @@ public class DumperCDImpl implements Dumper {
             try {
                 ComponentDescription componentDescription = getComponentDescription(timeout);
                 componentDescription.setEager(true);
-                ((PrettyPrinting)componentDescription).writeOn(out, 1);
+                componentDescription.writeOn(out, 1);
             } catch (SmartFrogException e) {
                 out.write(e.getMessage());
             }

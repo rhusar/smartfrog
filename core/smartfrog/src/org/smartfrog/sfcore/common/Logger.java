@@ -21,11 +21,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class used to store some flags used for log reporting.
@@ -46,18 +47,18 @@ public class Logger implements MessageKeys {
 
     //Configuration parameters
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_LOG_STACK_TRACE = "logStackTrace";
+    public static final String ATR_LOG_STACK_TRACE = "logStackTrace";
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_LOG_LIVENESS = "logLiveness";
+    public static final String ATR_LOG_LIVENESS = "logLiveness";
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
+    public static final String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_TEST_NETWORK = "testNetwork";
+    public static final String ATR_TEST_NETWORK = "testNetwork";
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_TEST_URI = "testURI";
+    public static final String ATR_TEST_URI = "testURI";
 
     /** String name for optional attribute "{@value}". */
-    public final static String ATR_TEST_JAR_REPEAT = "testJarRepeat";
+    public static final String ATR_TEST_JAR_REPEAT = "testJarRepeat";
 
     /** Property to enable stack trace. The default value is overridden by the
      * value specified in default.ini file.
@@ -139,15 +140,21 @@ public class Logger implements MessageKeys {
         try {
             // Check for repeated Jar files in classpath
             String[] words = Logger.testJarRepeat;
-            String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
+            String[] classpath = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
             StringBuffer message = Logger.getRepeatsMessage(words, classpath);
-            if (message !=null) SFSystem.sfLog().warn("Possible problem with classpath: \n"+message.toString());
+            if (message !=null) {
+                SFSystem.sfLog().warn("Possible problem with classpath: \n"+message.toString());
+            }
             // Check for repeated Jar files in code base
-            String codebaseproperty = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
+            String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
             if (codebaseproperty != null) {
-              String codebase[] = codebaseproperty.split(System.getProperty("path.separator"));
-              message =  Logger.getRepeatsMessage(words, codebase);
-              if (message !=null) SFSystem.sfLog().warn("Possible problem with codebase: "+message.toString());
+                String[] codebase = codebaseproperty.split(System.getProperty(
+                        "path.separator"));
+                message = Logger.getRepeatsMessage(words, codebase);
+                if (message != null) {
+                    SFSystem.sfLog()
+                            .warn("Possible problem with codebase: " + message.toString());
+                }
             }
         } catch (Throwable thr) { /*ignore*/ }
     }
@@ -160,15 +167,18 @@ public class Logger implements MessageKeys {
         return initialized;
     }
 
-    public static StringBuffer getRepeatsMessage(String[] words, String[] codebase) {
+    public static StringBuffer getRepeatsMessage(String[] words,
+                                                 String[] codebase) {
         String repeats;
         StringBuffer message = null;
         for (String word : words) {
-          repeats = checkRepeatedWords(word, codebase);
-          if (repeats !=null) {
-            if (message == null) message = new StringBuffer();
-            message.append("  "+repeats);
-          }
+            repeats = checkRepeatedWords(word, codebase);
+            if (repeats != null) {
+                if (message == null) {
+                    message = new StringBuffer();
+                }
+                message.append("  " + repeats);
+            }
         }
         return message;
     }
@@ -198,7 +208,9 @@ public class Logger implements MessageKeys {
         }
         if (count >1) {
            return (count + " occurrences for "+word + strb.toString()+"\n");
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
 }

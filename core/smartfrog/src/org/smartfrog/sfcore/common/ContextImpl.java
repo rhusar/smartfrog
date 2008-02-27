@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,19 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 
 /**
@@ -366,7 +377,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public synchronized void sfRemoveTag(Object name, String tag)  throws SmartFrogContextException {
         if (!containsKey(name))
-            throw new SmartFrogContextException("Attribute " + name + " does not exists for removing tags");
+            throw new SmartFrogContextException("Attribute " + name + " does not exist for removing tags");
         Set s = (Set)attributeTags.get(name);
         if ( s == null ) { 
             // do nothing - its not there
@@ -385,7 +396,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
      */
     public synchronized void sfAddTags(Object name, Set tags) throws SmartFrogContextException {
         if (!containsKey(name))
-            throw new SmartFrogContextException("Attribute " + name + " does not exists for adding tags");
+            throw new SmartFrogContextException("Attribute " + name + " does not exist for adding tags");
         Set s = (Set)attributeTags.get(name);      
         if( s == null ) {
             s = Collections.synchronizedSet(new HashSet());

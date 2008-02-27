@@ -22,27 +22,22 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFSystem;
-
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Arrays;
-import java.rmi.RemoteException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.rmi.ConnectException;
-
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 
+import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.PrintWriter;
+import java.net.UnknownHostException;
+import java.rmi.ConnectException;
+import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Hashtable;
 
 /**
  *  Creating a Configuration Descriptor with options
@@ -86,7 +81,7 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final String ACT_DUMP = "DUMP";
         public static final int DUMP = 10;
 
-        static public String[] type= {
+        public static String[] type= {
                       ACT_DEPLOY,
                       ACT_TERMINATE,
                       ACT_UNDEFINED,
@@ -154,7 +149,7 @@ public class ConfigurationDescriptor implements MessageKeys {
         public static final int FAILED=1;
         public static final int UNDEFINED=2;
         public static final int UNKNOWN=3;
-        static String[] type= {"SUCCESSFUL",
+        public static String[] type= {"SUCCESSFUL",
                                "FAILED",
                                "UNDEFINED",
                                "UNKNOWN"};
@@ -814,7 +809,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * of the field. It previously removes " or '
      * @param token token marks the beginning of the field
      * @return String last field from TempURL marked by token
-     * @throws java.lang.Exception  failure in some part of the process
+     * @throws Exception  failure in some part of the process
      */
     private String getAndCutLastFieldTempURL( String token) throws Exception{
         String field = null;
@@ -1214,7 +1209,9 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return  String hostname
      */
     public String getHost() {
-        if ((hostsList == null)||(hostsList.length==0)) return null;
+        if ((hostsList == null) || (hostsList.length == 0)) {
+            return null;
+        }
         return hostsList[0];
     }
 
@@ -1223,9 +1220,14 @@ public class ConfigurationDescriptor implements MessageKeys {
      * @return  String hostname/s
      */
     public String getHostsString() {
-        if (hostsList == null) return null;
-        if (hostsList.length==1) return hostsList[0];
-        else return Arrays.toString(hostsList);
+        if (hostsList == null) {
+            return null;
+        }
+        if (hostsList.length == 1) {
+            return hostsList[0];
+        } else {
+            return Arrays.toString(hostsList);
+        }
     }
 
     /**
@@ -1233,6 +1235,7 @@ public class ConfigurationDescriptor implements MessageKeys {
      * with the format [...,...,...]
      * This creates a list of one host only.
      * @param hostsString hostname/hostnames
+     * @throws SmartFrogInitException if the string could not be parsed
      */
     public void setHost(String hostsString) throws SmartFrogInitException {
         if (hostsString==null || isEmpty(hostsString)) return;
@@ -1250,7 +1253,13 @@ public class ConfigurationDescriptor implements MessageKeys {
     }
 
 
-    public String[] getHostList (String hostUrlString) throws SmartFrogInitException{
+    /**
+     * Crack the host list
+     * @param hostUrlString a list of hosts or a single host
+     * @return an array containing one or more hosts
+     * @throws SmartFrogInitException if the string could not be parsed
+     */
+    public String[] getHostList (String hostUrlString) throws SmartFrogInitException {
         String[] hostList = null;
         if (hostUrlString.startsWith("[")){
             if (!hostUrlString.endsWith("]")) throw new SmartFrogInitException( "Error parsing HOST_URLString in: "+ hostUrlString +", missing ']'");
