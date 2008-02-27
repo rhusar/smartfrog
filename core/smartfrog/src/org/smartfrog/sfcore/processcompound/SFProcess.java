@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.processcompound;
 
@@ -31,38 +31,37 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.SFDeployer;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.rmi.ConnectException;
-import java.lang.reflect.Constructor;
-
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
  * Access point to the single allowed process compound for a VM. It holds the
- * single instance of the process compound. It also knows how to get
- * a process compound from a given host and process name by forwarding the
- * request to the process compound on that host. Thirdly it maintains a
- * root locator which knows how to make a process compound the root
- * process compound for a host, and to get a root process compound.
- *
+ * single instance of the process compound. It also knows how to get a process
+ * compound from a given host and process name by forwarding the request to the
+ * process compound on that host. Thirdly it maintains a root locator which
+ * knows how to make a process compound the root process compound for a host,
+ * and to get a root process compound.
  */
 public class SFProcess implements MessageKeys {
+
     /**
      * Log for SFProcess (Process Log).
      */
-    private static LogSF sfLog= LogFactory.sfGetProcessLog();
+    private static LogSF sfLog = LogFactory.sfGetProcessLog();
     /**
      * Single instance of process compound for this process
      */
@@ -82,23 +81,23 @@ public class SFProcess implements MessageKeys {
      * Reference to root locator class.
      */
     protected static final Reference refRootLocatorClass = new Reference(
-                SmartFrogCoreKeys.SF_ROOT_LOCATOR_CLASS);
+            SmartFrogCoreKeys.SF_ROOT_LOCATOR_CLASS);
 
     /**
      * Reference to process compound.
      */
     protected static final Reference refProcessCompound = new Reference(
-                "ProcessCompound");
+            "ProcessCompound");
     private static final String INTERRUPT_HANDLER = "org.smartfrog.sfcore.processcompound.InterruptHandlerImpl";
-    private static final String ERROR_NO_INTERRUPT_HANDLER = "Could not create an interrupt handler from "+ INTERRUPT_HANDLER
-            +"\nSmartFrog may be running on a JVM which does not support this feature";
+    private static final String ERROR_NO_INTERRUPT_HANDLER = "Could not create an interrupt handler from " + INTERRUPT_HANDLER
+            + "\nSmartFrog may be running on a JVM which does not support this feature";
 
 //    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
 //     *  It can be replaced using sfSetLog()
 //     */
 //    private LogSF sflog = sfLog();
 
-    private SFProcess (){
+    private SFProcess() {
     }
 
     /**
@@ -110,7 +109,8 @@ public class SFProcess implements MessageKeys {
      *
      * @throws Exception if failed to set root locator
      */
-    public static synchronized void setRootLocator(RootLocator c) throws Exception {
+    public static synchronized void setRootLocator(RootLocator c)
+            throws Exception {
         if (rootLocator != null) {
             throw new Exception("Root locator already set");
         }
@@ -119,14 +119,15 @@ public class SFProcess implements MessageKeys {
 
 
     /**
-     * Sets the single instance of process compound for this process.
-     * The ProcessCompound can only be set once.
+     * Sets the single instance of process compound for this process. The
+     * ProcessCompound can only be set once.
      *
      * @param pc root locator to use.
      *
      * @throws Exception if failed to set process compound
      */
-    public static synchronized void setProcessCompound (ProcessCompound pc) throws Exception {
+    public static synchronized void setProcessCompound(ProcessCompound pc)
+            throws Exception {
         if (processCompound != null) {
             throw new Exception("ProcessCompound already set");
         }
@@ -143,17 +144,19 @@ public class SFProcess implements MessageKeys {
      * @return root locator for this process
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
-     *         deploying the component
+     * @throws SmartFrogDeploymentException In case of any error while deploying
+     * the component
      */
     public static synchronized RootLocator getRootLocator()
-        throws SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
         String className = null;
 
         try {
             if (rootLocator == null) {
-                className = (String) getProcessCompoundDescription().sfResolve(refRootLocatorClass);
-                rootLocator = (RootLocator) SFClassLoader.forName(className).newInstance();
+                className = (String) getProcessCompoundDescription().sfResolve(
+                        refRootLocatorClass);
+                rootLocator = (RootLocator) SFClassLoader.forName(className)
+                        .newInstance();
             }
         } catch (ClassNotFoundException cnfexcp) {
             // TODO: Check
@@ -192,7 +195,7 @@ public class SFProcess implements MessageKeys {
      * @throws RemoteException trouble on the wire
      */
     protected static Prim deployComponent(ComponentDescription comp)
-        throws SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
         Prim dComp = null;
 
         try {
@@ -204,10 +207,13 @@ public class SFProcess implements MessageKeys {
             if (dComp != null) {
                 try {
                     dComp.sfTerminate(TerminationRecord.abnormal(
-                            "Deployment Failure: " + ex, comp.sfCompleteName()));
+                            "Deployment Failure: " + ex,
+                            comp.sfCompleteName()));
                 } catch (Exception termex) {
                     // ignore
-                    if (sfLog().isIgnoreEnabled()){sfLog().ignore(ex); }
+                    if (sfLog().isIgnoreEnabled()) {
+                        sfLog().ignore(ex);
+                    }
                 }
             }
 
@@ -234,9 +240,13 @@ public class SFProcess implements MessageKeys {
         } catch (Exception ex) {
             Reference newRef = ComponentHelper.completeNameSafe(comp);
             try {
-                TerminationRecord tr = TerminationRecord.abnormal("Failed to start ", newRef);
+                TerminationRecord tr = TerminationRecord.abnormal(
+                        "Failed to start ",
+                        newRef);
                 if (sfLog().isErrorEnabled()) {
-                  sfLog().error(newRef.toString(),SmartFrogException.forward(ex),tr);
+                    sfLog().error(newRef.toString(),
+                            SmartFrogException.forward(ex),
+                            tr);
                 }
                 comp.sfTerminate(tr);
             } catch (Exception termEx) {
@@ -248,22 +258,25 @@ public class SFProcess implements MessageKeys {
     }
 
     public static void addDefaultProcessDescriptions
-        (ComponentDescription compDesc) throws SmartFrogException, RemoteException {
+            (ComponentDescription compDesc)
+            throws SmartFrogException, RemoteException {
         Properties props = System.getProperties();
-        String name =null;
-        String url=null;
-        String key=null;
+        String name = null;
+        String url = null;
+        String key = null;
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             key = e.nextElement().toString();
             if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                 // Collects all properties refering to default descriptions that
                 // have to be deployed inmediately after process compound
                 // is started.
-                url = (String)props.get(key);
+                url = (String) props.get(key);
                 name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
                 //SFSystem.deployFromURL(url,name, comp);
-                ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url);
-                compDesc.sfReplaceAttribute(name,cd); //.getContext().put(name,cd);
+                ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(
+                        url);
+                compDesc.sfReplaceAttribute(name,
+                        cd); //.getContext().put(name,cd);
             }
         }
     }
@@ -277,6 +290,7 @@ public class SFProcess implements MessageKeys {
 
     /**
      * Flag that indicates the process is terminated
+     *
      * @return the current flag value
      */
     static boolean isProcessCompoundTerminated() {
@@ -284,14 +298,15 @@ public class SFProcess implements MessageKeys {
     }
 
     /**
-     * Sets processCompoundTerminated to true, and returns its
-     * previous value, in a synchronized operation
+     * Sets processCompoundTerminated to true, and returns its previous value,
+     * in a synchronized operation
+     *
      * @return the previous value.
      */
     static synchronized boolean markProcessCompoundTerminated() {
-        boolean isTerminated=processCompoundTerminated;
-        if(!isTerminated) {
-            processCompoundTerminated=true;
+        boolean isTerminated = processCompoundTerminated;
+        if (!isTerminated) {
+            processCompoundTerminated = true;
         }
         return isTerminated;
     }
@@ -300,36 +315,38 @@ public class SFProcess implements MessageKeys {
      * Deploys the local process compound, if not already there
      *
      * @param addShutdownHook flag to enable shutdown hook listening
+     *
      * @return local process compound
      *
      * @throws SmartFrogException if failed to deploy process compound
      */
     public static synchronized ProcessCompound deployProcessCompound(boolean addShutdownHook)
-        throws SmartFrogException,RemoteException {
+            throws SmartFrogException, RemoteException {
 
         if (processCompound != null) {
             return processCompound;
         }
-
 
         //conditionally add a shutdown hook when the JVM permits it
         if (addShutdownHook) {
             try {
                 Class irqHandlerClass = Class.forName(INTERRUPT_HANDLER);
                 Constructor constructor = irqHandlerClass.getConstructor(new Class[0]);
-                InterruptHandler handler=(InterruptHandler) constructor.newInstance(new Object[0]);
+                InterruptHandler handler = (InterruptHandler) constructor.newInstance(
+                        new Object[0]);
                 handler.bind("INT", sfLog());
             } catch (NoClassDefFoundError e) {
                 //class not found
-                sfLog().error(ERROR_NO_INTERRUPT_HANDLER,e);
+                sfLog().error(ERROR_NO_INTERRUPT_HANDLER, e);
             } catch (Exception ex) {
                 //all the other ways things could fail; see SFOS-159
                 sfLog().error(ERROR_NO_INTERRUPT_HANDLER, ex);
             }
         }
 
-        ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription().copy();
-        ComponentDescription descrCache = (ComponentDescription)descr.copy();
+        ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription()
+                .copy();
+        ComponentDescription descrCache = (ComponentDescription) descr.copy();
 
         try {
             // A process compound sets processcompound in SFProcess at the end of its
@@ -337,7 +354,7 @@ public class SFProcess implements MessageKeys {
             startComponent(deployComponent(descr));
 
             //cache process component description
-           processCompoundDescription = descrCache;
+            processCompoundDescription = descrCache;
 
         } catch (Exception e) {
             throw SmartFrogDeploymentException.forward(e);
@@ -352,34 +369,39 @@ public class SFProcess implements MessageKeys {
     }
 
 
-
     /**
      * Resets the root process compound
+     *
      * @param terminatorCompleteName reference of terminatorCompleteName
+     *
      * @return new root process compound
      *
-     * @throws SmartFrogException if failed to deploy process compound, the root process compound didn't exist or ir the local process compound is not a root process compound
-     *
+     * @throws SmartFrogException if failed to deploy process compound, the root
+     * process compound didn't exist or ir the local process compound is not a
+     * root process compound
      */
-    public static synchronized ProcessCompound resetRootProcessCompound(Reference terminatorCompleteName)
-        throws SmartFrogException,RemoteException {
-        if ((processCompound != null)&& processCompound.sfIsRoot()) {
+    public static synchronized ProcessCompound resetRootProcessCompound(
+            Reference terminatorCompleteName)
+            throws SmartFrogException, RemoteException {
+        if ((processCompound != null) && processCompound.sfIsRoot()) {
             //Terminate process compound but without system exit
             processCompound.systemExitOnTermination(false);
             TerminationRecord termR = TerminationRecord.normal(
-                   "Restarting ProcessCompound: "+
-                    processCompound.sfCompleteName(), terminatorCompleteName);
-                processCompound.sfAddAttribute("sfSyncTerminate",Boolean.TRUE);
-                processCompound.sfTerminate(termR);
-                // reset cached processCompoundDescription
-                processCompoundDescription = null;
-                return deployProcessCompound(true);
+                    "Restarting ProcessCompound: " +
+                            processCompound.sfCompleteName(),
+                    terminatorCompleteName);
+            processCompound.sfAddAttribute("sfSyncTerminate", Boolean.TRUE);
+            processCompound.sfTerminate(termR);
+            // reset cached processCompoundDescription
+            processCompoundDescription = null;
+            return deployProcessCompound(true);
         }
         if (processCompound == null) {
-           throw new SmartFrogRuntimeException ("Process Compound cannot be reset: is null");
-        }else {
             throw new SmartFrogRuntimeException(
-                "Process Compound cannot be reset");
+                    "Process Compound cannot be reset: is null");
+        } else {
+            throw new SmartFrogRuntimeException(
+                    "Process Compound cannot be reset");
         }
     }
 
@@ -387,19 +409,19 @@ public class SFProcess implements MessageKeys {
     /**
      * Gets the description for the process compound. Retrieves the default
      * description out of processcompound.sf. Then allows overrides from any
-     * system property starting with the contents of the propBase variable.
-     * The description is type and deployResolved. Since system properties do
-     * not handle numbers, the number representation for system properties is
-     * restricted to doubles. For each value in the targetted system
-     * properties conversion is attempted to a number.
+     * system property starting with the contents of the propBase variable. The
+     * description is type and deployResolved. Since system properties do not
+     * handle numbers, the number representation for system properties is
+     * restricted to doubles. For each value in the targetted system properties
+     * conversion is attempted to a number.
      *
      * @return component description for process compound
      *
-     * @exception SmartFrogException failed to create description
+     * @throws SmartFrogException failed to create description
      * @throws RemoteException In case of network/rmi error
      */
     public static ComponentDescription getProcessCompoundDescription()
-        throws SmartFrogException, RemoteException {
+            throws SmartFrogException, RemoteException {
 
         if (processCompoundDescription != null) {
             //return cache
@@ -414,11 +436,10 @@ public class SFProcess implements MessageKeys {
         // this would replace ProcessCompoundImpl.deployDefaultProcessDescriptions
         //addDefaultProcessDescriptions (processCompoundDescription);
 
-
         // Add system properties
         newProcessCompoundDescription = ComponentDescriptionImpl.addSystemProperties(
-                                         SmartFrogCoreProperty.propBaseSFProcess
-                                        ,newProcessCompoundDescription);
+                SmartFrogCoreProperty.propBaseSFProcess
+                , newProcessCompoundDescription);
 
         return newProcessCompoundDescription;
     }
@@ -433,15 +454,16 @@ public class SFProcess implements MessageKeys {
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
     public static ComponentDescription getCoreProcessCompoundDescription()
-        throws SmartFrogException, RemoteException {
-        String urlProcessCompound ="org/smartfrog/sfcore/processcompound/processcompound.sf";
-        return ComponentDescriptionImpl.sfComponentDescription(urlProcessCompound);
+            throws SmartFrogException, RemoteException {
+        String urlProcessCompound = "org/smartfrog/sfcore/processcompound/processcompound.sf";
+        return ComponentDescriptionImpl.sfComponentDescription(
+                urlProcessCompound);
     }
 
 
     /**
-     * Sets the description which will create the process compound if it has
-     * not already been created
+     * Sets the description which will create the process compound if it has not
+     * already been created
      *
      * @param descr description to maintain
      */
@@ -452,70 +474,91 @@ public class SFProcess implements MessageKeys {
     /**
      * Select target process compound using host and subprocess names
      *
-     * @param host host name. If null, assumes localhost.
+     * @param host       host name. If null, assumes localhost.
      * @param subProcess subProcess name (optional; can be null)
+     *
      * @return ProcessCompound the target process compound
+     *
      * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ProcessCompound sfSelectTargetProcess(String host,
-        String subProcess) throws SmartFrogException, RemoteException {
+                                                        String subProcess)
+            throws SmartFrogException, RemoteException {
         try {
-            if (host==null) {
-                return sfSelectTargetProcess((InetAddress)null, subProcess);
+            if (host == null) {
+                return sfSelectTargetProcess((InetAddress) null, subProcess);
             } else {
-                return sfSelectTargetProcess(InetAddress.getByName(host), subProcess);
+                return sfSelectTargetProcess(InetAddress.getByName(host),
+                        subProcess);
             }
         } catch (UnknownHostException uhex) {
-            throw new SmartFrogException(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, host), uhex);
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_UNKNOWN_HOST,
+                    host), uhex);
         }
 
     }
 
     /**
-     * Select target process compound using host InetAddress and subprocess name
+     * Select target process compound using host InetAddress and subprocess
+     * name
      *
-     * @param host host InetAddress object. If null, assumes localhost.
+     * @param host       host InetAddress object. If null, assumes localhost.
      * @param subProcess subProcess name (optional; can be null)
+     *
      * @return ProcessCompound the target process compound
+     *
      * @throws SmartFrogException In case of SmartFrog system error
      */
-    public static ProcessCompound sfSelectTargetProcess(InetAddress host, String subProcess)
+    public static ProcessCompound sfSelectTargetProcess(InetAddress host,
+                                                        String subProcess)
             throws SmartFrogException, RemoteException {
         ProcessCompound target = null;
         try {
             target = SFProcess.getProcessCompound();
             if (host != null) {
-                target = SFProcess.getRootLocator().getRootProcessCompound(host);
+                target = SFProcess.getRootLocator()
+                        .getRootProcessCompound(host);
             }
             if (subProcess != null) {
                 try {
-                  Object targetObj = null;
-                  targetObj = target.sfResolve(subProcess); //target.sfResolveHere(subProcess);
-                  try {
-                    target = (ProcessCompound) targetObj;
-                  } catch (java.lang.ClassCastException thr) {
-                    throw SmartFrogResolutionException.illegalClassType(
-                        Reference.fromString(subProcess),
-                        target.sfCompleteName(),
-                        targetObj,
-                        targetObj.getClass().getName(),
-                        "ProcessCompound");
-                  }
-                } catch (Exception ex){
-                  throw new SmartFrogException("Error selecting target process '"+subProcess+"' in '"+target.sfCompleteName()+"'",ex);
+                    Object targetObj = null;
+                    targetObj = target.sfResolve(subProcess); //target.sfResolveHere(subProcess);
+                    try {
+                        target = (ProcessCompound) targetObj;
+                    } catch (java.lang.ClassCastException thr) {
+                        throw SmartFrogResolutionException.illegalClassType(
+                                Reference.fromString(subProcess),
+                                target.sfCompleteName(),
+                                targetObj,
+                                targetObj.getClass().getName(),
+                                "ProcessCompound");
+                    }
+                } catch (Exception ex) {
+                    throw new SmartFrogException(
+                            "Error selecting target process '" + subProcess + "' in '" + target
+                                    .sfCompleteName() + "'",
+                            ex);
                 }
             }
         } catch (SmartFrogException sfex) {
-          throw SmartFrogException.forward(sfex);
+            throw SmartFrogException.forward(sfex);
         } catch (UnknownHostException uhex) {
-          throw new SmartFrogException( MessageUtil.formatMessage(MSG_UNKNOWN_HOST,host), uhex);
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_UNKNOWN_HOST,
+                    host), uhex);
         } catch (ConnectException cex) {
-          throw new SmartFrogException(MessageUtil.formatMessage(MSG_CONNECT_ERR, host), cex);
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_CONNECT_ERR,
+                    host), cex);
         } catch (RemoteException rmiEx) {
-          throw new SmartFrogException (MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,host), rmiEx);
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_REMOTE_CONNECT_ERR,
+                    host), rmiEx);
         } catch (Throwable ex) {
-          throw new SmartFrogException(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
-          //throw SmartFrogException.forward(ex);
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_UNHANDLED_EXCEPTION), ex);
+            //throw SmartFrogException.forward(ex);
         }
         return target;
     }
@@ -524,43 +567,56 @@ public class SFProcess implements MessageKeys {
      * Request the host to which this process is bound to
      *
      * @return the host InetAddress
-     *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogException wrapped Exception
+     * @throws SmartFrogResolutionException if we cannot determine even our
+     * local host
      */
     private static InetAddress hostInetAddress = null;
+
     public static InetAddress sfDeployedHost() throws SmartFrogException {
-        
-        if( hostInetAddress != null ) {
+
+        if (hostInetAddress != null) {
             return hostInetAddress;
         }
-        
+
         try {
             String hostName = System.getProperty("java.rmi.server.hostname");
             try {
-                if (hostName!=null) {
-                    hostInetAddress = java.net.InetAddress.getByName(hostName);
+                if (hostName != null) {
+                    hostInetAddress = InetAddress.getByName(hostName);
                     return hostInetAddress;
                 }
             } catch (UnknownHostException ex) {
-               if (sfLog().isIgnoreEnabled()){
-                 sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-               }
+                if (sfLog().isIgnoreEnabled()) {
+                    sfLog().ignore(MessageUtil.formatMessage(
+                            MSG_FAILED_INET_ADDRESS_LOOKUP), ex);
+                }
             }
-            hostInetAddress = java.net.InetAddress.getLocalHost();
+            try {
+                //this can still do a network reverse DNS lookup, and hence fail
+                hostInetAddress = InetAddress.getLocalHost();
+            } catch (UnknownHostException e) {
+                //no, nothing there either
+                hostInetAddress = InetAddress.getByName(null);
+
+            }
             return hostInetAddress;
         } catch (Exception ex) {
-          if (sfLog().isIgnoreEnabled()){
-            sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-          }
-          throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(MessageUtil.formatMessage(
+                        MSG_FAILED_INET_ADDRESS_LOOKUP), ex);
+            }
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
+                    MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),
+                    ex);
         }
     }
 
 
     /**
      * Log for SFProcess.
-     * @return  ProcessLog
+     *
+     * @return ProcessLog
      */
     private static LogSF sfLog() {
         return sfLog;
