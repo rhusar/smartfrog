@@ -19,11 +19,13 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
+import java.io.EOFException;
+import java.net.SocketException;
 import java.rmi.RemoteException;
-import org.smartfrog.SFSystem;
 
 /**
  * This code contains the methods to do things from configurations.
@@ -128,7 +130,7 @@ public abstract class ConfigurationAction {
                       if (resultMultiHostObj==null) {resultMultiHostObj = "";}
                       String resultMultiHost = resultMultiHostObj +"; "+ resultMessage;
                       configuration.setContextAttribute("ResultMultihost", resultMultiHost);
-                  } catch (java.lang.Exception exception) {
+                  } catch ( Exception exception) {
                       exception.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                   }
 
@@ -160,8 +162,8 @@ public abstract class ConfigurationAction {
         if (!rootProcess)
             throw ex;
         //TODO: Check exception handling
-        if ((ex.getCause() instanceof java.net.SocketException) ||
-                (ex.getCause() instanceof java.io.EOFException)) {
+        if ((ex.getCause() instanceof SocketException) ||
+                (ex.getCause() instanceof EOFException)) {
             //Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
             //if (SFSystem.sfLog().isTraceEnabled()) {
             //  SFSystem.sfLog().trace(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));

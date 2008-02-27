@@ -19,15 +19,15 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.SFSystem;
 
-import java.rmi.RemoteException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 /**
  * Ping a component
@@ -96,24 +96,22 @@ public class ActionDump extends ConfigurationAction implements Serializable {
         } catch (RemoteException e) {
             if (SFSystem.sfLog().isWarnEnabled()) SFSystem.sfLog().warn(e);
         }
-        //Only works for Prims.
-        if (targetC instanceof Prim) {
-            try {
-                Prim objPrim = ((Prim)targetC);
-                message.append ("\n*************** State for "+ name+"  *****************\n");
-                Dumper dumper = new DumperCDImpl(objPrim);
-                objPrim.sfDumpState(dumper.getDumpVisitor());
-                message.append (dumper.toString());
-                name = (objPrim).sfCompleteName().toString();
-                message.append ("\n*************** End state for "+ name+"  *****************\n");
-            } catch (Exception ex) {
-                if (SFSystem.sfLog().isErrorEnabled()) SFSystem.sfLog().error (ex);
-                StringWriter sw = new StringWriter();
-                PrintWriter pr = new PrintWriter(sw,true);
-                ex.printStackTrace(pr);
-                pr.close();
-                message.append("\n Error: "+ex.toString()+"\n"+sw.toString());
+        try {
+            message.append("\n*************** State for " + name + "  *****************\n");
+            Dumper dumper = new DumperCDImpl(targetC);
+            targetC.sfDumpState(dumper.getDumpVisitor());
+            message.append(dumper.toString());
+            name = (targetC).sfCompleteName().toString();
+            message.append("\n*************** End state for " + name + "  *****************\n");
+        } catch (Exception ex) {
+            if (SFSystem.sfLog().isErrorEnabled()) {
+                SFSystem.sfLog().error(ex);
             }
+            StringWriter sw = new StringWriter();
+            PrintWriter pr = new PrintWriter(sw, true);
+            ex.printStackTrace(pr);
+            pr.close();
+            message.append("\n Error: " + ex.toString() + "\n" + sw.toString());
         }
         finish = System.currentTimeMillis();
         SFSystem.sfLog().out(message);

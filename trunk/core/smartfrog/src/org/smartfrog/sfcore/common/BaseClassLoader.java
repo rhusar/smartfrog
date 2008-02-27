@@ -32,7 +32,7 @@ import java.util.Hashtable;
  */
 public class BaseClassLoader extends ClassLoader {
     /** table of loaded classes */
-    private Hashtable classes = new Hashtable();
+    private Hashtable<String, Class> classes = new Hashtable<String, Class>();
 
     /**
      * Constructor. 
@@ -120,7 +120,7 @@ public class BaseClassLoader extends ClassLoader {
      */
     protected Class findClass(String className) throws ClassNotFoundException {
         // Check our local cache of classes
-        Class result = (Class) classes.get(className);
+        Class result = classes.get(className);
 
         if (result == null) {
             // Check with the primordial class loader

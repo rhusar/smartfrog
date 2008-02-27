@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
+
+import java.io.Serializable;
 
 /**
  * A SmartFrogLifecycleException is thrown if the attempt at executing one of
@@ -216,7 +216,7 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
                 if (sfObject!=null) {
                     try {
                         ((SmartFrogException)thr).init(sfObject);
-                        if ((message!=null)&&(!message.equals(""))) {
+                        if ((message!=null)&&(message.length() != 0)) {
                             String name = null;
                             try {
                                 name = "msg:"+ sfObject.sfCompleteName().toString();

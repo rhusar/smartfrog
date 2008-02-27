@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.common;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
- *  Description of the Class
+ *  Compare two strings
  *
  *@author     julgui
  *created    04 October 2001

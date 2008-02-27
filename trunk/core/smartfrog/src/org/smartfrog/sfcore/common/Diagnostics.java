@@ -40,11 +40,13 @@
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.Version;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.File;
@@ -150,12 +152,12 @@ public final class Diagnostics {
 
     private static void doReportCommon(StringBuffer out) {
         header(out, "Implementation Version");
-        out.append(org.smartfrog.Version.versionString());
+        out.append(Version.versionString());
         out.append("\n");
-        out.append(org.smartfrog.Version.copyright());
+        out.append(Version.copyright());
         out.append("\n");
         out.append("Build date: ");
-        out.append(org.smartfrog.Version.buildDate());
+        out.append(Version.buildDate());
         out.append("\n");
 
         header(out, "System properties summary");
@@ -222,7 +224,7 @@ public final class Diagnostics {
         header(out, "System properties");
         doReportSystemProperties(out);
 
-        header(out, org.smartfrog.Version.versionString() );
+        header(out, Version.versionString() );
         out.append("\n");
 
     }
@@ -236,7 +238,7 @@ public final class Diagnostics {
      */
     public static void doShortReport(StringBuffer out, Object object) {
         doReportCommon(out);
-        header(out, org.smartfrog.Version.versionString() );
+        header(out, Version.versionString() );
         out.append("\n");
     }
 
@@ -735,7 +737,7 @@ public final class Diagnostics {
             tempFile = File.createTempFile("sfDiag","txt",tempDirectory);
             //do some writing to it
             fileout = new FileOutputStream(tempFile);
-            byte buffer[]=new byte[1024];
+            byte[] buffer=new byte[1024];
             for(int i=0;i<32;i++) {
                 fileout.write(buffer);
             }
@@ -807,7 +809,7 @@ public final class Diagnostics {
    private static void doReportCodeBaseRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       StringBuffer message = null;
-      String codebaseproperty = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
+      String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
       if (codebaseproperty != null) {
           String codebase[] = codebaseproperty.split(System.getProperty("path.separator"));
           message =  Logger.getRepeatsMessage(words, codebase);
