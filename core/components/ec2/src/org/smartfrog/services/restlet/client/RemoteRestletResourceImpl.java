@@ -34,6 +34,7 @@ import org.restlet.util.Series;
 import org.smartfrog.services.restlet.datasources.InprocDataSource;
 import org.smartfrog.services.restlet.datasources.RestletDataSource;
 import org.smartfrog.services.restlet.overrides.ProxyEnabledClient;
+import org.smartfrog.services.restlet.overrides.ExtendedResponse;
 import org.smartfrog.services.www.AbstractLivenessPageComponent;
 import org.smartfrog.services.www.LivenessPageChecker;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -259,7 +260,9 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         params.add("followRedirects", Boolean.toString(followRedirects));
         params.add("readTimeout", Integer.toString(readTimeout));
 
-        return client.handle(request);
+        ExtendedResponse response = new ExtendedResponse(request,0,999);
+        client.handle(request, response);
+        return response;
     }
 
     /**
