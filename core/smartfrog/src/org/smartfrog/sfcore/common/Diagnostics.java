@@ -167,9 +167,13 @@ public final class Diagnostics {
         doReportTempDir(out);
 
         header(out, "Network");
-        doReportLocalNetwork(out);
-        out.append("\n");
-        doReportRemoteNetwork(out, Logger.testURI);
+        if (Logger.testNetwork) {
+            doReportLocalNetwork(out);
+            out.append("\n");
+            doReportRemoteNetwork(out, Logger.testURI);
+        } else {
+            out.append("Network report disabled.");
+        }
         out.append("\n");
 
 
