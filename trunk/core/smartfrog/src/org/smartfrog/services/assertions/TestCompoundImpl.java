@@ -132,6 +132,7 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws RemoteException    In case of network/rmi error
      * @throws SmartFrogException In case of any error while deploying the component
      */
+    @Override
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
@@ -160,6 +161,7 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     protected void deployConditionAtStartup() throws SmartFrogException, RemoteException {
         //do nothing
     }
@@ -180,6 +182,7 @@ public class TestCompoundImpl extends ConditionCompound
      * @throws RemoteException    network problems
      * @throws SmartFrogException unable start up
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
 
         Throwable thrown = null;
@@ -389,6 +392,7 @@ public class TestCompoundImpl extends ConditionCompound
      * {@link #sfLivenessFailure(Object,Object,Throwable)} is called and the iteration continues. <p/> Override this
      * method to implement different child ping behaviour.
      */
+    @Override
     protected void sfPingChildren() {
 
         if (actionPrim != null) {
@@ -404,6 +408,7 @@ public class TestCompoundImpl extends ConditionCompound
      *
      * @param record exit status
      */
+    @Override
     public synchronized void sfTerminateWith(TerminationRecord record) {
         sendEvent(new TerminatedEvent(this, record));
         super.sfTerminateWith(record);
@@ -437,6 +442,7 @@ public class TestCompoundImpl extends ConditionCompound
      * @param child       child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
      */
+    @Override
     protected boolean onChildTerminated(TerminationRecord childStatus, Prim child) {
         boolean propagateTermination = shouldTerminate;
         TerminationRecord exitRecord = null;
