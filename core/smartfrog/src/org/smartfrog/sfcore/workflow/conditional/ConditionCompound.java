@@ -110,7 +110,7 @@ public class ConditionCompound extends EventCompoundImpl implements Conditional,
      * @throws SmartFrogException for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
-        if(condition==null) {
+        if (condition == null) {
             return onEvaluateNoCondition();
         }
         return condition.evaluate();
