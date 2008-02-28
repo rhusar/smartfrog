@@ -8,9 +8,10 @@
    class="org.smartfrog.tools.eclipse.SmartFrogPlugin">
 
    <runtime>
-        <library name="org.smartfrog.tools.jar">
+    <!--library name="bin/">
+      <library name="smart_frog_plugin.jar">
          <export name="*"/>
-      </library>
+      </library-->
    </runtime>
 
    <requires>
@@ -224,6 +225,15 @@
                toolbarPath="SmartFrogTools"
                menubarPath="smartFrogMenu/tools"
                id="org.smartfrog.tools.eclipse.ui.runner.SfProcessRunnerAction">
+         </action>
+         <action
+               class="org.smartfrog.tools.eclipse.ui.runner.SfParseAction"
+               icon="icons/sfparse.GIF"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfParseAction"
+               label="SF Parse"
+               menubarPath="smartFrogMenu/tools"
+               toolbarPath="SmartFrogTools"
+               tooltip="SF Parse">
          </action>
       </actionSet>
    </extension>
