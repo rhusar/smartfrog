@@ -259,14 +259,14 @@ public class LivenessPageChecker implements LivenessPage {
     protected String concatPaths(String first,String second) {
         String f, s;
         f = first != null ? first : "";
-        int fl = first.length();
-        if (fl > 0 && first.charAt(fl - 1) == '/') {
-            f = first.substring(0, fl - 1);
+        int fl = f.length();
+        if (fl > 0 && f.charAt(fl - 1) == '/') {
+            f = f.substring(0, fl - 1);
         }
 
         s = second != null ? second : "";
-        if (second.length() > 0 && second.charAt(0) == '/') {
-            s = second.substring(1);
+        if (s.length() > 0 && s.charAt(0) == '/') {
+            s = s.substring(1);
         }
         return f + '/' + s;
     }
