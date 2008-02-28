@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="testharness" default="default">
+<project name="testharness" default="default" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <!--
   /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
@@ -363,5 +363,71 @@ values as a cue -->
 
 
   </target>
+  
+  <!-- =================================================================== -->
+  <!-- Coverage report -->
+  <!-- we don't force a failure in this target if the tests failed, because-->
+  <!-- there is existing code to run reports and halt-->
+  <!-- =================================================================== -->  
+  <target name="coverage-report" depends="emma, test"  unless="skip.test"
+			description="run tests with instrumentation and generate coverage report">
+		<mkdir dir="${coverage.report.dir}" />
+		<emma>
+			<report sourcepath="${src.dir}">
+				<fileset dir="${coverage.dir}">
+					<include name="*.emma" />
+				</fileset>
+
+				<txt outfile="${coverage.report.dir}/coverage.txt" />
+				<html outfile="${coverage.report.dir}/coverage.html" />
+			 </report>
+		 </emma>
+  </target>
+  
+  <target name="emma" depends="compile-tests" unless="skip.test">
+        <ivy:cachepath organisation="emma" module="emma" revision="2.0.5312" 
+                       inline="true" conf="default" pathid="emma.classpath" /> 
+        <ivy:cachepath organisation="emma" module="emma_ant" revision="2.0.5312" 
+                       inline="true" conf="default" pathid="emma.ant.classpath" transitive="false" /> 
+        <taskdef resource="emma_ant.properties">
+            <classpath refid="emma.classpath" />
+            <classpath refid="emma.ant.classpath" />
+        </taskdef>
+        <property name="emma.enabled" value="true" />
+        
+        <emma enabled="${emma.enabled}">
+		  <instr instrpathref="run.classpath"
+             mode="overwrite" metadatafile="${coverage.dir}/metadata.emma"
+		  >
+          <!--   
+		          <instr mode="copy"
+		                 destdir="${coverage.dir}/classes"
+						 classpathref="run.classpath"
+		                 metadatafile="${coverage.dir}/metadata.emma">
+		            <instrpath>
+					 
+		                <pathelement location="${build.dir}/core/classes" />				
+						<pathelement location="${build.classes.dir}" />				
+		                <pathelement location="${test.classes.dir}" />
+		            </instrpath>
+					-->
+	       </instr>
+		    		
+        </emma>
+        <!--<delete file="${coverage.dir}/coverage.emma" /> -->
+        <!-- add emma path to test path, because emma jars need to be available when running  instrumented classes -->
+        <ivy:addpath topath="tests.run.classpath" first="true">
+          <!-- <pathelement location="${coverage.dir}/classes" /> -->
+          <path refid="emma.classpath" />
+        </ivy:addpath>
+			<pathconvert pathsep="${line.separator}|   |-- "  
+	               property="echo.tests.run.classpath" 
+	               refid="tests.run.classpath">
+	  </pathconvert>
+      <echo message=" --------------------------------------------------------"/>	    
+      <echo message=" tests.run.classpath= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
+	    <echo message=" --------------------------------------------------------"/>
+	  
+    </target>
 
 </project>
