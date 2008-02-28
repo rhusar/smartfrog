@@ -77,10 +77,11 @@ public abstract class AbstractLivenessPageComponent extends PrimImpl implements 
                     livenessPage.getPort(),
                     true));
             livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
-                    livenessPage.getProtocol(), true));
+                    livenessPage.getProtocol(),
+                    true));
             livenessPage.setPath(sfResolve(ATTR_PATH,
-                livenessPage.getPath(),
-                false));
+                    livenessPage.getPath(),
+                    false));
             livenessPage.setPage(sfResolve(ATTR_PAGE,
                     livenessPage.getPage(),
                     false));
