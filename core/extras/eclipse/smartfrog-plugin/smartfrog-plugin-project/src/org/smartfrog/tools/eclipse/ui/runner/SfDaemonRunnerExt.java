@@ -90,7 +90,7 @@ class SfDaemonRunnerExt
     	// removing binPathName from classpath	
 	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
     //	classpath = mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
-   // 	System.out.println("sfDeamon cp............................." + classpath);
+    	System.out.println("sfDeamon cp............................." + classpath);
 //        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
 //        + "-cp " + classpath + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
 //        + SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile + ISmartFrogConstants.WHITE_SPACE
