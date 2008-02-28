@@ -27,21 +27,25 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class S3BucketTest extends DeployingTestBase {
-    public static final String FILES = "/org/smartfrog/services/amazon/s3/test";
+public class AwsKeysTest extends DeployingTestBase {
+    public static final String AWSID = "test.awsid";
+    public static final String AWSKEY = "test.awskey";
 
-    public S3BucketTest(String name) {
+
+    public AwsKeysTest(String name) {
         super(name);
     }
 
+    public void testAwsId() throws Throwable {
+        if (System.getProperty(AWSID) == null) {
+            fail("not set: " + AWSID);
+        }
+    }
 
-    public void testDeployGetBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testDeployGetBucket");
+    public void testAwsKey() throws Throwable {
+        if (System.getProperty(AWSKEY) == null) {
+            fail("not set: " + AWSKEY);
+        }
     }
-    public void testCreateBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateBucket");
-    }
-    public void testDeleteBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testDeleteBucket");
-    }
+
 }
