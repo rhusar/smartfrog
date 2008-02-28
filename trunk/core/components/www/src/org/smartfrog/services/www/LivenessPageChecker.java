@@ -793,7 +793,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * extract a query string from the parameters
      *
-     * @param params vectore of parameters for the query
+     * @param params vector of parameters for the query
      */
     public void buildQueryString(Vector params) {
 
