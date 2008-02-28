@@ -137,6 +137,12 @@ JettyHTTPS extends LocalJettyServer {
 
   }
 
+  LocalGet extends GetRestResource {
+      sfShouldTerminate true;
+      useSystemProxySettings false;
+      host hostname;
+      page "/";
+    }
 
   testWarDeployed extends WarTest  {
     description "test that the root page of the WAR is deployed";
@@ -144,15 +150,22 @@ JettyHTTPS extends LocalJettyServer {
 
       tests:operations  extends Sequence {
 
-        get extends GetRestResource {
-          sfShouldTerminate true;
-          host hostname;
+        get extends LocalGet {
           port PARENT:PARENT:PARENT:port;
-          page PARENT:PARENT:PARENT:contextPath;
+          path contextPath;
         }
       }
 
   }
+
+
+LocalErrorGet extends LocalGet {
+      page "error";
+      errorCode 419;
+      queries [["status",errorCode]];
+      maximumResponseCode errorCode;
+      minimumResponseCode errorCode;
+    }
 
   testErrorPageMinMax extends WarTest  {
 
@@ -161,14 +174,9 @@ JettyHTTPS extends LocalJettyServer {
 
     tests:operations  extends Sequence {
 
-        get extends GetRestResource {
-          sfShouldTerminate true;
+        get extends LocalErrorGet {
           port PARENT:ATTRIB port;
-          page ((PARENT:ATTRIB contextPath) ++ "/error");
-          errorCode 419;
-          queries [["status",errorCode]];
-          maximumResponseCode errorCode;
-          minimumResponseCode errorCode;
+          path contextPath;
         }
       }
 
@@ -181,17 +189,12 @@ JettyHTTPS extends LocalJettyServer {
 
     tests:operations  extends Sequence {
 
-        get extends GetRestResource {
-          sfShouldTerminate true;
+        get extends LocalErrorGet {
           port PARENT:ATTRIB port;
-          page ((PARENT:ATTRIB contextPath) ++ "/error");
-          errorCode 419;
-          queries [["status",errorCode]];
-          maximumResponseCode errorCode;
-          minimumResponseCode errorCode;
-          startActions [[GET,errorCode,errorCode]];
-          livenessActions [[HEAD,errorCode,errorCode]];
-         }
+          path contextPath;
+          startActions    [[GET,  errorCode,  errorCode]];
+          livenessActions [[HEAD, errorCode,  errorCode]];
+        }
       }
 
   }
