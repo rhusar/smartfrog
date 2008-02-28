@@ -70,6 +70,8 @@ RemoteResource extends Prim {
   protocol "http";
   //not yet implemented
   resultXPath "";
+
+  //not implemented in this component, just stubbed out
   responseRegexp "";
   
 
@@ -84,10 +86,10 @@ RemoteResource extends Prim {
  
   //the normal get action
 
-  GET_ACTION [GET,HttpCodes:START_2XX,HttpCodes:END_2XX];
-  HEAD_ACTION [HEAD,HttpCodes:START_2XX,HttpCodes:END_2XX];
-  POST_ACTION [POST,HttpCodes:START_2XX,HttpCodes:END_2XX];
-  PUT_ACTION [PUT,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  GET_ACTION  [GET, HttpCodes:START_2XX,  HttpCodes:END_2XX];
+  HEAD_ACTION [HEAD,HttpCodes:START_2XX,  HttpCodes:END_2XX];
+  POST_ACTION [POST,HttpCodes:START_2XX,  HttpCodes:END_2XX];
+  PUT_ACTION  [PUT, HttpCodes:START_2XX,  HttpCodes:END_2XX];
   
   //HTTP1.1 says that DELETE should also return 2XX responses.
   DELETE_ACTION [DELETE,HttpCodes:START_2XX,HttpCodes:END_2XX];
@@ -96,11 +98,13 @@ RemoteResource extends Prim {
 }
 
 GetRestResource extends RemoteResource {
+  followRedirects true;
   startActions [GET_ACTION];
   livenessActions [HEAD_ACTION];
 }
 
 HeadLivenessRestResource extends RemoteResource {
+  followRedirects true;
   livenessActions [HEAD_ACTION];
 }
 
