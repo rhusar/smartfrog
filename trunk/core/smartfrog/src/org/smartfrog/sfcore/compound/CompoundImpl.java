@@ -266,17 +266,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
         Prim comp = null;
 
         //check for any attempt to create a child in a terminating component, and bail out
-        if(sfIsTerminated() || sfIsTerminating()) {
+        if (sfIsTerminated() || sfIsTerminating()) {
             throw new SmartFrogDeploymentException("Cannot create a child during termination", this);
         }
         //no context? set one up
-        if (parms==null) {
+        if (parms == null) {
             parms = new ContextImpl();
         }
         try {
             // This is needed so that the root component is properly named
             // when registering with the ProcessCompound
-            if ((parent==null)&&(name!=null))parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+            if ((parent == null) && (name != null)) {
+                parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+            }
 
             if (sfLog().isTraceEnabled()) {
                 try {
@@ -300,22 +302,24 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // it is now a child, so need to guard against double calling of lifecycle...
             try {
                 comp.sfDeploy();
+            } catch (SmartFrogLifecycleException thr) {
+                throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
             } catch (Throwable thr) {
-                if (thr instanceof SmartFrogLifecycleException) {
-                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                }
-                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.", thr, this);
+                String message = "Failed to create the new child '" + name + "'.";
+                sfLog().error(message, thr);
+                throw SmartFrogLifecycleException.sfDeploy(message, thr, this);
             }
             try {
                 comp.sfStart(); // otherwise let the start of this component do it...
+            } catch (SmartFrogLifecycleException thr) {
+                throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
             } catch (Throwable thr) {
-                if (thr instanceof SmartFrogLifecycleException) {
-                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                }
-                throw SmartFrogLifecycleException.sfStart("Failed to create a new child.", thr, this);
+                String message = "Failed to start a new child '" + name + "'.";
+                sfLog().error(message,thr);
+                throw SmartFrogLifecycleException.sfStart(message, thr, this);
             }
         } catch (Exception e) {
-            if (comp!=null) {
+            if (comp != null) {
                 Reference compName = null;
                 try { compName = comp.sfCompleteName(); } catch (Throwable thr) { }
                 try {
