@@ -43,7 +43,7 @@ S3Bucket extends S3Resource {
   terminateActions [];
   //Amazon S3 return 404 on a delete, it makes responses idempotent.
   //by defining a new delete action we can encode this
-  S3_DELETE_ACTION [DELETE,HttpCodes:NOT_FOUND,HttpCodes:NOT_FOUND];
+  S3_DELETE_ACTION DELETE_ACTION_4XX;
 }
 
 /**

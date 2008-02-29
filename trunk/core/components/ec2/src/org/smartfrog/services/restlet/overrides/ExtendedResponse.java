@@ -22,6 +22,7 @@ package org.smartfrog.services.restlet.overrides;
 import org.restlet.data.Response;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.data.Reference;
 
 /**
  * This is an extended response code. One thing we can do is detect forbidden response codes and fail early, not late
@@ -41,6 +42,17 @@ public class ExtendedResponse extends Response {
         super(request);
         this.min = min;
         this.max = max;
+    }
+
+    /**
+     * Fix redirection handling by setting the base reference to the host of the system
+     * @param redirectUri
+     */
+    public void setRedirectRef(String redirectUri) {
+        Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
+                .getResourceRef()
+                : null;
+        setRedirectRef(new Reference(baseRef, redirectUri).getTargetRef());
     }
 
     /**

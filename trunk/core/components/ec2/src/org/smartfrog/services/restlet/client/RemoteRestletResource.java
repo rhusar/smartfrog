@@ -76,7 +76,7 @@ public interface RemoteRestletResource extends HttpAttributes {
     /**
      * SF constant {@value}
      */
-    String HEAD = "options";
+    String HEAD = "head";
     /**
      * SF constant {@value}
      */
