@@ -662,7 +662,7 @@ public class SFSystem implements MessageKeys {
         if (Logger.logClasspath) {
             StringBuffer result = new StringBuffer();
             Diagnostics.doReportClassPath(result);
-            if (sfLog().isInfoEnabled()) { sfLog().info( "ClassPath:\n" + result.toString());            
+            if (sfLog().isInfoEnabled()) { sfLog().info( "ClassPath:\n" + result.toString());}            
         }
     }
 
