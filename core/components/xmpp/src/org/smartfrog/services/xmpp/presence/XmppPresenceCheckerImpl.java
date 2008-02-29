@@ -26,6 +26,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.services.xmpp.XmppListenerImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
@@ -39,7 +40,6 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
         implements XmppPresenceChecker, Condition, RosterListener {
 
     private String target;
-    private int subscriptionMode;
     private int startupDelay;
     private long connectDelay;
     private boolean checkOnLiveness;
@@ -58,7 +58,6 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         target = sfResolve(ATTR_TARGET, "", true);
-        subscriptionMode = sfResolve(ATTR_SUBSCRIPTION_MODE, 0, true);
         startupDelay = sfResolve(ATTR_DELAY, 0, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         setConnectDelay();
@@ -72,10 +71,10 @@ public class XmppPresenceCheckerImpl extends XmppListenerImpl
      */
     @Override
     protected void configureRoster(XMPPConnection connection) {
+        super.configureRoster(connection);
         setConnectDelay();
-        //register our roster
+        //listen to the roster
         Roster roster = connection.getRoster();
-        roster.setSubscriptionMode(subscriptionMode);
         roster.addRosterListener(this);
         roster.reload();
     }

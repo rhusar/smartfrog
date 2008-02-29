@@ -38,9 +38,6 @@ XmppPresenceChecker extends XmppListener {
           description "should we terminat ourselves when the target is offline?";
         }
 
-        subscriptionMode extends Integer {
-          description "subscription mode for responding to roster subscription requests";
-        }
         delay extends Integer {
           description "time in milliseconds before assuming that no presence info => absence"
 
@@ -53,26 +50,6 @@ XmppPresenceChecker extends XmppListener {
 
     terminateWhenTargetOffline true;
 
-    /*
-     * Automatically accept all subscription and unsubscription requests.
-     * This is inherently insecure.
-     */
-    SUBSCRIPTION_ACCEPT_ALL 0;
-
-    /*
-     * Automatically reject all subscription requests.
-     */
-    SUBSCRIPTION_REJECT_ALL 1;
-
-    /*
-     * Manual subscription would require a subclass to handle the relevant packets
-     */
-    SUBSCRIPTION_MANUAL 2;
-
-    /**
-     * The default mode rejects all subscription modes
-     */
-    subscriptionMode SUBSCRIPTION_REJECT_ALL;
 
     /**
      * Give the component 10s to start up before it assumes someone is missing

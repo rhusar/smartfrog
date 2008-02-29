@@ -46,13 +46,6 @@ public interface XmppPresenceChecker extends Xmpp {
     String ATTR_TERMINATEWHENTARGETOFFLINE = "terminateWhenTargetOffline";
 
     /**
-     * Subscription mode
-     *
-     * @link org.jivesoftware.smack.Roster
-     */
-    String ATTR_SUBSCRIPTION_MODE = "subscriptionMode";
-
-    /**
      * Time (in milliseconds) to give for roster startup before the absence of someone's availability is deemed to be an
      * error
      */

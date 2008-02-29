@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -42,9 +42,6 @@ XmppSchema extends Schema {
     login extends String {
         description "user name for logins, no @domain suffix";
     }
-    useTLS extends Boolean {
-        description "should a (legacy) TLS encrypted channel be used";
-    }
     password extends String {
         description "password for logins";
     }
@@ -54,9 +51,6 @@ XmppSchema extends Schema {
     presence extends Boolean {
         description "should presence information be provided";
     }
-    status extends String {
-      description "The presence message to set (if not null)";
-    }
     requireEncryption extends Boolean {
         description ##should we require an encrypted connection
             -that is, fail if the connection negotiated is not secured
@@ -64,6 +58,15 @@ XmppSchema extends Schema {
     }
     resource extends String {
         description "resource for the login";
+    }
+    status extends String {
+      description "The presence message to set (if not null)";
+    }
+    subscriptionMode extends Integer {
+      description "subscription mode for responding to roster subscription requests";
+    }
+    useTLS extends Boolean {
+        description "should a (legacy) TLS encrypted channel be used";
     }
 }
 
@@ -76,6 +79,28 @@ XmppComponent extends Prim {
     presence false;
     status "";
     useTLS false;
+
+
+    /*
+     * Automatically accept all subscription and unsubscription requests.
+     * This is inherently insecure.
+     */
+    SUBSCRIPTION_ACCEPT_ALL 0;
+
+    /*
+     * Automatically reject all subscription requests.
+     */
+    SUBSCRIPTION_REJECT_ALL 1;
+
+    /*
+     * Manual subscription would require a subclass to handle the relevant packets
+     */
+    SUBSCRIPTION_MANUAL 2;
+
+    /**
+     * The default mode rejects all subscription modes
+     */
+    subscriptionMode SUBSCRIPTION_REJECT_ALL;
 }
 
 
