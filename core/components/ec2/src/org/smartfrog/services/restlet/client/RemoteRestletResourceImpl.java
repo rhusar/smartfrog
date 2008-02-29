@@ -196,6 +196,8 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      */
     protected Request buildRequest(Method method, Representation localData) {
         // Send an authenticated request
+        //create and then abuse a reference so that relative locations in the response get handled
+        org.restlet.data.Reference ref=new org.restlet.data.Reference(getURL());
         Request request = new Request(method, getURL(), localData);
         //request.
         if (challengeScheme != null) {

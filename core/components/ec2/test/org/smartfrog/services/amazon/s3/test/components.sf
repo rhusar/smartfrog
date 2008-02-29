@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 bucket "smartfrogtest";
 login PROPERTY test.awsid;
 password PROPERTY test.awskey
-timeout 10000;
+timeout 10;
 
 bucketURL (bucket ++ ".s3.amazonaws.com");
 
@@ -51,14 +51,18 @@ WorkflowBucket extends  TransientS3Bucket {
 
 GetBucket extends TestBucket {
   startActions [GET_ACTION];
+  sfShouldTerminate true;
 }
 
 HeadBucket extends TestBucket {
   startActions [HEAD_ACTION];
+  sfShouldTerminate true;
 }
 
 DeleteBucket extends TestBucket {
   startActions [S3_DELETE_ACTION];
+  livenessActions [];
+  sfShouldTerminate true;
 }
 
 
@@ -66,10 +70,16 @@ DeleteBucket extends TestBucket {
  * Look for the bucket
  */
 ProbeForBucket extends WaitForPage {
-  url bucketURL;
+  host bucketURL;
   fetchErrorText true;
   checkFrequency 100;
   timeout ROOT:timeout;
+  checkOnStartup true;
+  checkOnLiveness false
+  maximumResponseCode HttpCodes:FORBIDDEN;
+  minimumResponseCode HttpCodes:FORBIDDEN;
+  sfShouldTerminate true;
+  logResponse true;
 }
 
 
@@ -120,6 +130,10 @@ BucketTest extends ExpectDeployOnAWS {
 
 testCreateBucket extends BucketTest {
 
+   tests extends Sequence {
+
+
+  }
 }
 
 
@@ -135,6 +149,9 @@ testDeployGetBucket extends BucketTest {
 testDeleteBucket extends BucketTest {
 
   description "try to delete a bucket that has just been created";
+
+  //strip out the liveness check, as it is now allowed to fail
+  action:bucket:livenessActions [];
 
   tests extends Sequence {
 

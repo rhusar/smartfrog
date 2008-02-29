@@ -456,13 +456,14 @@ public class LivenessPageChecker implements LivenessPage {
     private void postProcess(int responseCode, String response, String body)
             throws SmartFrogLivenessException {
         if (logResponse) {
+            log.info(""+responseCode+ ' ' +response);
             log.info(body);
         }
         if (responsePattern != null) {
             Matcher matcher = responsePattern.matcher(body);
             if (!matcher.matches()) {
                 throw new SmartFrogLivenessException(ERROR_NO_MATCH + responseRegexp
-                        + "\n" + body);
+                        + '\n' + body);
             }
             try {
                 if (owner != null) {
@@ -553,7 +554,7 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public String toString() {
         return urlAsString + " ["
-                + minimumResponseCode + "< response <" + maximumResponseCode+"]"
+                + minimumResponseCode + "<= response <=" + maximumResponseCode+"]"
                 + (enabled ? "" : "(disabled)");
     }
 
