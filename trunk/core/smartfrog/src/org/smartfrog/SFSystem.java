@@ -492,8 +492,10 @@ public class SFSystem implements MessageKeys {
         logSecurityStatus();
         //Notify special properties status
         Logger.logStatus();
+        //SmartFrog classpath
+        logClassPath();
         //SmartFrog network status checks
-        logNetworkStatus();
+        logNetworkStatus();        
     }
 
     protected void exitWithException(Exception sfex, int errorcode) {
@@ -653,6 +655,14 @@ public class SFSystem implements MessageKeys {
             } else {
                 if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
             }
+        }
+    }
+
+    private static void logClassPath() {
+        if (Logger.logClasspath) {
+            StringBuffer result = new StringBuffer();
+            Diagnostics.doReportClassPath(result);
+            if (sfLog().isInfoEnabled()) { sfLog().info( "ClassPath:\n" + result.toString());            
         }
     }
 

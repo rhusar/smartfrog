@@ -51,9 +51,13 @@ public class Logger implements MessageKeys {
     /** String name for optional attribute "{@value}". */
     public static final String ATR_LOG_LIVENESS = "logLiveness";
     /** String name for optional attribute "{@value}". */
+    public static final String ATR_LOG_CLASSPATH = "logClasspath";
+    /** String name for optional attribute "{@value}". */
     public static final String ATR_LOG_PC_DIAG_REPORT = "processCompoundDiagReport";
     /** String name for optional attribute "{@value}". */
     public static final String ATR_TEST_NETWORK = "testNetwork";
+
+
     /** String name for optional attribute "{@value}". */
     public static final String ATR_TEST_URI = "testURI";
 
@@ -91,6 +95,11 @@ public class Logger implements MessageKeys {
 
     private static boolean initialized = false;
 
+    /** Property to define if to log classpaht during startup. The default value can be overridden by the
+      * value specified in default.ini file.
+      */
+    public static boolean logClasspath = true;
+
     /**
      * empty constructor
      */
@@ -109,6 +118,7 @@ public class Logger implements MessageKeys {
             if (configuration!=null){
                logStackTrace = configuration.sfResolve(ATR_LOG_STACK_TRACE,logStackTrace,false);
                logLiveness = configuration.sfResolve(ATR_LOG_LIVENESS,logLiveness,false);
+               logClasspath = configuration.sfResolve(ATR_LOG_CLASSPATH,logClasspath,false);
                processCompoundDiagReport = configuration.sfResolve(ATR_LOG_PC_DIAG_REPORT,processCompoundDiagReport,false);
                testNetwork = configuration.sfResolve(ATR_TEST_NETWORK,testNetwork,false);
                testURI = configuration.sfResolve(ATR_TEST_URI,testURI,false);

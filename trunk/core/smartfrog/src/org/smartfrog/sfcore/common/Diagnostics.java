@@ -658,7 +658,7 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-    private static void doReportClassPath(StringBuffer out) {
+    public static void doReportClassPath(StringBuffer out) {
       out.append((System.getProperty("java.class.path")).replace(
                       System.getProperty("path.separator").charAt(0), '\n'));
     }
