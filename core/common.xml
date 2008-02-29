@@ -678,20 +678,30 @@ java.class.path=
         smartfrog and our lib dir -->
   <!-- ========================================================== -->
 
+  <!--set up the original redist classpath-->
+  <target name="declare-redist.classpath" depends="init" unless="ivy.enabled">
+    <path id="redist.classpath">
+      <fileset dir=".">
+        <include name="lib/**/*.jar"/>
+      </fileset>
+    </path>
+    <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
+  </target>
+
+
   <target name="declare-base.compile.classpath" depends="init"  unless="ivy.enabled">
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
     </path>
   </target>
 
- <target name="declare-compile.classpath"
-    depends="declare-base.compile.classpath" unless="ivy.enabled">
-   <path id="compile.classpath">
-     <path refid="base.compile.classpath"/>
-     <fileset dir=".">
-       <include name="lib/**/*.jar"/>
-     </fileset>
-   </path>
+  <target name="declare-compile.classpath"
+      depends="declare-base.compile.classpath,declare-redist.classpath"
+      unless="ivy.enabled">
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <path refid="redist.classpath"/>
+    </path>
     <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
   </target>
 
@@ -735,6 +745,7 @@ java.class.path=
       <path refid="exec.classpath"/>
     </path>
   </target>
+
 
   <!-- This target explicitly lists all dependencies so that if anyone starts overriding
     declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
@@ -1335,31 +1346,14 @@ java.class.path=
   <!-- this is an override point -->
   <!-- copy all dependencies -->
   <!-- ========================================================== -->
-  <target name="install-ivy-dependencies" depends="package,declare-classpaths"
-      if="ivy.enabled">
+  <target name="install-dependencies" depends="package,declare-classpaths">
     <mkdir dir="${smartfrog.dist.lib.dir}"/>
-    <!--TODO now pull in all runtime dependencies-->
-    <copypath destDir="${smartfrog.dist.lib.dir}"
+    <!--pull in all runtime dependencies-->
+    <copypath destdir="${smartfrog.dist.lib.dir}"
       pathref="redist.classpath">
       <flattenmapper/>
     </copypath>
   </target>
-
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- copy all dependencies -->
-  <!-- ========================================================== -->
-  <target name="install-dependencies" depends="install-ivy-dependencies"
-      unless="ivy.enabled">
-  <!--copy the lib stuff-->
-  <mkdir dir="${smartfrog.dist.lib.dir}"/>
-  <copy-useful-files src="${lib.dir}"
-      pattern="**/*.jar"
-      dest="${smartfrog.dist.lib.dir}"
-      failonerror="false"/>
-   </target>
-
-
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
