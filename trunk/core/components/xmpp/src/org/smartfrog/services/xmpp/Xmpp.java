@@ -74,4 +74,10 @@ public interface Xmpp extends Remote {
     String ATTR_USE_TLS = "useTLS";
 
 
+    /**
+     * Subscription mode
+     *
+     * @link org.jivesoftware.smack.Roster
+     */
+    String ATTR_SUBSCRIPTION_MODE = "subscriptionMode";
 }

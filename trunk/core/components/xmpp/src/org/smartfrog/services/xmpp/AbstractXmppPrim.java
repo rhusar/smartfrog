@@ -39,6 +39,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
     private boolean presence, requireEncryption, useTLS;
     public static final String ERROR_NO_SECURE_CONNECTION = "Failed to set up a secure connection to ";
     private String status;
+    private int subscriptionMode;
 
     protected AbstractXmppPrim() throws RemoteException {
     }
@@ -64,9 +65,10 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         }
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
-        status = sfResolve(ATTR_STATUS, "", true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
         resource = sfResolve(ATTR_RESOURCE, resource, true);
+        status = sfResolve(ATTR_STATUS, "", true);
+        subscriptionMode = sfResolve(ATTR_SUBSCRIPTION_MODE, 0, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
     }
 
@@ -169,9 +171,8 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
      * @param connection connection to configure
      */
     protected void configureRoster(XMPPConnection connection) {
-        //refuse new requests
         Roster roster = connection.getRoster();
-        roster.setSubscriptionMode(Roster.SUBSCRIPTION_REJECT_ALL);
+        roster.setSubscriptionMode(getSubscriptionMode());
     }
 
     /**
@@ -189,5 +190,11 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         }
     }
 
-
+    /**
+     * get the current subscription mode
+     * @return
+     */
+    public int getSubscriptionMode() {
+        return subscriptionMode;
+    }
 }
