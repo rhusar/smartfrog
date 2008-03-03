@@ -81,8 +81,7 @@ members.dyndns.org
  * register over HTTPS
  */
 DynDnsHttpsRegistration extends DynDnsRegistration {
-  protocol "https";
-  port 443;
+  protocol HttpCodes:HTTPS;
 }
 
 /**

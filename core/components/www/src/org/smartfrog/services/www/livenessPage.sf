@@ -90,6 +90,9 @@ For more information: www.smartfrog.org
      followRedirects extends Boolean;
       //connect timeout in milliseconds
      connectTimeout extends Integer;
+
+
+
  }
 
  /**
@@ -147,14 +150,12 @@ For more information: www.smartfrog.org
      headers [];
      host "127.0.0.1";
      logResponse false;
-     HTTP "http";
-     HTTPS "https";
-     protocol HTTP;
+     protocol HttpCodes:HTTP;
      maximumResponseCode HttpCodes:END_2XX;
      minimumResponseCode HttpCodes:START_2XX;
      mimeType [];
      path "/";
-     port 80;
+     port HttpCodes:CHOOSE_PORT;
      responseRegexp "";
  }
 

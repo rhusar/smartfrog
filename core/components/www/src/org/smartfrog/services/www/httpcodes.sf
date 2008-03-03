@@ -79,6 +79,20 @@ HttpCodes extends DATA {
   SERVICE_UNAVAILABLE 503;
   GATEWAY_TIMEOUT 504;
   HTTP_VERSION_NOT_SUPPORTED 505;
+
+
+  //some used for port setting
+  //protocol
+  HTTP "http";
+  //protocol
+  HTTPS "https";
+  //port used by HTTP
+  HTTP_PORT 80;
+  //HTTPS port
+  HTTPS_PORT 443;
+  //instruct the component to work it out iself.
+  CHOOSE_PORT 0;
+  
 }
 
 /**

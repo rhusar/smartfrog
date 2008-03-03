@@ -17,7 +17,6 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -35,9 +34,6 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -62,7 +58,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      */
-    protected String protocol = "http";
+    protected String protocol = HTTP;
 
     /**
      */
@@ -70,7 +66,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      */
-    protected int port = 80;
+    protected int port = CHOOSE_PORT;
 
     /**
      * user name
@@ -142,13 +138,13 @@ public class LivenessPageChecker implements LivenessPage {
     private int connectTimeout;
 
     /** regexp or empty string */
-    private String responseRegexp="";
-    private Pattern responsePattern;
+    private RegexpCheck regexpCheck;
     public static final String ERROR_NO_CONNECTION = "unable to connect to URL";
     public static final String ERROR_NO_MATCH = "Response body does not match regular expression ";
     public static final String ERROR_UNABLE_TO_COMPILE = "Unable to compile ";
-    private static final String FAILED_TO_REPLACE_ATTRIBUTE = "failed to replace attribute ";
-    private static final String BAD_URL = "Bad URL: ";
+    public static final String FAILED_TO_REPLACE_ATTRIBUTE = "failed to replace attribute ";
+    public static final String BAD_URL = "Bad URL: ";
+    public static final String UNKNOWN_DEFAULT_PORT = "Unknown default port for the protocol ";
 
     /**
      * create a new liveness page
@@ -157,7 +153,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @param host     hostname/ip address
      * @param port     port to use
      * @param page     page on the web site
-     * @throws RemoteException              for RMI/Networking problems
+     * @throws RemoteException  for RMI/Networking problems
      * @throws SmartFrogDeploymentException deployment problems
      */
     public LivenessPageChecker(
@@ -282,7 +278,7 @@ public class LivenessPageChecker implements LivenessPage {
         url.append("://");
         url.append(host);
         url.append(':');
-        url.append(port);
+        url.append(calculatePort());
         String fullpath=concatPaths("",path);
         fullpath = concatPaths(fullpath, page);
         url.append(fullpath);
@@ -298,6 +294,20 @@ public class LivenessPageChecker implements LivenessPage {
             headers.addElement(ListUtils.tuple("Authorization",
                     "Basic " + encoding));
         }
+    }
+
+    public int calculatePort() throws SmartFrogDeploymentException {
+        int urlport = port;
+        if (urlport == CHOOSE_PORT) {
+            if (HTTP.equals(protocol)) {
+                urlport = HTTP_PORT;
+            } else if (HTTPS.equals(protocol)) {
+                urlport = HTTPS_PORT;
+            } else {
+                throw new SmartFrogDeploymentException(UNKNOWN_DEFAULT_PORT +protocol);
+            }
+        }
+        return urlport;
     }
 
     /**
@@ -447,7 +457,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * Override point.
-     * Default implementation checks the regular expression and adds its first group as the group1 attribute 
+     * Default implementation checks the regular expression and adds group as attributes
      * @param responseCode response http code
      * @param response     response line
      * @param body         body of the response
@@ -456,29 +466,11 @@ public class LivenessPageChecker implements LivenessPage {
     private void postProcess(int responseCode, String response, String body)
             throws SmartFrogLivenessException {
         if (logResponse) {
-            log.info(""+responseCode+ ' ' +response);
+            log.info("" + responseCode + ' ' + response);
             log.info(body);
         }
-        if (responsePattern != null) {
-            Matcher matcher = responsePattern.matcher(body);
-            if (!matcher.matches()) {
-                throw new SmartFrogLivenessException(ERROR_NO_MATCH + responseRegexp
-                        + '\n' + body);
-            }
-            try {
-                if (owner != null) {
-                    //we use <= because there is always, implicitly, a group 0
-                    for (int i = 0; i <= matcher.groupCount(); i++) {
-                        String group = matcher.group(i);
-                        log.info("Matched response group" + i + ": " + group);
-                        owner.sfReplaceAttribute("group" + i, group);
-                    }
-                }
-            } catch (SmartFrogRuntimeException e) {
-                log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
-            } catch (RemoteException e) {
-                log.ignore(FAILED_TO_REPLACE_ATTRIBUTE, e);
-            }
+        if(regexpCheck!=null) {
+            regexpCheck.validate(owner, body);
         }
     }
 
@@ -554,7 +546,7 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public String toString() {
         return urlAsString + " ["
-                + minimumResponseCode + "<= response <=" + maximumResponseCode+"]"
+                + minimumResponseCode + "<= response <=" + maximumResponseCode+ ']'
                 + (enabled ? "" : "(disabled)");
     }
 
@@ -762,25 +754,17 @@ public class LivenessPageChecker implements LivenessPage {
 
 
     public String getResponseRegexp() {
-        return responseRegexp;
+        return regexpCheck.getResponseRegexp();
     }
 
     /**
-     * Set the response regular expression
+     * Set the response regular expression. builds a new {@link RegexpCheck}  using the
+     * log parameters, which should already be set up.
      * @param responseRegexp the regular expression
      * @throws SmartFrogDeploymentException if the syntax would not compile
      */
     public void setResponseRegexp(String responseRegexp) throws SmartFrogDeploymentException {
-        this.responseRegexp = responseRegexp;
-        if(responseRegexp!=null && responseRegexp.length()>0) {
-            try {
-                responsePattern=Pattern.compile(responseRegexp);
-            } catch (PatternSyntaxException e) {
-                throw new SmartFrogDeploymentException(ERROR_UNABLE_TO_COMPILE +responseRegexp,e);
-            }
-        } else {
-            responsePattern=null;
-        }
+        regexpCheck=new RegexpCheck(responseRegexp,log);
     }
 
     public boolean isLogResponse() {
