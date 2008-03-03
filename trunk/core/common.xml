@@ -1907,7 +1907,7 @@ Exist.
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
-    <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.version" value="2.0.0-beta1" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
@@ -1944,6 +1944,18 @@ Exist.
     </condition>
     <mkdir dir="${ivy.reports.dir}" />
     <mkdir dir="${ivy.lib.dir}" />
+
+
+    <property name="ivy.cache.smartfrog.dir"
+        location=" ${ivy2.cache.dir}/${ivy.package.name}" />
+    <property name="ivy.project.name" value="sf-${ant.project.name}" />
+    <property name="ivy.cache.project.dir"
+        location=" ${ivy.cache.smartfrog.dir}/${ivy.project.name}" />
+
+    <mkdir dir="${ivy.cache.smartfrog.dir}" />
+    <mkdir dir="${ivy.cache.project.dir}" />
+
+
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
@@ -2030,14 +2042,20 @@ Exist.
 
   <target name="ivy-purge-cache" depends="ivy-properties"
       description="purge all smartfrog artifacts from the cache">
-    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
-    <delete includeEmptyDirs="true">
-      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
-    </delete>
-    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true" includes="**/*"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
+  </target>
+
+  <!--remove all project-seecific libraries from the cache-->
+  <target name="ivy-purge-project" depends="ivy-properties"
+      description="purge all smartfrog artifacts from the ~/.ivy2 directories">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.project.dir}" defaultexcludes="false"  includes="**/*"/>
+      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-${ivy.project.name}" />
+    </delete>
+    <delete dir="${ivy2.local.dir}/${ivy.package.name}/${ivy.project.name}" />
   </target>
 
   <!--This is a trick. by running the same stuff
@@ -2096,7 +2114,7 @@ ${ivy.reports.dir}
        artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-  <target name="published" depends="ivy-publish-all,m2-install"
+  <target name="published" depends="ivy-publish-all"
       description="Publish artifacts to the local repositories"
       />
 
