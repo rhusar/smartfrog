@@ -62,8 +62,6 @@ package org.smartfrog.services.xunit.listeners.antxml;
  * &lt;!ELEMENT system-out (#PCDATA)&gt;
  *
  * </pre></code>
- * @see XMLJUnitResultFormatter
- * @see XMLResultAggregator
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface XMLConstants {
