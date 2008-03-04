@@ -192,7 +192,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
 
     /**
      * get the current subscription mode
-     * @return
+     * @return the current subscription mode
      */
     public int getSubscriptionMode() {
         return subscriptionMode;
