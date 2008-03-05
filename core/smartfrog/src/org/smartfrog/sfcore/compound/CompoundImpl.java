@@ -589,7 +589,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 child.sfStart();
             } catch (Throwable thr) {
                 String name = getChildNameSafe(child);
-                ;
+                sfLog().warn("Failed to start child "+name,thr);
                 SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name, thr, this);
                 sflex.add(SmartFrogLifecycleException.DATA,
                         "Failed object class: " + child.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", false));
