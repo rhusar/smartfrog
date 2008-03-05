@@ -197,9 +197,10 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected Request buildRequest(Method method, Representation localData) {
         // Send an authenticated request
         //create and then abuse a reference so that relative locations in the response get handled
-        org.restlet.data.Reference ref=new org.restlet.data.Reference(getURL());
         Request request = new Request(method, getURL(), localData);
         //request.
+        Object headers = request.getAttributes().get("org.restlet.http.headers");
+
         if (challengeScheme != null) {
             request.setChallengeResponse(createChallengeResponse());
         }
@@ -262,7 +263,9 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         params.add("followRedirects", Boolean.toString(followRedirects));
         params.add("readTimeout", Integer.toString(readTimeout));
 
-        ExtendedResponse response = new ExtendedResponse(request,0,999);
+        ExtendedResponse response;
+        //response = new ExtendedResponse(request,0,999);
+        response = new ExtendedResponse(request);
         client.handle(request, response);
         return response;
     }
@@ -307,23 +310,33 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
         int responseCode = status.getCode();
         if (responseCode < minResponseCode || responseCode > maxResponseCode) {
             if(responseCode>=1000) {
-                throw new RestletOperationException(request,
-                        "Internal Restlet Error "+status.toString()+'\n'
-                                +status.getDescription() + '\n'
-                                +status.getUri()
-                        +" over "+client.toString(),
-                        response,
+                String endpoint=client.toString();
+                String statusText = status.toString();
+                String statusDescription = status.getDescription();
+                String statusURI = status.getUri();
+                String text=request.getMethod().getName()
+                        + " on " +
+                        request.getResourceRef().toString();
+
+                String message = "Internal Restlet Error " + statusText + '\n'
+                        + statusDescription + '\n'
+                        + statusURI
+                        + " over " + endpoint;
+                RestletOperationException exception = new RestletOperationException(
+                        text + message,
                         this);
+                exception.build(response);
+                throw exception;
             }
 
             throw new RestletOperationException(
                     request,
-                    "Status code " + responseCode +" ("+status.toString()+")"
+                    "Status code " + responseCode +" ("+status+ ')'
                             + " is out of range of "
                             + minResponseCode
                             + '-'
                             + maxResponseCode
-                            + "\n over " + client.toString(),
+                            + "\n over " + client,
                     response,
                     this);
         }

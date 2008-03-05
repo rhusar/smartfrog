@@ -29,8 +29,6 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -136,20 +134,23 @@ public class RestletOperationException extends SmartFrogException {
      * here.
      * @param response response text
      */
-    protected void build(Response response) {
-        status=response.getStatus().getCode();
-        Representation data = response.getEntity();
-        RepresentationHelper rh=new RepresentationHelper(data);
-        if(rh.isTextType())
-        try {
-            text = data.getText();
-        } catch (IOException e) {
-            text=null;
-        }
-        Form form=(Form)response.getAttributes().get("org.restlet.http.headers");
-        headers = new HashMap<String, String>(form.size());
-        for(String header: form.getNames()) {
-            headers.put(header,form.getFirstValue(header));
+    public void build(Response response) {
+        if (response != null) {
+            status = response.getStatus().getCode();
+            Representation data = response.getEntity();
+            RepresentationHelper rh = new RepresentationHelper(data);
+            if (rh.isTextType()) {
+                try {
+                    text = data.getText();
+                } catch (IOException e) {
+                    text = null;
+                }
+            }
+            Form form = RestletUtils.extractHttpHeaders(response);
+            headers = new HashMap<String, String>(form.size());
+            for (String header : form.getNames()) {
+                headers.put(header, form.getFirstValue(header));
+            }
         }
     }
 
@@ -169,10 +170,10 @@ public class RestletOperationException extends SmartFrogException {
      */
     public String toString(String nm) {
         StringBuilder builder=new StringBuilder(super.toString(nm));
-        builder.append(nm);
-        builder.append("Headers:");
-        builder.append(nm);
         if(headers!=null) {
+            builder.append(nm);
+            builder.append("Headers:");
+            builder.append(nm);
             for(String header:headers.keySet()) {
                         builder.append(header);
                         builder.append(":");

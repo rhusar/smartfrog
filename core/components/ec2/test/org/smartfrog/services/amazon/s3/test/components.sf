@@ -26,11 +26,11 @@ login PROPERTY test.awsid;
 password PROPERTY test.awskey
 timeout 10;
 
-bucketURL (bucket ++ ".s3.amazonaws.com");
+bucketHost (bucket ++ ".s3.amazonaws.com");
 
 
 TestBucket extends  TransientS3Bucket {
-    name ROOT:bucket;
+    bucket ROOT:bucket;
     username ROOT:login;
     password ROOT:password;
     connectTimeout timeout;
@@ -65,12 +65,44 @@ DeleteBucket extends TestBucket {
   sfShouldTerminate true;
 }
 
+IndexHtml extends S3File {
+  sfShouldTerminate true;
+  name "index.html";
+  bucket ROOT:bucket;
+  username ROOT:login;
+  password ROOT:password;
+  connectTimeout timeout;
+  headers [
+    S3_PUBLIC_READ_HEADER
+    ];
+}
+
+GetIndexHtml extends IndexHtml {
+  startActions [GET_ACTION];
+}
+
+HeadIndexHtml extends IndexHtml {
+  startActions [GET_ACTION];
+}
+
+PutIndexHtml extends IndexHtml {
+  startActions [PUT_ACTION];
+}
+
+DeleteIndexHtml extends IndexHtml {
+  startActions [DELETE_ACTION];
+}
+
+DeleteOnTerminateIndexHtml extends IndexHtml {
+  terminateActions [DELETE_ACTION];
+}
+
 
 /**
  * Look for the bucket
  */
 ProbeForBucket extends WaitForPage {
-  host bucketURL;
+  host bucketHost;
   fetchErrorText true;
   checkFrequency 100;
   timeout ROOT:timeout;
@@ -82,7 +114,23 @@ ProbeForBucket extends WaitForPage {
   logResponse true;
 }
 
-
+ /**
+ * Look for a public file
+ */
+ProbeForFile extends WaitForPage {
+  host S3Resource:host;
+  bucket TBD;
+  name TBD;
+  path bucket;
+  page name;
+  fetchErrorText true;
+  checkFrequency 100;
+  timeout ROOT:timeout;
+  checkOnStartup true;
+  checkOnLiveness false
+  sfShouldTerminate true;
+  logResponse true;
+}
 /*
  * Our AWS condition
  */
@@ -117,11 +165,22 @@ BucketTest extends ExpectDeployOnAWS {
  
   action extends  Compound {
 
-    datasource extends TextDataSource { text "";}
+    //text data is empty
+    textdata extends TextDataSource {
+     text "";
+    }
+
+    //html data
+    htmldata extends TextDataSource {
+     //add no regexp magic characters here, or you break the tests
+      text "<html><body><h1><blink>hello, world</blink></h1></body></html>";
+      regexp text;
+    }
 
     bucket extends TestBucket  {
-      datasource LAZY PARENT:datasource ;
+      datasource LAZY PARENT:textdata ;
     }
+
 
   }
 
@@ -136,7 +195,6 @@ testCreateBucket extends BucketTest {
   }
 }
 
-
 testDeployGetBucket extends BucketTest {
 
   tests extends Sequence {
@@ -145,6 +203,8 @@ testDeployGetBucket extends BucketTest {
   }
 
 }
+
+
 
 testDeleteBucket extends BucketTest {
 
@@ -170,5 +230,68 @@ testDeleteNonexistentBucket extends ExpectDeployOnAWS {
     delete2 extends DeleteBucket;
   }
 
+}
+
+testPutFileToBucket extends BucketTest {
+
+   description "add an HTML page ";
+
+
+   tests extends Sequence {
+     putFile extends PutIndexHtml {
+       datasource LAZY ATTRIB action:htmldata;
+     }
+     
+     followon extends Sequence {
+
+     }
+  }
+}
+
+
+testGetFileFromBucket extends testPutFileToBucket {
+   description "add an HTML page and then GET it";
+
+
+   tests:followon extends Sequence {
+     get extends GetIndexHtml {
+     }
+   }
+}
+
+
+
+
+testGetWaitForFileFromBucket extends testPutFileToBucket {
+   description "add an HTML page and wait for it";
+   links ["http://jira.smartfrog.org/jira/browse/SFOS-703"];
+
+   tests:followon extends Sequence {
+     wait extends ProbeForFile {
+      name PutIndexHtml:name;
+      bucket PutIndexHtml:bucket;
+     }
+   }
+}
+
+
+
+
+testGetFileRegexp extends testGetFileFromBucket {
+
+  description "add an HTML page and then GET it, checking the regular expression";
+  tests:followon:get:responseRegexp action:htmldata:regexp;
+}
+
+
+testGetFileBadRegexp extends testGetFileFromBucket {
+  description "check that the regexp code is live, by generating an error";
+/*
+  expectTerminate true;
+  exitType EXIT_TYPE_ABNORMAL;
+*/
+
+  description "add an HTML page and then GET it, checking the regular expression";
+  tests:followon:get:responseRegexp "not-the-correct-pattern";
 }
 

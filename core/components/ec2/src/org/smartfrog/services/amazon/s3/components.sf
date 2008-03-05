@@ -27,7 +27,11 @@
  * During startup, liveness and termination
  */
 S3Resource extends AWSResource {
-  host "https://s3.amazonaws.com/";
+  protocol "https";
+  host "s3.amazonaws.com";
+  S3_ACL_HEADER "x-amz-acl";
+  PUBLIC_READ "public-read";
+  S3_PUBLIC_READ_HEADER [S3_ACL_HEADER,PUBLIC_READ];
 }
 
 /**
@@ -36,8 +40,8 @@ S3Resource extends AWSResource {
 
 
 S3Bucket extends S3Resource {
-  name TBD;
-  url (host ++ name);
+  bucket TBD;
+  path bucket;
   startActions [];
   livenessActions [];
   terminateActions [];
@@ -73,3 +77,45 @@ DeleteS3BucketOnTermination extends S3Bucket {
 PersistentS3Bucket extends TransientS3Bucket {
   terminateActions [];
 }
+
+
+
+/**
+ * An S3 File is a file in the filesystem
+ */
+S3File extends S3Resource {
+  bucket TBD;
+  name TBD;
+  path bucket;
+  page name;
+}
+
+/**
+ * A file we put up
+ */
+PutS3File extends S3File  {
+  startActions [PUT_ACTION];
+}
+
+/**
+ * A file we examine
+ */
+HeadS3File extends S3File  {
+  startActions [HEAD_ACTION];
+}
+
+/**
+ * A file we get
+ */
+GetS3File extends S3File  {
+  startActions [GET_ACTION];
+}
+
+
+/**
+ * A file we delete
+ */
+DeleteS3File extends S3File  {
+  startActions [GET_ACTION];
+}
+

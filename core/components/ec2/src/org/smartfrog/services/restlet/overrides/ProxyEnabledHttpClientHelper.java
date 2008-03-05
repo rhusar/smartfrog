@@ -135,7 +135,9 @@ public class ProxyEnabledHttpClientHelper extends HttpClientHelper {
         proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "80"));
         proxyUser = System.getProperty("http.proxyUser");
         proxyPassword = System.getProperty("proxyPassword");
-        log.debug("Binding to proxy " + proxyHost + ":" + proxyPort);
+        if(log.isDebugEnabled()) {
+            log.debug("Binding to proxy " + proxyHost + ':' + proxyPort);
+        }
         return true;
     }
 

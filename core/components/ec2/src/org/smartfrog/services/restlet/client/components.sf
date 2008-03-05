@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 
 
 
-RemoteResource extends Prim {
+RemoteResource extends HttpCodes {
   schema extends HttpPageSchema;
   sfClass "org.smartfrog.services.restlet.client.RemoteRestletResourceImpl";
   NO_AUTH ""
@@ -53,27 +53,29 @@ RemoteResource extends Prim {
   headers [];
 
   //these response codes are actually unused. 
-  minimumResponseCode HttpCodes:START_2XX;
-  maximumResponseCode HttpCodes:END_2XX;
+  minimumResponseCode START_2XX;
+  maximumResponseCode END_2XX;
   
+  connectTimeout -1;
+  //read timeout in milliseconds
+  readTimeout 30000;
 
   fetchErrorText true;
   //turned off as PUT redirects aren't handled yet
   followRedirects false;
-  connectTimeout -1;
-  //read timeout in milliseconds
-  readTimeout 30000;
-  useSystemProxySettings true;
 
   mimeType [];
-
-  protocol "http";
+  //work the port out from the protocol
+  port CHOOSE_PORT;
+  //default to http
+  protocol HTTP;
+  //not implemented in this component, just stubbed out
+  responseRegexp "";
   //not yet implemented
   resultXPath "";
 
-  //not implemented in this component, just stubbed out
-  responseRegexp "";
-  
+
+  useSystemProxySettings true;
 
   //data source
   //datasource ;
@@ -86,20 +88,20 @@ RemoteResource extends Prim {
  
   //the normal get action
 
-  GET_ACTION  [GET, HttpCodes:START_2XX,  HttpCodes:END_2XX];
-  HEAD_ACTION [HEAD,HttpCodes:START_2XX,  HttpCodes:END_2XX];
-  POST_ACTION [POST,HttpCodes:START_2XX,  HttpCodes:END_2XX];
-  PUT_ACTION  [PUT, HttpCodes:START_2XX,  HttpCodes:END_2XX];
+  GET_ACTION  [GET, START_2XX,  END_2XX];
+  HEAD_ACTION [HEAD,START_2XX,  END_2XX];
+  POST_ACTION [POST,START_2XX,  END_2XX];
+  PUT_ACTION  [PUT, START_2XX,  END_2XX];
   
   //HTTP1.1 says that DELETE should also return 2XX responses.
-  DELETE_ACTION [DELETE,HttpCodes:START_2XX,HttpCodes:END_2XX];
+  DELETE_ACTION [DELETE,START_2XX,END_2XX];
   //and a backwards compatible variant allows people to delete idempotently
-  DELETE_ACTION_4XX [DELETE,HttpCodes:START_2XX,HttpCodes:END_4XX];
+  DELETE_ACTION_4XX [DELETE,START_2XX,END_4XX];
 }
 
 GetRestResource extends RemoteResource {
   followRedirects true;
-  startActions [GET_ACTION];
+  startActions    [GET_ACTION];
   livenessActions [HEAD_ACTION];
 }
 
@@ -109,15 +111,15 @@ HeadLivenessRestResource extends RemoteResource {
 }
 
 PostRestResource extends RemoteResource {
-  startActions [POST_ACTION];
+  startActions    [POST_ACTION];
 }
 
 DeleteRestResource extends RemoteResource {
-  startActions [DELETE_ACTION_4XX];
+  startActions    [DELETE_ACTION_4XX];
 }
 
 PutRestResource extends RemoteResource {
-  startActions [PUT_ACTION];
+  startActions    [PUT_ACTION];
 }
 
 /**
@@ -126,8 +128,8 @@ PutRestResource extends RemoteResource {
  */
 
 PutDeleteRestResource extends RemoteResource {
-  startActions [PUT_ACTION];
-  livenessActions [HEAD_ACTION];
+  startActions     [PUT_ACTION];
+  livenessActions  [HEAD_ACTION];
   terminateActions [DELETE_ACTION];
 }
 

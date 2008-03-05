@@ -46,12 +46,18 @@ public class ExtendedResponse extends Response {
 
     /**
      * Fix redirection handling by setting the base reference to the host of the system
-     * @param redirectUri
+     * @param redirectUri URI to redirect to
      */
     public void setRedirectRef(String redirectUri) {
-        Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
-                .getResourceRef()
-                : null;
+        Reference baseRef=null;
+        Reference resourceRef = getRequest().getResourceRef();
+        if (resourceRef != null) {
+            if (resourceRef.getBaseRef() != null) {
+                baseRef = resourceRef.getBaseRef();
+            } else {
+                baseRef = resourceRef;
+            }
+        }
         setRedirectRef(new Reference(baseRef, redirectUri).getTargetRef());
     }
 
