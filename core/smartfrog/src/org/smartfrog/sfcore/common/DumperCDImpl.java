@@ -45,6 +45,12 @@ import java.util.Enumeration;
 
 public class DumperCDImpl implements Dumper {
 
+    /** Property name for DumperCDImpl class
+         *  Value {@value}
+         *  */
+     public static final String dumperPropertyBase = "org.smartfrog.sfcore.common.Dumper";
+
+
     private Reference rootRef = null;
 
     private  boolean completed = false;
@@ -55,11 +61,18 @@ public class DumperCDImpl implements Dumper {
     private Long visiting = new Long(1); //Counter of Visits
 
 
+    //Configuration attributes
+    /** String name for optional attribute "{@value}". */
+    public static final String ATR_SF_KEYS_TO_BE_REMOVED = "sfKeysToBeRemoved";
+    /** String name for optional attribute "{@value}". */
+    public static final String ATR_TIMEOUT = "timeout";
+
     /**
      * Special keys that are created by the runtime and that should be removed to have a deployable description.
      * Value: @value
      */
-    private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime","sfTraceDeployLifeCycle","sfTraceStartLifeCycle"};
+    private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime","sfTraceDeployLifeCycle","sfTraceStartLifeCycle", "sfUniqueComponentName"};
+
 
     /** Default timeout (@value msecs), in large distributed deployments
      * it could need more time to reach the final result*/
@@ -70,8 +83,26 @@ public class DumperCDImpl implements Dumper {
         try {
             UnicastRemoteObject.exportObject(this);
             rootRef = from.sfCompleteName();
+            init();
         } catch (RemoteException e) {
             if (sfLog().isErrorEnabled()) sfLog().error(e);
+        }
+    }
+
+    /**
+     * Init method
+     */
+    private void  init() {
+        ComponentDescription configuration = null;
+        //Check Class and read configuration...including system.properties
+        try {
+            configuration = ComponentDescriptionImpl.getClassComponentDescription(dumperPropertyBase, true, null);
+            if (configuration!=null){
+               timeout = configuration.sfResolve(ATR_TIMEOUT,timeout,false);
+               sfKeysToBeRemoved = configuration.sfResolve(ATR_SF_KEYS_TO_BE_REMOVED, sfKeysToBeRemoved ,false);
+            }
+        } catch (Exception ex){
+            if (sfLog().isErrorEnabled()) sfLog().error(ex);
         }
     }
 
