@@ -240,6 +240,7 @@ public class TestCompoundImpl extends ConditionCompound
         }
 
         if (thrown == null) {
+            assert actionPrim !=null : "actionPrim is null, yet we did not catch an exception";
             //a null exception meant the action was deployed successfully
 
             //if we get here. then it is time to actually start the action.
@@ -278,13 +279,13 @@ public class TestCompoundImpl extends ConditionCompound
 
                 String recordText = "";
                 if (exceptionCheck != null) {
-                    recordText = UNEXPECTED_STARTUP_EXCEPTION + exceptionCheck + "\n";
+                    recordText = UNEXPECTED_STARTUP_EXCEPTION + exceptionCheck + '\n';
                 }
                 if (wrongExitText) {
-                    recordText += EXPECTED_EXIT_TEXT + exitText + "\n"
-                            + "But got: " + message + "\n";
+                    recordText += EXPECTED_EXIT_TEXT + exitText + '\n'
+                            + "But got: " + message + '\n';
                 } else {
-                    recordText += "Exit message: " + message + "\n";
+                    recordText += "Exit message: " + message + '\n';
                 }
                 noteStartupFailure(recordText, thrown);
                 //then throw an exception
@@ -344,7 +345,10 @@ public class TestCompoundImpl extends ConditionCompound
     private void noteEndOfTestRun(TerminationRecord record, boolean success)
             throws SmartFrogRuntimeException, RemoteException {
         if (!success) {
-            sfLog().error(record);
+            sfLog().warn(record.toString());
+            if(record.getCause() !=null) {
+                sfLog().warn(record.getCause());
+            }
         }
         setStatus(record);
         actionTerminationRecord = record;

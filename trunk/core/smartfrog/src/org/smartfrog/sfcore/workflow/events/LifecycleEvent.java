@@ -75,7 +75,7 @@ public abstract class LifecycleEvent implements Serializable {
      * @param status termination record, can be null.
      */
     protected LifecycleEvent(Prim component, TerminationRecord status) {
-        this.timestamp = System.currentTimeMillis();
+        timestamp = System.currentTimeMillis();
         this.component = component;
         if (component!=null && componentName != null) {
             Reference reference = new ComponentHelper(component).completeNameOrNull();
@@ -145,7 +145,7 @@ public abstract class LifecycleEvent implements Serializable {
     public String toString() {
         StringBuilder buf=new StringBuilder();
         buf.append(getComponentName());
-        buf.append(" -"+getEventName());
+        buf.append(" -").append(getEventName());
         buf.append(" at ");
         buf.append(new Date(getTimestamp()).toString());
         buf.append(" alive: ");
