@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
- *
+ * A source of text data
  */
 public class TextDataSource extends AbstractRestletDataSource implements RestletDataSource {
 
