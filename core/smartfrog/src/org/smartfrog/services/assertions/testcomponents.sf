@@ -197,7 +197,7 @@ ExpectTerminate extends TestCompound {
 FailingTestCompound extends ExpectTerminate {
 
   description "The deployment is expected to fail";
-
+  expectTerminate true;
   exitType EXIT_TYPE_ABNORMAL;
 }
 

@@ -188,11 +188,31 @@ public final class TerminationRecord implements Serializable {
      */
     public String toString() {
         //return id + "(" + errorType + ":" + description + ")";
-        return "Termination Record: " +
-        (((id == null) || (id.size() == 0)) ? "" : ("" + id.toString())) +
-        ((errorType == null) ? "" : (",  type: " + errorType)) +
-        ((description == null) ? "" : (",  description: " + description)) +
-        ((cause == null) ? "" : (",  cause: " + cause)) ;
+        StringBuilder builder=new StringBuilder();
+        builder.append("Termination Record: ");
+        if(id != null && id.size() > 0) {
+            builder.append(id.toString());
+        }
+        if(errorType!=null) {
+            builder.append(",  type: ").append(errorType);
+        }
+        if(description!=null) {
+            builder.append(",  description: ").append(description);
+        }
+        //recursively attach exceptions
+        Throwable thrown = cause;
+        Throwable parent = null;
+        while (thrown != null && thrown != parent) {
+            builder.append(",  ");
+            if(parent!=null) {
+                builder.append(" nested ");
+            }
+            builder.append("cause: ");
+            builder.append(thrown);
+            parent = thrown;
+            thrown = thrown.getCause();
+        }
+        return builder.toString();
     }
 
     /**

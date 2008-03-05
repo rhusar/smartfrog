@@ -37,7 +37,12 @@ public class TestCompletedEvent extends LifecycleEvent {
     }
 
 
-    public TestCompletedEvent(Prim component, boolean succeeded, boolean forcedTimeout, boolean skipped, TerminationRecord status, String description) {
+    public TestCompletedEvent(Prim component,
+                              boolean succeeded,
+                              boolean forcedTimeout,
+                              boolean skipped,
+                              TerminationRecord status,
+                              String description) {
         super(component,status);
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
@@ -79,13 +84,13 @@ public class TestCompletedEvent extends LifecycleEvent {
     public String toString() {
         StringBuilder buffer=new StringBuilder(super.toString());
         if(description!=null && description.length()>0) {
-            buffer.append("\n").append(description);
-            buffer.append("\n");
+            buffer.append('\n').append(description);
+            buffer.append('\n');
         }
         buffer.append("\nsucceeded:").append(succeeded);
         buffer.append("\nforcedTimeout:").append(forcedTimeout);
         buffer.append("\nskipped:").append(skipped);
-        buffer.append("\n");
+        buffer.append('\n');
         return buffer.toString();
     }
 }
