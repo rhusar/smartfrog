@@ -146,10 +146,12 @@ public class RestletOperationException extends SmartFrogException {
                     text = null;
                 }
             }
+            headers = new HashMap<String, String>();
             Form form = RestletUtils.extractHttpHeaders(response);
-            headers = new HashMap<String, String>(form.size());
-            for (String header : form.getNames()) {
-                headers.put(header, form.getFirstValue(header));
+            if (form != null) {
+                for (String header : form.getNames()) {
+                    headers.put(header, form.getFirstValue(header));
+                }
             }
         }
     }
@@ -169,17 +171,17 @@ public class RestletOperationException extends SmartFrogException {
      * @return String this object to String.
      */
     public String toString(String nm) {
-        StringBuilder builder=new StringBuilder(super.toString(nm));
-        if(headers!=null) {
+        StringBuilder builder = new StringBuilder(super.toString(nm));
+        if (headers != null) {
             builder.append(nm);
             builder.append("Headers:");
             builder.append(nm);
-            for(String header:headers.keySet()) {
-                        builder.append(header);
-                        builder.append(":");
-                        builder.append(headers.get(header));
-                        builder.append(nm);
-                    }
+            for (String header : headers.keySet()) {
+                builder.append(header);
+                builder.append(":");
+                builder.append(headers.get(header));
+                builder.append(nm);
+            }
         }
         builder.append(text);
         builder.append(nm);
