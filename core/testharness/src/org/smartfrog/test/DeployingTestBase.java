@@ -41,7 +41,6 @@ import java.rmi.NoSuchObjectException;
  */
 
 public abstract class DeployingTestBase extends SmartFrogTestBase implements TestProperties {
-
     private static final int SPIN_INTERVAL = 10;
 
     /**
@@ -310,8 +309,10 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
         TestCompletedEvent results = (TestCompletedEvent) event;
         conditionalFail(results.isForcedTimeout(),
                 "Forced timeout", event);
-        conditionalFail(results.isFailed() && !results.isSkipped(),
-                "Test failed", event);
+        if (results.isFailed() && !results.isSkipped()) {
+            String message = "Test failed" + '\n' + results;
+            throw new TerminationRecordException(message,results.getStatus());
+        }
         return results;
     }
 
@@ -358,7 +359,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      */
     private void conditionalFail(boolean test, String message, LifecycleEvent event) {
         if (test) {
-            fail(message + "\n" + event);
+            fail(message + '\n' + event);
         }
     }
 
