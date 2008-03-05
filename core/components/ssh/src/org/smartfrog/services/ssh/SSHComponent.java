@@ -74,7 +74,7 @@ public interface SSHComponent extends Remote {
     /**
      * {@value}
      */
-    String ATTR_KNOWN_HOSTS = "knownHosts";
+    String ATTR_KNOWN_HOSTS = "knownHostsFile";
     /**
      * How to authenticate: {@value}
      */

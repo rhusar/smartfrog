@@ -36,8 +36,9 @@ SSHComponentSchema extends Schema {
     //for key authentication, the file containing the private key
     keyFile extends  OptionalFilenameType;
 
-    //a list of known hosts; hosts to trust
-    knownHosts extends OptionalVector;
+    //a file of known hosts; hosts to trust. This includes their keys.
+    //not needed when trustAllCertificates is true
+    knownHostsFile extends OptionalFilenameType;
 
     //a reference to a password provider
     passwordProvider extends Compulsory;
