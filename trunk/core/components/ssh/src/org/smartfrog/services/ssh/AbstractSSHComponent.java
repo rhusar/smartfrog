@@ -22,6 +22,8 @@ package org.smartfrog.services.ssh;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.HostKeyRepository;
+import com.jcraft.jsch.HostKey;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -32,9 +34,11 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.io.File;
 
 /**
  * This base class handles all SSH authentication issues for any component that needs SSH auth.
@@ -59,7 +63,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     protected int port = SSH_PORT;
     protected String userName;
 
-    protected Vector knownHosts;
+    protected String knownHosts;
 
     private volatile Session session = null;
 
@@ -67,14 +71,18 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     protected static final String SESSION_IS_DOWN = "session is down";
     private static final String AUTH_FAIL = "Auth fail";
     private static final String AUTH_CANCEL = "Auth cancel";
-    public static final String ERROR_WRONG_PASSWORD_PROVIDER_TYPE = "The attribute "+ATTR_PASSWORD_PROVIDER+" must be a lazy reference to a class that implements the "
-    +"org.smartfrog.services.passwords.PasswordProvider"+" interface -";
+    public static final String ERROR_WRONG_PASSWORD_PROVIDER_TYPE = "The attribute "
+            +ATTR_PASSWORD_PROVIDER
+            +" must be a lazy reference to a class that implements the "
+            +"org.smartfrog.services.passwords.PasswordProvider"+" interface -";
+    private final Reference attrKnownHosts;
 
     /**
      * Only subclasses can instantiate this
      * @throws RemoteException if the superclass constructor raises it
      */
     protected AbstractSSHComponent() throws RemoteException {
+        attrKnownHosts = new Reference(ATTR_KNOWN_HOSTS);
     }
 
 
@@ -139,8 +147,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
 
         timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
         connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, connectTimeout, true);
-        knownHosts = sfResolve(ATTR_KNOWN_HOSTS,knownHosts,false);
-
+        knownHosts = FileSystem.lookupAbsolutePath(this, attrKnownHosts, null, null, false, null);
     }
 
 
@@ -166,6 +173,10 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         if (usePublicKey) {
             jsch.addIdentity(keyFile);
         }
+        if (knownHosts != null) {
+            jsch.setKnownHosts(knownHosts);
+        }
+
         //set the logger up to our logging.
         JSch.setLogger(new JschLogger(log));
         return jsch;
@@ -181,7 +192,7 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
      */
     public synchronized Session openSession() throws JSchException {
         if(session!=null) {
-            throw new JSchException("existing sessin is in use");
+            throw new JSchException("Existing session is in use");
         }
         JSch jsch = createJschInstance();
         Session newSession = createSession(jsch);
@@ -204,8 +215,8 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
         Session newSession;
         newSession = jsch.getSession(userInfo.getName(), host, port);
         newSession.setUserInfo(userInfo);
-        if(!usePublicKey) {
-           newSession.setPassword(userInfo.getPassword());
+        if (!usePublicKey) {
+            newSession.setPassword(userInfo.getPassword());
         }
         log.info("Connecting to " + getConnectionDetails());
         return newSession;
@@ -297,8 +308,12 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
                       "\n -server not trusted":
                       "")
                     + "\n -server not supporting login by that user";
+        } else if(faulttext.contains("reject HostKey:")) {
+            message = "The host key of the server is not trusted:"
+                    + (knownHosts != null ? (" (knownHosts=" + knownHosts + ')') : "")
+                    + getConnectionDetails() + " -" + faulttext;
         } else {
-            message=getConnectionDetails()+" -"+ faulttext;
+            message = getConnectionDetails() + " -" + faulttext;
         }
         return new SmartFrogLifecycleException(message, ex);
     }
