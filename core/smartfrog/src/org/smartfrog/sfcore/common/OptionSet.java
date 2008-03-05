@@ -49,7 +49,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     private static final String USAGE = "\n" +
-        " Usage: SFSystem [-a SFACT] [-f SFREF] [-t] [-e] [-d] [-headless]\n" +
+        " Usage: SFSystem [-a SFACT] [-f SFREF] [-t] [-e] [-d] [-p port][-headless]\n" +
         "    or: SFSystem -?\n";
 
     /** Help string for SFSystem. */
@@ -102,9 +102,10 @@ public class OptionSet {
         "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d or -diagnostics: print information that might be helpful to diagnose or report problems." + "\n" +
-        "   " + OPTION_HEADLESS + ": the process will run in headless mode\n" +
-        "   " + OPTION_QUIETEXIT + ":  do not set any exit code when the program exits with an error\n"+
-        "   -? or -help:  print this help information\n";
+        "    -p or -port: port to locate the daemon (default 3800)." + "\n" +
+        "   " + OPTION_HEADLESS + ": the process will run in headless mode.\n" +
+        "   " + OPTION_QUIETEXIT + ":  do not set any exit code when the program exits with an error.\n"+
+        "   -? or -help:  print this information.\n";
 
     /** Error string for SFSystem. */
     public String errorString = null;
@@ -176,6 +177,9 @@ public class OptionSet {
                             SFSystem.sfLog().error(ex.getMessage(), ex);
                         }
                     }
+                } else if ("-p".equals(currentArg)|| "-port".equals(currentArg)) {
+
+                        System.setProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorPort",readLocationPort(args[++i]));                    
                 } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
                     //diagnostics
                     diagnostics = true;
@@ -270,5 +274,11 @@ public class OptionSet {
             }
         }
         return cfgDescriptors;
+    }
+
+    String readLocationPort(String sfRootLocatorPort) {
+        //Check that the value is correct
+        Integer.getInteger(sfRootLocatorPort);        
+        return sfRootLocatorPort;
     }
 }
