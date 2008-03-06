@@ -55,11 +55,6 @@
         name="quartz"
         rev="${quartz.version}"
         conf="compile->master;redist->default"/>
-    <!--    <dependency org="commons-logging"
-    name="commons-logging"
-    rev="${commons-logging.version}"
-    conf="compile,redist->master"/>-->
-
 
   </dependencies>
 </ivy-module>
