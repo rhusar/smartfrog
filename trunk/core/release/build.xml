@@ -1017,9 +1017,17 @@
       remote directory is ${rpm.full.ssh.dir}
       rpms to install: ${rpms.list}
     </echo>
+
   </target>
 
   <target name="rpm-upload" depends="rpm-upload-init">
+    <fail>
+      <condition >
+        <resourcecount count="0" refid="rpm.upload.fileset"/>
+      </condition>
+      There are no RPMs to upload in the directory
+      ${upload.dir}
+    </fail>
     <rpmssh command="rm -rf ${rpm.full.ssh.dir}/" failonerror="false"/>
     <rpmssh command="mkdir -p ${rpm.full.ssh.dir}"/>
     <property name="rpm.ssh.path"
