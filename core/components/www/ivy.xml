@@ -61,6 +61,14 @@
         name="sf-testharness"
         changing="true"
         rev="latest.integration"
-        conf="test->default"/>    
+        conf="test->default"/>
+
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;redist->default">
+      <exclude org="commons-logging"/>
+      <exclude org="junit"/>
+    </dependency>
   </dependencies>
 </ivy-module>
