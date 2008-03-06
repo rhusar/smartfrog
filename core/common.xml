@@ -371,6 +371,8 @@ java.class.path=
         fork="true"
         failonerror="true"
         >
+		<jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+        <jvmarg value="-Demma.coverage.out.merge=true" />
        </java>
     </presetdef>
 
@@ -416,6 +418,9 @@ java.class.path=
            >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
+		<jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+        <jvmarg value="-Demma.coverage.out.merge=true" />
+
         <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
 
