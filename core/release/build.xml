@@ -510,6 +510,8 @@
     <ln artifact="jetty" version="${jetty.version}"/>
     <ln artifact="jetty-util" version="${jetty.version}"/>
     <ln artifact="servlet-api" version="${servletapi.version}"/>
+    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
+    <ln artifact="commons-codec" version="${commons-codec.version}"/>
 
     <!--  xml-->
     <rpmpackage package="xml"/>
