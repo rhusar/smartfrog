@@ -38,6 +38,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * @since 3.11.001
@@ -123,18 +125,7 @@ public class DumperCDImpl implements Dumper {
      */
     public void modifyCD(Reference from, Context stateCopy ) throws Exception {
         try {
-            //Remove non re-deployable keys
-            for (String aSfKeysToBeRemoved : sfKeysToBeRemoved) {
-                if (stateCopy.sfContainsAttribute(aSfKeysToBeRemoved)) {
-                    try {
-                        stateCopy.sfRemoveAttribute(aSfKeysToBeRemoved);
-                    } catch (SmartFrogContextException e) {
-                        if (sfLog().isWarnEnabled()) {
-                            sfLog().warn(e);
-                        }
-                    }
-                }
-            }
+            removeAttributesFromContext(stateCopy);
 
             //Create new CD if not created yet and inspecting root ref
             if ((cd==null) && rootRef.equals(from)) {
@@ -169,8 +160,28 @@ public class DumperCDImpl implements Dumper {
         }
     }
 
+    private void removeKeysFromContext(Context stateCopy) {//Remove non re-deployable keys
+        for (String aSfKeysToBeRemoved : sfKeysToBeRemoved) {
+            if (stateCopy.sfContainsAttribute(aSfKeysToBeRemoved)) {
+                try {
+                    stateCopy.sfRemoveAttribute(aSfKeysToBeRemoved);
+                } catch (SmartFrogContextException e) {
+                    if (sfLog().isWarnEnabled()) {
+                        sfLog().warn(e);
+                    }
+                }
+            }
+        }
+    }
 
 
+    public void removeAttributesFromContext (Context context){
+         removeKeysFromContext (context);
+         for (Iterator values = context.sfValues(); values.hasNext(); ) {
+             Object value = values.next();
+             if (value instanceof ComponentDescription) removeAttributesFromContext (( (ComponentDescription) value).sfContext());
+         }
+     }
 
 
     /**
