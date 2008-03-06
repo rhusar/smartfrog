@@ -62,6 +62,7 @@ abstract class ISfRunnerExt
 
     protected final static String SfSystemClass = "org.smartfrog.SFSystem"; //$NON-NLS-1$
     protected final static String SfParseClass = "org.smartfrog.SFParse";
+   
 
     protected final static String JAVA =  SmartFrogPreferencePage.getRmiLocation() + ISmartFrogConstants.FILE_SEPARATOR +"java" ; //$NON-NLS-1$
     protected static final String CMD_SFMANAGEMENT_CONSOLE =
