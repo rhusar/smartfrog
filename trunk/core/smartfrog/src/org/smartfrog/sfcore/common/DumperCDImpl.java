@@ -125,7 +125,7 @@ public class DumperCDImpl implements Dumper {
      */
     public void modifyCD(Reference from, Context stateCopy ) throws Exception {
         try {
-            removeAttributesFromContext(stateCopy);
+            removeAttributesFromContext((Context) (stateCopy.clone()));
 
             //Create new CD if not created yet and inspecting root ref
             if ((cd==null) && rootRef.equals(from)) {
