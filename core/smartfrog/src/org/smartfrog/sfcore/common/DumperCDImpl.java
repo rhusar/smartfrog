@@ -20,6 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
@@ -29,17 +39,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Set;
-import java.util.Iterator;
 
 /**
  * @since 3.11.001
@@ -74,7 +73,6 @@ public class DumperCDImpl implements Dumper {
      * Value: @value
      */
     private String[] sfKeysToBeRemoved = new String[] {"sfHost", "sfProcess", "sfLog", "sfBootDate","sfParseTime","sfDeployTime","sfTraceDeployLifeCycle","sfTraceStartLifeCycle", "sfUniqueComponentName"};
-
 
     /** Default timeout (@value msecs), in large distributed deployments
      * it could need more time to reach the final result*/
@@ -125,11 +123,9 @@ public class DumperCDImpl implements Dumper {
      */
     public void modifyCD(Reference from, Context stateCopy ) throws Exception {
         try {
-            removeKeysFromContext(stateCopy);
-
             //Create new CD if not created yet and inspecting root ref
             if ((cd==null) && rootRef.equals(from)) {
-                cd = new ComponentDescriptionImpl(null,stateCopy,false);
+                cd = createCDWithKeysRemoved(stateCopy,false);
                 return;
             }
 
@@ -148,7 +144,7 @@ public class DumperCDImpl implements Dumper {
             //Place stateCopy in the right spot inside cd.
             try {
                 ComponentDescription placeHolder = (ComponentDescription)cd.sfResolve(relativeRef);
-                ComponentDescription child =new ComponentDescriptionImpl(placeHolder, stateCopy,true);
+                ComponentDescription child = createCDWithKeysRemoved(stateCopy,true);
                 placeHolder.sfReplaceAttribute(name, child);
             } catch (SmartFrogException ex) {
                 if (sfLog().isErrorEnabled()) sfLog().error(ex);
@@ -159,7 +155,14 @@ public class DumperCDImpl implements Dumper {
             throw e;
         }
     }
+    
 
+    /**
+     * Remove the listed keys from the context. This is used to remove keys that
+     * are runtime attributes not to be dumped.
+     * 
+     * @param stateCopy
+     */
     private void removeKeysFromContext(Context stateCopy) {//Remove non re-deployable keys
         for (String aSfKeysToBeRemoved : sfKeysToBeRemoved) {
             if (stateCopy.sfContainsAttribute(aSfKeysToBeRemoved)) {
@@ -173,25 +176,41 @@ public class DumperCDImpl implements Dumper {
             }
         }
     }
+    
 
-
-    public void removeAttributesFromCD (ComponentDescription CD){
-         Context context = (Context) CD.sfContext().copy();
-         removeKeysFromContext (context);
-         CD.setContext(context);
-         for (Iterator values = context.sfValues(); values.hasNext(); ) {
-             Object value = values.next();
-             Object key = CD.sfAttributeKeyFor(value);
-             if (value instanceof ComponentDescription) removeAttributesFromCD ((ComponentDescription)value);
-             try {
-                 CD.sfReplaceAttribute (key,value);
-             } catch (SmartFrogRuntimeException e) {
-                 if (sfLog().isWarnEnabled()) {
-                        sfLog().warn(e);
-                    }
-             }
-         }
-     }
+    /**
+     * Create a component description from the given state copy (context) after 
+     * removing the keys that are listed as keys to be removed. If attributes of 
+     * the state context are component descriptions recursively replace them with 
+     * clones that also have the keys removed.
+     * 
+     * @param stateCopy
+     * @param isEager
+     * @return
+     */
+    private ComponentDescription createCDWithKeysRemoved (Context stateCopy, boolean isEager){
+        
+        removeKeysFromContext (stateCopy);
+        ComponentDescription newCD = new ComponentDescriptionImpl(null, stateCopy, isEager);
+        
+        for (Iterator keys = stateCopy.sfAttributes(); keys.hasNext(); ) {
+            Object key = keys.next();
+            Object value = stateCopy.get(key);
+            if (value instanceof ComponentDescription) {
+                try {
+                    Context context = ((ComponentDescription)value).sfContext();
+                    stateCopy.sfReplaceAttribute(key, createCDWithKeysRemoved((Context)context.clone(), false) );
+                } catch (SmartFrogRuntimeException e) {
+                    if (sfLog().isWarnEnabled()) {
+                           sfLog().warn(e);
+                       }
+                }
+            }
+        }
+        
+        return newCD;
+    }
+    
 
 
     /**
