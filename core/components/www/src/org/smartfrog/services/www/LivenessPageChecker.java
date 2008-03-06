@@ -775,6 +775,16 @@ public class LivenessPageChecker implements LivenessPage {
         this.logResponse = logResponse;
     }
 
+
+
+    /**
+     * Get the headers.
+     * @return the current set of headers
+     */
+    public Vector<Vector<String>> getHeaders() {
+        return headers;
+    }
+
     /**
      * extract a query string from the parameters
      *
