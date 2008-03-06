@@ -125,7 +125,7 @@ public class DumperCDImpl implements Dumper {
      */
     public void modifyCD(Reference from, Context stateCopy ) throws Exception {
         try {
-            removeAttributesFromContext((Context) (stateCopy.clone()));
+            removeKeysFromContext(stateCopy);
 
             //Create new CD if not created yet and inspecting root ref
             if ((cd==null) && rootRef.equals(from)) {
@@ -175,11 +175,21 @@ public class DumperCDImpl implements Dumper {
     }
 
 
-    public void removeAttributesFromContext (Context context){
+    public void removeAttributesFromCD (ComponentDescription CD){
+         Context context = (Context) CD.sfContext().copy();
          removeKeysFromContext (context);
+         CD.setContext(context);
          for (Iterator values = context.sfValues(); values.hasNext(); ) {
              Object value = values.next();
-             if (value instanceof ComponentDescription) removeAttributesFromContext (( (ComponentDescription) value).sfContext());
+             Object key = CD.sfAttributeKeyFor(value);
+             if (value instanceof ComponentDescription) removeAttributesFromCD ((ComponentDescription)value);
+             try {
+                 CD.sfReplaceAttribute (key,value);
+             } catch (SmartFrogRuntimeException e) {
+                 if (sfLog().isWarnEnabled()) {
+                        sfLog().warn(e);
+                    }
+             }
          }
      }
 
