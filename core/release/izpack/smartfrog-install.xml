@@ -194,7 +194,7 @@ want izpack to see it, double escape the $$ symbol.-->
       <author name="SmartFrog Developers" email="smartfrog-developer@lists.sourceforge.net"/>
     </authors>
     <url>http://smartfrog.org/</url>
-    <javaversion>1.4</javaversion>
+    <javaversion>1.5</javaversion>
   </info>
 
 
@@ -614,14 +614,15 @@ SmartFrog to deploy complex systems.
     <pack name="WWW" required="no" preselected="no">
       <description>WWW support.
         This package contains components to deploy web applications on different
-        Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
-        component that can monitor the health of a remote site.
+        Java web servers, from Jetty ${jetty.version} to JBoss.
+        It also contains a LivenessPage component that can monitor the health of a remote site
 
         The bundled libraries are
         commons-httpclient-${commons-httpclient.version}.jar
         commons-codec-${commons-codec.version}.jar
         servlet-api-${servletapi.version}.jar
         jetty-${jetty.version}.jar
+        jetty-util-${jetty.version}.jar
 
         Prerequisite packages: Logging.
       </description>
@@ -648,12 +649,12 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH/lib"
           />
 
-<!--      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
+      <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
-          />-->
+          />
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
