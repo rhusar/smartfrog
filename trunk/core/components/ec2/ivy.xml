@@ -48,7 +48,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon->master;test->default;testwar->testwar"/>
+        conf="compile,runtime,daemon,test->default;testwar->testwar"/>
 
     <!--XML content-->
     <dependency org="org.smartfrog"
@@ -109,15 +109,6 @@
         conf="compile,redist->default">
       <exclude org="commons-httpclient"/>
       </dependency>
-
-    <!--httpclient is used underneath...we need this, but not its logging-->
-    <dependency org="commons-httpclient"
-        name="commons-httpclient"
-        rev="${commons-httpclient.version}"
-        conf="compile->master;test,runtime,redist->default">
-        <exclude org="commons-logging"/>
-        <exclude org="junit"/>
-    </dependency>
 
     <!--file upload-->
     <dependency org="org.restlet"

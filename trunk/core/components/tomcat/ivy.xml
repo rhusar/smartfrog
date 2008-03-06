@@ -56,13 +56,5 @@
         changing="true"
         rev="latest.integration"
         conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>
-    <dependency org="commons-httpclient"
-        name="commons-httpclient"
-        rev="${commons-httpclient.version}"
-        conf="compile->master;redist->default">
-      <exclude org="commons-logging"/>
-      <exclude org="junit"/>
-    </dependency>
-    
   </dependencies>
 </ivy-module>

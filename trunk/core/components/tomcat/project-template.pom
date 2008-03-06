@@ -28,10 +28,5 @@
       <artifactId>sf-loggingservices</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>${commons-httpclient.version}</version>
-    </dependency>
   </dependencies>
 </project>
