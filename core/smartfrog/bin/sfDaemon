@@ -40,12 +40,18 @@ while [ $# -ge 1 ]; do
     -J | -j) shift
         JVMARGS="$JVMARGS $1"
         ;;
+    -p) if [ -z $2 ]; then
+		echo Usage: sfDaemon -?
+		exit 69
+	else 
+   		CLASSARGS="$CLASSARGS $1"
+	fi	
+	;;	
     *) CLASSARGS="$CLASSARGS $1"
         ;;
     esac
     shift
 done
-
 #if test "$SFCODEBASE"; then
 #    JVMARGS="$JVMARGS $SFCODEBASE" 
 #fi
