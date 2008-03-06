@@ -235,6 +235,21 @@
                toolbarPath="SmartFrogTools"
                tooltip="SF Parse">
          </action>
+         <action
+               class="org.smartfrog.tools.eclipse.ui.runner.SfPingAction"
+               id="org.smartfrog.tools.eclipse.ui.runner.SfPingAction"
+               label="SF Ping"
+               menubarPath="smartFrogMenu/tools"
+               toolbarPath="SmartFrogTools"
+               tooltip="SF Ping">
+         </action>
+         <action
+               id="smartfrog-plugin-project.action2"
+               label="SF Terminate"
+               menubarPath="smartFrogMenu/tools"
+               toolbarPath="SmartFrogTools"
+               tooltip="SF Terminate">
+         </action>
       </actionSet>
    </extension>
 
