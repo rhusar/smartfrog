@@ -49,9 +49,9 @@
         conf="build->default"/>
 
     <dependency org="org.smartfrog"
-                name="sf-anubis"
-                rev="latest.integration"
-                conf="compile,redist->default"/>
+        name="sf-anubis"
+        rev="latest.integration"
+        conf="compile,redist->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-testharness"
