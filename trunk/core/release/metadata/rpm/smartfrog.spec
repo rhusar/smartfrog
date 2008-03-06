@@ -643,12 +643,16 @@ fi
 %{libdir}/jetty-${jetty.version}.jar
 %{libdir}/jetty-util-${jetty.version}.jar
 %{libdir}/servlet-api-${servletapi.version}.jar
+%{libdir}/commons-codec-${commons-codec.version}.jar
+%{libdir}/commons-httpclient-${commons-httpclient.version}.jar
 
 %{linkdir}/sf-www.jar
 %{linkdir}/sf-jetty.jar
 %{linkdir}/servlet-api.jar
 %{linkdir}/jetty.jar
 %{linkdir}/jetty-util.jar
+%{linkdir}/commons-codec.jar
+%{linkdir}/commons-httpclient.jar
 
 %files xml
 %{libdir}/sf-xml-${smartfrog.version}.jar
