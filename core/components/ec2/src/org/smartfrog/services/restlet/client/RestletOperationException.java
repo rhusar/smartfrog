@@ -178,7 +178,7 @@ public class RestletOperationException extends SmartFrogException {
             builder.append(nm);
             for (String header : headers.keySet()) {
                 builder.append(header);
-                builder.append(":");
+                builder.append(':');
                 builder.append(headers.get(header));
                 builder.append(nm);
             }

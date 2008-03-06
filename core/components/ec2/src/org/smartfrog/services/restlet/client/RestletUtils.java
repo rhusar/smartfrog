@@ -21,6 +21,9 @@ package org.smartfrog.services.restlet.client;
 
 import org.restlet.data.Form;
 import org.restlet.data.Message;
+import org.restlet.data.Parameter;
+
+import java.util.HashMap;
 
 /**
  * Utility methods for restlet support.
@@ -29,12 +32,40 @@ import org.restlet.data.Message;
  */
 
 public class RestletUtils {
+    private static final String HEADERS = "org.restlet.http.headers";
+
     /**
      * Get the headers
      * @param message message to parse
      * @return the headers as a form
      */
     public static Form extractHttpHeaders(Message message) {
-        return (Form) message.getAttributes().get("org.restlet.http.headers");
+        return (Form) message.getAttributes().get(HEADERS);
     }
+
+    public static HashMap<String, String> headersToHashMap(Message message) {
+        HashMap<String, String> headers = new HashMap<String, String>();
+        Form form = RestletUtils.extractHttpHeaders(message);
+        if (form != null) {
+            for (String header : form.getNames()) {
+                headers.put(header, form.getFirstValue(header));
+            }
+        }
+        return headers;
+    }
+
+    public static void addHttpHeaders(Message message,Form headers) {
+        message.getAttributes().put(HEADERS,headers);
+    }
+
+    public static void addHttpHeader(Message message, String key, String value) {
+        Form headers = extractHttpHeaders(message);
+        if (headers == null) {
+            headers = new Form();
+            addHttpHeaders(message, headers);
+        }
+        Parameter param = new Parameter(key, value);
+        headers.add(param);
+    }
+
 }

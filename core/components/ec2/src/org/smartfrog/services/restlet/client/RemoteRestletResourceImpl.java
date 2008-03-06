@@ -35,6 +35,7 @@ import org.smartfrog.services.restlet.datasources.InprocDataSource;
 import org.smartfrog.services.restlet.datasources.RestletDataSource;
 import org.smartfrog.services.restlet.overrides.ProxyEnabledClient;
 import org.smartfrog.services.restlet.overrides.ExtendedResponse;
+import org.smartfrog.services.restlet.overrides.ExtendedRequest;
 import org.smartfrog.services.www.AbstractLivenessPageComponent;
 import org.smartfrog.services.www.LivenessPageChecker;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -197,9 +198,14 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     protected Request buildRequest(Method method, Representation localData) {
         // Send an authenticated request
         //create and then abuse a reference so that relative locations in the response get handled
-        Request request = new Request(method, getURL(), localData);
-        //request.
-        Object headers = request.getAttributes().get("org.restlet.http.headers");
+        ExtendedRequest request = new ExtendedRequest(method, getURL(), localData);
+        //add any headers
+        Vector<Vector<String>> headers = getLivenessPage().getHeaders();
+        if (headers != null) {
+            for (Vector<String> tuple : headers) {
+                request.addHeader(tuple.get(0),tuple.get(1));
+            }
+        }
 
         if (challengeScheme != null) {
             request.setChallengeResponse(createChallengeResponse());
