@@ -1947,10 +1947,10 @@ Exist.
 
 
     <property name="ivy.cache.smartfrog.dir"
-        location=" ${ivy2.cache.dir}/${ivy.package.name}" />
+        location="${ivy2.cache.dir}/${ivy.package.name}" />
     <property name="ivy.project.name" value="sf-${ant.project.name}" />
     <property name="ivy.cache.project.dir"
-        location=" ${ivy.cache.smartfrog.dir}/${ivy.project.name}" />
+        location="${ivy.cache.smartfrog.dir}/${ivy.project.name}" />
 
     <mkdir dir="${ivy.cache.smartfrog.dir}" />
     <mkdir dir="${ivy.cache.project.dir}" />
