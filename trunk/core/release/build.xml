@@ -996,6 +996,9 @@
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
     </fileset>
+    <echo level="verbose">
+      files to upload: ${toString:rpm.upload.fileset}
+    </echo>
     <!--override this to -vv for extra diagnostics -->
     <property name="rpm.verbosity" value="-v"/>
     <!--this is the full rpm destination-->
