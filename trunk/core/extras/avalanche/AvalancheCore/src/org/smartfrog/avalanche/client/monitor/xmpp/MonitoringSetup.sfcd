@@ -7,4 +7,5 @@
 
 //"HOST localhost:rootProcess:avalancheEventService":DEPLOY:/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf::localhost:
 
-"HOST localhost:rootProcess:vmware":DEPLOY:org/smartfrog/services/vmware/components.sf::localhost:
+// "HOST localhost:rootProcess:vmware":DEPLOY:org/smartfrog/services/vmware/components.sf::localhost:
+"HOST localhost:rootProcess:vmware":DEPLOY:org/smartfrog/avalanche/client/monitor/xmpp/vmware.sf::localhost:
