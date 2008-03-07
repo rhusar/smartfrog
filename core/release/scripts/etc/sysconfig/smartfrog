@@ -9,7 +9,7 @@ export SFHOME
 #
 # The following settings run to the virtual desktop for root
 #
-if [[ $$HOME == "" ]]
+if test -z "$$HOME";
 then
 	HOME=/root
 fi
