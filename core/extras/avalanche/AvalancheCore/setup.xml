@@ -220,6 +220,9 @@
         <include name="ant*.jar" />
         <include name="ant-launcher*.jar" />
         <include name="ant-jsch*.jar" />
+        <include name="ant-nodeps*.jar" />
+        <include name="ant-junit*.jar" />
+        <include name="ant-trax*.jar" />
         <include name="sf-vmware*.jar" />
 	<include name="sf-xmpp*.jar" />
 	<include name="jna*.jar"/>
@@ -254,6 +257,10 @@
         <include name="ant*.jar" />
         <include name="ant-launcher*.jar" />
         <include name="ant-jsch*.jar" />
+	<include name="ant-nodeps*.jar" />
+        <include name="ant-junit*.jar" />
+        <include name="ant-trax*.jar" />
+	<include name="jna*.jar"/>
       </fileset>
    </copy>
 
@@ -366,6 +373,10 @@
 	<target name="setup" depends="env_diag, createXMPPEnabledSmartFrog, securitySetup, setupUI" />
 
 	<target name="createbundle" depends="init.scripts.pattern">
+		<!--Copy Master VM Images-->
+    	<copy todir="${avalanche.home}/temp/smartfrog/dist/vmmasterimages">
+      		<fileset dir="${avalanche.home}/smartfrog/dist/vmmasterimages" />
+    	</copy>
 		<zip destfile="${avalanche.home}/temp/smartfrog.zip">
 			<zipfileset dir="${avalanche.home}/temp">
 				<include name="smartfrog/dist/**"/>
