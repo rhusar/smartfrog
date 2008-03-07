@@ -17,5 +17,6 @@ AvlXmppListener extends XmppListener {
     presence true;
     reconnect true;
     //a lot of servers go down. To be robust you have to retry a lot.
-    offlineMinutesTimeout 60;
+    offlineMinutesTimeout 60; 
+    subscriptionMode SUBSCRIPTION_ACCEPT_ALL;
 }
