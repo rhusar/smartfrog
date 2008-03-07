@@ -55,7 +55,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
     private int minCount;
     private int minWidth;
     private int maxWidth;
-    public static final String ERROR_LINE_WIDTH_WRONG = "Line Width is out of the range [";
+    public static final String ERROR_LINE_WIDTH_WRONG = "Line width is out of the range [";
     public static final String ERROR_TOO_MANY_LINES = "Too many lines, stopped at line ";
     public static final String ERROR_TOO_FEW_LINES = "Too few lines -expected ";
 
@@ -92,13 +92,13 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        closeQuietely();
+        closeQuietly();
     }
 
     /**
      * Close without leaving any error messages
      */
-    protected void closeQuietely() {
+    protected void closeQuietly() {
         try {
             close();
         } catch (RemoteException e) {
@@ -156,7 +156,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
                 }
                 int width=result.length;
                 if (width < minWidth || (maxWidth >= 0 && width > maxWidth)) {
-                    throw new SmartFrogDeploymentException(ERROR_LINE_WIDTH_WRONG + minWidth + "," + maxWidth + "]: " + width
+                    throw new SmartFrogDeploymentException(ERROR_LINE_WIDTH_WRONG + minWidth + ',' + maxWidth + "]: " + width
                     + '\n' +merge(result),
                             this);
                 }
@@ -220,7 +220,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
             b.append(first ? "\"" : ", \"");
             first = false;
             b.append(entry);
-            b.append("\"");
+            b.append('\"');
         }
         return b.toString();
     }
