@@ -118,8 +118,9 @@ public class SFAutoWrapper extends PrimImpl implements Prim {
      * main extends DATA { object LAZY constructor:result; method extends DATA { name "version"; parameters extends
      * Vector {}; } next failure condition }
      *
-     * @param cd
-     * @throws SmartFrogResolutionException
+     * @param cd the CD to work with
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws IllegalAccessException forbidden methods
      */
     void runStateMachine(ComponentDescription cd) throws IllegalAccessException, SmartFrogResolutionException {
         // TODO a real state machine
