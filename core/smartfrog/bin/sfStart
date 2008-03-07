@@ -11,7 +11,7 @@ if [ -z $1 ] ; then
    echo "Usage: sfStart HostName ApplicationName URL [-p port]"
    exit 69
 fi
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfStart HostName ApplicationName URL [-p port]"
    exit 0
 #elif [ $# -ne 3 ];then
@@ -32,13 +32,13 @@ else
     APPNAME="$2";
 fi
 
-if [ $1 == "-p" ] || [ $2 == "-p" ] || [ $3 == "-p" ];then
+if [ "$1" = "-p" ] || [ "$2" = "-p" ] || [ "$3" = "-p" ];then
    	echo "Insufficient arguments to use sfStart"
    	echo "Usage: sfStart HostName ApplicationName URL [-p port]"
 	exit 69
 fi
 
-if [ $4 == "-p" ];then
+if [ "$4" = "-p" ];then
 	if [ -z $5 ] ; then
    		echo "Insufficient arguments to use sfStart"
    		echo "Usage: sfStart HostName ApplicationName URL [-p port]"

@@ -11,7 +11,7 @@ if [ -z $1 ] ; then
    echo "Usage: sfUpdate HostName ApplicationName URL"
    exit 69
 fi
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfUpdate HostName ApplicationName URL"
    exit 0
 elif [ $# -ne 3 ];then
@@ -19,8 +19,6 @@ elif [ $# -ne 3 ];then
    echo "Usage: sfUpdate HostName ApplicationName URL"
    exit 69
 fi 
-#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-#export CLASSPATH
 
 . "$SFHOME/bin/setSFProperties"
 

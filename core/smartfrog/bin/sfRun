@@ -11,7 +11,7 @@ echo "Insufficent arguments to use sfRun"
 echo "Usage: sfRun URL [-p port] [-e]"
 exit 69
 fi 
-if [ $1 == "-?" ];then
+if [ "$1" = "-?" ];then
 echo "Usage: sfRun URL [-p port] [-e]"
 exit 0
 fi 
@@ -26,13 +26,13 @@ fi
 
 #java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
 
-if [ $1 == "-p" ];then
+if [ "$1" = "-p" ];then
 	echo "Insufficent arguments to use sfRun"
 	echo "Usage: sfRun URL [-p port] [-e]"
 	exit 69
 fi
 
-if [ $2 == "-p" ];then
+if [ "$2" = "-p" ];then
 	if [ -z $3 ] ; then
 		echo "Insufficent arguments to use sfRun"
 		echo "Usage: sfRun URL [-p port] [-e]"
