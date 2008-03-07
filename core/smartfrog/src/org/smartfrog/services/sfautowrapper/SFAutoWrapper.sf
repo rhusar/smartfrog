@@ -26,6 +26,7 @@ For more information: www.smartfrog.org
 SFAutoWrapper extends Prim {
 
     sfClass "org.smartfrog.services.sfautowrapper.SFAutoWrapper";
+    libPattern "*(jar|zip)";
 
 /*    // Name of the object's class to be deployed by the wrapper
     // jclass "org.smartfrog.nullclass";
