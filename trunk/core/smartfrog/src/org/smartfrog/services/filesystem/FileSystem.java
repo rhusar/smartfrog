@@ -481,10 +481,11 @@ public final class FileSystem {
      * @param filePaths       List
      * @param extensionsRegex String Regular expresion that matches the end of the filename searched
      * @param recursive       boolean Should it scan subdirectories
+     * @return the scanned list (the filePaths parameter)
      * @throws IOException Thrown when dir is not a directory.
      */
 
-    public static List scanDir(File dir, List filePaths, String extensionsRegex, boolean recursive) throws IOException {
+    public static List<String> scanDir(File dir, List<String> filePaths, String extensionsRegex, boolean recursive) throws IOException {
         if (!dir.isDirectory()) throw new IOException(dir + " is not a directory.");
         File[] files = dir.listFiles();
         for (File file : files) {
@@ -493,7 +494,9 @@ public final class FileSystem {
                     scanDir(file, filePaths, extensionsRegex, recursive);
                 } else {
                     String path = file.getCanonicalPath();
-                    if (path.matches(extensionsRegex)) filePaths.add(path);
+                    if (path.matches(extensionsRegex)) {
+                        filePaths.add(path);
+                    }
                 }
             }
         }
@@ -507,13 +510,11 @@ public final class FileSystem {
      * @return List of  File.getCanonicalPath() strings
      * @throws MalformedURLException
      */
-    public List toFileURLs(List filePaths) throws MalformedURLException {
+    public static List<URL> toFileURLs(List filePaths) throws MalformedURLException {
         List<URL> urls = new ArrayList<URL>();
-        ListIterator it = filePaths.listIterator();
-        while (it.hasNext()) {
-            urls.add(toFileURL(it.next().toString()));
+        for(Object o:filePaths) {
+            urls.add(toFileURL(o.toString()));
         }
-
         return urls;
     }
 
