@@ -69,6 +69,12 @@ public class SFAntHelper extends PrimImpl implements Prim{
 				// default target
 				helper.execute();
 			}
+
+			sfLog().info("Executed the build file " + buildFile + " successfully");
+			
+			TerminationRecord tr = new TerminationRecord("Normal", "Completed executing the build file... ",
+				sfCompleteName());
+		sfTerminate(tr);
 		}catch(Exception e){
 			log.error(e);
 			throw new SmartFrogException(e);

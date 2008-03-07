@@ -49,8 +49,9 @@ public class AntHelper {
 	public void init(File f){
 		this.buildFile = f;
 		project.init();
-		ProjectHelper ph = ProjectHelper.getProjectHelper();
-		ph.parse(project, buildFile);
+	//	ProjectHelper ph = ProjectHelper.getProjectHelper();
+	//	ph.parse(project, buildFile);
+		ProjectHelper.configureProject(project, buildFile);
 		
 		// set default output to System.out
 		listener.setOutputPrintStream(System.out);
