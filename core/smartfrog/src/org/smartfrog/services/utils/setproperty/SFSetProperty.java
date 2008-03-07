@@ -20,14 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.utils.setproperty;
 
+import java.rmi.Remote;
+
 
 /**
  */
-public interface SFSetProperty {
+public interface SFSetProperty extends Remote {
     /** Attribute name - name. Optional String*/
-    final String ATR_NAME = "name";
+    String ATTR_NAME = "name";
     /** Attribute name - value. Compulsory Object */
-    final String ATR_VALUE = "value";
+    String ATTR_VALUE = "value";
     /** Attribute name - replace. Optional boolean */
-    final String ATR_REPLACE = "replace_old_value";
+    String ATTR_REPLACE = "replace_old_value";
 }
