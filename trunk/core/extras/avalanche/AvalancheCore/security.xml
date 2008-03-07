@@ -113,10 +113,10 @@
             <param name="signedjarname" value="${dist.signedLib.dir}/avalanche-types.jar "/>
     	</antcall>
 	
-	<antcall target="signjarbuild">
+	<!--antcall target="signjarbuild">
             <param name="jarname" value="${avalanche.dir}/sf-avalanche-core.jar "/>
             <param name="signedjarname" value="${dist.signedLib.dir}/sf-avalanche-core.jar "/>
-    	</antcall>
+    	</antcall-->
 
     	<antcall target="signjarbuild">
             <param name="jarname" value="${avalanche.dir}/quartz.jar "/>
