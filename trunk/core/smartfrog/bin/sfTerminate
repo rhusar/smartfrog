@@ -11,7 +11,7 @@ if [ -z $1 ] ; then
    echo "Usage: sfTerminate HostName ComponentName [-p port]"
    exit 69
 fi
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfTerminate HostName ComponentName [-p port]"
    exit 0
 #elif [ $# -ne 2 ];then
@@ -19,8 +19,6 @@ if [ $# -eq 1 ] && [ $1 == "-?" ];then
 #   echo "Usage: sfTerminate HostName ComponentName"
 #   exit 69
 fi
-#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-#export CLASSPATH
 
 . "$SFHOME/bin/setSFProperties"
 
@@ -31,13 +29,13 @@ else
     APPNAME="$2";
 fi
 
-if [ $1 == "-p" ] || [ $2 == "-p" ];then
+if [ "$1" = "-p" ] || [ "$2" = "-p" ];then
    	echo "Insufficient arguments to use sfTerminate"
    	echo "Usage: sfTerminate HostName ComponentName [-p port]"
 	exit 69
 fi
 
-if [ $3 == "-p" ];then
+if [ "$3" = "-p" ];then
 	if [ -z $4 ] ; then
    		echo "Insufficient arguments to use sfTerminate"
    		echo "Usage: sfTerminate HostName ComponentName [-p port]"

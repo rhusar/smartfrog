@@ -11,25 +11,19 @@ if [ -z $1 ] ; then
    echo "Usage: sfStopDaemon HostName [-p port]"
    exit 69
 fi 
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfStopDaemon HostName [-p port]"
    exit 0
-#elif [ $# -ne 1 ];then
-#   echo "Insufficient arguments to use sfStopDaemon"
-#   echo "Usage: sfStopDaemon HostName [-p port]"
-#   exit 69
-fi 
-#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-#export CLASSPATH
+fi
 
 . "$SFHOME/bin/setSFProperties"
-if [ $1 == "-p" ];then
+if [ "$1" = "-p" ];then
   	echo "Insufficient arguments to use sfStopDaemon"
    	echo "Usage: sfStopDaemon HostName [-p port]"
 	exit 69
 fi
 	
-if [ $2 == "-p" ];then
+if [ "$2" = "-p" ];then
 	if [ -z $3 ] ; then
   		echo "Insufficient arguments to use sfStopDaemon"
    		echo "Usage: sfStopDaemon HostName [-p port]"
