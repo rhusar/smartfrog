@@ -20,25 +20,26 @@
 
 package org.smartfrog.services.utils.setproperty;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-
-import java.rmi.RemoteException;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
-/** Implement our JVM manipulator */
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
+
+/**
+ * Implement our JVM manipulator
+ */
 public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     private Properties proplist = new Properties();
@@ -48,23 +49,27 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private boolean unsetOnTerminate = true;
     private Log log;
 
+    /**
+     * constructor
+     * @throws RemoteException if the super throws it
+     */
     public SystemPropertiesImpl() throws RemoteException {
     }
 
 
     /**
      * This is a very early deploy phases
+     *
      * @param parent parent
-     * @param cxt context
+     * @param cxt    context
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
-
+     * @throws RemoteException    network trouble
      */
     public synchronized void sfDeployWith(Prim parent, Context cxt)
             throws SmartFrogDeploymentException, RemoteException {
         try {
             sfContext = cxt;
-            log = this.sfGetApplicationLog();
+            log = sfGetApplicationLog();
             setOnEarlyDeploy = resolveBool(cxt, ATTR_SETONEARLYDEPLOY);
             if (setOnEarlyDeploy) {
                 loadAndSetProperties();
@@ -84,7 +89,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             return ((Boolean) cxt.sfResolveAttribute(name)).booleanValue();
         } catch (SmartFrogContextException e) {
             if (log.isErrorEnabled()) {
-                log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                log.error("Failed to read mandatory attribute: " + e.toString(), e);
             }
             throw e;
         }
@@ -94,12 +99,11 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
 
     /**
-     * Called after instantiation for deployment purposes. Heart monitor is
-     * started and if there is a parent the deployed component is added to the
-     * heartbeat. Subclasses can override to provide additional deployment
-     * behavior.
+     * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
+     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
+     *
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
@@ -114,11 +118,11 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -136,52 +140,30 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         if (unsetOnTerminate && proplist != null) {
-            try {
-                clearProperties();
-            } catch (SmartFrogException e) {
-                //ignore
-
-            } catch (RemoteException e) {
-                //ignore
-            }
+            clearProperties();
         }
         super.sfTerminateWith(status);
     }
 
     /**
      * load the properties in
+     *
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
     private void loadProperties()
             throws SmartFrogException, RemoteException {
-        Vector propVector = null;
+        Vector<Vector<String>> tuples = ListUtils.resolveStringTupleList(this, new Reference(ATTR_PROPERTIES), true);
         proplist = new Properties();
-
-        try {
-            propVector =((Vector) sfContext.sfResolveAttribute(ATTR_PROPERTIES));
-        } catch (SmartFrogContextException e) {
-            if (log.isErrorEnabled()) {
-                log.error("Failed to read mandatory attribute: " + e.toString(),e);
-            }
-            throw e;
-        }
-
-        if (propVector != null) {
-            for (Enumeration en = propVector.elements();
-                 en.hasMoreElements();) {
-                Vector element = (Vector) en.nextElement();
-                String key = element.firstElement().toString();
-                String value = element.lastElement().toString();
-                proplist.put(key, value);
-            }
+        for (Vector<String> tuple : tuples) {
+            proplist.put(tuple.get(0), tuple.get(1));
         }
     }
 
@@ -189,7 +171,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * load in the property list and set it
      *
      * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
+     * @throws RemoteException    network trouble
      */
     private void loadAndSetProperties() throws SmartFrogException,
             RemoteException {
@@ -203,16 +185,17 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     }
 
     /**
-     * clear the properties
-     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
-     * @throws RemoteException network trouble
+     * clear the properties Failures are logged at ignore level.
      */
-    private void clearProperties() throws SmartFrogException,
-            RemoteException {
+    private void clearProperties() {
         Enumeration keys = proplist.propertyNames();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
-            unsetProperty(key);
+            try {
+                unsetProperty(key);
+            } catch (SmartFrogException e) {
+                sfLog().ignore(e);
+            }
         }
     }
 
@@ -222,10 +205,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * @param name  name of the property
      * @param value value of the property
      * @throws SmartFrogException may wrap a security exception
-     * @throws RemoteException network trouble
      */
     public void setProperty(String name, String value)
-            throws SmartFrogException, RemoteException {
+            throws SmartFrogException {
         String action = "setting " + name + " to " + value;
         try {
             sfLog().info(action);
@@ -237,16 +219,16 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     /**
      * Unset a property in this JVM
+     *
      * @param name name of the property
      * @throws SmartFrogException may wrap a security exception
-     * @throws RemoteException network trouble
      */
     public void unsetProperty(String name)
-            throws SmartFrogException, RemoteException {
+            throws SmartFrogException {
         try {
             System.clearProperty(name);
         } catch (SecurityException e) {
-            throw SmartFrogException.forward("Failed to clear property "+name, e);
+            throw SmartFrogException.forward("Failed to clear property " + name, e);
         }
     }
 }

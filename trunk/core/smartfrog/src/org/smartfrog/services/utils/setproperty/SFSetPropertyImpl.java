@@ -64,8 +64,8 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
             log = sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
             // Mandatory attributes.
             try {
-                name = (String) cxt.sfResolveAttribute(ATR_NAME);
-                value = cxt.sfResolveAttribute(ATR_VALUE);
+                name = (String) cxt.sfResolveAttribute(ATTR_NAME);
+                value = cxt.sfResolveAttribute(ATTR_VALUE);
             } catch (SmartFrogException e) {
                 if (log.isErrorEnabled()) {
                     log.error("Failed to read mandatory attribute: " + e.toString(), e);
@@ -73,7 +73,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
                 throw e;
             }
             try {
-                replace = ((Boolean) cxt.sfResolveAttribute(ATR_REPLACE)).booleanValue();
+                replace = ((Boolean) cxt.sfResolveAttribute(ATTR_REPLACE)).booleanValue();
             } catch (SmartFrogContextException e) {
                 if (log.isDebugEnabled()) {
                     log.debug("Failed to read optional attribute: " + e.toString());
@@ -81,7 +81,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
             }
 
 
-            String oldValue = System.getProperty(name, "non defined");
+            String oldValue = System.getProperty(name, "");
             if (replace) {
                 finalValue = value.toString();
             } else {
@@ -99,7 +99,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
             if (log.isErrorEnabled()) {
                 log.error(t.getMessage(),t);
             }
-            throw new SmartFrogDeploymentException(t, this);
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(t.getMessage(), t);
         }
         //super.sfDeploy();
         super.sfDeployWith(parent, cxt);
@@ -116,6 +116,6 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "set "+name+" to "+finalValue, null, null);
+                "set " + name + " to " + finalValue, null, null);
     }
 }
