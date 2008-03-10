@@ -33,6 +33,7 @@ package org.smartfrog.services.database.core;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -55,7 +56,7 @@ public class CounterTransactionImpl extends TransactionImpl {
     /**
      * The list of counterCommands, extracted at startup
      */
-    private ArrayList<String> counterCommands;
+    private Vector<String> counterCommands;
 
     public CounterTransactionImpl() throws RemoteException {
     }
@@ -68,14 +69,10 @@ public class CounterTransactionImpl extends TransactionImpl {
      * @throws SmartFrogException for smartfrog problems
      * @throws RemoteException    for network problems.
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Vector cc = null;
-        cc = sfResolve(REF_COUNTERCOMMANDS, cc, true);
-        counterCommands = new ArrayList<String>(cc.size());
-        for (Object o : cc) {
-            counterCommands.add(o.toString());
-        }
+        counterCommands= ListUtils.resolveStringList(this,REF_COUNTERCOMMANDS,true);
     }
 
     /**
@@ -85,6 +82,7 @@ public class CounterTransactionImpl extends TransactionImpl {
      * @throws RemoteException    network problems
      * @throws SQLException       SQL problems
      */
+    @Override
     protected void runTerminationCommands() throws SmartFrogException, RemoteException, SQLException {
         Connection connection = null;
         try {
@@ -102,6 +100,7 @@ public class CounterTransactionImpl extends TransactionImpl {
      *
      * @return true if there are counterCommands.
      */
+    @Override
     protected boolean hasTerminationCommands() {
         return counterCommands != null && counterCommands.size() > 0;
     }

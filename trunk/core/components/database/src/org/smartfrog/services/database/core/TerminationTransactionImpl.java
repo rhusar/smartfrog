@@ -48,6 +48,7 @@ public class TerminationTransactionImpl extends TransactionImpl {
      * @throws SmartFrogResolutionException for smartfrog problems
      * @throws RemoteException for network problems.
      */
+    @Override
     protected void executeStartupCommands()
             throws SmartFrogDeploymentException, SmartFrogResolutionException, RemoteException {
         //do nothing
@@ -60,6 +61,7 @@ public class TerminationTransactionImpl extends TransactionImpl {
      * @throws RemoteException    network problems
      * @throws SQLException       SQL problems
      */
+    @Override
     protected void runTerminationCommands() throws SmartFrogException, RemoteException, SQLException {
         Connection connection = null;
         try {
@@ -77,6 +79,7 @@ public class TerminationTransactionImpl extends TransactionImpl {
      *
      * @return true if we have commmands
      */
+    @Override
     protected boolean hasTerminationCommands() {
         return getCommands() != null && !getCommands().isEmpty();
     }

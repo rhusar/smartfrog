@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -60,6 +60,16 @@ public class ConnectionOpenCondition extends AbstractJdbcOperation implements Co
         }
     }
 
+    /**
+     * Subclasses should override this
+     * Introspect to make a ping on the remote system. Any error during the ping is logged at debug level and the method
+     * returns false. A successful ping is turned into success; there's no timing checks or anything
+     *
+     * @param connection connection to ping
+     * @return true if the ping succeeds, false if something went wrong.
+     * @throws SmartFrogException if the connection does not support a public void ping() method
+     * @throws RemoteException for network problems
+     */
     protected boolean ping(Connection connection) throws SmartFrogException,
             RemoteException {
         return true;
