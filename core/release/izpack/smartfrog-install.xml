@@ -370,6 +370,34 @@ SmartFrog to deploy complex systems.
           unpack="true"/>
     </pack>
 
+
+    <pack name="CSVfiles" required="no" preselected="no">
+      <description>
+        The csvfiles package contains components that can work with CSV files, turning the data
+        into attributes of components, or serving them in a form that other components
+        including XML components can handle.
+
+        This enables CSV files (such as those generated and edited in spreadsheets) to be
+        used as the direct input for deployment/configuration operations. As many
+        applications act as sources of CSV files, this allows for some interesting
+        integrations with existing software.
+
+        Includes opencsv-${opencsv.version}.jar
+      </description>
+      <file src="ivy/lib/package-csvfiles/sf-csvfiles-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-csvfiles/sf-csvfiles-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-csvfiles/sf-csvfiles-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-csvfiles/opencsv-${opencsv.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+    </pack>
+
     <pack name="Database" required="no" preselected="no">
       <description>
         The sf-database package contains the components needed to talk to a database
@@ -377,8 +405,7 @@ SmartFrog to deploy complex systems.
         to start and administer MySQL.
 
         This package does not include any JDBC drivers. The appropriate JDBC driver for the
-        target system must be installed/added to the sfCodeBase attribute of the components,
-        in order for JDBC connectivity to work.
+        target system must be installed in order for JDBC connectivity to work.
       </description>
       <file src="ivy/lib/package-database/sf-database-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"

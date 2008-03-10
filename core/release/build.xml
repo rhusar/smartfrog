@@ -450,9 +450,15 @@
     <ln artifact="sf-ant" version="${smartfrog.version}"/>
     <ln artifact="ant" version="${apache.ant.version}"/>
     <ln artifact="ant-launcher" version="${apache.ant.version}"/>
+    
     <!-- anubis -->
     <rpmpackage package="anubis"/>
     <ln artifact="sf-anubis" version="${smartfrog.version}"/>
+
+    <!-- csvfiles -->
+    <rpmpackage package="csvfiles"/>
+    <ln artifact="sf-csvfiles" version="${smartfrog.version}"/>
+    <ln artifact="opencsv" version="${opencsv.version}"/>
 
     <!-- database -->
     <rpmpackage package="database"/>
