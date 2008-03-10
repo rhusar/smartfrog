@@ -119,7 +119,8 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
                 }
                 getRootNode().appendChild(element);
             } catch (ArrayIndexOutOfBoundsException e) {
-                throw new SmartFrogException("Line "+getCount()+" is wider than the"
+                sfLog().debug(e);
+                throw new SmartFrogException("Line "+ getCurrentLine()+" is wider than the"
                 + ATTR_FIELD_NAMES+" list",
                         TuplesToXom.this);
             }
