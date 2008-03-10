@@ -14,10 +14,10 @@ fi
 if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfTerminate HostName ComponentName [-p port]"
    exit 0
-#elif [ $# -ne 2 ];then
-#   echo "Insufficient arguments to use sfTerminate"
-#   echo "Usage: sfTerminate HostName ComponentName"
-#   exit 69
+elif [ $# -lt 2 ];then
+   echo "Insufficient arguments to use sfTerminate"
+   echo "Usage: sfTerminate HostName ComponentName [-p port]"
+   exit 69
 fi
 
 . "$SFHOME/bin/setSFProperties"
