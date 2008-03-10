@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="csvfile" default="default">
+<project name="csvfiles" default="default">
 
   <!--
    (C) Copyright 2008 Hewlett-Packard Development Company, LP
