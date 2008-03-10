@@ -54,7 +54,7 @@ public final class ParserHelper implements XmlConstants {
      * @param disableDoctypes flag to disable doctypes
      * @param secureLoading flag for secure loading (disables entity expansion)
      * @return an appropriately configured XML reader
-     * @throws SAXException
+     * @throws SAXException for parser errors
      */
     public static XMLReader createXmlParser(boolean validate,
             boolean disableDoctypes,
