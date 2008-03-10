@@ -46,6 +46,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -231,8 +233,8 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         if (resource != null) {
             count++;
         }
-        Vector commandList = null;
-        commandList = sfResolve(ATTR_SQL_COMMANDS, commandList, false);
+        Vector<String> commandList = null;
+        commandList= ListUtils.resolveStringList(this,new Reference(ATTR_SQL_COMMANDS),false);
         if (commandList != null) {
             count++;
         }
@@ -269,7 +271,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                         e);
             }
         } else {
-            commands=stringify(commandList);
+            commands=commandList;
             if (commandList == null) {
                 command = "";
             }
@@ -281,27 +283,6 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                     + " statements, but after parsing, there were " + size
                     + " from \n" + command);
         }
-    }
-
-
-    /**
-     * Turn a vector of commands into a more strongly typed array list
-     * @param commandList commands; can be null
-     * @return the equivalent ArrayList. A null command list results an empty list
-     */
-    protected ArrayList<String> stringify(Vector commandList) {
-        ArrayList<String> result;
-        if (commandList != null) {
-            //the commands are copied to the command list as strings.
-            result = new ArrayList<String>(commandList.size());
-            for (Object o : commandList) {
-                result.add(o.toString());
-            }
-        } else {
-            //no commands at all. That's not really allowed.
-            result = new ArrayList<String>(0);
-        }
-        return result;
     }
 
     /**

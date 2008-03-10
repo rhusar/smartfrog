@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -31,9 +31,11 @@ import java.sql.Connection;
 /**
  * A subclass of {@link ConnectionOpenCondition} which issues a ping command against the database.
  *
- * To reduce GPL dependencies and to work with other drivers that are pingable, we use
- * reflection to invoke a method called 'vind ping
- * for mysql, this requires a database > 3.22, and a compatible mysql driver.
+ * To reduce GPL dependencies and to work with other drivers that are pingable, we use reflection to invoke a method
+ * called void ping() We don't care what side effects this method has. For Mysql 3.22 it is some ping() operation which
+ * checks the connection.
+ *
+ * For other databases, it implementation specific.
  *
  * created 05-Dec-2006 15:19:35
  */
@@ -54,30 +56,49 @@ public class IsMysqlLive extends ConnectionOpenCondition implements Condition {
     }
 
     /**
-     * Introspect to make a ping on the remote system. Any error during the ping is logged at debug level and
-     * the method returns false. A successful ping is turned into success; there's no timing checks or anything
+     * Introspect to make a ping on the remote system. Any error during the ping is logged at debug level and the method
+     * returns false. A successful ping is turned into success; there's no timing checks or anything
+     *
      * @param connection connection to ping
      * @return true if the ping succeeds, false if something went wrong.
      * @throws SmartFrogException if the connection does not support a public void ping() method
+     * @throws RemoteException for network problems
      */
-    protected boolean ping(Connection connection) throws SmartFrogException {
-        Class clazz = connection.getClass();
+    protected boolean ping(Connection connection) throws SmartFrogException, RemoteException {
+        Method method;
+        method = loadPingMethod(connection);
         try {
-            Method method = clazz.getMethod("ping", EMPTY_PARAM_CLASSES);
             method.invoke(connection, EMPTY_PARAM_OBJECTS);
             return true;
-        } catch (NoSuchMethodException e) {
-            throw new SmartFrogException("Connection " + connection + "  of type " +clazz
-                +" does not have a method called ping()",e);
         } catch (IllegalAccessException e) {
-            throw new SmartFrogException("Connection " + connection + "  of type " + clazz
-                    + " does allow access to the ping() method",e);
+            throw new SmartFrogException("Connection " + connection + "  of type " + connection.getClass()
+                    + " does not allow access to the ping() method", e, this);
         } catch (InvocationTargetException e) {
             //something went wrong with the Ping operation. log it, and return false
             //as the database connection is clearly not working.
             getLog().debug("When pinging ", e.getCause());
             return false;
         }
+    }
+
+    /**
+     * Load our ping method
+     *
+     * @param connection connection to ping
+     * @return the ping method
+     * @throws SmartFrogException  if the connection does not support a public void ping() method
+     * @throws RemoteException for network problems
+     */
+    protected Method loadPingMethod(Connection connection) throws SmartFrogException, RemoteException {
+        Method method;
+        Class clazz = connection.getClass();
+        try {
+            method = clazz.getMethod("ping", EMPTY_PARAM_CLASSES);
+        } catch (NoSuchMethodException e) {
+            throw new SmartFrogException("Connection " + connection + "  of type " + clazz
+                    + " does not have a method called ping()", e, this);
+        }
+        return method;
     }
 
 

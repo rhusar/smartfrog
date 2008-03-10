@@ -24,6 +24,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -37,7 +40,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
 
 
     private Throwable queuedFault;
-    private Thread workerThread;
+    private WorkflowThread workerThread;
 
     /**
      * Protected constructor as this class is abstract
@@ -53,12 +56,13 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
     }
 
 
-    protected synchronized void queueFault(Throwable e) {
-        queuedFault = e;
+    protected synchronized Throwable queueFault(Throwable e) {
+        return queuedFault = e;
     }
 
-    protected synchronized void queueFault(String action, SQLException e) {
+    protected synchronized Throwable queueFault(String action, SQLException e) {
         queuedFault = translate(action, e);
+        return queuedFault;
     }
 
     protected Throwable getQueuedFault() {
@@ -75,6 +79,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      * @throws RemoteException for consistency with the {@link Liveness}
      *                                  interface
      */
+    @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -88,8 +93,9 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
     /**
      * stop the worker thread if it is running.
      *
-     * @param status
+     * @param status termination record
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         stopWorkerThread();
@@ -101,6 +107,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      * method.
      *
      * @return the worker thread
+     * @throws SmartFrogDeploymentException if the thread wont start
      */
     protected synchronized Thread startWorkerThread()
             throws SmartFrogDeploymentException {
@@ -108,10 +115,10 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
             throw new SmartFrogDeploymentException(
                     "Cannot start the worker thread, as it is already running");
         }
-        Thread thread = new Thread(this, sfCompleteNameSafe().toString());
-        workerThread = thread;
-        thread.start();
-        return thread;
+
+        workerThread = new DatabaseThread();
+        workerThread.start();
+        return workerThread;
     }
 
     /**
@@ -119,48 +126,10 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
      * thread is not running.
      */
     protected synchronized void stopWorkerThread() {
-        if (workerThread != null && workerThread.isAlive()) {
-            workerThread.interrupt();
-            workerThread = null;
-        }
+        SmartFrogThread.requestThreadTermination(workerThread);
+        workerThread = null;
     }
 
-
-    /**
-     * run the operation by creating a connection, calling {@link
-     * #performOperation(java.sql.Connection)} and then closing the connection
-     * afterwards.
-     * <p/>
-     * the component is then terminated after the run, if the sfTerminate or
-     * similar attributes are set.
-     *
-     * @see Thread#run()
-     */
-    public void run() {
-        Throwable caught = null;
-        Connection connection = null;
-        try {
-            connection = connect();
-            performOperation(connection);
-            commitAndClose(connection);
-
-        } catch (SQLException e) {
-            caught = e;
-            queueFault("processing transactions", e);
-        } catch (SmartFrogException e) {
-            caught = e;
-            queueFault(e);
-        } catch (RemoteException e) {
-            caught = e;
-            queueFault(e);
-        } finally {
-            closeQuietly(connection);
-        }
-        getHelper().sfSelfDetachAndOrTerminate(null,
-                null,
-                null,
-                caught);
-    }
 
     /**
      * Something for components to override. This performs the operation
@@ -174,5 +143,40 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
     public void performOperation(Connection connection)
             throws SQLException, SmartFrogException {
         getLog().info("performing no useful work");
+    }
+
+    private class DatabaseThread extends WorkflowThread {
+
+        /**
+         * Create a new workflow thread
+         */
+        private DatabaseThread() {
+            super(AsyncJdbcOperation.this, true, new Object());
+        }
+
+        /**
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses of
+         * <code>Thread</code> should override this method.
+         *
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            Connection connection = null;
+            try {
+                connection = connect();
+                performOperation(connection);
+                commitAndClose(connection);
+            } catch (SQLException e) {
+                throw queueFault("processing transactions", e);
+            } catch (SmartFrogException e) {
+                throw queueFault(e);
+            } catch (RemoteException e) {
+                throw queueFault(e);
+            } finally {
+                closeQuietly(connection);
+            }
+        }
+
     }
 }
