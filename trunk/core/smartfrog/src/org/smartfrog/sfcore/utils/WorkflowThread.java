@@ -62,7 +62,8 @@ public class WorkflowThread extends SmartFrogThread {
     /**
      * Create a basic thread. Notification is bound to a local notification object.
      *
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
+     * @param owner owner thread
+     * @param workflowTermination is workflow termination expected
      */
     public WorkflowThread(Prim owner, boolean workflowTermination) {
         this(owner,workflowTermination, new Object());
