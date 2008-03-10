@@ -14,10 +14,10 @@ fi
 if [ $# -eq 1 ] && [ $1 = "-?" ];then
    echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
    exit 0
-#elif [ $# -ne 2 ];then
-#   echo "Insufficient arguments to use sfDetachAndTerminate"
-#   echo "Usage: sfDetachAndTerminate HostName ComponentName"
-#   exit 69
+elif [ $# -lt 2 ];then
+   echo "Insufficient arguments to use sfDetachAndTerminate"
+   echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
+   exit 69
 fi 
 
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
@@ -31,7 +31,7 @@ else
     APPNAME="$2";
 fi
 
-if [ "$1" = "-p" ] || [ "$2" = "-p" ];then
+if [ "$1" = "-p" ] || [ "$2" = "-p" ] ;then
   	echo "Insufficient arguments to use sfDetachAndTerminate"
   	echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
 	exit 69
