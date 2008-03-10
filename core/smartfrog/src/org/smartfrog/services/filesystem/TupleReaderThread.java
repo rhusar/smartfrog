@@ -39,7 +39,7 @@ public class TupleReaderThread extends WorkflowThread {
      * data source
      */
     protected TupleDataSource source;
-    private volatile int count;
+    private volatile int currentLine;
 
     /**
      * Create a basic thread
@@ -52,8 +52,8 @@ public class TupleReaderThread extends WorkflowThread {
         this.source = source;
     }
 
-    public int getCount() {
-        return count;
+    public int getCurrentLine() {
+        return currentLine;
     }
 
     /**
@@ -63,7 +63,7 @@ public class TupleReaderThread extends WorkflowThread {
      */
     public void execute() throws Throwable {
         source.start();
-        count=0;
+        currentLine = 0;
         try {
             onStarted();
             String[] line;
@@ -73,8 +73,8 @@ public class TupleReaderThread extends WorkflowThread {
                     //bail out completely
                     return;
                 }
-                count++;
                 processOneLine(line);
+                currentLine++;
             }
             onFinished();
         } finally {
