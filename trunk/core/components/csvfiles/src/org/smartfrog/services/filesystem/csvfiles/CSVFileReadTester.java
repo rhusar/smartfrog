@@ -68,7 +68,8 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
         super.sfStart();
         Prim src = sfResolve(ATTR_SOURCE, (Prim) null, true);
         TupleDataSource source = (TupleDataSource) src;
-        lines = ListUtils.resolveStringTupleList(this, new Reference(ATTR_LINES), true);
+        lines = ListUtils.resolveStringNTupleList(this, new Reference(ATTR_LINES), -1,true);
+        sfLog().info(ListUtils.tuplesToString(lines));
         minCount = sfResolve(ATTR_MINCOUNT, 0, true);
         maxCount = sfResolve(ATTR_MAXCOUNT, 0, true);
         setReader(new ReaderThread(source));
@@ -105,11 +106,11 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
          * @throws RemoteException network problems
          */
         protected void onFinished() throws SmartFrogException, RemoteException {
-            if (getCount() < minCount) {
+            if (getCurrentLine() < minCount) {
                 throw new SmartFrogException("Too few lines -expected " +
                         minCount +
                         " but got " +
-                        getCount(),
+                        getCurrentLine(),
                         CSVFileReadTester.this);
             }
         }
@@ -125,7 +126,7 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
             if (sfLog().isInfoEnabled()) {
                 sfLog().info(CSVFileReadImpl.merge(line));
             }
-            int position = getCount();
+            int position = getCurrentLine();
             if (lines.size() > position) {
                 Vector<String> expected = lines.elementAt(position);
                 compareLine(position, line, expected);
@@ -139,25 +140,25 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
         /**
          * compare two lines, fail if they mismatch
          *
-         * @param element element number
+         * @param number element number
          * @param line line read in
          * @param expected expected line
          * @throws SmartFrogException if there is a count mismatch, or a value is not as expected
          */
-        private void compareLine(int element, String[] line, Vector<String> expected)
+        private void compareLine(int number, String[] line, Vector<String> expected)
                 throws SmartFrogException {
             String merged = CSVFileReadImpl.merge(line);
             int size = expected.size();
             int actual = line.length;
             if (actual != size) {
-                throw new SmartFrogException("Line " +
-                        element +
+                throw new SmartFrogException("Line index " +
+                        number +
                         " is wrong width; expected " +
                         size +
-                        " but got "
+                        " elements but got "
                         +
                         actual +
-                        " elements\n" +
+                        " \n" +
                         merged);
             }
             for (int i = 0; i < size; i++) {
@@ -165,7 +166,7 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
                 String actualElt = line[i];
                 if (!expectedElt.equals(actualElt)) {
                     throw new SmartFrogException(
-                            "Line " + element + " does not match expected element " + i
+                            "Line " + number + " does not match expected element " + i
                                     + " expected=\"" + expectedElt + '\"'
                                     + " actual=\"" + actualElt + '\"'
                                     + ":\n" + merged);
