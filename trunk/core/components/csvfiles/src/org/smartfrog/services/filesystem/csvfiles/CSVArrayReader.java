@@ -29,8 +29,7 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * component to test the CSV file read operations;
- * lets you validate headers and such like Created 20-Feb-2008 15:50:56
+ * component to build up a (ragged) array from the documents
  */
 
 public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
