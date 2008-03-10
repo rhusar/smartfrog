@@ -169,9 +169,29 @@ It does not contain any of the Ant optional libraries, or their dependencies.
 
 # -----------------------------------------------------------------------------
 
+%package csvfiles
+Group:         ${rpm.framework}
+Summary:        Components to work with CSV files
+Requires:       %{name} = %{version}-%{release}
+#
+%description csvfiles
+The csvfiles package contains components that can work with CSV files, turning the data
+into attributes of components, or serving them in a form that other components
+including XML components can handle.
+
+This enables CSV files (such as those generated and edited in spreadsheets) to be
+used as the direct input for deployment/configuration operations. As many
+applications act as sources of CSV files, this allows for some interesting
+integrations with existing software.
+
+Includes opencsv-${opencsv.version}.jar
+
+
+# -----------------------------------------------------------------------------
+
 %package database
 Group:         ${rpm.framework}
-Summary:        the components needed to talk to a database
+Summary:        The components needed to talk to a database
 Requires:       %{name} = %{version}-%{release}
 #
 %description database
@@ -551,7 +571,12 @@ fi
 %{libdir}/sf-anubis-${smartfrog.version}.jar
 %{linkdir}/sf-anubis.jar
 
+%files csvfiles
 
+%{libdir}/sf-csvfiles-${smartfrog.version}.jar
+%{libdir}/opencsv-${opencsv.version}.jar
+%{linkdir}/sf-csvfiles.jar
+%{linkdir}/opencsv.jar
 
 %files database
 

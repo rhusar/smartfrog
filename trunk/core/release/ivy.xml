@@ -48,6 +48,8 @@
         description="ant components"/>
     <conf name="package-anubis"
         description="anubis components"/>
+    <conf name="package-csvfiles"
+        description="CSV File components"/>
     <conf name="package-database"
         description="database components"/>
     <conf name="package-jmx"
@@ -115,6 +117,12 @@
         rev="${ivy.smartfrog.version}"
         conf="package-anubis->master,redist,documentation"/>
 
+    <!--database-->
+    <dependency org="org.smartfrog"
+        name="sf-csvfiles"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-database->master,redist,documentation"/>
 
     <!--database-->
     <dependency org="org.smartfrog"
@@ -123,7 +131,6 @@
         rev="${ivy.smartfrog.version}"
 
         conf="package-database->master,redist,documentation"/>
-<!--,documentation -->
 
     <!--dns-->
     <dependency org="org.smartfrog"
@@ -131,6 +138,7 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
+    
     <!--email -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
