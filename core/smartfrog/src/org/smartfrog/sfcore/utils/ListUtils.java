@@ -229,36 +229,37 @@ public final class ListUtils {
      * Everything is converted to strings in the process
      * @param component component to resolve against
      * @param ref a reference
+     * @param width width; use a negative number for any
      * @param required whether the element is required or not
      * @return the tuple list, or null if none was provided
      * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
      * otherwise fails.
      * @throws RemoteException network problems
      */
-    public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref,int width,boolean required)
+    public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector tupleList=null;
-        tupleList=component.sfResolve(ref, tupleList,required);
-        if(tupleList==null) {
+        Vector tupleList = null;
+        tupleList = component.sfResolve(ref, tupleList, required);
+        if (tupleList == null) {
             return null;
         }
-        int count=0;
+        int count = 0;
         for (Object element : tupleList) {
             if (!(element instanceof Vector)) {
                 throw new SmartFrogResolutionException(
-                        ref,null,
-                        "Element ["+count+"] is "+ERROR_NOT_A_LIST + element,
+                        ref, null,
+                        "Element [" + count + "] is " + ERROR_NOT_A_LIST + element,
                         element,
                         null,
                         component);
             }
             Vector entry = (Vector) element;
-            if (entry.size() != width) {
+            if (width>=0 && entry.size() != width) {
                 throw new SmartFrogResolutionException(
-                        ref,null,
-                        "Element [" + count + "] is " +ERROR_WRONG_SIZE +
-                        " (expected "+width+" but got "+entry.size()+") "
-                        +entry,
+                        ref, null,
+                        "Element [" + count + "] is " + ERROR_WRONG_SIZE +
+                                " (expected " + width + " but got " + entry.size() + ") "
+                                + entry,
                         entry,
                         null,
                         component);
@@ -266,35 +267,83 @@ public final class ListUtils {
         }
         return tupleList;
     }
-    
+
+
     /**
-     * Extract a string tuple list; verify the depth is 2.
-     * Everything is converted to strings in the process
+     * Extract a string tuple list; verify the depth is 2. Everything is converted to strings in the process
+     *
      * @param component component to resolve against
-     * @param ref a reference
-     * @param required whether the element is required or not
+     * @param ref       a reference
+     * @param width width of the n-tuple; use a negative number for 'any'
+     * @param required  whether the element is required or not
      * @return the tuple list, or null if none was provided
-     * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
-     * otherwise fails.
-     * @throws RemoteException network problems
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution otherwise
+     *                                      fails.
+     * @throws RemoteException              network problems
      */
-    public static Vector<Vector<String>> resolveStringTupleList(Prim component, Reference ref,boolean required)
+    public static Vector<Vector<String>> resolveStringNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector<Vector<Object>> tupleList=resolveNTupleList(component,ref,2,required);
-        if(tupleList==null) {
+        Vector<Vector<Object>> tupleList = resolveNTupleList(component, ref, width, required);
+        if (tupleList == null) {
             return null;
         }
-        Vector<Vector<String>> result=new Vector<Vector<String>>(tupleList.size());
-        for (Vector<Object> tuple: tupleList) {
-            String name = tuple.get(0).toString();
-            String value = tuple.get(1).toString();
-            result.add(tuple(name,value));
+        Vector<Vector<String>> result = new Vector<Vector<String>>(tupleList.size());
+        for (Vector<Object> tuple : tupleList) {
+            Vector<String> row=new Vector<String>(tuple.size());
+            for(Object field:tuple) {
+                row.add(field.toString());
+            }
+            result.add(row);
         }
         return result;
     }
 
     /**
+     * Turn a table into a string that can be logged
+     * @param table table to print out
+     * @return a string form
+     */
+    public static String tuplesToString(Vector<Vector<String>> table) {
+        StringBuilder builder=new StringBuilder();
+        builder.append("[\n");
+        for(Vector<String> row:table) {
+            builder.append(" [");
+            boolean first=true;
+            for(String column:row) {
+                if(first) {
+                    first=false;
+                } else {
+                    builder.append(",");
+                }
+                builder.append("\"");
+                builder.append(column);
+                builder.append("\"");
+            }
+            builder.append("]\n");
+        }
+        builder.append("]\n");
+        return builder.toString();
+    }
+
+                                               /**
+                                               * Extract a string tuple list; verify the depth is 2.
+                                               * Everything is converted to strings in the process
+                                               * @param component component to resolve against
+                                               * @param ref a reference
+                                               * @param required whether the element is required or not
+                                               * @return the tuple list, or null if none was provided
+                                               * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
+                                               * otherwise fails.
+                                               * @throws RemoteException network problems
+                                               */
+    public static Vector<Vector<String>> resolveStringTupleList(Prim component, Reference ref, boolean required)
+            throws SmartFrogResolutionException, RemoteException {
+        return resolveStringNTupleList(component, ref, 2,required);
+    }
+
+    /**
      * Convert the properties to to a string tuple list
+     *
      * @param properties the properties to work on
      * @return the properties as a list of [name,value] tuples, sorted on name
      */
@@ -302,7 +351,7 @@ public final class ListUtils {
         Vector<Vector<String>> propertyTupleList = new Vector<Vector<String>>(properties.size());
         List keyList = new ArrayList(properties.keySet());
         Collections.sort(keyList);
-        for(Object keyO:keyList) {
+        for (Object keyO : keyList) {
             String key = keyO.toString();
             String value = properties.getProperty(key);
             Vector<String> tuple = tuple(key, value);
