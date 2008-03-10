@@ -14,10 +14,10 @@ fi
 if [ $# -eq 1 ] && [ "$1" = "-?" ];then
    echo "Usage: sfStart HostName ApplicationName URL [-p port]"
    exit 0
-#elif [ $# -ne 3 ];then
-#   echo "Wrong number of arguments for sfStart"
-#   echo "Usage: sfStart HostName ApplicationName URL [-p port]"
-#   exit 69
+elif [ $# -lt 3 ];then
+   echo "Wrong number of arguments for sfStart"
+   echo "Usage: sfStart HostName ApplicationName URL [-p port]"
+   exit 69
 fi 
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 #export CLASSPATH
