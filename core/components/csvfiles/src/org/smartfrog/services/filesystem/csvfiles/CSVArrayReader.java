@@ -154,7 +154,7 @@ public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
                 if (skipNarrowLines) {
                     return;
                 } else {
-                    throw new SmartFrogDeploymentException("Too narrow, line #" + getCount() + ": "
+                    throw new SmartFrogDeploymentException("Too narrow, line #" + getCurrentLine() + ": "
                             + CSVFileReadImpl.merge(line), CSVArrayReader.this);
                 }
             }
