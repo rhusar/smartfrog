@@ -70,14 +70,18 @@ public class SerializedXomDocument implements Serializable {
      * read in an object
      *
      * @param in object to read
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException IO problems
+     * @throws ClassNotFoundException problems unmarshalling
      */
     private void readObject(ObjectInputStream in) throws
             IOException, ClassNotFoundException {
         document = codec.readObject(in);
     }
-    
+
+    /**
+     * Reading an empty object
+     * @throws ObjectStreamException if there is trouble on the wire
+     */
     private void readObjectNoData() 
      throws ObjectStreamException {
         document=new Document(new Element("root"));
