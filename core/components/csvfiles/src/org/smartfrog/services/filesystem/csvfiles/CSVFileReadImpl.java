@@ -135,7 +135,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
      * @throws RemoteException    network problems
      * @throws SmartFrogDeploymentException parsing/file IO problems, or wrong dimensions of the array
      */
-    public synchronized String[] getNextLine() throws RemoteException, SmartFrogException {
+    public synchronized String[] getNextTuple() throws RemoteException, SmartFrogException {
         if (reader == null) {
             throw new SmartFrogLifecycleException(ERROR_CSV_READER_IS_NOT_OPEN);
         }

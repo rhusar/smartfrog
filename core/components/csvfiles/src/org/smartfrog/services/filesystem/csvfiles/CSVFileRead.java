@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.filesystem.csvfiles;
 
 import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface CSVFileRead extends FileIntf {
+public interface CSVFileRead extends FileIntf, TupleDataSource {
 
     /** {@value} */
     String ATTR_HEADER_LINES = "headerLines";
@@ -58,25 +59,4 @@ public interface CSVFileRead extends FileIntf {
      */
     public static final String ATTR_MAXWIDTH = "maxWidth";
 
-    /**
-     * Get the next line
-     * @return the next line, all broken up, or null for no new lines.
-     * @throws RemoteException network problems
-     * @throws SmartFrogException parsing/file IO problems
-     */
-    String[] getNextLine() throws RemoteException, SmartFrogException;
-
-    /**
-     * Go back to the start of the file
-     * @throws RemoteException network problems
-     * @throws SmartFrogException parsing/file IO problems
-     */
-    void start() throws RemoteException, SmartFrogException;
-
-    /**
-     * Close the reader. harmless if we are already closed
-     * @throws RemoteException network problems
-     * @throws SmartFrogException parsing/file IO problems
-     */
-    void close() throws RemoteException, SmartFrogException;
 }

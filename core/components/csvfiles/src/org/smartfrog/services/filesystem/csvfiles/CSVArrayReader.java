@@ -22,13 +22,15 @@ package org.smartfrog.services.filesystem.csvfiles;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.TupleReaderThread;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * component to test the file read operations; lets you validate headers and such like Created 20-Feb-2008 15:50:56
+ * component to test the CSV file read operations;
+ * lets you validate headers and such like Created 20-Feb-2008 15:50:56
  */
 
 public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
@@ -79,7 +81,7 @@ public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -98,60 +100,73 @@ public class CSVArrayReader extends AbstractCSVProcessor implements Remote {
     /**
      * do the work in a thread which triggers workflow events afterwards
      */
-    private class ReaderThread extends CSVReaderThread {
+    private class ReaderThread extends TupleReaderThread {
+        private Vector<String> result;
 
         /**
          * Create a basic thread
+         *
          * @param source the data source
          */
         private ReaderThread(CSVFileRead source) {
-            super(CSVArrayReader.this,source);
+            super(CSVArrayReader.this, source, true);
 
         }
 
         /**
-         * read the thread in, validate the values, then maybe terminate the component
+         * we've started. do any preparation
          *
-         * @throws Throwable if anything went wrong
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
          */
-        public void execute() throws Throwable {
-            String[] line;
-            Vector<String> result=new Vector<String>();
-            int count = 0;
-            source.start();
-            while ((line = source.getNextLine()) != null) {
-                if (isTerminationRequested()) {
-                    //bail out completely
-                    return;
-                }
-                int w = line.length;
-                if (w < column) {
-                    //too narrow for this column
-                    if (skipNarrowLines) {
-                        continue;
-                    } else {
-                        throw new SmartFrogDeploymentException("Too narrow, line #" + count + ": "
-                                + CSVFileReadImpl.merge(line), CSVArrayReader.this);
-                    }
-                }
-                String columnValue=line[column-1];
-                if(trimFields) {
-                    columnValue=columnValue.trim();
-                }
-                if(columnValue.length()==0 && skipEmptyFields) {
-                    continue;
-                }
-                result.add(columnValue);
-            }
-            //end of lines set the results
-            sfReplaceAttribute(ATTR_RESULT,result);
-            if(target!=null) {
-                target.sfReplaceAttribute(targetAttribute,result);
-            }
-
+        @Override
+        protected void onStarted() throws SmartFrogException, RemoteException {
+            result = new Vector<String>();
         }
 
+        /**
+         * we've finished (successfully)
+         *
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
+         */
+        @Override
+        protected void onFinished() throws SmartFrogException, RemoteException {
+            //end of lines set the results
+            sfReplaceAttribute(ATTR_RESULT, result);
+            if (target != null) {
+                target.sfReplaceAttribute(targetAttribute, result);
+            }
+        }
 
+        /**
+         * Process one line of the data source
+         *
+         * @param line line to process
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
+         */
+        @Override
+        protected void processOneLine(String[] line) throws SmartFrogException, RemoteException {
+            int w = line.length;
+            if (w < column) {
+                //too narrow for this column
+                if (skipNarrowLines) {
+                    return;
+                } else {
+                    throw new SmartFrogDeploymentException("Too narrow, line #" + getCount() + ": "
+                            + CSVFileReadImpl.merge(line), CSVArrayReader.this);
+                }
+            }
+            String columnValue = line[column - 1];
+            if (trimFields) {
+                columnValue = columnValue.trim();
+            }
+            if (columnValue.length() == 0 && skipEmptyFields) {
+                return;
+            }
+            result.add(columnValue);
+        }
 
     }
 
