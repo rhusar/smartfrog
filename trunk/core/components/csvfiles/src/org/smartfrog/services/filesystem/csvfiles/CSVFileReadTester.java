@@ -21,6 +21,10 @@ package org.smartfrog.services.filesystem.csvfiles;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.filesystem.TupleReaderThread;
+import org.smartfrog.services.filesystem.TupleDataSource;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -58,13 +62,13 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
      * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         Prim src = sfResolve(ATTR_SOURCE, (Prim) null, true);
-        CSVFileRead source = (CSVFileRead) src;
-        lines = (Vector<Vector<String>>) sfResolve(ATTR_LINES, lines, true);
+        TupleDataSource source = (TupleDataSource) src;
+        lines = ListUtils.resolveStringTupleList(this, new Reference(ATTR_LINES), true);
         minCount = sfResolve(ATTR_MINCOUNT, 0, true);
         maxCount = sfResolve(ATTR_MAXCOUNT, 0, true);
         setReader(new ReaderThread(source));
@@ -72,67 +76,89 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
     }
 
 
+    private class ReaderThread extends TupleReaderThread {
 
-    private class ReaderThread extends CSVReaderThread {
- 
         /**
          * Create a reader
+         *
          * @param source CSV source
          * @see Thread#Thread(ThreadGroup,Runnable,String)
          */
-        private ReaderThread(CSVFileRead source) {
-            super(CSVFileReadTester.this, source);
+        private ReaderThread(TupleDataSource source) {
+            super(CSVFileReadTester.this, source, true);
+        }
+
+         /**
+         * we've started. do any preparation
+         *
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
+         */
+        protected void onStarted() throws SmartFrogException, RemoteException {
+        }
+
+
+        /**
+     * we've finished (successfully)
+         *
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
+         */
+        protected void onFinished() throws SmartFrogException, RemoteException {
+            if (getCount() < minCount) {
+                throw new SmartFrogException("Too few lines -expected " +
+                        minCount +
+                        " but got " +
+                        getCount(),
+                        CSVFileReadTester.this);
+            }
         }
 
         /**
-         * read the thread in, validate the values, then maybe terminate the component
+         * Process one line of the data source
          *
-         * @throws Throwable if anything went wrong
+         * @param line line to process
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException network problems
          */
-        public void execute() throws Throwable {
-            String[] line;
-            int count = 0;
-            source.start();
-            while ((line = source.getNextLine()) != null) {
-                if (isTerminationRequested()) {
-                    //bail out completely
-                    return;
-                }
-                if (sfLog().isInfoEnabled()) {
-                    sfLog().info(CSVFileReadImpl.merge(line));
-                }
-                if (lines.size() > count) {
-                    Vector<String> expected = lines.elementAt(count);
-                    compareLine(count, line, expected);
-                }
-                count++;
-                if (maxCount >= 0 && count > maxCount) {
-                    throw new SmartFrogException("Too many lines", CSVFileReadTester.this);
-                }
+        protected void processOneLine(String[] line) throws SmartFrogException, RemoteException {
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info(CSVFileReadImpl.merge(line));
             }
-            if (count < minCount) {
-                throw new SmartFrogException("Too few lines -expected " + minCount + " but got " + count,
-                        CSVFileReadTester.this);
+            int position = getCount();
+            if (lines.size() > position) {
+                Vector<String> expected = lines.elementAt(position);
+                compareLine(position, line, expected);
             }
-            //end of lines
-        }
 
+            if (maxCount >= 0 && position > maxCount) {
+                throw new SmartFrogException("Too many lines", CSVFileReadTester.this);
+            }
+        }
 
         /**
          * compare two lines, fail if they mismatch
          *
-         * @param element  element number
-         * @param line     line read in
+         * @param element element number
+         * @param line line read in
          * @param expected expected line
          * @throws SmartFrogException if there is a count mismatch, or a value is not as expected
          */
-        private void compareLine(int element, String[] line, Vector<String> expected) throws SmartFrogException {
+        private void compareLine(int element, String[] line, Vector<String> expected)
+                throws SmartFrogException {
             String merged = CSVFileReadImpl.merge(line);
             int size = expected.size();
             int actual = line.length;
             if (actual != size) {
-                throw new SmartFrogException("Line " + element + " is wrong width; expected " + size + " but got "
-                        + actual + " elements\n" + merged);
+                throw new SmartFrogException("Line " +
+                        element +
+                        " is wrong width; expected " +
+                        size +
+                        " but got "
+                        +
+                        actual +
+                        " elements\n" +
+                        merged);
             }
             for (int i = 0; i < size; i++) {
                 String expectedElt = expected.elementAt(i);
@@ -142,7 +168,7 @@ public class CSVFileReadTester extends AbstractCSVProcessor implements Remote {
                             "Line " + element + " does not match expected element " + i
                                     + " expected=\"" + expectedElt + '\"'
                                     + " actual=\"" + actualElt + '\"'
-                                    +":\n" + merged);
+                                    + ":\n" + merged);
                 }
             }
 
