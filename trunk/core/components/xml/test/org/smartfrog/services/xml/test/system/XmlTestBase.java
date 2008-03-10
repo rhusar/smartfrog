@@ -28,7 +28,7 @@ import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -39,7 +39,7 @@ import java.rmi.RemoteException;
 /**
  * base class for tests; currently extends the smartfrog testbase
  */
-public abstract class XmlTestBase extends SmartFrogTestBase {
+public abstract class XmlTestBase extends DeployingTestBase {
 
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
 
@@ -48,25 +48,17 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
      */
     public static final String ATTR_XML = "xml";
 
-    /**
-     * Node of any deployed application
-     */
-    private Prim application;
-
     protected XmlTestBase(String name) {
         super(name);
     }
 
     /**
-     * location for files.
-     * {@value}
-     *
+     * location for files. {@value}
      */
     public static final String FILE_BASE = "/org/smartfrog/services/xml/test/files/";
 
     /**
-     * Sets up the fixture, for example, open a network connection. This method
-     * is called before a test is executed.
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
      */
     protected void setUp() throws Exception {
         super.setUp();
@@ -75,23 +67,14 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
 
     /**
-     * Tears down the fixture, for example, close a network connection. This
-     * method is called after a test is executed.
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        //terminate the node if it is not null.
-        terminateApplication(application);
-    }
-
-    /**
      * Deploy an XML node
+     *
      * @param url
      * @param appName
      * @return
      * @throws Throwable
      */
-    public XmlNode deployXmlNode(String url,String appName) throws Throwable {
+    public XmlNode deployXmlNode(String url, String appName) throws Throwable {
         Prim prim = deployApplication2(url, appName);
         try {
             return (XmlNode) prim;
@@ -103,6 +86,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
     /**
      * Deploy an application.
+     *
      * @param url
      * @param appName
      * @return
@@ -110,43 +94,36 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
      */
     protected Prim deployApplication2(String url, String appName)
             throws Throwable {
-        Prim prim = deployExpectingSuccess(url, appName);
-        application = prim;
-        return prim;
-    }
-
-    /**
-     * Get the deployed application, or null
-     * @return application, if deployed
-     */
-    public Prim getApplication() {
-        return application;
+        return application = deployExpectingSuccess(url, appName);
     }
 
     /**
      * Get the application (if deployed) as an XML Node (if it is one)
+     *
      * @return the application or null
      * @throws ClassCastException if the app doesn't implement XmlNode
      */
     public XmlNode getApplicationAsNode() {
-        if(application==null) {
+        if (application == null) {
             return null;
         }
-        return (XmlNode)application;
+        return (XmlNode) application;
     }
 
     /**
      * terminate a deployed app of type xmlnode. no-op if null
+     *
      * @param node node to terminate
      * @throws RemoteException
      */
     protected void terminateNode(XmlNode node) throws RemoteException {
-        terminateApplication((Prim)node);
+        terminateApplication((Prim) node);
     }
 
     /**
      * load an XML File
-     * @param file file to load
+     *
+     * @param file     file to load
      * @param validate flag to ask for a validating parser
      * @return the loaded document.
      * @throws SAXException
@@ -155,7 +132,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
      */
     public Document loadXMLFile(File file, boolean validate) throws SAXException,
             ParsingException, IOException {
-        XMLReader xmlParser = ParserHelper.createXmlParser(validate,true,false);
+        XMLReader xmlParser = ParserHelper.createXmlParser(validate, true, false);
         Builder builder = new Builder(xmlParser, validate);
         Document document = builder.build(file);
         return document;
@@ -164,14 +141,15 @@ public abstract class XmlTestBase extends SmartFrogTestBase {
 
     /**
      * resolve the xmlnode name {@link #ATTR_XML} in the application
+     *
      * @return the resolved node
      * @throws SmartFrogResolutionException
      * @throws RemoteException
-     * @throws AssertionFailedError if the application is null
+     * @throws AssertionFailedError         if the application is null
      */
     protected XmlNode resolveXmlNode() throws SmartFrogResolutionException,
             RemoteException {
         assertNotNull(getApplication());
-        return (XmlNode) getApplication().sfResolve(ATTR_XML,(Prim)null,true);
+        return (XmlNode) getApplication().sfResolve(ATTR_XML, (Prim) null, true);
     }
 }

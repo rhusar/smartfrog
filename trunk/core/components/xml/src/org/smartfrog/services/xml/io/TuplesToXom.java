@@ -34,9 +34,7 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * Create a Xom document from a file
- * <p/>
- * Created: 09-Mar-2008
+ * Create a Xom document from a file <p/> Created: 09-Mar-2008
  */
 public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
 
@@ -51,17 +49,19 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
     private boolean skipEmptyFields;
     public static final String ATTR_SKIP_EMPTY_FIELDS = "skipEmptyFields";
     public static final String ATTR_SOURCE = "source";
+    public static final String ATTR_TRIM = "trim";
     private TupleReader reader;
+    private boolean trim;
 
     public TuplesToXom() throws RemoteException {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -73,12 +73,14 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
                 this,
                 new Reference(ATTR_FIELD_NAMES)
                 , true);
-        skipEmptyFields = sfResolve(ATTR_SKIP_EMPTY_FIELDS,false,true);
+        skipEmptyFields = sfResolve(ATTR_SKIP_EMPTY_FIELDS, false, true);
+        trim = sfResolve(ATTR_TRIM, false, true);
         Element rootelt = new Element(root, namespaceURI);
         Document doc = new Document(rootelt);
         document = new SerializedXomDocument(doc);
         TupleDataSource source = (TupleDataSource) sfResolve(ATTR_SOURCE, (Prim) null, true);
         reader = new TupleReader(source);
+        reader.start();
     }
 
     Document getDocument() {
@@ -101,27 +103,30 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
          *
          * @param line line to process
          * @throws SmartFrogException SmartFrog problems
-         * @throws RemoteException network problems
+         * @throws RemoteException    network problems
          */
         @Override
         protected void processOneLine(String[] line) throws SmartFrogException, RemoteException {
-            Element element=new Element(elementName, namespaceURI);
+            Element element = new Element(elementName, namespaceURI);
             try {
-                for(int i=0;i<line.length;i++) {
-                    String field=line[i];
-                    String name= fieldNames.get(i);
-                    if(field.length()==0 && skipEmptyFields) {
+                for (int i = 0; i < line.length; i++) {
+                    String field = line[i];
+                    if (trim) {
+                        field = field.trim();
+                    }
+                    String name = fieldNames.get(i);
+                    if (field.length() == 0 && skipEmptyFields) {
                         continue;
                     }
-                    Element fieldElement=new Element(name, namespaceURI);
+                    Element fieldElement = new Element(name, namespaceURI);
                     fieldElement.appendChild(field);
                     element.appendChild(fieldElement);
                 }
                 getRootNode().appendChild(element);
             } catch (ArrayIndexOutOfBoundsException e) {
                 sfLog().debug(e);
-                throw new SmartFrogException("Line "+ getCurrentLine()+" is wider than the"
-                + ATTR_FIELD_NAMES+" list",
+                throw new SmartFrogException("Line " + getCurrentLine() + " is wider than the"
+                        + ATTR_FIELD_NAMES + " list",
                         TuplesToXom.this);
             }
         }
@@ -130,10 +135,13 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
          * our work is done, let's write it out
          *
          * @throws SmartFrogException SmartFrog problems
-         * @throws RemoteException network problems
+         * @throws RemoteException    network problems
          */
         @Override
         protected void onFinished() throws SmartFrogException, RemoteException {
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info("Writing to " + getFile());
+            }
             writeDocumentToFile(getDocument());
         }
     }

@@ -18,7 +18,7 @@
 
  */
 
- #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
 
 AbstractXomFileWriter extends WorkflowPrim {
@@ -33,12 +33,11 @@ TuplesToXom extends AbstractXomFileWriter {
   source TBD;
   namespaceURI "";
   skipEmptyFields false;
+  trim false;
   //root element name
   //if you want namespaces, include the prefix. e.g. foo:root
   root "root";
   element "element";
   //list of the names of the elements of each entry in the tuple
   fieldNames [];
-
-
 }
