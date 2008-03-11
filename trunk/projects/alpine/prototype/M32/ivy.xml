@@ -52,58 +52,39 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile->default;runtime->runtime;redist->master"/>
-    <dependency org="xom"
-        name="xom"
-        rev="${xom.version}"
-        conf="compile->master;redist->master"/>
-
+        conf="compile,runtime->default,servletapi;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime->default;redist->redist"/>
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime->default;redist->redist"/>
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="latest.integration"
         conf="test,runtime->default;redist->master"/>
-    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="compile->master"/>
-    <dependency org="commons-logging"
-        name="commons-logging"
-        rev="${commons-logging.version}"
-        conf="compile->master;redist->master"/>
-    <dependency org="commons-httpclient"
-        name="commons-httpclient"
-        rev="${commons-httpclient.version}"
-        conf="compile->master;test,runtime,redist->default">
-      <exclude org="commons-logging"/>
-      <exclude org="junit"/>
-    </dependency>
 
     <!--optionals-->
-    <dependency org="log4j"
-        name="log4j"
-        rev="${log4j.version}"
-        conf="optional->default"/>
     <dependency org="jaxen"
         name="jaxen"
         rev="${jaxen.version}"
         conf="optional->master"/>
-    <dependency org="xalan"
-        name="xalan"
-        rev="${xalan.version}"
-        conf="optional->default"/>
-
     <!--test-->
 
     <dependency org="junit"
-                name="junit"
-                rev="${junit.version}"
-                conf="test->default"/>
+        name="junit"
+        rev="${junit.version}"
+        conf="test->default"/>
 
     <dependency org="httpunit"
-                name="httpunit"
-                rev="${httpunit.version}"
-                conf="test->default">
+        name="httpunit"
+        rev="${httpunit.version}"
+        conf="test->default">
       <exclude org="rhino"/>
       <exclude org="xerces"/>
     </dependency>
