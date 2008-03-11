@@ -117,12 +117,12 @@
         rev="${ivy.smartfrog.version}"
         conf="package-anubis->master,redist,documentation"/>
 
-    <!--database-->
+    <!--csvfiles-->
     <dependency org="org.smartfrog"
         name="sf-csvfiles"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-database->master,redist,documentation"/>
+        conf="package-csvfiles->master,redist,documentation"/>
 
     <!--database-->
     <dependency org="org.smartfrog"
