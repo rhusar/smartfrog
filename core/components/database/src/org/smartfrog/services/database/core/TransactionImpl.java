@@ -106,6 +106,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * @throws SmartFrogException for smartfrog problems
      * @throws RemoteException for network problems.
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -129,6 +130,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      *
      * @param status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         checkAndRunTerminationCommands();
@@ -164,6 +166,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * @throws RemoteException    network problems
      * @throws SQLException       SQL problems
      */
+
     protected void runTerminationCommands() throws SmartFrogException, RemoteException, SQLException {
 
     }
@@ -293,6 +296,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * @throws SQLException SQL execution problems
      * @throws SmartFrogException for smartfrog problems
      */
+    @Override
     public void performOperation(Connection connection)
             throws SQLException, SmartFrogException {
         executeCommands(connection, commands.iterator());
@@ -355,7 +359,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * @param connection  connection to use
      * @param commandIterator iterator over the commands to run
      *
-     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException when things go wrong
      */
     public void executeCommands(Connection connection,
                                 Iterator<String> commandIterator)
@@ -373,7 +377,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
      * @param connection connection to use
      * @param command    comand to issue
      *
-     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException when things go wrong
      */
     public void executeOneCommand(Connection connection, String command)
             throws SmartFrogDeploymentException {

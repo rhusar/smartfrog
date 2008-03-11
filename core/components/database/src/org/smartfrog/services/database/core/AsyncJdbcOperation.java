@@ -35,8 +35,7 @@ import java.sql.SQLException;
 /**
  * This represents a JDBC operation that runs in a background thread
  */
-public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
-        implements Runnable {
+public abstract class AsyncJdbcOperation extends AbstractJdbcOperation {
 
 
     private Throwable queuedFault;
@@ -116,9 +115,17 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
                     "Cannot start the worker thread, as it is already running");
         }
 
-        workerThread = new DatabaseThread();
+        workerThread = createWorkerThread();
         workerThread.start();
         return workerThread;
+    }
+
+    /**
+     * Override this to implement a new worker thread
+     * @return
+     */
+    protected DatabaseThread createWorkerThread() {
+        return new DatabaseThread();
     }
 
     /**
@@ -129,6 +136,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation
         SmartFrogThread.requestThreadTermination(workerThread);
         workerThread = null;
     }
+
 
 
     /**
