@@ -43,7 +43,7 @@ import java.util.Properties;
  */
 public class InstallCA extends CAConstants {
 	private String installerDir = null;
-	private static Log log = LogFactory.getLog(InstallCA.class);
+	private static final Log log = LogFactory.getLog(InstallCA.class);
 			
 	/**
 	 * 
@@ -98,7 +98,7 @@ public class InstallCA extends CAConstants {
 		Properties props = new Properties();
 		props.setProperty("--prefix", opensslDir);
 		try {
-			System.out.println("Starting configure in InstallCA.buildFrmGlobus");
+			log.info("Starting configure in InstallCA.buildFrmGlobus");
 			buildUtils.configure(props, null);
 			buildUtils.make("gsi-openssh");
 			buildUtils.make("install");

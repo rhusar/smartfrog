@@ -37,7 +37,7 @@ import java.io.PrintStream;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class FileUtils {
-	private static Log log = LogFactory.getLog(FileUtils.class);
+	private static final Log log = LogFactory.getLog(FileUtils.class);
 
 	/**
 	 * 

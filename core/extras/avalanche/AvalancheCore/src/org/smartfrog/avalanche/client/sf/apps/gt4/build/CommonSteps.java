@@ -39,7 +39,7 @@ public class CommonSteps extends GT4Constants {
 	public BuildUtils bld = null;	
 	public String installerDir, globusLoc = null;
 	
-	private static Log log = LogFactory.getLog(CommonSteps.class);
+	private static final Log log = LogFactory.getLog(CommonSteps.class);
 	
 	/**
 	 * 

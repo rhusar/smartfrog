@@ -39,10 +39,10 @@ import java.io.OutputStreamWriter;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class TxtFileHelper {
-	File txtFile = null;
+	private File txtFile = null;
 	private static int cnt = 0;
 	
-	private static Log log = LogFactory.getLog(TxtFileHelper.class);
+	private static final Log log = LogFactory.getLog(TxtFileHelper.class);
 
 	/**
 	 * 

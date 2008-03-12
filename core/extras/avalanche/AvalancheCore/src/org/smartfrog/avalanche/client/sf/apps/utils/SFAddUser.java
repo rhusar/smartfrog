@@ -21,6 +21,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -61,17 +62,16 @@ public class SFAddUser extends PrimImpl implements Prim {
 		}
 		
 		if (shdTerminate) {
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
-			sfTerminate(tr);
+            new ComponentHelper(this).targetForTermination();
 		}
 	}
 
 	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 		super.sfDeploy();
-		homeDir = (String)sfResolve("homeDir", homeDir, true);
-		shell = (String)sfResolve("shell", shell, true);
-		passwd = (String)sfResolve("passwd", passwd, true);
-		user = (String)sfResolve("user", user, true);
+		homeDir = sfResolve("homeDir", homeDir, true);
+		shell = sfResolve("shell", shell, true);
+		passwd = sfResolve("passwd", passwd, true);
+		user = sfResolve("user", user, true);
 		
 		shdTerminate = sfResolve("shdTerminate", true, false);
 		
@@ -80,10 +80,6 @@ public class SFAddUser extends PrimImpl implements Prim {
 		props.setProperty("-d", homeDir);
 		props.setProperty("-s", shell);
 		props.setProperty("-m", "");
-	}
-
-	public synchronized void sfTerminateWith(TerminationRecord status) {
-		super.sfTerminateWith(status);
 	}
 
 }

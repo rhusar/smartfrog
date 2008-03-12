@@ -21,6 +21,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -46,17 +47,9 @@ public class SFPlatform extends PrimImpl implements Prim {
 		sfLog().info(SystemUtils.os());
 		
 		if (shdTerminate) {
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
-			sfTerminate(tr);
+            new ComponentHelper(this).targetForTermination();
 		}
 	}
 
-	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-		super.sfDeploy();
-	}
-
-	public synchronized void sfTerminateWith(TerminationRecord status) {
-		super.sfTerminateWith(status);
-	}
 
 }

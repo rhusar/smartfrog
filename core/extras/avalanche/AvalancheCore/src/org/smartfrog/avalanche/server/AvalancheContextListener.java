@@ -31,11 +31,11 @@ import javax.servlet.ServletContextListener;
  * Sets up connection with XMPP server and register for events. 
  */
 public class AvalancheContextListener implements ServletContextListener {
-	private static Log log = LogFactory.getLog(AvalancheContextListener.class);	
-	ServerSetup setup = new ServerSetup();
-        Scheduler scheduler = null;	
-	
-	/**
+    private static final Log log = LogFactory.getLog(AvalancheContextListener.class);
+    private ServerSetup setup = new ServerSetup();
+    private Scheduler scheduler = null;
+
+    /**
 	 * Needs following attributes in the web.xml for webapp
 	 * 	xmppServer (default is localhost) 
 	 * 	xmppServerPort (default is 5223)
@@ -51,17 +51,17 @@ public class AvalancheContextListener implements ServletContextListener {
 			String securityOn = evt.getServletContext().getInitParameter("securityOn");
 			setup.getFactory().setAttribute(setup.getFactory().SECURITY_ON, securityOn);
             String xmppServer = evt.getServletContext().getInitParameter("xmppServer");
-            if( null != xmppServer){
-            		setup.setXmppServer(xmppServer);
-			setup.getFactory().setAttribute(setup.getFactory().XMPP_SERVER_NAME, xmppServer);
+            if (null != xmppServer) {
+                setup.setXmppServer(xmppServer);
+                setup.getFactory().setAttribute(setup.getFactory().XMPP_SERVER_NAME, xmppServer);
             }
             String xmppServerPort = evt.getServletContext().getInitParameter("xmppServerPort");
-            if( null != xmppServerPort ){
-            		setup.setXmppServerPort(Integer.parseInt(xmppServerPort));
+            if (null != xmppServerPort) {
+                setup.setXmppServerPort(Integer.parseInt(xmppServerPort));
             }
             String useSSL = evt.getServletContext().getInitParameter("useSSLForXMPP");
-            if( null != useSSL ){
-            		setup.setUseSSLForXMPP(useSSL);
+            if (null != useSSL) {
+                setup.setUseSSLForXMPP(useSSL);
             }
             
 			String xmppAdmin = evt.getServletContext().getInitParameter("xmppServerAdminUsername");
@@ -79,15 +79,15 @@ public class AvalancheContextListener implements ServletContextListener {
 			setup.getFactory().setAttribute(setup.getFactory().AVALANCHE_SERVER_NAME, avalancheServerName);
 	        
 			//Start Quartz Scheduler
-			System.out.println("Initializing");
+			log.info("Initializing");
 	        	SchedulerFactory schedFact = new StdSchedulerFactory();
 			scheduler = schedFact.getScheduler();
-			System.out.println("Initialization Complete");
+			log.info("Initialization Complete");
 			scheduler.start();
-			System.out.println("Started Scheduler");
+			log.info("Started Scheduler");
 		//	setup.setScheduler(scheduler);
 			//Scheduler scheduler1 = setup.getScheduler();
-			//System.out.println("Scheduler===" + scheduler1.getSchedulerName());
+			//log.info("Scheduler===" + scheduler1.getSchedulerName());
 			setup.startup();
 			evt.getServletContext().setAttribute("avalancheFactory", setup.getFactory()) ;
 			evt.getServletContext().setAttribute("scheduler", scheduler) ;
@@ -101,18 +101,18 @@ public class AvalancheContextListener implements ServletContextListener {
 	 * This is executed when server is shuttig down. Current implementation
 	 * closes all database handles and stops Smartfrog on server. 
 	 */
-	public void contextDestroyed(ServletContextEvent evt) {
-		try{
-			if(scheduler!=null) {
-                    		log.info("Shutting Down");
-                    		scheduler.shutdown(true);
-                    		log.info("Shutdown Complete");
-		    		scheduler=null;
-			}
-			setup.shutdown();
-		}catch(Exception e){
-			log.fatal("Avalanche InitializAtion failed : ", e);
-		}
+    public void contextDestroyed(ServletContextEvent evt) {
+        try {
+            if (scheduler != null) {
+                log.info("Shutting Down");
+                scheduler.shutdown(true);
+                log.info("Shutdown Complete");
+                scheduler = null;
+            }
+            setup.shutdown();
+        } catch (Exception e) {
+            log.fatal("Avalanche InitializAtion failed : ", e);
+        }
 	}
 
 }

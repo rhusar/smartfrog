@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class CAServiceImpl extends CAConstants {
-	private static Log log = LogFactory.getLog(CAServiceImpl.class);
+	private static final Log log = LogFactory.getLog(CAServiceImpl.class);
 	private String passPhrase = null;
 	//private int bufSize = 2048;
 	

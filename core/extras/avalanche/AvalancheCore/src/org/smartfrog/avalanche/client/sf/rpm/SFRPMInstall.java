@@ -64,8 +64,8 @@ public class SFRPMInstall extends PrimImpl implements Prim {
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        rpmPackage = (String) sfResolve(RPMPACKAGE, "", true);
-        installOptions = (String) sfResolve(INSTALLOPTS, "", true);
+        rpmPackage = sfResolve(RPMPACKAGE, "", true);
+        installOptions = sfResolve(INSTALLOPTS, "", true);
         rpmUtils = new RPMUtils(sfLog());
 
     }

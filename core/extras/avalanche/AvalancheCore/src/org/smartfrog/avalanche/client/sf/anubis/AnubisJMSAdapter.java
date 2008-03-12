@@ -24,29 +24,30 @@ import org.smartfrog.services.anubis.locator.AnubisValue;
  */
 public class AnubisJMSAdapter extends AnubisListener {
 	
-	MessageSender sender = new MessageSender();
-	public AnubisJMSAdapter(String name){
+	private MessageSender sender = new MessageSender();
+
+    public AnubisJMSAdapter(String name){
 		super(name);
 		try{
 			sender.init();
 		}catch(Exception e){
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
 
 	public void newValue(AnubisValue val) {
-		System.out.println("AnubisJMSAdapter.newValue() ..");
+		log.info("AnubisJMSAdapter.newValue() ..");
 		MonitoringEvent e = (MonitoringEvent)val.getValue();
 		// FIXME
 	//	MonitoringEvent e = (MonitoringEvent)vald.getValue() ;
 		e.setTimestamp(""+val.getTime());
-		System.out.println("AnubisJMSAdapter.newValue() .." + e.toString());
+        log.info("AnubisJMSAdapter.newValue() .." + e.toString());
 		try{
 			sender.sendMessage(e);
-			System.out.println("AnubisJMSAdapter.newValue() .. message sent successfully to JMS server from Anubis");
+            log.info("AnubisJMSAdapter.newValue() .. message sent successfully to JMS server from Anubis");
 		}catch(Exception ex){
-			// FIXME : do something .. 
-			ex.printStackTrace();
+			// FIXME : do something ..
+            log.error(ex);
 		}
 	}
 

@@ -33,7 +33,7 @@ public class SFModuleStateManager extends PrimImpl implements Prim {
 	
 	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 		super.sfDeploy();
-		locator = (AnubisLocator)sfResolve("locator") ;
+		locator = (AnubisLocator) sfResolve("locator", (Prim) null, true);
 	}
 	
 	protected AnubisProvider getProvider(String instanceName) throws RemoteException{

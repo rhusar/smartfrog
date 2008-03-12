@@ -13,6 +13,8 @@ package org.smartfrog.avalanche.client.sf.anubis;
 
 import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.services.xmpp.MonitoringEvent;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import javax.jms.MapMessage;
 import javax.jms.Queue;
@@ -33,9 +35,9 @@ public class MessageSender {
 	private String queueName = MonitoringConstants.DEPLOY_JMS_QUEUE ;
 	String userName = "system" ;
 	String password = "system" ;
-	
-	
-	public void init() throws Exception{
+    private LogSF log = LogFactory.getLog(this.getClass().toString());
+
+    public void init() throws Exception{
         Properties p = new Properties();
         p.put(Context.INITIAL_CONTEXT_FACTORY, 
              "org.mom4j.jndi.InitialCtxFactory"); 
@@ -63,10 +65,10 @@ public class MessageSender {
 		mm.setString(MonitoringEvent.MODULEID, event.getModuleId());
 		mm.setString(MonitoringEvent.MODULE_STATE, event.getModuleState());
 		mm.setString(MonitoringEvent.MESSAGE, event.getMsg());
-		
-		System.out.println("MessageSender.sendMessage() - Sending event to JMS Q") ;
+
+        log.info("MessageSender.sendMessage() - Sending event to JMS Q") ;
 		qsend.send(mm);
-		System.out.println("MessageSender.sendMessage() - Message sent successfully to JMS.") ;
+        log.info("MessageSender.sendMessage() - Message sent successfully to JMS.") ;
 		
 		qsend.close();
 		qs.close();

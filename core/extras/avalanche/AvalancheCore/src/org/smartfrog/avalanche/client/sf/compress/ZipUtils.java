@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.tools.bzip2.CBZip2InputStream;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -54,7 +55,7 @@ public class ZipUtils {
 	
 	public static boolean unTarProc(File tarFile, File outputDir) 
 		throws IOException {
-		String tarFileName = new String(tarFile.getName());
+		String tarFileName = tarFile.getName();
 
 		if (!tarFile.exists()) {
 			log.error("The file " + tarFileName + " does not exist");
@@ -121,18 +122,18 @@ public class ZipUtils {
 			return false;
 		}
 
-		try {
-			InputStream instream = getInputStream(tarFile);
-			TarInputStream tarInstream = new TarInputStream(instream);
+        TarInputStream tarInstream=null;
+        try {
+            InputStream instream = getInputStream(tarFile);
+            tarInstream = new TarInputStream(instream);
 
-			TarEntry tarEntry = tarInstream.getNextEntry();
+            TarEntry tarEntry = tarInstream.getNextEntry();
 			while (tarEntry != null) {
 				//create a file with the same name as the tarEntry
-				File destPath = new File(outputDir.toString()
-						+ File.separatorChar + tarEntry.getName());
+				File destPath = new File(outputDir,tarEntry.getName());
 				log.info(tarEntry.getName());
-				System.out.println("Mode : " + tarEntry.getMode());
-				System.out.println("Size : " + tarEntry.getSize());
+                log.info("Mode : " + tarEntry.getMode());
+                log.info("Size : " + tarEntry.getSize());
 				
 				if (tarEntry.isDirectory()) {
 					destPath.mkdir();
@@ -143,11 +144,15 @@ public class ZipUtils {
 						File destDir = new File(pathStr.substring(0, idx));
 						destDir.mkdirs();
 					}
-					FileOutputStream fileOutStream = new FileOutputStream(
-							destPath);
-					tarInstream.copyEntryContents(fileOutStream);
-					
-					fileOutStream.close();
+					FileOutputStream fileOutStream=null;
+                    try {
+                        fileOutStream = new FileOutputStream(
+                                destPath);
+                        tarInstream.copyEntryContents(fileOutStream);
+                    } finally {
+                        FileSystem.close(fileOutStream);
+                    }
+
 					// TODO: find a better method grant execute permissions
 					System.out.println("Length of " + tarEntry.getName() + " : " + destPath.length());
 					
@@ -167,12 +172,12 @@ public class ZipUtils {
 				}
 				tarEntry = tarInstream.getNextEntry();
 			}
-			tarInstream.close();
 		} catch (FileNotFoundException fnf) {
-			log.error("Exception while un-tarring the file " + tarFileName);
-			log.error(fnf);
+			log.error("Exception while un-tarring the file " + tarFileName,fnf);
 			throw new IOException("Error: File Not Found, " + fnf.getMessage());
-		}
+		} finally {
+            FileSystem.close(tarInstream);
+        }
 		return true;
 	}
 
@@ -183,8 +188,10 @@ public class ZipUtils {
 	
 	public static boolean bunzip(File bzipFile, File outputDir) throws IOException{
 
-		CBZip2InputStream bzipInstream ;
-		if (!bzipFile.exists()) {
+		CBZip2InputStream bzipInstream=null;
+        BufferedOutputStream output=null;
+
+        if (!bzipFile.exists()) {
 			log.error("The file " + bzipFile.getAbsolutePath() + " does not exist");
 			return false;
 		}
@@ -205,38 +212,42 @@ public class ZipUtils {
 					+ ".Permission denied");
 			return false;
 		}
-		String bzFileName = bzipFile.getName(); 
-		String file = bzipFile.getPath();
-		FileInputStream in = new FileInputStream(file);
-		BufferedInputStream src = new BufferedInputStream(in);
-		bzipInstream = new CBZip2InputStream(src);
+        String bzFileName;
+        FileOutputStream out;
+        try {
+            bzFileName = bzipFile.getName();
+            String file = bzipFile.getPath();
+            FileInputStream in = new FileInputStream(file);
+            BufferedInputStream src = new BufferedInputStream(in);
+            bzipInstream = new CBZip2InputStream(src);
 
-		byte[] buffer = new byte[chunkSize];
-		int len = 0;
-		
-		String outputFileName = null;
-		if (bzFileName.endsWith(".gz")) {
-			outputFileName = bzFileName.substring(0, bzFileName.length() - 3);
-		} else {
-			outputFileName = bzFileName + ".tmp";
-		}
-		File outputFile = new File(outputDir, outputFileName);
+            byte[] buffer = new byte[chunkSize];
+            int len = 0;
 
-		FileOutputStream out = new FileOutputStream(outputFile);
-		BufferedOutputStream output = new BufferedOutputStream(out, chunkSize);
+            String outputFileName = null;
+            if (bzFileName.endsWith(".gz")) {
+                outputFileName = bzFileName.substring(0, bzFileName.length() - 3);
+            } else {
+                outputFileName = bzFileName + ".tmp";
+            }
+            File outputFile = new File(outputDir, outputFileName);
 
-		/*
-		 * Read from gzip stream which will uncompress and write to output
-		 * stream
-		 */
-		while ((len = bzipInstream.read(buffer, 0, chunkSize)) != -1) {
-			output.write(buffer, 0, len);
-		}
+            out = new FileOutputStream(outputFile);
+            output = new BufferedOutputStream(out, chunkSize);
 
-		output.flush();
-		out.close();
+            /*
+            * Read from gzip stream which will uncompress and write to output
+                * stream
+                */
+            while ((len = bzipInstream.read(buffer, 0, chunkSize)) != -1) {
+                output.write(buffer, 0, len);
+            }
 
-		bzipInstream.close();
+            output.flush();
+        } finally {
+            FileSystem.close(output);
+            FileSystem.close(bzipInstream);
+        }
 
 		log.info("Uncompress completed for file - " + bzFileName);
 		return true;

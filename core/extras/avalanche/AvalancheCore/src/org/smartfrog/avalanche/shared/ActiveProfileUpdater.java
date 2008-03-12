@@ -25,7 +25,7 @@ import org.apache.xmlbeans.XmlString;
  * Retrieves, saves and modifies the ActiveProfile of a given host
  */
 public class ActiveProfileUpdater {
-    private static Log log = LogFactory.getLog(ActiveProfileUpdater.class);
+    private static final Log log = LogFactory.getLog(ActiveProfileUpdater.class);
     private ActiveProfileManager profileManager = null;
     private static final int XMPP_HISTORY_LIMIT = 25;
 

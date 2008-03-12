@@ -35,18 +35,18 @@ import java.util.Iterator;
  *
  */
 public class EventListener implements PacketListener {
-	private static Log log = LogFactory.getLog(EventListener.class);
+	private static final Log log = LogFactory.getLog(EventListener.class);
 	private ArrayList<XMPPPacketHandler> handlers = new ArrayList<XMPPPacketHandler>();
 
 	public EventListener() {
-		super();
 	}
 
 	public void processPacket(Packet p) {
         log.info("Processing packet from " + p.getFrom() + " to " + p.getTo());
         log.info("Dispatching to all registered handlers.");
-        for (XMPPPacketHandler h : handlers)
+        for (XMPPPacketHandler h : handlers) {
             h.handlePacket(p);
+        }
 }
 	
 	/**

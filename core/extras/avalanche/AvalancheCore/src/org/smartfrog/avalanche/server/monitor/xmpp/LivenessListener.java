@@ -32,7 +32,7 @@ import java.util.Collection;
 public class LivenessListener implements RosterListener {
 	private ArrayList handlers = new ArrayList();
 	private Roster roster ;
-	private static Log log = LogFactory.getLog(LivenessListener.class);
+	private static final Log log = LogFactory.getLog(LivenessListener.class);
 	
 	/**
 	 * Constructor needs to roster on which this listerner is registered. 

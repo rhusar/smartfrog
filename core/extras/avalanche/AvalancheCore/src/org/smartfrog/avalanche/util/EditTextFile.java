@@ -42,7 +42,7 @@ public class EditTextFile {
 	File txtFile = null;
 	private static int cnt = 0;
 	
-	private static Log log = LogFactory.getLog(EditTextFile.class);
+	private static final Log log = LogFactory.getLog(EditTextFile.class);
 
 	/**
 	 * 

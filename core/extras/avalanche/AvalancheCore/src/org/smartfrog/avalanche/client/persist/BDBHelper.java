@@ -25,6 +25,9 @@ import com.sleepycat.je.LockMode;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 /**
  * Helper class to create BDB database in given location. 
  * The created database is enabled to store java objects directly. 
@@ -35,9 +38,10 @@ import java.io.UnsupportedEncodingException;
 public class BDBHelper {
 	private Environment env ;
 	private static StoredClassCatalog classCatalog ;
-	private Database database ; 
+	private Database database ;
+    private LogSF log = LogFactory.getLog(this.getClass().toString());
 
-	/**
+    /**
 	 * Creates or opens Berkeley DB in dbHome directory. 
 	 * @param avalancheHome
 	 * @throws DatabaseException
@@ -73,27 +77,27 @@ public class BDBHelper {
 	 * @param key
 	 * @param value
 	 * @throws DatabaseException
-	 */
-	public void put(String key, Object value) throws DatabaseException{
-	    // Create the binding
-	    EntryBinding dataBinding = new SerialBinding(classCatalog, 
-	                                                 value.getClass());
+     */
+    public void put(String key, Object value) throws DatabaseException {
+        // Create the binding
+        EntryBinding dataBinding = new SerialBinding(classCatalog,
+                value.getClass());
 
-	    // Create the DatabaseEntry for the key
-	    try{
-	    		DatabaseEntry theKey = new DatabaseEntry(key.getBytes("UTF-8"));
+        // Create the DatabaseEntry for the key
+        try {
+            DatabaseEntry theKey = new DatabaseEntry(key.getBytes("UTF-8"));
 
-		    // Create the DatabaseEntry for the data. Use the EntryBinding object
-		    // that was just created to populate the DatabaseEntry
-		    DatabaseEntry theData = new DatabaseEntry();
-		    dataBinding.objectToEntry(value, theData);
-	
-	    		database.put(null, theKey, theData);		
-	    }catch(UnsupportedEncodingException e){
-    		// shouldnt 
-	    		e.printStackTrace();
-	    }
-	}
+            // Create the DatabaseEntry for the data. Use the EntryBinding object
+            // that was just created to populate the DatabaseEntry
+            DatabaseEntry theData = new DatabaseEntry();
+            dataBinding.objectToEntry(value, theData);
+
+            database.put(null, theKey, theData);
+        } catch (UnsupportedEncodingException e) {
+            // shouldnt
+            log.error(e);
+        }
+    }
 	/**
 	 * Retrieves an object from database identified by key. 
 	 * @param key
@@ -117,7 +121,7 @@ public class BDBHelper {
 		    // the EntryBinding created above
 		    value = dataBinding.entryToObject(theData);
 	    }catch(UnsupportedEncodingException e){
-	    		e.printStackTrace();
+            log.error(e);
 	    }
 	    return value; 
 	}
@@ -133,7 +137,7 @@ public class BDBHelper {
 		    database.delete(null, theKey);
 	
 	    }catch(UnsupportedEncodingException e){
-	    		e.printStackTrace();
+            log.error(e);
 	    }
 	}
 	/**

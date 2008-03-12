@@ -41,7 +41,7 @@ public class UndeployFrmTomcat {
 	private String tomcatDir = null;
 	private String version = null;
 	
-	private static Log log = LogFactory.getLog(UndeployFrmTomcat.class);
+	private static final Log log = LogFactory.getLog(UndeployFrmTomcat.class);
 
 	/**
 	 * 
@@ -102,7 +102,7 @@ public class UndeployFrmTomcat {
 		} catch(IOException ioe) {
 			log.error("Error in deleting directory " + dirName);
 			log.error("Failed to undeploy " + webAppName);
-			throw new WSCoreException(ioe.toString());
+			throw new WSCoreException(ioe.toString(),ioe);
 		} 
 		log.info("Successfully undeployed " + webAppName);
 	}

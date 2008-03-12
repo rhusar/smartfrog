@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Hashtable;
@@ -70,7 +71,7 @@ public class SFDeployToTomcat extends PrimImpl implements Prim {
 	
 	private Hashtable connAttrs, valveAttrs;
 	boolean shouldTerminate = true;
-	private static Log log = LogFactory.getLog(SFDeployToTomcat.class);
+	private static final Log log = LogFactory.getLog(SFDeployToTomcat.class);
 
 	/**
 	 * @throws java.rmi.RemoteException
@@ -89,9 +90,9 @@ public class SFDeployToTomcat extends PrimImpl implements Prim {
 		try {
 			// mandatory attributes
 			globusLocation = 
-				(String)sfResolve(GLOBUS_LOCATION, globusLocation, true);
-			tomcatDir = (String)sfResolve(TOMCAT_DIR, tomcatDir, true);
-			tomcatVersion = (String)sfResolve(TOMCAT_VER, tomcatVersion, true);
+				sfResolve(GLOBUS_LOCATION, globusLocation, true);
+			tomcatDir = sfResolve(TOMCAT_DIR, tomcatDir, true);
+			tomcatVersion = sfResolve(TOMCAT_VER, tomcatVersion, true);
 			
 			// optional attributes
 			readOptionalAttributes();
@@ -111,21 +112,18 @@ public class SFDeployToTomcat extends PrimImpl implements Prim {
 			props = new Properties();
 			props.setProperty((String)webAppName.get(0), (String)webAppName.get(1));
 		}
-		
-		try {
-			sfLog().info("Starting deploying application in tomcat ...");
-			wscore.deployIntoTomcat(target, props);
-		
-		sfLog().info("Finished deploying application in tomcat.");
-		
-		sfLog().info("Configuring the deployment...");
-		
-			wscore.editXMLFiles(tomcatVersion, connAttrs, valveAttrs);
-		} catch (WSCoreException tce) {
-			sfLog().info("WSCoreException : " + tce);
-			throw new SmartFrogException(tce.toString());
-		}
-		sfLog().info("Tomcat XML files configured.");
+
+        try {
+            sfLog().info("Starting deploying application in tomcat ...");
+            wscore.deployIntoTomcat(target, props);
+            sfLog().info("Finished deploying application in tomcat.");
+            sfLog().info("Configuring the deployment...");
+            wscore.editXMLFiles(tomcatVersion, connAttrs, valveAttrs);
+        } catch (WSCoreException tce) {
+            sfLog().info("WSCoreException : " + tce);
+            throw new SmartFrogException(tce.toString(),tce);
+        }
+        sfLog().info("Tomcat XML files configured.");
 		
 		
 /*            log.info("Normal termination :" + sfCompleteNameSafe());
@@ -135,55 +133,50 @@ public class SFDeployToTomcat extends PrimImpl implements Prim {
             terminator.start();
             */
 			if (shouldTerminate) {
-				TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
-				sfTerminate(tr);
-			}			
+                new ComponentHelper(this).targetForTermination();
+			}
 	}	
 
-	public synchronized void sfTerminateWith(TerminationRecord status) {
-		super.sfTerminateWith(status);
-	}
-	
 	private void readOptionalAttributes() throws SmartFrogException, RemoteException{
-		target = (String)sfResolve(TARGET, target, false);
-		webAppName = (Vector)sfResolve(WEBAPPNAME, webAppName, false);
+		target = sfResolve(TARGET, target, false);
+		webAppName = sfResolve(WEBAPPNAME, webAppName, false);
 		
-		connClassName = (Vector)sfResolve(CONN_CLASS, connClassName, false);
+		connClassName = sfResolve(CONN_CLASS, connClassName, false);
 		connAttrs.put(
 				(String)connClassName.get(0), (String)connClassName.get(1));
 		
-		port = (Vector)sfResolve(PORT, port, false);
+		port = sfResolve(PORT, port, false);
 		connAttrs.put((String)port.get(0), (String)port.get(1));
 		
-		maxThreads = (Vector)sfResolve(MAXTHREADS, maxThreads, false);
+		maxThreads = sfResolve(MAXTHREADS, maxThreads, false);
 		connAttrs.put((String)maxThreads.get(0), (String)maxThreads.get(1));
 		
 		minSpareThreads = 
-			(Vector)sfResolve(MIN_SPARETHREADS, minSpareThreads, false);
+			sfResolve(MIN_SPARETHREADS, minSpareThreads, false);
 		connAttrs.put(
 				(String)minSpareThreads.get(0), (String)minSpareThreads.get(1));
 		
-		autoFlush = (Vector)sfResolve(AUTOFLUSH, autoFlush, false);
+		autoFlush = sfResolve(AUTOFLUSH, autoFlush, false);
 		connAttrs.put((String)autoFlush.get(0), (String)autoFlush.get(1));
 		
 		disableUploadTimeout = 
-			(Vector)sfResolve(DISABLE_UPLDTIMEOUT, disableUploadTimeout, false);
+			 sfResolve(DISABLE_UPLDTIMEOUT, disableUploadTimeout, false);
 		connAttrs.put(
 				(String)disableUploadTimeout.get(0), (String)disableUploadTimeout.get(1));
 			
-		scheme = (Vector)sfResolve(SCHEME, scheme, false);
+		scheme =  sfResolve(SCHEME, scheme, false);
 		connAttrs.put((String)scheme.get(0), (String)scheme.get(1));
 		
-		enableLookups = (Vector)sfResolve(ENABLE_LOOKUPS, enableLookups, false);
+		enableLookups =  sfResolve(ENABLE_LOOKUPS, enableLookups, false);
 		connAttrs.put((String)enableLookups.get(0), (String)enableLookups.get(1));
 		
-		acceptCounts = (Vector)sfResolve(ACCEPT_COUNTS, acceptCounts, false);
+		acceptCounts =  sfResolve(ACCEPT_COUNTS, acceptCounts, false);
 		connAttrs.put((String)acceptCounts.get(0), (String)acceptCounts.get(1));
 		
-		debug = (Vector)sfResolve(DEBUG, debug, false);
+		debug = sfResolve(DEBUG, debug, false);
 		connAttrs.put((String)debug.get(0), (String)debug.get(1));
 		
-		valveClassName = (Vector)sfResolve(VALVE_CLASS, valveClassName, false);
+		valveClassName = sfResolve(VALVE_CLASS, valveClassName, false);
 		valveAttrs.put((String)valveClassName.get(0), (String)valveClassName.get(1));
 		
 		shouldTerminate = sfResolve(SHDTERMINATE, true, false);

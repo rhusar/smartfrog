@@ -17,6 +17,7 @@ import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 import java.net.InetAddress;
@@ -24,37 +25,30 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 
 public class AvlXMPPListener extends XmppListenerImpl {
+    private String hostname;
+
     public AvlXMPPListener() throws RemoteException {
         super();
     }
+
+
+
 
     /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-
-        // set the login and password
-        String strHostname;
-        try {
-            strHostname = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            throw new SmartFrogException("Stupid me, I don't know my own hostname!");
-        }
-        this.setLogin(strHostname);
-        this.setPassword(strHostname);
-
         super.sfStart();
 
         sfLog().info("AvlXMPPListener started.");
 
         // send a notification to the avalanche server that the host started
         XMPPEventExtension ext = new XMPPEventExtension();
-        ext.setHost(strHostname);
+        ext.setHost(hostname);
         ext.setInstanceName("None");
         ext.setLastAction("None");
         ext.setMessageType(MonitoringConstants.HOST_STARTED);
@@ -63,10 +57,33 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setModuleId("None");
         ext.setModuleState("None");
 
-        if (!sendMessage("avl@" + this.getServer(), "None", "AE", ext))
+        if (!sendMessage("avl@" + getServer(), "None", "AE", ext))
             sfLog().error("Error sending packet.");
     }
 
+    /**
+     * Determine the local hostname. If there is more than one port,
+     * we use the network card that RMI is running on
+     * @throws SmartFrogException failure to determine our hostname
+     */
+    private void determineHostname() throws SmartFrogException {
+        InetAddress localhost = SFProcess.sfDeployedHost();
+        hostname = localhost.getHostName();
+    }
+
+
+    /**
+     * Some classes may override this
+     *
+     * @throws SmartFrogException resolution problems
+     * @throws RemoteException    network problems
+     */
+    @Override
+    protected void readLoginAndPassword() throws SmartFrogException, RemoteException {
+
+        setLogin(hostname);
+        setPassword(hostname);
+    }
 
     /**
      * Called after instantiation for deployment purposes. Heart monitor is
@@ -75,30 +92,24 @@ public class AvlXMPPListener extends XmppListenerImpl {
      * behavior.
      * Attributees that require injection are handled during sfDeploy().
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
         sfLog().info("AvlXMPPListener deployed.");
+        determineHostname();
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
-     *
+     * Send a message out when we are terminating
      * @param status termination status
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
-        // notify the avlanache server
+        // notify the avalanche server
         XMPPEventExtension ext = new XMPPEventExtension();
-        try {
-            ext.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            ext.setHost("Stupid me, I don't know my own hostname!");
-        }
+        ext.setHost(hostname);
         ext.setInstanceName("None");
         ext.setLastAction("None");
         ext.setMessageType(MonitoringConstants.HOST_STARTED);
@@ -107,7 +118,7 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setModuleId("None");
         ext.setModuleState("None");
 
-        sendMessage("avl@" + this.getServer(), "None", "AE", ext);
+        sendMessage("avl@" +  getServer(), "None", "AE", ext);
 
         super.sfTerminateWith(status);
     }

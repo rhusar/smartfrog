@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
 
 public class XbeanUtils {
 	
-	private static Log log = LogFactory.getLog(XbeanUtils.class);	
+	private static final Log log = LogFactory.getLog(XbeanUtils.class);	
 	
 	public XbeanUtils() {
 		super();

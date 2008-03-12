@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -40,7 +41,7 @@ public class SFJavaWSCore extends PrimImpl implements Prim {
 	
 	private String globusLocation, buildFile;
 	boolean shouldTerminate = true;
-	private static Log log = LogFactory.getLog(SFJavaWSCore.class);
+	private static final Log log = LogFactory.getLog(SFJavaWSCore.class);
 
 	/**
 	 * @throws java.rmi.RemoteException
@@ -54,8 +55,8 @@ public class SFJavaWSCore extends PrimImpl implements Prim {
 		try {
 			// mandatory attributes
 			globusLocation = 
-				(String)sfResolve(GLOBUS_LOCATION, globusLocation, true);
-			buildFile = (String)sfResolve(BUILDFILE, buildFile, true);
+				sfResolve(GLOBUS_LOCATION, globusLocation, true);
+			buildFile = sfResolve(BUILDFILE, buildFile, true);
 			
 			// optional attribute
 			shouldTerminate = sfResolve(SHDTERMINATE, true, false);
@@ -84,23 +85,12 @@ public class SFJavaWSCore extends PrimImpl implements Prim {
 			wscore.buildFromSource(null);	
 		} catch (WSCoreException be) {
 			sfLog().info("Failed to build GT4 WSCore");
-			throw new SmartFrogException("Build Failed : " + be.toString());			
+			throw new SmartFrogException("Build Failed : " + be.toString(),be);
 		}		
 		sfLog().info("Finished GT4 WSCore build from sources");
-		log.info("Normal termination :" + sfCompleteNameSafe());
-		/*TerminationRecord termR = new TerminationRecord("normal", 
-	            		"Installed Java WS Core : ",sfCompleteName());
-	      TerminatorThread terminator = new TerminatorThread(this,termR);
-	      terminator.start();
-	      */
-	        	    
-	    // terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
-		sfTerminate(tr);
-	}	
-
-	public synchronized void sfTerminateWith(TerminationRecord status) {
-		super.sfTerminateWith(status);
+        log.info("Normal termination :" + sfCompleteNameSafe());
+        new ComponentHelper(this).targetForTermination();
 	}
+
 
 }
