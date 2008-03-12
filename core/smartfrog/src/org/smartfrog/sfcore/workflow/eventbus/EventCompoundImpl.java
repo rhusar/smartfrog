@@ -20,24 +20,26 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.workflow.eventbus;
 
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.NoSuchElementException;
-
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.Vector;
 
 
 /**
@@ -48,8 +50,8 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  */
 public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, EventCompound {
-    private static Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
-    private static Reference sendRef = new Reference(ATTR_SEND_TO);
+    private static final Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
+    private static final Reference sendRef = new Reference(ATTR_SEND_TO);
     private Vector<EventRegistration> receiveFrom = new Vector<EventRegistration>();
     private Vector<EventSink> sendTo = new Vector<EventSink>();
 
@@ -100,14 +102,14 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
           // New WF notation
           // Delays any child component deployment
           try { // if an exception is thrown in the super call - the termination is already handled
-              Context childCtx= new ContextImpl();
-              for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+              Context childCtx = new ContextImpl();
+              for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
                   Object key = e.nextElement();
                   Object elem = sfContext.get(key);
-                  if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
+                  if ((elem instanceof ComponentDescription) && (((ComponentDescription) elem).getEager())) {
                       childCtx.sfAddAttribute(key, elem);
                       if (action == null) {
-                          action = (ComponentDescription)elem;
+                          action = (ComponentDescription) elem;
                       }
                   }
               }
@@ -213,7 +215,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         ComponentDescription sends = (ComponentDescription) sfResolve(sendRef,false);
         if (sends != null) {
             Context scxt = sends.sfContext();
-
             for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
                 Object k = e.nextElement();
                 Reference l = (Reference) scxt.get(k);
