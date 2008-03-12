@@ -54,6 +54,6 @@
   <dependency org="java"
     name="jna"
     rev="${jna.version}"
-    conf="compile,runtime->default"/>
+    conf="compile,redist->default"/>
   </dependencies>
 </ivy-module>

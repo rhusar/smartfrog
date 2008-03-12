@@ -18,5 +18,10 @@
       <artifactId>sf-xmpp</artifactId>
       <version>${smartfrog.version}</version>
     </dependency>
+      <dependency>
+        <groupId>java</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
   </dependencies>
 </project>
