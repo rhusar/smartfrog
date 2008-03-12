@@ -310,8 +310,7 @@ public class XmppListenerImpl extends AbstractXmppPrim implements XmppListener,
         if (ext != null) {
             message.addExtension(ext);
         }
-        if (sendMessage(message)) return true;
-        return false;
+        return sendMessage(message);
     }
 
     /**

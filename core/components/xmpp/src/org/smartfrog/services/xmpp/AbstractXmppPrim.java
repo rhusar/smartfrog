@@ -25,6 +25,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
@@ -57,12 +58,7 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         super.sfStart();
         server = sfResolve(ATTR_SERVER, server, true);
         serviceName = sfResolve(ATTR_SERVICE_NAME, server, true);
-        if (login == null) {
-            login = sfResolve(ATTR_LOGIN, login, true);
-        }
-        if (password == null) {
-            password = sfResolve(ATTR_PASSWORD, password, true);
-        }
+        readLoginAndPassword();
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
@@ -70,6 +66,20 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         status = sfResolve(ATTR_STATUS, "", true);
         subscriptionMode = sfResolve(ATTR_SUBSCRIPTION_MODE, 0, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
+    }
+
+    /**
+     * Some classes may override this
+     * @throws SmartFrogException resolution problems
+     * @throws RemoteException network problems
+     */
+    protected void readLoginAndPassword() throws SmartFrogException, RemoteException {
+        if (login == null) {
+            login = sfResolve(ATTR_LOGIN, login, true);
+        }
+        if (password == null) {
+            password = sfResolve(ATTR_PASSWORD, password, true);
+        }
     }
 
 
