@@ -30,8 +30,8 @@ import java.io.InputStreamReader;
  * This class redirect InputStream to System.out.
  */
 public class StreamGobbler extends Thread {
-    InputStream is;
-    boolean out = true;
+    private InputStream is;
+    private boolean out = true;
 
     /**
      * Constructs StreamGobbler with the input stream and type of stream
@@ -40,7 +40,7 @@ public class StreamGobbler extends Thread {
      * @param typeS Type of the stream
      */
     public StreamGobbler(InputStream is, String typeS) {
-        this.setName("StreamGobbler("+typeS+")");
+        setName("StreamGobbler("+typeS+")");
         this.is = is;
 
         if (typeS.equals("err")) {
@@ -56,7 +56,7 @@ public class StreamGobbler extends Thread {
         try {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
-            String line = null;
+            String line ;
 
             while ((line = br.readLine()) != null) {
                 if (out) {
