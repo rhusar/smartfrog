@@ -31,28 +31,33 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 */
 package org.smartfrog.services.vmware;
 
+import com.sun.jna.ptr.IntByReference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.filesystem.FileSystem;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.sun.jna.ptr.IntByReference;
 
 public class VMWareImageModule {
     /**
      * The path to the vmware image file.
      */
-    private String  strImagePath    = "";
+    private String imagePath = "";
 
     /**
      * Reference to the communicator class
      */
     private VMWareCommunicator vmComm = null;
 
-    private String  strGuestOSUser = "";
-    private String  strGuestOSPasswd = "";
+    private String guestOSUser = "";
+    private String guestOSPasswd = "";
 
     /**
      * The vmware handle of this image.
@@ -65,17 +70,16 @@ public class VMWareImageModule {
      * @param inComm Reference to the vmware communicator class.
      */
     private VMWareImageModule(String inImagePath, VMWareCommunicator inComm) {
-        this.strImagePath   = inImagePath;
-        this.vmComm         = inComm;
+        imagePath = inImagePath;
+        vmComm = inComm;
     }
 
     /**
      * Gets the path to the .vmx image file.
      * @return the path
      */
-    public String getVMPath()
-    {
-        return strImagePath;
+    public String getVMPath() {
+        return imagePath;
     }
 
     /**
@@ -83,7 +87,7 @@ public class VMWareImageModule {
      * @return The vm handle.
      */
     public IntByReference getVMHandle() {
-        return this.iVMHandle;
+        return iVMHandle;
     }
 
     /**
@@ -91,7 +95,7 @@ public class VMWareImageModule {
      * @return The user name for the guest OS.
      */
     public String getGuestOSUser() {
-        return strGuestOSUser;
+        return guestOSUser;
     }
 
     /**
@@ -99,7 +103,7 @@ public class VMWareImageModule {
      * @param strGuestOSUser The user name for the guest OS.
      */
     public void setGuestOSUser(String strGuestOSUser) {
-        this.strGuestOSUser = strGuestOSUser;
+        guestOSUser = strGuestOSUser;
     }
 
     /**
@@ -107,7 +111,7 @@ public class VMWareImageModule {
      * @return The user password for the guest OS.
      */
     public String getGuestOSPasswd() {
-        return strGuestOSPasswd;
+        return guestOSPasswd;
     }
 
     /**
@@ -115,7 +119,7 @@ public class VMWareImageModule {
      * @param strGuestOSPasswd The user password for the guest OS.
      */
     public void setGuestOSPasswd(String strGuestOSPasswd) {
-        this.strGuestOSPasswd = strGuestOSPasswd;
+        guestOSPasswd = strGuestOSPasswd;
     }
 
     /**
@@ -128,8 +132,7 @@ public class VMWareImageModule {
     {
         // validate the path
         File file = new File(inImagePath);
-        if (file.exists() && file.getName().endsWith(".vmx"))
-        {
+        if (file.exists() && file.getName().endsWith(".vmx")) {
             return new VMWareImageModule(inImagePath, inComm);
         }
 
@@ -142,7 +145,7 @@ public class VMWareImageModule {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public int getPowerState() throws SmartFrogException {
-        return this.vmComm.getPowerState(this);
+        return vmComm.getPowerState(this);
     }
 
     /**
@@ -151,7 +154,7 @@ public class VMWareImageModule {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public int getToolsState() throws SmartFrogException {
-        return this.vmComm.getToolsState(this);
+        return vmComm.getToolsState(this);
     }
 
     /**
@@ -159,7 +162,7 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void startUp() throws SmartFrogException {
-        this.vmComm.startVM(this);
+        vmComm.startVM(this);
     }
 
     /**
@@ -167,7 +170,7 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void shutDown() throws SmartFrogException {
-        this.vmComm.stopVM(this);
+        vmComm.stopVM(this);
     }
 
     /**
@@ -175,7 +178,7 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void suspend() throws SmartFrogException {
-        this.vmComm.suspendVM(this);
+        vmComm.suspendVM(this);
     }
 
     /**
@@ -183,7 +186,7 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void reset() throws SmartFrogException {
-        this.vmComm.resetVM(this);
+        vmComm.resetVM(this);
     }
 
     /**
@@ -191,7 +194,7 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void registerVM() throws SmartFrogException {
-        this.vmComm.registerVM(this);
+        vmComm.registerVM(this);
     }
 
     /**
@@ -199,7 +202,7 @@ public class VMWareImageModule {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public void unregisterVM() throws SmartFrogException {
-        this.vmComm.unregisterVM(this);
+        vmComm.unregisterVM(this);
     }
 
     /**
@@ -210,10 +213,11 @@ public class VMWareImageModule {
      */
     public String getAttribute(final String inKey) throws SmartFrogException
     {
+        BufferedReader reader=null;
         try {
             // open the .vmx file
-            File vmxFile = new File(this.strImagePath);
-            BufferedReader reader = new BufferedReader(new FileReader(vmxFile));
+            File vmxFile = new File(this.imagePath);
+            reader = new BufferedReader(new FileReader(vmxFile));
 
             // create pattern
             Pattern pattern = Pattern.compile("^\\s*" + Matcher.quoteReplacement(inKey) + "\\s*=\\s*\"(.*)\"\\s*$");
@@ -230,35 +234,37 @@ public class VMWareImageModule {
                 }
             }
 
-            reader.close();
-
             // attribute not found
             return "";
         } catch (IOException e) {
             throw new SmartFrogException("Error while getting attribute.", e);
+        } finally {
+            FileSystem.close(reader);
         }
     }
 
     /**
      * Sets the given attribute to the given value. NOTE: Setting non-existing values will have no effect and won't cause errors.
-     * @param inKey
-     * @param inValue
+     * @param inKey key
+     * @param inValue value
      * @return Returns "success" or an error message.
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException on a filure to set
      */
     public String setAttribute(final String inKey, final String inValue) throws SmartFrogException
     {
+        BufferedReader reader = null;
+        BufferedWriter writer=null;
         try {
             // the old value of the attribute, if it existed before
             String strOldVal = "";
 
             // open the .vmx file to read from
-            File vmxFile = new File(this.strImagePath);
-            BufferedReader reader = new BufferedReader(new FileReader(vmxFile));
+            File vmxFile = new File(imagePath);
+            reader = new BufferedReader(new FileReader(vmxFile));
 
             // create a new file to write to
             File newFile = new File(vmxFile.getAbsolutePath() + "_new");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
+            writer = new BufferedWriter(new FileWriter(newFile));
 
             // prepare the pattern
             Pattern pattern = Pattern.compile("^\\s*" + Matcher.quoteReplacement(inKey) + "\\s*=\\s*\"(.*)\"\\s*$");
@@ -292,9 +298,11 @@ public class VMWareImageModule {
 
             // close the new file
             writer.close();
+            writer=null;
 
             // close and delete the old file
             reader.close();
+            reader=null;
             vmxFile.delete();
 
             // rename the new file
@@ -303,6 +311,9 @@ public class VMWareImageModule {
             return strOldVal;
         } catch (IOException e) {
             throw new SmartFrogException("Error while setting attribute.", e);
+        } finally {
+            FileSystem.close(reader);
+            FileSystem.close(writer);
         }
     }
 
@@ -314,41 +325,49 @@ public class VMWareImageModule {
     public void delete() throws SmartFrogException
     {
         try {
-            // get the power state
-            int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
-            try {
-                iPowerState = this.getPowerState();
-            } catch (VIXException e) {
-                // ignore the file not found exception which will be thrown if
-                // virtual machine has not been registered with the vmware server
-                if (e.getErrorCode() != VMWareVixLibrary.VixError.VIX_E_FILE_NOT_FOUND)
-                    throw e;
-            }
-
-            // shut down the vm if it's not powered off or suspended
-            if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
-                iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
-                this.shutDown();
-
-            // unregister the vm
-            this.unregisterVM();
+            shutDownAndUnregister();
 
             // get the folder of the virtual machine
-            File folder = (new File(this.strImagePath)).getParentFile();
+            File folder = (new File(imagePath)).getParentFile();
 
             // get the files in this folder and delete them
             File[] files = folder.listFiles();
             for (File curFile : files)
-                if (!curFile.delete())
+                if (!curFile.delete()) {
                     throw new SmartFrogException("Could not delete \"" + curFile.getAbsolutePath() + "\"");
+                }
 
             // delete the folder
-            if (!folder.delete())
+            if (!folder.delete()) {
                 throw new SmartFrogException("Could not delete \"" + folder.getAbsolutePath() + "\"");
+            }
 
         } catch (SmartFrogException e) {
-            throw new SmartFrogException(this.strImagePath + ": Failed to delete.", e);
+            throw new SmartFrogException(imagePath + ": Failed to delete.", e);
         }
+    }
+
+    private void shutDownAndUnregister() throws SmartFrogException {
+        // get the power state
+        int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
+        try {
+            iPowerState = getPowerState();
+        } catch (VIXException e) {
+            // ignore the file not found exception which will be thrown if
+            // virtual machine has not been registered with the vmware server
+            if (e.getErrorCode() != VMWareVixLibrary.VixError.VIX_E_FILE_NOT_FOUND) {
+                throw e;
+            }
+        }
+
+        // shut down the vm if it's not powered off or suspended
+        if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
+            iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED) {
+            shutDown();
+        }
+
+        // unregister the vm
+        unregisterVM();
     }
 
     /**
@@ -358,28 +377,11 @@ public class VMWareImageModule {
      */
     public void rename(String inNewName) throws SmartFrogException
     {
-        if (inNewName.equals(""))
+        if (inNewName.length() == 0)
             throw new SmartFrogException("An empty string is not a valid name.");
 
         try {
-            // get the power state
-            int iPowerState = VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF;
-            try {
-                iPowerState = this.getPowerState();
-            } catch (VIXException e) {
-                // ignore the file not found exception which will be thrown if
-                // virtual machine has not been registered with the vmware server
-                if (e.getErrorCode() != VMWareVixLibrary.VixError.VIX_E_FILE_NOT_FOUND)
-                    throw e;
-            }
-
-            // shut down the vm if it's not powered off or suspended
-            if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
-                iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED)
-                this.shutDown();
-
-            // unregister the vm
-            this.unregisterVM();
+            shutDownAndUnregister();
 
             // just rename the folder of the virtual machine and change the display name
             // the reason for this are the virtual machine disks: there is little to
@@ -388,9 +390,9 @@ public class VMWareImageModule {
             // to the data
 
             // set the display name
-            this.setAttribute("displayName", inNewName);
+            setAttribute("displayName", inNewName);
 
-            File vmxFile = new File(strImagePath);
+            File vmxFile = new File(imagePath);
             File vmFolder = vmxFile.getParentFile();
 
             // set the execution rights
@@ -403,13 +405,13 @@ public class VMWareImageModule {
             vmFolder.renameTo(new File(vmFolder.getParent() + File.separator + inNewName));
 
             // refresh the path to this vm
-            this.strImagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
+            imagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
 
             // register the vm again
-            this.registerVM();
+            registerVM();
 
         } catch (Exception e) {
-            throw new SmartFrogException(this.strImagePath + ": Failed to rename.", e);
+            throw new SmartFrogException(imagePath + ": Failed to rename.", e);
         }
     }
 
@@ -420,9 +422,10 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void copyFileFromHostToGuestOS(String inSourceFile, String inTargetFile) throws SmartFrogException {
-        if (this.strGuestOSUser.equals(""))
-            throw new SmartFrogException(this.strImagePath + ": Username required for copying files from host to guest OS.");
+        if (guestOSUser.length() == 0) {
+            throw new SmartFrogException(imagePath + ": Username required for copying files from host to guest OS.");
+        }
 
-        this.vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
+        vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
     }
 }
