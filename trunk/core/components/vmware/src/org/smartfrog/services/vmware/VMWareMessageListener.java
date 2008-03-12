@@ -85,9 +85,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      * behavior.
      * Attributees that require injection are handled during sfDeploy().
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -98,9 +97,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
      public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -143,6 +141,10 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         return new VMWareMessageFilter();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param packet packet to process
+     */
     public void processPacket(Packet packet) {
         sfLog().info("VMWare Message Listener: Received packet: " + packet);
         // get the extension
@@ -153,8 +155,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
             String command = ext.getPropertyBag().get("vmcmd");
             String strPath = ext.getPropertyBag().get(VMPATH);
 
-            if (command != null)
-            {
+            if (command != null) {
                 // extension for the response message
                 XMPPEventExtension response = new XMPPEventExtension();
 
@@ -171,29 +172,23 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                 response.getPropertyBag().put(VMPATH, strPath);
 
                 try {
-                    if (command.equals("start"))
-                    {
+                    if (command.equals("start")) {
                         // attempt to start the machine
                         response.getPropertyBag().put(VMRESPONSE, manager.startVM(strPath));
                     }
-                    else if (command.equals("stop"))
-                    {
+                    else if (command.equals("stop")) {
                         response.getPropertyBag().put(VMRESPONSE, manager.shutDownVM(strPath));
                     }
-                    else if (command.equals("suspend"))
-                    {
+                    else if (command.equals("suspend")) {
                         response.getPropertyBag().put(VMRESPONSE, manager.suspendVM(strPath));
                     }
-                    else if (command.equals("reset"))
-                    {
+                    else if (command.equals("reset")) {
                         response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strPath));
                     }
-                    else if (command.equals("list"))
-                    {
+                    else if (command.equals("list")) {
                         response.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
                     }
-                    else if (command.equals("powerstate"))
-                    {
+                    else if (command.equals("powerstate")) {
                         int iState = manager.getPowerState(strPath);
                         String strResponse = "";
 
@@ -238,7 +233,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             strResponse += "Blocked on message. ";
                         }
 
-                        if (strResponse.equals(""))
+                        if (strResponse.length() == 0)
                             strResponse = "Could not retrieve power state.";
 
                         response.getPropertyBag().put(VMRESPONSE, strResponse);
@@ -261,19 +256,16 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                                 break;
                         }
                     }
-                    else if (command.equals("create"))
-                    {
+                    else if (command.equals("create")) {
                         // create a vmware from a master model
                         response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath));
                         response.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath + File.separator + strPath + ".vmx");
                     }
-                    else if (command.equals("delete"))
-                    {
+                    else if (command.equals("delete")) {
                         // delete a vmware
                         response.getPropertyBag().put(VMRESPONSE, manager.deleteCopy(strPath));
                     }
-                    else if (command.equals("getmasters"))
-                    {
+                    else if (command.equals("getmasters")) {
                         // list the master copies
                         response.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
                     }

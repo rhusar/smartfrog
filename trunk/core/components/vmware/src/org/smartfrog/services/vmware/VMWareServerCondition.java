@@ -32,13 +32,12 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 package org.smartfrog.services.vmware;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
-import java.io.IOException;
 import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * Checks whether vmware server is installed on the machine.
@@ -64,11 +63,11 @@ public class VMWareServerCondition extends PrimImpl implements Condition {
     public boolean evaluate() throws RemoteException, SmartFrogException {
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             // get the windows directory
-            String strWinDir = System.getenv("windir");
-            sfLog().error("windir: " + strWinDir);
+            String winDir = System.getenv("windir");
+            sfLog().error("windir: " + winDir);
             
             // check for the existance of "vmx86.sys"
-            File file = new File(strWinDir + File.separator + "system32" + File.separator + "drivers" + File.separator + "vmx86.sys");
+            File file = new File(winDir + File.separator + "system32" + File.separator + "drivers" + File.separator + "vmx86.sys");
             return file.exists();
         } else {
             // check if "/etc/init.d/vmware" exists
