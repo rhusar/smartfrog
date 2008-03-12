@@ -67,7 +67,7 @@ public abstract class ConfigurationAction {
               } catch (Throwable ex) {
                 //keep trying
                 thr = ex;
-                if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Fail to locate target host: "+ host, ex); }  
+                if (SFSystem.sfLog().isDebugEnabled()) { SFSystem.sfLog().debug("Failed to locate target host: "+ host, ex); }
               }
             }
             if ((thr!=null)) {   //Throw the last exception
