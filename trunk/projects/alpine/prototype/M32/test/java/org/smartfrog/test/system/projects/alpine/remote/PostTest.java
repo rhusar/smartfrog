@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PostTest extends RemoteTestBase {
 
-    Log log= LogFactory.getLog(PostTest.class);
+    private static final Log log= LogFactory.getLog(PostTest.class);
 
     public PostTest(String name) {
         super(name);

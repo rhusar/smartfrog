@@ -40,7 +40,7 @@ public class HttpTransportFault extends ClientException {
     private String response;
 
 
-    private static Log log = LogFactory.getLog(HttpTransmitter.class);
+    private static final Log log = LogFactory.getLog(HttpTransmitter.class);
 
     public HttpTransportFault(String destination, HttpMethod method) {
         super("Error when communicating with " + destination);

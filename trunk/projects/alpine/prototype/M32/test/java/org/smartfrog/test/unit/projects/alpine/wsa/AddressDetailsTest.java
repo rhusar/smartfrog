@@ -33,7 +33,7 @@ import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 public class AddressDetailsTest extends AddressingTestBase {
 
-    private Log log = LogFactory.getLog(AddressDetailsTest.class);
+    private static final Log log = LogFactory.getLog(AddressDetailsTest.class);
 
     public AddressDetailsTest(String name) {
         super(name);

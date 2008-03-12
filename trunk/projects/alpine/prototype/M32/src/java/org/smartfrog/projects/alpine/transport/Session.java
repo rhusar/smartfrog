@@ -48,7 +48,7 @@ public class Session {
      * {@value}
      */
     public static final String DEFAULT_ROLE = "Client";
-    private static Log log = LogFactory.getLog(Session.class);
+    private static final Log log = LogFactory.getLog(Session.class);
     /**
      * a queue for transmissions
      */

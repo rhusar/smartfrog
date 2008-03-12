@@ -9,8 +9,8 @@
   <display-name>Alpine</display-name>
   
   <servlet>
-    <servlet-name>AlpineServlet</servlet-name>
     <display-name>AlpineServlet</display-name>
+    <servlet-name>AlpineServlet</servlet-name>
     <servlet-class>
         org.smartfrog.projects.alpine.http.SoapPostServlet
     </servlet-class>

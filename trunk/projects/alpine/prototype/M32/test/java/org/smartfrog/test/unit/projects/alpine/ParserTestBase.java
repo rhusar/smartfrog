@@ -40,7 +40,7 @@ import java.io.IOException;
 public abstract class ParserTestBase extends TestCase implements Filenames {
 
 
-    protected Log log = LogFactory.getLog(this.getClass());
+    protected static final Log log = LogFactory.getLog(this.getClass());
     protected SoapMessageParser parser;
 
     /**
