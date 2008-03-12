@@ -180,7 +180,7 @@ public class TerminatorThread extends SmartFrogThread {
     }
 
     /**
-     * Run method used to trigger the terminatation of the component.
+     * Run method used to trigger the termination of the component.
      */
     public synchronized void execute() throws Throwable {
         if (shouldDetach && shouldTerminate && notifyParent) {
