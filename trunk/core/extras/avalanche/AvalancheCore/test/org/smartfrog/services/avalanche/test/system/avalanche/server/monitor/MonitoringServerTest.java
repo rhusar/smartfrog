@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server.monitor;
+package org.smartfrog.services.avalanche.test.system.avalanche.server.monitor;
 
 import junit.framework.TestCase;
 import org.smartfrog.avalanche.server.monitor.ModuleState;

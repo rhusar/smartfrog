@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server;
+package org.smartfrog.services.avalanche.test.system.avalanche.server;
 
 import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
@@ -93,7 +93,6 @@ public class AvalancheFactoryTest extends TestCase {
 		String passwd = "testPwd" ;
 		
 		HostManager hm = factory.getHostManager();
-		{
 			HostType host = hm.newHost(hostId) ;
 			host.setUser(user) ;
 			host.setPassword(passwd) ;
@@ -109,9 +108,9 @@ public class AvalancheFactoryTest extends TestCase {
 			arg.setValue("/usr/local/java") ;
 			
 			hm.setHost(host);
-		}
-		{
-			HostType host = hm.getHost(hostId) ;
+
+        //now do a lookup
+            host = hm.getHost(hostId) ;
 			// validate all the data we added 
 			assertNotNull(host);
 			assertEquals(host.getId(), hostId);
@@ -119,16 +118,11 @@ public class AvalancheFactoryTest extends TestCase {
 			assertEquals(host.getPassword(), passwd);
 			
 			System.out.println(host.xmlText());
-			
-		}
-		
-		{
-			// delete the module 
-			hm.removeHost(hostId);
-			HostType host = hm.getHost(hostId) ;
+			// delete the module
+			hm.removeHost(host);
+			host = hm.getHost(hostId) ;
 			// validate its not there anymore 
 			assertNull(host);
-		}
 		factory.close();
 	}
 
