@@ -122,7 +122,7 @@ public abstract class AsyncJdbcOperation extends AbstractJdbcOperation {
 
     /**
      * Override this to implement a new worker thread
-     * @return
+     * @return the worker thread
      */
     protected DatabaseThread createWorkerThread() {
         return new DatabaseThread();
