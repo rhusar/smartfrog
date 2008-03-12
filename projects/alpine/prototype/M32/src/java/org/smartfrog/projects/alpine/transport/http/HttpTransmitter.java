@@ -60,7 +60,7 @@ import java.io.OutputStream;
 
 public class HttpTransmitter {
 
-    private static Log log = LogFactory.getLog(HttpTransmitter.class);
+    private static final Log log = LogFactory.getLog(HttpTransmitter.class);
     private Transmission tx;
 
     private HttpClient httpclient;

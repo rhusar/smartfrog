@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SoapException extends AlpineRuntimeException implements SoapFaultSource {
 
-    private static Log log= LogFactory.getLog(SoapException.class);
+    private static final Log log= LogFactory.getLog(SoapException.class);
     private Fault fault;
 
     private String soapNamespace;

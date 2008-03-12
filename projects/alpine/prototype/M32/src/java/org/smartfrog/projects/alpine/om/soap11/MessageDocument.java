@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class MessageDocument extends Document implements ValidateXml {
 
-    private static Log log = LogFactory.getLog(MessageDocument.class);
+    private static final Log log = LogFactory.getLog(MessageDocument.class);
 
     public static final String ERROR_EMPTY_DOCUMENT = "Empty";
 

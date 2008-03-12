@@ -113,7 +113,7 @@ public class SoapPostServlet extends ServletBase {
 
     /**
      * Use wherever we dont want caching on an GET.
-     * @param response
+     * @param response response to patch
      */
     protected void turnOffCaching(HttpServletResponse response) {
         response.setHeader("Cache-Control","no-cache");
@@ -124,10 +124,10 @@ public class SoapPostServlet extends ServletBase {
     /**
      * Post handles SOAP requests
      *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param request incoming
+     * @param response outgoing
+     * @throws ServletException any servlet error
+     * @throws IOException IO problems
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
