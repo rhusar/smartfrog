@@ -47,7 +47,7 @@ public class DeployToTomcat {
 	private String tomcatDirectory = null;
 	private String webappName = null;
 	
-	private static Log log = LogFactory.getLog(DeployToTomcat.class);
+	private static final Log log = LogFactory.getLog(DeployToTomcat.class);
 	private AntUtils antRunner; 
 	
 	/**

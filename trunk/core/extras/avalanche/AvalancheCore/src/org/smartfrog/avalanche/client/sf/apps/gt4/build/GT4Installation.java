@@ -34,7 +34,7 @@ import java.io.File;
 public class GT4Installation extends CommonSteps {
 	private File globusLoc, installerDir;
 	private FileUtils fUtil = null;
-	private static Log log = LogFactory.getLog(GT4Installation.class);
+	private static final Log log = LogFactory.getLog(GT4Installation.class);
 
 	/**
 	 * 

@@ -30,7 +30,7 @@ public class CheckCommand {
 	BufferedReader cmdError = null;
 	BufferedReader cmdOutput = null;
 
-	private static Log log = LogFactory.getLog(CheckCommand.class);
+	private static final Log log = LogFactory.getLog(CheckCommand.class);
 
 	public CheckCommand() {
 		rt = Runtime.getRuntime();
@@ -58,7 +58,7 @@ public class CheckCommand {
 		//	System.out.println(cmd + " found in path");
 		} catch (IOException ioe) {
 			throw new IOException("Error occured while executing " + 
-					chkCmd);
+					chkCmd,ioe);
 		}
 		
 		//System.out.println("Exit value for " + cmd + " is :" + exitVal);

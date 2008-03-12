@@ -36,7 +36,7 @@ public class JavaWSCore {
 	private String globusLocation = null;
 	private String buildFile = null;
 	
-	private static Log log = LogFactory.getLog(JavaWSCore.class);
+	private static final Log log = LogFactory.getLog(JavaWSCore.class);
 	private AntUtils antRunner; 
 	
 	/**

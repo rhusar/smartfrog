@@ -39,7 +39,7 @@ public class Configure extends GT4Constants {
 	public String installerDir, globusLoc = null;
 	//private GT4Constants gt4Consts;
 	
-	private static Log log = LogFactory.getLog(Configure.class);
+	private static final Log log = LogFactory.getLog(Configure.class);
 	
 	/**
 	 * 

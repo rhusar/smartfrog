@@ -19,8 +19,11 @@ import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.xmpp.MonitoringConstants;
+import org.smartfrog.SFSystem;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -158,9 +161,10 @@ public class ServerSetup {
     public static void sendVMCommand(String inTargetMachine, String inVMPath, String inMasterVM, String inCmd)
     {
         XMPPEventExtension ext = new XMPPEventExtension();
+
         try {
-            ext.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
+            ext.setHost(SFProcess.sfDeployedHost().toString());
+        } catch (SmartFrogException e) {
             ext.setHost("");
         }
         ext.setMessageType(MonitoringConstants.VM_MESSAGE);
@@ -171,7 +175,7 @@ public class ServerSetup {
             ext.getPropertyBag().put("vmmasterpath", inMasterVM);
 
         try {
-            listenerAdapter.sendEvent(inTargetMachine + "@" + xmppServer, ext);
+            listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, ext);
         } catch (XMPPException e) {
             log.error(e.getMessage());
         }
@@ -253,7 +257,7 @@ public class ServerSetup {
             factory.getHostManager().addHandler(new HostUpdateRosterHandler(adminAdapter, listenerAdapter));            
 
             // Getting the most recent presence of host
-            this.updateHosts(this.getListenerAdapter().getRoster(), this.getFactory().getHostManager().listHosts());
+            updateHosts(getListenerAdapter().getRoster(), getFactory().getHostManager().listHosts());
 
             // TODO : Start Smartfrog on server if its not already running using avalancheHome
 
@@ -272,8 +276,8 @@ public class ServerSetup {
         boolean hostAvailable = false;
         Presence p = null;
         for (String hostName : hostList) {
-            p = buddylist.getPresence(hostName + "@" + this.getXmppServer());
-            hostAvailable = ((p != null) && (p.getType().equals(Presence.Type.AVAILABLE)));
+            p = buddylist.getPresence(hostName + "@" + getXmppServer());
+            hostAvailable = (p != null && Presence.Type.AVAILABLE.equals(p.getType()));
             updater.setMachineAvailability(hostName, hostAvailable);
         }
     }
@@ -303,8 +307,8 @@ public class ServerSetup {
 	public void shutdown() throws Exception {
         // Close the XMPP connections
         log.info("Closing the XMPP connections...");
-        this.getAdminAdapter().close();
-        this.getListenerAdapter().close();
+        getAdminAdapter().close();
+        getListenerAdapter().close();
 
         // Shutdown the rest of the machine
         log.info("Shutting down Avalanche...");

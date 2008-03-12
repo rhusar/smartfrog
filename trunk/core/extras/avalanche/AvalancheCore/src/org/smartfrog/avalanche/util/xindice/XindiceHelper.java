@@ -47,7 +47,7 @@ public class XindiceHelper {
 
 	private org.apache.xindice.core.Database m_db = null; 
 
-	private static Log log = LogFactory.getLog(XindiceHelper.class);
+	private static final Log log = LogFactory.getLog(XindiceHelper.class);
 	
 	/**
 	 * Constructor 

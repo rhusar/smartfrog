@@ -38,7 +38,7 @@ public class BuildUtils extends BuildHelper {
 	String installDir = null;
 	File instDir;
 	Runtime rt = null;
-	private static Log log = LogFactory.getLog(BuildUtils.class);
+	private static final Log log = LogFactory.getLog(BuildUtils.class);
 	
 	/**
 	 * 

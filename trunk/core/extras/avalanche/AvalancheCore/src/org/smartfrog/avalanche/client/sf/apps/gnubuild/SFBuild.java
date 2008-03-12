@@ -15,6 +15,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -39,7 +40,6 @@ public class SFBuild extends PrimImpl implements Prim {
 	 */
 	public SFBuild() throws RemoteException {
 		super();
-		// TODO Auto-generated constructor stub
 		confOpts = new Properties();
 	}
 
@@ -65,7 +65,7 @@ public class SFBuild extends PrimImpl implements Prim {
 		targets = makeTargets.split(",");
 		
 		//optional attribute
-		shouldTerminate = (boolean)sfResolve(SHDTERMINATE, shouldTerminate, true);		
+		shouldTerminate = sfResolve(SHDTERMINATE, shouldTerminate, true);
 	}	
 	
 	public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -81,7 +81,6 @@ public class SFBuild extends PrimImpl implements Prim {
 					"/usr/local/sbin:/bin"	
 			};
 			build.make(targets, env);
-			sfLog().info("Installing in GLOBUS_LOCATION");
 			build.make("install");
 		}catch (GNUBuildException gbe) {
 			sfLog().err("Error while installation", gbe);
@@ -92,14 +91,10 @@ public class SFBuild extends PrimImpl implements Prim {
 		
 		// terminate synchronously
 		if (shouldTerminate) {
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
-			sfTerminate(tr);
+            new ComponentHelper(this).targetForTermination();
 		}
 	}
 
-	public synchronized void sfTerminateWith(TerminationRecord status) {
-		super.sfTerminateWith(status);
-	}
 
 }
 

@@ -23,15 +23,15 @@ import java.rmi.RemoteException;
 public class SFListenerDeployer extends PrimImpl implements Prim {
 	
 	// make it a list of listeners 
-	AnubisListener listener = null ;
-	AnubisLocator locator = null; 
+	private AnubisListener listener = null ;
+    private AnubisLocator locator = null;
 	public SFListenerDeployer() throws RemoteException{
 		
 	}
 
 	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 		super.sfDeploy();
-		locator = (AnubisLocator)sfResolve("locator") ;
+		locator = (AnubisLocator)sfResolve("locator",(Prim)null,true) ;
 		
 		// let it be the default configuration
 		listener = new AnubisJMSAdapter(MonitoringConstants.ANUBIS_SHARED_NAME);
@@ -43,7 +43,6 @@ public class SFListenerDeployer extends PrimImpl implements Prim {
 		sfLog().info("Registering Anubis listener ... ");
 		locator.registerListener(listener);
 		sfLog().info("Anubis listener registered ... ");
-		System.out.println("Anubis listener registered. ");
 	}
 	
 }

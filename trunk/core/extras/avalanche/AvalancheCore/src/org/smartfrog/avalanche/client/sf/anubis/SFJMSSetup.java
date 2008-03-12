@@ -58,7 +58,7 @@ public class SFJMSSetup extends PrimImpl implements Prim {
 			sfLog().fatal("Error ! JMS config file " + "" + " is not valid", pe);
 			throw new SmartFrogException("Error ! JMS startup failed", pe);
 		}
-		System.out.println("server started ...") ;
+        sfLog().info("server started ...") ;
 		if( null == server ){
 			// TODO : fail with error
 			throw new SmartFrogException("Error ! JMS startup failed");

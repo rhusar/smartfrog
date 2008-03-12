@@ -60,13 +60,12 @@ public class GmetricAdapter implements MonitoringService {
 		Map props = e.getPropertyBag();
 		
 		if (null != props){
-			Iterator it = props.keySet().iterator();
-			while(it.hasNext()){
-				String k = (String)it.next();
-				String v = (String) props.get(k);
-				
-				value += k + "=" + v + "," ;
-			}
+            for (Object o : props.keySet()) {
+                String k = (String) o;
+                String v = (String) props.get(k);
+
+                value += k + "=" + v + ",";
+            }
 		}
 		
 		// create a command line now 

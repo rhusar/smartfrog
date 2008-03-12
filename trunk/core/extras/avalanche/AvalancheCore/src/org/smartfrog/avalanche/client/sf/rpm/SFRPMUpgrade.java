@@ -32,8 +32,6 @@ import java.rmi.RemoteException;
 /**
  * @author sandya
  *
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class SFRPMUpgrade extends PrimImpl implements Prim {
     private static final String RPMPACKAGE = "rpmPackage";
@@ -66,8 +64,8 @@ public class SFRPMUpgrade extends PrimImpl implements Prim {
         throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
-        rpmPackage = (String) sfResolve(RPMPACKAGE, "", true);
-        upgradeOptions = (String) sfResolve(UPGRADEOPTS, "", true);
+        rpmPackage = sfResolve(RPMPACKAGE, "", true);
+        upgradeOptions = sfResolve(UPGRADEOPTS, "", true);
         rpmUtils = new RPMUtils(sfLog());
 
     }

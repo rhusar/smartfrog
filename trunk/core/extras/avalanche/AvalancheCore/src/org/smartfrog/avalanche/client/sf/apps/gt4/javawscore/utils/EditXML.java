@@ -48,7 +48,7 @@ public class EditXML extends XMLUtils {
 	private String fileName;
 	Document doc = null;
 
-	private static Log log = LogFactory.getLog(EditXML.class);
+	private static final Log log = LogFactory.getLog(EditXML.class);
 	
 	/**
 	 * @param xmlFileName

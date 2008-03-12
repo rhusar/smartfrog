@@ -35,10 +35,10 @@ import java.util.Properties;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class BuildUtils extends BuildHelper {
-	String installerDir = null;
-	File instDir;
-	Runtime rt = null;
-	private static Log log = LogFactory.getLog(BuildUtils.class);
+	private String installerDir = null;
+	private File instDir;
+	private Runtime rt = null;
+	private static final Log log = LogFactory.getLog(BuildUtils.class);
 	
 	/**
 	 * 
@@ -274,12 +274,11 @@ public class BuildUtils extends BuildHelper {
 		}
 		//bld.make("install"); 
 	}
-}
 
-class StreamGobbler extends Thread {
-	InputStream is;
-	String type;
-	private static Log log = LogFactory.getLog(StreamGobbler.class);
+static class StreamGobbler extends Thread {
+	private InputStream is;
+	private String type;
+	private static final Log log = LogFactory.getLog(StreamGobbler.class);
 	
 	StreamGobbler(InputStream is, String type) {
 		this.is = is;
@@ -304,4 +303,6 @@ class StreamGobbler extends Thread {
 			log.error(line + ioe);
 		}
 	}
+}
+
 }

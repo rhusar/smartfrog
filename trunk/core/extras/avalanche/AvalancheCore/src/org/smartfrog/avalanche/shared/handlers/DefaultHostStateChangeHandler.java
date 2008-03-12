@@ -22,7 +22,7 @@ import org.smartfrog.avalanche.shared.*;
  * @author sanjaydahiya
  */
 public class DefaultHostStateChangeHandler implements HostStateChangeHandler {
-    private static Log log = LogFactory.getLog(DefaultHostStateChangeHandler.class);
+    private final static Log log = LogFactory.getLog(DefaultHostStateChangeHandler.class);
 
     /**
      * Updates the state of a given host in the database

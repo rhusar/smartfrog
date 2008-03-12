@@ -48,7 +48,7 @@ public class XMPPAdapter {
 	private boolean useSSL = true ;
 	private XMPPConnection connection ;
 
-	private static Log log = LogFactory.getLog(XMPPAdapter.class);
+	private static final Log log = LogFactory.getLog(XMPPAdapter.class);
 
 	/**
      * Create a new instance of XMPPAdapter
@@ -60,7 +60,7 @@ public class XMPPAdapter {
         this.xmppServer = xmppServer;
 
         // setup the event listener
-        this.listener.setup();
+        listener.setup();
 
         // Save useSSL value and set the ports accordingly
         this.useSSL = useSSL ;
@@ -161,14 +161,14 @@ public class XMPPAdapter {
     public void login() throws XMPPException {
         // Log in to XMPP Server
         try {
-            log.info("Trying to log in. " + this.getCurrentConnectionInfo());
+            log.info("Trying to log in. " + getCurrentConnectionInfo());
             connection.login(xmppUserName, xmppPassword);
         } catch (XMPPException e) {
-            log.error("Login failed. " + this.getCurrentConnectionInfo());
+            log.error("Login failed. " + getCurrentConnectionInfo());
             throw e;
         }
 
-        log.info("Logged in successfully. " + this.getCurrentConnectionInfo());
+        log.info("Logged in successfully. " + getCurrentConnectionInfo());
 
         // Accept incoming roster subscription requests by default.
 		connection.getRoster().setSubscriptionMode(Roster.SUBSCRIPTION_ACCEPT_ALL);
@@ -181,9 +181,9 @@ public class XMPPAdapter {
 		if ( null != connection ){
 			connection.close();
 			connection = null ;
-            log.info("Closed connection. " + this.getCurrentConnectionInfo());
+            log.info("Closed connection. " + getCurrentConnectionInfo());
         } else {
-            log.info("Connection was already closed. " + this.getCurrentConnectionInfo());
+            log.info("Connection was already closed. " + getCurrentConnectionInfo());
         }
 	}
 
@@ -197,22 +197,22 @@ public class XMPPAdapter {
 	 */
 	public void sendEvent(String recipient, MonitoringEvent event) throws XMPPException{
 		try {
-            if (this.getConnection() == null) {
-                this.close();
-                this.init();
-                this.login();
+            if (getConnection() == null) {
+                close();
+                init();
+                login();
             }
             // Setup and send the event as message
             Message msg = new Message(recipient, Message.Type.HEADLINE);
             msg.setBody("AE");
 			msg.addExtension(new XMPPEventExtension(event));
-            log.info("Sending message: " + msg + ". " + this.getCurrentConnectionInfo());
+            log.info("Sending message: " + msg + ". " + getCurrentConnectionInfo());
             connection.sendPacket(msg);
         } catch(XMPPException e ){
 			// Failed sending message. Log this message and move on.
-			log.error("Failed sending event: " + event + ". " + this.getCurrentConnectionInfo());
+			log.error("Failed sending event: " + event + ". " + getCurrentConnectionInfo());
             // close connection if error, try reconnect on next message
-			this.close();
+			close();
 		}
 	}
 
@@ -240,13 +240,13 @@ public class XMPPAdapter {
      */
     public void registerListeners() throws XMPPException {
         log.info("Adding PacketListener and PacketFilter to connection." + this.getCurrentConnectionInfo());
-        this.getConnection().addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
+        getConnection().addPacketListener(listener, new EventListener.XMPPPacketFilter()) ;
 
         log.info("Adding RosterListener.");
         // configure handler chain for host state change events
-		LivenessListener llistener = new LivenessListener(this.getRoster());
+		LivenessListener llistener = new LivenessListener(getRoster());
 		llistener.addLivenessHandler(new DefaultHostStateChangeHandler());
-		this.getRoster().addRosterListener(llistener);
+		getRoster().addRosterListener(llistener);
 	}
 
     /**
@@ -261,23 +261,23 @@ public class XMPPAdapter {
         boolean returnValue = false;
         try {
             // Get account management
-            AccountManager am = this.getConnection().getAccountManager();
+            AccountManager am = getConnection().getAccountManager();
             // If account creation is possible
             if (am.supportsAccountCreation()){
                     // Set a few attributes - required by most servers
                     Map attrs = new HashMap();
-                    attrs.put("email", newUsername + "@" + this.getXmppServer());
+                    attrs.put("email", newUsername + "@" + getXmppServer());
                     attrs.put("name", newFullname);
                     attrs.put("registered", "false");
                     // Create the account with the given data
                     am.createAccount(newUsername, newPassword, attrs);
-                    log.info("Account \"" + newUsername + "\" was created successfully. " + this.getCurrentConnectionInfo()) ;
+                    log.info("Account \"" + newUsername + "\" was created successfully. " + getCurrentConnectionInfo()) ;
                     returnValue = true;
             } else {
-                 log.error("Account \"" + newUsername + "\" could not be created. Creation not allowed. " + this.getCurrentConnectionInfo());
+                 log.error("Account \"" + newUsername + "\" could not be created. Creation not allowed. " + getCurrentConnectionInfo());
             }
         } catch (XMPPException xe) {
-            log.error("Account \"" + newUsername + "\" could not be created. " + this.getCurrentConnectionInfo() + "\nException: " + xe);
+            log.error("Account \"" + newUsername + "\" could not be created. " + getCurrentConnectionInfo() + "\nException: " + xe);
         }
         return returnValue;
     }
@@ -291,8 +291,8 @@ public class XMPPAdapter {
     public boolean deleteUser(String existingUserName, String existingUserPassword) {
         try {
             // Setting up the connection
-            XMPPAdapter adapter = new XMPPAdapter(this.getXmppServer(), this.isUseSSL());
-            adapter.setXmppServerPort(this.getXmppServerPort());
+            XMPPAdapter adapter = new XMPPAdapter(getXmppServer(), isUseSSL());
+            adapter.setXmppServerPort(getXmppServerPort());
             // Setting user credentials
             adapter.setXmppUserName(existingUserName);
             adapter.setXmppPassword(existingUserPassword);
@@ -301,10 +301,10 @@ public class XMPPAdapter {
             adapter.login();
             // Delete user's account
             adapter.getConnection().getAccountManager().deleteAccount();
-            log.info("Successfully deleted account \"" + existingUserName + "\". " + this.getCurrentConnectionInfo());
+            log.info("Successfully deleted account \"" + existingUserName + "\". " + getCurrentConnectionInfo());
             return true;
         } catch (XMPPException xe) {
-            log.error("Account \"" + existingUserName + "\" could not be deleted. " + this.getCurrentConnectionInfo() + "\nException: " + xe);
+            log.error("Account \"" + existingUserName + "\" could not be deleted. " + getCurrentConnectionInfo(),xe);
             return false;
         }
     }
@@ -318,14 +318,14 @@ public class XMPPAdapter {
     */
     public boolean removeUserFromRoster(String existingUsername) {
         try {
-            Roster roster = this.getRoster();
+            Roster roster = getRoster();
             // Remove roster entry
             RosterEntry re = roster.getEntry(existingUsername);
             roster.removeEntry(re);
             log.info("Successfully removed roster for host \"" + existingUsername + "\".");
             return true;
         } catch (XMPPException xe) {
-            log.error("Error while removing roster for user \"" + existingUsername + "\". Exception:" + xe);
+            log.error("Error while removing roster for user \"" + existingUsername + "\"",xe);
             return false;
         }
     }
@@ -340,11 +340,11 @@ public class XMPPAdapter {
         // Try to add new user to the Avalanche user's buddy list
         try {
             // Add roster entry
-            this.getRoster().createEntry(existingUsername + "@" + this.getXmppServer(), existingUsername, null);
+            getRoster().createEntry(existingUsername + "@" + getXmppServer(), existingUsername, null);
             log.info("Successfully added roster for host \"" + existingUsername + "\".");
             return true;
         } catch (XMPPException xe) {
-            log.error("Could not add roster for host \"" + existingUsername + "\". Exception: " + xe);
+            log.error("Could not add roster for host \"" + existingUsername + "\"",xe);
             return false;
         }
     }

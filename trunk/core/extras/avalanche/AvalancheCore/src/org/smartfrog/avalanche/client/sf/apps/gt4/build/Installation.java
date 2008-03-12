@@ -36,7 +36,7 @@ import java.io.IOException;
 public class Installation {
 	private File globusLoc, installerDir;
 	private FileUtils fUtil = null;
-	private static Log log = LogFactory.getLog(Installation.class);
+	private static final Log log = LogFactory.getLog(Installation.class);
 
 	/**
 	 * 

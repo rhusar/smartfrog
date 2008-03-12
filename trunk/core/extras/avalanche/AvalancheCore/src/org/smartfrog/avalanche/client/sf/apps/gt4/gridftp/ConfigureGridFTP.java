@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public class ConfigureGridFTP {
 	private String globusLoc = null;
-	private static Log log = LogFactory.getLog(ConfigureGridFTP.class);
+	private static final Log log = LogFactory.getLog(ConfigureGridFTP.class);
 
 	/**
 	 * 

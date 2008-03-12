@@ -34,7 +34,6 @@ public class BuildHelper {
 	 */
 	public BuildHelper() {
 		super();
-		// TODO Auto-generated constructor stub
 		sysPath = new String("/usr/bin:/bin:/usr/local/bin:/sbin");
 		String jHome = System.getProperty("java.home");
 		char separator = File.separatorChar;
