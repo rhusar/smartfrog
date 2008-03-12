@@ -27,7 +27,7 @@ import java.rmi.server.RMIServerSocketFactory;
 
 
 /**
- * A server socket factory that adapts a  server socket factory so that we can bind to a particular ip address and
+ * A server socket factory that adapts a server socket factory so that we can bind to a particular ip address and
  * can be used to generate RMI server sockets.
  *
  */
@@ -39,6 +39,12 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
     public int hashCode() {
         return bindAddr.hashCode();
     }
+
+    /**
+     * Equality test compares IP Addresses
+     * @param obj object to be compared with
+     * @return true iff it is the same class, and the same IP address
+     */
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -46,7 +52,7 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
             return false;
         }
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
-        return bindAddr.equals(other.bindAddr);
+        return bindAddr!=null && bindAddr.equals(other.bindAddr);
     }
 
 
