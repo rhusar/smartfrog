@@ -40,3 +40,18 @@ DirectoryWatcher extends Prim {
   //every 10 seconds
   interval 10000;
 }
+
+
+DeployingDirectoryWatcher extends DirectoryWatcher {
+  sfClass "org.smartfrog.services.deploydir.DeployingDirectoryWatcherImpl";
+    /**
+     * Parent component for deployments: {@value}
+     * Set to null to use the current root process
+     */
+  //UNUSED deployParent NULL;
+
+    /**
+     *  Optional application prefix, helps to distinguish automated deployments: {@value}
+     */
+  applicationPrefix "";
+}
