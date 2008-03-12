@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.utils.SmartFrogThread;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -110,8 +111,11 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
      * @param current the current directory
      * @param added   added files
      * @param removed removed files
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    network problems
      */
-    public void directoryChanged(List<File> current, List<File> added, List<File> removed) {
+    public void directoryChanged(List<File> current, List<File> added, List<File> removed)
+        throws SmartFrogException,RemoteException {
         for (File file : added) {
             sfLog().info("Added " + file);
         }
@@ -127,7 +131,7 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
         private File directory;
         private long interval;
         private DirectoryWatcherEvent handler;
-        private List<File> entries = new ArrayList<File>();
+        private List<File> active = new ArrayList<File>();
 
         /**
          * start a watcher
@@ -165,34 +169,40 @@ public class DirectoryWatcherImpl extends PrimImpl implements DirectoryWatcher, 
 
         /**
          * Scan the directories, report changes
+         * @throws SmartFrogException SmartFrog problems
+         * @throws RemoteException    network problems
          */
-        private void scanAndReport() {
+        private void scanAndReport() throws SmartFrogException, RemoteException {
             File[] currentFiles = directory.listFiles();
             List<File> current = new ArrayList<File>(currentFiles.length);
             List<File> added = new ArrayList<File>();
             List<File> removed = new ArrayList<File>();
             //work out what is added.
             for (File child : currentFiles) {
-                if (!child.isDirectory()) {
-                    continue;
-                }
-                current.add(child);
-                if (entries.lastIndexOf(child) == -1) {
-                    //its arrived
-                    added.add(child);
-                    //add to the entry list
-                    entries.add(child);
+                if (child.isDirectory()) {
+                    current.add(child);
+                    if (active.lastIndexOf(child) == -1) {
+                        //its arrived
+                        added.add(child);
+                        //add to the entry list
+                        active.add(child);
+                    }
                 }
             }
 
             //work out what is removed
-            for (File entry : entries) {
+            for (File entry : active) {
                 if (current.indexOf(entry) == 0) {
                     removed.add(entry);
                 }
             }
             //copy over the new list of current entries
-            entries = current;
+            Collections.sort(active);
+            active = current;
+
+            //sort them; this isolates us from file-system quirks
+            Collections.sort(added);
+            Collections.sort(removed);
 
             //now see if anything has changed
             if (added.size() > 0 || removed.size() > 0) {

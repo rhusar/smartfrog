@@ -19,28 +19,20 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.deploydir;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.List;
-
 /**
- * Created 07-Mar-2008 16:56:45
+ * Created 10-Mar-2008 14:29:47
  */
 
 
-public interface DirectoryWatcherEvent {
+public interface DeployingDirectoryWatcher extends DirectoryWatcher {
 
     /**
-     * Notify of a directory changed
-     *
-     * @param current the current directory
-     * @param added   added files
-     * @param removed removed files
-     * @throws SmartFrogException SmartFrog problems
-     * @throws RemoteException    network problems
+     * Parent component for deployments: {@value}
      */
-    void directoryChanged(List<File> current, List<File> added, List<File> removed) throws SmartFrogException,
-            RemoteException;
+    String ATTR_DEPLOY_PARENT = "deployParent";
+
+    /**
+     *  Optional application prefix, helps to distinguish automated deployments: {@value}
+     */
+    String ATTR_APP_PREFIX = "applicationPrefix";
 }
