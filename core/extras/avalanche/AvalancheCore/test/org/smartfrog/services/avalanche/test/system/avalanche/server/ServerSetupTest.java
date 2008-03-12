@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server;
+package org.smartfrog.services.avalanche.test.system.avalanche.server;
 
 import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.host.HostType;
@@ -18,13 +18,30 @@ import org.smartfrog.avalanche.server.HostManager;
 import org.smartfrog.avalanche.server.ServerSetup;
 
 public class ServerSetupTest extends TestCase {
+    private ServerSetup setup;
 
-	/*
-	 * Test method for 'org.smartfrog.avalanche.server.ServerSetup.startup()'
-	 */
+
+    /**
+     * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        setup = new ServerSetup();
+    }
+
+    /**
+     * Tears down the fixture, for example, close a network connection. This method is called after a test is executed.
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        setup.shutdown();
+    }
+
+    /**
+      * Test method for 'org.smartfrog.avalanche.server.ServerSetup.startup()'
+      */
 	public void testStartup() throws Exception{
-		ServerSetup setup = new ServerSetup();
-		setup.setAvalancheHome("/tmp/avalancheTest");
+        setup.setAvalancheHome("/tmp/avalancheTest");
 		setup.setXmppServer("15.76.99.8");
 		setup.setXmppServerAdminUser("admin");
 		setup.setXmppServerAdminPassword("admin");
@@ -36,20 +53,10 @@ public class ServerSetupTest extends TestCase {
 		// add a host now and see if the user for the host is created properly
 		AvalancheFactory factory = setup.getFactory();
 		HostManager hm = factory.getHostManager();
-		try{
-			HostType host = hm.newHost("lx9622.india.hp.com");
-		}catch(Exception e){
-			System.out.println("Error !! Host already exists");
-		}
-		
-		// create a thread for sending event on behalf of the new host
-		
-		System.in.read();
-		try{
-			hm.removeHost("lx9622.india.hp.com");
-		}catch(Exception e){
-			System.out.println("Error !! Failed deleting host");
-		}
-		setup.shutdown();
+        HostType host=null;
+        host = hm.newHost("lx9622.india.hp.com");
+
+        hm.removeHost(host);
+
 	}
 }

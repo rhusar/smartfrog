@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server.engines.sf;
+package org.smartfrog.services.avalanche.test.system.avalanche.server.engines.sf;
 
 import junit.framework.TestCase;
 import org.smartfrog.avalanche.core.host.ArgumentType;
@@ -82,20 +82,19 @@ public class BootStrapTest extends TestCase {
 		
 		System.out.println("Igniting ... "); 
 		// bootstap host. 
-		BootStrap boot = new BootStrap(factory, setup);
+		BootStrap boot = new BootStrap(factory);
 		boot.ignite(new String[]{hostId});
 		
 		System.out.println("Igniting successfully started... press key to exit "); 
 		System.in.read();
 		// delete factory 
-		{
-			// delete the module 
-			hm.removeHost(hostId);
-			HostType host = hm.getHost(hostId) ;
-			// validate its not there anymore 
-			assertNull(host);
-		}
-		setup.shutdown();		
+        // delete the module
+        HostType host = hm.getHost(hostId);
+        assertNotNull(host);
+        hm.removeHost(host);
+        // validate its not there anymore
+        assertNull(host);
+        setup.shutdown();
 		// close factory 
 	}
 }

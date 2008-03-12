@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.client.sf.compress;
+package org.smartfrog.services.avalanche.test.system.avalanche.client.sf.compress;
 
 import junit.framework.TestCase;
 import org.smartfrog.avalanche.client.sf.compress.ZipUtils;

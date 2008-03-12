@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server.engines.sf;
+package org.smartfrog.services.avalanche.test.system.avalanche.server.engines.sf;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.sfinterface.SmartFrogAdapterImpl;

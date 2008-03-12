@@ -9,7 +9,7 @@ You should have received a copy of the GNU Lesser General Public License along w
 
 For more information: www.smartfrog.org
 */
-package tests.org.smartfrog.avalanche.server;
+package org.smartfrog.services.avalanche.test.system.avalanche.server;
 
 
 import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
@@ -43,7 +43,7 @@ public class XMPPClientStub {
 		event.setModuleId("None");
 		event.setModuleState("None");
 		
-		adapter.sendEvent(event);
+		adapter.sendEvent(hostId,event);
 		System.out.println("Sent Event ..  press any key to exit. "); 
 		
 		System.in.read();
