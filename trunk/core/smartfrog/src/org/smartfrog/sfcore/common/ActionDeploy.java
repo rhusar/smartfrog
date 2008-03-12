@@ -287,7 +287,7 @@ public class ActionDeploy extends ConfigurationAction {
      * @param configuration configuration to deploy
      * @param name name of the component
      * @param parent parent flag
-     * @param targetP target
+     * @param targetP target process (can be null)
      * @return the deployed prim
      * @throws SmartFrogException for deployment problems
      * @throws RemoteException for network problems
