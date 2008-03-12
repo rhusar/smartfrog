@@ -94,6 +94,9 @@
     <property name="javac.include.ant" value="false" />
     <property name="javac.max.memory" value="192m" />
 
+    <!--emma coverage directory-->
+    <property name="emma.coverage.dir" location="${core.dir}/build/coverage/emma" />
+
     <property name="smartfrog.daemon.port" value="3800" />
     <!--use the forking compiler with tuned memory use and profiling diagnostics-->
     <property name="rmic.compiler" value="forking"/>
@@ -255,9 +258,9 @@ java.class.path=
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
 
-</target>
+  </target>
 
-<target name="init-common" depends="bind-to-smartfrog">
+  <target name="init-common" depends="bind-to-smartfrog">
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
@@ -367,19 +370,19 @@ java.class.path=
     the ant runtime by default, and fails on any error -->
     <presetdef name="sf-java">
       <java
-        includeantruntime="false"
-        fork="true"
-        failonerror="true"
-        >
-		<jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
-        <jvmarg value="-Demma.coverage.out.merge=true" />
-       </java>
+          includeantruntime="false"
+          fork="true"
+          failonerror="true"
+          >
+        <jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma"/>
+        <jvmarg value="-Demma.coverage.out.merge=true"/>
+      </java>
     </presetdef>
 
-   <!--
-    JAR files are uncompressed, with duplicate classes preserved, meaning
-    whatever was there first wins.
-    -->
+  <!--
+  JAR files are uncompressed, with duplicate classes preserved, meaning
+  whatever was there first wins.
+  -->
     <presetdef name="sf-jar">
       <jar
         compress="true"
@@ -418,7 +421,7 @@ java.class.path=
            >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
-		<jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+	    	<jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma" />
         <jvmarg value="-Demma.coverage.out.merge=true" />
 
         <!--copy all proxy settings from the running JVM-->
@@ -660,6 +663,7 @@ java.class.path=
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
+    <mkdir dir="${emma.coverage.dir}" />
   </target>
 
 
@@ -2169,13 +2173,12 @@ ${ivy.reports.dir}
   </target>
 
 
-
   <!-- CLOVER -->
   <target name="init-clover" depends="init">
-    <property name="clover.dir" location="${core.dir}/clover" />
-    <property name="clover.jar" location="${clover.dir}/clover.jar" />
+    <property name="clover.dir" location="${core.dir}/clover"/>
+    <property name="clover.jar" location="${clover.dir}/clover.jar"/>
     <path id="clover.classpath">
-      <fileset file="${clover.jar}" />
+      <fileset file="${clover.jar}"/>
     </path>
     <available property="clover.present"
         file="${clover.jar}"/>
