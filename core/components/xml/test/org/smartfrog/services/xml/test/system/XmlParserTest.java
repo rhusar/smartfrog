@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,8 @@ import org.xml.sax.XMLReader;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.logging.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Test some aspects of XMLL created 27-Jan-2005 14:05:29
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
 
 public class XmlParserTest extends TestCase {
 
-    private Logger logger= Logger.getLogger(this.getClass().getName());
+    private static final Log logger= LogFactory.getLog(XmlParserTest.class);
 
     public XmlParserTest(String s) {
         super(s);
