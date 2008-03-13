@@ -1,0 +1,77 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
+/**
+ * These components provides the password for components that need it
+ * All must implement the PasswordProvider interface
+ */
+
+/**
+ Extract a password from a file
+ */
+FilePassword extends Prim {
+    // default password provides expects password from a password file
+    sfClass "org.smartfrog.services.passwords.FilePasswordProvider";
+    passwordFile TBD;
+}
+
+/**
+ * Although it is insecure to have a password inline, sometimes it is useful, especially when that password is
+ * handed to the process via a property (in which case a ps can view it), or when it is
+ * set programmatically
+ */
+
+InlinePassword extends Prim {
+    sfClass "org.smartfrog.services.passwords.InlinePasswordProviderImpl";
+    password TBD;
+}
+
+/**
+ * component to check that passwords have a min/max length,
+ * or that it matches a specific value. Use for testing or
+ * enforcing rules
+ */
+PasswordChecker extends Prim {
+    sfClass "org.smartfrog.services.passwords.PasswordChecker";
+    
+    schema extends Schema {
+        passwordProvider extends Compulsory;
+        minimumSize extends OptionalInteger;
+        //-1 for no checks
+        maximumSize extends OptionalInteger;
+        expected extends OptionalString;
+        //if true, the attribute 'password' is set.
+        publish extends Boolean;
+        //pattern to match; "" means anything is allowed
+        pattern extends String;
+    }
+
+    minimumSize 0;
+    maximumSize -1;
+    publish false;
+    pattern "";
+}
+
+

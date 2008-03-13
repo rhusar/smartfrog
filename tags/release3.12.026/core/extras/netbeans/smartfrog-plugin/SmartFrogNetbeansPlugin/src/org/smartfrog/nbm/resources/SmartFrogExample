@@ -1,0 +1,14 @@
+#include "org/smartfrog/components.sf"
+//comment
+MyPrim extends prim {
+tbdValue TBD;
+intValue 56;
+stringValue "mystring";
+intValue IF ( value1 > value2 ) 
+THEN ( val1 - val2 ) 
+ELSE ( val2 - val1 ) 
+FI;
+}
+
+
+

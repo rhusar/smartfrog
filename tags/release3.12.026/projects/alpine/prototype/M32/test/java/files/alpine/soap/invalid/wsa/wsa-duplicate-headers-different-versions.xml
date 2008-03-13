@@ -1,0 +1,23 @@
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:wsa="http://www.w3.org/2005/08/addressing"
+    xmlns:wsa2004="http://www.w3.org/2004/04/addressing">
+  <S:Header>
+    <wsa:MessageID>http://example.com/someuniquestring</wsa:MessageID>
+    <wsa:ReplyTo>
+      <wsa:Address>http://example.com/business/client1</wsa:Address>
+    </wsa:ReplyTo>
+    <wsa:To>http://example.org/epr</wsa:To>
+    <wsa:Action>http://example.com/fabrikam/mail/Delete</wsa:Action>
+    <wsa2004:To>http://example.org/epr2</wsa2004:To>
+    <wsa2004:MessageID>http://example.org/guid2</wsa2004:MessageID>
+    <wsa2004:ReplyTo>
+      <wsa2004:Address>http://example.com/business/client2</wsa2004:Address>
+    </wsa2004:ReplyTo>
+    <wsa2004:Action>http://example.com/fabrikam/mail/Spam</wsa2004:Action>
+  </S:Header>
+  <S:Body>
+    <f:Delete xmlns:f="http://example.com/fabrikam">
+      <maxCount>42</maxCount>
+    </f:Delete>
+  </S:Body>
+</S:Envelope>

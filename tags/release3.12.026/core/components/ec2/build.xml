@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ec2" default="default">
+
+  <!--
+  /** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    Amazon EC2/S3 support.
+
+    For testing, edit build.properties to add the secret login details for an AWS account
+    test.awsid = id
+    test.awskey = secret key
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="system.tests" value="false" />
+
+
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+  
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+
+  <target name="ready-to-test" depends="common.ready-to-test,testwar">
+    <property name="test.jetty.home"
+        location="${test.src.dir}/files/jettyhome"/>
+    <property name="test.demo.webapp"
+        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
+    <echo level="verbose" >
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
+    </echo>
+  </target>
+
+  <!--pick up the test war from Ivy-->
+  <target name="testwar" depends="ivy-retrieve">
+    <property name="test.testwar.war"
+        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war" />
+    <fail>
+      <condition >
+        <not><available file="${test.testwar.war}"/></not>
+      </condition>
+      Not found: ${test.testwar.war}
+    </fail>
+  </target>
+</project>

@@ -1,0 +1,297 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/amazon/s3/components.sf"
+
+bucket "smartfrogtest";
+login PROPERTY test.awsid;
+password PROPERTY test.awskey
+timeout 10;
+
+bucketHost (bucket ++ ".s3.amazonaws.com");
+
+
+TestBucket extends  TransientS3Bucket {
+    bucket ROOT:bucket;
+    username ROOT:login;
+    password ROOT:password;
+    connectTimeout timeout;
+    //followRedirects false;
+}
+
+TransientBucket extends TestBucket {
+
+}
+
+/**
+ * bucket in a workflow
+ */
+WorkflowBucket extends  TransientS3Bucket {
+    sfShouldTerminate true;
+}
+
+
+GetBucket extends TestBucket {
+  startActions [GET_ACTION];
+  sfShouldTerminate true;
+}
+
+HeadBucket extends TestBucket {
+  startActions [HEAD_ACTION];
+  sfShouldTerminate true;
+}
+
+DeleteBucket extends TestBucket {
+  startActions [S3_DELETE_ACTION];
+  livenessActions [];
+  sfShouldTerminate true;
+}
+
+IndexHtml extends S3File {
+  sfShouldTerminate true;
+  name "index.html";
+  bucket ROOT:bucket;
+  username ROOT:login;
+  password ROOT:password;
+  connectTimeout timeout;
+  headers [
+    S3_PUBLIC_READ_HEADER
+    ];
+}
+
+GetIndexHtml extends IndexHtml {
+  startActions [GET_ACTION];
+}
+
+HeadIndexHtml extends IndexHtml {
+  startActions [GET_ACTION];
+}
+
+PutIndexHtml extends IndexHtml {
+  startActions [PUT_ACTION];
+}
+
+DeleteIndexHtml extends IndexHtml {
+  startActions [DELETE_ACTION];
+}
+
+DeleteOnTerminateIndexHtml extends IndexHtml {
+  terminateActions [DELETE_ACTION];
+}
+
+
+/**
+ * Look for the bucket
+ */
+ProbeForBucket extends WaitForPage {
+  host bucketHost;
+  fetchErrorText true;
+  checkFrequency 100;
+  timeout ROOT:timeout;
+  checkOnStartup true;
+  checkOnLiveness false
+  maximumResponseCode HttpCodes:FORBIDDEN;
+  minimumResponseCode HttpCodes:FORBIDDEN;
+  sfShouldTerminate true;
+  logResponse true;
+}
+
+ /**
+ * Look for a public file
+ */
+ProbeForFile extends WaitForPage {
+  host S3Resource:host;
+  bucket TBD;
+  name TBD;
+  path bucket;
+  page name;
+  fetchErrorText true;
+  checkFrequency 100;
+  timeout ROOT:timeout;
+  checkOnStartup true;
+  checkOnLiveness false
+  sfShouldTerminate true;
+  logResponse true;
+}
+/*
+ * Our AWS condition
+ */
+
+IsAwsEnabled extends IsPropertySet {
+    property "test.awsid";
+  }
+
+
+
+/**
+ A test using a bucket
+ */
+
+ExpectDeployOnAWS extends ExpectDeploy {
+
+  description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
+
+  condition extends IsAwsEnabled ;
+
+
+}
+
+
+/**
+ A test using a bucket
+ */
+
+BucketTest extends ExpectDeployOnAWS {
+
+  description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
+ 
+  action extends  Compound {
+
+    //text data is empty
+    textdata extends TextDataSource {
+     text "";
+    }
+
+    //html data
+    htmldata extends TextDataSource {
+     //add no regexp magic characters here, or you break the tests
+      text "<html><body><h1><blink>hello, world</blink></h1></body></html>";
+      regexp text;
+    }
+
+    bucket extends TestBucket  {
+      datasource LAZY PARENT:textdata ;
+    }
+
+
+  }
+
+}
+
+
+testCreateBucket extends BucketTest {
+
+   tests extends Sequence {
+
+
+  }
+}
+
+testDeployGetBucket extends BucketTest {
+
+  tests extends Sequence {
+
+    probe extends ProbeForBucket;
+  }
+
+}
+
+
+
+testDeleteBucket extends BucketTest {
+
+  description "try to delete a bucket that has just been created";
+
+  //strip out the liveness check, as it is now allowed to fail
+  action:bucket:livenessActions [];
+
+  tests extends Sequence {
+
+    delete extends DeleteBucket;
+  }
+
+}
+
+testDeleteNonexistentBucket extends ExpectDeployOnAWS {
+
+  description "try to delete a bucket that may or may not exist";
+
+  tests extends Sequence {
+
+    delete extends DeleteBucket;
+    delete2 extends DeleteBucket;
+  }
+
+}
+
+testPutFileToBucket extends BucketTest {
+
+   description "add an HTML page ";
+
+
+   tests extends Sequence {
+     putFile extends PutIndexHtml {
+       datasource LAZY ATTRIB action:htmldata;
+     }
+     
+     followon extends Sequence {
+
+     }
+  }
+}
+
+
+testGetFileFromBucket extends testPutFileToBucket {
+   description "add an HTML page and then GET it";
+
+
+   tests:followon extends Sequence {
+     get extends GetIndexHtml {
+     }
+   }
+}
+
+
+
+
+testGetWaitForFileFromBucket extends testPutFileToBucket {
+   description "add an HTML page and wait for it";
+   links ["http://jira.smartfrog.org/jira/browse/SFOS-703"];
+
+   tests:followon extends Sequence {
+     wait extends ProbeForFile {
+      name PutIndexHtml:name;
+      bucket PutIndexHtml:bucket;
+     }
+   }
+}
+
+
+
+
+testGetFileRegexp extends testGetFileFromBucket {
+
+  description "add an HTML page and then GET it, checking the regular expression";
+  tests:followon:get:responseRegexp action:htmldata:regexp;
+}
+
+
+testGetFileBadRegexp extends testGetFileFromBucket {
+  description "check that the regexp code is live, by generating an error";
+/*
+  expectTerminate true;
+  exitType EXIT_TYPE_ABNORMAL;
+*/
+
+  description "add an HTML page and then GET it, checking the regular expression";
+  tests:followon:get:responseRegexp "not-the-correct-pattern";
+}
+

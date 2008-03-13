@@ -1,0 +1,14 @@
+build
+dist
+build.properties
+runtime.properties
+common.properties
+*.jpx
+*.ipr
+*.iml
+*.iws
+*.log
+.classpath
+.project
+.externalToolBuilders
+.settings

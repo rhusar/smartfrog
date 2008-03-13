@@ -1,0 +1,39 @@
+#include "/org/smartfrog/sfcore/workflow/components.sf"
+
+/**
+ * This extension of EventPrim is an utility component to collect, store, and convert results
+ * of a service location. To get a link to the service location facility, 
+ * the 'locator' attribute should point to a SLPLocator component.
+ * Then the component, either during its sfStart phase or on event reception,
+ * triggers the request by looking up the 'sfLocationResults' attribute of the locator.
+ * It then enumerates other the results in three different ways depending on the 'threadType':
+ * "tryAndDie" : Tries once and then stops.
+ * "activeWait": Tries until non-empty results are found, then stops.
+ * "keepLooking": Keeps asking for results as long as the component lives.
+ * Each result found is stored in a Vector in the SLPResultsCollector  context according to its service type. 
+ * A SmartFlow event is sent to indicate to any subscriber a new result from this service.
+ *	by default this event is the service type String. If the sendURLEvent is set to true 
+ * 	the whole serviceURL is sent. If sendAttributesEvent is set true the whole URL plus the 
+ *	attributes are concatenated in the string ;
+ *
+ * Example of use is given in the slpExample3.sf file, and in the sfSLP user manual.
+ */
+
+SLPResultsCollector extends EventPrim {
+	sfClass "org.smartfrog.services.slp.SLPResultsCollector";
+	retryInterval 10000; 	// the refresh interval of the thread in ms
+	threadType "tryAndDie"; // may be "keepLooking", "activeWait", or "tryAndDie"
+	display false;	// set to true if you want the component to display its findings.
+	
+	// booleans for the type of message sent on event registering
+	sendDeregistration true;	// send string message: "unregister_serviceURL" on URL deregistration
+	sendURLEvent false;		// send string message: "serviceURL" on URL registration
+	sendAttributesEvent false;	// send string message: "serviceURL[att1=value1,att2=value2 ...]" on URL registration
+					// !!! will NOT send a message on incremental regitration
+	// locator LAZY ATTRIB mySLPLocator;
+	// destination LAZY ATTRIB anyCompound;
+		
+	// results are then stored the following way:
+	// serviceType1 [Type1urlA, Type1urlB, 	    ...	]; 
+	// serviceType2 [Type2urlA, 		    ... ]; 
+}
