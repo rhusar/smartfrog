@@ -234,6 +234,7 @@ public class SFClassLoader {
      *
      * @throws ClassNotFoundException The resource does not exist or it does not meet the
      *            security requirements.
+     * @throws IOException on IO problems
      */
     protected static InputStream getURLAsStream(URL resourceURL)
             throws ClassNotFoundException, IOException {
@@ -371,21 +372,23 @@ public class SFClassLoader {
      * @return input stream to the resource
      *
      * @throws ClassNotFoundException if unable to locate the resource
+     * @throws IOException on IO problems
      */
     static InputStream getResourceHelper(String resourceInJar, String codebase)
             throws ClassNotFoundException, IOException {
         ClassLoader cl = getClassLoader(codebase);
-        if (debug !=null) {
-            debug.println("ClassLoader for "+resourceInJar+" in jar "+codebase);
-            try {
-                debug.println("cl "+cl.getClass().getName());
-                debug.println("cl.getResource(resourceInJar): "+
-                          cl.getResource(resourceInJar).toString());
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
+        URL resourceURL = cl.getResource(resourceInJar);
+        if (debug != null) {
+            debug.println("ClassLoader for " + resourceInJar + " in jar " + codebase);
+            debug.println("cl " + cl.getClass().getName());
+            debug.println("cl.getResource(resourceInJar): " +
+                    (resourceURL != null ? resourceURL : "not found"));
         }
-        return getURLAsStream(cl.getResource(resourceInJar));
+
+        if (resourceURL == null) {
+            throw new ClassNotFoundException("Unable to locate the resource " + resourceInJar + " in " + codebase);
+        }
+        return getURLAsStream(resourceURL);
     }
 
     /**
@@ -420,15 +423,15 @@ public class SFClassLoader {
      * @param isForName whether we are loading a class or other resource
      *
      * @return A class or an input stream to the resource
-     * @throws ClassNotFoundException
-     * @throws IOException
+     * @throws ClassNotFoundException if unable to locate the resource
+     * @throws IOException on IO problems
      */
     static Object opHelper(String name, String codebase, boolean isForName)
             throws ClassNotFoundException, IOException {
         if (isForName) {
-            return (Object) forNameHelper(name, codebase);
+            return forNameHelper(name, codebase);
         } else {
-            return (Object) getResourceHelper(name, codebase);
+            return getResourceHelper(name, codebase);
         }
     }
 
@@ -500,11 +503,6 @@ public class SFClassLoader {
                 debug.println("SecurityException loading "+name+" in " + codebase +
                         " getting exception " + se.getMessage());
             }
-
-        } catch (NullPointerException npe) {
-            //BUGBUG NPEs get thrown during startup when trying to load nonexistent property files
-            //this log/ignore is a substitute for fixing the problem.
-            logOpHelperException(msg, name, codebase,npe);
         } catch (LinkageError le) {
             //we found the class, but could not handle it
             // We try next class loader throw e;
@@ -518,16 +516,13 @@ public class SFClassLoader {
             logOpHelperException(msg, name, codebase, t);
             throw t;
         } catch (ClassNotFoundException cnfe) {
-            //ClassNotFound or IOException
+            //ClassNotFound Exception
             // Not valid, continuing ...
             logOpHelperException(msg, name, codebase, cnfe);
 
         } catch (IOException ioe) {
-            //ClassNotFound or IOException
             // Not valid, continuing ...
-            //Revisit: SteveL:  Bad things can get caught here, like StackOverthrowError. Things that should not be caught
             logOpHelperException(msg, name, codebase, ioe);
-
         }
         return result;
     }
