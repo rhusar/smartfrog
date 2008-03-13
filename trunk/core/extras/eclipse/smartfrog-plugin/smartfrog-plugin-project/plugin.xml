@@ -165,15 +165,6 @@
          
 
 		<!-- tools -->
-         <action
-               label="SmartFrog GUI"
-               icon="icons/Frog_16.gif"
-               class="org.smartfrog.tools.eclipse.ui.runner.SmartFrogGUIRunnerAction"
-               tooltip="SmartFrog GUI"
-               toolbarPath="SmartFrogTools"
-               menubarPath="smartFrogMenu/tools"
-               id="org.smartfrog.tools.eclipse.ui.runner.SmartFrogGUIRunnerAction">
-         </action>
 
          <action
                label="Management Console"
@@ -242,13 +233,6 @@
                menubarPath="smartFrogMenu/tools"
                toolbarPath="SmartFrogTools"
                tooltip="SF Ping">
-         </action>
-         <action
-               id="smartfrog-plugin-project.action2"
-               label="SF Terminate"
-               menubarPath="smartFrogMenu/tools"
-               toolbarPath="SmartFrogTools"
-               tooltip="SF Terminate">
          </action>
       </actionSet>
    </extension>
