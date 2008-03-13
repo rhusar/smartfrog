@@ -1014,7 +1014,7 @@
     <!--list of rpms-->
 
     <property name="rpms.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit"/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit"/>
     <!--here are all the signed RPMs that are generated-->
     <property name="rpms.signed.list" value="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed"/>
 
