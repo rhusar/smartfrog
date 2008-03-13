@@ -36,7 +36,7 @@ class SfProcessStopperWizard
     extends Wizard
 {
     private IFile mFile = null;
-    private SfProcessRunnerWizardPage mRunnerPage;
+    private SfTerminateWizardPage mRunnerPage;
     private String mSelectedFile;
     private SfProcessStopperExt mSfRunner;
 
@@ -56,7 +56,7 @@ class SfProcessStopperWizard
      */
     public void addPages()
     {
-        mRunnerPage = new SfProcessRunnerWizardPage(Messages.getString(
+        mRunnerPage = new SfTerminateWizardPage(Messages.getString(
                     "SfProcessStopperWizard.title.SmartFrogProcessWizardPage"), //$NON-NLS-1$
                 Messages.getString(
                     "SfProcessStopperWizard.description.SmartFrogProcessWizardPage"), //$NON-NLS-1$
