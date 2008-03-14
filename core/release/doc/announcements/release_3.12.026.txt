@@ -129,24 +129,24 @@ Changes since last Release
 
 The main changes in this release are:-
 
-* All shell scripts/batch files take a -p option that specifies the port to work with. This simplifies running SmartFrog
-  on different ports, including multiple versions of SmartFrog simultaneously.
+* All shell scripts/batch files take a -p option that specifies the port to work with. This
+simplifies running SmartFrog on different ports, including multiple versions of SmartFrog
+simultaneously.
 
-* There is a new component bundle, sf-csvfiles, in the smartfrog-csvfiles RPM. This can read in lines from a .csv file, be
-  they created by a spreadsheet or another program. A column from a CSV file can be turned into a list attribute of a
-  component, so enabling parts of a deployment to be spreadsheet driven. There is also a component in the sf-xml package
-  which runs through a CSV file (or other source of tuples) and generates an XML file from it, XML that can then be transformed
-  using XSL operations into other text formats.
+* There is a new component bundle, sf-csvfiles, in the smartfrog-csvfiles RPM. This can read in
+lines from a .csv file, be they created by a spreadsheet or another program. A column from a CSV
+file can be turned into a list attribute of a component, so enabling parts of a deployment to be
+spreadsheet driven. There is also a component in the sf-xml package which runs through a CSV file
+(or other source of tuples) and generates an XML file from it, XML that can then be transformed
+using XSL operations into other text formats.
 
-* The LivenessPage and WaitForPage components in the sf-www package now support authenticated access to web pages; this
-  enables the components to connect to the dyndns.org services to dynamically register hostnames. We provide templates
-  to demonstrate this.
+* The LivenessPage and WaitForPage components in the sf-www package now support authenticated access
+to web pages; this enables the components to connect to the dyndns.org services to dynamically
+register hostnames. We provide templates to demonstrate this.
 
-* More graceful handling of bad network states. Remember, SmartFrog uses Java RMI, a technology which does not like
-  the hostname of the local host not resolving in the network stack. SmartFrog detects this and keeps going, but you may
-  not be able to deploy all that you wish to.
-
-
+* More graceful handling of bad network states. Remember, SmartFrog uses Java RMI, a technology
+which does not like the hostname of the local host not resolving in the network stack. SmartFrog
+detects this and keeps going, but you may not be able to deploy all that you wish to.
 
   
 Release Notes - SmartFrog - Version 3.12.025 dev
