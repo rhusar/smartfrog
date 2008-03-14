@@ -1,0 +1,122 @@
+package org.smartfrog.sfcore.utils;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+
+/**
+ * This class provides a single static method - print - which takes a ComponentDescription
+ * and iterates over it to generate an output string. It can be used, for example, to generate XML text.
+ *
+ * It also contains a main method used for testing...
+ */
+public class CDPrinter {
+    /**
+     * The method looks for three optional attributes: CDPStart, CDPEnd, CPDSep and returns
+     * the following print string
+     * <p>
+     * CDPStart + print(first child) + CPDSep + ... + CDPSep + print(last child) + CDPEnd
+     * <p>
+     * If the attributes are not present, they are taken to be empty strings. The attributes
+     * may be arbitrarly complex derivatives of the other attributes in the component description
+     * assuming that full resolution will be carried out before printing.
+     * <p>
+     * Normally, the CDPStart, CDPEnd and CDPSep attributes would be defined in the templaets being
+     * extended and not visible directly to the end users of the templates. So for example one might have:
+     * <p>
+     * Network extends {<br>
+     *     CDPStart "<network subnet=\"" + subnet + "\"/> "<br>
+     *     subnet TBD;<br>
+     * }<br>
+     * <p>
+     * and this would be inherited through normal mechansims.
+     * <p>
+     * Note that comopnent descriptions that contain no CDP attributes does not stop the printer from
+     * printing its children.
+     *
+     * @param cd  the component description to print
+     * @return  the string that is the result of printing
+     */
+    public static String print(ComponentDescription cd) {
+        String nested = "";
+        String CDPStart = "";
+        String CDPEnd = "";
+        String CDPSep = "";
+
+        try {
+            CDPStart = cd.sfResolve(new Reference(ReferencePart.here("CDPStart")), CDPStart, false);
+        } catch (SmartFrogResolutionException e) {
+            //shouldn't happen
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        try {
+            CDPEnd = cd.sfResolve(new Reference(ReferencePart.here("CDPEnd")), CDPEnd, false);
+        } catch (SmartFrogResolutionException e) {
+            //shouldn't happen
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        try {
+            CDPSep = cd.sfResolve(new Reference(ReferencePart.here("CDPSep")), CDPSep, false);
+        } catch (SmartFrogResolutionException e) {
+            //shouldn't happen
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        for (Iterator i = cd.sfAttributes(); i.hasNext(); ) {
+            Object next = i.next();
+            Object value = cd.sfContext().get(next);
+            if (value instanceof ComponentDescription) {
+                String resNext = print((ComponentDescription) value);
+                if (!resNext.equals("") && !nested .equals("")) nested += CDPSep;
+                nested += resNext;
+            }
+        }
+        return CDPStart + nested + CDPEnd;
+    }
+
+    /*
+    public static void main(String [] args) {
+        String url = args[0];
+        try {
+            System.out.println("printing " + url);
+            Phases p = new SFParser().sfParse(new FileInputStream(url));
+            p = p.sfResolvePhases();
+            System.out.println(p.sfAsComponentDescription());
+            System.out.println(print(p.sfAsComponentDescription()));
+        } catch (SmartFrogException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+    */
+    /* example use
+    #include "org/smartfrog/functions.sf"
+
+    System extends {
+      CDPStart ("<sys data=\"" ++ sysval ++ "\">");
+      CDPEnd "</sys>";
+      sysval TBD;
+    }
+
+    comp extends {
+       CDPStart  ("<nic data=\"" ++ compData ++ "\"/>");
+       compData TBD;
+    }
+
+
+    sfConfig extends System {
+        c1 extends comp { compData 5; }
+        c2 extends comp { compData 10; };
+        sysval 100;
+    }
+    */
+}
