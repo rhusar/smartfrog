@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,10 @@ import com.noelios.restlet.http.HttpClientCall;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.restlet.Client;
 import org.restlet.data.Request;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  *

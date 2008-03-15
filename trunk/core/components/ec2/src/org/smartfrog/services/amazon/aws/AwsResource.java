@@ -1,15 +1,4 @@
-package org.smartfrog.services.amazon.aws;
-
-import org.restlet.data.Response;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Protocol;
-import org.restlet.resource.Representation;
-import org.restlet.Client;
-
-/**
+/*
  * (C) Copyright 2007 Hewlett-Packard Development Company, LP
  * <p/>
  * This library is free software; you can redistribute it and/or modify it under
@@ -27,9 +16,7 @@ import org.restlet.Client;
  * 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * <p/>
  * For more information: www.smartfrog.org
- */
 
-/*
 * Copyright 2005-2007 Noelios Consulting.
 *
 * The contents of this file are subject to the terms of the Common Development
@@ -46,6 +33,19 @@ import org.restlet.Client;
 * enclosed by brackets "[]" replaced with your own identifying information:
 * Portions Copyright [yyyy] [name of copyright owner]
 */
+package org.smartfrog.services.amazon.aws;
+
+import org.restlet.data.Response;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
+import org.restlet.resource.Representation;
+import org.restlet.Client;
+
+
+
 
 /**
  * this is a factoring out of the base resource concept from the S3 code.

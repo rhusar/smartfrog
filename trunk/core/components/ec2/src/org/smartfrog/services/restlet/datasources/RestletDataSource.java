@@ -1,5 +1,4 @@
-
-/**
+/*
  * (C) Copyright 2007 Hewlett-Packard Development Company, LP
  * <p/>
  * This library is free software; you can redistribute it and/or modify it under
