@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.database.test.system.core.hsqldb;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.TestBlock;
 
 /**
  */
