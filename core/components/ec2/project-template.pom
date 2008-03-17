@@ -45,5 +45,16 @@
       <artifactId>commons-fileupload</artifactId>
       <version>${commons-fileupload.version}</version>
     </dependency>
+
+    <!--typica-->
+
+    <dependency>
+      <groupId>typica</groupId>
+      <artifactId>typica</artifactId>
+      <version>${typica.version}</version>
+    </dependency>
+
   </dependencies>
+
+
 </project>
