@@ -1,5 +1,7 @@
 package org.smartfrog.sfcore.utils;
 
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -10,6 +12,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
@@ -82,15 +85,29 @@ public class CDPrinter {
         return CDPStart + nested + CDPEnd;
     }
 
+    public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
+            Phases p = new SFParser().sfParse(new FileInputStream(url));
+            // add params
+            if (params != null) {
+                for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
+                    Object k = keys.nextElement();
+                    p.sfReplaceAttribute(k, params.get(k));
+                }
+            }
+            p = p.sfResolvePhases();
+            return print(p.sfAsComponentDescription());
+    }
+
     /*
     public static void main(String [] args) {
         String url = args[0];
         try {
+            Context testC = new ContextImpl();
+            testC.put("test1", new Integer(100));
+            testC.put("test2", new Integer(200));
+            
             System.out.println("printing " + url);
-            Phases p = new SFParser().sfParse(new FileInputStream(url));
-            p = p.sfResolvePhases();
-            System.out.println(p.sfAsComponentDescription());
-            System.out.println(print(p.sfAsComponentDescription()));
+            System.out.println(printURL(url, testC));
         } catch (SmartFrogException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (FileNotFoundException e) {
@@ -98,6 +115,7 @@ public class CDPrinter {
         }
     }
     */
+    
     /* example use
     #include "org/smartfrog/functions.sf"
 
