@@ -120,13 +120,15 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
                 } catch (SmartFrogException dex) {
                     sfTerminate(TerminationRecord.abnormal(
                             "DetachingCompound failed to detach ",
-                            null));
+                            null,
+                            dex));
 
                     return;
                 } catch (RemoteException rex) {
                     sfTerminate(TerminationRecord.abnormal(
                             "DetachingCompound failed to detach due to remote exception",
-                            null));
+                            null,
+                            rex));
 
                     return;
                 }
@@ -140,13 +142,15 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
                     } catch (SmartFrogException remex) {
                         sfTerminate(TerminationRecord.abnormal(
                                 "DetachingCompound failed to detach children",
-                                null));
+                                null,
+                                remex));
 
                         return;
                     } catch (RemoteException rex) {
                         sfTerminate(TerminationRecord.abnormal(
                                 "DetachingCompound failed to detach children due to remote exception",
-                                null));
+                                null,
+                                rex));
 
                         return;
                     }
