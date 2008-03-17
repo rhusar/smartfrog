@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.smartfrog.services.anubis.basiccomms.connectiontransport.ConnectionAddress;
 import org.smartfrog.services.anubis.basiccomms.multicasttransport.MulticastAddress;
 import org.smartfrog.services.anubis.basiccomms.multicasttransport.MulticastComms;
 import org.smartfrog.services.anubis.partition.protocols.heartbeat.HeartbeatReceiver;
@@ -53,8 +54,35 @@ public class HeartbeatComms extends MulticastComms implements HeartbeatCommsIntf
     private Object                   ingnoringMonitor         = new Object();
 
 
+    /**
+     * Set up multicast comms - uses default network interface
+     * @param address - multicast address
+     * @param cs - connection set
+     * @param threadName - name for multicast server thread
+     * @param id - local identify
+     * @param sec - security module
+     * @throws Exception
+     */
    public HeartbeatComms(MulticastAddress address, HeartbeatReceiver cs, String threadName, Identity id, WireSecurity sec) throws Exception {
        super(threadName, address);
+       me = id;
+       connectionSet = cs;
+       wireSecurity = sec;
+       setPriority(Thread.MAX_PRIORITY);
+   }
+
+   /**
+    * Set up multicast coms specifying the network interface
+    * @param address - multicast address
+    * @param inf - network interface to use (specified as a connection address)
+    * @param cs - connection set
+    * @param threadName - name for multicast server thread
+    * @param id - local identify
+    * @param sec - security module
+    * @throws Exception
+    */
+   public HeartbeatComms(MulticastAddress address, ConnectionAddress inf, HeartbeatReceiver cs, String threadName, Identity id, WireSecurity sec) throws Exception {
+       super(threadName, address, inf);
        me = id;
        connectionSet = cs;
        wireSecurity = sec;

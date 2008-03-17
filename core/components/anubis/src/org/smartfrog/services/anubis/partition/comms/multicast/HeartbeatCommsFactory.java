@@ -21,6 +21,7 @@ package org.smartfrog.services.anubis.partition.comms.multicast;
 
 import java.rmi.RemoteException;
 
+import org.smartfrog.services.anubis.basiccomms.connectiontransport.ConnectionAddress;
 import org.smartfrog.services.anubis.basiccomms.multicasttransport.MulticastAddress;
 import org.smartfrog.services.anubis.partition.protocols.heartbeat.HeartbeatReceiver;
 import org.smartfrog.services.anubis.partition.util.Identity;
@@ -44,5 +45,9 @@ public class HeartbeatCommsFactory extends PrimImpl implements Prim {
     
     public HeartbeatCommsIntf create(MulticastAddress address, HeartbeatReceiver cs, String threadName, Identity id) throws Exception {
         return (HeartbeatCommsIntf)new HeartbeatComms(address, cs, threadName, id, wireSecurity);
+    }
+
+    public HeartbeatCommsIntf create(MulticastAddress address, ConnectionAddress inf, HeartbeatReceiver cs, String threadName, Identity id) throws Exception {
+        return (HeartbeatCommsIntf)new HeartbeatComms(address, inf, cs, threadName, id, wireSecurity);
     }
 }

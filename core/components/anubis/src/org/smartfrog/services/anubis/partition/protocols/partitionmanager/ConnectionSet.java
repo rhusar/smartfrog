@@ -152,19 +152,19 @@ public class ConnectionSet extends CompoundImpl
             partitionProtocol = (PartitionProtocol) sfResolve( "partitionProtocol");
 
             /**
-             * Multicast heartbeat comms
-             */
-            HeartbeatCommsFactory heartbeatCommsFactory = (HeartbeatCommsFactory)sfResolve("heartbeatCommsFactory");
-            MulticastAddress heartbeatAddress = ((MulticastAddressData)sfResolve("heartbeatCommsAddress")).getMulticastAddress();
-            heartbeatComms = heartbeatCommsFactory.create(heartbeatAddress, this, "Anubis: heartbeat comms", me);
-
-            /**
              * Message connection comms
              */
             ConnectionAddress connectionAddress = ((ConnectionAddressData)sfResolve("contactAddress")).getConnectionAddress();
             IOConnectionServerFactory factory = (IOConnectionServerFactory)sfResolve("connectionServerFactory");
             connectionServer = (IOConnectionServer)factory.create(connectionAddress, me, this);
             
+            /**
+             * Multicast heartbeat comms
+             */
+            HeartbeatCommsFactory heartbeatCommsFactory = (HeartbeatCommsFactory)sfResolve("heartbeatCommsFactory");
+            MulticastAddress heartbeatAddress = ((MulticastAddressData)sfResolve("heartbeatCommsAddress")).getMulticastAddress();
+            heartbeatComms = heartbeatCommsFactory.create(heartbeatAddress, connectionAddress, this, "Anubis: heartbeat comms", me);
+
 
             SelfConnection self = new SelfConnection(me, connectionView, connectionServer.getAddress(), isPreferredLeaderNode);
 

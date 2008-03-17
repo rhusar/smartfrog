@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
+import org.smartfrog.services.anubis.basiccomms.connectiontransport.ConnectionAddress;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogImplAsyncWrapper;
@@ -88,6 +90,24 @@ public class MulticastComms extends Thread {
       sock.setTimeToLive(address.timeToLive);
       terminating = false;
   }
+  
+  /**
+   * Constructor - uses MulticastAddress to define the multicast. Use inf to define
+   * the network interface to use.
+   * group etc.
+   */
+  public MulticastComms(String threadName, MulticastAddress address, ConnectionAddress inf) throws Exception {
+
+      super(threadName);
+      this.groupAddress = address;
+      sock = new MulticastSocket(address.port);
+      sock.setInterface(inf.ipaddress);
+      sock.joinGroup(address.ipaddress);
+      sock.setTimeToLive(address.timeToLive);
+      terminating = false;
+  }
+  
+  
 
 
   public void start() {
