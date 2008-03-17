@@ -161,7 +161,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                        "error in starting next random component", name));
+                        "error in starting next random component", name, e));
                 forward=false;
             }
         }
