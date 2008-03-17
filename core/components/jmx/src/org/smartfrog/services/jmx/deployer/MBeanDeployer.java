@@ -589,7 +589,7 @@ public class MBeanDeployer extends CompoundImpl implements Compound, MBeanDeploy
             termR = (TerminationRecord.abnormal("MBeanDeployer terminated: Unable to bind to " +
                                            ex.remoteAgentAddress.toString() +
                                            ", reason: " + ex.getMessage(),
-                                           nameRef));
+                                           nameRef, ex));
             // Proper termination of a component!
             Runnable terminator = new Runnable() {
               public void run() {

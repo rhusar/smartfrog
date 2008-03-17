@@ -156,7 +156,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             // any exception causes termination
             Reference componentName = sfCompleteNameSafe();
             sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                    componentName));
+                    componentName,ex));
         }
     }
 
