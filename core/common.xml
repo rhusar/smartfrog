@@ -67,6 +67,8 @@
     <!-- it is how we infer the base directory of the system -->
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
+    <!--if unset, we work it out here too-->
+    <property name="root.dir" location="${core.dir}"/>
     
     <!-- This is to decide the directory structure for the components, and default is false -->
     <property name="is.component" value="true"  />
