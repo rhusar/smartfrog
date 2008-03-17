@@ -11,9 +11,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.xmpp;
 /**
- * Constants used on both Avalanche Server and clients. This class
- * exists on both places.
- * @author sanjaydahiya
+ * Constants used on both Avalanche Server and clients.
+ *
+ * This class is used by the VMWare and Avalanche modules
  *
  */
 public class MonitoringConstants {
