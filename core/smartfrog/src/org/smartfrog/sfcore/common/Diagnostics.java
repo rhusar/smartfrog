@@ -585,8 +585,9 @@ public final class Diagnostics {
          out.append("ip '"+localhost.getHostAddress()+"', ");
          time=System.currentTimeMillis();
          InetAddress newLocalhost = InetAddress.getByName(localhostName);
+         InetAddress newLocalhost2 = InetAddress.getByAddress(newLocalhost.getAddress());
          time2=System.currentTimeMillis()-time;
-         if (localhost.equals(newLocalhost)){
+         if ((localhost.equals(newLocalhost))&& (localhost.equals(newLocalhost2))){
              out.append(" [Successful], ").append(time2).append("ms");
              failed = false;
          } else {
@@ -635,8 +636,9 @@ public final class Diagnostics {
               out.append("ip '"+remotehost.getHostAddress()+"', "+time2+"ms, ");
               time=System.currentTimeMillis();
               InetAddress newRemotehost = InetAddress.getByName(remotehostName);
+              InetAddress newRemotehost2 = InetAddress.getByAddress(newRemotehost.getAddress());
               time2=System.currentTimeMillis()-time;
-              if (remotehost.equals(newRemotehost)){
+              if ((remotehost.equals(newRemotehost)) && (remotehost.equals(newRemotehost2))) {
                  out.append(" [Successful], "+time2+"ms");
                  failed = false;
               } else {
