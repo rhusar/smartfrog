@@ -20,17 +20,16 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.passwords;
 
-import java.rmi.RemoteException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.nio.charset.Charset;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
 
 /**
  * Implementation of PasswordProvider which reads the password from a text 
@@ -44,7 +43,8 @@ public class FilePasswordProvider extends PrimImpl implements Prim,
      * The attribute of the password file: "{@value}"
      */
     public static final String PASSWORD_FILE="passwordFile";
-    
+    public static final String ERROR_MISSING_PASSWORD_FILE = "Missing password file: ";
+
     /**
      * Constructs FilePasswordProvider object.
      *
@@ -58,22 +58,26 @@ public class FilePasswordProvider extends PrimImpl implements Prim,
      * {@inheritDoc}
      * @throws SmartFrogException If unable to get the password
      * @throws RemoteException in case of network or RMI error
+     * @throws SmartFrogDeploymentException if there is no password file
      * @return a password
      */
     public String getPassword() throws SmartFrogException, RemoteException {
         File file =
-            FileSystem.lookupAbsoluteFile(this,
-                PASSWORD_FILE,
-                null,
-                null,
-                true,
-                null);
+                FileSystem.lookupAbsoluteFile(this,
+                        PASSWORD_FILE,
+                        null,
+                        null,
+                        true,
+                        null);
+        if(!file.exists()) {
+            throw new SmartFrogDeploymentException(ERROR_MISSING_PASSWORD_FILE +file.getAbsolutePath(),this);
+        }
         try {
             String contents =
-                FileSystem.readFile(file, Charset.defaultCharset()).toString();
+                    FileSystem.readFile(file, Charset.defaultCharset()).toString();
             return contents.trim();
-        }catch (IOException ioex) {
-                throw new SmartFrogException(ioex);
+        } catch (IOException ioex) {
+            throw new SmartFrogException("Failed to read "+file.getAbsolutePath(), ioex, this);
         }
     }
 }

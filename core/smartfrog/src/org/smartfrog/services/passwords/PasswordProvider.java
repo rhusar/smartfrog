@@ -20,9 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.passwords;
 
-import java.rmi.RemoteException;
-import java.rmi.Remote;
 import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 /**
  * Interface to provide password for the net components. Possibly there can be
  * various sources to get password. Like File, Database and UI component.

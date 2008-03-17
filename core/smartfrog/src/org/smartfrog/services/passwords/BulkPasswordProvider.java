@@ -21,8 +21,8 @@ package org.smartfrog.services.passwords;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * This interface is for components that provide bulk access to passwords.
