@@ -97,7 +97,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
             if (sfLog().isErrorEnabled()) {
                 sfLog().error(sfCompleteNameSafe()+ " - error in event handler for event "+event, e);
             }
-            sfTerminate(TerminationRecord.abnormal("error in event handler for event "+event, null));
+            sfTerminate(TerminationRecord.abnormal("error in event handler for event "+event, null, e));
         }
     }
 
