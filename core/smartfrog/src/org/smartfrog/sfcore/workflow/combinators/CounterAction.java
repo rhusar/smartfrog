@@ -138,7 +138,7 @@ public class CounterAction extends EventCompoundImpl implements Compound {
                     sfLog().error(message, e);
                 }
                 //trigger our own abnormal termination
-                sfTerminate(TerminationRecord.abnormal(message, name));
+                sfTerminate(TerminationRecord.abnormal(message, name, e));
                 //and tell the container not to
                 return false;
             }
