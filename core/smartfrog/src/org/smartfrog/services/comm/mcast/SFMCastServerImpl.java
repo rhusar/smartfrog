@@ -91,16 +91,16 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
     RemoteException {
         super.sfDeploy();
         TerminationRecord termR;
-                String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
-                if ((onlyInRoot)&& (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
-                    termR = TerminationRecord.normal("Not deployed in rootProcess",
-                                                  sfCompleteName());
+        String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
+        if ((onlyInRoot) && (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
+            termR = TerminationRecord.normal("Not deployed in rootProcess",
+                    sfCompleteName());
 
-                    TerminatorThread terminator = new TerminatorThread(this,
+            TerminatorThread terminator = new TerminatorThread(this,
                     termR);
-                    terminator.start();
-                    return;
-                }
+            terminator.start();
+            return;
+        }
 
         myName = this.sfCompleteNameSafe().toString();
         readSFAttributes();

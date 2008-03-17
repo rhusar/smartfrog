@@ -75,7 +75,7 @@ public class SFUnzip extends PrimImpl implements Prim {
 		}
 		sfLog().info("Finished un-zip file ");
 				
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 

@@ -86,7 +86,7 @@ public class SFStopContainer extends PrimImpl implements Prim {
 			throw new SmartFrogException(ioe.toString());
 		}
 		
-		TerminationRecord tr = new TerminationRecord("Normal", "Completed executing command... ",
+		TerminationRecord tr = TerminationRecord.normal("Completed executing command... ",
 				sfCompleteName());
 		sfTerminate(tr);
 	}	

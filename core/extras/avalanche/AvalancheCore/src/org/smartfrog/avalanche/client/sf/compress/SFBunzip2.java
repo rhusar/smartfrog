@@ -77,7 +77,7 @@ public class SFBunzip2 extends PrimImpl implements Prim {
 		}
 		sfLog().info("Finished bun-zip2 file ");
 				
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 

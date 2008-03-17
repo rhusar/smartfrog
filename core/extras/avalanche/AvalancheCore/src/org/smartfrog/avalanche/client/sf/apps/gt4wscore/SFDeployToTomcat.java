@@ -144,7 +144,7 @@ public class SFDeployToTomcat extends PrimImpl implements Prim {
             terminator.start();
             */
 			
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+			TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 			sfTerminate(tr);
 			
 	}	

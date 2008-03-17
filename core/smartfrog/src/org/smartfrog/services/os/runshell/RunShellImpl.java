@@ -255,6 +255,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public void run() {
         int exitVal = 0;
         boolean failed=false;
+        Throwable thrown=null;
         try {
             // wait until process finishes
             exitVal = subProcess.waitFor();
@@ -268,6 +269,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             //Thread.sleep(3*1000);
         } catch (Exception ex) {
             failed=true;
+            thrown=ex;
             terminationType= TerminationRecord.ABNORMAL;
             if (sfLog().isErrorEnabled()) {
                 sfLog().error(ex.getMessage(), ex);
@@ -296,7 +298,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             details.append(fullShellCommand);
         }
         terminationRecord = (new TerminationRecord(terminationType,
-                details.toString(), null));
+                details.toString(),
+                null,
+                thrown));
 
         TerminatorThread terminator = new TerminatorThread(this, terminationRecord);
         if (shouldDetach)   {

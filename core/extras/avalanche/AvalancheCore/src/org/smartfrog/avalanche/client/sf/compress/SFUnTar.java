@@ -85,7 +85,7 @@ public class SFUnTar extends PrimImpl implements Prim {
 		sfLog().info("Finished un-tar file ");
 				
         // terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 

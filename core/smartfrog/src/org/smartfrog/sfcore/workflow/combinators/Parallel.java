@@ -184,8 +184,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
         } else {
             //no actions. Maybe terminate 
             if (terminateIfEmpty) {
-                terminationRecord = new TerminationRecord(TerminationRecord.NORMAL,
-                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY, getName());
+                terminationRecord = TerminationRecord.normal(
+                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY,
+                        getName());
             }
         }
         if (terminationRecord != null) {

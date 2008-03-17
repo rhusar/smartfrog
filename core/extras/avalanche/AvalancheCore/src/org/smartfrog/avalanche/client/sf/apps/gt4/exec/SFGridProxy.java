@@ -83,7 +83,8 @@ public class SFGridProxy extends PrimImpl implements Prim {
 		
 		sfLog().info("Proxy initialized successfully");
 		
-		TerminationRecord tr = new TerminationRecord("Normal", "Completed executing command... ", sfCompleteName());
+		TerminationRecord tr =
+                TerminationRecord.normal("Completed executing command... ", sfCompleteName());
 		sfTerminate(tr);
 	}	
 

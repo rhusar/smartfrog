@@ -88,7 +88,7 @@ public class SFGridFTPPrereqs extends PrimImpl implements Prim {
 		sfLog().info("All pre-requisites for GT4-GridFTP satisfied");
 		
 		// terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);		
 	}	
 

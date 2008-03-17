@@ -84,7 +84,7 @@ public class SFUnInstallWSCore extends PrimImpl implements Prim {
 			throw new SmartFrogException(e);
 		}
 		
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 

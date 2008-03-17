@@ -82,7 +82,7 @@ public class SFConfigureGridFTP extends PrimImpl implements Prim {
 		}
 		
 		if (shdTerminate) {
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+			TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 			sfTerminate(tr);
 		}
 	}
