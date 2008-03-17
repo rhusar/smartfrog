@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -78,18 +79,6 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
     }
 
     /**
-     * Deploys ScpImpl component and reads SmartFrog attributes and .
-     *
-     * @throws SmartFrogException in case of error in deploying or reading the attributes
-     * @throws RemoteException in case of network/emi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
-        readSFAttributes();
-    }
-
-    /**
      * Connects to remote host over SSH and uploads/downloads files.
      *
      * @throws SmartFrogException in case of error while connecting to remote host or executing scp command
@@ -99,6 +88,7 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
             RemoteException {
 
         super.sfStart();
+        readSFAttributes();
         readFileLists();
         if (localFiles.isEmpty()) {
             log.info(INFO_NO_FILES_TO_PROCESS);
@@ -201,12 +191,8 @@ public class ScpComponentImpl extends AbstractSSHComponent implements ScpCompone
         localFiles = FileSystem.resolveFileList(this, new Reference(LOCAL_FILES),
                 null, true);
 
-        //convert the list of local files into
-        Vector vector = sfResolve(REMOTE_FILES, (Vector) null, true);
-        remoteFileList = new Vector<String>(vector.size());
-        for (Object o : vector) {
-            remoteFileList.add(o.toString());
-        }
+        //get the remote files
+        remoteFileList = ListUtils.resolveStringList(this, new Reference(REMOTE_FILES), true);
         validateFileLists();
     }
 

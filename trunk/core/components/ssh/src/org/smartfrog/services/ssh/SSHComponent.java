@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
-
 import java.rmi.Remote;
 
 /**

@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * A component to execute remote scripts.
+ *
+ * This is just a stub; nothing implemented yet.
  * Created 22-Oct-2007 13:29:37
  *
  */

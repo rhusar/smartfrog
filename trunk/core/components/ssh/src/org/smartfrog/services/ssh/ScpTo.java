@@ -23,9 +23,9 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class to upload files to a remote host over SSH Session.
