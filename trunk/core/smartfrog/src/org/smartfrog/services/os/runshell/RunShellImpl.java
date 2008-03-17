@@ -292,7 +292,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         details.append(shellCommand);
         details.append(" finished: ");
         details.append(getNotifierId());
-        details.append(" exit value="+exitVal);
+        details.append(" exit value=").append(exitVal);
         if(failed && printCommandOnFailure) {
             details.append("\ncommand=");
             details.append(fullShellCommand);
