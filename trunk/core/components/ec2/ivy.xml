@@ -15,21 +15,25 @@
   </configurations>
   -->
 <configurations defaultconfmapping="default">
-    <conf name="default" extends="master,runtime"/>
-    <conf name="build" visibility="private"
-        description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
-        description="artifacts needed to compile the application"/>
-    <conf name="daemon" visibility="private"
-        description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="compile,default"
-        description="the classpath needed to run tests" />
+  <conf name="default" extends="master,runtime"/>
+  <conf name="build" visibility="private"
+      description="artifacts needed to build the application"/>
+  <conf name="compile" visibility="private"
+      extends="redist"
+      description="artifacts needed to compile the application"/>
+  <conf name="daemon" visibility="private"
+      description="the classpath needed to run smartfrog daemons"/>
+  <conf name="test" extends="compile,default"
+      description="the classpath needed to run tests"/>
   <conf name="testwar"
-      description="the test WAR File" visibility="private"/>  
-    <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
-    <conf name="runtime" description="runtime but not the artifact"
-        extends="redist"/>
+      description="the test WAR File" visibility="private"/>
+  <conf name="master" description="contains the artifact but no dependencies"/>
+  <conf name="typica" description="contains the typica dependencies"/>
+  <conf name="restlet" description="contains the restlet dependencies"/>
+  <conf name="redist" description="redistributals excluding smartfrog artifacts"
+      extends="typica,restlet"/>
+  <conf name="runtime" description="runtime but not the artifact"
+      extends="redist"/>
 </configurations> 
 
   <publications>
@@ -92,21 +96,21 @@
     <dependency org="org.restlet"
         name="org.restlet"
         rev="${restlet.version}"
-        conf="compile,redist->default"/>
+        conf="restlet->default"/>
 
     <!--this is the implementation and java.net integration-->
     <dependency org="com.noelios.restlet"
         name="com.noelios.restlet"
         rev="${restlet.version}"
-        conf="compile,redist->default"/>
+        conf="restlet->default"/>
     <dependency org="com.noelios.restlet"
         name="com.noelios.restlet.ext.net"
         rev="${restlet.version}"
-        conf="compile,redist->default"/>
+        conf="restlet->default"/>
     <dependency org="com.noelios.restlet"
         name="com.noelios.restlet.ext.httpclient"
         rev="${restlet.version}"
-        conf="compile,redist->default">
+        conf="restlet->default">
       <exclude org="commons-httpclient"/>
       </dependency>
 
@@ -114,12 +118,16 @@
     <dependency org="org.restlet"
         name="org.restlet.ext.fileupload"
         rev="${restlet.version}"
-        conf="compile,redist->default"/>
+        conf="restlet->default"/>
     <dependency org="commons-fileupload"
         name="commons-fileupload"
         rev="${commons-fileupload.version}"
-        conf="compile,redist->default"/>
+        conf="restlet->default"/>
 
-
+    <!--Typica -->
+    <dependency org="typica"
+        name="typica"
+        rev="${typica.version}"
+        conf="typica->default"/>
   </dependencies>
 </ivy-module>
