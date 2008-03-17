@@ -40,7 +40,7 @@ import java.io.IOException;
 public abstract class ParserTestBase extends TestCase implements Filenames {
 
 
-    protected static final Log log = LogFactory.getLog(this.getClass());
+    protected static final Log log = LogFactory.getLog(ParserTestBase.class);
     protected SoapMessageParser parser;
 
     /**
@@ -57,7 +57,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
      */
     protected CatalogHandler createCatalog() {
         ResourceLoader loader;
-        loader = new ResourceLoader(this.getClass());
+        loader = new ResourceLoader(getClass());
         return new CatalogHandler(loader);
     }
 
@@ -93,7 +93,7 @@ public abstract class ParserTestBase extends TestCase implements Filenames {
      * @throws SAXException
      */
     protected void initParser() throws SAXException {
-        ResourceLoader loader = new ResourceLoader(this.getClass());
+        ResourceLoader loader = new ResourceLoader(getClass());
         parser = new SoapMessageParser(loader,
                 SoapConstants.URI_SOAPAPI,
                 isParserValidating(),
