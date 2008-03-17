@@ -21,15 +21,14 @@
 
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.filesystem.files.FilesImpl;
 import org.smartfrog.services.filesystem.files.Fileset;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
-import java.rmi.RemoteException;
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
@@ -72,7 +71,6 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
                 log.info("Skipping directory "+file);
             }
         }
-
         setLocalFiles(local);
         setRemoteFileList(remote);
         validateFileLists();

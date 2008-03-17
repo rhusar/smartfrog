@@ -23,8 +23,8 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -34,9 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.util.StringTokenizer;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class to copy securely from a remote machine. 

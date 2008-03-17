@@ -21,18 +21,17 @@
 
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.utils.ComponentHelper;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
-import java.util.List;
 import java.rmi.RemoteException;
-
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.JSchException;
+import java.util.List;
 
 /**
  * This is the worker thread we use to move files. After execution,

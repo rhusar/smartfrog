@@ -128,10 +128,12 @@ tcn89 extends ExpectDeployFailure {
   action extends FullScpSession  {
     transferType "POST";
   }
-  //exitText CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.UNSUPPORTED_ACTION";
+  exitText CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.UNSUPPORTED_ACTION";
+  /*
   exceptions [
       ["",CONSTANT "org.smartfrog.services.ssh.ScpComponentImpl.UNSUPPORTED_ACTION" ]
     ];
+    */
 }
 
 tcn_nonexistent_host extends FullScpSession  {
@@ -231,10 +233,12 @@ test_vm_commands extends ExpectDeployFailure {
     action extends vmcommands  {
     }
 
+    //NoPasswd FilePassword:ERROR_MISSING_PASSWORD_FILE;
+    NoPasswd "Missing password file: ";
+
     exceptions [
         [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
-        ["",""],
-        ["java.io.FileNotFoundException",""]
+        [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,NoPasswd]
       ];
 
 }

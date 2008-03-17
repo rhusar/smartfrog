@@ -19,13 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogSF;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.File;
 import java.rmi.RemoteException;
 
 /**

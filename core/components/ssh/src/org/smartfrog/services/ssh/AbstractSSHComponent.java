@@ -22,23 +22,18 @@ package org.smartfrog.services.ssh;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.HostKeyRepository;
-import com.jcraft.jsch.HostKey;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.passwords.PasswordProvider;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
-import java.util.Vector;
-import java.io.File;
 
 /**
  * This base class handles all SSH authentication issues for any component that needs SSH auth.
@@ -96,6 +91,16 @@ public abstract class  AbstractSSHComponent extends PrimImpl implements SSHCompo
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         log = sfLog();
+    }
+
+    /**
+     * Read in the common SHS attributes during startup
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
         readCommonSSHAttributes();
     }
 

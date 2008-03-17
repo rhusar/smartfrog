@@ -87,19 +87,6 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
     }
 
     /**
-     * Reads SmartFrog attributes and deploys SSHExecImpl component.
-     *
-     * @throws SmartFrogException in case of error in deploying or reading the attributes
-     * @throws RemoteException    in case of network/emi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
-        super.sfDeploy();
-        readSFAttributes();
-    }
-
-
-    /**
      * Connects to remote host over SSH and executes commands.
      *
      * @throws SmartFrogException in case of error while connecting to remote host or executing commands
@@ -109,6 +96,7 @@ public class SSHExecImpl extends AbstractSSHComponent implements SSHExec {
             RemoteException {
 
         super.sfStart();
+        readSFAttributes();
         executorThread = new CommandExecutor();
         executorThread.start();
     }
