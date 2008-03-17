@@ -63,7 +63,7 @@ public class SFStartComponent extends PrimImpl implements Prim {
 		}
 		sfLog().info("Executed the command " + componentPath + " successfully");
 		
-		TerminationRecord tr = new TerminationRecord("Normal", "Completed executing command... ",
+		TerminationRecord tr = TerminationRecord.normal( "Completed executing command... ",
 				sfCompleteName());
 		sfTerminate(tr);
 	}

@@ -77,7 +77,7 @@ public class SFUndeployFrmTomcat extends PrimImpl implements Prim {
 		}
 		sfLog().info("Finished undeploying " + webAppName + " from tomcat.");
 		
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 	

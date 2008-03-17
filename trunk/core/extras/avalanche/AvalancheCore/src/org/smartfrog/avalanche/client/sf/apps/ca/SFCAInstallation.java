@@ -133,7 +133,7 @@ public class SFCAInstallation extends PrimImpl implements Prim {
 		sfLog().info("Sucessfully installed CA");
 		
 		// terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 		
 	}	

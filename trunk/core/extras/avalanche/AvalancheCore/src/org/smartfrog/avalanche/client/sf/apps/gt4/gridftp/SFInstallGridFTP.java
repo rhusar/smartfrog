@@ -106,7 +106,7 @@ public class SFInstallGridFTP extends PrimImpl implements Prim {
 		sfLog().info("Successfully installed Grid FTP");
 		
 		//terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}
 

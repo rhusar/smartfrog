@@ -72,7 +72,7 @@ public class SFAntHelper extends PrimImpl implements Prim{
 
 			sfLog().info("Executed the build file " + buildFile + " successfully");
 			
-			TerminationRecord tr = new TerminationRecord("Normal", "Completed executing the build file... ",
+			TerminationRecord tr = TerminationRecord.normal("Completed executing the build file... ",
 				sfCompleteName());
 		sfTerminate(tr);
 		}catch(Exception e){

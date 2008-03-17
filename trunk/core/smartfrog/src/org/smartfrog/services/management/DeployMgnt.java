@@ -99,8 +99,9 @@ public class DeployMgnt {
      * @param  obj  Reference to SF Component
      * @param type error type
      * @param reason cause
+     * @throws Exception if termination fails
      */
-    public static void terminate(Prim obj, String type, String reason) throws Exception{
+    public static void terminate(Prim obj, String type, String reason) throws Exception {
             TerminationRecord tr = new TerminationRecord(type, reason, null);
             obj.sfTerminate(tr);
     }
@@ -111,6 +112,7 @@ public class DeployMgnt {
      * @param  obj  Reference to SF Component
      * @param type error type
      * @param reason cause
+     * @throws Exception if termination fails
      */
     public static void dTerminate(Prim obj, String type, String reason) throws Exception {
         TerminationRecord tr = new TerminationRecord(type, reason, null);

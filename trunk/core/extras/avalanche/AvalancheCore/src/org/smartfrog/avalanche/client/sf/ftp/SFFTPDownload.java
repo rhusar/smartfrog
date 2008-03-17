@@ -76,7 +76,7 @@ public class SFFTPDownload extends PrimImpl implements Prim {
 		}
 		
 		sfLog().info("Creating termination record : FTP Component .. ");
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfLog().info("Terminating FTP Component .. ");
 		this.sfTerminate(tr);
 	}

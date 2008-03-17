@@ -102,7 +102,7 @@ public class SFCheckPrereqs extends PrimImpl implements Prim {
 		sfLog().info("All pre-requisites for GT4 satisfied");
 		
 		// terminate synchronously
-		TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+		TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 		sfTerminate(tr);
 	}	
 

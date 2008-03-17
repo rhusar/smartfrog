@@ -137,7 +137,7 @@ public class SFSetupUserCerts extends PrimImpl implements Prim {
 		
 		// terminate synchronously
 		if (shouldTerminate) {
-			TerminationRecord tr = new TerminationRecord("normal", "Terminating ...", sfCompleteName());
+			TerminationRecord tr = TerminationRecord.normal("Terminating ...", sfCompleteName());
 			sfTerminate(tr);
 		}
 	}	
