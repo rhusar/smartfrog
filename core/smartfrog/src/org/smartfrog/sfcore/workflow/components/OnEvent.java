@@ -139,7 +139,9 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(sfCompleteNameSafe()+ " - error handling child event handler termination ", e);
                 }
-                sfTerminate(TerminationRecord.abnormal( "error handling child event handler termination "+e, sfCompleteNameSafe()));
+                sfTerminate(TerminationRecord.abnormal( "error handling child event handler termination "+e,
+                        sfCompleteNameSafe(),
+                        e));
             }
         }
     }
