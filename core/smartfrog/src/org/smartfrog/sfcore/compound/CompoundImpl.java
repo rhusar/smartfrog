@@ -563,7 +563,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
          } catch (Throwable thr) {
                // any exception causes termination
                Reference name = sfCompleteNameSafe();
-               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name));
+               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name,thr));
                sfGetCoreLog().error("caught on start ("+name.toString()+")", thr);
                throw SmartFrogLifecycleException.forward(thr);
          }

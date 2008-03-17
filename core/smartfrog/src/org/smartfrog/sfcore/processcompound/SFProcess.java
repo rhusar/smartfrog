@@ -208,7 +208,8 @@ public class SFProcess implements MessageKeys {
                 try {
                     dComp.sfTerminate(TerminationRecord.abnormal(
                             "Deployment Failure: " + ex,
-                            comp.sfCompleteName()));
+                            comp.sfCompleteName(),
+                            ex));
                 } catch (Exception termex) {
                     // ignore
                     if (sfLog().isIgnoreEnabled()) {
@@ -242,7 +243,8 @@ public class SFProcess implements MessageKeys {
             try {
                 TerminationRecord tr = TerminationRecord.abnormal(
                         "Failed to start ",
-                        newRef);
+                        newRef,
+                        ex);
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(newRef.toString(),
                             SmartFrogException.forward(ex),
