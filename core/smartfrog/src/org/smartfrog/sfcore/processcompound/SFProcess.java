@@ -44,7 +44,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Properties;
 
 
@@ -91,6 +90,8 @@ public class SFProcess implements MessageKeys {
     private static final String INTERRUPT_HANDLER = "org.smartfrog.sfcore.processcompound.InterruptHandlerImpl";
     private static final String ERROR_NO_INTERRUPT_HANDLER = "Could not create an interrupt handler from " + INTERRUPT_HANDLER
             + "\nSmartFrog may be running on a JVM which does not support this feature";
+    public static final String ERROR_ROOT_LOCATOR_ALREADY_SET = "Root locator already set";
+    public static final String ERROR_PROCESS_COMPOUND_ALREADY_SET = "ProcessCompound already set";
 
 //    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
 //     *  It can be replaced using sfSetLog()
@@ -112,7 +113,7 @@ public class SFProcess implements MessageKeys {
     public static synchronized void setRootLocator(RootLocator c)
             throws Exception {
         if (rootLocator != null) {
-            throw new Exception("Root locator already set");
+            throw new SmartFrogException(ERROR_ROOT_LOCATOR_ALREADY_SET);
         }
         rootLocator = c;
     }
@@ -129,7 +130,7 @@ public class SFProcess implements MessageKeys {
     public static synchronized void setProcessCompound(ProcessCompound pc)
             throws Exception {
         if (processCompound != null) {
-            throw new Exception("ProcessCompound already set");
+            throw new SmartFrogException(ERROR_PROCESS_COMPOUND_ALREADY_SET);
         }
         processCompound = pc;
     }
@@ -266,8 +267,8 @@ public class SFProcess implements MessageKeys {
         String name = null;
         String url = null;
         String key = null;
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            key = e.nextElement().toString();
+        for(Object keyName:props.keySet()) {
+            key = keyName.toString();
             if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                 // Collects all properties refering to default descriptions that
                 // have to be deployed inmediately after process compound
@@ -321,6 +322,7 @@ public class SFProcess implements MessageKeys {
      * @return local process compound
      *
      * @throws SmartFrogException if failed to deploy process compound
+     * @throws RemoteException network problems
      */
     public static synchronized ProcessCompound deployProcessCompound(boolean addShutdownHook)
             throws SmartFrogException, RemoteException {
@@ -482,6 +484,7 @@ public class SFProcess implements MessageKeys {
      * @return ProcessCompound the target process compound
      *
      * @throws SmartFrogException In case of SmartFrog system error
+     * @throws RemoteException network problems
      */
     public static ProcessCompound sfSelectTargetProcess(String host,
                                                         String subProcess)
@@ -511,6 +514,7 @@ public class SFProcess implements MessageKeys {
      * @return ProcessCompound the target process compound
      *
      * @throws SmartFrogException In case of SmartFrog system error
+     * @throws RemoteException network problems
      */
     public static ProcessCompound sfSelectTargetProcess(InetAddress host,
                                                         String subProcess)
@@ -524,8 +528,7 @@ public class SFProcess implements MessageKeys {
             }
             if (subProcess != null) {
                 try {
-                    Object targetObj = null;
-                    targetObj = target.sfResolve(subProcess); //target.sfResolveHere(subProcess);
+                    Object targetObj = target.sfResolve(subProcess);
                     try {
                         target = (ProcessCompound) targetObj;
                     } catch (java.lang.ClassCastException thr) {
@@ -539,7 +542,7 @@ public class SFProcess implements MessageKeys {
                 } catch (Exception ex) {
                     throw new SmartFrogException(
                             "Error selecting target process '" + subProcess + "' in '" + target
-                                    .sfCompleteName() + "'",
+                                    .sfCompleteName() + '\'',
                             ex);
                 }
             }
@@ -570,11 +573,15 @@ public class SFProcess implements MessageKeys {
      *
      * @return the host InetAddress
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogResolutionException if we cannot determine even our
-     * local host
+     * @throws SmartFrogResolutionException if we cannot determine even our local host
      */
     private static InetAddress hostInetAddress = null;
 
+    /**
+     * Determine the deployed host
+     * @return the network address of the host
+     * @throws SmartFrogException
+     */
     public static InetAddress sfDeployedHost() throws SmartFrogException {
 
         if (hostInetAddress != null) {
