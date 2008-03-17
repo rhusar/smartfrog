@@ -85,6 +85,15 @@ public class CDPrinter {
         return CDPStart + nested + CDPEnd;
     }
 
+    /**
+     * Method to take a URL, parse it, add the addtional key-value parameters to the top level, resolve and then create the
+     * print string on the resultant description.
+     * @param url the file to parse
+     * @param params a context containing the parameter key-value pairs
+     * @return the resultant print string
+     * @throws SmartFrogException
+     * @throws FileNotFoundException
+     */
     public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
             Phases p = new SFParser().sfParse(new FileInputStream(url));
             // add params
