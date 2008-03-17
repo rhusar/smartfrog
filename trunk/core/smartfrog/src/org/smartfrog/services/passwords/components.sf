@@ -35,6 +35,9 @@ FilePassword extends Prim {
     // default password provides expects password from a password file
     sfClass "org.smartfrog.services.passwords.FilePasswordProvider";
     passwordFile TBD;
+
+    //error string when needed
+    MISSING_PASSWORD_FILE CONSTANT "org.smartfrog.services.passwords.FilePasswordProvider.ERROR_MISSING_PASSWORD_FILE";
 }
 
 /**

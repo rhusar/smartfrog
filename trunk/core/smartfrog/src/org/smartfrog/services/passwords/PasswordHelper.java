@@ -19,10 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.passwords;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
