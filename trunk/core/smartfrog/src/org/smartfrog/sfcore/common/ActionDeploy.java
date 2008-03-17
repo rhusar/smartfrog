@@ -185,7 +185,7 @@ public class ActionDeploy extends ConfigurationAction {
                  catch (Exception ignored) {
                  }
                  try {
-                     comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName));
+                     comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName,e));
                  } catch (Exception ignored) {
                  }
              }
