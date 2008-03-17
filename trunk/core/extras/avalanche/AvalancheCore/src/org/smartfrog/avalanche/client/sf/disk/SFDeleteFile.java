@@ -59,13 +59,13 @@ public class SFDeleteFile extends PrimImpl implements Prim {
 				sfLog().info("Deleting file : " + filePath );
 				DiskUtils.forceDelete(filePath);
 			}catch(IOException e){
-				if( failOnDelete ){
-					sfLog().err("File delete failed, failOnDelete was true terminating with error. filePath : "
-							+ filePath);
-					status = false; 
-		             t = TerminationRecord.abnormal(
-		            		 "File delete failed : " + filePath, name);
-				}
+                if (failOnDelete) {
+                    sfLog().err("File delete failed, failOnDelete was true terminating with error. filePath : "
+                            + filePath);
+                    status = false;
+                    t = TerminationRecord.abnormal(
+                            "File delete failed : " + filePath, name, e);
+                }
 				sfLog().err("File delete failed, failOnDelete was false continuing. filePath : "
 						+ filePath);
 			}
