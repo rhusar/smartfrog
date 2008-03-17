@@ -88,7 +88,7 @@ public class Terminator extends EventPrimImpl implements Prim {
                             targetRecord);
                 }
             } catch (Exception e) {
-                term = TerminationRecord.abnormal(e.toString(), id);
+                term = TerminationRecord.abnormal(e.toString(), id, e);
             }
         }
 
