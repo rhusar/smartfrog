@@ -127,14 +127,11 @@ public class CDPrinter {
             return print(p.sfAsComponentDescription());
     }
 
-/**
+
     public static void main(String [] args) {
         String url = args[0];
         try {
-            Context testC = new ContextImpl();
-            testC.put("test1", new Integer(100));
-            testC.put("test2", new Integer(200));
-            
+            Context testC = new ContextImpl();            
             System.out.println("printing " + url);
             System.out.println(printURL(url, testC));
         } catch (SmartFrogException e) {
@@ -144,7 +141,7 @@ public class CDPrinter {
         }
     }
 
-   */ 
+
     /* example use
     #include "org/smartfrog/functions.sf"
 
