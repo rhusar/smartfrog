@@ -229,9 +229,9 @@ public class SmartFrogPlugin
     public static String[] getSmartFrogLib()
     {
          String smartfrogLib[]={
-    		ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "smartfrog"+getVersion()+"jar", //$NON-NLS-1$
+    		ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "smartfrog"+getVersion()+"jar", 
     		ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "sfServices"+getVersion() +"jar",
-            ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "sfExamples"+getVersion()+"jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "sfExamples"+getVersion()+"jar" 
         };
 
         return smartfrogLib;
