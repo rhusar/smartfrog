@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
@@ -126,7 +127,7 @@ public class CDPrinter {
             return print(p.sfAsComponentDescription());
     }
 
-    /*
+/**
     public static void main(String [] args) {
         String url = args[0];
         try {
@@ -142,8 +143,8 @@ public class CDPrinter {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
-    */
-    
+
+   */ 
     /* example use
     #include "org/smartfrog/functions.sf"
 
