@@ -50,7 +50,7 @@
     <dependency org="org.smartfrog"
         name="sf-loggingservices" changing="true"
         rev="latest.integration"
-        conf="compile->default;runtime->default"/>
+        conf="compile->default;redist->redist;runtime->default"/>
     <dependency org="quartz"
         name="quartz"
         rev="${quartz.version}"
