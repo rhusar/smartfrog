@@ -5,7 +5,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.SmartFrogProjectUtil;
 import org.smartfrog.tools.eclipse.model.Util;
+import org.smartfrog.tools.eclipse.model.builder.SmartFrogProjectBuilder;
+import org.smartfrog.tools.eclipse.ui.project.SmartFrogProject;
 import org.smartfrog.tools.eclipse.SmartFrogPlugin;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class SfParseExt extends ISfRunnerExt {
 
@@ -33,6 +38,9 @@ public class SfParseExt extends ISfRunnerExt {
 		// removing binPathName from classpath
 		classpath = classpath + Util.getClassSeparator() + mClassPath
 				+ SmartFrogPlugin.getmClassPath(mSelectedIFile);
+		
+		
+		
 		String cmds[] = new String[7];
 		cmds[0] = JAVA;
 		cmds[1] = "-cp";
@@ -41,8 +49,10 @@ public class SfParseExt extends ISfRunnerExt {
 		cmds[3] = SfParseClass;
 		cmds[4] = "-r";
 		cmds[5] = "-q";
-		cmds[6] = mSelectedIFile.getProjectRelativePath().toOSString();
+		//cmds[6] = mSelectedIFile.getProjectRelativePath().toOSString();
+		cmds[6] = mSelectedIFile.toString();
 		executeCmd(cmds);
+	
 	}
-
+	
 }
