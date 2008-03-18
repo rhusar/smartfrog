@@ -17,7 +17,7 @@ public class SfParseExt extends ISfRunnerExt {
 	private Shell mShell;
 	private String mFilePath;
 	private IFile mSelectedIFile;
-
+	
 	private String file;
 
 	/**
@@ -27,7 +27,7 @@ public class SfParseExt extends ISfRunnerExt {
 	public SfParseExt(Shell shell, IFile selectedIFile) {
 		mShell = shell;
 		mSelectedIFile = selectedIFile;
-
+		 
 	}
 
 	public void run() {
@@ -50,7 +50,7 @@ public class SfParseExt extends ISfRunnerExt {
 		cmds[4] = "-r";
 		cmds[5] = "-q";
 		//cmds[6] = mSelectedIFile.getProjectRelativePath().toOSString();
-		cmds[6] = mSelectedIFile.toString();
+		cmds[6] = mSelectedIFile.getLocationURI().toString();
 		executeCmd(cmds);
 	
 	}
