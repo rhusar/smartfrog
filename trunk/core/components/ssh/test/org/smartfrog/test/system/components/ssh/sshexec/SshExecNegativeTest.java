@@ -33,9 +33,9 @@ public class SshExecNegativeTest
         super(s);
     }
 
-/*sshexec : improper host*/
-    public void testCaseTCN91_missing_host() throws Exception {
-        deployExpectingException(FILES +"tcn91.sf",
+    /*sshexec : improper host*/
+    public void testCaseTCN91_missing_host() throws Throwable {
+        deployExpectingException(FILES +"tcn91_missing_host.sf",
                                  "tcn91",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
@@ -43,32 +43,20 @@ public class SshExecNegativeTest
                                  "error in schema: non-optional attribute 'host' is missing");
     }
 
-	/*sshexec : userid missing*/
-	public void testCaseTCN92_user_name_is_missing() throws Exception {
-        deployExpectingException(FILES +"tcn92.sf",
+    /*sshexec : userid missing*/
+    public void testCaseTCN92_user_name_is_missing() throws Throwable {
+        deployExpectingException(FILES +"tcn92_user_name_is_missing.sf",
                                  "tcn92",
                                  EXCEPTION_DEPLOYMENT,
                                  null,
                                  EXCEPTION_LINKRESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
-	/*sshexec : command missing*/
-	public void NotestCaseTCN93_commands_is_missing() throws Exception {
-        deployExpectingException(FILES +"tcn93.sf",
-                                 "tcn93",
-                                 null,
-                                 null,
-                                 EXCEPTION_RESOLUTION,
-                                 "commands");
-    }
-	/*sshexec : password file missing*/
-    public void testCaseTCN94_missing_password_file() throws Exception {
-        deployExpectingException(FILES +"tcn94.sf",
-                                 "tcn94",
-                                EXCEPTION_LIFECYCLE,
-                                "sfDeploy",
-                                EXCEPTION_SMARTFROG,
-                                "java.io.FileNotFoundException");
+
+
+    /*sshexec : password file missing*/
+    public void testCaseTCN94_missing_password_file() throws Throwable {
+        expectSuccessfulTestRun(FILES, "tcn94_missing_password_file");
     }
 
 
