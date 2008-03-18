@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/test/system/components/ssh/sshexec/components.sf"
 
 /**
+ * no host
  *
  */
 
- sfConfig extends Tcn94;
-
+ sfConfig extends tcn91;

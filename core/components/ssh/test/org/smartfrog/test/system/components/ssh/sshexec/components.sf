@@ -26,32 +26,61 @@ PasswordSshExec extends SSHSessionInlinePassword {
     username "smartfrog";
  }
 
+tcn91 extends SSHSessionInlinePassword {
+  description "no host";
+  password "secret";
+  commands ["mkdir Sep15", "mkdir sep15"];
+  username "smartfrog";
+};
 
-Tcn91 extends SSHSessionInlinePassword {
-    description "no host";
-    password "secret";
-    username "smartfrog";
-    commands ["mkdir Sep15", "mkdir sep15"];
- }
+tcn91_missing_host  extends ExpectDeployFailure {
+  description "no host";
 
-Tcn92 extends SSHSessionInlinePassword {
-    description "user name is missing";
-    password "secret";
-    host testvalues:localhost;
-    commands ["mkdir Sep15", "mkdir sep15"];
- }
+  action tcn91;
 
-Tcn93 extends PasswordSshExec {
-    description "commands is missing";
+  exceptions [
+      [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,""],
+      [SmartFrogExceptionNames:EXCEPTION_LINKRESOLUTION,
+       "non-optional attribute 'host' is missing"]
+    ];
 }
 
-Tcn94 extends SSHSessionPasswordFile {
-    description "missing password file";
+tcn92  extends SSHSessionInlinePassword {
+  description "missing username attribute";
+  password "secret";
+  host testvalues:localhost;
+  commands ["mkdir Sep15", "mkdir sep15"];
+};
+
+tcn92_user_name_is_missing extends ExpectDeployFailure {
+  description "missing username attribute";
+
+  action tcn92;
+  exceptions [
+      [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,""],
+      [SmartFrogExceptionNames:EXCEPTION_LINKRESOLUTION,
+       "non-optional attribute 'username' is missing"]
+    ];
+}
+
+
+tcn94_missing_password_file extends ExpectDeployFailure {
+  description "missing password file";
+
+  action extends SSHSessionPasswordFile {
     passwordFile "this-file-does-not-exist-probably-0a1b2c3d.txt";
     username "smartfrog";
     host testvalues:localhost;
     commands [];
- }
+ };
+  //NoPasswd FilePassword:ERROR_MISSING_PASSWORD_FILE;
+  NoPasswd "Missing password file: ";
+
+  exceptions [
+      [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
+      [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,NoPasswd]
+    ];
+}
 
 /**
  * bind to a test SSH server
@@ -94,3 +123,4 @@ testLoginBadUser extends testSshLogin {
     ["com.jcraft.jsch.JSchException","Auth cancel"]
   ];
 }
+
