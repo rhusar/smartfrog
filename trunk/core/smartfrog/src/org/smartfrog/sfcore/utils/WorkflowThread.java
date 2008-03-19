@@ -46,7 +46,6 @@ public class WorkflowThread extends SmartFrogThread {
      * @param notifyObject to notify afterwards. If null, "this" is used
      * @param workflowTermination should workflow (optional) termination rules be used? If false, this thread
      * always terminates the parent when finished
-     * @see #Thread(ThreadGroup,Runnable,String)
      */
     public WorkflowThread(Prim owner, boolean workflowTermination,Object notifyObject) {
         super(notifyObject);

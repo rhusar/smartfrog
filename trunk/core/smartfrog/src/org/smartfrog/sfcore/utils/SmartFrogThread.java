@@ -64,7 +64,6 @@ public class SmartFrogThread extends Thread {
      *
      * @param notifyObject to notify afterwards. If null, "this" is used
      *
-     * @see #Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(Object notifyObject) {
         init(null, notifyObject);
@@ -76,7 +75,6 @@ public class SmartFrogThread extends Thread {
      * @param target       the object whose <code>run</code> method is called.
      * @param notifyObject to notify afterwards. If null, "this" is used
      *
-     * @see #Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(Runnable target, Object notifyObject) {
         init(target, notifyObject);
@@ -87,7 +85,6 @@ public class SmartFrogThread extends Thread {
      *
      * @param target the object whose <code>run</code> method is called.
      *
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(Runnable target) {
         init(target, null);
@@ -102,7 +99,6 @@ public class SmartFrogThread extends Thread {
      *
      * @throws SecurityException if the current thread cannot create a thread in
      * the specified thread group.
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(ThreadGroup group, Runnable target) {
         super(group, (Runnable) null);
@@ -114,7 +110,6 @@ public class SmartFrogThread extends Thread {
      *
      * @param name the name of the new thread.
      *
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(String name) {
         super(name);
@@ -127,7 +122,6 @@ public class SmartFrogThread extends Thread {
      * @param target the object whose <code>run</code> method is called.
      * @param name   the name of the new thread.
      *
-     * @see Thread#Thread(ThreadGroup,Runnable,String)
      */
     public SmartFrogThread(Runnable target, String name) {
         super((Runnable) null, name);
