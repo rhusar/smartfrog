@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.common.JarUtil;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -58,6 +57,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Collections;
+import java.io.IOException;
 
 
 /**
@@ -129,7 +130,9 @@ public class ProcessCompoundImpl extends CompoundImpl
      * A set that contains the names of the sub-processes that have been
      * requested, but not yet ready
      */
-    protected Set processLocks = new HashSet();
+    protected Set<Object> processLocks = new HashSet<Object>();
+    public static final String ATTR_PORT = "sfPort";
+    private static final String JAVA_SECURITY_POLICY = "java.security.policy";
     ;
 
 
@@ -185,7 +188,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      */
     protected ProcessCompound sfLocateParent()
             throws SmartFrogException, RemoteException {
-        ProcessCompound root = null;
+        ProcessCompound root;
 
         if (sfParent != null) {
             return (ProcessCompound) sfParent;
@@ -344,7 +347,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             if (portObj instanceof Integer) {
                 port = ((Integer) portObj).intValue();
                 exportRef = sfExportRef(port);
-                sfAddAttribute("sfPort", new Integer(port));
+                sfAddAttribute(ATTR_PORT, new Integer(port));
             } else if (portObj instanceof Vector) {
                 //if not in range use vector and try
                 int size = ((Vector) (portObj)).size();
@@ -353,7 +356,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                     try {
                         port = ((Integer) ((Vector) (portObj)).elementAt(i)).intValue();
                         exportRef = sfExportRef(port);
-                        sfAddAttribute("sfPort", new Integer(port));
+                        sfAddAttribute(ATTR_PORT, new Integer(port));
                         break;
                     } catch (SmartFrogException ex) {
                         if (i >= size - 1) {
@@ -402,7 +405,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         // This call and method will disapear once we refactor ProcessCompound
         // SFProcess.addDefaultProcessDescriptions will replace all this code.
         // @TODO fix after refactoring ProcessCompound.
-        deployDefaultProcessDescriptions(this);
+        deployDefaultProcessDescriptions();
 
         // Add diagnostics report
         if (Logger.processCompoundDiagReport) {
@@ -441,22 +444,19 @@ public class ProcessCompoundImpl extends CompoundImpl
     }
 
     /**
-     * @param comp
-     *
      * @throws RemoteException In case of Remote/nework error
-     * @sflog SmartFrogException if fail deployment
+     * @throws SmartFrogException if fail deployment
      */
-    private void deployDefaultProcessDescriptions(ProcessCompound comp)
+    private void deployDefaultProcessDescriptions()
             throws SmartFrogException, RemoteException {
         Properties props = System.getProperties();
-        Prim p;
         Context nameContext = null;
-        String name = null;
-        String url = null;
+        String name ;
+        String url;
         String key = null;
         try {
-            for (Enumeration e = props.keys(); e.hasMoreElements();) {
-                key = e.nextElement().toString();
+            for (Object o : props.keySet()) {
+                key = o.toString();
                 if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                     // Collects all properties refering to default descriptions that
                     // have to be deployed inmediately after process compound
@@ -466,20 +466,17 @@ public class ProcessCompoundImpl extends CompoundImpl
 
                     ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(
                             url.trim());
-                    p = sfCreateNewApp(name, cd, nameContext);
+                    sfCreateNewApp(name, cd, nameContext);
                 }
             }
-
+        } catch (SmartFrogDeploymentException ex) {
+            throw ex;
         } catch (SmartFrogException sfex) {
-            if (sfex instanceof SmartFrogDeploymentException) {
-                throw sfex;
-            } else {
-                throw new SmartFrogDeploymentException(
-                        "deploying default description for '" + key + "'",
-                        sfex,
-                        comp,
-                        nameContext);
-            }
+            throw new SmartFrogDeploymentException(
+                    "deploying default description for '" + key + '\'',
+                    sfex,
+                    this,
+                    nameContext);
         }
     }
 
@@ -497,13 +494,11 @@ public class ProcessCompoundImpl extends CompoundImpl
             sfRemoveAttribute(sfAttributeKeyFor(comp));
         }
         catch (RemoteException ex) {
-            //Logger.logQuietly(ex);
             if (sfLog().isIgnoreEnabled()) {
                 sfLog().ignore(ex);
             }
         }
         catch (SmartFrogRuntimeException ex) {
-            //Logger.logQuietly(ex);
             if (sfLog().isIgnoreEnabled()) {
                 sfLog().ignore(ex);
             }
@@ -530,7 +525,9 @@ public class ProcessCompoundImpl extends CompoundImpl
         try {
             sfRemoveAttribute(sfAttributeKeyFor(target));
         } catch (Exception ex) {
-            // ignore
+            if (sfLog().isIgnoreEnabled()) {
+                sfLog().ignore(ex);
+            }
         }
     }
 
@@ -547,13 +544,11 @@ public class ProcessCompoundImpl extends CompoundImpl
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
-                //Logger.logQuietly(ex);
                 if (sfLog().isIgnoreEnabled()) {
                     sfLog().ignore(ex);
                 }
             }
         }
-        //System.out.println("terminating with " + rec.toString());
         if (systemExit) {
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
@@ -561,11 +556,11 @@ public class ProcessCompoundImpl extends CompoundImpl
                         name,
                         false);
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD,
-                        name) + " " + new Date(System.currentTimeMillis()));
+                        name) + ' ' + new Date(System.currentTimeMillis()));
             } catch (Throwable thr) {
+                sfLog().ignore("When exiting",thr);
             }
             ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
-            // Runtime.getRuntime().halt(0);
         }
     }
 
@@ -636,8 +631,6 @@ public class ProcessCompoundImpl extends CompoundImpl
                     (new TerminatorThread(child, status).quietly()).start();
                 }
             } catch (Exception ex) {
-                //@TODO: Log
-                //Logger.logQuietly(ex);
                 if (sfLog().isIgnoreEnabled()) {
                     sfLog().ignore(ex);
                 }
@@ -702,11 +695,18 @@ public class ProcessCompoundImpl extends CompoundImpl
             SFProcess.getRootLocator().setRootProcessCompound(this);
         } catch (SmartFrogException sfex) {
             // Add the context
-            sfex.put("sfDetachFailure", this.sfContext);
+            sfex.put("sfDetachFailure", sfContext);
             throw sfex;
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     * @param source caller
+     * @throws SmartFrogLivenessException liveness failure
+     * @throws RemoteException In case of network/rmi error
+     */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
@@ -723,7 +723,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             try {
                 gcTimeout = ((Integer) sfResolveHere(SmartFrogCoreKeys.SF_SUBPROCESS_GC_TIMEOUT))
                         .intValue();
-            } catch (SmartFrogResolutionException r) {
+            } catch (SmartFrogResolutionException ignored) {
                 gcTimeout = 0;
             }
 
@@ -742,7 +742,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                 countdown = gcTimeout;
             }
         } else {
-            //System.out.println("SPGC not enabled");
+            sfLog().debug("SPGC not enabled");
         }
     }
 
@@ -792,11 +792,11 @@ public class ProcessCompoundImpl extends CompoundImpl
             if (sfParent == null) {
                 r.addElement(ReferencePart.host((canonicalHostName)));
 
-                if (this.sfProcessName() == null) {
+                if (sfProcessName() == null) {
                     // Process created when using sfDeployFrom (use by sfStart & sfRun)
                     r.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_RUN_PROCESS));
                 } else {
-                    r.addElement(ReferencePart.here(this.sfProcessName()));
+                    r.addElement(ReferencePart.here(sfProcessName()));
                 }
             } else {
                 //r = sfParent.sfCompleteName(); // Only if you had a hierarchy
@@ -842,7 +842,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             // Make up a name for the component first get complete name of
             // component
             // Add a timestamp to the end and convert to string
-            compName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + "_" +
+            compName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + '_' +
                     registrationNumber++;
         }
 
@@ -870,7 +870,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             throws SmartFrogException, RemoteException {
         boolean success = false;
         if (sfContext.contains(comp)) {
-            sfContext.remove(sfContext.keyFor(comp));
+            sfContext.remove(sfContext.sfAttributeKeyFor(comp));
             success = true;
         }
         if (sfContainsChild(comp)) {
@@ -953,7 +953,7 @@ public class ProcessCompoundImpl extends CompoundImpl
     public ProcessCompound sfResolveProcess(Object name,
                                             ComponentDescription cd)
             throws Exception {
-        ProcessCompound pc = null;
+        ProcessCompound pc;
 
         if (sfParent() == null) { // I am the root
             try {
@@ -961,7 +961,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                         name)));
             } catch (SmartFrogResolutionException e) {
                 if (sfLog().isTraceEnabled()) {
-                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString());
+                    sfLog().trace(" Creating a new ProcessCompound: " + name.toString(),e);
                 }
                 pc = addNewProcessCompound(name, cd);
                 pc.sfParentageChanged();
@@ -988,7 +988,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * this does not happen the process is killed, and an exception is thrown.
      *
      * @param name name of new compound
-     *
+     * @param cd component to deploy
      * @return ProcessCompound
      *
      * @throws Exception failed to deploy new naming compound
@@ -997,7 +997,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                                                     ComponentDescription cd)
             throws Exception {
         // Check if process creation is allowed
-        boolean allowProcess = false;
+        boolean allowProcess;
 
         Object ap = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_ALLOW, false);
 
@@ -1021,12 +1021,12 @@ public class ProcessCompoundImpl extends CompoundImpl
 
         if (!allowProcess) {
             throw SmartFrogResolutionException.generic(sfCompleteName(),
-                    "Not allowed to create process '" + name.toString() + "'");
+                    "Not allowed to create process '" + name.toString() + '\'');
         }
 
         // Locate timeout
-        Object timeoutObj = null;
-        long timeout = 0L;
+        Object timeoutObj;
+        long timeout;
         timeoutObj = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT);
         try {
             timeout = 1000 * ((Number) timeoutObj).intValue();
@@ -1107,11 +1107,12 @@ public class ProcessCompoundImpl extends CompoundImpl
      *
      * @return new process
      *
-     * @throws Exception failed to locate all attributes, or start process
+     * @throws SmartFrogException failed to resolve all attributes
+     * @throws IOException failed to start the process
      */
     protected Process startProcess(Object name, ComponentDescription cd)
-            throws Exception {
-        Vector runCmd = new Vector();
+            throws SmartFrogException, IOException {
+        Vector<String> runCmd = new Vector<String>();
 
         addProcessJava(runCmd, cd);
         //addProcessClassName(runCmd,cd);
@@ -1143,11 +1144,11 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param cd  component description with extra process configuration (ex.
      *            sfProcessConfig)
      *
-     * @throws Exception failed to construct java command
+     * @throws SmartFrogException failed to construct java command
      */
-    protected void addProcessJava(Vector cmd, ComponentDescription cd)
-            throws Exception {
-        Object processCmd = null;
+    protected void addProcessJava(Vector<String> cmd, ComponentDescription cd)
+            throws SmartFrogException {
+        Object processCmd;
         processCmd = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         if (processCmd == null) {
             processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA,
@@ -1156,9 +1157,9 @@ public class ProcessCompoundImpl extends CompoundImpl
         if (processCmd instanceof String) {
             cmd.addElement((String) processCmd);
         } else if (processCmd instanceof Collection) {
-            cmd.addAll((Collection) processCmd);
+            cmd.addAll((Collection<String>) processCmd);
         } else {
-            cmd.addElement(processCmd);
+            cmd.addElement(processCmd.toString());
         }
     }
 
@@ -1170,10 +1171,10 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param cd  component description with extra process configuration (ex.
      *            sfProcessClass)
      *
-     * @throws Exception failed to construct classname
+     * @throws SmartFrogException failed to construct classname
      */
-    protected void addProcessClassName(Vector cmd, ComponentDescription cd)
-            throws Exception {
+    protected void addProcessClassName(Vector<String> cmd, ComponentDescription cd)
+            throws SmartFrogException {
         String pClass = (String) cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS,
                 false);
         if (pClass == null) {
@@ -1198,13 +1199,13 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param name process name
      * @param cd   component description with extra process configuration
      *
-     * @throws Exception failed to construct classpath
+     * @throws SmartFrogException failed to construct classpath
      */
     //@todo document how new classpath works for subProcesses.
-    protected void addProcessClassPath(Vector cmd,
+    protected void addProcessClassPath(Vector<String> cmd,
                                        Object name,
                                        ComponentDescription cd)
-            throws Exception {
+            throws SmartFrogException {
         String res = null;
         String replaceBoolKey = SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
@@ -1241,13 +1242,13 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param name process name
      * @param cd   component description with extra process configuration
      *
-     * @throws Exception failed to construct classpath
+     * @throws SmartFrogException failed to construct classpath
      */
     //@todo document how new classpath works for subProcesses.
-    protected void addProcessSFCodeBase(Vector cmd,
+    protected void addProcessSFCodeBase(Vector<String> cmd,
                                         Object name,
                                         ComponentDescription cd)
-            throws Exception {
+            throws SmartFrogException {
         String res = null;
         String replaceBoolKey = SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
@@ -1262,19 +1263,30 @@ public class ProcessCompoundImpl extends CompoundImpl
                 pathSeparator);
 
         if (res != null) {
-            cmd.addElement("-D" + sysPropertyKey + "=" + res);
+            cmd.addElement("-D" + sysPropertyKey + '=' + res);
         }
     }
 
 
+    /**
+     * Set the classpath or other path enviroment variable up. Includes the value of the current process
+     * @param cd CD to work wit
+     * @param defVal default value
+     * @param replaceBoolKey name of a boolean attribute to control replace/extend policy
+     * @param attributeKey attribute
+     * @param sysPropertyKey system property to set
+     * @param pathSeparator path separator char
+     * @return the calculated path
+     * @throws SmartFrogResolutionException resolution problems.
+     */
     private String addProcessSpecialSystemVar(ComponentDescription cd,
-                                              String res,
+                                              String defVal,
                                               String replaceBoolKey,
                                               String attributeKey,
                                               String sysPropertyKey,
                                               String pathSeparator) throws
             SmartFrogResolutionException {
-        Boolean replace = null;
+        Boolean replace;
         // Should we replace or overwrite?
         replace = ((Boolean) cd.sfResolveHere(replaceBoolKey, false));
         if (replace == null) {
@@ -1287,7 +1299,7 @@ public class ProcessCompoundImpl extends CompoundImpl
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
         String cdClasspath = (String) cd.sfResolveHere(attributeKey, false);
-        //This will read the system property for org.smartfrog.sfcore.processcompound.NAME.sfProcessClassPath;
+        //This will read the system property for org.smartfrog.sfcore.processcompound.NAME. + key
         String envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
                 + SmartFrogCoreKeys.SF_PROCESS_NAME
                 + attributeKey, null);
@@ -1296,7 +1308,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         String pcClasspath = (String) sfResolveHere(attributeKey, false);
         //Takes previous process classpath (rootProcessClassPath)
         String sysClasspath = SFSystem.getProperty(sysPropertyKey, null);
-
+        String res=defVal;
         if (replace.booleanValue()) {
             if (cdClasspath != null) {
                 res = cdClasspath;
@@ -1358,23 +1370,21 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param cmd  command to append to
      * @param name name for subprocess
      *
-     * @throws Exception failed to construct defines
+     * @throws SmartFrogException failed to construct defines
      */
-    protected void addProcessDefines(Vector cmd, Object name)
-            throws Exception {
+    protected void addProcessDefines(Vector<String> cmd, Object name)
+            throws SmartFrogException {
         Properties props = System.getProperties();
         //Sys properties get ordered
-        Vector keysVector = new Vector();
+        Vector<String> keysVector = new Vector<String>(props.size());
         for (Enumeration keys = props.propertyNames(); keys.hasMoreElements();)
         {
             keysVector.add((String) keys.nextElement());
         }
         // Order keys
-        keysVector = JarUtil.sort(keysVector);
+        Collections.sort(keysVector);
         //process keys
-        for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();)
-        {
-            String key = keys.nextElement().toString();
+        for(String key:keysVector) {
             try {
                 if ((key.startsWith(SmartFrogCoreProperty.propBase)) &&
                         (!(key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
@@ -1387,7 +1397,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                         //@todo add Junit test for this feature
                         //@todo test what happens with special caracters
                         // prefixed by 'org.smartfrog.sfcore.processcompound.jvm'+NAME+.property=value
-                        String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
+                        String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + '.';
 
                         if (key.startsWith(specialParameters)) {
                             Object value = props.get(key);
@@ -1399,12 +1409,12 @@ public class ProcessCompoundImpl extends CompoundImpl
                         } else {
                             //Properties to overwrite processcompound.sf attributes
                             Object value = props.get(key);
-                            cmd.addElement("-D" + key + "=" + value.toString());
+                            cmd.addElement("-D" + key + '=' + value.toString());
                         }
                     } else {
                         //Special - Add property to name ProcessCompound
                         cmd.addElement("-D" + (SmartFrogCoreProperty.propBaseSFProcess
-                                + SmartFrogCoreKeys.SF_PROCESS_NAME + "=") +
+                                + SmartFrogCoreKeys.SF_PROCESS_NAME + '=') +
                                 name.toString());
                     }
                 }
@@ -1417,10 +1427,10 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         // Pass java.security.policy if it is defined
-        String secProp = props.getProperty("java.security.policy");
+        String secProp = props.getProperty(JAVA_SECURITY_POLICY);
 
         if (secProp != null) {
-            cmd.addElement("-Djava.security.policy=" + secProp);
+            cmd.addElement("-D"+ JAVA_SECURITY_POLICY + '=' + secProp);
         }
 
         if (SFSecurity.isSecurityOn()) {
@@ -1430,7 +1440,7 @@ public class ProcessCompoundImpl extends CompoundImpl
 
             if (secProp != null) {
                 cmd.addElement("-D" +
-                        SFSecurityProperties.propPropertiesFileName + "=" +
+                        SFSecurityProperties.propPropertiesFileName + '=' +
                         secProp);
             }
 
@@ -1439,18 +1449,20 @@ public class ProcessCompoundImpl extends CompoundImpl
 
             if (secProp != null) {
                 cmd.addElement("-D" + SFSecurityProperties.propKeyStoreName +
-                        "=" + secProp);
+                        '=' + secProp);
             }
         }
     }
 
     /**
      * Resolves sfProcessConfig and adds to it all SystemProperties that start
-     * with org.smartfrog.processcompound.PROCESS_NAME
+     * with org.smartfrog.processcompound.${name}
      *
+     * @param name name to build the system property under
      * @param cd ComponentDescription
      *
      * @return ComponentDescription
+     * @throws SmartFrogResolutionException resolution failure
      */
     private ComponentDescription getProcessAttributes(Object name,
                                                       ComponentDescription cd)
@@ -1473,16 +1485,17 @@ public class ProcessCompoundImpl extends CompoundImpl
      * Constructs sequence of -D statements for the new sub-process by iterating
      * over the sfProcessConfig ComponentDescription.
      *
+     * @param name name of the process
      * @param cmd command to append to
      * @param cd  component description with extra process configuration (ex.
      *            sfProcessConfig)
      *
-     * @throws Exception failed to construct defines
+     * @throws SmartFrogException failed to construct defines
      */
-    protected void addProcessAttributes(Vector cmd,
+    protected void addProcessAttributes(Vector<String> cmd,
                                         Object name,
                                         ComponentDescription cd)
-            throws Exception {
+            throws SmartFrogException {
         ComponentDescription sfProcessAttributes = getProcessAttributes(name,
                 cd);
         Object key = null;
@@ -1492,7 +1505,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             value = sfProcessAttributes.sfResolveHere(key);
             cmd.addElement("-D" +
                     SmartFrogCoreProperty.propBaseSFProcess +
-                    key.toString() + "=" +
+                    key.toString() + '=' +
                     value.toString());
         }
     }
@@ -1505,22 +1518,22 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @param cd  component description with extra process configuration (ex.
      *            sfProcessConfig)
      *
-     * @throws Exception failed to construct defines
+     * @throws SmartFrogException failed to construct defines
      */
-    protected void addProcessEnvVars(Vector cmd, ComponentDescription cd)
-            throws Exception {
+    protected void addProcessEnvVars(Vector<String> cmd, ComponentDescription cd)
+            throws SmartFrogException {
         ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere(
                 SmartFrogCoreKeys.SF_PROCESS_ENV_VARS,
                 false);
         if (sfProcessEnvVars == null) {
             return;
         }
-        Object key = null;
-        Object value = null;
+        Object key;
+        Object value;
         for (Iterator i = sfProcessEnvVars.sfAttributes(); i.hasNext();) {
             key = i.next().toString();
             value = sfProcessEnvVars.sfResolveHere(key);
-            cmd.addElement("-D" + key.toString() + "=" + value.toString());
+            cmd.addElement("-D" + key.toString() + '=' + value.toString());
         }
     }
 
