@@ -110,11 +110,9 @@ public class SFSystem implements MessageKeys {
      */
     public static String getProperty(String key, String def) {
         String res = System.getProperty(key, def);
-
         if (res == null) {
             return def;
         }
-
         return res;
     }
 
@@ -203,15 +201,14 @@ public class SFSystem implements MessageKeys {
 
         Properties sysProps = System.getProperties();
 
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            Object key = e.nextElement();
+        for (Object key : props.keySet()) {
             sysProps.put(key, props.get(key));
         }
 
         System.setProperties(sysProps);
-        if (sflog!=null) { // This method cannot be called before LogSystem was initialized
+        if (sflog != null) { // This method cannot be called before LogSystem was initialized
             if (sfLog().isTraceEnabled()) {
-                sfLog().trace("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
+                sfLog().trace("New system properties: \n" + sysProps.toString().replace(',', '\n'));
             }
         }
     }
@@ -291,41 +288,47 @@ public class SFSystem implements MessageKeys {
     /**
      * Runs a set (vector) of configuration descriptors
      * @param cfgDescs Vector of ConfigurationDescriptors
+     * @param terminateOnFailure should we termiante on failure
      * @see ConfigurationDescriptor
      */
 
-    public static void runConfigurationDescriptors (Vector cfgDescs, boolean terminateOnFailure) {
-        if (cfgDescs==null) return;
+    public static void runConfigurationDescriptors(Vector<ConfigurationDescriptor> cfgDescs,
+                                                   boolean terminateOnFailure) {
+        if (cfgDescs == null) {
+            return;
+        }
 
         if (!terminateOnFailure) {
-            for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
-                runConfigurationDescriptor((ConfigurationDescriptor)items.nextElement());
+            for (ConfigurationDescriptor cdesc : cfgDescs) {
+                runConfigurationDescriptor(cdesc);
             }
         } else {
-           //Store successful DEPLOY actions only
-           boolean terminateSuccessfulDeployments = false;
-           Stack<ConfigurationDescriptor> deployedStack = new Stack<ConfigurationDescriptor>();
-           ConfigurationDescriptor cdesc= null;
-           for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
-              cdesc = (ConfigurationDescriptor)items.nextElement();
-              runConfigurationDescriptor(cdesc);
-              if (cdesc.getResultType() != ConfigurationDescriptor.Result.SUCCESSFUL){
-                 terminateSuccessfulDeployments = true;
-                 break;
-              }
-              // if it was a successful DEPLOY action then store it just in case we need to terminate it.
-              if (cdesc.getActionType()== ConfigurationDescriptor.Action.DEPLOY){
-                  deployedStack.push(cdesc);
-              }
-           }
-           if (terminateSuccessfulDeployments) {
-              //Terminate last one just in case
-              cdesc.terminateDeployedResult();
-              //Terminate the successful ones
-              while (!deployedStack.empty()){
-                 deployedStack.pop().terminateDeployedResult();
-              }
-           }
+            //Store successful DEPLOY actions only
+            boolean terminateSuccessfulDeployments = false;
+            Stack<ConfigurationDescriptor> deployedStack = new Stack<ConfigurationDescriptor>();
+            ConfigurationDescriptor last = null;
+            for (ConfigurationDescriptor cdesc : cfgDescs) {
+                last = cdesc;
+                runConfigurationDescriptor(cdesc);
+                if (cdesc.getResultType() != ConfigurationDescriptor.Result.SUCCESSFUL) {
+                    terminateSuccessfulDeployments = true;
+                    break;
+                }
+                // if it was a successful DEPLOY action then store it just in case we need to terminate it.
+                if (cdesc.getActionType() == ConfigurationDescriptor.Action.DEPLOY) {
+                    deployedStack.push(cdesc);
+                }
+            }
+            if (terminateSuccessfulDeployments) {
+                //Terminate last one just in case
+                if (last != null) {
+                    last.terminateDeployedResult();
+                }
+                //Terminate the successful ones
+                while (!deployedStack.empty()) {
+                    deployedStack.pop().terminateDeployedResult();
+                }
+            }
         }
 
 
@@ -483,7 +486,7 @@ public class SFSystem implements MessageKeys {
                 }
                 //ignore.
             }
-            sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":" + port + "]") + " " + new Date(System.currentTimeMillis()));
+            sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, '[' + name + ':' + port + ']') + ' ' + new Date(System.currentTimeMillis()));
         }
     }
 
@@ -560,7 +563,7 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws Exception {
+    public static ProcessCompound runSmartFrog(Vector<ConfigurationDescriptor> cfgDescriptors) throws Exception {
         return runSmartFrog (cfgDescriptors, false);
     }
 
@@ -580,14 +583,15 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(Vector cfgDescriptors, boolean terminateOnFailure) throws Exception {
-        ProcessCompound process;
-        process = runSmartFrog();
-        if (cfgDescriptors!=null){
-            runConfigurationDescriptors(cfgDescriptors, terminateOnFailure);
-        }
-        return process;
-    }
+   public static ProcessCompound runSmartFrog(Vector<ConfigurationDescriptor> cfgDescriptors,
+                                              boolean terminateOnFailure) throws Exception {
+       ProcessCompound process;
+       process = runSmartFrog();
+       if (cfgDescriptors != null) {
+           runConfigurationDescriptors(cfgDescriptors, terminateOnFailure);
+       }
+       return process;
+   }
 
     /**
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
@@ -595,13 +599,13 @@ public class SFSystem implements MessageKeys {
      * Important: things like the output streams can be redirected.
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws RemoteException if something goes wrong during the communication
      * @throws UnknownHostException if the target host is unknown
      * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
-     * @throws RemoteException if something goes wrong during the communication
      * @throws SFGeneralSecurityException for security trouble
      */
     public static ProcessCompound runSmartFrog()
-            throws SmartFrogException, UnknownHostException, ConnectException,
+            throws SmartFrogException, UnknownHostException,
             RemoteException, SFGeneralSecurityException {
 
         ProcessCompound process = null;
@@ -626,8 +630,8 @@ public class SFSystem implements MessageKeys {
      * and then look at stack tracing.
      * To print init status messages call {@link org.smartfrog.SFSystem#logInitStatus()} after.
      * This method is idempotent and synchronised; you can only init the system once.
-     * @throws SmartFrogException
-     * @throws SFGeneralSecurityException
+     * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws SFGeneralSecurityException if security does not initialize
      */
     synchronized public static void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
@@ -646,7 +650,10 @@ public class SFSystem implements MessageKeys {
         }
     }
 
-    private static void logNetworkStatus() {//Test local networking: checks localhost NIC
+    /**
+     * Test local networking: checks localhost NIC
+     */
+    private static void logNetworkStatus() {
         if (Logger.testNetwork) {
             StringBuffer result = new StringBuffer();
             boolean failed = Diagnostics.doReportLocalNetwork(result);
@@ -658,16 +665,19 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+    /**
+     * Print out the classpath at level info
+     */
     private static void logClassPath() {
-        if (Logger.logClasspath) {
+        if (Logger.logClasspath && sfLog().isInfoEnabled()) {
             StringBuffer result = new StringBuffer();
             Diagnostics.doReportClassPath(result);
-            if (sfLog().isInfoEnabled()) { sfLog().info( "ClassPath:\n" + result.toString());}            
+            sfLog().info( "ClassPath:\n" + result.toString());
         }
     }
 
     /**
-     * Throws exception if secury is required and not enabled.
+     * @throws SFGeneralSecurityException if security is required and not enabled.
      */
     public static void checkSecurityStatus() throws SFGeneralSecurityException {
         // Notify status of Security
@@ -683,7 +693,6 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Prints messages about security status
-     * @throws SFGeneralSecurityException
      */
     public static void logSecurityStatus() {
         // Notify warning message about Security status
