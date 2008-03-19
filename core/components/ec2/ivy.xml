@@ -52,7 +52,7 @@
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon,test->default;testwar->testwar"/>
+        conf="compile,runtime,daemon,test->default;typica->httpclient;restlet->httpclient,servletapi;testwar->testwar"/>
 
     <!--XML content-->
     <dependency org="org.smartfrog"
@@ -92,6 +92,13 @@
         rev="latest.integration"
         conf="test->default"/>
 
+    <!--grab mail and activation-->
+    <dependency org="org.smartfrog"
+        name="sf-emailer"
+        changing="true"
+        rev="latest.integration"
+        conf="typica->redist"/>
+
     <!--restlet api-->
     <dependency org="org.restlet"
         name="org.restlet"
@@ -112,7 +119,7 @@
         rev="${restlet.version}"
         conf="restlet->default">
       <exclude org="commons-httpclient"/>
-      </dependency>
+    </dependency>
 
     <!--file upload-->
     <dependency org="org.restlet"
@@ -129,5 +136,7 @@
         name="typica"
         rev="${typica.version}"
         conf="typica->default"/>
+
+
   </dependencies>
 </ivy-module>
