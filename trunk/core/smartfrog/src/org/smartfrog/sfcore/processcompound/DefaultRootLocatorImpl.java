@@ -75,7 +75,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
       * @param pc ProcessCompound
       * @param bind boolean
       */
-     public AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
+     AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
          this.pc = pc;
          this.bind = bind;
      }
@@ -247,7 +247,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 registry = SFSecurity.createRegistry(registryPort,registryBindAddr);
             }
             //registry.bind(defaultName, c);
-            /**
+            /*
              * Uses a new thread to bind/unbind the register. Otherwise, since
              * the stack typically involves an RMI call, the register
              *  will not let us do the unbind/bind (no remote modifications allowed)
@@ -259,11 +259,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
              depThr.join();
              // it re-throws exceptions in the thread here...
              depThr.getProcessCompound();
+        } catch (java.rmi.server.ExportException t) {
+            throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
         } catch (Throwable t) {
-            if (t instanceof java.rmi.server.ExportException){
-                throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
-
-            }
             throw SmartFrogRuntimeException.forward(t);
         }
     }
