@@ -18,7 +18,36 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/amazon/aws/components.sf"
-#include "/org/smartfrog/services/amazon/ec2/upload.sf"
-#include "/org/smartfrog/services/amazon/ec2/firewall.sf"
-#include "/org/smartfrog/services/amazon/ec2/machines.sf"
+
+/**
+ * Represent Amazon Machine Images.
+ * An AMI must exist at deploy time
+ */
+
+AmazonMachineImage extends Prim {
+
+}
+
+PublicAMI extends AmazonMachineImage {
+
+}
+
+PrivateAmi  extends AmazonMachineImage {
+
+}
+
+/*
+ * schema definition for an AMI
+ */
+CompulsoryAMI extends Compulsory {
+  description "An Amazon Machine Image";
+}
+
+/*
+ * schema definition for an optional AMI
+ */
+OptionalAMI extends Optional {
+  description "An optional Amazon Machine Image";
+}
+
 

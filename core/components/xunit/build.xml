@@ -35,9 +35,7 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <!--
   <property name="system.tests" value="true"/>
-    -->
   <!-- override point -->
   <property file="build.properties"/>
 
@@ -69,6 +67,7 @@
         value="${codebase}"/>
       <!-- source files -->
       <source file="test/org/smartfrog/services/sfunit/test/system/example.sf" />
+      <source file="test/org/smartfrog/services/sfunit/test/system/antxml/testSFUnitAntXml.sf" />
     </sf-parse>
   </target>
 
