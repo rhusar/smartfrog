@@ -89,12 +89,12 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      * @param logger log to log messages to
      */
     public void bind(String name, LogSF logger) {
-        this.log=logger;
+        log=logger;
         try {
             oldHandler=Signal.handle(new Signal(name), this);
         } catch (IllegalArgumentException e) {
             //this happens when binding fails. In this situation, warn, but keep going
-            this.log.err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
+            log.err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
         }
     }
 }
