@@ -23,11 +23,11 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
     sampleFTPClient extends FTPClient {
-	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
-	FTP:ftpHost "ebnt171.india.hp.com";
-	FTP:username "ritu";
-	FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
-	FTP:remoteFiles ["/home/ritu/tmp/test1",
-                     "/home/ritu/tmp/test2"];
+      PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+      FTP:ftpHost "ebnt171.india.hp.com";
+      FTP:username "ritu";
+      FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
+      FTP:remoteFiles ["/home/ritu/tmp/test1",
+                         "/home/ritu/tmp/test2"];
 	}
 }

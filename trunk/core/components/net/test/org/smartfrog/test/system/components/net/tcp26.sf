@@ -25,23 +25,24 @@ For more information: www.smartfrog.org
 
 sfConfig extends Sequence {
 //   actions extends LAZY {
-    sampleTelnet extends TelnetSession {
-	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
-	Telnet:commands ["cd /home/ritu",
-                  "mkdir tmp"];
-            Telnet:host "ebnt171.india.hp.com";
-            Telnet:username "ritu";
-            Telnet:logFile "spy.log";
-	    Telnet:ostype "linux";
-     }
-     sampleFTPClient extends FTPClient {
-	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
-	FTP:ftpHost "ebnt171.india.hp.com";
-	FTP:username "ritu";
-        FTP:transferType "put";
-	FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
-	FTP:remoteFiles ["/home/ritu/tmp/test1",
-                     "/home/ritu/tmp/test2"];
-    }
+  sampleTelnet extends TelnetSession {
+    PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+    Telnet:commands [
+          "cd /home/ritu",
+          "mkdir tmp"];
+    Telnet:host "ebnt171.india.hp.com";
+    Telnet:username "ritu";
+    Telnet:logFile "spy.log";
+    Telnet:ostype "linux";
+  }
+  sampleFTPClient extends FTPClient {
+    PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+    FTP:ftpHost "ebnt171.india.hp.com";
+    FTP:username "ritu";
+    FTP:transferType "put";
+    FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
+    FTP:remoteFiles ["/home/ritu/tmp/test1",
+                       "/home/ritu/tmp/test2"];
+  }
 // }
 }

@@ -22,13 +22,14 @@
 package org.smartfrog.test.system.components.net;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * JUnit test class for test cases related to "net" component
  */
 public class NetTest
-    extends SmartFrogTestBase {
+    extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/components/net/";
 
@@ -36,13 +37,8 @@ public class NetTest
         super(s);
     }
 
-    public void testCaseTCN68() throws Exception {
-        deployExpectingException(FILES+"tcn68.sf",
-                                 "tcn68",
-                                 EXCEPTION_LIFECYCLE,
-                                 "sfDeploy",
-                                 EXCEPTION_SMARTFROG,
-                                 "java.io.FileNotFoundException");
+    public void testCaseTCN68() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "tcn68");
     }
 
     public void testCaseTCN69() throws Exception {
@@ -72,13 +68,8 @@ public class NetTest
                                  "error in schema: non-optional attribute 'commands' is missing");
     }
 
-    public void testCaseTCN72() throws Exception {
-        deployExpectingException(FILES+"tcn72.sf",
-                                 "tcn72",
-                                 EXCEPTION_LIFECYCLE,
-                                 "sfStart",
-                                 EXCEPTION_SMARTFROG,
-                                 "java.io.FileNotFoundException");
+    public void testCaseTCN72() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "tcn72");
     }
 
     public void testCaseTCN73() throws Exception {

@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,8 +60,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     private String password = "";
     private String shellPrompt = "$";
     private int port = DEFAULT_PORT;
-    private Vector commandsList = null;
-    private Vector cmdsFailureMsgs = null;
+    private Vector<String> commandsList = null;
+    private Vector<String> cmdsFailureMsgs = null;
     private TelnetClient client = null;
     private OutputStream opStream = null;
     private InputStream inpStream = null;
@@ -72,6 +73,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     private boolean shouldTerminate = true;  // default
     protected LogSF logCore = null;
     protected LogSF logApp = null;
+    private static final Reference attr_commands = new Reference(COMMANDS);
+    private static final Reference attr_cmds_failure_msgs = new Reference(CMDS_FAILURE_MSGS);
 
     /**
      * Constructs TelnetImpl object.
@@ -126,19 +129,19 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             boolean operationStatus = waitForString(inpStream, "login:",
                 timeout);
             if (operationStatus) {
-                String loginName = user + "\n";
+                String loginName = user + '\n';
                 opStream.write(loginName.getBytes());
                 opStream.flush();
-                if (ostype.equals("linux")) {
+                if ("linux".equals(ostype)) {
                     operationStatus = waitForString(inpStream, "Password:",
                         timeout);
-                } else if (ostype.equals("windows")) {
+                } else if ("windows".equals(ostype)) {
                     operationStatus = waitForString(inpStream, "password:",
                         timeout);
                 }
             }
             if (operationStatus) {
-                String passWd = password + "\n";
+                String passWd = password + '\n';
                 opStream.write(passWd.getBytes());
                 opStream.flush();
             }
@@ -160,8 +163,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             }
             // Execute commands
             for (int i = 0; i < commandsList.size(); i++) {
-                String cmd = (String) commandsList.get(i);
-                cmd = cmd + "\n";
+                String cmd = commandsList.get(i);
+                cmd = cmd + '\n';
                 opStream.write(cmd.getBytes());
                 opStream.flush();
                 /*   try {
@@ -180,7 +183,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
 
                 // check if command was successfully executed
                 if (checkCmdExecStatus) {
-                    String errMsg = (String) cmdsFailureMsgs.get(i);
+                    String errMsg = cmdsFailureMsgs.get(i);
                     boolean execError = waitForString(inpStream, errMsg,
                         timeout);
                     if (execError) {
@@ -217,6 +220,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 client.disconnect();
             }
         } catch (IOException ioex) {
+            sfLog().ignore("When terminating the client",ioex);
             // ignore
         }
     }
@@ -235,10 +239,10 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         ostype = sfResolve(OSTYPE, ostype, true);
         pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         password = pwdProvider.getPassword();
-        commandsList = sfResolve(COMMANDS, commandsList, true);
+        commandsList = ListUtils.resolveStringList(this, attr_commands,  true);
 
         //optional attributes
-        cmdsFailureMsgs = sfResolve(CMDS_FAILURE_MSGS, cmdsFailureMsgs, false);
+        cmdsFailureMsgs = ListUtils.resolveStringList(this, attr_cmds_failure_msgs, false);
         port = sfResolve(PORT, port, false);
         timeout = sfResolve(TIMEOUT, timeout, false);
         shellPrompt = sfResolve(SHELL_PROMPT, shellPrompt, false);
@@ -283,57 +287,61 @@ public class TelnetImpl extends PrimImpl implements Telnet,
      * @param timeout Timeout
      * @return true if string is located in the inp stream, false if search is
      *         timedout or string is not found
+     * @throws IOException for network problems
      */
-    public boolean waitForString(InputStream is, String end, long timeout)
-        throws Exception {
+    public boolean waitForString(InputStream is, String end, long timeout) throws IOException {
         byte buffer[] = new byte[32];
         long starttime = System.currentTimeMillis();
 
-        String readbytes = new String();
-        while ((readbytes.indexOf(end) < 0) &&
+        String readbytes = "";
+        while ((!readbytes.contains(end)) &&
             ((System.currentTimeMillis() - starttime) < timeout)) {
             if (is.available() > 0) {
                 int ret_read = is.read(buffer);
                 readbytes = readbytes + new String(buffer, 0, ret_read);
             } else {
-                Thread.sleep(500);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    //interrupted
+                    return false;
+                }
             }
         }
-        if (readbytes.indexOf(end) >= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return readbytes.contains(end);
     }
 
     /**
      * Checks if login is successful.
      *
+     * @param is input stream
+     * @param end end string to wait for
+     * @param loginTimeout how log to wait in millis
      * @return true if login sucessful else false
+     * @throws IOException for network problems
      */
     private boolean isLoginSuccessful(InputStream is, String end,
-                                      long timeout) throws Exception {
-        boolean loginSucessful = false;
+                                      long loginTimeout) throws IOException {
         byte[] buffer = new byte[32];
         long starttime = System.currentTimeMillis();
 
-        String readbytes = new String();
+        String readbytes = "";
 
-        while ((readbytes.indexOf(end) < 0) &&
-            ((System.currentTimeMillis() - starttime) < timeout)) {
+        while ((!readbytes.contains(end)) &&
+            ((System.currentTimeMillis() - starttime) < loginTimeout)) {
             if (is.available() > 0) {
                 int ret_read = is.read(buffer);
                 readbytes = readbytes + new String(buffer, 0, ret_read);
             } else {
-                Thread.sleep(500);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    //interrupted
+                    return false;
+                }
             }
         }
 
-        if ((readbytes.indexOf(end) >= 0) ||
-            (readbytes.indexOf(DEFAULT_PROMPT) >= 0)) {
-            return true;
-        } else {
-            return false;
-        }
+        return readbytes.contains(end) || readbytes.contains(DEFAULT_PROMPT);
     }
 }
