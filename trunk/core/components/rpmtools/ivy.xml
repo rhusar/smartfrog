@@ -48,7 +48,7 @@
                 name="sf-ssh"
                 changing="true"
                 rev="latest.integration"
-                conf="compile->default,redist->redist,runtime->default"/>
+                conf="compile->default;redist->redist;runtime->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-tasks"
