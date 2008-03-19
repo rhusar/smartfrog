@@ -128,6 +128,10 @@ public class CDPrinter {
     }
 
 
+    /**
+     * The main method takes a URL, parses it, resolves the structure and then displays the
+     * print string on the resultant description of sfConfig. Used for debugging descriptions.
+     */
     public static void main(String [] args) {
         String url = args[0];
         try {
@@ -135,12 +139,11 @@ public class CDPrinter {
             System.out.println("printing " + url);
             System.out.println(printURL(url, testC));
         } catch (SmartFrogException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
-
 
     /* example use
     #include "org/smartfrog/functions.sf"
@@ -162,5 +165,9 @@ public class CDPrinter {
         c2 extends comp { compData 10; };
         sysval 100;
     }
+
+
+    Save in a file, say test.sf, then use using the following command line
+    java org.smartfrog.sfcore.utils.CDPrinter test.sf
     */
 }
