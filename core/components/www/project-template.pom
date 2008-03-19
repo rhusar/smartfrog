@@ -24,6 +24,8 @@
       <version>${servletapi.version}</version>
       <optional>true</optional>
     </dependency>
+
+    <!--HTTP client and codec are considered optional-->
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
@@ -38,6 +40,13 @@
           <artifactId>junit</artifactId>
         </exclusion>
       </exclusions>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons-codec.version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>
