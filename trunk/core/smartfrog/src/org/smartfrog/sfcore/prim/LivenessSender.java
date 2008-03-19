@@ -74,7 +74,7 @@ public class LivenessSender extends Timer {
      */
     protected Thread createThread(Runnable run, String nameTh) {
         if (nameTh !=null)
-            this.name = nameTh+"."+name;
+            name = nameTh+"."+name;
         Thread t = new Thread(livenessGroup, run,name);
         t.setDaemon(true);
 

@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.Liveness;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -106,7 +107,7 @@ public abstract class AbstractCompoundCondition extends ConditionCompound {
      * @throws SmartFrogException for any other problem
      */
     public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
-        Enumeration children = sfChildren();
+        Enumeration<Liveness> children = sfChildren();
         boolean keepGoing = true;
         resetAccumulator();
         while (keepGoing && children.hasMoreElements()) {

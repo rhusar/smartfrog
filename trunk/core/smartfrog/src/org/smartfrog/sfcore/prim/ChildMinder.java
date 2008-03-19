@@ -71,5 +71,5 @@ public interface ChildMinder extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Enumeration sfChildren() throws RemoteException;
+    public Enumeration<Liveness> sfChildren() throws RemoteException;
 }
