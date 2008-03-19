@@ -18,11 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/version.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/version.sf"
 
 ProcessCompoundSchema extends CompoundSchema {
-  sfProcessJava extends OptionalString {description "name for java runtime";}
+  sfProcessJava extends OptionalString {description "name for Java runtime";}
   sfProcessClass extends OptionalString {description "entry class to SmartFrog";}
   sfProcessAllow extends OptionalBoolean {description "decides if subprocesses are allowed in root process";}
   sfProcessTimeout extends OptionalInteger {description "timeout for subprocess deployment in seconds";}
