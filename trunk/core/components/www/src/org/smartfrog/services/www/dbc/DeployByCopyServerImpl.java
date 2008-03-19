@@ -275,7 +275,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Enumeration sfChildren() throws RemoteException {
+    public Enumeration<Liveness> sfChildren() throws RemoteException {
         return childminder.sfChildren();
     }
 
