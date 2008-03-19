@@ -80,9 +80,9 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public boolean isEmpty();
 
     /**
-     * Returns an enumeration over the keys of the context. Deprecated: replaced
-     * by sfAttributes();
-     *
+     * Returns an enumeration over the keys of the context.
+     * Deprecated replaced by sfAttributes();
+     * @see #sfAttributes()
      * @return enumeration
      */
     public Enumeration keys();

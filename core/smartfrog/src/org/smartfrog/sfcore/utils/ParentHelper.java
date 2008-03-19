@@ -116,7 +116,7 @@ public class ParentHelper implements ChildMinder {
      *
      * @throws RemoteException In case of Remote/network error
      */
-    public Enumeration sfChildren() throws RemoteException {
+    public Enumeration<Liveness> sfChildren() throws RemoteException {
        return((Vector) sfChildren.clone()).elements();
     }
 

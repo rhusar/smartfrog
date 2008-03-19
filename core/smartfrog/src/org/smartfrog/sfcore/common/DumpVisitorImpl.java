@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.Serializable;
@@ -57,7 +58,7 @@ public class DumpVisitorImpl implements Dump, Serializable {
         Integer numberOfChildren = new Integer(0);
         if (from instanceof Compound) {
            int numberC = 0;
-           for (Enumeration e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
+           for (Enumeration<Liveness> e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
              e.nextElement();
              numberC++;
            }

@@ -20,20 +20,36 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.compound;
 
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogUpdateException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.SFDeployer;
-import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ReverseListIterator;
+
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 
 /**
@@ -60,7 +76,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                         .intValue();
 
     /** Maintains children on which life of compound depends (and vice versa). */
-    protected Vector sfChildren = new Vector(childCap, childInc);
+    protected Vector<Prim> sfChildren = new Vector<Prim>(childCap, childInc);
 
 
     /** Maintains a temporal list of the children that have to be driven
@@ -121,7 +137,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             if (sfLog().isTraceEnabled()){
               StringBuilder message = new StringBuilder();
               try {
-                message.append(this.sfCompleteNameSafe());
+                message.append(sfCompleteNameSafe());
                 message.append(" is deploying: ");
                 if (name != null) {
                   message.append(name);
@@ -341,9 +357,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
             try {
                 if (parent!=null) {
-                    sfLog().trace("New child created: "+comp.sfCompleteName()+ " ");
+                    sfLog().trace("New child created: "+comp.sfCompleteName()+ ' ');
                 } else {
-                    sfLog().trace("New application created: "+ comp.sfCompleteName()+" ");
+                    sfLog().trace("New application created: "+ comp.sfCompleteName()+ ' ');
                 }
             } catch (Exception ex1) {
                 sfLog().trace(ex1.toString());
@@ -365,7 +381,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     //public synchronized void sfAddChild(Liveness target) {
     // if synchronized -> locks processCompound when it registers back!
     public void sfAddChild(Liveness target) throws RemoteException {
-        sfChildren.addElement(target);
+        sfChildren.addElement((Prim)target);
         ((Prim)target).sfParentageChanged();
     }
 
@@ -403,7 +419,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return enumeration over children
      */
-    public Enumeration sfChildren() {
+    public Enumeration<Liveness> sfChildren() {
         return ((Vector) sfChildren.clone()).elements();
     }
 
@@ -564,7 +580,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                // any exception causes termination
                Reference name = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name,thr));
-               sfGetCoreLog().error("caught on start ("+name.toString()+")", thr);
+               sfGetCoreLog().error("caught on start ("+name.toString()+ ')', thr);
                throw SmartFrogLifecycleException.forward(thr);
          }
     }
@@ -768,8 +784,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Override this method to implement different child ping behaviour.
      */
     protected void sfPingChildren() {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Liveness child = (Liveness) e.nextElement();
+        for(Liveness child:sfChildren) {
             sfPingChildAndTerminateOnFailure(child);
         }
     }
@@ -882,20 +897,14 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfPrepareUpdate();
         // iterate over all children, preparing them for update.
         // if an exception is returned, trigger an abandon downwards and return an exception
-        for (Object p:sfChildren) {
-            if (p instanceof Update) {
-                ((Update) p).sfPrepareUpdate();
-            } else {
-                sfAbandonUpdate();
-                throw new SmartFrogUpdateException("Component not fully updateable, component " +
-                        sfCompleteNameSafe() + " attribute " + sfContext.sfAttributeKeyFor(p));
-            }
+        for (Prim p: sfChildList()) {
+            p.sfPrepareUpdate();
         }
     }
 
-    protected Vector childrenToTerminate;
-    protected Vector childrenToUpdate;
-    protected Vector childrenToCreate;
+    protected Vector<Prim> childrenToTerminate;
+    protected Vector<Prim> childrenToUpdate;
+    protected Vector<Object> childrenToCreate;
 
     /**
      * Validate whether the component (and its children) can be updated
@@ -911,9 +920,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         //     identify those that should be terminated  (returned false)
         //     those to be updated (return true)
         // return true
-        childrenToTerminate = new Vector(); //Prims
-        childrenToUpdate = new Vector();    //Prims
-        childrenToCreate = new Vector();    // Names
+        childrenToTerminate = new Vector<Prim>(); //Prims
+        childrenToUpdate = new Vector<Prim>();    //Prims
+        childrenToCreate = new Vector<Object>();    // Names
 
         super.sfUpdateWith(newCxt);
 
@@ -929,20 +938,22 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 if (((ComponentDescription)value).getEager()) {
                    // if there is a component of the same name - stash as a name to update
                    // if there is no component, then stash as a name to create
-                   if (currentValue == null)
+                   if (currentValue == null) {
                        childrenToCreate.add(key);
+                   }
                    else
-                       if (currentValue instanceof Prim) childrenToUpdate.add(currentValue);
+                       if (currentValue instanceof Prim) {
+                           childrenToUpdate.add((Prim) currentValue);
+                       }
                 }
             }
         }
 
         for (Prim p:sfChildList()) {
             // get the name, if it is not in the to be updated vector, add it to the to be terminated vector
-            Object key = sfContext().keyFor(p);
+            Object key = sfContext().sfAttributeKeyFor(p);
             if (childrenToUpdate.contains(p)) {
-                if (p instanceof Update) {
-                    if (((Update) p).sfUpdateWith(((ComponentDescription)newContext.get(key)).sfContext())) {
+                    if (p.sfUpdateWith(((ComponentDescription)newContext.get(key)).sfContext())) {
                         // every thing OK
                     } else {
                         // refused to update as is- sf attribute change for example - redeploy...
@@ -950,11 +961,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
                         childrenToTerminate.add(p);
                         childrenToCreate.add(key);
                     }
-                } else {
-                    sfAbandonUpdate();
-                    throw new SmartFrogUpdateException("Component not fully updateable, comopnent " +
-                            sfCompleteNameSafe() + " attribute " + key);
-                }
             } else {
                 childrenToTerminate.add(p);
             }
@@ -983,22 +989,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
 
         // make sure that the children are in the new context, replacing the ComponentDescriptions
-        for (Enumeration e = childrenToUpdate.elements(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
+        for (Prim p:childrenToUpdate) {
             newContext.put(sfContext.sfAttributeKeyFor(p), p);
         }
 
         // update context
         sfContext = newContext;
 
-        for (Enumeration e = childrenToUpdate.elements(); e.hasMoreElements(); ) {
-            Update u = (Update) e.nextElement();
-            u.sfUpdate();
+        for (Prim p : childrenToUpdate) {
+            p.sfUpdate();
         }
 
         // create new children,
-        for (Enumeration e = childrenToCreate.elements(); e.hasMoreElements(); ) {
-            Object name = e.nextElement();
+        for (Object name:childrenToCreate) {
             ComponentDescription d = (ComponentDescription) newContext.get(name);
             sfDeployComponentDescription(name, this, d, null);
         }
@@ -1020,12 +1023,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfUpdateDeploy();
 
         // sfUpdateDeploy() all previously existing children, sfDeploy() new ones
-        for (Prim prim:sfChildList()) {
-            Update child = prim;
+        for (Prim child:sfChildList()) {
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateDeploy();
             }  else {
-                prim.sfDeploy();
+                child.sfDeploy();
             }
         }
         //
@@ -1042,12 +1044,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfUpdateStart();
 
         // sfUpdateStart() all previously existing children, sfStart() new ones
-        for (Prim prim:sfChildList()) {
-            Update child = prim;
+        for (Prim child:sfChildList()) {
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateStart();
             }  else {
-                prim.sfStart();
+                child.sfStart();
             }
         }
         //
@@ -1061,12 +1062,12 @@ public class CompoundImpl extends PrimImpl implements Compound {
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
-        if (updateAbandoned) return;
+        if (updateAbandoned) {
+            return;
+        }
         updateAbandoned = true;
-        for (Prim p:sfChildList()) {
-            if (p instanceof Update) {
-            	((Update) p).sfAbandonUpdate();
-            }
+        for (Prim p : sfChildList()) {
+            p.sfAbandonUpdate();
         }
     }
 
