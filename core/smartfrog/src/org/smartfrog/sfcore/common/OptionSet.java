@@ -122,7 +122,7 @@ public class OptionSet {
 
 
     /** Vector for configurationDescriptors to be deployed. */
-    public Vector cfgDescriptors = new Vector();
+    public Vector<ConfigurationDescriptor> cfgDescriptors = new Vector<ConfigurationDescriptor>();
 
    /** Terminate sucessful deployments in case of a deployment failure. */
     public boolean terminateOnDeploymentFailure = false;
@@ -159,7 +159,7 @@ public class OptionSet {
                 if("-a".equals(currentArg)) {
                     //deploy an application
                     try {
-                        this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
+                        cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
                     } catch (SmartFrogInitException ex) {
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                         //Logger.log(ex);
