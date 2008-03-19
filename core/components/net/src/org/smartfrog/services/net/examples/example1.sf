@@ -23,17 +23,17 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
     sampleTelnet extends TelnetSession {
-	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
-	Telnet:host "ebnt171.india.hp.com";
-        Telnet:username "ritu";
-        Telnet:commands ["cd /home/ritu/SmartFrog",
-                         "mkdir test"
-                        ];
-        Telnet:cmdsFailureMsgs ["No such file or directory", 
-                                "cannot create directory `test': File exists"
-                                ];
-        // optional log file for the telnet session
-        Telnet:logFile "spy.log";
-	Telnet:ostype "linux";
+      PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+      Telnet:host "ebnt171.india.hp.com";
+      Telnet:username "ritu";
+      Telnet:commands ["cd /home/ritu/SmartFrog",
+                       "mkdir test"
+                      ];
+      Telnet:cmdsFailureMsgs ["No such file or directory",
+                              "cannot create directory `test': File exists"
+                              ];
+      // optional log file for the telnet session
+      Telnet:logFile "spy.log";
+      Telnet:ostype "linux";
     }
 }

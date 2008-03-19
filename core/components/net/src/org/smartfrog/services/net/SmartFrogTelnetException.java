@@ -48,7 +48,7 @@ public class SmartFrogTelnetException extends SmartFrogException {
     public SmartFrogTelnetException(String command, String failMsg) {
         super("unable to execute command["+ command +"]");
         this.command = command;
-        this.failMessage = failMsg;
+        failMessage = failMsg;
       
     }
     /**

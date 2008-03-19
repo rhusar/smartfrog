@@ -22,15 +22,15 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/net/telnet.sf"
 
 sfConfig extends Compound {
-    sampleTelnet extends TelnetSession {
-	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
-	Telnet:commands ["cd /home/ritu/cvs",
-                  "mkdir test",
-                   "ll" 
-                 ];
-            Telnet:host "ebnt171.india.hp.com";
-            Telnet:username "ritu";
-            Telnet:logFile "spy.log";
-	    Telnet:ostype "linux";
-    }
+  sampleTelnet extends TelnetSession {
+    PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+    Telnet:commands ["cd /home/ritu/cvs",
+      "mkdir test",
+       "ll"
+      ];
+    Telnet:host "ebnt171.india.hp.com";
+    Telnet:username "ritu";
+    Telnet:logFile "spy.log";
+    Telnet:ostype "linux";
+  }
 }
