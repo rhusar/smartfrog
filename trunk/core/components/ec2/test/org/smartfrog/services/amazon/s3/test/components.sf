@@ -188,7 +188,7 @@ BucketTest extends ExpectDeployOnAWS {
 
 
 testCreateBucket extends BucketTest {
-
+  description "create a bucket";
    tests extends Sequence {
 
 
@@ -196,7 +196,7 @@ testCreateBucket extends BucketTest {
 }
 
 testDeployGetBucket extends BucketTest {
-
+  description "create a bucket then look for it";
   tests extends Sequence {
 
     probe extends ProbeForBucket;

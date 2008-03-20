@@ -41,7 +41,13 @@ public class S3BucketTest extends DeployingTestBase {
     public void testCreateBucket() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testCreateBucket");
     }
+
     public void testDeleteBucket() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testDeleteBucket");
     }
+
+    public void testPutBucketContent() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testPutBucketContent");
+    }
+
 }
