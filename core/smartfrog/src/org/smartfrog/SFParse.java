@@ -52,11 +52,11 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 public class SFParse implements MessageKeys {
 
 //    static String usageString = "Usage: sfParse [-v][-d] filename";
-    static ParseOptionSet opts = null;
+    private static ParseOptionSet opts = null;
 
-    static Vector phases;
+    private static Vector phases;
 
-    static Vector errorReport = new Vector();
+    private static Vector errorReport = new Vector();
 
     private SFParse(){
     }
@@ -68,9 +68,10 @@ public class SFParse implements MessageKeys {
      *
      * @return Language string
      *
-     * @throws Exception In case any error while getting the language string
+     * @throws SmartFrogException In case any error while getting the language string
      */
-    private static String getLanguageFromUrl(String url) throws Exception {
+    private static String getLanguageFromUrl(String url) throws
+            SmartFrogException {
         int i = url.lastIndexOf('.');
 
         if (i <= 0) {
@@ -179,16 +180,13 @@ public class SFParse implements MessageKeys {
      *
      * @param list the list of files to be parsed
      */
-    private static void parseFiles (Vector list){
+    private static void parseFiles (Vector<String> list){
           StringBuffer strb;
-          String file = "";
           Vector report= new Vector();
           //Loop through the vector
-         for (int i = 0; i < list.size(); i++) {
+          for(String file:list) {
              try {
                  strb = new StringBuffer();
-                 //Get the current line of text
-                 file = list.elementAt(i).toString();
                  //If it's not an empty line
                  if (file.trim().length() > 0) {
                      strb.append("-----------------------------------------------\n")
