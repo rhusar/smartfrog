@@ -26,4 +26,13 @@ public class PasswordsTest extends DeployingTestBase {
     public void testFile() throws Throwable {
         expectSuccessfulTestRun(FILES, "testFile");
     }
+
+    public void testPropertyPassword() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testPropertyPassword");
+    }
+
+
+    public void testPropertyPasswordUnset() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testPropertyPasswordUnset");
+    }
 }
