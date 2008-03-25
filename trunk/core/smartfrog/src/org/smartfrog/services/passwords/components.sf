@@ -51,6 +51,20 @@ InlinePassword extends Prim {
     password TBD;
 }
 
+
+/**
+ * This component extracts a password from a property. The value of the property is resolved at the moment
+ * the password is requested, and is not cached. If the property is unset, an exception is raised.
+ * The value of the property is not set as an attribute of the component, so its value is never visible remotely.
+ */
+
+PropertyPassword extends Prim {
+  sfClass "org.smartfrog.services.passwords.PropertyPasswordProvider";
+  property TBD;
+  //error string on an undefined property
+  ERROR_UNDEFINED_PROPERTY CONSTANT "org.smartfrog.services.passwords.PropertyPasswordProvider.ERROR_UNDEFINED_PROPERTY";
+}
+
 /**
  * component to check that passwords have a min/max length,
  * or that it matches a specific value. Use for testing or
