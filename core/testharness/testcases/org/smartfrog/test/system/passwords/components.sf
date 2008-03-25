@@ -23,6 +23,7 @@
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/test/system/assertions/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/components.sf"
 
  pass "secret";
 
@@ -75,5 +76,52 @@ testFile extends testDeploy {
     passwordProvider LAZY action:SecretFilePassword;
   }
 }
+
+
+testPropertyPassword extends ExpectDeploy {
+
+  description "Create a system property and check that the property password provider can read it";
+
+  action extends Compound {
+
+    sysprops extends SystemProperties {
+      properties [
+        [ "secret.password.property", pass]
+      ]
+    }
+
+    provider extends PropertyPassword {
+      property "secret.password.property";
+    }
+  }
+
+  tests extends CheckPassword {
+    passwordProvider LAZY action:provider;
+  }
+
+}
+
+
+testPropertyPasswordUnset extends ExpectDeployFailure {
+
+  description "Check that the property password provider fails if the property is unset";
+
+  action extends Compound {
+
+    provider extends PropertyPassword {
+      property "undefined.password.property";
+    }
+
+
+   check extends CheckPassword {
+    passwordProvider LAZY action:provider;
+   }
+
+  }
+
+  exceptions [ [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
+               [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,PropertyPassword:ERROR_UNDEFINED_PROPERTY]];
+}
+
 
 
