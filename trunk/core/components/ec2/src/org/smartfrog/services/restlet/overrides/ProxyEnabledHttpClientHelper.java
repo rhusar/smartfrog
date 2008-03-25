@@ -28,6 +28,7 @@ import org.restlet.Client;
 import org.restlet.data.Request;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.services.www.HttpProxyProperties;
 
 /**
  *
@@ -123,7 +124,7 @@ public class ProxyEnabledHttpClientHelper extends HttpClientHelper {
      * @return true iff the proxy is enabled
      */
     public boolean bindToSystemProxySettings() {
-        proxyHost = System.getProperty("http.proxyHost");
+        proxyHost = System.getProperty(HttpProxyProperties.HTTP_PROXY_HOST);
         if (proxyHost != null) {
             if (proxyHost.length() == 0) {
                 proxyHost = null;
@@ -132,9 +133,9 @@ public class ProxyEnabledHttpClientHelper extends HttpClientHelper {
         if (!isEnabled()) {
             return false;
         }
-        proxyPort = Integer.parseInt(System.getProperty("http.proxyPort", "80"));
-        proxyUser = System.getProperty("http.proxyUser");
-        proxyPassword = System.getProperty("proxyPassword");
+        proxyPort = Integer.parseInt(System.getProperty(HttpProxyProperties.HTTP_PROXY_PORT, "80"));
+        proxyUser = System.getProperty(HttpProxyProperties.HTTP_PROXY_USER);
+        proxyPassword = System.getProperty(HttpProxyProperties.HTTP_PROXY_PASSWORD);
         if(log.isDebugEnabled()) {
             log.debug("Binding to proxy " + proxyHost + ':' + proxyPort);
         }
@@ -142,7 +143,7 @@ public class ProxyEnabledHttpClientHelper extends HttpClientHelper {
     }
 
     /**
-     * configure an HTTP client from the settinsg
+     * configure an HTTP client from the settings
      *
      * @param client client to configure
      */
