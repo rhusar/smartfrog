@@ -67,7 +67,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
                                        .intValue();
 
     /** Vector for ordered keys. */
-    public Vector orderedKeys = new Vector(initCap, keysInc);
+    public Vector<Object> orderedKeys = new Vector<Object>(initCap, keysInc);
 
     /**
      * Constructs an ordered hashtable with default capacity (10) and load
@@ -116,36 +116,36 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
             if (value instanceof Copying) {
                 value = ((Copying) value).copy();
-        } else if (value instanceof SFNull) {
-        // do nothing...
-        } else if (value instanceof Number) {
-        if (value instanceof Integer) {
-            value = new Integer(((Integer)value).intValue());
-        } else if (value instanceof Double) {
-            value = new Double(((Double)value).doubleValue());
-        } else if (value instanceof Float) {
-            value = new Float(((Float)value).floatValue());
-        } else if (value instanceof Long) {
-            value = new Long(((Long)value).longValue());
-        }
-        } else if (value instanceof String) {
-        value = new String((String)value);
-        } else if (value instanceof Boolean) {
-        value = new Boolean(((Boolean) value).booleanValue());
-        } else if (value instanceof Serializable) {
-        // copy by serialization and de-serialization
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(100);
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(value);
-            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bis);
-            value = ois.readObject();
-        } catch (Exception t) {
-            throw new RuntimeException(MessageUtil.formatMessage(COPY_SERIALIZE_FAILED,value), t);
-        }
-        } else {
-        throw new IllegalArgumentException(MessageUtil.formatMessage(COPY_FAILED, value));
+            } else if (value instanceof SFNull) {
+                // do nothing...
+            } else if (value instanceof Number) {
+                if (value instanceof Integer) {
+                    value = new Integer(((Integer) value).intValue());
+                } else if (value instanceof Double) {
+                    value = new Double(((Double) value).doubleValue());
+                } else if (value instanceof Float) {
+                    value = new Float(((Float) value).floatValue());
+                } else if (value instanceof Long) {
+                    value = new Long(((Long) value).longValue());
+                }
+            } else if (value instanceof String) {
+                value = new String((String) value);
+            } else if (value instanceof Boolean) {
+                value = new Boolean(((Boolean) value).booleanValue());
+            } else if (value instanceof Serializable) {
+                // copy by serialization and de-serialization
+                try {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream(100);
+                    ObjectOutputStream oos = new ObjectOutputStream(bos);
+                    oos.writeObject(value);
+                    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+                    ObjectInputStream ois = new ObjectInputStream(bis);
+                    value = ois.readObject();
+                } catch (Exception t) {
+                    throw new RuntimeException(MessageUtil.formatMessage(COPY_SERIALIZE_FAILED, value), t);
+                }
+            } else {
+                throw new IllegalArgumentException(MessageUtil.formatMessage(COPY_FAILED, value));
             }
             r.primPut(key, value);
         }
@@ -259,7 +259,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      *
      * @return enumeration over keys
      */
-    public Enumeration keys() {
+    public synchronized Enumeration keys() {
         return orderedKeys.elements();
     }
 
@@ -268,11 +268,8 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      *
      * @return ordered enumeration over values
      */
-    public Enumeration elements() {
-        Vector r = new Vector(orderedKeys.size());
-
-        for (Enumeration e = keys(); e.hasMoreElements();)
-            r.addElement(get(e.nextElement()));
+    public synchronized Enumeration elements() {
+        Vector<Object> r = createOrderedValueVector();
         return r.elements();
     }
 
@@ -295,11 +292,21 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      *
      * @return ordered iterator over values
      */
-    public Iterator orderedValues() {
-        Vector r = new Vector(orderedKeys.size());
-        for (Enumeration e = keys(); e.hasMoreElements();)
-            r.addElement(get(e.nextElement()));
+    public Iterator<Object> orderedValues() {
+        Vector<Object> r = createOrderedValueVector();
         return r.iterator();
+    }
+
+    /**
+     * Get a value vector ordered by the key order
+     * @return a new vector
+     */
+    protected Vector<Object> createOrderedValueVector() {
+        Vector<Object> r = new Vector<Object>(orderedKeys.size());
+        for(Object key:orderedKeys) {
+            r.addElement(get(key));
+        }
+        return r;
     }
 
 

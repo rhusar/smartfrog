@@ -50,6 +50,7 @@ import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.SerializableIterator;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -383,7 +384,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             if ((!(rex.containsKey(SmartFrogRuntimeException.SOURCE)))
                     || (rex.get(SmartFrogRuntimeException.SOURCE) == null)) {
                 rex.put(SmartFrogRuntimeException.SOURCE,
-                        this.sfCompleteNameSafe());
+                        sfCompleteNameSafe());
                 rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
             if ((!(rex.containsKey(SmartFrogResolutionException.REFERENCE)))) {
@@ -391,7 +392,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             }
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
-        } catch (java.lang.StackOverflowError st) {
+        } catch (StackOverflowError st) {
             throw new SmartFrogResolutionException(r,
                     sfCompleteNameSafe(),
                     st.toString() + ". Possible cause: cyclic reference",
@@ -617,8 +618,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
-    public Iterator sfAttributes() throws RemoteException {
-        return sfContext.sfAttributes();
+    public Iterator<Object> sfAttributes() throws RemoteException {
+        return new SerializableIterator<Object>(sfContext.sfAttributes());
     }
 
     /**
@@ -630,8 +631,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of Remote/network error
      */
-    public Iterator sfValues() throws RemoteException {
-        return sfContext.sfValues();
+    public Iterator<Object> sfValues() throws RemoteException {
+        return new SerializableIterator<Object>(sfContext.sfValues());
     }
 
 
@@ -1050,12 +1051,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * injections
      */
     private void injectAttributes() throws SmartFrogException {
-        Iterator i = null;
-        try {
-            i = sfAttributes();
-        } catch (Exception e) {
-            throw SmartFrogException.forward(e);
-        }
+        Iterator<Object> i = null;
+        i = sfContext.sfAttributes();
         while (i.hasNext()) {
             Object name = i.next();
 
