@@ -177,11 +177,11 @@ public final class ListUtils {
      * @throws SmartFrogResolutionException if one of the list entries is not a tuple
      */
     public static Properties convertToProperties(List tupleList) throws SmartFrogResolutionException {
-        Properties properties=new Properties();
-        if(tupleList!=null) {
+        Properties properties = new Properties();
+        if (tupleList != null) {
             for (Object element : tupleList) {
-                if(!(element instanceof Vector)) {
-                    throw new SmartFrogResolutionException(ERROR_NOT_A_LIST +element);
+                if (!(element instanceof Vector)) {
+                    throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
                 }
                 Vector entry = (Vector) element;
                 if (entry.size() != 2) {
@@ -189,7 +189,7 @@ public final class ListUtils {
                 }
                 String name = entry.get(0).toString();
                 String value = entry.get(1).toString();
-                properties.setProperty(name,value);
+                properties.setProperty(name, value);
             }
         }
         return properties;
@@ -325,21 +325,36 @@ public final class ListUtils {
         return builder.toString();
     }
 
-                                               /**
-                                               * Extract a string tuple list; verify the depth is 2.
-                                               * Everything is converted to strings in the process
-                                               * @param component component to resolve against
-                                               * @param ref a reference
-                                               * @param required whether the element is required or not
-                                               * @return the tuple list, or null if none was provided
-                                               * @throws SmartFrogResolutionException if one of the list entries is not a tuple, or the resolution
-                                               * otherwise fails.
-                                               * @throws RemoteException network problems
-                                               */
+    /**
+     * Extract a string tuple list; verify the depth is 2. Everything is converted to strings in the process
+     *
+     * @param component component to resolve against
+     * @param ref       a reference
+     * @param required  whether the element is required or not
+     * @return the tuple list, or null if none was provided
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple
+     * @throws RemoteException network problems
+     */
     public static Vector<Vector<String>> resolveStringTupleList(Prim component, Reference ref, boolean required)
             throws SmartFrogResolutionException, RemoteException {
         return resolveStringNTupleList(component, ref, 2,required);
     }
+
+    /**
+     * Resolve a list to a properties instance
+     * @param component component to resolve against
+     * @param ref       a reference
+     * @param required  whether the element is required or not
+     * @return the newly resolved properties
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple
+     * @throws RemoteException network problems
+     */
+    public static Properties resolveProperties(Prim component, Reference ref, boolean required)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector<Vector<String>> tuples = resolveStringNTupleList(component, ref, 2, required);
+        return convertToProperties(tuples);
+    }
+
 
     /**
      * Convert the properties to to a string tuple list
