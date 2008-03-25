@@ -25,6 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -41,8 +43,6 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
     private String user;
 
     private String password;
-
-    private Vector properties;
 
     private Properties connectionProperties;
 
@@ -67,9 +67,9 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
 
     /**
      * Startup time binding to the database
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogResolutionException missing attributes
+     * @throws RemoteException network problems
+     * @throws SmartFrogDeploymentException trouble with the properties.
      */
     protected void bindToDatabaseProperties()
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
@@ -79,7 +79,7 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
         url = sfResolve(ATTR_URL, "", true);
         user = sfResolve(ATTR_USERNAME, "", false);
         password = sfResolve(ATTR_PASSWORD, "", false);
-        properties = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
+        Vector<Vector<String>> properties = ListUtils.resolveStringTupleList(this, new Reference(ATTR_PROPERTIES), false);
 
         if (driver != null) {
             helper.loadClass(driver);
@@ -95,9 +95,11 @@ public class JdbcBindingImpl extends PrimImpl implements JdbcBinding {
             connectionProperties.setProperty("password", password);
         }
 
-        if (properties != null && properties.size() != 0) {
-            throw new SmartFrogDeploymentException(
-                    "Properties are not yet implemented");
+        //Add any ohter properties
+        if (properties != null ) {
+            for(Vector<String> tuple:properties) {
+                connectionProperties.setProperty(tuple.get(0),tuple.get(1));
+            }
         }
     }
 
