@@ -45,8 +45,8 @@ import java.util.Vector;
  */
 public class ContextImpl extends OrderedHashtable implements Context, Serializable, PrettyPrinting, Copying {
 
-    Map attributeTags = new HashMap();
-    Map attributeTagsWrappers = new HashMap();
+    protected Map attributeTags = new HashMap();
+    protected Map attributeTagsWrappers = new HashMap();
 
     /**
      * Creates an empty context with default capacity.

@@ -44,6 +44,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ReverseListIterator;
+import org.smartfrog.sfcore.utils.SerializableEnumeration;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -419,8 +420,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return enumeration over children
      */
-    public Enumeration<Liveness> sfChildren() {
-        return ((Vector) sfChildren.clone()).elements();
+    public Enumeration sfChildren() {
+        return new SerializableEnumeration<Prim>(sfChildren);
     }
 
     /**
@@ -505,8 +506,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
               Object key = e.nextElement();
               Object elem = sfContext.get(key);
 
-              if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
-                  lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
+              if ((elem instanceof ComponentDescription) && (((ComponentDescription) elem).getEager())) {
+                  lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription) elem, null));
               }
           }
       } catch (Exception sfex) {
@@ -983,8 +984,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
 
         // detach and terminate all children  which must disappear
-        for (Enumeration e = childrenToTerminate.elements(); e.hasMoreElements(); ) {
-            Prim p = (Prim)e.nextElement();
+        for (Prim p: childrenToTerminate) {
             p.sfDetachAndTerminate(TerminationRecord.normal(sfCompleteNameSafe()));
         }
 

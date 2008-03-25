@@ -129,7 +129,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator sfAttributes() throws RemoteException;
+    public  Iterator<Object> sfAttributes() throws RemoteException;
 
     /**
      * Returns an ordered iterator over the values in the context.
@@ -140,7 +140,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator sfValues() throws RemoteException;
+    public  Iterator<Object> sfValues() throws RemoteException;
 
 
     /**
