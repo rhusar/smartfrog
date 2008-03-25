@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,13 +18,35 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/amazon/ec2/components.sf"
+#include "/org/smartfrog/services/amazon/s3/components.sf"
+#include "/org/smartfrog/services/amazon/test/components.sf";
+
+DeployedService extends Compound {
+   authentication extends AwsPassword;
+   service TBD;
+}
 
 
-/*
- SmartFrog components to create EC2 machines
- */
+ExpectDeployedService extends  ExpectDeployOnAWS {
+
+  action DeployedService;
+
+}
+
+testListEC2Images extends  ExpectDeployedService  {
+
+  action:service extends ListEC2Images {
+    id login;
+    key LAZY authentication;
+  }
+}
 
 
-ListEC2Images extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.amazon.ec2.ListEc2Images";
+testListEC2ImagesBadPassword extends  ExpectDeployFailureOnAWS  {
+
+  action extends ListEC2Images {
+    id login;
+    key "not a valid key";
+  }
 }

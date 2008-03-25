@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,14 +17,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
+package org.smartfrog.services.amazon.ec2.test;
 
+import org.smartfrog.test.DeployingTestBase;
 
-/*
- SmartFrog components to create EC2 machines
+/**
+ *
+ * Created 30-Nov-2007 16:46:45
+ *
  */
 
+public class EC2ListImagesTest extends DeployingTestBase {
+    public static final String FILES = "/org/smartfrog/services/amazon/ec2/test/";
 
-ListEC2Images extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.amazon.ec2.ListEc2Images";
+    public EC2ListImagesTest(String name) {
+        super(name);
+    }
+
+
+    public void testListEC2Images() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testListEC2Images");
+    }
+
+
+    public void testListEC2ImagesBadPassword() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testListEC2ImagesBadPassword");
+    }
+
 }

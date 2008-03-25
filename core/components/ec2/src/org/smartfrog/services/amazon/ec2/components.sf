@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/amazon/aws/components.sf"
+#include "/org/smartfrog/services/amazon/ec2/ami.sf"
 #include "/org/smartfrog/services/amazon/ec2/upload.sf"
 #include "/org/smartfrog/services/amazon/ec2/firewall.sf"
 #include "/org/smartfrog/services/amazon/ec2/machines.sf"
