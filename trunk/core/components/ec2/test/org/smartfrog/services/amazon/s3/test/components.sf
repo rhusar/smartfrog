@@ -18,15 +18,9 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/amazon/s3/components.sf"
+#include "/org/smartfrog/services/amazon/test/components.sf";
 
-bucket "smartfrogtest";
-login PROPERTY test.awsid;
-password PROPERTY test.awskey
-timeout 10;
-
-bucketHost (bucket ++ ".s3.amazonaws.com");
 
 
 TestBucket extends  TransientS3Bucket {
@@ -131,28 +125,7 @@ ProbeForFile extends WaitForPage {
   sfShouldTerminate true;
   logResponse true;
 }
-/*
- * Our AWS condition
- */
 
-IsAwsEnabled extends IsPropertySet {
-    property "test.awsid";
-  }
-
-
-
-/**
- A test using a bucket
- */
-
-ExpectDeployOnAWS extends ExpectDeploy {
-
-  description "test against the S3 servers; requires test.awsid to be set with a login, (and test.awskey with its secret key)"
-
-  condition extends IsAwsEnabled ;
-
-
-}
 
 
 /**

@@ -24,12 +24,6 @@
 
 
 
-/**
- * An AWS service includes resources and SOAPy stuff
- */
-AWSService extends RemoteResource {
-  authorization HTTP_AMAZON_AWS;
-}
 
 
 
@@ -38,7 +32,15 @@ AWSService extends RemoteResource {
  * Control their policy w.r.t whether they should execute common operations
  * During startup, liveness and termination
  */
-AWSResource extends AWSService {
-
-
+AWSResource extends RemoteResource {
+  authorization HTTP_AMAZON_AWS;
 }
+
+/**
+ * All AWS Authorized Services have to have a key and an ID
+ */
+AwsAuthorizedService extends Prim {
+   id TBD;
+   key TBD;
+}
+

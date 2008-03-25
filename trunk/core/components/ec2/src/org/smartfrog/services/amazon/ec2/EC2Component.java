@@ -17,14 +17,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
+package org.smartfrog.services.amazon.ec2;
 
+import java.rmi.Remote;
 
-/*
- SmartFrog components to create EC2 machines
+/**
+ *
+ * Created 25-Mar-2008 13:35:47
+ *
  */
 
+public interface EC2Component extends Remote {
 
-ListEC2Images extends AwsAuthorizedService {
-  sfClass "org.smartfrog.services.amazon.ec2.ListEc2Images";
+    String ATTR_ID="id";
+    String ATTR_KEY ="key";
+
 }
