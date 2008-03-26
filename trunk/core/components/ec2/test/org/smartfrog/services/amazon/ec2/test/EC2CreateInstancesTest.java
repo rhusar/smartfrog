@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.amazon.s3.test;
+package org.smartfrog.services.amazon.ec2.test;
 
 import org.smartfrog.test.DeployingTestBase;
 
@@ -25,29 +25,17 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 30-Nov-2007 16:46:45
  */
 
-public class S3BucketTest extends DeployingTestBase {
+public class EC2CreateInstancesTest extends DeployingTestBase {
 
-    public static final String FILES = "/org/smartfrog/services/amazon/s3/test";
+    public static final String FILES = "/org/smartfrog/services/amazon/ec2/test/";
 
-    public S3BucketTest(String name) {
+    public EC2CreateInstancesTest(String name) {
         super(name);
     }
 
-
-    public void testDeployGetBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testDeployGetBucket");
+    public void testCreateInstance() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testCreateInstance");
     }
 
-    public void testCreateBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateBucket");
-    }
-
-    public void testDeleteBucket() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testDeleteBucket");
-    }
-
-    public void NotestPutBucketContent() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testPutBucketContent");
-    }
 
 }

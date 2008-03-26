@@ -18,6 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
+
+
+
 /**
  * Represent Amazon Machine Images.
  * An AMI must exist at deploy time
@@ -30,6 +33,23 @@ AmazonMachineImage extends Prim {
 PublicAMI extends AmazonMachineImage {
 
 }
+
+/**
+ * amazon ID and the list of machine images
+ */
+AmazonAMI extends AmazonMachineImage {
+  AMAZON_ID "amazon";
+
+  FC4 "ec2-public-images/fedora-core4-base.manifest.xml";
+  FC4_MYSQL "ec2-public-images/fedora-core4-mysql.manifest.xml";
+  FC4_APACHE "ec2-public-images/fedora-core4-apache.manifest.xml";
+  FC4_MYSQL "ec2-public-images/fedora-core4-apache-mysql.manifest.xml";
+  FC4_DEVELOPER "ec2-public-images/developer-image.manifest.xml";
+  GETTING_STARTED "ec2-public-images/getting-started.manifest.xml";
+  FC6_64 "ec2-public-images/fedora-core6-base-x86_64.manifest.xml";
+  DEMO_PAID_AMI "ec2-public-images/demo-paid-AMI.manifest.xml";
+}
+
 
 PrivateAmi  extends AmazonMachineImage {
 

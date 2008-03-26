@@ -34,12 +34,54 @@ ExpectDeployedService extends  ExpectDeployOnAWS {
 
 }
 
-testListEC2Images extends  ExpectDeployedService  {
+
+
+ExpectTerminatingService extends  ExpectDeployOnAWS {
+  expectTerminate true;
+  exitType EXIT_TYPE_NORMAL;
+  action DeployedService;
+
+}
+
+
+testListEC2Images extends  ExpectTerminatingService  {
 
   action:service extends ListEC2Images {
     id login;
     key LAZY authentication;
   }
+}
+
+testListAmazonImages extends  testListEC2Images  {
+
+  action:service:target LAZY action;
+  action:service:owners [AmazonAMI:AMAZON_ID];
+
+  tests extends Sequence {
+    -- extends Delay {
+      time 1000;
+    }
+    assertHasValues extends Assert {
+      sfShouldTerminate true;
+      reference LAZY action;
+      attribute "imageList";
+      //at least two
+      attributeVectorMinLength 2;
+      attributeVectorMaxLength 10;
+    }
+
+    assertSingleton extends Assert {
+      sfShouldTerminate true;
+      reference LAZY action;
+      attribute "imageID";
+    }
+  }
+}
+
+testListPrivateImages extends  testListEC2Images  {
+
+  action:service:target LAZY action;
+  action:service:includePublic false;
 }
 
 
@@ -49,4 +91,23 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnAWS  {
     id login;
     key "not a valid key";
   }
+
+  exceptions [
+    ["",""],
+    ["","AWS was not able to validate the provided access credentials"]
+  ];
+}
+
+
+testCreateInstance extends ExpectDeployOnAWS {
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       id login;
+       imageID "ami-26b6534f";
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
 }

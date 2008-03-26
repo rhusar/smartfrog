@@ -23,14 +23,15 @@ import com.xerox.amazonws.ec2.Jec2;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- *
  * Created 25-Mar-2008 13:36:29
- *
  */
 
 public class EC2ComponentImpl extends PrimImpl implements EC2Component {
@@ -39,27 +40,56 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     private String id;
     private String key;
     protected static final ArrayList<String> EMPTY_ARGUMENTS = new ArrayList<String>();
+    private WorkflowThread worker;
 
     public EC2ComponentImpl() throws RemoteException {
     }
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
-        id=sfResolve(ATTR_ID,"",true);
-        key = PasswordHelper.resolvePassword(this,ATTR_KEY,true);
-
+        id = sfResolve(ATTR_ID, "", true);
+        key = PasswordHelper.resolvePassword(this, ATTR_KEY, true);
         ec2binding = bindToEC2();
-
     }
 
+    /**
+     * Provides hook for subclasses to implement useful termination behavior.
+     * Deregisters component from local process compound (if ever registered)
+     *
+     * @param status termination status
+     */
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        terminateWorker();
+    }
+
+    /**
+     * Terminate any worker thread; synchronized. After the request is made the
+     * worker field is always null.
+     */
+    protected void terminateWorker() {
+        WorkflowThread thread;
+        synchronized (this) {
+            thread = worker;
+            worker = null;
+        }
+        SmartFrogThread.requestThreadTermination(thread);
+    }
+
+    /**
+     * Get the current Jec2 binding
+     *
+     * @return the current binding
+     */
     public Jec2 getEc2binding() {
         return ec2binding;
     }
@@ -74,11 +104,19 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
 
     /**
      * Create a new EC2 binding
+     *
      * @return a new binding with the current key/password
      */
     protected Jec2 bindToEC2() {
-        return new Jec2(id,key);
+        return new Jec2(id, key);
     }
 
 
+    public WorkflowThread getWorker() {
+        return worker;
+    }
+
+    public void setWorker(WorkflowThread worker) {
+        this.worker = worker;
+    }
 }
