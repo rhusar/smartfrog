@@ -22,21 +22,24 @@ package org.smartfrog.services.amazon.ec2.test;
 import org.smartfrog.test.DeployingTestBase;
 
 /**
- *
  * Created 30-Nov-2007 16:46:45
- *
  */
 
 public class EC2ListImagesTest extends DeployingTestBase {
+
     public static final String FILES = "/org/smartfrog/services/amazon/ec2/test/";
 
     public EC2ListImagesTest(String name) {
         super(name);
     }
 
-
     public void testListEC2Images() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testListEC2Images");
+    }
+
+
+    public void testListAmazonImages() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testListAmazonImages");
     }
 
 
