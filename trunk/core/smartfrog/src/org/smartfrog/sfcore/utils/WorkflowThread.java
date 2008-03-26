@@ -33,7 +33,8 @@ import java.rmi.RemoteException;
 public class WorkflowThread extends SmartFrogThread {
     private Prim owner;
     private Reference ownerID;
-    boolean workflowTermination;
+    private boolean workflowTermination;
+
     /**
      * termination message: {@value}
      */
@@ -80,12 +81,12 @@ public class WorkflowThread extends SmartFrogThread {
                 ownerID,
                 getThrown());
         ComponentHelper helper = new ComponentHelper(owner);
-        if(workflowTermination) {
+        if (workflowTermination) {
             //put up for workflow termination
             helper.targetForWorkflowTermination(tr);
         } else {
             //put up for termination
-            helper.targetForTermination(tr,false,false,false);
+            helper.targetForTermination(tr, false, false, false);
         }
     }
 
