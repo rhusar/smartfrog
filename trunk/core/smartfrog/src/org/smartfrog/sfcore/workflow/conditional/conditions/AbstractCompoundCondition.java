@@ -92,7 +92,6 @@ public abstract class AbstractCompoundCondition extends ConditionCompound {
      * @throws SmartFrogResolutionException not thrown
      * @throws SmartFrogDeploymentException not thrown 
      * @throws RemoteException for network problems
-     * @throws SmartFrogException for any other problem
      */
     protected void deployCondition()
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
