@@ -44,6 +44,9 @@ public class TomcatTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testTomcatRuns");
     }
 
+    public void testTomcatHomeIsWellDefined() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testTomcatHomeIsWellDefined");
+    }
     public void testWaitForTimesOut() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testWaitForTimesOut");
     }
