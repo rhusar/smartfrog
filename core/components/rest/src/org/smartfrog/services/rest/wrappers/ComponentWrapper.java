@@ -63,7 +63,7 @@ public class ComponentWrapper implements Restful
 	 */
 	public ComponentWrapper(ResolutionResult result, HttpRestRequest restRequest) throws RemoteException
 	{
-		Object subject = result.getSubject();
+		 subject = result.getSubject();
 
 		if (!(	(subject instanceof Prim)			||
 				(subject instanceof ComponentStub)	||
@@ -74,9 +74,11 @@ public class ComponentWrapper implements Restful
 		this.result = result;
 		this.restRequest = restRequest;
 
-		Object owner = result.getOwner();
+		//Object owner = result.getOwner();
+		owner = result.getOwner();
 		ownerContext = (owner instanceof Prim) ?
 			((Prim) owner).sfContext() : ((ComponentDescription) owner).sfContext();
+
 	}
 
 	public void doDelete(HttpRestRequest restRequest, HttpRestResponse restResponse)
@@ -111,8 +113,11 @@ public class ComponentWrapper implements Restful
 						((Prim) result.getOwner()).sfContext() : ((ComponentDescription) result.getOwner()).sfContext();
 
 				String targetName = restRequest.getTargetResourceName();
-				context.sfRemoveAttribute(targetName);
-
+				if (owner instanceof Prim) {
+					((Prim) owner).sfRemoveAttribute(targetName);
+				} else {
+					((ComponentDescription) owner).sfRemoveAttribute(targetName);
+				}
 				String response = HttpRestResponse.generateResponseXML("OK", "The selected component description has " +
 						"been removed from the SmartFrog tree.");
 
@@ -146,7 +151,7 @@ public class ComponentWrapper implements Restful
 
 			SFParser parser = new SFParser(resourceRequest.getParserLanguage());
 			ComponentDescription description = parser.sfParseComponentDescription(resourceRequest.getPayload());
-
+			
 			String response;
 
 			if (resourceRequest.getTargetType().equals("description"))
@@ -160,8 +165,12 @@ public class ComponentWrapper implements Restful
 					description.setParent((ComponentDescription) result.getOwner());
 				}
 
-				ownerContext.sfAddAttribute(restRequest.getTargetResourceName(), description);
 
+			if (owner instanceof Prim) {
+				((Prim) owner).sfAddAttribute(restRequest.getTargetResourceName(), description);
+			} else {
+				((ComponentDescription) owner).sfAddAttribute(restRequest.getTargetResourceName(), description);
+			}
 				response = HttpRestResponse.generateResponseXML("OK", "The description was successfully parsed and" +
 						" added to the SmartFrog tree as an attribute.");
 			}
@@ -188,7 +197,6 @@ public class ComponentWrapper implements Restful
 							"as a child of the specified parent on the requested SmartFrog Daemon");
 				}
 			}
-
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
@@ -222,7 +230,11 @@ public class ComponentWrapper implements Restful
 					description.setParent((ComponentDescription) result.getOwner());
 				}
 
-				ownerContext.sfReplaceAttribute(restRequest.getTargetResourceName(), description);
+			if (owner instanceof Prim) {
+				((Prim) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), description);
+			} else {
+				((ComponentDescription) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), description);
+			}
 
 				response = HttpRestResponse.generateResponseXML("OK", "The description was successfully parsed and" +
 						" added to the SmartFrog tree as an attribute.");
@@ -280,7 +292,8 @@ public class ComponentWrapper implements Restful
 			resourceType = "attribute";
 
 		String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
-				restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
+				restRequest.getServerPort() + restRequest.getRequestURI();
+				//restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
 
 		// each resource has a name, type, class and link
 		Attribute rName =	new Attribute("name", restRequest.getTargetResourceName());
@@ -295,7 +308,6 @@ public class ComponentWrapper implements Restful
 
 		Context context = (result.getSubject() instanceof Prim) ?
 				((Prim) result.getSubject()).sfContext() : ((ComponentDescription) result.getSubject()).sfContext();
-
 		try
 		{
 			for (Iterator i = context.sfAttributes(); i.hasNext();)
@@ -332,11 +344,12 @@ public class ComponentWrapper implements Restful
 			}
 		}
 		catch (SmartFrogContextException ignored) { }
-
 		return new Document(root);
 	}
 
-	private final Context ownerContext;
+	private final Object owner;
+	private final Object subject;
+	private Context ownerContext;
 	private final ResolutionResult result;
 	private final HttpRestRequest restRequest;
 }
