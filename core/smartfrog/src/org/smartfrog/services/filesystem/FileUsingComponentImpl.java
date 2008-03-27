@@ -92,10 +92,10 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException runtime error
      */
-    protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
+    protected void bind(boolean mandatory, String defval) throws RemoteException, SmartFrogRuntimeException {
         String filename = bind(this, mandatory, defval);
-        if(filename!=null) {
-            file=new File(filename);
+        if (filename != null) {
+            file = new File(filename);
         }
     }
 
