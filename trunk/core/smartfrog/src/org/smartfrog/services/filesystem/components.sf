@@ -18,18 +18,18 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
-#include "org/smartfrog/services/filesystem/copyfile.sf"
-#include "org/smartfrog/services/filesystem/deploybycopy.sf"
-#include "org/smartfrog/services/filesystem/chmod.sf"
-
+#include "/org/smartfrog/services/filesystem/textfile.sf"
+#include "/org/smartfrog/services/filesystem/selfdeletingfile.sf"
+#include "/org/smartfrog/services/filesystem/file.sf"
+#include "/org/smartfrog/services/filesystem/tempfile.sf"
+#include "/org/smartfrog/services/filesystem/mkdir.sf"
+#include "/org/smartfrog/services/filesystem/touchfile.sf"
+#include "/org/smartfrog/services/filesystem/copyfile.sf"
+#include "/org/smartfrog/services/filesystem/deploybycopy.sf"
+#include "/org/smartfrog/services/filesystem/chmod.sf"
+#include "/org/smartfrog/services/filesystem/fileexists.sf"
 
 
 
