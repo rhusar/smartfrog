@@ -61,7 +61,8 @@ public class AttributeWrapper implements Restful
 		this.result = result;
 		this.restRequest = restRequest;
 
-		Object owner = result.getOwner();
+		owner = result.getOwner();
+		//Object owner = result.getOwner();
 
 		ownerContext = (owner instanceof Prim) ?
 			((Prim) owner).sfContext() : ((ComponentDescription) owner).sfContext();
@@ -82,8 +83,11 @@ public class AttributeWrapper implements Restful
 				response = HttpRestResponse.generateResponseXML("OK", "The specified attribute has been successfully" +
 						" removed from the SmartFrog tree.");
 
-			ownerContext.sfRemoveAttribute(targetName);
-
+			if (owner instanceof Prim) {
+				((Prim) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
+			} else {
+				((ComponentDescription) owner).sfRemoveAttribute(restRequest.getTargetResourceName());
+			}
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
@@ -97,7 +101,7 @@ public class AttributeWrapper implements Restful
 	public void doGet(HttpRestRequest restRequest, HttpRestResponse restResponse)
 			throws MethodNotSupportedException, RemoteException, RestException
 	{
-		Document xmlResponse = getXMLRepresentation();
+	Document xmlResponse = getXMLRepresentation();
 
 		restResponse.setContentType(XmlConstants.APPLICATION_XML);
 		restResponse.setContentLength(xmlResponse.toXML().length());
@@ -128,8 +132,11 @@ public class AttributeWrapper implements Restful
 				response = HttpRestResponse.generateResponseXML("OK", "The provided value was successfully parsed" +
 						" as a valid SmartFrog reference and added to the tree.");
 			}
-
-			ownerContext.sfAddAttribute(restRequest.getTargetResourceName(), data);
+			if (owner instanceof Prim) {
+				((Prim) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
+			} else {
+				((ComponentDescription) owner).sfAddAttribute(restRequest.getTargetResourceName(), data);
+			}
 
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
@@ -166,8 +173,11 @@ public class AttributeWrapper implements Restful
 						" as a valid SmartFrog reference and added to the tree.");
 			}
 
-			ownerContext.sfReplaceAttribute(restRequest.getTargetResourceName(), data);
-
+			if (owner instanceof Prim) {
+				((Prim) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
+			} else {
+				((ComponentDescription) owner).sfReplaceAttribute(restRequest.getTargetResourceName(), data);
+			}
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
@@ -183,7 +193,8 @@ public class AttributeWrapper implements Restful
 		Element root = new Element("resource");
 
 		String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
-				restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
+				restRequest.getServerPort() + restRequest.getRequestURI();
+				//restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
 
 		String resourceType = (result.getSubject() instanceof Reference) ? "reference" : "attribute";
 
@@ -204,6 +215,8 @@ public class AttributeWrapper implements Restful
 		return new Document(root);
 	}
 
+
+	private final Object owner; 
 	private final Context ownerContext;
 	private final ResolutionResult result;
 	private final HttpRestRequest restRequest;
