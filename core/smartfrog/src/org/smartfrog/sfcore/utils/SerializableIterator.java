@@ -96,7 +96,7 @@ public class SerializableIterator<T> implements Iterator<T>, Iterable<T>, Serial
      * @return <tt>true</tt> if the iterator has more elements.
      */
     public boolean hasNext() {
-        return pos>elements.length;
+        return pos<elements.length;
     }
 
     /**
