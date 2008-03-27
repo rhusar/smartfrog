@@ -464,7 +464,7 @@ public class TestCompoundImpl extends ConditionCompound
                 String exitTextMessage = null;
                 if (expectTerminate) {
                     //act on whether or not a fault was expected.
-                    if (childStatus.errorType.contains(exitType)) {
+                    if (childStatus.errorType.equals(exitType)) {
                         //we have a match
                         sfLog().debug("Exit type is as expected");
                         expected = true;
@@ -479,14 +479,14 @@ public class TestCompoundImpl extends ConditionCompound
                                         + exitText
                                         + "\" but got \""
                                         + childDescription
-                                        + "\"";
-                                sfLog().debug(exitTextMessage);
+                                        + '\"';
+                                sfLog().info(exitTextMessage);
                                 expected = false;
                             }
                         }
                     } else {
                         //wrong exit type
-                        sfLog().info("Action Exit type mismatch");
+                        sfLog().info("Exit type mismatch -expected " + exitType + " but got " + childStatus.errorType);
                         expected = false;
                     }
                     //also check the error text, regardless of the previous checks
