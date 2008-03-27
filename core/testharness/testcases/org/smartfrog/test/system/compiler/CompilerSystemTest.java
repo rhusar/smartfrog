@@ -154,7 +154,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Parsing include file test.sf : Include file: test.sf not found"); 
+                "Include file: test.sf not found"); 
     }
 
 }
