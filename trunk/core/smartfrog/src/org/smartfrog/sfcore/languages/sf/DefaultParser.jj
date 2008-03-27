@@ -140,12 +140,17 @@ public class DefaultParser {
     try {
       return includeHandler.parseInclude(fName, codebase);
     } catch (TokenMgrError tex) {
-      throw new TokenMgrError("In include file " + fName + " : " +
+      throw new TokenMgrError("In include file " + fName
+                              +(codebase != null? ("in code base "+ codebase):"")
+                              + " : " +
                               tex.getMessage(),
                               tex.errorCode);
     } catch (Exception ex) {
-      throw new ParseException("Parsing include file " + fName + " : " +
-                               ex.getMessage());
+      ParseException pe=new ParseException("Parsing include file " + fName
+                +(codebase != null? ("in code base "+ codebase):"")
+                + " : " + ex.getMessage());
+      pe.initCause(ex);
+      throw pe;
     }
   }
 
