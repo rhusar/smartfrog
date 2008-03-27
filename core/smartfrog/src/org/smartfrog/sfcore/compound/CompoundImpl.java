@@ -421,7 +421,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @return enumeration over children
      */
     public Enumeration sfChildren() {
-        return new SerializableEnumeration<Prim>(sfChildren);
+        //SFOS-750 Regression: a change to core has broken the WWW tests
+        //return new SerializableEnumeration<Prim>(sfChildren);
+        return ((Vector) sfChildren.clone()).elements();
     }
 
     /**
