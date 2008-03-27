@@ -18,6 +18,7 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/filesystem/fileexists.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/www/servers/tomcat5.sf"
 //#include "/org/smartfrog/sfcore/workflow/conditional/conditions/components.sf"
@@ -55,15 +56,29 @@ IsTomcatPresent extends BooleanValue {
   value tomcat.present;
 }
 
+DoesTomcatHomeExist extends DirectoryExists {
+  filename tomcat.home;
+}
+
+DoesTomcatWebappsDirExist extends DirectoryExists {
+  dir tomcat.home
+  filename "webapps";
+}
 
 NoRunningServer extends Not {
-     condition extends TomcatLivenessPage;
-    }
+   condition extends TomcatLivenessPage;
+}
 
 IsTomcatPresentButNotRunning extends And {
   -- extends IsTomcatPresent;
   -- extends NoRunningServer;
 }
+
+
+WorkflowAssert extends Assert {
+  sfShouldTerminate true;
+}
+
 
 /**
  * Tomcat bound to the local properties
@@ -85,10 +100,7 @@ DeployTomcat extends ExpectDeploy {
     tomcat extends BoundTomcatServer;
   }
 
-
-
   undeployAfter 60000;
-
 }
 
 /*
@@ -100,6 +112,34 @@ DeployTomcatTests extends DeployTomcat {
   tests extends WaitForTomcat ;
 }
 
+
+testTomcatHomeIsWellDefined extends ExpectTerminate {
+
+  condition extends IsTomcatPresentButNotRunning;
+  description "check that the tomcat home property is not the empty string if the IsPresent test works";
+
+  action extends Sequence {
+      propertyIsNotEmpty extends EvaluateCondition {
+        condition extends Not {
+           condition extends StringEquals {
+              left "";
+              right tomcat.home;
+           }
+        }
+
+        tomcatHomeExists extends EvaluateCondition {
+          condition DoesTomcatHomeExist;
+        }
+
+        tomcatWebappsDirExists  extends EvaluateCondition {
+          condition DoesTomcatWebappsDirExist;
+        }
+      }
+
+
+  }
+
+}
 
 
 /**
@@ -125,6 +165,7 @@ testTomcatIsNotRunning extends ExpectTerminate {
  * one test with a 10s shutdown
  */
 testTomcatRuns extends DeployTomcatTests {
+  condition extends IsTomcatPresentButNotRunning;
   description "test that tomcat runs";
 }
 
