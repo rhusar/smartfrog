@@ -126,6 +126,8 @@ public class HttpRestRequest implements Serializable
 
 		// Extract smartfrog-specific rest information from the incoming request
 
+		String[] context = contextPath.replaceAll("(^/|/$)", "").split("/");
+		
 		// remove leading/trailing slashes from URI and explode on "/"
 		String[] raw = requestURI.replaceAll("(^/|/$)", "").split("/");
 
@@ -133,29 +135,65 @@ public class HttpRestRequest implements Serializable
 		if (raw.length < 2)
 			throw new InvalidURIException("Insufficient information was supplied in the URI provided.");
 
-		targetHost = raw[0];
+		if (context.length == 0) {
+		 	targetHost = raw[0];
+			try {
+				targetPort = Integer.parseInt(raw[1]);
+			}
+				catch (NumberFormatException nfe)
+			{
+				throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+			}
+		} else {
+			targetHost = raw[context.length];
+			try {
+				targetPort = Integer.parseInt(raw[context.length+1]);
+			}
+				catch (NumberFormatException nfe)
+			{
+				throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+			}
+		}
 
-		try
+		/*try
 		{
 			targetPort = Integer.parseInt(raw[1]);
 		}
 		catch (NumberFormatException nfe)
 		{
 			throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
-		}
+		}*/
 
+		if (context.length == 0) {
+			
 		// 2 parts means they're requesting the root context (i.e. an empty resource path)
-		if (raw.length == 2)
-		{
-			resourcePath = new String[]{};
-		}
-		else
-		{
-			resourcePath = new String[raw.length - 2];
-
-			for (int i = 2; i < raw.length; i++)
+			if (raw.length == 2)
 			{
-				resourcePath[i - 2] = raw[i];
+				resourcePath = new String[]{};
+			}
+			else
+			{
+				resourcePath = new String[raw.length - 2];
+
+				for (int i = 2; i < raw.length; i++)
+				{
+					resourcePath[i - 2] = raw[i];
+				}
+			}
+
+		} else {
+			if ((raw.length - context.length) == 2)
+			{
+				resourcePath = new String[]{};
+			}
+			else
+			{
+				resourcePath = new String[raw.length - (context.length + 2)];
+
+				for (int i = (context.length + 2) ; i < raw.length ; i++)
+				{
+					resourcePath[i - (context.length + 2)] = raw[i];
+				}
 			}
 		}
 
@@ -534,8 +572,9 @@ public class HttpRestRequest implements Serializable
 
 		Reference reference = new Reference();
 
-		for (int i = 0; i < depth; i++)
+		for (int i = 0; i < depth; i++) {
 			reference.addElement(ReferencePart.attrib(path[i]));
+		}
 
 		return reference;
 	}
@@ -568,5 +607,5 @@ public class HttpRestRequest implements Serializable
 	private final boolean	followReferences;
 	private final String	targetHost;
 	private final int		targetPort;
-	private final String[] 	resourcePath;
+	private  String[] 	resourcePath = new String[]{};
 }
