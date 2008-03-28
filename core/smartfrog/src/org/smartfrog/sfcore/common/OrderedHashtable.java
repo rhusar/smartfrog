@@ -303,7 +303,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
      */
     protected Vector<Object> createOrderedValueVector() {
         Vector<Object> r = new Vector<Object>(orderedKeys.size());
-        for(Object key:orderedKeys) {
+        for (Object key : orderedKeys) {
             r.addElement(get(key));
         }
         return r;
