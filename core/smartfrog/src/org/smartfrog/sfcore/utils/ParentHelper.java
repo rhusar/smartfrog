@@ -51,7 +51,7 @@ public class ParentHelper implements ChildMinder {
     /**
      * Maintains children on which life of parent depends (and vice versa).
      */
-    private Vector<Prim> sfChildren = new Vector<Prim>(5, 2);
+    private Vector<Liveness> sfChildren = new Vector<Liveness>(5, 2);
 
     /**
      * construct a parent helper and bind to a prim class
@@ -112,12 +112,12 @@ public class ParentHelper implements ChildMinder {
     /**
      * Gets an enumeration over the children of the implementor.
      *
-     * @return enumeration over children
+     * @return a remotable enumeration over children
      *
      * @throws RemoteException In case of Remote/network error
      */
     public Enumeration<Liveness> sfChildren() throws RemoteException {
-       return((Vector) sfChildren.clone()).elements();
+        return new SerializableEnumeration<Liveness>(sfChildren);
     }
 
     /**
