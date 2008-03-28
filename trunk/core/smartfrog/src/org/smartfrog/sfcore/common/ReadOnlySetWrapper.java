@@ -19,7 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.common;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,6 +37,7 @@ import java.util.Set;
 public class ReadOnlySetWrapper implements Set, Serializable {
     
     private static final Set nullSet = new HashSet();
+    private static final Set nullWrapper = new ReadOnlySetWrapper(nullSet);
 
     private Set impl;
     
@@ -46,6 +46,9 @@ public class ReadOnlySetWrapper implements Set, Serializable {
     }
     
     public static Set wrap(Set set) {
+    	if (set == null) {
+    		return nullWrapper;
+    	}
         return new ReadOnlySetWrapper(set);
     }
     
@@ -94,7 +97,7 @@ public class ReadOnlySetWrapper implements Set, Serializable {
     }
 
     public Iterator iterator() {
-        return impl.iterator();
+        return new ReadOnlyIterator(impl.iterator());
     }
 
     public boolean remove(Object o) {
