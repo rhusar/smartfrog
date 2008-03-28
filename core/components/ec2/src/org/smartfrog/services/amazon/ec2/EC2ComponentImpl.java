@@ -108,7 +108,9 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
      * @return a new binding with the current key/password
      */
     protected Jec2 bindToEC2() {
-        return new Jec2(id, key);
+        Jec2 ec2 = new Jec2(id, key);
+        ec2.useSystemProxy();
+        return ec2;
     }
 
 
