@@ -33,6 +33,8 @@ import java.util.Enumeration;
  */
 
 public class RemoteCompoundTest extends DeployingTestBase {
+    private static final int CHILDCOUNT = 3;
+    private static final int ATTRCOUNT = 20;
 
     public RemoteCompoundTest(String name) {
         super(name);
@@ -59,27 +61,49 @@ public class RemoteCompoundTest extends DeployingTestBase {
     public void testAttributes() throws Throwable {
         Compound comp=deployCompound();
         Iterator iterator = comp.sfAttributes();
+        int counter = 0;
+        int childcount = 0;
         while (iterator.hasNext()) {
-            Object o = iterator.next();
+            Object key = iterator.next();
+            Object value = comp.sfResolveHere(key, true);
+            getLog().info(key.toString()+"="+ value);
+            counter++;
+            if (value instanceof Liveness) {
+                childcount++;
+            }
         }
+        assertEquals(ATTRCOUNT, counter);
+        assertEquals(CHILDCOUNT, childcount);
     }
 
     public void testValues() throws Throwable {
         Compound comp = deployCompound();
         Iterator iterator = comp.sfValues();
+        int counter = 0;
+        int childcount =0;
         while (iterator.hasNext()) {
-            Object o = iterator.next();
+            Object value = iterator.next();
+            getLog().info(value.toString());
+            counter++;
+            if(value instanceof Liveness) {
+                childcount++;
+            }
         }
+        assertEquals(ATTRCOUNT, counter);
+        assertEquals(CHILDCOUNT, childcount);
     }
 
     public void testChildren() throws Throwable {
         Compound comp = deployCompound();
         Enumeration<Liveness> children = comp.sfChildren();
+        int childcount = 0;
         while (children.hasMoreElements()) {
+            childcount++;
             Liveness child = children.nextElement();
             //pretend we are the parent
             child.sfPing(comp);
         }
+        assertEquals(CHILDCOUNT, childcount);
     }
 
 }
