@@ -134,6 +134,7 @@
     <!--Typica -->
     <dependency org="typica"
         name="typica"
+        changing="true"
         rev="${typica.version}"
         conf="typica->default"/>
 
