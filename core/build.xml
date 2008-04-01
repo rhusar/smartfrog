@@ -493,6 +493,7 @@ For more information: www.smartfrog.org
 
           <!--Java 1.6+ code-->
           <exclude name="vmware/build.xml" unless="java1.6+"/>
+          <exclude name="ec2/build.xml" unless="java1.6+"/>
 
           <!--Not yet funcational -->
           <exclude name="rpmtools/build.xml" />
