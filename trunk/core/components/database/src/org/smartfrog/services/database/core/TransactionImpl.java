@@ -128,7 +128,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
     /**
      * stop the worker thread if it is running.
      *
-     * @param status
+     * @param status termination record
      */
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
@@ -236,7 +236,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         if (resource != null) {
             count++;
         }
-        Vector<String> commandList = null;
+        Vector<String> commandList;
         commandList= ListUtils.resolveStringList(this,new Reference(ATTR_SQL_COMMANDS),false);
         if (commandList != null) {
             count++;
@@ -382,9 +382,9 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
     public void executeOneCommand(Connection connection, String command)
             throws SmartFrogDeploymentException {
         ResultSet resultSet = null;
-
+        Statement statement=null;
         try {
-            Statement statement = connection.createStatement();
+            statement = connection.createStatement();
             if(sfLog().isInfoEnabled()) {
                 sfLog().info(command);
             }
@@ -432,20 +432,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
             }
         } finally {
             closeResultSetQuietly(resultSet);
-        }
-    }
-
-    /**
-     * Close a result set 'quietly' if is not null
-     * @param resultSet result set; can be null
-     */
-    protected void closeResultSetQuietly(ResultSet resultSet) {
-        if (resultSet != null) {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                getLog().error("when closing the result set", e);
-            }
+            closeStatementQuietly(statement);
         }
     }
 
@@ -488,7 +475,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
         if (printHeaders) {
             for (int col = 1; col < columnCount; col++) {
                 line.append(md.getColumnName(col));
-                line.append(",");
+                line.append(',');
             }
             line.append(md.getColumnName(columnCount));
             getLog().info(line);
@@ -505,7 +492,7 @@ public class TransactionImpl extends AsyncJdbcOperation implements Transaction {
                 if (first) {
                     first = false;
                 } else {
-                    line.append(",");
+                    line.append(',');
                 }
                 line.append(columnValue);
             }

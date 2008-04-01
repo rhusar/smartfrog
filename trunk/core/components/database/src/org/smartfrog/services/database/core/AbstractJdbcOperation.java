@@ -296,4 +296,28 @@ public abstract class AbstractJdbcOperation extends PrimImpl implements JdbcOper
         l.warn("SQL State: " + warning.getSQLState());
         l.warn("Error Code: " + warning.getErrorCode());
     }
+
+    protected void closeStatementQuietly(Statement statement) {
+        if(statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                getLog().error("when closing the statement", e);
+            }
+        }
+    }
+
+    /**
+    * Close a result set 'quietly' if is not null
+    * @param resultSet result set; can be null
+    */
+    protected void closeResultSetQuietly(ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                getLog().error("when closing the result set", e);
+            }
+        }
+    }
 }
