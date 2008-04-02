@@ -125,6 +125,20 @@ public class SmartFrogCoreProperty {
      */
     public static final String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
 
+    /**
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.processcompound.SFProcess#deployProcessCompound()
+     */
+    public static final String addShutdownHook = propBaseSFProcess + "shutdownhook";
+
+    /**
+     * Value {@value}
+     *
+     * @see org.smartfrog.sfcore.processcompound.SFProcess#deployProcessCompound()
+     */
+    public static final String shutdownHookClassname = propBaseSFProcess + "shutdownhook.classname";
+
 
     //Compound
 

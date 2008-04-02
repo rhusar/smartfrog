@@ -622,7 +622,7 @@ public class SFSystem implements MessageKeys {
     }
 
     protected static ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
-        return SFProcess.deployProcessCompound(true);
+        return SFProcess.deployProcessCompound();
     }
 
     /**
