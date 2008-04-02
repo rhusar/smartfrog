@@ -31,6 +31,9 @@ bucketHost (bucket ++ ".s3.amazonaws.com");
 
 test.awsid "test.awsid";
 test.awskey "test.awskey";
+test.ec2.image.id "ami-26b6534f";
+test.sleep.delay 1000;
+
 
 /*
  * Our AWS condition
@@ -40,6 +43,15 @@ IsAwsEnabled extends IsPropertySet {
     property test.awsid;
 }
 
+
+IsEC2EnabledSet extends IsPropertySet {
+    property "test.ec2.enabled";
+}
+
+IsEC2Enabled extends And {
+  aws IsAwsEnabled;
+  ec2 IsEC2EnabledSet;
+}
 
 
 /**
@@ -60,11 +72,33 @@ ExpectDeployOnAWS extends ExpectDeploy {
 
 ExpectDeployFailureOnAWS extends ExpectDeployFailure {
 
-  description "test against the AWS servers; requires test.awsid to be set with a login"
+  description ExpectDeployOnAWS:description;
 
   condition extends IsAwsEnabled ;
 
 }
+
+ExpectDeployOnEC2 extends ExpectDeploy {
+
+  description "test deploy on the EC2 servers; requires test.awsid to be set with a login and test.ec2.enabled to set to something"
+
+  condition extends IsEC2Enabled ;
+
+}
+
+/**
+ A test on AWS
+ */
+
+ExpectDeployFailureOnEC2 extends ExpectDeployFailure {
+
+  description ExpectDeployOnEC2:description;
+
+  condition extends IsEC2Enabled ;
+
+}
+
+
 
 /**
  * turn the AWS key into a password

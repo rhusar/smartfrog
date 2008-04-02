@@ -37,5 +37,16 @@ public class EC2CreateInstancesTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testCreateInstance");
     }
 
+    public void testListInstances() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testListInstances");
+    }
+
+    public void testKillInstances() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testKillInstances");
+    }
+
+    public void testCreateBadInstance() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testCreateBadInstance");
+    }
 
 }

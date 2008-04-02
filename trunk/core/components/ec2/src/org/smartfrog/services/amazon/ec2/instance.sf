@@ -38,4 +38,54 @@ ImageInstance extends AwsAuthorizedService {
 
   //set on deployment.
   //instance
+  //instances []
 }
+
+
+/**
+ * List instances belonging to a specific user
+ * Images are listed on startup; this is a workflow component that terminates afterwards.
+ * the min/max count are there for testing 
+
+ */
+ListInstances extends AwsAuthorizedService {
+  sfClass "org.smartfrog.services.amazon.ec2.ListInstancesImpl";
+  sfShouldTerminate true;
+  //this is the AMI of an image. Empty string is don't care
+  imageID "";
+  //string list of instances. Can be empty
+  instances [];
+  //minimum number of instances
+  minCount -1;
+  //max number
+  maxCount -1;
+
+  state STATE_ANY;
+
+  STATE_ANY "";
+  STATE_RUNNING "running";
+  STATE_PENDING "pending";
+  STATE_SHUTTING_DOWN "shutting-down";
+  STATE_TERMINATED "terminated";
+}
+
+
+/**
+ * Kill instances belonging to a specific user.
+ * You can set a limit on how many you want left alive afterwards.
+ * Images are killed on startup; this is a workflow component that terminates afterwards
+ */
+
+KillInstances extends ListInstances {
+  sfClass "org.smartfrog.services.amazon.ec2.KillEC2InstanceImpl";
+  sfShouldTerminate true;
+  //this is the AMI of an image. Empty string is don't care
+  imageID "";
+  //string list of instances. Can be empty
+  instances [];
+
+  //number of instances to leave running
+  //leaveRunning 0;
+}
+
+

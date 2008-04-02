@@ -47,4 +47,8 @@ public class EC2ListImagesTest extends DeployingTestBase {
         expectSuccessfulTestRunOrSkip(FILES, "testListEC2ImagesBadPassword");
     }
 
+
+    public void testListInstances() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testListInstances");
+    }
 }

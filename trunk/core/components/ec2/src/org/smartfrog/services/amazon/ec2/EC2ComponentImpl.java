@@ -121,4 +121,13 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     public void setWorker(WorkflowThread worker) {
         this.worker = worker;
     }
+
+    /**
+     * Bind to and start a worker thread
+     * @param workflowThread worker
+     */
+    protected void deployWorker(WorkflowThread workflowThread) {
+        setWorker(workflowThread);
+        getWorker().start();
+    }
 }
