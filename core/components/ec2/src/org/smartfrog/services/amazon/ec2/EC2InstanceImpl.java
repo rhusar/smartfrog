@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 /**
  * Component to deploy an instance
@@ -44,6 +43,8 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
     private String userData;
     private ReservationDescription reservation;
     private String instanceID;
+    private InstanceList instances;
+    private final Object reservationComplete=new Object();
 
 
     public EC2InstanceImpl() throws RemoteException {
@@ -67,8 +68,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         if (imageID.length() == 0) {
             throw new SmartFrogLifecycleException("No image to deploy");
         }
-        setWorker(new Ec2InstanceThread());
-        getWorker().start();
+        deployWorker(new Ec2InstanceThread());
     }
 
     /**
@@ -79,36 +79,40 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        ReservationDescription.Instance instance = getInstance();
-        if (shutdown && instance != null) {
-            String[] instances = new String[1];
-            instances[1] = instance.getInstanceId();
+        InstanceList list = instances;
+        if (shutdown && list != null) {
             try {
-                getEc2binding().terminateInstances(instances);
+                list.terminate();
             } catch (EC2Exception e) {
-                sfLog().warn("When terminating " + instance, e);
-
+                sfLog().warn("When terminating", e);
             }
         }
-
     }
 
     protected void reserve(ReservationDescription reservationInfo) {
         reservation = reservationInfo;
-        ReservationDescription.Instance instance = getInstance();
+        ImageInstance instance = getInstance();
         instanceID = instance.getImageId();
 
     }
 
-    protected synchronized ReservationDescription.Instance getInstance() {
-        if (reservation != null) {
-            List<ReservationDescription.Instance> instances = reservation.getInstances();
-            if (!instances.isEmpty()) {
-                return instances.get(0);
-            }
+    protected synchronized ImageInstance getInstance() {
+        if (instances!=null) {
+            return instances.get(0);
         }
-        //no match
         return null;
+    }
+
+    /**
+     * Callback from the worker when the reservation is finished
+     * @throws SmartFrogException any SmartFrog problems
+     * @throws RemoteException networking
+     */
+    protected void reservationCompleted() throws SmartFrogException, RemoteException {
+        sfReplaceAttribute(ATTR_INSTANCE,getId());
+        sfReplaceAttribute(ATTR_INSTANCES, instances.listInstanceIDs());
+        //notify anything listening
+        reservationComplete.notifyAll();
     }
 
     /**
@@ -136,17 +140,27 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         public void execute() throws Throwable {
             InstanceType size = InstanceType.getTypeFromString(instanceType);
             sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
-            reservation = getEc2binding().runInstances(
-                    imageID,
-                    1,
-                    1,
-                    null,
-                    userData,
-                    null,
-                    true,
-                    size);
-            sfLog().info("Reserved an instance:" + reservation);
+            try {
+                reservation = getEc2binding().runInstances(
+                        imageID,
+                        1,
+                        1,
+                        null,
+                        userData,
+                        null,
+                        true,
+                        size);
+                sfLog().info("Reserved an instance:" + reservation);
+                instances = InstanceList.listInstances(getEc2binding(), reservation);
+                reservationCompleted();
+
+
+            } catch (EC2Exception e) {
+                throw new SmartFrogEC2Exception("Failed to reserve an instance of "+imageID+" on "+instanceType,e);
+            }
         }
+
+
     }
 
 }

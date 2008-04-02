@@ -44,6 +44,7 @@ public class TerminationRecordException extends Exception {
      * @param record the termination record
      */
     public TerminationRecordException(TerminationRecord record) {
+        super(record.getCause());
         this.record = record;
     }
 
@@ -57,7 +58,7 @@ public class TerminationRecordException extends Exception {
      * @param record the termination record
      */
     public TerminationRecordException(String message, TerminationRecord record) {
-        super(message);
+        super(message,record.getCause());
         this.record = record;
     }
 

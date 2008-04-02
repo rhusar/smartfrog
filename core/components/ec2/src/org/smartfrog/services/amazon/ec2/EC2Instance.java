@@ -31,4 +31,19 @@ public interface EC2Instance extends EC2Component {
     String ATTR_INSTANCETYPE = "instanceType";
 
     String ATTR_USER_DATA = "userData";
+    //this is the AMI of an image. Empty string is don't care
+    //string list of instances. Can be empty
+    String ATTR_INSTANCES="instances";
+    //minimum number of instances
+    String ATTR_MIN_COUNT="minCount";
+    //max number
+    String ATTR_MAX_COUNT="maxCount";
+
+    String ATTR_STATE="state";
+
+    String STATE_RUNNING = "running";
+    String STATE_PENDING = "pending";
+    String STATE_SHUTTING_DOWN = "shutting-down";
+    String STATE_TERMINATED = "terminated";
+
 }

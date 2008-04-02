@@ -22,13 +22,16 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/amazon/s3/components.sf"
 #include "/org/smartfrog/services/amazon/test/components.sf";
 
+BAD_IMAGE_ID "ami-bad-image-id";
+
 DeployedService extends Compound {
    authentication extends AwsPassword;
    service TBD;
 }
 
 
-ExpectDeployedService extends  ExpectDeployOnAWS {
+
+ExpectDeployedService extends  ExpectDeployOnEC2 {
 
   action DeployedService;
 
@@ -36,7 +39,7 @@ ExpectDeployedService extends  ExpectDeployOnAWS {
 
 
 
-ExpectTerminatingService extends  ExpectDeployOnAWS {
+ExpectTerminatingService extends  ExpectDeployOnEC2 {
   expectTerminate true;
   exitType EXIT_TYPE_NORMAL;
   action DeployedService;
@@ -44,15 +47,29 @@ ExpectTerminatingService extends  ExpectDeployOnAWS {
 }
 
 
-testListEC2Images extends  ExpectTerminatingService  {
-
-  action:service extends ListEC2Images {
+ListMyImages extends ListEC2Images {
     id login;
-    key LAZY authentication;
+}
+
+
+ListMyInstances extends ListInstances {
+    id login;
+}
+
+KillMyInstances extends KillInstances {
+    id login;
+}
+
+
+testListEC2Images extends  ExpectTerminatingService  {
+  description "list the EC2 images available to our login";
+  action:service extends ListMyImages  {
   }
 }
 
 testListAmazonImages extends  testListEC2Images  {
+
+  description "list images that belong to amazon";
 
   action:service:target LAZY action;
   action:service:owners [AmazonAMI:AMAZON_ID];
@@ -79,13 +96,15 @@ testListAmazonImages extends  testListEC2Images  {
 }
 
 testListPrivateImages extends  testListEC2Images  {
-
+  description "list the private images";
   action:service:target LAZY action;
   action:service:includePublic false;
 }
 
 
-testListEC2ImagesBadPassword extends  ExpectDeployFailureOnAWS  {
+testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
+
+  description "try to list images with a bad login key";
 
   action extends ListEC2Images {
     id login;
@@ -99,15 +118,94 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnAWS  {
 }
 
 
-testCreateInstance extends ExpectDeployOnAWS {
+testCreateInstance extends ExpectDeployOnEC2 {
+
+  description "create a real instance" ;
 
   action extends DeployedService {
     service extends ImageInstance {
        id login;
-       imageID "ami-26b6534f";
+       imageID test.ec2.image.id;
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
+  tests extends Sequence {
+
+    sleep extends Delay {
+      time test.sleep.delay;
+    }
+
+    instancesWithWrongID extends ListMyInstances  {
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
+        key LAZY action:authentication;
+    }
+
+
+    //assert that an instance is live
+    Instances extends ListMyInstances  {
+        minCount 1;
+        key LAZY action:authentication;
+    }
+
+    instancesWithGivenID extends Instances  {
+        imageID test.ec2.image.id;
+    }
+
+
+    instancesWithExplicitID extends Instances  {
+        instances [LAZY action:service:instance];
+    }
+
+
+    instancesWithExplicitList extends Instances  {
+        instances LAZY action:service:instances;
+    }
+
+    kill extends KillMyInstances {
+        minCount 1;
+        key LAZY action:authentication;
+        instances LAZY action:service:instances;
+    }
+
+  }
+
+}
+
+testCreateBadInstance extends ExpectDeployFailureOnEC2 {
+  description "try to deploy an instance that doesnt exist" ;
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       id login;
+       imageID  BAD_IMAGE_ID;
        userData "test-data";
        key LAZY authentication;
     };
   }
 
 }
+
+
+
+
+testListInstances extends  ExpectTerminatingService  {
+  description "list the EC2 images running; fail if this is >0";
+  action:service extends ListMyInstances  {
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
+
+testKillInstances extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends  KillMyInstances  {
+    key LAZY authentication;
+  }
+}
+
+
+
+
