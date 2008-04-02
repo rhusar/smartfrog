@@ -396,11 +396,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             RemoteException {
         super.sfStart();
         //Set itself as single instance of process compound for this process
-        try {
-            SFProcess.setProcessCompound(this);
-        } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
-        }
+        SFProcess.setProcessCompound(this);
 
         // This call and method will disapear once we refactor ProcessCompound
         // SFProcess.addDefaultProcessDescriptions will replace all this code.

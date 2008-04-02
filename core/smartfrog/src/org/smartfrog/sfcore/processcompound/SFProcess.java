@@ -108,10 +108,10 @@ public class SFProcess implements MessageKeys {
      *
      * @param c root locator to use.
      *
-     * @throws Exception if failed to set root locator
+     * @throws SmartFrogException if failed to set root locator
      */
     public static synchronized void setRootLocator(RootLocator c)
-            throws Exception {
+            throws SmartFrogException {
         if (rootLocator != null) {
             throw new SmartFrogException(ERROR_ROOT_LOCATOR_ALREADY_SET);
         }
@@ -125,10 +125,10 @@ public class SFProcess implements MessageKeys {
      *
      * @param pc root locator to use.
      *
-     * @throws Exception if failed to set process compound
+     * @throws SmartFrogException if failed to set process compound
      */
     public static synchronized void setProcessCompound(ProcessCompound pc)
-            throws Exception {
+            throws SmartFrogException {
         if (processCompound != null) {
             throw new SmartFrogException(ERROR_PROCESS_COMPOUND_ALREADY_SET);
         }
@@ -203,7 +203,7 @@ public class SFProcess implements MessageKeys {
             //comp.deployResolve();
             dComp = SFDeployer.deploy(comp, null, null, null);
             dComp.sfDeploy();
-        } catch (SmartFrogException ex) {
+        } catch (SmartFrogDeploymentException ex) {
             // Deployment failure, try terminating
             if (dComp != null) {
                 try {
@@ -267,7 +267,7 @@ public class SFProcess implements MessageKeys {
         String name = null;
         String url = null;
         String key = null;
-        for(Object keyName:props.keySet()) {
+        for (Object keyName : props.keySet()) {
             key = keyName.toString();
             if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                 // Collects all properties refering to default descriptions that
@@ -314,17 +314,33 @@ public class SFProcess implements MessageKeys {
         return isTerminated;
     }
 
+
+    /**
+     * Deploys the local process compound, if not already there
+     * the decision to add a shutdown hook, and its name, are based on system properties.
+     * @return local process compound
+     * @throws SmartFrogException if failed to deploy process compound
+     * @throws RemoteException    network problems
+     */
+    public static ProcessCompound deployProcessCompound() throws SmartFrogException, RemoteException {
+        String addHook = System.getProperty(SmartFrogCoreProperty.addShutdownHook, "true");
+        boolean addShutdownHook=Boolean.valueOf(addHook);
+        String classname = System.getProperty(SmartFrogCoreProperty.shutdownHookClassname, INTERRUPT_HANDLER);
+        return deployProcessCompound(addShutdownHook,classname);
+    }
+
     /**
      * Deploys the local process compound, if not already there
      *
      * @param addShutdownHook flag to enable shutdown hook listening
      *
+     * @param handlerName
      * @return local process compound
      *
      * @throws SmartFrogException if failed to deploy process compound
      * @throws RemoteException network problems
      */
-    public static synchronized ProcessCompound deployProcessCompound(boolean addShutdownHook)
+    public static synchronized ProcessCompound deployProcessCompound(boolean addShutdownHook, String handlerName)
             throws SmartFrogException, RemoteException {
 
         if (processCompound != null) {
@@ -334,7 +350,7 @@ public class SFProcess implements MessageKeys {
         //conditionally add a shutdown hook when the JVM permits it
         if (addShutdownHook) {
             try {
-                Class irqHandlerClass = Class.forName(INTERRUPT_HANDLER);
+                Class irqHandlerClass = Class.forName(handlerName);
                 Constructor constructor = irqHandlerClass.getConstructor(new Class[0]);
                 InterruptHandler handler = (InterruptHandler) constructor.newInstance(
                         new Object[0]);
@@ -383,6 +399,7 @@ public class SFProcess implements MessageKeys {
      * @throws SmartFrogException if failed to deploy process compound, the root
      * process compound didn't exist or ir the local process compound is not a
      * root process compound
+     * @throws RemoteException on networking problems
      */
     public static synchronized ProcessCompound resetRootProcessCompound(
             Reference terminatorCompleteName)
@@ -394,11 +411,11 @@ public class SFProcess implements MessageKeys {
                     "Restarting ProcessCompound: " +
                             processCompound.sfCompleteName(),
                     terminatorCompleteName);
-            processCompound.sfAddAttribute("sfSyncTerminate", Boolean.TRUE);
+            processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_SYNC_TERMINATE, Boolean.TRUE);
             processCompound.sfTerminate(termR);
             // reset cached processCompoundDescription
             processCompoundDescription = null;
-            return deployProcessCompound(true);
+            return deployProcessCompound();
         }
         if (processCompound == null) {
             throw new SmartFrogRuntimeException(
@@ -540,7 +557,7 @@ public class SFProcess implements MessageKeys {
                                 "ProcessCompound");
                     }
                 } catch (Exception ex) {
-                    throw new SmartFrogException(
+                    throw SmartFrogException.forward(
                             "Error selecting target process '" + subProcess + "' in '" + target
                                     .sfCompleteName() + '\'',
                             ex);
@@ -563,7 +580,6 @@ public class SFProcess implements MessageKeys {
         } catch (Throwable ex) {
             throw new SmartFrogException(MessageUtil.formatMessage(
                     MSG_UNHANDLED_EXCEPTION), ex);
-            //throw SmartFrogException.forward(ex);
         }
         return target;
     }
@@ -580,7 +596,7 @@ public class SFProcess implements MessageKeys {
     /**
      * Determine the deployed host
      * @return the network address of the host
-     * @throws SmartFrogException
+     * @throws SmartFrogException if the hostame cannot be determined
      */
     public static InetAddress sfDeployedHost() throws SmartFrogException {
 
