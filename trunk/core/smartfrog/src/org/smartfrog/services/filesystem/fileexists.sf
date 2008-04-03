@@ -41,12 +41,12 @@ FileExists extends Conditional {
       minSize extends Integer;
 
       /**
-       *  Boolean to indicate the file can be a directory: {@value}
+       *  Boolean to indicate the file can be a directory:
        */
       canBeDirectory extends Boolean;
 
       /**
-       * Boolean to indicate the file can be a file:{@value}
+       * Boolean to indicate the file can be a file
        */
       canBeFile  extends Boolean;
   }
