@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -115,7 +116,7 @@ public class CDPrinter {
      * @throws FileNotFoundException
      */
     public static String printURL(String url, Context params) throws SmartFrogException, FileNotFoundException {
-            Phases p = new SFParser().sfParse(new FileInputStream(url));
+            Phases p = new SFParser().sfParse(SFClassLoader.getResourceAsStream(url));
             // add params
             if (params != null) {
                 for (Enumeration keys = params.keys(); keys.hasMoreElements(); ) {
