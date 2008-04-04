@@ -93,7 +93,7 @@ public class TuplesToXom extends AbstractXomFileWriter implements FileIntf {
 
     private class TupleReader extends TupleReaderThread {
 
-        public TupleReader(TupleDataSource source) {
+        TupleReader(TupleDataSource source) {
             super(TuplesToXom.this, source, true);
         }
 
