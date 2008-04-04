@@ -21,12 +21,13 @@ package org.smartfrog.services.assertions;
 
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestStartedEvent;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -113,7 +114,7 @@ public class TestCompoundImpl extends ConditionCompound
     public static final String ERROR_LESS_EXCEPTIONS_THAN_EXPECTED = "Less exceptions than expected";
     public static final String EXPECTED_EXIT_TEXT = "Expected exit text: ";
     public static final String EXPECTED_SUCCESSFUL_DEPLOYMENT = "expected successful deployment, but got: ";
-    public static final String UNEXPECTED_TERMINATION = "(this termination was not expected)";
+    public static final String UNEXPECTED_TERMINATION = " (this termination was not expected)";
     public static final String TERMINATION_MESSAGE_MISMATCH = "Termination message mismatch";
     public static final String FAILED_TO_START_CONDITION = "Failed to start condition";
 
@@ -308,7 +309,7 @@ public class TestCompoundImpl extends ConditionCompound
             //the action is deployed
             //start the terminator
             actionTerminator = new DelayedTerminator(actionPrim, undeployAfter, sfLog(),
-                    FORCED_TERMINATION + " after " + testTimeout + " milliseconds",
+                    FORCED_TERMINATION + " after " + undeployAfter + " milliseconds",
                     !expectTerminate);
             actionTerminator.start();
 
@@ -398,12 +399,46 @@ public class TestCompoundImpl extends ConditionCompound
      */
     @Override
     protected void sfPingChildren() {
-
-        if (actionPrim != null) {
-            sfPingChildAndTerminateOnFailure(actionPrim);
+        if (actionPrim != null && actionTerminationRecord == null) {
+            sfPingActionAndHandleFailure();
         }
-        if (testsPrim != null) {
+        if (testsPrim != null && testsTerminationRecord == null) {
             sfPingChildAndTerminateOnFailure(testsPrim);
+        }
+    }
+
+    /**
+     * Ping the action. If we get a liveness failure (i.e. the child has terminated, we check to see if
+     * it was actually expected, in which case this is not a problem. We note and ignore it.
+     *
+     * The reason for this special handling is related to race conditions in termination...a ping could be
+     * received and processed while we are getting ready to deal with terminated children.
+     * This handler ignores such situations
+     * @param child
+     */
+    protected void sfPingActionAndHandleFailure() {
+        try {
+            sfPingChild(actionPrim);
+        } catch (SmartFrogLivenessException ex) {
+            handleActionLivenessFailure(ex);
+        } catch (RemoteException ex) {
+            handleActionLivenessFailure(ex);
+        }
+    }
+
+    /**
+     *  Handle a liveness failure by maybe terminating the application, maybe just noting it is being ignored
+     * @param ex the exception that triggered this failure
+     * @return true if termination was triggered
+     */
+    private synchronized boolean handleActionLivenessFailure(Exception ex) {
+        sfLog().info("Liveness failure pinging the action", ex);
+        if(!expectTerminate) {
+            sfLivenessFailure(this, actionPrim, ex);
+            return true;
+        } else {
+            sfLog().info("Ignoring as we were expecting termination");
+            return false;
         }
     }
 
@@ -530,6 +565,11 @@ public class TestCompoundImpl extends ConditionCompound
                                     childStatus.description,
                                     childStatus.id,
                                     childStatus.getCause());
+                        } else {
+                            //error is good,
+                            //The decision to terminate is based on the shouldTerminate flag
+                            sfLog().debug(propagateTermination?"Terminating normally":
+                                    "Not terminating as sfShouldTerminate is false");
                         }
 
                     }
@@ -591,6 +631,7 @@ public class TestCompoundImpl extends ConditionCompound
 
         //if the error record is non null, terminate ourselves with the new record
         if (exitRecord != null) {
+            
             sfTerminate(exitRecord);
             //dont forward, as we are terminating with an error
             propagateTermination = false;
