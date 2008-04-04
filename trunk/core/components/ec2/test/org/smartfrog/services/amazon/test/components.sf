@@ -63,6 +63,7 @@ ExpectDeployOnAWS extends ExpectDeploy {
   description "test against the AWS servers; requires test.awsid to be set with a login"
 
   condition extends IsAwsEnabled ;
+  sfShouldTerminate true;
 
 }
 
@@ -83,6 +84,7 @@ ExpectDeployOnEC2 extends ExpectDeploy {
   description "test deploy on the EC2 servers; requires test.awsid to be set with a login and test.ec2.enabled to set to something"
 
   condition extends IsEC2Enabled ;
+  sfShouldTerminate true;
 
 }
 

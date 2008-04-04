@@ -19,16 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.amazon.ec2;
 
+import com.xerox.amazonws.ec2.EC2Exception;
+import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
-
-import com.xerox.amazonws.ec2.EC2Exception;
+import java.util.List;
 
 /**
- *
  * Kill the listed instances; skip things that are already terminating/terminated.
- *
  */
 
 public class KillEC2InstanceImpl extends ListInstancesImpl implements EC2Instance {
@@ -48,9 +47,11 @@ public class KillEC2InstanceImpl extends ListInstancesImpl implements EC2Instanc
     protected void processInstanceList(InstanceList instanceList) throws SmartFrogException, RemoteException {
         super.processInstanceList(instanceList);
         try {
-            instanceList.terminate();
+            List<TerminatingInstanceDescription> terminating = instanceList.terminate();
+            logTerminationInfo(terminating);
         } catch (EC2Exception e) {
             throw new SmartFrogEC2Exception("failed to terminate the instances", e);
         }
     }
+
 }
