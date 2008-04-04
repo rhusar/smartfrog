@@ -22,56 +22,90 @@ import java.rmi.Remote;
  */
 public interface Assert extends Remote {
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_IS_TRUE = "isTrue";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_IS_FALSE = "isFalse";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_REFERENCE = "reference";
-    /** {@value} */
-    public String ATTR_HAS_ATTRIBUTE ="hasAttribute";
-    /** {@value} */
+    /**
+     * {@value}
+     */
+    public String ATTR_HAS_ATTRIBUTE = "hasAttribute";
+    /**
+     * {@value}
+     */
     public String ATTR_EVALUATES_TRUE = "evaluatesTrue";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_EVALUATES_FALSE = "evaluatesFalse";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_FILE_EXISTS = "fileExists";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_DIR_EXISTS = "dirExists";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_ATTRIBUTE_EQUALS = "attributeEquals";
 
     /**
-     * first equality string
-     * {@value}
+     * first equality string {@value}
      */
     public String ATTR_EQUALS_STRING1 = "equalsString1";
 
     /**
-     * second equality string
-     * {@value}
+     * second equality string {@value}
      */
     public String ATTR_EQUALS_STRING2 = "equalsString2";
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public String ATTR_EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
 
     /**
-     * check when we start up
-     * {@value}
+     * check when we start up {@value}
      */
     public String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
-    /** {@value} */
-    public String ATTR_MESSAGE ="message";
+    /**
+     * {@value}
+     */
+    public String ATTR_MESSAGE = "message";
 
     //
-    /** value of a vector element to test {@value} */
-    public String ATTR_VECTOR_VALUE="attributeVectorValue";
+    /**
+     * value of a vector element to test {@value}
+     */
+    public String ATTR_VECTOR_VALUE = "attributeVectorValue";
     //the index to look for
-    /** the index to look for {@value} */
-    public String ATTR_VECTOR_INDEX="attributeVectorIndex";
+    /**
+     * the index to look for {@value}
+     */
+    public String ATTR_VECTOR_INDEX = "attributeVectorIndex";
+
+    /**
+     * the min length of the vector {@value}
+     */
+    public String ATTR_VECTOR_MIN_LENGTH = "attributeVectorMinLength";
+    /**
+     * the max length of the vector {@value}
+     */
+    public String ATTR_VECTOR_MAX_LENGTH = "attributeVectorMaxLength";
 
 }

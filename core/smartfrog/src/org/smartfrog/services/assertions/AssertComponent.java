@@ -34,46 +34,56 @@ import java.util.Vector;
  * created 28-Apr-2004 11:40:53
  */
 public class AssertComponent extends PrimImpl implements Condition, Assert {
+
     private static final String ERROR_VECTOR = "Vector too small, expected ";
     private static final String ERROR_COULD_NOT_RESOLVE_ATTRIBUTE = "Could not resolve attribute ";
 
     /**
-     *  Constructor .
+     * Constructor .
      *
-     *@exception  RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public AssertComponent() throws RemoteException {
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return true if all the assertions evaluate true
+     *
      * @throws RemoteException
      * @throws SmartFrogException
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        String result=check();
-        if(result!=null) {
+        String result = check();
+        if (result != null) {
             sfLog().debug(result);
         }
-        return result==null;
+        return result == null;
     }
 
     /**
      * Evaluate the condition.
      *
      * @return true if it is successful, false if not
-     * @throws RemoteException    for network problems
+     *
+     * @throws RemoteException for network problems
      * @throws SmartFrogException for any other problem
      */
     public String check() throws RemoteException, SmartFrogException {
         boolean isTrue = sfResolve(ATTR_IS_TRUE, true, false);
         boolean isFalse = sfResolve(ATTR_IS_FALSE, false, false);
-        boolean equalityIgnoresCase = sfResolve(ATTR_EQUALITY_IGNORES_CASE, false, true);
-        String evaluatesTrue = sfResolve(ATTR_EVALUATES_TRUE, (String) null, false);
+        boolean equalityIgnoresCase = sfResolve(ATTR_EQUALITY_IGNORES_CASE,
+                false,
+                true);
+        String evaluatesTrue = sfResolve(ATTR_EVALUATES_TRUE,
+                (String) null,
+                false);
         String evaluatesFalse = sfResolve(ATTR_EVALUATES_FALSE, (String) null,
                 false);
-        String attribute = sfResolve(Assert.ATTR_HAS_ATTRIBUTE, (String) null, false);
+        String attribute = sfResolve(Assert.ATTR_HAS_ATTRIBUTE,
+                (String) null,
+                false);
         String attributeEquals = sfResolve(Assert.ATTR_ATTRIBUTE_EQUALS,
                 (String) null,
                 false);
@@ -84,7 +94,15 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         Integer attributeVectorIndex = (Integer) sfResolve(ATTR_VECTOR_INDEX,
                 (Integer) null, false);
 
-        if(!isTrue) {
+        Integer attributeVectorMinLength = (Integer) sfResolve(
+                ATTR_VECTOR_MIN_LENGTH,
+                (Integer) null,
+                false);
+        Integer attributeVectorMaxLength = (Integer) sfResolve(
+                ATTR_VECTOR_MAX_LENGTH,
+                (Integer) null,
+                false);
+        if (!isTrue) {
             return ATTR_IS_TRUE + " evaluates to false";
         }
         if (isFalse) {
@@ -92,46 +110,74 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         }
 
         Prim prim = maybeResolveReference();
-        if (prim!=null) {
+        if (prim != null) {
             if (evaluatesTrue != null) {
-                if(!evaluate(prim, evaluatesTrue)) {
-                    return "Evaluated to false: "+prim.sfCompleteName()+"."+evaluatesTrue;
+                if (!evaluate(prim, evaluatesTrue)) {
+                    return "Evaluated to false: " + prim.sfCompleteName() + '.' + evaluatesTrue;
                 }
             }
 
             if (evaluatesFalse != null) {
                 if (evaluate(prim, evaluatesFalse)) {
-                    return "Evaluated to true: " + prim.sfCompleteName() + "." + evaluatesFalse;
+                    return "Evaluated to true: " + prim.sfCompleteName() + '.' + evaluatesFalse;
                 }
             }
 
             if (attribute != null) {
                 //look for a named attribute existing
                 Object resolved = prim.sfResolve(attribute, false);
-                if(resolved==null) {
+                if (resolved == null) {
                     return ERROR_COULD_NOT_RESOLVE_ATTRIBUTE + attribute + " of " + prim;
                 }
                 if (attributeEquals != null) {
                     //do string match if needed
                     String attrValue = resolved.toString();
-                    if(!equal(attributeEquals, attrValue, equalityIgnoresCase)) {
-                        return " Expected <"+attributeEquals +"> actual <"+attrValue+">" ;
+                    if (!equal(attributeEquals,
+                            attrValue,
+                            equalityIgnoresCase)) {
+                        return " Expected <" + attributeEquals + "> actual <" + attrValue + '>';
                     }
-                } else if (attributeVectorIndex != null) {
-                    //vector element
-                    Vector v = (Vector) resolved;
-                    int index = attributeVectorIndex.intValue();
-                    try {
-                        Object vectorValue = v.elementAt(index);
-                        if (attributeVectorValue != null
-                                && !equal(attributeVectorValue, vectorValue.toString(), equalityIgnoresCase)) {
-                                return " Expected <" + attributeEquals + "> actual <" + vectorValue.toString() + ">";
+                } else {
+                    boolean needsVector = attributeVectorMinLength != null
+                            || attributeVectorIndex != null
+                            || attributeVectorMaxLength != null;
+                    Vector v;
+                    int length;
+                    if (needsVector) {
+                        if (!(resolved instanceof Vector)) {
+                            return "Not a list " + resolved;
                         }
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        //vector was too small, complain.
-                        return ERROR_VECTOR
+                        v = (Vector) resolved;
+                        length = v.size();
+                        if (attributeVectorMinLength != null &&
+                                length < attributeVectorMinLength) {
+                            return "List too short: needs to be " + attributeVectorMinLength
+                                    + " elements long, not " + length;
+                        }
+                        if (attributeVectorMaxLength != null &&
+                                length < attributeVectorMaxLength) {
+                            return "List too long: maximum is" + attributeVectorMaxLength
+                                    + " not " + length;
+                        }
+
+                        if (attributeVectorIndex != null) {
+                            //vector element
+                            int index = attributeVectorIndex.intValue();
+                            if (index >= length) {
+                                //vector was too small, complain.
+                                return ERROR_VECTOR
                                         + index + " elements, found "
                                         + v.size() + " in " + v.toString();
+                            }
+                            Object vectorValue = v.elementAt(index);
+                            if (attributeVectorValue != null
+                                    && !equal(attributeVectorValue,
+                                    vectorValue.toString(),
+                                    equalityIgnoresCase)) {
+                                return " Expected <" + attributeEquals + "> actual <" + vectorValue
+                                        .toString() + '>';
+                            }
+                        }
                     }
                 }
             }
@@ -141,8 +187,8 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         String filename = sfResolve(ATTR_FILE_EXISTS, (String) null, false);
         if (filename != null) {
             File file = new File(filename);
-            if(!file.exists()) {
-                return "File not found:"+filename;
+            if (!file.exists()) {
+                return "File not found:" + filename;
             }
             if (!file.isFile()) {
                 return "Not a file:" + filename;
@@ -166,11 +212,11 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         equals1 = sfResolve(Assert.ATTR_EQUALS_STRING1, equals1, false);
         equals2 = sfResolve(Assert.ATTR_EQUALS_STRING2, equals2, false);
         if (equals1 != null) {
-            if(equals2==null) {
-                return "Not defined "+ATTR_EQUALS_STRING2;
+            if (equals2 == null) {
+                return "Not defined " + ATTR_EQUALS_STRING2;
             }
-            if(!equal(equals1, equals2, equalityIgnoresCase)) {
-                return "Expected <"+ equals1+"> actual <"+equals2+">";
+            if (!equal(equals1, equals2, equalityIgnoresCase)) {
+                return "Expected <" + equals1 + "> actual <" + equals2 + '>';
             }
         } else {
             if (equals2 != null) {
@@ -187,23 +233,25 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
     /**
      * verify that assertions are valid.
      *
-     * @throws RemoteException  In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogAssertionException error in verification
      * @throws SmartFrogException error in verification
      */
     public void checkAssertions()
             throws RemoteException, SmartFrogException {
-        String result=check();
-        if(result!=null) {
+        String result = check();
+        if (result != null) {
             throw new SmartFrogAssertionException(createAssertionMessage(result));
         }
     }
 
     /**
      * make an assertion if two strings are equal
-     * @param equals1 string 1
-     * @param equals2 string 2
+     *
+     * @param equals1             string 1
+     * @param equals2             string 2
      * @param equalityIgnoresCase flag to ignore case while comparing
+     *
      * @throws SmartFrogAssertionException error in assertion
      */
     private void assertEqualStrings(String equals1, String equals2,
@@ -211,12 +259,14 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             throws SmartFrogAssertionException {
         boolean fact = equal(equals1, equals2, equalityIgnoresCase);
         assertTrue(fact,
-            equals2+" equals "+equals1);
+                equals2 + " equals " + equals1);
     }
 
-    private boolean equal(String equals1, String equals2, boolean equalityIgnoresCase) {
+    private boolean equal(String equals1,
+                          String equals2,
+                          boolean equalityIgnoresCase) {
         boolean fact;
-        if(equalityIgnoresCase) {
+        if (equalityIgnoresCase) {
             fact = equals1.equals(equals2);
         } else {
             fact = equals1.equalsIgnoreCase(equals2);
@@ -226,9 +276,11 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
 
 
     /**
-     * try and resolve a reference, return null if there was some kind of failure
-     * including lazy references not yet ready.
+     * try and resolve a reference, return null if there was some kind of
+     * failure including lazy references not yet ready.
+     *
      * @return Prim
+     *
      * @throws RemoteException In case of network/rmi error
      */
     private Prim maybeResolveReference() throws RemoteException {
@@ -236,7 +288,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         Prim prim = null;
         try {
             reference = sfResolve(ATTR_REFERENCE, reference, false);
-            if ( reference == null ) {
+            if (reference == null) {
                 //there was no reference
                 return null;
             }
@@ -252,7 +304,8 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * make an assertion
      *
      * @param fact result flag
-     * @param test  test String
+     * @param test test String
+     *
      * @throws SmartFrogAssertionException error in assertion
      */
     protected void assertTrue(boolean fact, String test)
@@ -263,16 +316,18 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
     }
 
     /**
-     * get the failure message.
-     * This is done by attempting to resolve the message, falling back to a declared one
-     * if there is no declared message, or the resolution process failed.
+     * get the failure message. This is done by attempting to resolve the
+     * message, falling back to a declared one if there is no declared message,
+     * or the resolution process failed.
+     *
      * @param test test message
-     * @return  String
+     *
+     * @return String
      */
     private String createAssertionMessage(String test) {
         String message = test;
         try {
-            message=sfResolve(ATTR_MESSAGE,message,false);
+            message = sfResolve(ATTR_MESSAGE, message, false);
         } catch (SmartFrogResolutionException ignore) {
 
         } catch (RemoteException ignore) {
@@ -284,9 +339,11 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
     /**
      * evaluate a named method on an object; expect it to return a boolean
      *
-     * @param target  object to invoke
+     * @param target     object to invoke
      * @param methodName name of method
+     *
      * @return the boolean value of the invocation
+     *
      * @throws SmartFrogException error in evaluation
      * @throws RemoteException In case of network/rmi error
      */
@@ -298,7 +355,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             Class[] params = new Class[0];
             Method method = clazz.getMethod(methodName, params);
             Object result = null;
-            result = method.invoke(target, (Object[])null);
+            result = method.invoke(target, (Object[]) null);
 
             if (!(result instanceof Boolean)) {
                 throw new SmartFrogAssertionException("method " + methodName
@@ -319,6 +376,8 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
 
             String errorText = "invoking " + methodName + " on " + target;
             throw new SmartFrogAssertionException(errorText, e);
+        } catch (SmartFrogAssertionException e) {
+            throw e;
         } catch (Exception e) {
             String errorText = "invoking " + methodName + " on " + target;
             throw new SmartFrogAssertionException(errorText, e);
@@ -329,16 +388,19 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
+     *
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException In case of network/rmi error
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
-                                                            RemoteException {
+            RemoteException {
         super.sfPing(source);
 
         try {
-            boolean checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, false);
-            if(checkOnLiveness) {
+            boolean checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS,
+                    true,
+                    false);
+            if (checkOnLiveness) {
                 checkAssertions();
             }
         } catch (RemoteException e) {
@@ -358,13 +420,17 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
-        boolean checkOnStartup=sfResolve(ATTR_CHECK_ON_STARTUP, true, false);
-        if(checkOnStartup) {
+        boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, false);
+        if (checkOnStartup) {
             checkAssertions();
         }
         //Workflow integration
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, "Assert", null, null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "Assert",
+                null,
+                null);
     }
 }
