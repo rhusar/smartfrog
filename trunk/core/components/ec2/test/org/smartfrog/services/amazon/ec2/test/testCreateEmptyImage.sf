@@ -19,6 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/amazon/ec2/test/components.sf"
 
-sfConfig extends testKillInstances {
+sfConfig extends testCreateEmptyImage {
 
 }

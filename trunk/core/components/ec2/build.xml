@@ -37,13 +37,14 @@
 
   <!-- override point -->
   <property file="build.properties"/>
-  <property name="system.tests" value="false" />
+  <property name="system.tests" value="false"/>
 
 
 
-  <echo message="==================================================================="/>
+  <echo
+      message="==================================================================="/>
   <echo message="= ${ant.project.name}"/>
-  
+
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
@@ -54,7 +55,8 @@
         location="${test.src.dir}/files/jettyhome"/>
     <property name="test.demo.webapp"
         location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
-    <echo level="verbose" >
+    <echo level="verbose">
+      test.ec2.enabled=${test.ec2.enabled}
       test.jetty.home=${test.jetty.home}
       test.demo.webapp=${test.demo.webapp}
       test.testwar.war=${test.testwar.war}
@@ -67,9 +69,9 @@
   <!--pick up the test war from Ivy-->
   <target name="testwar" depends="ivy-retrieve">
     <property name="test.testwar.war"
-        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war" />
+        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war"/>
     <fail>
-      <condition >
+      <condition>
         <not><available file="${test.testwar.war}"/></not>
       </condition>
       Not found: ${test.testwar.war}

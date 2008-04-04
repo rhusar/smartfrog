@@ -33,7 +33,9 @@ import java.util.List;
  * Created 01-Apr-2008 15:15:07
  */
 
-public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances {
+public class ListInstancesImpl extends EC2ComponentImpl
+        implements ListInstances {
+
     protected static final Reference refInstances = new Reference(ATTR_INSTANCES);
     private List<String> instances;
     private String imageID;
@@ -49,13 +51,14 @@ public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
         super.sfStart();
         instances = ListUtils.resolveStringList(this, refInstances, true);
         minCount = sfResolve(ATTR_MIN_COUNT, 0, true);
@@ -71,14 +74,16 @@ public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances
 
 
     /**
-     * Process the list of instances enumerated The base class lists the instances at info level then checks the number
-     * of instances found.
+     * Process the list of instances enumerated The base class lists the
+     * instances at info level then checks the number of instances found.
      *
      * @param instanceList instances
+     *
      * @throws SmartFrogException for any SF exception
-     * @throws RemoteException    for networking problems
+     * @throws RemoteException for networking problems
      */
-    protected void processInstanceList(InstanceList instanceList) throws SmartFrogException, RemoteException {
+    protected void processInstanceList(InstanceList instanceList)
+            throws SmartFrogException, RemoteException {
         logInstances(instanceList);
         checkInstanceCount(instanceList);
     }
@@ -87,9 +92,11 @@ public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances
      * Check that the instance count is in range
      *
      * @param instanceList list of instances
+     *
      * @throws SmartFrogDeploymentException if the count is too high or low
      */
-    protected void checkInstanceCount(List<ImageInstance> instanceList) throws SmartFrogDeploymentException {
+    protected void checkInstanceCount(List<ImageInstance> instanceList)
+            throws SmartFrogDeploymentException {
         int count = instanceList.size();
         if (minCount >= 0 && count < minCount) {
             throw new SmartFrogDeploymentException(
@@ -108,22 +115,27 @@ public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances
 
 
         /**
-         * Create a basic thread. Notification is bound to a local notification object.
+         * Create a basic thread. Notification is bound to a local notification
+         * object.
          */
         private Ec2InstanceThread() {
-            super(ListInstancesImpl.this, false);
+            super(ListInstancesImpl.this, true);
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
-         * of <code>Thread</code> should override this method.
+         * If this thread was constructed using a separate {@link Runnable} run
+         * object, then that <code>Runnable</code> object's <code>run</code>
+         * method is called; otherwise, this method does nothing and returns.
+         * <p> Subclasses of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
         public void execute() throws Throwable {
             Jec2 binding = getEc2binding();
-            InstanceList instanceList = InstanceList.describeInstances(binding, instances, imageID, state);
+            InstanceList instanceList = InstanceList.describeInstances(binding,
+                    instances,
+                    imageID,
+                    state);
             processInstanceList(instanceList);
         }
 
