@@ -65,6 +65,11 @@ AssertSchema extends Schema {
     //the index to look for
     attributeVectorIndex extends OptionalInteger;
 
+    //the min length of the vector
+    attributeVectorMinLength extends OptionalInteger;
+    //the max length of the vector
+    attributeVectorMaxLength extends OptionalInteger;
+    
     //name of a file to probe for
     fileExists extends OptionalString;
     //name of a directory to probe for
