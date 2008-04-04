@@ -30,6 +30,7 @@ AbstractXomFileWriter extends WorkflowPrim {
 
 TuplesToXom extends AbstractXomFileWriter {
   sfClass "org.smartfrog.services.xml.io.TuplesToXom";
+  sfShouldTerminate true;
   source TBD;
   namespaceURI "";
   skipEmptyFields false;
