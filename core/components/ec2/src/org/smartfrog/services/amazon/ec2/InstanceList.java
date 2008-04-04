@@ -35,13 +35,17 @@ import java.util.Vector;
 public class InstanceList extends ArrayList<ImageInstance> {
 
 
-    public static InstanceList EMPTY_LIST=new InstanceList(0);
+    public static InstanceList EMPTY_LIST = new InstanceList(0);
+    private static final ArrayList<TerminatingInstanceDescription> EMPTY_TERMINATED_INSTANCE_LIST = new ArrayList<TerminatingInstanceDescription>(
+            0);
 
     /**
      * Constructs an empty list with the specified initial capacity.
      *
      * @param initialCapacity the initial capacity of the list
-     * @throws IllegalArgumentException if the specified initial capacity is negative
+     *
+     * @throws IllegalArgumentException if the specified initial capacity is
+     * negative
      */
     public InstanceList(int initialCapacity) {
         super(initialCapacity);
@@ -72,16 +76,19 @@ public class InstanceList extends ArrayList<ImageInstance> {
     }
 
     /**
-     * Bulk terminate all instances that aren't listed as terminated/shutting down
+     * Bulk terminate all instances that aren't listed as terminated/shutting
+     * down
      *
      * @return the list of outcomes
+     *
      * @throws EC2Exception for problems on the way
      */
-    public List<TerminatingInstanceDescription> terminate() throws EC2Exception {
+    public List<TerminatingInstanceDescription> terminate()
+            throws EC2Exception {
         int size = size();
         List<String> instanceIDs = new ArrayList<String>(size);
         if (size == 0) {
-            return new ArrayList<TerminatingInstanceDescription>(0);
+            return EMPTY_TERMINATED_INSTANCE_LIST;
         }
         for (ImageInstance instance : this) {
             if (!instance.isTerminated() && !instance.isShuttingDown()) {
@@ -97,9 +104,11 @@ public class InstanceList extends ArrayList<ImageInstance> {
      *
      * @param ec2binding   the EC2 binding
      * @param reservations a list of reservations
+     *
      * @return the list of active instances
      */
-    public static InstanceList listInstances(Jec2 ec2binding, List<ReservationDescription> reservations) {
+    public static InstanceList listInstances(Jec2 ec2binding,
+                                             List<ReservationDescription> reservations) {
         InstanceList instances = new InstanceList();
         for (ReservationDescription res : reservations) {
             List<ReservationDescription.Instance> ilist = res.getInstances();
@@ -115,9 +124,11 @@ public class InstanceList extends ArrayList<ImageInstance> {
      *
      * @param ec2binding  the EC2 binding
      * @param reservation a single reservations
+     *
      * @return the list of active instances
      */
-    public static InstanceList listInstances(Jec2 ec2binding, ReservationDescription reservation) {
+    public static InstanceList listInstances(Jec2 ec2binding,
+                                             ReservationDescription reservation) {
         InstanceList instances = new InstanceList();
         List<ReservationDescription.Instance> ilist = reservation.getInstances();
         for (ReservationDescription.Instance i : ilist) {
@@ -128,29 +139,41 @@ public class InstanceList extends ArrayList<ImageInstance> {
 
 
     /**
-     * Get a list of images from the server, pass in a (possibly empty) list of instances
+     * Get a list of images from the server, pass in a (possibly empty) list of
+     * instances
      *
      * @param binding     the EC2 binding
      * @param instanceIDs a (possibly empty) list of instances
+     *
      * @return the list of active instances
+     *
      * @throws EC2Exception when things go wrong
      */
-    public static InstanceList describeInstances(Jec2 binding, List<String> instanceIDs) throws EC2Exception {
-        List<ReservationDescription> reservations = binding.describeInstances(instanceIDs);
+    public static InstanceList describeInstances(Jec2 binding,
+                                                 List<String> instanceIDs)
+            throws EC2Exception {
+        List<ReservationDescription> reservations = binding.describeInstances(
+                instanceIDs);
         return listInstances(binding, reservations);
     }
 
     /**
-     * Get a list of images from the server, pass in a (possibly empty) list of instances
+     * Get a list of images from the server, pass in a (possibly empty) list of
+     * instances
      *
      * @param binding     the EC2 binding
      * @param instanceIDs a (possibly empty) list of instances
-     * @param ami         the image ID to look for. Empty string means ALL IMAGES.
+     * @param ami         the image ID to look for. Empty string means ALL
+     *                    IMAGES.
      * @param state       the state to filter. Empty string means ALL IMAGES.
+     *
      * @return the list of active instances
+     *
      * @throws EC2Exception when things go wrong
      */
-    public static InstanceList describeInstances(Jec2 binding, List<String> instanceIDs, String ami,
+    public static InstanceList describeInstances(Jec2 binding,
+                                                 List<String> instanceIDs,
+                                                 String ami,
                                                  String state)
             throws EC2Exception {
         InstanceList instances = describeInstances(binding, instanceIDs);
@@ -164,7 +187,9 @@ public class InstanceList extends ArrayList<ImageInstance> {
      * Filter the list of instances to get only those with a specific image ID.
      *
      * @param instances instances to filter
-     * @param ami       the image ID to look for. Empty string means ALL IMAGES.
+     * @param ami       the image ID to look for. Empty string means ALL
+     *                  IMAGES.
+     *
      * @return the (possibly shorter) list.
      */
     public static InstanceList filterByAMI(InstanceList instances, String ami) {
@@ -186,9 +211,11 @@ public class InstanceList extends ArrayList<ImageInstance> {
      *
      * @param instances instances to filter
      * @param state     the state to filter. Empty string means ALL IMAGES.
+     *
      * @return the (possibly shorter) list.
      */
-    public static InstanceList filterByState(InstanceList instances, String state) {
+    public static InstanceList filterByState(InstanceList instances,
+                                             String state) {
         if (state.length() == 0) {
             return instances;
         }
