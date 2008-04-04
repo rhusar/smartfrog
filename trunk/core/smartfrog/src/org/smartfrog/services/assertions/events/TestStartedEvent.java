@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.assertions.events;
 
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
+import org.smartfrog.sfcore.workflow.events.ReadyEvent;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -28,7 +29,7 @@ import org.smartfrog.sfcore.prim.Prim;
  *
  */
 
-public class TestStartedEvent extends LifecycleEvent {
+public class TestStartedEvent extends ReadyEvent {
 
 
 

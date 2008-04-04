@@ -104,3 +104,12 @@ AssertCondition extends Assert {
     checkOnStartup false;
     checkOnLiveness false;
 }
+
+/**
+ * define an assertion in a workflow
+ */
+AssertWorkflow extends Assert {
+    sfShouldTerminate true;
+    checkOnLiveness false;
+}
+
