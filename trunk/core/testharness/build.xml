@@ -181,7 +181,7 @@ values as a cue -->
       <exclude name="${systemtests}/filesystem/ChmodTest.*"
           unless="run.failing.tests"/>
 
-      <!-- SFOS-671 TestCompound doesnt terminate correctly in all circumstances when the action terminates normally (as expected) -->
+      <!-- SFOS-761 TestCompound doesnt terminate correctly in all circumstances when the action terminates normally (as expected) -->
       <exclude name="${systemtests}/workflow/thread/WorkflowThreadTest.*"
           unless="run.failing.tests"/>
 
