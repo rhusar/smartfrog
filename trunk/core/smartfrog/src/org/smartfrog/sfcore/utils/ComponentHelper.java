@@ -93,7 +93,7 @@ public class ComponentHelper {
     public Reference completeNameOrNull() {
         try {
             return owner.sfCompleteName();
-        } catch (Throwable ignored) {
+        } catch (RemoteException e) {
             return null;
         }
     }
@@ -106,8 +106,8 @@ public class ComponentHelper {
      * @return reference of attribute names to this component or an empty reference
      */
     public Reference completeNameSafe() {
-        Reference ref=completeNameOrNull();
-        if(ref==null) {
+        Reference ref = completeNameOrNull();
+        if (ref == null) {
             return new Reference();
         } else {
             return ref;
@@ -132,12 +132,12 @@ public class ComponentHelper {
      * @return reference of attribute names to this component or an empty reference
      */
     public static Reference completeNameSafe(Prim owner) {
-    	if(owner==null) {
-    		return new Reference();
-    	}
+        if (owner == null) {
+            return new Reference();
+        }
         try {
             return owner.sfCompleteName();
-        } catch (Throwable thr) {
+        } catch (RemoteException thr) {
             // TODO: log a message to indicate that sfCompleteName failed!
             return new Reference();
         }
@@ -418,8 +418,8 @@ public class ComponentHelper {
     /**
      * Load a class in the classloader, using the SmartFrog classloader.
      * {@link SFClassLoader#forName(String, String, boolean)}
-     * @param classname
-     * @return class
+     * @param classname class to load
+     * @return loaded class
      * @throws SmartFrogResolutionException if the class could not be found
      * @throws RemoteException for network problems
      */
@@ -430,7 +430,6 @@ public class ComponentHelper {
             return SFClassLoader.forName(classname, targetCodeBase, true);
         } catch (ClassNotFoundException ignored) {
             throw new SmartFrogResolutionException("Not found: " + classname + " in " + targetCodeBase);
-
         }
     }
 

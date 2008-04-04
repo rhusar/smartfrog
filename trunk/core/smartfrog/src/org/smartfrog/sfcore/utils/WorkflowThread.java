@@ -83,7 +83,7 @@ public class WorkflowThread extends SmartFrogThread {
         ComponentHelper helper = new ComponentHelper(owner);
         if (workflowTermination) {
             //put up for workflow termination
-            helper.targetForWorkflowTermination(tr);
+            helper.sfSelfDetachAndOrTerminate(tr);
         } else {
             //put up for termination
             helper.targetForTermination(tr, false, false, false);
