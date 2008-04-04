@@ -181,6 +181,11 @@ values as a cue -->
       <exclude name="${systemtests}/filesystem/ChmodTest.*"
           unless="run.failing.tests"/>
 
+      <!-- SFOS-671 TestCompound doesnt terminate correctly in all circumstances when the action terminates normally (as expected) -->
+      <exclude name="${systemtests}/workflow/thread/WorkflowThreadTest.*"
+          unless="run.failing.tests"/>
+
+
       <!-- SFOS-565 cyclic reference test tcn19.sf is now spinning instead of detecting a cyclic reference 
        (this is a JRockit problem)
       -->
