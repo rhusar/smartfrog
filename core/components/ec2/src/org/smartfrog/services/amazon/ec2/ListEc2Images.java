@@ -69,11 +69,11 @@ public class ListEc2Images extends EC2ComponentImpl implements EC2Component {
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -102,22 +102,18 @@ public class ListEc2Images extends EC2ComponentImpl implements EC2Component {
     private class Ec2Worker extends WorkflowThread {
 
         /**
-         * Create a basic thread. Notification is bound to a local notification
-         * object.
+         * Create a basic thread. Notification is bound to a local notification object.
          */
         private Ec2Worker() {
             super(ListEc2Images.this, true);
         }
 
         /**
-         * matches an expected value against an actual one, if the expected one
-         * is set
+         * matches an expected value against an actual one, if the expected one is set
          *
          * @param actual value to test
          * @param expect expected value, can be null or ""
-         *
-         * @return true if expected is unset, or it is set and it matches the
-         *         actual value
+         * @return true if expected is unset, or it is set and it matches the actual value
          */
         private boolean contained(String actual, String expect) {
             return expect == null || expect.length() == 0 || actual.contains(

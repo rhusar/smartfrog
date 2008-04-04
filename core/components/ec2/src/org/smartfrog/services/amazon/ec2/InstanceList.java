@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- *
  * Created 02-Apr-2008 15:18:26
- *
  */
 
 public class InstanceList extends ArrayList<ImageInstance> {
 
+
+    public static InstanceList EMPTY_LIST=new InstanceList(0);
 
     /**
      * Constructs an empty list with the specified initial capacity.
@@ -56,6 +56,7 @@ public class InstanceList extends ArrayList<ImageInstance> {
 
     /**
      * Create a new list of instance IDs
+     *
      * @return a new list
      */
     public Vector<String> listInstanceIDs() {
@@ -65,13 +66,14 @@ public class InstanceList extends ArrayList<ImageInstance> {
             return new Vector<String>(0);
         }
         for (ImageInstance instance : this) {
-                instanceIDs.add(instance.getInstanceId());
+            instanceIDs.add(instance.getInstanceId());
         }
         return instanceIDs;
     }
 
     /**
      * Bulk terminate all instances that aren't listed as terminated/shutting down
+     *
      * @return the list of outcomes
      * @throws EC2Exception for problems on the way
      */
@@ -82,7 +84,7 @@ public class InstanceList extends ArrayList<ImageInstance> {
             return new ArrayList<TerminatingInstanceDescription>(0);
         }
         for (ImageInstance instance : this) {
-            if(!instance.isTerminated() && !instance.isShuttingDown()) {
+            if (!instance.isTerminated() && !instance.isShuttingDown()) {
                 instanceIDs.add(instance.getInstanceId());
             }
         }
@@ -111,8 +113,8 @@ public class InstanceList extends ArrayList<ImageInstance> {
     /**
      * Build a list of images
      *
-     * @param ec2binding   the EC2 binding
-     * @param reservation  a single reservations
+     * @param ec2binding  the EC2 binding
+     * @param reservation a single reservations
      * @return the list of active instances
      */
     public static InstanceList listInstances(Jec2 ec2binding, ReservationDescription reservation) {
@@ -149,7 +151,7 @@ public class InstanceList extends ArrayList<ImageInstance> {
      * @throws EC2Exception when things go wrong
      */
     public static InstanceList describeInstances(Jec2 binding, List<String> instanceIDs, String ami,
-                                                        String state)
+                                                 String state)
             throws EC2Exception {
         InstanceList instances = describeInstances(binding, instanceIDs);
         instances = filterByAMI(instances, ami);
@@ -201,10 +203,11 @@ public class InstanceList extends ArrayList<ImageInstance> {
 
     /**
      * Returns a string representation of this collection.
+     *
      * @return a string representation of this collection
      */
     public String toString() {
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (ImageInstance instance : this) {
             builder.append(instance.toString());
             builder.append('\n');

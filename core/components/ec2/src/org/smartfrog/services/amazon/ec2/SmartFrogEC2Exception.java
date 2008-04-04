@@ -19,13 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.amazon.ec2;
 
+import com.xerox.amazonws.ec2.EC2Exception;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
-import com.xerox.amazonws.ec2.EC2Exception;
 
 /**
  * An exception that wraps an {@link EC2Exception}
- *
  */
 
 public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
@@ -73,8 +72,8 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
     }
 
     /**
-     * Constructs a SmartFrogDeploymentException with specified message and cause. Also initializes  the exception context
-     * with component details.
+     * Constructs a SmartFrogDeploymentException with specified message and cause. Also initializes  the exception
+     * context with component details.
      *
      * @param message  exception message
      * @param cause    exception causing this exception
@@ -87,6 +86,7 @@ public class SmartFrogEC2Exception extends SmartFrogDeploymentException {
 
     /**
      * Add post-processing of the exception
+     *
      * @param cause the root cause
      */
     private void bind(EC2Exception cause) {

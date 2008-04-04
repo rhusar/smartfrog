@@ -19,13 +19,14 @@
  */
 
 
-ImageInstance extends AwsAuthorizedService {
+ImageInstance extends AwsAuthorizedWorkflowService {
   sfClass "org.smartfrog.services.amazon.ec2.EC2InstanceImpl";
   //this is the AMI of an image
   imageID TBD;
+  sfShouldTerminate false;
 
   //shut down when we terminate?
-  autoShutdown true;
+  shutdown true;
 
   //instance types
   instanceType SIZE_SMALL;
@@ -48,7 +49,7 @@ ImageInstance extends AwsAuthorizedService {
  * the min/max count are there for testing 
 
  */
-ListInstances extends AwsAuthorizedService {
+ListInstances extends AwsAuthorizedWorkflowService {
   sfClass "org.smartfrog.services.amazon.ec2.ListInstancesImpl";
   sfShouldTerminate true;
   //this is the AMI of an image. Empty string is don't care
@@ -78,7 +79,6 @@ ListInstances extends AwsAuthorizedService {
 
 KillInstances extends ListInstances {
   sfClass "org.smartfrog.services.amazon.ec2.KillEC2InstanceImpl";
-  sfShouldTerminate true;
   //this is the AMI of an image. Empty string is don't care
   imageID "";
   //string list of instances. Can be empty

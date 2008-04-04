@@ -40,7 +40,18 @@ AWSResource extends RemoteResource {
  * All AWS Authorized Services have to have a key and an ID
  */
 AwsAuthorizedService extends Prim {
-   id TBD;
-   key TBD;
+  id TBD;
+  key TBD;
 }
+
+/**
+ *  A workflow service which is expected to terminate
+ */
+AwsAuthorizedWorkflowService extends AwsAuthorizedService {
+  workflowPrimSchema extends WorkflowPrimSchema;
+  id TBD;
+  key TBD;
+  sfShouldTerminate true;
+}
+
 

@@ -102,15 +102,6 @@ public class ListInstancesImpl extends EC2ComponentImpl implements ListInstances
     }
 
     /**
-     * Print all instances out to the log
-     *
-     * @param instanceList instances
-     */
-    protected void logInstances(InstanceList instanceList) {
-        sfLog().info(instanceList.toString());
-    }
-
-    /**
      * Thread to create the instance
      */
     private class Ec2InstanceThread extends WorkflowThread {

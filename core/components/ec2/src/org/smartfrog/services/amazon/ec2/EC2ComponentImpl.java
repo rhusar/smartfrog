@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.Jec2;
+import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -29,6 +30,7 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created 25-Mar-2008 13:36:29
@@ -40,18 +42,18 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     private String id;
     private String key;
     protected static final ArrayList<String> EMPTY_ARGUMENTS = new ArrayList<String>();
-    private WorkflowThread worker;
+    private SmartFrogThread worker;
 
     public EC2ComponentImpl() throws RemoteException {
     }
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -62,8 +64,8 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -73,11 +75,10 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     }
 
     /**
-     * Terminate any worker thread; synchronized. After the request is made the
-     * worker field is always null.
+     * Terminate any worker thread; synchronized. After the request is made the worker field is always null.
      */
     protected void terminateWorker() {
-        WorkflowThread thread;
+        SmartFrogThread thread;
         synchronized (this) {
             thread = worker;
             worker = null;
@@ -114,20 +115,40 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     }
 
 
-    public WorkflowThread getWorker() {
+    public SmartFrogThread getWorker() {
         return worker;
     }
 
-    public void setWorker(WorkflowThread worker) {
+    public void setWorker(SmartFrogThread worker) {
         this.worker = worker;
     }
 
     /**
      * Bind to and start a worker thread
+     *
      * @param workflowThread worker
      */
-    protected void deployWorker(WorkflowThread workflowThread) {
+    protected void deployWorker(SmartFrogThread workflowThread) {
         setWorker(workflowThread);
         getWorker().start();
+    }
+
+    /**
+     * Log any termination records
+     * @param terminating list of terminating entries
+     */
+    protected void logTerminationInfo(List<TerminatingInstanceDescription> terminating) {
+        for (TerminatingInstanceDescription description : terminating) {
+            sfLog().info(description);
+        }
+    }
+
+    /**
+     * Print all instances out to the log
+     *
+     * @param instanceList instances
+     */
+    protected void logInstances(InstanceList instanceList) {
+        sfLog().info(instanceList.toString());
     }
 }

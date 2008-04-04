@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
  */
 
 
-ListEC2Images extends AwsAuthorizedService {
+ListEC2Images extends AwsAuthorizedWorkflowService {
   sfClass "org.smartfrog.services.amazon.ec2.ListEc2Images";
   sfShouldTerminate true;
   state "available";

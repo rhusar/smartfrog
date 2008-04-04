@@ -32,9 +32,7 @@ DeployedService extends Compound {
 
 
 ExpectDeployedService extends  ExpectDeployOnEC2 {
-
   action DeployedService;
-
 }
 
 
@@ -48,22 +46,31 @@ ExpectTerminatingService extends  ExpectDeployOnEC2 {
 
 
 ListMyImages extends ListEC2Images {
-    id login;
+  sfShouldTerminate true;
+  id login;
 }
 
 
 ListMyInstances extends ListInstances {
-    id login;
+  sfShouldTerminate true;
+  id login;
 }
 
 KillMyInstances extends KillInstances {
-    id login;
+  sfShouldTerminate true;
+  id login;
 }
+
+StartupDelay extends Delay {
+  time test.sleep.delay;
+}
+
 
 
 testListEC2Images extends  ExpectTerminatingService  {
   description "list the EC2 images available to our login";
   action:service extends ListMyImages  {
+    key LAZY authentication;
   }
 }
 
@@ -75,11 +82,9 @@ testListAmazonImages extends  testListEC2Images  {
   action:service:owners [AmazonAMI:AMAZON_ID];
 
   tests extends Sequence {
-    -- extends Delay {
-      time 1000;
-    }
-    assertHasValues extends Assert {
-      sfShouldTerminate true;
+    -- StartupDelay;
+    
+    assertHasValues extends AssertWorkflow {
       reference LAZY action;
       attribute "imageList";
       //at least two
@@ -87,8 +92,7 @@ testListAmazonImages extends  testListEC2Images  {
       attributeVectorMaxLength 10;
     }
 
-    assertSingleton extends Assert {
-      sfShouldTerminate true;
+    assertSingleton extends AssertWorkflow {
       reference LAZY action;
       attribute "imageID";
     }
@@ -118,12 +122,13 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
 }
 
 
-testCreateInstance extends ExpectDeployOnEC2 {
 
+testCreateInstance extends ExpectDeployOnEC2 {
   description "create a real instance" ;
 
   action extends DeployedService {
     service extends ImageInstance {
+       sfShouldTerminate false;
        id login;
        imageID test.ec2.image.id;
        userData "test-data";
@@ -131,37 +136,71 @@ testCreateInstance extends ExpectDeployOnEC2 {
     };
   }
 
-  tests extends Sequence {
+ tests extends Sequence {
+    -- StartupDelay;
+ }
 
-    sleep extends Delay {
-      time test.sleep.delay;
-    }
+  Notests extends Sequence {
+    -- StartupDelay;
 
+/*
     instancesWithWrongID extends ListMyInstances  {
+        description "expect to find no images when the ID is wrong";
         imageID  BAD_IMAGE_ID;
         maxCount 0;
         key LAZY action:authentication;
     }
-
+*/
 
     //assert that an instance is live
     Instances extends ListMyInstances  {
+        description "expect to find at least one instance with my name on it";
         minCount 1;
         key LAZY action:authentication;
     }
 
     instancesWithGivenID extends Instances  {
+        description "test the imageID attribute for validity";
         imageID test.ec2.image.id;
     }
 
 
-    instancesWithExplicitID extends Instances  {
+    instancesWithExplicitInstances extends Instances  {
+        description "test the instance attribute for validity";
         instances [LAZY action:service:instance];
     }
 
 
-    instancesWithExplicitList extends Instances  {
+    instancesWithExplicitInstancesWrongImageID extends Instances  {
+        description "expect to find no images when the ID is wrong, even with a list of instances";
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
         instances LAZY action:service:instances;
+    }
+
+    instancesWithExplicitInstancesList extends Instances  {
+        description "test the instances attribute for validity";
+        instances LAZY action:service:instances;
+    }
+
+
+    killBadID extends KillMyInstances {
+        description "nothing is killed if the image ID is wrong";
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
+        key LAZY action:authentication;
+    }
+
+    killBadIDandInstances extends killBadID {
+        description "the instances are irrelevant if the image ID is wrong";
+        instances LAZY action:service:instances;
+    }
+
+    killWrongState extends kill {
+        description "with the wrong state, there is nothing to kill";
+        maxCount 0;
+        minCount 0;
+        state "not-valid-state";
     }
 
     kill extends KillMyInstances {
@@ -192,7 +231,7 @@ testCreateBadInstance extends ExpectDeployFailureOnEC2 {
 
 
 testListInstances extends  ExpectTerminatingService  {
-  description "list the EC2 images running; fail if this is >0";
+  description "list the EC2 images running; fail if this is > 0";
   action:service extends ListMyInstances  {
     maxCount 0;
     key LAZY authentication;
@@ -201,11 +240,28 @@ testListInstances extends  ExpectTerminatingService  {
 
 testKillInstances extends  ExpectTerminatingService  {
   description "kill any images that are running";
-  action:service extends  KillMyInstances  {
+  action:service extends KillMyInstances  {
     key LAZY authentication;
   }
 }
 
 
+testKillInstancesBadID extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends KillMyInstances  {
+    imageID  BAD_IMAGE_ID;
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
 
+
+testKillUnknownInstance extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends KillMyInstances  {
+    instances  ["unknown-instance-id"];
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
 
