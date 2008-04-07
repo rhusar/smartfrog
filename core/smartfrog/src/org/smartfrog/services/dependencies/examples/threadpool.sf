@@ -1,0 +1,7 @@
+#include "org/smartfrog/services/dependencies/threadpool/components.sf"
+
+sfConfig extends Compound {
+    threadpool extends ThreadPool {
+      sfProcessComponentName "threadpool";
+    }
+}

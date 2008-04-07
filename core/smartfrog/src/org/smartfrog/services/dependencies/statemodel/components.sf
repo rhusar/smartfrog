@@ -1,11 +1,11 @@
 
 Dependency extends Prim {
-     sfClass "com.hp.ov.cc.statemodel.dependency.Dependency";
+     sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
      sfUpdatable true;
 }
 
 State extends Prim {
-     sfClass "com.hp.ov.cc.statemodel.state.State";
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.State";
      sfUpdatable true;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
@@ -18,7 +18,7 @@ State extends Prim {
 }
 
 Composite extends Compound {
-     sfClass "com.hp.ov.cc.statemodel.state.Composite";
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
      sfUpdatable true;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
@@ -32,7 +32,7 @@ Composite extends Compound {
 }
 
 NWayComposite extends Composite {
-     sfClass "com.hp.ov.cc.statemodel.state.NWayComposite";
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.NWayComposite";
      sfUpdatable false;
 
      template TBD;
@@ -41,14 +41,14 @@ NWayComposite extends Composite {
 
 
 Model extends Composite {
-     sfClass "com.hp.ov.cc.statemodel.state.Model";
+     sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
      run true; // set to false if you do not want the model to generate new notification sweeps, true if do
 }
 
 ModelTerminator extends State {
-    sfClass "com.hp.ov.cc.statemodel.modeltermination.ModelTermination";
+    sfClass "org.smartfrog.services.dependencies.statemodel.modeltermination.ModelTermination";
     stateData ["required"];
     stateListen ["required"];
 
@@ -57,67 +57,23 @@ ModelTerminator extends State {
     required TBD;
 }
 
-Counter extends State {
-    sfClass "com.hp.ov.cc.statemodel.statecomponents.Counter";
-    stateData ["tick", "tock", "reset"];
-    stateListen ["tick", "tock", "reset"];
-    stateNotify ["count"];
-    count 0;
-
-    reset false;
-    tick TBD;
-    tock TBD;
-}
-
-Latch extends State {
-    sfClass "com.hp.ov.cc.statemodel.statecomponents.Latch";
-    stateData ["reset"];
-    stateListen ["reset"];
-    stateNotify ["value"];
-
-    value resetValue;
-    resetValue TBD;
-    reset TBD;
-}
-
-TimedStateUpdate extends State {
-    sfClass "com.hp.ov.cc.statemodel.statecomponents.TimedStateUpdate";
-    stateData ["run"];
-    stateListen ["run"];
-    stateNotify [];
-
-    on TBD;       // which state to assert
-    value TBD;    // which value
-    state TBD;    // which attribute
-    interval TBD; // in milliseconds
-    run TBD;      // whether to be applying the state value
-
-    // constants for defining intervals
-    ms 1;
-    sec 1000;
-    min (60*sec);
-    hr (60 * min);
-    day (24 * hr);
-}
-
-
 AndConnector extends Prim {
-    sfClass "com.hp.ov.cc.statemodel.connector.AndConnector";
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnector";
     sfUpdatable true;
 }
 
 OrConnector extends Prim {
-    sfClass "com.hp.ov.cc.statemodel.connector.OrConnector";
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
     sfUpdatable true;
 }
 
 NorConnector extends Prim {
-    sfClass "com.hp.ov.cc.statemodel.connector.NorConnector";
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NorConnector";
     sfUpdatable true;
 }
 
 NandConnector extends Prim {
-    sfClass "com.hp.ov.cc.statemodel.connector.NandConnector";
+    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NandConnector";
     sfUpdatable true;
 }
 
