@@ -5,7 +5,7 @@
  * A threadpool manages a pool of threads to handle tasks
  */
 ThreadPool extends Prim {
-    sfClass "com.hp.ov.cc.threadpool.ThreadPoolImpl";
+    sfClass "org.smartfrog.services.dependencies.threadpool.ThreadPoolImpl";
     sfExport false;
 
     maxThreads 20;
@@ -16,7 +16,7 @@ ThreadPool extends Prim {
  * A component to test the thread pool
  */
 ThreadPoolPTester extends Prim {
-    sfClass "com.hp.ov.cc.threadpool.ThreadPoolTester";
+    sfClass "org.smartfrog.services.dependencies.threadpool.ThreadPoolTester";
     sfExport false;
 
     threadPool TBD;
