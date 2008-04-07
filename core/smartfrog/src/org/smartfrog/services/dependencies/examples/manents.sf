@@ -1,19 +1,33 @@
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/dependencies/components.sf"
+#include "org/smartfrog/services/dependencies/statemodel/components.sf"
 #include "org/smartfrog/services/dependencies/threadpool/components.sf"
 
-sfConfig extends {
-   ManagedEntity extends State {
-      sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
-      stateListen ["createdprev", "removedsucc"];
-      stateData ["created, removed", "name"];
-      stateNotify ["created, removed"];
-      created false;
-      removed false;
-      createdprev true;
-      removedsucc true;
-      name TBD;
-   }
+ManagedEntity extends State {
+   sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
+
+   created false;
+   removed false;
+   createdprev true;
+   removedsucc true;
+   name "default";
+      
+   stateListen ["createdprev", "removedsucc"];
+   stateData ["createdprev", "removedsucc", "created", "removed", "name"];
+   stateNotify ["created", "removed"];
+}
+
+createdDependency extends Dependency {
+   enabled LAZY on:created;
+   relevant (! LAZY by:created);
+}
+
+removedDependency extends Dependency {
+   enabled LAZY on:removed;
+   relevant LAZY by:created;
+}
+ 
+sfConfig extends Model {
+   run true;
 
    foo0 extends ManagedEntity{
       name "foo0";
@@ -33,16 +47,6 @@ sfConfig extends {
 
    finished extends ModelTerminator {
       required LAZY foo0:removed;
-   }
-
-   createdDependency extends Dependency {
-      enabled LAZY on:created;
-      relevant (! LAZY by:created);
-   }
-
-   removedDependency extends Dependency {
-      enabled LAZY on:removed;
-      relevant LAZY by:created;
    }
 
    foo0Created extends createdDependency {
