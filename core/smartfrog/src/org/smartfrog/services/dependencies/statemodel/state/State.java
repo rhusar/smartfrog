@@ -1,17 +1,22 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
 import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
 import org.smartfrog.services.dependencies.statemodel.utils.CDUtil;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
-import java.util.*;
-import java.rmi.RemoteException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
 
 
 
@@ -38,9 +43,23 @@ public abstract class State extends PrimImpl implements Prim, StateDependencies,
 
    public synchronized void sfDeploy() throws RemoteException, SmartFrogException {
       super.sfDeploy();
-      stateData = sfResolve("stateData", stateData, false);
-      stateNotify = sfResolve("stateNotify", stateNotify, false);
-      stateListen = sfResolve("stateListen", stateListen, false);
+      
+      Context cxt = sfContext();
+      Enumeration keys = cxt.keys(); 
+      
+      while (keys.hasMoreElements()){
+    	  Object key = keys.nextElement();
+    	  if (cxt.sfContainsTag(key, "stateData")){
+    		  stateData.add(key);
+    	  }
+    	  if (cxt.sfContainsTag(key, "stateListen")){
+    		  stateListen.add(key);
+    	  }
+    	  if (cxt.sfContainsTag(key, "stateNotify")){
+    		  stateNotify.add(key);
+    	  }
+      }
+      
       asAndConnector = sfResolve("asAndConnector", asAndConnector, false);
       parentLocking = (NotificationLock)sfParent();
    }
