@@ -47,7 +47,7 @@ ModelTerminator extends State {
 
     toTerminate LAZY ROOT;
     detachFirst false;
-    [stateData, stateListen] required TBD;
+    [stateListen, stateData] required TBD;
 }
 
 AndConnector extends Prim {
