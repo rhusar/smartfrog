@@ -10,11 +10,6 @@ State extends Prim {
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
      model LAZY ROOT;
-
-     // the next three will be replaced by attribute tagging when implemented!
-     stateData [];   // which of my attributes do I needs to know as a consistent set
-     stateListen []; // which of my attributes do I needs to be informed when they change
-     stateNotify []; // what attributes will I will inform the system when I change them
 }
 
 Composite extends Compound {
@@ -49,12 +44,10 @@ Model extends Composite {
 
 ModelTerminator extends State {
     sfClass "org.smartfrog.services.dependencies.statemodel.modeltermination.ModelTermination";
-    stateData ["required"];
-    stateListen ["required"];
 
     toTerminate LAZY ROOT;
     detachFirst false;
-    required TBD;
+    [stateData, stateListen] required TBD;
 }
 
 AndConnector extends Prim {
