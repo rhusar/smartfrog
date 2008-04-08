@@ -5,15 +5,11 @@
 ManagedEntity extends State {
    sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
 
-   created false;
-   removed false;
-   createdprev true;
-   removedsucc true;
-   name "default";
-      
-   stateListen ["createdprev", "removedsucc"];
-   stateData ["createdprev", "removedsucc", "created", "removed", "name"];
-   stateNotify ["created", "removed"];
+   [stateData, stateNotify] created false;
+   [stateData, stateNotify] removed false;
+   [stateListen, stateData] createdprev true;
+   [stateListen, stateData] removedsucc true;
+   [stateData] name "default";
 }
 
 createdDependency extends Dependency {
