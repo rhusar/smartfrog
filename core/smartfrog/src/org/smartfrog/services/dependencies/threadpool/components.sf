@@ -13,6 +13,18 @@ ThreadPool extends Prim {
 }
 
 /*
+ * A threadpool manages a pool of threads to handle tasks
+ * SimpleThreadPool uses java.util.concurrent functionality.
+ * Simple fixed limit on thread number.
+ */
+SimpleThreadPool extends Prim {
+    sfClass "org.smartfrog.services.dependencies.threadpool.ThreadPoolImpl";
+    sfExport false;
+
+    numThreads 20;
+}
+
+/*
  * A component to test the thread pool
  */
 ThreadPoolPTester extends Prim {

@@ -8,9 +8,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 public class ManagedEntity extends ThreadedState implements Prim {
 	
-	public ManagedEntity() throws RemoteException { 
-		super(); 
-	}  
+	public ManagedEntity() throws RemoteException {super();}  
 	
 	public boolean requireThread(HashMap data){ return true; }  
 	

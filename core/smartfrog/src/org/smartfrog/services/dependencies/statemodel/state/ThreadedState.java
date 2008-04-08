@@ -15,16 +15,15 @@ public abstract class ThreadedState extends State implements Prim, StateDependen
    protected ThreadPool threadpool;
    protected final Object threadpoolLock = new Object();
 
-   // when the current action is complete - do this...
-   protected Runnable continuation = null;
-
    // a thread is in the pool, and may still be removable or in flight
    protected boolean actionInProgress = false;
 
    // there is an async response that is still outstanding
    boolean asyncResponse = false;
 
-   StateUpdateThread currentAction = null;
+   Object currentAction = null;
+   
+   protected HashMap continuation_data = null;
 
 
    public ThreadedState() throws RemoteException {
@@ -45,12 +44,11 @@ public abstract class ThreadedState extends State implements Prim, StateDependen
          } //either already running, or none on the queue...
          if (requireThread(data)) {
             if (actionInProgress) {//ie there was one and it was already in flight, so not removed
-               continuation = new StateUpdateThread(data);
+               continuation_data = data;
             } else { // there was none, or was removed
                actionInProgress = true;
-               currentAction = new StateUpdateThread(data);
                try { parentLocking.threadStarted(); } catch (RemoteException e) {}
-               threadpool.addToQueue(currentAction);
+               currentAction = threadpool.addToQueue(new StateUpdateThread(data));
             }
          } else {
             // do nothing
@@ -69,11 +67,11 @@ public abstract class ThreadedState extends State implements Prim, StateDependen
             } else {
                state = data;
 
-               if (continuation != null) {
+               if (continuation_data != null) {
                   if (sfLog().isTraceEnabled()) sfLog().trace("async response have continuation");
                   try {parentLocking.threadStarted();} catch (RemoteException e) {}
-                  threadpool.addToQueue(continuation);
-                  continuation = null;
+                  currentAction = threadpool.addToQueue(new StateUpdateThread(continuation_data));
+                  continuation_data = null;
                } else {
                   if (sfLog().isTraceEnabled()) sfLog().trace("async response no continuation");
                   actionInProgress = false;
@@ -117,10 +115,10 @@ public abstract class ThreadedState extends State implements Prim, StateDependen
                      asyncResponse = true;
                   } else {
                      asyncResponse = false;
-                     if (continuation != null) {
+                     if (continuation_data != null) {
                         try { parentLocking.threadStarted(); } catch (RemoteException e) {}
-                        threadpool.addToQueue(continuation);
-                        continuation = null;
+                        currentAction = threadpool.addToQueue(new StateUpdateThread(continuation_data));
+                        continuation_data = null;
                      } else {
                         actionInProgress = false;
                      }

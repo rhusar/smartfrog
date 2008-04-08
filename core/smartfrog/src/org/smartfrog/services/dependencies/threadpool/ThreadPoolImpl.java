@@ -142,8 +142,9 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
     * register a Runnable to be allocated a thread
     *
     * @param run The instances of a Runnable
+    * @return An Object corresponding to the Runnable
     */
-   public void addToQueue(Runnable run) {
+   public Object addToQueue(Runnable run){
       synchronized (jobs) {
          if (sfLog().isTraceEnabled())
             sfLog().trace("adding job to queue " + run);
@@ -163,17 +164,18 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
             }
          }
       }
+      return run;
    }
 
    /**
     * Remove a runnable from the registered Runnable jobs
     *
-    * @param run the Runnable to remove
+    * @param run the task to remove
     * @return true if successful, fales if it did not exist or was already allocated
     */
-   public boolean removeFromQueue(Runnable run) {
+   public boolean removeFromQueue(Object task){
       synchronized (jobs) {
-         return jobs.remove(run);
+         return jobs.remove((Runnable) task);
       }
    }
 
@@ -182,7 +184,7 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
     *
     * @return the queue length
     */
-   public int queueLength() {
+   private int queueLength() {
       return jobs.size();
    }
 
@@ -191,7 +193,7 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
     *
     * @return the number of threads
     */
-   public int threads() {
+   private int threads() {
       return freeThreads + busyThreads;
    }
 
@@ -200,7 +202,7 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
     *
     * @return the number of free threads
     */
-   public int threadsFree() {
+   private int threadsFree() {
       return freeThreads;
    }
 
@@ -209,18 +211,8 @@ public class ThreadPoolImpl extends PrimImpl implements Remote, Prim, ThreadPool
     *
     * @return the number of threads
     */
-   public int getMaxThreads() {
+   private int getMaxThreads() {
       return maxThreads;
    }
-
-   /**
-    * Get the maximum number of free threads that this threadpool can keep
-    *
-    * @return the number of threads
-    */
-   public int getMaxFreeThreads() {
-      return maxFreeThreads;
-   }
-
 
 }

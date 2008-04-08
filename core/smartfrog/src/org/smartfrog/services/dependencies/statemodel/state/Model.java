@@ -67,14 +67,14 @@ public class Model extends Composite implements Compound {
 	   }
 
 
-	   Notifier notifier = null;
+	   Object notifier = null;
 	   public void notifyStateChange() {
 	      synchronized (notifyLock) {
 	         if (stateLockCount == 0 && running) {
 	            threadStarted();
 	            notificationRequired = false;
 	            //System.out.println("notifier launched");
-	            threadpool.addToQueue(notifier = new Notifier());
+	            notifier = threadpool.addToQueue(new Notifier());
 	         } else { // delay the start - someone still needs to run
 	            notificationRequired = true;
 	         }
