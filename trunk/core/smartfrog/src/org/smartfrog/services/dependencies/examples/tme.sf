@@ -1,0 +1,6 @@
+#include "org/smartfrog/services/dependencies/examples/manents.sf"
+
+sfConfig extends Compound {
+   sfClass "org.smartfrog.services.dependencies.examples.TestManagedEntities";
+   test extends ManagedEntities;
+}
