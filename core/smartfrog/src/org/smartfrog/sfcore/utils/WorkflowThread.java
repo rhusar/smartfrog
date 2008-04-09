@@ -73,21 +73,36 @@ public class WorkflowThread extends SmartFrogThread {
      * Runs the {@link #execute()} method, catching any exception it throws and storing it away for safe keeping After
      * the run, the notify object is notified, and we trigger a workflow termination
      */
+    @Override
     public void run() {
+        //do the work and catch the result
         super.run();
+        //now analyse the result, create a term record and maybe terminate the owner
+        boolean isNormal = getThrown() == null;
         TerminationRecord tr = new TerminationRecord(
-                getThrown() == null ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
+                isNormal ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
                 getTerminationMessage(),
                 ownerID,
                 getThrown());
+        aboutToTerminate(tr);
         ComponentHelper helper = new ComponentHelper(owner);
-        if (workflowTermination) {
+        if (workflowTermination && isNormal) {
             //put up for workflow termination
             helper.sfSelfDetachAndOrTerminate(tr);
         } else {
+            //workflow termination is disabled, or something went wrong
             //put up for termination
             helper.targetForTermination(tr, false, false, false);
         }
+    }
+
+    /**
+     * this is an override point. The TR is passed in for examination and
+     * editing. The base implementation does nothing.
+     * @param tr the termination record about to be passed up
+     */
+    protected void aboutToTerminate(TerminationRecord tr) {
+
     }
 
     /**
