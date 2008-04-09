@@ -20,28 +20,30 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.assertions.events;
 
 /**
- *
  * A refactoring of timeout tracking logic
- *
  */
 
 public final class TimeoutTracker {
 
     private long endtime;
+    private long delay;
 
     /**
      * Start tracking the time for a timeout
+     * A delay of -1 or less means 'forever'
      * @param delay delay in milliseconds
      */
     public TimeoutTracker(long delay) {
-        endtime= System.currentTimeMillis()+delay;
+        this.delay = delay;
+        endtime = System.currentTimeMillis() + delay;
     }
 
     /**
      * Test for timed out-ness
+     *
      * @return true iff the current time is greater than th end time,
      */
     public boolean isTimedOut() {
-        return System.currentTimeMillis()>endtime;
+        return delay>=0 && System.currentTimeMillis() > endtime;
     }
 }
