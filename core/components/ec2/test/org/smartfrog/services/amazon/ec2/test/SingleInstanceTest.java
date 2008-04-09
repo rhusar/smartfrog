@@ -33,11 +33,14 @@ public class SingleInstanceTest extends DeployingTestBase {
         super(name);
     }
 
-    public void testCreateBadImageType() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateBadImageType");
+    public void testValidateLogin() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testValidateLogin");
+    }
+    public void NotestCreateAndSelfTerminateInstance() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testCreateAndSelfTerminateInstance");
+    }
+    public void NotestCreateInstance() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testCreateInstance");
     }
 
-    public void NotestKillInstances() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testKillInstances");
-    }
 }

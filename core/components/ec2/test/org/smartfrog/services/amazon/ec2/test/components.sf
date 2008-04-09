@@ -41,7 +41,6 @@ ExpectTerminatingService extends  ExpectDeployOnEC2 {
   expectTerminate true;
   exitType EXIT_TYPE_NORMAL;
   action DeployedService;
-
 }
 
 
@@ -53,6 +52,7 @@ ListMyImages extends ListEC2Images {
 
 ListMyInstances extends ListInstances {
   sfShouldTerminate true;
+  timeout test.ec2.startup.delay;
   id login;
 }
 
@@ -65,7 +65,45 @@ StartupDelay extends Delay {
   time test.sleep.delay;
 }
 
+WaitForEC2 extends FailingWaitFor {
+  target TBD;
+  interval 100;
+  timeout test.ec2.startup.delay;
+  message "target component did not complete its work"
 
+  condition extends IsWorkCompleted {
+    target PARENT:target;
+  }
+}
+
+ValidateLogin extends ValidateEC2Settings {
+  sfShouldTerminate false;
+  id login;
+  delay 1000;
+  simulateFailure false;
+}
+
+
+testValidateLogin extends  ExpectDeployedService  {
+  description "validate our login";
+  action:service extends ValidateLogin  {
+    key LAZY authentication;
+  }
+
+  tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+      timeout 30000;
+    }
+ }
+}
+
+testValidateLoginSimulatedFailure extends  testValidateLogin  {
+  expectTerminate true;
+  exitType EXIT_TYPE_ABNORMAL;
+  description "simulate a failure when validating our login";
+  action:service:simulateFailure true;
+}
 
 testListEC2Images extends  ExpectTerminatingService  {
   description "list the EC2 images available to our login";
@@ -123,8 +161,29 @@ testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
 
 
 
-testCreateInstance extends ExpectDeployOnEC2 {
-  description "create a real instance" ;
+testCreateAndSelfTerminateInstance extends ExpectDeployOnEC2 {
+  description "create a real instance and terminate it" ;
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       sfShouldTerminate false;
+       shutdown true;
+       id login;
+       imageID test.ec2.image.id;
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
+ tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+    }
+ }
+}
+
+testCreateInstance extends testCreateAndSelfTerminateInstance {
+  description "create an instance and run tests over it" ;
 
   action extends DeployedService {
     service extends ImageInstance {
@@ -136,21 +195,18 @@ testCreateInstance extends ExpectDeployOnEC2 {
     };
   }
 
- tests extends Sequence {
-    -- StartupDelay;
- }
 
-  Notests extends Sequence {
-    -- StartupDelay;
+  tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+    }
 
-/*
-    instancesWithWrongID extends ListMyInstances  {
+/*    instancesWithWrongID extends ListMyInstances  {
         description "expect to find no images when the ID is wrong";
         imageID  BAD_IMAGE_ID;
         maxCount 0;
         key LAZY action:authentication;
-    }
-*/
+    }*/
 
     //assert that an instance is live
     Instances extends ListMyInstances  {
@@ -165,16 +221,12 @@ testCreateInstance extends ExpectDeployOnEC2 {
     }
 
 
-    instancesWithExplicitInstances extends Instances  {
-        description "test the instance attribute for validity";
-        instances [LAZY action:service:instance];
-    }
-
 
     instancesWithExplicitInstancesWrongImageID extends Instances  {
         description "expect to find no images when the ID is wrong, even with a list of instances";
         imageID  BAD_IMAGE_ID;
         maxCount 0;
+        minCount 0;
         instances LAZY action:service:instances;
     }
 
@@ -184,24 +236,26 @@ testCreateInstance extends ExpectDeployOnEC2 {
     }
 
 
-    killBadID extends KillMyInstances {
+/*    killBadID extends KillMyInstances {
         description "nothing is killed if the image ID is wrong";
         imageID  BAD_IMAGE_ID;
         maxCount 0;
         key LAZY action:authentication;
-    }
+    }*/
 
+/*
     killBadIDandInstances extends killBadID {
         description "the instances are irrelevant if the image ID is wrong";
         instances LAZY action:service:instances;
     }
-
+*/
+/*
     killWrongState extends kill {
         description "with the wrong state, there is nothing to kill";
         maxCount 0;
         minCount 0;
         state "not-valid-state";
-    }
+    }*/
 
     kill extends KillMyInstances {
         minCount 1;

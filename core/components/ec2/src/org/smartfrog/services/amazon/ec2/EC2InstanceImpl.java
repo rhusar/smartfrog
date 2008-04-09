@@ -45,11 +45,27 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
     private boolean shutdown;
     private String userData;
     private ReservationDescription reservation;
-    private String instanceID;
+    //minimum number of instances
+    private int minCount;
+    //max number
+    private int maxCount;
     private InstanceList instances = InstanceList.EMPTY_LIST;
     private final Object reservationComplete = new Object();
+    /**
+     * Error message: {@value}
+     */
     public static final String ERROR_NO_IMAGE = "No image to deploy";
+    /**
+     * Error message: {@value}
+     */
     public static final String ERROR_UNRECOGNISED_IMAGE_TYPE = "Unrecognised image type: ";
+
+    /**
+     * switch to turn EC2 support off. Used when getting workflow right {@value}
+     */
+    private static final boolean EC2_ENABLED = true;
+    public static final String WARNING_THE_WORKER_IS_STILL_BUSY =
+            "Warning: the worker is still busy -the request to create instances may still be active";
 
 
     public EC2InstanceImpl() throws RemoteException {
@@ -62,10 +78,12 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-
+        minCount = sfResolve(ATTR_MIN_COUNT, 0, true);
+        maxCount = sfResolve(ATTR_MAX_COUNT, 0, true);
         instanceType = sfResolve(ATTR_INSTANCETYPE, "", true);
         imageID = sfResolve(ATTR_IMAGEID, "", true);
         userData = sfResolve(ATTR_USER_DATA, "", true);
@@ -82,30 +100,37 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
+        if (shutdown) {
+            terminateDeployedInstances();
+        }
         super.sfTerminateWith(status);
+    }
+
+    /**
+     * Terminate any deployed instances
+     */
+    protected void terminateDeployedInstances() {
         InstanceList list = instances;
-        if (shutdown && list != null) {
+        if (list != null) {
             try {
+                sfLog().info("About to terminate "+list.size()+" instances");
                 List<TerminatingInstanceDescription> tid = list.terminate();
                 logTerminationInfo(tid);
             } catch (EC2Exception e) {
                 sfLog().warn("When terminating", e);
+            }
+        } else {
+            sfLog().info("No instances to terminate");
+            if(getWorker()!=null) {
+                sfLog().warn(WARNING_THE_WORKER_IS_STILL_BUSY);
             }
         }
     }
 
     protected void reserve(ReservationDescription reservationInfo) {
         reservation = reservationInfo;
-        ImageInstance instance = getInstance();
-        instanceID = instance.getImageId();
-    }
-
-    protected synchronized ImageInstance getInstance() {
-        if (instances != null) {
-            return instances.get(0);
-        }
-        return null;
     }
 
     /**
@@ -119,6 +144,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
         sfReplaceAttribute(ATTR_INSTANCE, getId());
         sfReplaceAttribute(ATTR_INSTANCES, instances.listInstanceIDs());
         logInstances(instances);
+        workCompleted();
         //notify anything listening
         synchronized (reservationComplete) {
             reservationComplete.notifyAll();
@@ -147,6 +173,7 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             InstanceType size = InstanceType.getTypeFromString(instanceType);
             if (size == null) {
@@ -154,40 +181,55 @@ public class EC2InstanceImpl extends EC2ComponentImpl implements EC2Instance {
                         ERROR_UNRECOGNISED_IMAGE_TYPE + instanceType);
             }
             sfLog().info("Deploying a " + instanceType + " image ID " + imageID);
-/*            try {
-                reservation = getEc2binding().runInstances(
-                        imageID,
-                        1,
-                        1,
-                        null,
-                        userData,
-                        null,
-                        true,
-                        size);
-                sfLog().info("Reserved an instance:" + reservation);
-                instances = InstanceList.listInstances(getEc2binding(), reservation);
+            if (EC2_ENABLED) {
+                try {
+                    reservation = getEc2binding().runInstances(
+                            imageID,
+                            minCount,
+                            maxCount,
+                            null,
+                            userData,
+                            null,
+                            true,
+                            size);
+                    sfLog().info("Reserved an instance:" + reservation);
+                    instances = InstanceList.listInstances(getEc2binding(), reservation);
 
-            } catch (EC2Exception e) {
-                throw new SmartFrogEC2Exception("Failed to reserve an instance of " + imageID + " on " + instanceType,
-                        e);
-            }*/
+                } catch (EC2Exception e) {
+                    throw new SmartFrogEC2Exception("Failed to reserve an instance of " +
+                            imageID +
+                            " on " +
+                            instanceType,
+                            e);
+                }
+            } else {
+                sfLog().info("Skipping EC2 deployment as it has been disabled");
+            }
             reservationCompleted();
         }
 
-
-    }
-
-    private class Ec2ConsoleThread extends WorkflowThread {
-
         /**
-         * Create a basic thread. Notification is bound to a local notification
-         * object.
+         * decide whether we passed or failed based on the termination record
          *
-         * @param workflowTermination is workflow termination expected
+         * @param tr the termination record about to be passed up
          */
-        private Ec2ConsoleThread(boolean workflowTermination) {
-            super(EC2InstanceImpl.this, workflowTermination);
+        @Override
+        protected void aboutToTerminate(TerminationRecord tr) {
+            workCompleted(tr.getCause());
         }
     }
 
-}
+        private class Ec2ConsoleThread extends WorkflowThread {
+
+            /**
+             * Create a basic thread. Notification is bound to a local notification
+             * object.
+             *
+             * @param workflowTermination is workflow termination expected
+             */
+            private Ec2ConsoleThread(boolean workflowTermination) {
+                super(EC2InstanceImpl.this, workflowTermination);
+            }
+        }
+
+    }

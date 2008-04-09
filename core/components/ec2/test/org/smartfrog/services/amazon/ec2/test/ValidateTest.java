@@ -25,43 +25,16 @@ import org.smartfrog.test.DeployingTestBase;
  * Created 30-Nov-2007 16:46:45
  */
 
-public class EC2CreateInstancesTest extends DeployingTestBase {
+public class ValidateTest extends DeployingTestBase {
 
     public static final String FILES = "/org/smartfrog/services/amazon/ec2/test/";
 
-    public EC2CreateInstancesTest(String name) {
+    public ValidateTest(String name) {
         super(name);
     }
 
     public void testValidateLogin() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testValidateLogin");
     }
-    
-    public void testCreateAndSelfTerminateInstance() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateAndSelfTerminateInstance");
-    }
 
-    public void testCreateInstance() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateInstance");
-    }
-
-    public void testListInstances() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testListInstances");
-    }
-
-    public void testKillInstances() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testKillInstances");
-    }
-
-    public void testCreateBadInstance() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateBadInstance");
-    }
-
-    public void testCreateEmptyImage() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateEmptyImage");
-    }
-
-    public void testCreateBadImageType() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testCreateBadImageType");
-    }
 }

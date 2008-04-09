@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.Jec2;
+import org.smartfrog.services.assertions.events.TimeoutTracker;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
@@ -44,7 +45,10 @@ public class ListInstancesImpl extends EC2ComponentImpl
     //max number
     private int maxCount;
     private String state;
-
+    //time in millis to wait until the minCount has been reached. -1 means forever, 0 for never
+    private int timeout;
+    //polling frequency.
+    private int pollInterval;
 
     public ListInstancesImpl() throws RemoteException {
     }
@@ -57,6 +61,7 @@ public class ListInstancesImpl extends EC2ComponentImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -65,6 +70,8 @@ public class ListInstancesImpl extends EC2ComponentImpl
         maxCount = sfResolve(ATTR_MAX_COUNT, 0, true);
         imageID = sfResolve(ATTR_IMAGEID, "", true);
         state = sfResolve(ATTR_STATE, "", true);
+        timeout = sfResolve(ATTR_TIMEOUT, 0, true);
+        pollInterval = sfResolve(ATTR_POLL_INTERVAL, 0, true);
         createAndDeployWorker();
     }
 
@@ -78,7 +85,6 @@ public class ListInstancesImpl extends EC2ComponentImpl
      * instances at info level then checks the number of instances found.
      *
      * @param instanceList instances
-     *
      * @throws SmartFrogException for any SF exception
      * @throws RemoteException for networking problems
      */
@@ -92,7 +98,6 @@ public class ListInstancesImpl extends EC2ComponentImpl
      * Check that the instance count is in range
      *
      * @param instanceList list of instances
-     *
      * @throws SmartFrogDeploymentException if the count is too high or low
      */
     protected void checkInstanceCount(List<ImageInstance> instanceList)
@@ -106,6 +111,19 @@ public class ListInstancesImpl extends EC2ComponentImpl
             throw new SmartFrogDeploymentException(
                     "Too many instances deployed, expecting " + maxCount + " but found " + count);
         }
+    }
+
+    /**
+     * Do whatever is needed to delay for the next poll
+     * @return true if the delay should finish
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException network problems
+     * @throws InterruptedException if the thread got interrupted; this is interpreted as an exit
+     */
+    protected boolean delayForNextPoll()
+            throws SmartFrogException, RemoteException, InterruptedException {
+        Thread.sleep(pollInterval);
+        return false;
     }
 
     /**
@@ -130,12 +148,29 @@ public class ListInstancesImpl extends EC2ComponentImpl
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             Jec2 binding = getEc2binding();
-            InstanceList instanceList = InstanceList.describeInstances(binding,
+            TimeoutTracker tracker=new TimeoutTracker(timeout);
+            InstanceList instanceList=null;
+            boolean finished=false;
+            while(!finished) {
+                instanceList = InstanceList.describeInstances(binding,
                     instances,
                     imageID,
                     state);
+                boolean overMinimum=instanceList.size()>minCount;
+                finished = overMinimum || tracker.isTimedOut();
+                if(!finished) {
+                    //not finished, so let's poll
+                    if(delayForNextPoll()) {
+                        //the delay process said it is time to exit, but not
+                        //bail out with an interrupted thread
+                        break;
+                    }
+                }
+            }
+            //hand off to the implementation or subclass
             processInstanceList(instanceList);
         }
 
