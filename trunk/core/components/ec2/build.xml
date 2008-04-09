@@ -38,8 +38,12 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="system.tests" value="false"/>
-
-
+  <!--very long test timeout to allow for startup delays-->
+  <property name="test.timeout.execute" value="120000" />
+  <property name="test.timeout.startup" value="${test.timeout.execute}" />
+  <property name="application.name" value="ec2-demo" />
+  <property name="deploy.sf" value="demo.sf" />
+  
 
   <echo
       message="==================================================================="/>

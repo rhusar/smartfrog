@@ -37,6 +37,11 @@ ImageInstance extends AwsAuthorizedWorkflowService {
   //user data
   userData "";
 
+  //minimum number of instances
+  minCount 1;
+  //max number
+  maxCount 1;
+
   //set on deployment.
   //instance
   //instances []
@@ -60,6 +65,11 @@ ListInstances extends AwsAuthorizedWorkflowService {
   minCount -1;
   //max number
   maxCount -1;
+
+  //time in millis to wait until the minCount has been reached. -1 means forever, 0 for never
+  timeout 30000;
+  //polling frequency.
+  pollInterval 1000;
 
   state STATE_ANY;
 

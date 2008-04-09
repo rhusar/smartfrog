@@ -21,12 +21,15 @@ package org.smartfrog.services.amazon.ec2;
 
 import com.xerox.amazonws.ec2.Jec2;
 import com.xerox.amazonws.ec2.TerminatingInstanceDescription;
+import org.smartfrog.services.amazon.workflow.CompletableWork;
 import org.smartfrog.services.passwords.PasswordHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogExtractedException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -36,13 +39,15 @@ import java.util.List;
  * Created 25-Mar-2008 13:36:29
  */
 
-public class EC2ComponentImpl extends PrimImpl implements EC2Component {
+public class EC2ComponentImpl extends PrimImpl implements EC2Component, CompletableWork {
 
     private Jec2 ec2binding;
     private String id;
     private String key;
     protected static final ArrayList<String> EMPTY_ARGUMENTS = new ArrayList<String>();
     private SmartFrogThread worker;
+    private Throwable workException;
+    private volatile boolean workCompleted;
 
     public EC2ComponentImpl() throws RemoteException {
     }
@@ -55,6 +60,7 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -64,11 +70,29 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
     }
 
     /**
+     * Liveness call in to check if this component is still alive.
+     * Any work exception gets forwarded up here.
+     * @param source source of call
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException for consistency with the {@link Liveness}
+     * interface
+     */
+    @Override
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        Throwable ex = workException;
+        if (ex != null) {
+            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(ex);
+        }
+    }
+
+    /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         terminateWorker();
@@ -84,6 +108,52 @@ public class EC2ComponentImpl extends PrimImpl implements EC2Component {
             worker = null;
         }
         SmartFrogThread.requestThreadTermination(thread);
+    }
+
+    /**
+     * record that the work has completed. If an exception
+     * is passed in, assume the work failed
+     * @param exception an optional exception.
+     */
+    protected synchronized void workCompleted(Throwable exception) {
+        workCompleted = true;
+        workException = SmartFrogExtractedException.convert(exception);
+    }
+
+    /**
+     * record that the work has completed.
+     */
+    protected void workCompleted() {
+        workCompleted(null);
+    }
+
+    /**
+     * Poll point for work being completed
+     *
+     * @return true if the work is completed
+     */
+    public boolean isWorkCompleted() {
+        return workCompleted;
+    }
+
+    /**
+     * Poll for the work being successful.
+     * This is defined as the exception being null
+     *
+     * @return true if nothing went wrong and we have completed
+     */
+    public synchronized boolean isWorkSuccessful() {
+        return workCompleted && workException==null;
+    }
+
+    /**
+     * Return any exception raised when the work failed.
+     * If this is non-null, then isWorkSuccessful() must be false
+     *
+     * @return an exception or null
+     */
+    public Throwable getWorkException() {
+        return workException;
     }
 
     /**

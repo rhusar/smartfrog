@@ -24,4 +24,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/amazon/ec2/listimages.sf"
 #include "/org/smartfrog/services/amazon/ec2/instance.sf"
 #include "/org/smartfrog/services/amazon/ec2/errors.sf"
+#include "/org/smartfrog/services/amazon/ec2/validate.sf"
 

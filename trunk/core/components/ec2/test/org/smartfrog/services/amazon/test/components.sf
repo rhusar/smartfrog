@@ -19,11 +19,11 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/passwords/components.sf"
-
+#include "/org/smartfrog/services/amazon/workflow/components.sf"
 
 bucket "smartfrogtest";
 login PROPERTY test.awsid;
-password PROPERTY test.awskey
+password PROPERTY test.awskey;
 timeout 10;
 
 bucketHost (bucket ++ ".s3.amazonaws.com");
@@ -33,6 +33,7 @@ test.awsid "test.awsid";
 test.awskey "test.awskey";
 test.ec2.image.id "ami-26b6534f";
 test.sleep.delay 1000;
+test.ec2.startup.delay 30000;
 
 
 /*
