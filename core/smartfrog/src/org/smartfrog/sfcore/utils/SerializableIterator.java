@@ -61,7 +61,7 @@ public class SerializableIterator<T> implements Iterator<T>, Iterable<T>, Serial
 
     /**
      * Build from an array
-     * @param source
+     * @param source source array
      */
     public SerializableIterator(T[] source) {
         elements = new Object[source.length];
