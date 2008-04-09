@@ -433,6 +433,18 @@ public class Reference implements Copying, Cloneable, Serializable {
     public ReferencePart removeElement(int index) {
         return (ReferencePart)ref.remove(index);
     }
+
+    /**
+     * Removes the last reference part.
+     * Returns the reference part removed.
+     *
+     * @return the reference part removed.
+     */
+
+    public ReferencePart removeLastElement() {        
+        return (ReferencePart)ref.remove(ref.size()-1);
+    }
+
     
     /**
      * Resolves this reference using the given reference resolver, and starting
