@@ -17,19 +17,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/services/dependencies/examples/manents.sf"
+package org.smartfrog.services.dependencies.examples;
 
-sfConfig extends Compound {
-   tester extends Prim {
-      sfClass "org.smartfrog.services.dependencies.examples.TestManagedEntities";
-      sfExport false;
-   }
-   test extends ManagedEntities{
-      sfExport false;
-   }
-   output extends Function {
-      sfFunctionClass "org.smartfrog.services.dependencies.examples.TestManagedEntitiesTerminate"; 
-      gettester LAZY tester;
-   };
+import org.smartfrog.sfcore.languages.sf.functions.BaseFunction;
+
+public class TestManagedEntitiesTerminate extends BaseFunction {
+	
+    protected Object doFunction() {
+    	TestManagedEntities tme = (TestManagedEntities) context.get("gettester");
+    	tme.waitForTerminate();  
+        return tme.getOutput();
+    }
 }
