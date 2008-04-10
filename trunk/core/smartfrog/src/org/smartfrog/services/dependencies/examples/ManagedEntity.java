@@ -37,8 +37,7 @@ public class ManagedEntity extends ThreadedState implements Prim {
 		HashMap save = new HashMap();
 		
 		boolean created = ((Boolean) data.get("created")).booleanValue();
-		boolean createdprev = ((Boolean) data.get("createdprev")).booleanValue();
-		boolean removedsucc = ((Boolean) data.get("removedsucc")).booleanValue();
+		boolean sink = ((Boolean) data.get("sink")).booleanValue();
 		String name = (String) data.get("name");
 		
 		//For test...
@@ -47,21 +46,19 @@ public class ManagedEntity extends ThreadedState implements Prim {
 		try { 
 			parent = sfParent().sfContext();
 			cur_output = (String) parent.get("output"); 
-		} catch(Exception e){} 
-		
-		if (parent!=null) System.out.println(""+parent);
+		} catch(Exception e){} 		
 		//
 		
-		if (createdprev && !created) {
+		if (!created) {
 			System.out.println(name+" setting created to true");
 			save.put("created", true);
 			
 			//For test
 			cur_output+=(name+"c");
 			//
-		}
+		} 
 		
-		if (removedsucc) {
+		if (created || sink) {
 			System.out.println(name+" setting removed to true");
 			save.put("removed", true);
 			
