@@ -101,11 +101,19 @@ public class AttributeWrapper implements Restful
 	public void doGet(HttpRestRequest restRequest, HttpRestResponse restResponse)
 			throws MethodNotSupportedException, RemoteException, RestException
 	{
-	Document xmlResponse = getXMLRepresentation();
+		String responseType = restRequest.getresponseType();
+		if (responseType == null || responseType.equals("XML")) {
+			Document xmlResponse = getXMLRepresentation();
 
-		restResponse.setContentType(XmlConstants.APPLICATION_XML);
-		restResponse.setContentLength(xmlResponse.toXML().length());
-		restResponse.setContents(xmlResponse.toXML().getBytes());
+			restResponse.setContentType(XmlConstants.APPLICATION_XML);
+			restResponse.setContentLength(xmlResponse.toXML().length());
+			restResponse.setContents(xmlResponse.toXML().getBytes());
+		} else if (responseType.equals("HTML")){
+			String result = getHTMLRepresentation();
+			restResponse.setContentType("text/html");
+			restResponse.setContentLength(result.length());
+			restResponse.setContents(result.getBytes());
+		}
 	}
 
 	public void doPost(HttpRestRequest restRequest, HttpRestResponse restResponse)
@@ -215,6 +223,30 @@ public class AttributeWrapper implements Restful
 		return new Document(root);
 	}
 
+	public String getHTMLRepresentation() throws RemoteException
+	{
+		
+
+		String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
+				restRequest.getServerPort() + restRequest.getRequestURI();
+				//restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
+
+		String resourceType = (result.getSubject() instanceof Reference) ? "reference" : "attribute";
+
+		String out = "<html> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"resourceTable\" id=\"resourceTable\" width=\"100%\">";
+	 	out = out + "<caption bgcolor=\"darkblue\"><h2>Resources for <a href=" + resourceLink+ "?responseType=HTML>" +  restRequest.getTargetResourceName() + "</a> " + resourceType + "</h2></caption></table>";        
+		out = out + " <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"subresourceTable\" id=\"subresourceTable\" width=\"70%\">";
+		out = out + "<tr class=\"captionRow\" bgcolor=\"lightblue\">  <td>Resource Name</td>  <td>Type</td> <td>Class</td> <td>Link</td> <td>Value</td>	</tr>";
+		out = out + "<tr bgcolor=\"lightyellow\">";
+	    	out = out + "<td>" + restRequest.getTargetResourceName() + "</a></td>";
+	    	out = out + "<td>"+  resourceType + "</td>";
+	    	out = out + "<td>" + result.getSubject().getClass().getName() + "</td>";
+	    	out = out + "<td>" + resourceLink + "</td>";
+	    	out = out + "<td>" + result.getSubject().toString() + "</td>";
+		out = out + "</tr>";
+		out = out + "</table></html>";
+		return out;
+	}
 
 	private final Object owner; 
 	private final Context ownerContext;
