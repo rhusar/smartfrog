@@ -10,7 +10,7 @@ sfConfig extends Compound {
       sfExport false;
    }
    output extends Function {
-      sfFunctionClass "org.smartfrog.services.dependencies.examples.TestManagedEntitiesTerminate"; 
+      sfFunctionClass "org.smartfrog.services.dependencies.examples.TestManagedEntities.TestManagedEntitiesTerminate"; 
       gettester LAZY tester;
    };
 }
