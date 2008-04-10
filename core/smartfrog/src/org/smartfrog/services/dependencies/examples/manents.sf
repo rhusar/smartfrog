@@ -26,8 +26,7 @@ ManagedEntity extends State {
 
    [stateData, stateNotify] created false;
    [stateData, stateNotify] removed false;
-   [stateListen, stateData] createdprev true;
-   [stateListen, stateData] removedsucc true;
+   [stateData] sink false;
    [stateData] name "default";
 }
 
@@ -45,24 +44,25 @@ ManagedEntities extends Model {
    run true;
 
    foo0 extends ManagedEntity{
+      [stateListen] -- LAZY foo1:removed;  
       name "foo0";
-      removedsucc LAZY foo1:removed;  
    }
 
    foo1 extends ManagedEntity{
+      [stateListen] -- LAZY foo2:removed;  
+      [stateListen] -- LAZY foo0:created;  
       name "foo1";
-      createdprev LAZY foo0:created;
-      removedsucc LAZY foo2:removed;
    }
    
    foo2 extends ManagedEntity{
+      [stateListen] -- LAZY foo1:created;  
+      sink true;
       name "foo2";
-      createdprev LAZY foo1:created; 
    }
 
    finished extends ModelTerminator {
       required LAZY foo0:removed;
-      detachfirst true;
+      detachfirst true;  //remove
    }
    
    foo0Created extends createdDependency {
