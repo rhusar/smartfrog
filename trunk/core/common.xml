@@ -197,6 +197,14 @@
 
   </target>
 
+  <target name="print-proxy-settings" depends="init">
+    <echo>Proxy:
+      http:  ${http.proxyHost}:${http.proxyPort}
+      https: ${https.proxyHost}:${https.proxyPort}
+    </echo>
+  </target>
+
+
 <!--
   This is a bit of a legacy; in a pure ivy build we should not need it.
   Instead we'd work out our version from whichever copy of smartfrog we found
@@ -543,7 +551,7 @@ java.class.path=
       </javadoc>
     </presetdef>
 
-    <!-- turn off javadocu-->
+    <!-- turn off javadocs-->
     <condition property="javadoc.disabled">
       <resourcecount when="equal" count="0" >
         <fileset dir="${src.dir}" includes="**/*.java" />
@@ -918,7 +926,7 @@ java.class.path=
     for our needs -->
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks">
+      depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -934,7 +942,7 @@ java.class.path=
     </presetdef>
 
     <presetdef name="sf-gui-debug">
-      <sf-gui classpathref="run.classpath"
+      <sf-gui classpathref="tests.run.classpath"
         logStackTraces="true" spawn="true">
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -946,7 +954,7 @@ java.class.path=
     </presetdef>
 
     <presetdef name="sf-console-debug">
-      <sf-management-console classpathref="run.classpath"
+      <sf-management-console classpathref="tests.run.classpath"
         logStackTraces="true" >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -1448,7 +1456,9 @@ java.class.path=
         timeout="30000"
         >
       <codebase url="${codebase}"/>
-
+      <syspropertyset>
+        <propertyref prefix="test."/>
+      </syspropertyset>
       <application name="${application.name}">
         sfCodeBase PROPERTY org.smartfrog.codebase;
         #include "/${deploy.sf}"
@@ -1487,7 +1497,7 @@ java.class.path=
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
-            <!--all properties beginning with test and runtime, and the codebase-->
+            <!--all properties beginning with test-->
             <syspropertyset>
               <propertyref prefix="test."/>
             </syspropertyset>
