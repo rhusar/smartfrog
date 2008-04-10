@@ -21,7 +21,6 @@
 
 package org.smartfrog.test.system.dependencies;
 
-import org.smartfrog.services.dependencies.examples.WaitToFinish;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.test.DeployingTestBase;
