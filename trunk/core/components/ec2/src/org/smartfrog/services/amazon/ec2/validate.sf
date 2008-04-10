@@ -25,7 +25,7 @@
  */
  
 ValidateEC2Settings extends AwsAuthorizedWorkflowService {
-  sfClass "org.smartfrog.services.amazon.ec2.EC2ValidateSettingsImpl";
+  sfClass "org.smartfrog.services.amazon.ec2.ValidateEC2SettingsImpl";
   sfShouldTerminate true;
   delay 0;
   simulateFailure false;
