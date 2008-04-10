@@ -72,7 +72,6 @@ public class ManagedEntity extends ThreadedState implements Prim {
 		
 		//For test
 		parent.put("output",cur_output); 
-		if (parent!=null) System.out.println(""+parent);
 		//
 		
 		return save;
