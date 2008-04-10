@@ -205,6 +205,7 @@ public class HttpRestRequest implements Serializable
 		// followReferences, for GET requests, should we transparently resolve through references
 		param = servletRequest.getParameter("followReferences");
 		followReferences = ((param == null) || (param.length()==0)) || Boolean.valueOf(param).booleanValue();
+		responseType = servletRequest.getParameter("responseType");
 	}
 
 	/**
@@ -439,6 +440,17 @@ public class HttpRestRequest implements Serializable
 	}
 
 	/**
+	 * Ascertains whether the response should be in HTML format or XML format.
+	 * Associated with the 'responseType' request parameter.
+	 *
+	 * @return <code>HTML</code> if HTML fromat is desired, <code>XML</code> if XML format is desired.
+	 */
+	public String getresponseType()
+	{
+		return responseType;
+	}
+
+	/**
 	 * Returns the host name of the target SmartFrog Daemon specified in this request
 	 *
 	 * @return A string containing the name of the SmartFrog Daemon targetted by this request.
@@ -605,6 +617,7 @@ public class HttpRestRequest implements Serializable
 	// members for SmartFrog REST information
 	private final boolean	expandAll;
 	private final boolean	followReferences;
+	private String	responseType = null;
 	private final String	targetHost;
 	private final int		targetPort;
 	private  String[] 	resourcePath = new String[]{};
