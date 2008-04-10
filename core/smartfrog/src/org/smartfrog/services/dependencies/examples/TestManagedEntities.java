@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public class TestManagedEntities extends CompoundImpl implements Compound {		
 	public TestManagedEntities() throws RemoteException {super();}  
 
-	///CHECK SYNC...
 	public synchronized void waitForTerminate(){
 		try { 
 			if (!sfIsTerminating()) wait(); 
