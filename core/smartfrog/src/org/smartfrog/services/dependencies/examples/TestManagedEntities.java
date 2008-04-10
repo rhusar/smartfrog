@@ -48,13 +48,4 @@ public class TestManagedEntities extends CompoundImpl implements Compound {
 		super.sfTerminateWith(tr);
 		notifyAll();
 	}
-
-	static public class TestManagedEntitiesTerminate extends BaseFunction {
-		
-	    protected Object doFunction() {
-	    	TestManagedEntities tme = (TestManagedEntities) context.get("gettester");
-	    	tme.waitForTerminate();  
-	        return tme.getOutput();
-	    }
-	}
 }
