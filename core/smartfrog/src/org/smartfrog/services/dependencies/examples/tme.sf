@@ -1,6 +1,16 @@
+#include "org/smartfrog/functions.sf"
 #include "org/smartfrog/services/dependencies/examples/manents.sf"
 
 sfConfig extends Compound {
-   sfClass "org.smartfrog.services.dependencies.examples.TestManagedEntities";
-   test extends ManagedEntities;
+   tester extends Prim {
+      sfClass "org.smartfrog.services.dependencies.examples.TestManagedEntities";
+      sfExport false;
+   }
+   test extends ManagedEntities{
+      sfExport false;
+   }
+   output extends Function {
+      sfFunctionClass "org.smartfrog.services.dependencies.examples.TestManagedEntitiesTerminate"; 
+      gettester LAZY tester;
+   };
 }
