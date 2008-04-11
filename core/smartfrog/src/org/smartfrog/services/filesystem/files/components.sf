@@ -69,4 +69,6 @@ Files extends Prim {
   fileCount -1;
   minFileCount -1;
   maxfileCount -1;
+  //fileSet; //created at runtime
+  //fileSetString; //created at runtime and using local platform path.separator
 }

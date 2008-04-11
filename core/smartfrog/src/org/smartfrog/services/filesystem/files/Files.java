@@ -38,6 +38,16 @@ public interface Files extends Remote {
     String ATTR_FILES="files";
 
     /**
+     * Fileset attribute:  {@value}
+     */
+    String ATTR_FILE_SET="fileSet";
+
+    /**
+     * FileSetString attribute:  {@value}
+     */
+    String ATTR_FILE_SET_STRING="fileSetString";
+
+    /**
      * SF component attribute {@value}
      */
     String ATTR_DIR = "dir";
