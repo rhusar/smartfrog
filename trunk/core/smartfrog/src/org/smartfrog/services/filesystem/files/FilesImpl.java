@@ -21,10 +21,7 @@ package org.smartfrog.services.filesystem.files;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
@@ -60,11 +57,15 @@ public class FilesImpl extends PrimImpl implements Files {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    public synchronized void sfStart()
+    public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
-        super.sfStart();
+        super.sfDeploy();
         fileset = resolveFileset(this);
         checkAndUpdateFileCount(this,fileset);
+        //CreateRuntime Attributes
+        sfAddAttribute(ATTR_FILE_SET,fileset);
+        sfAddAttribute(ATTR_FILE_SET_STRING,fileset.toString());
+
     }
 
     /**

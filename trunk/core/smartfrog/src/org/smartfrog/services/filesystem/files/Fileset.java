@@ -141,9 +141,7 @@ public class Fileset implements Serializable {
                     null);
             //no files, so resolve everything else
             String pattern = component.sfResolve(patternAttribute, "", true);
-            boolean caseSensitive = component.sfResolve(caseAttribute,
-                    true,
-                    true);
+            boolean caseSensitive = component.sfResolve(caseAttribute, true, true);
             boolean includeHiddenFiles = component.sfResolve(
                     hiddenAttribute,
                     true,
@@ -154,5 +152,16 @@ public class Fileset implements Serializable {
                     caseSensitive);
             return new Fileset(baseDir, filter);
         }
+    }
+
+    /**
+     * Returns a list of files in String format using the platform file separator.
+     * @return
+     */
+    public String toString() {
+          String fileSetString = java.util.Arrays.toString(listFiles());
+          fileSetString = fileSetString.substring(1,fileSetString.length()-1);
+          fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
+          return (fileSetString);
     }
 }
