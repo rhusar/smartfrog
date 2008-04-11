@@ -1284,9 +1284,9 @@ public class ProcessCompoundImpl extends CompoundImpl
             SmartFrogResolutionException {
         Boolean replace;
         // Should we replace or overwrite?
-        replace = ((Boolean) cd.sfResolveHere(replaceBoolKey, false));
+        replace = ((Boolean) cd.sfResolve(replaceBoolKey, false));
         if (replace == null) {
-            replace = ((Boolean) sfResolveHere(replaceBoolKey, false));
+            replace = ((Boolean) sfResolveHere (replaceBoolKey, false));
         }
         //by default add, not replace
         if (replace == null) {
@@ -1294,16 +1294,19 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
-        String cdClasspath = (String) cd.sfResolveHere(attributeKey, false);
+        String cdClasspath = (String) cd.sfResolve(attributeKey, false);
+
         //This will read the system property for org.smartfrog.sfcore.processcompound.NAME. + key
         String envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
                 + SmartFrogCoreKeys.SF_PROCESS_NAME
                 + attributeKey, null);
 
         //General description for process compound
-        String pcClasspath = (String) sfResolveHere(attributeKey, false);
+        String pcClasspath = (String) sfResolveHere (attributeKey, false);
+
         //Takes previous process classpath (rootProcessClassPath)
         String sysClasspath = SFSystem.getProperty(sysPropertyKey, null);
+
         String res=defVal;
         if (replace.booleanValue()) {
             if (cdClasspath != null) {
