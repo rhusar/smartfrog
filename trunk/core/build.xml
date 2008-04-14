@@ -495,8 +495,8 @@ For more information: www.smartfrog.org
           <exclude name="vmware/build.xml" unless="java1.6+"/>
           <exclude name="ec2/build.xml" unless="java1.6+"/>
 
-          <!--Not yet funcational -->
-          <exclude name="rpmtools/build.xml" />
+          <!--Not yet functional -->
+          <exclude name="hadoop/build.xml" />
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
