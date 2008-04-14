@@ -27,15 +27,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * @author sandya
- *         <p/>
- *         Contains RPM utilities to Install, Un-install and Upgrade RPM packages
+ * @author sandya <p/> Contains RPM utilities to Install, Un-install and Upgrade RPM packages
  */
 public class RPMUtils {
     private LogSF log;
-    private Runtime rt = null;
+    public static final String ERROR_NOT_FOUND = "Not found: ";
+    public static final String ERROR_NOT_A_SIMPLE_FILE = "Not a simple file: ";
 
     /**
      * Constructor which initialises a Runtime object
@@ -44,15 +45,13 @@ public class RPMUtils {
      */
     public RPMUtils(LogSF log) {
         this.log = log;
-        rt = Runtime.getRuntime();
     }
 
     /**
      * Installs the RPM package without any install-options
      *
      * @param rpmPackage - full path of RPM Package to be installed
-     * @return boolean - returns true if Package is installed successfully
-     *         else return false
+     * @return boolean - returns true if Package is installed successfully else return false
      * @throws IOException if an i/o error occurs
      */
     public boolean InstallPackage(String rpmPackage) throws IOException {
@@ -61,13 +60,11 @@ public class RPMUtils {
     }
 
     /**
-     * Installs the RPM package in the install path provided.
-     * Note: Only relocatable RPM packages can use this method.
+     * Installs the RPM package in the install path provided. Note: Only relocatable RPM packages can use this method.
      *
-     * @param rpmPackage - full path of RPM Package to be installed
+     * @param rpmPackage  - full path of RPM Package to be installed
      * @param installPath - location where the package need to be installed
-     * @return boolean - returns true if Package is installed successfully
-     *         else return false
+     * @return boolean - returns true if Package is installed successfully else return false
      * @throws IOException if an i/o error occurs
      */
     public boolean InstallPackage(String rpmPackage, File installPath)
@@ -86,44 +83,22 @@ public class RPMUtils {
     /**
      * Installs RPM Package with the given install-options.
      *
-     * @param rpmPackage - RPM package to be installed
+     * @param rpmPackage     - RPM package to be installed
      * @param installOptions - RPM install options
-     * @return boolean - returns true if Package is installed successfully
-     *         else return false
+     * @return boolean - returns true if Package is installed successfully else return false
      * @throws IOException if i/o error occurs
      */
     public boolean InstallPackage(String rpmPackage, String installOptions)
             throws IOException {
         File rpmFile = new File(rpmPackage);
-        if (!rpmFile.exists()) {
-            log.error("The file " + rpmPackage + " does not exist.");
-            return false;
-        }
-        if (!rpmFile.isFile()) {
-            log.error(rpmPackage + " is not a file");
-            return false;
-        }
-
-        /*
-		// Get the file extension to check if it is .rpm file
-		String fileName = rpmFile.getName();
-        String extn = null;
-        int whereExtn = fileName.lastIndexOf('.');
-        if ( 0 < whereExtn && whereExtn <= fileName.length()-2)
-                extn = fileName.substring(whereExtn+1);
-
-        if (!extn.equals("rpm")) {
-        	log.error("The file " + rpmPackage + " is not RPM file.");
-        	return false;
-        }a
-        */
+        validateFile(rpmFile);
 
         String command = "rpm -i ";
         if (installOptions != null) {
             command = "rpm -i " + installOptions;
         }
 
-        String cmd = command + " " + rpmPackage;
+        String cmd = command + ' ' + rpmPackage;
         boolean error = executeRpmCommand(cmd);
         if (!error) {
             log.info("The RPM package " + rpmPackage + " is successfully installed.");
@@ -136,7 +111,7 @@ public class RPMUtils {
         String line;
         boolean error = false;
         Process p = null;
-        p = rt.exec(cmd);
+        p = Runtime.getRuntime().exec(cmd);
         BufferedReader cmdError = null;
         try {
             cmdError = new BufferedReader(new InputStreamReader(p
@@ -230,27 +205,9 @@ public class RPMUtils {
             throws IOException {
         boolean error;
         File rpmFile = new File(rpmPackage);
-        if (!rpmFile.exists()) {
-            throw new FileNotFoundException("No such file " + rpmFile);
-        }
+        validateFile(rpmFile);
 
-        if (!rpmFile.isFile()) {
-            throw new FileNotFoundException("Not an RPM file " + rpmFile);
-        }
 
-        /*
-        // Get the file extension to check if it is .rpm file
-        String fileName = rpmFile.getName();
-        String extn = null;
-        int whereExtn = fileName.lastIndexOf('.');
-        if ( 0 < whereExtn && whereExtn <= fileName.length()-2)
-                extn = fileName.substring(whereExtn+1);
-
-        if (!extn.equals("rpm")) {
-            log.error("The file " + rpmPackage + " is not RPM file.");
-            return false;
-        }
-        */
 
         String command = "rpm -U ";
         if (upgradeOptions.length() != 0) {
@@ -262,11 +219,69 @@ public class RPMUtils {
 
         if (!error) {
             log.info("The RPM package " + rpmPackage + " is successfully upgraded");
-			return true;
-		}
-		else {
-			return false;
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    /**
+     * Check that an rpm file exists
+     *
+     * @param rpmFile the file to check
+     * @throws FileNotFoundException if anything went wrong
+     */
+    protected void validateFile(File rpmFile) throws FileNotFoundException {
+        if (!rpmFile.exists()) {
+            throw new FileNotFoundException("No such file " + rpmFile);
+        }
+
+        if (!rpmFile.isFile()) {
+            throw new FileNotFoundException("Not an RPM file " + rpmFile);
+        }
+        checkHasRpmExtension(rpmFile);
+    }
+
+    protected void checkHasRpmExtension(File rpmFile) throws FileNotFoundException {
+        // Get the file extension to check if it is .rpm file
+        String fileName = rpmFile.getName();
+        if(!fileName.endsWith(".rpm")) {
+            throw new FileNotFoundException("Not an RPM file: "+rpmFile);
+        }
+    }
+
+    /**
+     * This takes a list of packages and builds an upgrade command from them
+     *
+     * @param executable    executable to run
+     * @param basedir        base directory
+     * @param packages       packages to upgrade
+     * @param actions commands to use to upgrade
+     * @param upgradeOptions options
+     * @param validateFiles  should we check the files exist? This should be true except when generating a remote
+     *                       command, as they only need to exist on the remote machine.
+     * @return the commands to run
+     * @throws FileNotFoundException if the file cannot be validated and validateFiles==true
+     */
+    public List<String> buildUpgradeCommand(String executable, String actions, String basedir, List<String> packages,
+                                            String upgradeOptions,
+                                            boolean validateFiles)
+            throws IOException {
+
+        ArrayList<String> commands = new ArrayList<String>(packages.size() + 4);
+        commands.add(executable);
+        commands.add(actions);
+        if (upgradeOptions != null) {
+            commands.add(upgradeOptions);
+        }
+        for (String rpm : packages) {
+            File rpmFile = new File(basedir, rpm);
+            if (validateFiles) {
+                validateFile(rpmFile);
+            }
+            commands.add(rpm);
+        }
+        return commands;
     }
 
 }
