@@ -26,7 +26,7 @@ public interface ThreadPool {
     /**
      * Remove a runnable from the registered Runnable jobs
      *
-     * @param run the task to remove
+     * @param task the task to remove
      * @return true if successful, fales if it did not exist or was already allocated
      */
     public boolean removeFromQueue(Object task);

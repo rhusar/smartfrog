@@ -71,7 +71,7 @@ public class CDUtil {
      * 
      * @param obj1
      * @param obj2
-     * @return
+     * @return whether two attribute values are the same
      * @throws SmartFrogResolutionException 
      */
     static public boolean same(Object obj1, Object obj2) {
@@ -91,7 +91,7 @@ public class CDUtil {
      *
      * @param obj1
      * @param obj2
-     * @return
+     * @return whether two attribute values are the same
      * @throws SmartFrogResolutionException 
      */
     static public boolean same(Object obj1, Object obj2, ReferenceResolver rr) throws SmartFrogResolutionException {
@@ -121,7 +121,7 @@ public class CDUtil {
      * contain any lazy references
      * @param obj1 Object
      * @param obj2 Object
-     * @return boolean
+     * @return boolean whether two attribute values are the same
      * @throws SmartFrogResolutionException 
      */
     static public boolean same0(Object obj1, Object obj2) throws SmartFrogResolutionException  {
