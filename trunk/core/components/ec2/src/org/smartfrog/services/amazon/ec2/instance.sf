@@ -40,7 +40,7 @@ ImageInstance extends AwsAuthorizedWorkflowService {
   //minimum number of instances
   minCount 1;
   //max number
-  maxCount 1;
+  maxCount minCount;
 
   //set on deployment.
   //instance
