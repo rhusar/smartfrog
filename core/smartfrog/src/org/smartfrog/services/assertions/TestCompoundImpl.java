@@ -414,7 +414,6 @@ public class TestCompoundImpl extends ConditionCompound
      * The reason for this special handling is related to race conditions in termination...a ping could be
      * received and processed while we are getting ready to deal with terminated children.
      * This handler ignores such situations
-     * @param child
      */
     protected void sfPingActionAndHandleFailure() {
         try {
