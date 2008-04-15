@@ -719,8 +719,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         // only check for subprocess GC if checking self
         if (gcTimeout == -1) {
             try {
-                gcTimeout = ((Integer) sfResolveHere(SmartFrogCoreKeys.SF_SUBPROCESS_GC_TIMEOUT))
-                        .intValue();
+                gcTimeout = ((Integer) sfResolveHere(SmartFrogCoreKeys.SF_SUBPROCESS_GC_TIMEOUT)).intValue();
             } catch (SmartFrogResolutionException ignored) {
                 gcTimeout = 0;
             }
@@ -740,7 +739,8 @@ public class ProcessCompoundImpl extends CompoundImpl
                 countdown = gcTimeout;
             }
         } else {
-            sfLog().debug("SPGC not enabled");
+            // only send warn when debug enabled.
+            if (sfLog().isDebugEnabled()) sfLog().warn("SubProcessGC not enabled");
         }
     }
 
