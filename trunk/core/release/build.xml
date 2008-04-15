@@ -54,11 +54,13 @@
   <import file="../common.xml"/>
 
   <!-- main distribution target-->
-  <target name="dist" depends="common.dist,maven-artifacts,rpm,izpack,release-kernel,package-source"/>
+  <target name="dist"
+      depends="common.dist,maven-artifacts,rpm,izpack,release-kernel,package-source"/>
 
 
   <target name="init" depends="common.init">
-    <property name="izpack.jar" location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
+    <property name="izpack.jar"
+        location="${dist.bin.dir}/smartfrog-install-${smartfrog.version}.jar"/>
     <!--presetdef for a copy with expansion of all properties in scope-->
 
 
@@ -105,7 +107,8 @@
     </copy>
   </target>
 
-  <target name="prepare-executables" depends="ivy-retrieve,locate-core-artifacts">
+  <target name="prepare-executables"
+      depends="ivy-retrieve,locate-core-artifacts">
   </target>
 
   <target name="locate-core-artifacts" depends="ivy-properties">
@@ -217,7 +220,8 @@
   <!-- ============================================================================================= -->
 
   <target name="package-source" depends="init,ivy-resolve">
-    <property name="source.zip" location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip"/>
+    <property name="source.zip"
+        location="${upload.dir}/smartfrog-${smartfrog.version}-source.zip"/>
 
     <copy tofile="${source.zip}"
         file="${ivy.lib.dir}/package-antbuild-source/sf-antbuild-src-${smartfrog.version}.zip"/>
@@ -267,7 +271,8 @@
   everything set up right, at least until ant gets the ability to set up
   symlinks in a <tar> file.
   -->
-  <target name="init-rpm" depends="check-rpm,ivy-properties,use-smartfrog-tasks">
+  <target name="init-rpm"
+      depends="check-rpm,ivy-properties,use-smartfrog-tasks">
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
     <loadproperties srcFile="${rpm.metadata.dir}/rpm.properties"/>
@@ -397,7 +402,8 @@
   <!--set up the javadocs by
     -unzipping the JAR into its own location
   -->
-  <target name="rpm-javadocs" if="has.rpm.tools" depends="init-rpm,prepare-executables">
+  <target name="rpm-javadocs" if="has.rpm.tools"
+      depends="init-rpm,prepare-executables">
     <newdir name="rpm.javadocs.install.dir"
         location="${rpm.root.dir}${rpm.javadocs.path}"/>
     <unzip src="${sf-core-javadocs.zip}"
@@ -414,7 +420,8 @@
   <!-- create the link dir and its symlinks -->
   <target name="create-link-dir" if="has.rpm.tools"
       depends="copy-scripts,rpm-components">
-    <property name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.install.dir}/links"/>
+    <property name="rpm.link.dir"
+        location="${build.rpm.dir}/root${rpm.install.dir}/links"/>
     <mkdir dir="${rpm.link.dir}"/>
     <!-- macro to create a symlink on Unix for the RPM.
       The artifact is verified as living in the reparented filesystem, 
@@ -450,7 +457,7 @@
     <ln artifact="sf-ant" version="${smartfrog.version}"/>
     <ln artifact="ant" version="${apache.ant.version}"/>
     <ln artifact="ant-launcher" version="${apache.ant.version}"/>
-    
+
     <!-- anubis -->
     <rpmpackage package="anubis"/>
     <ln artifact="sf-anubis" version="${smartfrog.version}"/>
@@ -535,7 +542,8 @@
 
   </target>
 
-  <target name="ready-to-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security">
+  <target name="ready-to-sign-rpm-jars"
+      depends="copy-rpm-specs,create-link-dir,init-security">
 
   </target>
 
@@ -605,7 +613,8 @@
       <tarentry archive="${smartfrog.rpmfiles.tar}"
           name="etc/sysconfig/smartfrog"/>
     </loadresource>
-    <gzip src="${smartfrog.rpmfiles.tar}" destfile="${smartfrog.rpmfiles.tar.gz}"/>
+    <gzip src="${smartfrog.rpmfiles.tar}"
+        destfile="${smartfrog.rpmfiles.tar.gz}"/>
   </target>
 
   <!--copy rpms, but do not create them-->
@@ -632,7 +641,8 @@
         <isset property="has.rpm.tools"/>
       </and>
     </condition>
-    <echo level="verbose">can.create.signed.rpms=${can.create.signed.rpms}</echo>
+    <echo
+        level="verbose">can.create.signed.rpms=${can.create.signed.rpms}</echo>
   </target>
 
   <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms"/>
@@ -709,7 +719,8 @@
   </target>
 
 
-  <target name="ready-to-package-maven-artifacts" depends="init-maven-artifacts"/>
+  <target name="ready-to-package-maven-artifacts"
+      depends="init-maven-artifacts"/>
 
   <target name="init-maven-artifacts" depends="m2-init">
     <property name="maven.zip.filename"
@@ -719,9 +730,11 @@
     <property name="maven.zip.sha1" location="${maven.zip}.sha1"/>
   </target>
 
-  <target name="package-maven-artifacts" depends="ready-to-package-maven-artifacts">
+  <target name="package-maven-artifacts"
+      depends="ready-to-package-maven-artifacts">
     <zip destfile="${maven.zip}" duplicate="fail">
-      <zipfileset prefix="org/smartfrog" dir="${m2.publish.repository}/org/smartfrog/">
+      <zipfileset prefix="org/smartfrog"
+          dir="${m2.publish.repository}/org/smartfrog/">
         <!--core and tasks-->
         <include name="smartfrog/${smartfrog.version}/*"/>
         <include name="sfExamples/${smartfrog.version}/*"/>
@@ -733,6 +746,7 @@
         <!--components-->
         <include name="sf-ant/${smartfrog.version}/*"/>
         <include name="sf-anubis/${smartfrog.version}/*"/>
+        <include name="sf-csvfiles/${smartfrog.version}/*"/>
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
@@ -767,7 +781,8 @@
   <target name="maven-artifacts" depends="expand-maven-artifacts"/>
 
 
-  <target name="upload-maven-artifacts" depends="init-maven-artifacts,upload-init">
+  <target name="upload-maven-artifacts"
+      depends="init-maven-artifacts,upload-init">
     <fail>
       <condition>
         <not>
@@ -786,7 +801,8 @@
         verbose="${ssh.verbose}">
       <fileset file="${maven.zip}"/>
     </scp>
-    <ssh-remote command="unzip -o ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
+    <ssh-remote
+        command="unzip -o ${ssh.maven.dir}/${maven.zip.filename} -d ${ssh.maven.dir}"/>
     <ssh-remote command="rm ${ssh.maven.dir}/${maven.zip.filename}"/>
     <ssh-remote command="chmod a+r ${ssh.maven.dir}"/>
   </target>
@@ -1010,13 +1026,15 @@
     <!--override this to -vv for extra diagnostics -->
     <property name="rpm.verbosity" value="-v"/>
     <!--this is the full rpm destination-->
-    <property name="rpm.full.ssh.dir" value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
+    <property name="rpm.full.ssh.dir"
+        value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
     <!--list of rpms-->
 
     <property name="rpms.list"
         value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit"/>
     <!--here are all the signed RPMs that are generated-->
-    <property name="rpms.signed.list" value="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed"/>
+    <property name="rpms.signed.list"
+        value="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed"/>
 
     <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
     <property name="rpms.dependent.list" value=""/>
@@ -1030,7 +1048,7 @@
 
   <target name="rpm-upload" depends="rpm-upload-init">
     <fail>
-      <condition >
+      <condition>
         <resourcecount count="0" refid="rpm.upload.fileset"/>
       </condition>
       There are no RPMs to upload in the directory
@@ -1050,25 +1068,29 @@
   </target>
 
   <target name="rpm-remote-install-core" depends="rpm-upload">
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
+    <rootssh
+        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
         outputProperty="rpm.result.core"/>
     <validate-rpm-result result="${rpm.result.core}"/>
   </target>
 
   <target name="rpm-remote-install-daemon" depends="rpm-upload">
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
+    <rootssh
+        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-daemon-*.rpm"
         outputProperty="rpm.result.daemon"/>
     <validate-rpm-result result="${rpm.result.daemon}"/>
   </target>
 
   <target name="rpm-remote-install-demo" depends="rpm-upload">
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm"
+    <rootssh
+        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-demo-*.rpm"
         outputProperty="rpm.result.demo"/>
     <validate-rpm-result result="${rpm.result.demo}"/>
   </target>
 
   <target name="rpm-remote-install-all" depends="rpm-upload">
-    <rootssh command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-*.rpm"
+    <rootssh
+        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} smartfrog-*.rpm"
         outputProperty="rpm.result.all"/>
     <validate-rpm-result result="${rpm.result.all}"/>
   </target>
@@ -1091,7 +1113,8 @@
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
-    <rootssh command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.signed.list} ${rpms.dependent.list}"
+    <rootssh
+        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.signed.list} ${rpms.dependent.list}"
         failonerror="false"/>
   </target>
 
@@ -1099,14 +1122,16 @@
       depends="rpm-remote-version,rpm-remote-initd,rpm-queries-test,rpm-remote-uninstall-strict"
       description="install, verify and uninstall the RPMs to a remote target"/>
 
-  <target name="rpm-remote-version" depends="rpm-ready-to-remote-install,rpm-remote-install">
+  <target name="rpm-remote-version"
+      depends="rpm-ready-to-remote-install,rpm-remote-install">
     <rpmssh command="sfVersion"
         outputProperty="rpm.test.results"/>
     <echo>${rpm.test.results}</echo>
     <fail>
       <condition>
         <not>
-          <contains string="${rpm.test.results}" substring="${smartfrog.version}"/>
+          <contains string="${rpm.test.results}"
+              substring="${smartfrog.version}"/>
         </not>
       </condition>
       Did not find "${smartfrog.version}" in "${rpm.test.results}", which implies
@@ -1114,12 +1139,14 @@
     </fail>
   </target>
 
-  <target name="rpm-remote-initd-status" depends="rpm-ready-to-remote-install,rpm-remote-install"
+  <target name="rpm-remote-initd-status"
+      depends="rpm-ready-to-remote-install,rpm-remote-install"
       description="check that initd parses">
     <rootssh command="${remote-smartfrogd} status"/>
   </target>
 
-  <target name="rpm-remote-initd" depends="rpm-ready-to-remote-install,rpm-remote-install"
+  <target name="rpm-remote-initd"
+      depends="rpm-ready-to-remote-install,rpm-remote-install"
       description="check that initd parses">
     <rootssh command="${remote-smartfrogd} start"/>
     <pause/>
@@ -1177,9 +1204,15 @@ rpm -qf /etc/profile.d/smartfrog.csh ;
 rpm -qf ${rpm.install.dir}/docs ;
 rpm -qf ${rpm.install.dir}/src ;
 rpm -qf ${rpm.install.dir}/src.zip ;
+rpm -qf ${rpm.install.dir}/lib/sf-ant-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/lib/ant-${apache.ant.version}.jar;
 rpm -qf ${rpm.install.dir}/lib/ant-launcher-${apache.ant.version}.jar;
+rpm -qf ${rpm.install.dir}/links/sf-ant.jar;
 rpm -qf ${rpm.install.dir}/links/ant.jar;
+rpm -qf ${rpm.install.dir}/lib/sf-csvfiles-${smartfrog.version}.jar;
+rpm -qf ${rpm.install.dir}/lib/opencsv-${opencsv.version}.jar;
+rpm -qf ${rpm.install.dir}/links/sf-csvfiles.jar;
+rpm -qf ${rpm.install.dir}/links/opencsv.jar;
 ${secureLibs}"
         outputProperty="rpm.queries.results"/>
 
@@ -1232,7 +1265,8 @@ ${secureLibs}"
   <target name="svn-init" depends="init">
     <property name="svn.tag" value="release${smartfrog.version}"/>
     <echo>SVN tag="${svn.tag}"</echo>
-    <property name="svn.url" value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/"/>
+    <property name="svn.url"
+        value="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/"/>
     <property name="svn.branch.url" value="${svn.url}tags/${svn.tag}"/>
   </target>
 
@@ -1303,8 +1337,10 @@ ${secureLibs}"
       "
       >
     <property name="announcements.dir" location="doc/announcements"/>
-    <property name="target.announcement" location="${announcements.dir}/release_${smartfrog.version}.txt"/>
-    <property name="target.announcement.html" location="${announcements.dir}/release_${smartfrog.version}.html"/>
+    <property name="target.announcement"
+        location="${announcements.dir}/release_${smartfrog.version}.txt"/>
+    <property name="target.announcement.html"
+        location="${announcements.dir}/release_${smartfrog.version}.html"/>
 
     <expandingcopy tofile="${target.announcement}">
       <fileset file="${announcements.dir}/release-template.txt"/>
