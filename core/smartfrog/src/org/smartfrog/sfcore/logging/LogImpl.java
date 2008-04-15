@@ -261,10 +261,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             loadStartUpLoggers(name, configurationClass, configurationCodeBase, loggersConfiguration);
 
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
-            int i= getLevel(localLog);
+            int i = 3;
+            if (localLog instanceof LogLevel) {
+                i = ((LogLevel)localLog).getLevel();
+            } else {
+                i= getLevel(localLog);
+            }
             if (currentLogLevel>i){
               setLevel(i);
             }
+            System.out.println("Using leveL = " + getLevel());
 
         } catch (Exception ex ){
             String msg = "Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile)";

@@ -122,7 +122,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * The current log level
      */
-    protected int currentLogLevel = 0;
+    protected int currentLogLevel = 1;
     /**
      * The short name of this simple log instance
      */
