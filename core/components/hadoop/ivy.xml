@@ -5,33 +5,31 @@
     <license name="LGPL"/>
     <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
     <description>
-        Amazon S3 and EC2 integration
-        Created 30-Nov-2007 by slo
+        Hadoop support
     </description>
   </info>
-<!-- FIXME: Ivy 1.4.1 buildlist bug
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
   <configurations defaultconfmapping="default">
     <include file="../../antbuild/ivy/configurations.xml"/>
   </configurations>
   -->
-<configurations defaultconfmapping="default">
+  <configurations defaultconfmapping="default">
   <conf name="default" extends="master,runtime"/>
   <conf name="build" visibility="private"
       description="artifacts needed to build the application"/>
   <conf name="compile" visibility="private"
       extends="redist"
       description="artifacts needed to compile the application"/>
-  <conf name="daemon" visibility="private"
+  <conf name="daemon" visibility="private" extends="redist,default"
       description="the classpath needed to run smartfrog daemons"/>
   <conf name="test" extends="compile,default"
       description="the classpath needed to run tests"/>
   <conf name="testwar"
       description="the test WAR File" visibility="private"/>
   <conf name="master" description="contains the artifact but no dependencies"/>
-  <conf name="typica" description="contains the typica dependencies"/>
-  <conf name="restlet" description="contains the restlet dependencies"/>
+  <conf name="hadoop-core" description="contains the hadoop-core dependencies"/>
   <conf name="redist" description="redistributals excluding smartfrog artifacts"
-      extends="typica,restlet"/>
+      extends="hadoop-core"/>
   <conf name="runtime" description="runtime but not the artifact"
       extends="redist"/>
 </configurations> 
@@ -42,31 +40,30 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-      name="smartfrog"
-      changing="true"
-      rev="latest.integration"
-      conf="compile,runtime,daemon->services"/>
+        name="smartfrog"
+        changing="true"
+        rev="latest.integration"
+        conf="compile,runtime,daemon->services"/>
 
     <!--we pull in www stuff -->
     <dependency org="org.smartfrog"
         name="sf-www"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon,test->default;typica->httpclient;restlet->httpclient,servletapi;testwar->testwar"/>
+        conf="compile,runtime,daemon,test->default;testwar->testwar"/>
 
     <!--XML content-->
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="latest.integration"
+        conf="runtime->default"/>
+
     <dependency org="org.smartfrog"
         name="sf-xml"
         changing="true"
         rev="latest.integration"
-        conf="compile,runtime,daemon->default"/>
-    <!--httpclient needs commons logging; logging services pulls it in-->
-    <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        changing="true"
-        rev="latest.integration"
-        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
-
+        conf="runtime->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-testharness"
@@ -87,7 +84,19 @@
         rev="latest.integration"
         conf="test->default"/>
 
+    <dependency org="hadoop"
+        name="hadoop-core"
+        rev="${hadoop.version}"
+        conf="redist->default"/>
 
+    <dependency org="commons-cli"
+        name="commons-cli"
+        rev="${commons-cli.version}"
+        conf="redist->default"/>
+    <dependency org="xmlenc"
+        name="xmlenc"
+        rev="${xmlenc.version}"
+        conf="redist->default"/>
 
 
   </dependencies>
