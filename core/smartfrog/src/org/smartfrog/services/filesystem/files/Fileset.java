@@ -22,8 +22,10 @@
 package org.smartfrog.services.filesystem.files;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.Serializable;
@@ -104,7 +106,7 @@ public class Fileset implements Serializable {
         return filter!=null?files=baseDir.listFiles(filter):files;
     }
 
-    /**
+       /**
      * Look for a fileset from the various attributes
      *
      * @param component component to work from
@@ -119,37 +121,74 @@ public class Fileset implements Serializable {
      * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
-    public static Fileset createFileset(Prim component,
+    public static Fileset createFileset(Object component,
+                                        String filesAttribute,
+                                        String dirAttribute,
+                                        String patternAttribute,
+                                        String caseAttribute,
+                                        String hiddenAttribute)
+            throws  SmartFrogException, RemoteException {
+
+           return createFileset(component,
+                                Reference.fromString(filesAttribute),
+                                Reference.fromString(dirAttribute),
+                                Reference.fromString(patternAttribute),
+                                Reference.fromString(caseAttribute),
+                                Reference.fromString(hiddenAttribute));
+       }
+
+    /**
+     * Look for a fileset from the various attributes
+     *
+     * @param component or component description to work from
+     * @param filesAttribute name of the files attribute
+     * @param dirAttribute name of the dir attribute
+     * @param patternAttribute name of the pattern attribute
+     * @param caseAttribute name of the case attribute
+     * @param hiddenAttribute name of the hidden attribute
+     *
+     * @return a fileset built from the attributes
+     *
+     * @throws RemoteException when the network plays up
+     * @throws SmartFrogException if something else went wrong
+     */
+    public static Fileset createFileset(Object component,
                                         Reference filesAttribute,
                                         Reference dirAttribute,
                                         Reference patternAttribute,
                                         Reference caseAttribute,
                                         Reference hiddenAttribute)
-            throws
-            SmartFrogException,
-            RemoteException {
+            throws SmartFrogException, RemoteException {
+
         Files files = null;
-        files = (Files) component.sfResolve(filesAttribute, (Prim) null, false);
+        if (component instanceof Prim) {
+            files = (Files) ((Prim)component).sfResolve(filesAttribute, (Prim) null, false);
+        } else if (component instanceof ComponentDescription) {
+            files = (Files) ((ComponentDescription)component).sfResolve(filesAttribute, (Prim) null, false);
+        } else {
+            throw  new SmartFrogResolutionException("Wrong object type. It does not implement Resolve() interfaces: "+component.getClass().getName());
+        }
+
+
         if (files != null) {
             return new Fileset(files);
         } else {
-            File baseDir = FileSystem.lookupAbsoluteFile(component,
-                    dirAttribute,
-                    null,
-                    null,
-                    true,
-                    null);
+            File baseDir = FileSystem.lookupAbsoluteFile(component, dirAttribute, null, null, true, null);
             //no files, so resolve everything else
-            String pattern = component.sfResolve(patternAttribute, "", true);
-            boolean caseSensitive = component.sfResolve(caseAttribute, true, true);
-            boolean includeHiddenFiles = component.sfResolve(
-                    hiddenAttribute,
-                    true,
-                    true);
-            FilenamePatternFilter filter = new FilenamePatternFilter(
-                    pattern,
-                    includeHiddenFiles,
-                    caseSensitive);
+            String pattern;
+            boolean caseSensitive;
+            boolean includeHiddenFiles;
+            if (component instanceof Prim) {
+                pattern = ((Prim)component).sfResolve(patternAttribute, "", true);
+                caseSensitive = ((Prim)component).sfResolve(caseAttribute, true, true);
+                includeHiddenFiles = ((Prim)component).sfResolve(hiddenAttribute, true, true);
+            }  else  {
+                pattern = ((ComponentDescription)component).sfResolve(patternAttribute, "", true);
+                caseSensitive = ((ComponentDescription)component).sfResolve(caseAttribute, true, true);
+                includeHiddenFiles = ((ComponentDescription)component).sfResolve(hiddenAttribute, true, true);
+            }
+
+            FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
             return new Fileset(baseDir, filter);
         }
     }

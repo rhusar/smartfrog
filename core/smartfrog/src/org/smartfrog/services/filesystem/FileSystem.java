@@ -209,7 +209,7 @@ public final class FileSystem {
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
      */
-    public static File lookupAbsoluteFile(Prim component,
+    public static File lookupAbsoluteFile(Object component,
                                           String attribute,
                                           File defval,
                                           File baseDir,
@@ -245,7 +245,7 @@ public final class FileSystem {
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
      */
-    public static File lookupAbsoluteFile(Prim component,
+    public static File lookupAbsoluteFile(Object component,
                                           Reference attribute,
                                           File defval,
                                           File baseDir,
@@ -268,7 +268,7 @@ public final class FileSystem {
      * string is turned into an absolute path, relative to any directory named, after the string is converted into
      * platform appropriate forward/back slashes.
      *
-     * @param component component to look up the path from
+     * @param component/component description to look up the path from
      * @param attribute the name of the attribute to look up
      * @param defval    a default value. This should already be in the local format for the target platform, and
      *                  absolute. Can be null. No used when mandatory is true
@@ -280,14 +280,22 @@ public final class FileSystem {
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
      */
-    public static String lookupAbsolutePath(Prim component,
+    public static String lookupAbsolutePath(Object component,
                                             Reference attribute,
                                             String defval,
                                             File baseDir,
                                             boolean mandatory,
                                             PlatformHelper platform)
             throws SmartFrogResolutionException, RemoteException {
-        Object pathAttr = component.sfResolve(attribute, mandatory);
+
+        Object pathAttr = null;
+        if (component instanceof Prim) {
+            pathAttr = ((Prim) component).sfResolve(attribute, mandatory);
+        } else if (component instanceof ComponentDescription) {
+            pathAttr =( (ComponentDescription) component).sfResolve(attribute, mandatory);
+        } else {
+            throw  new SmartFrogResolutionException ("Wrong object type. It does not implement Resolve() interfaces: "+component.getClass().getName());
+        }
         if (pathAttr == null) {
             //mandatory must be false, because we did not get a value.
             return defval;
@@ -306,7 +314,7 @@ public final class FileSystem {
      * @throws RemoteException for network problems
      * @throws SmartFrogResolutionException if the reference cannot be converted to a path
      */
-    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform, Prim component, Reference attribute) throws RemoteException, SmartFrogResolutionException {
+    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform, Object component, Reference attribute) throws RemoteException, SmartFrogResolutionException {
         String path = null;
         if (pathSource instanceof FileIntf) {
             //file interface: get the info direct from the component
@@ -355,7 +363,14 @@ public final class FileSystem {
                     pathSource.getClass().toString()
                     + " - " + pathSource;
             Reference owner;
-            owner = (component != null) ? ComponentHelper.completeNameSafe(component) : null;
+            if (component instanceof Prim) {
+                owner = (component != null) ? ComponentHelper.completeNameSafe((Prim)component) : null;
+            } else if (component instanceof ComponentDescription) {
+                owner = (component != null) ? ((ComponentDescription)component).sfCompleteName() : null;
+            } else {
+                throw  new SmartFrogResolutionException ("Wrong object type. It does not implement completeName() method: "+component.getClass().getName());    
+            }
+
             throw new SmartFrogResolutionException(attribute, owner, message);
         }
         return path;
@@ -380,7 +395,7 @@ public final class FileSystem {
      * @throws SmartFrogResolutionException error in resolving
      * @throws RemoteException In case of network/rmi error
      */
-    public static String lookupAbsolutePath(Prim component,
+    public static String lookupAbsolutePath(Object component,
                                             String attribute,
                                             String defval,
                                             File baseDir,
