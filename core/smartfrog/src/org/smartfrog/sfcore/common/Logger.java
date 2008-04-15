@@ -98,7 +98,7 @@ public class Logger implements MessageKeys {
     /** Property to define if to log classpaht during startup. The default value can be overridden by the
       * value specified in default.ini file.
       */
-    public static boolean logClasspath = true;
+    public static boolean logClasspath = false;
 
     /**
      * empty constructor
