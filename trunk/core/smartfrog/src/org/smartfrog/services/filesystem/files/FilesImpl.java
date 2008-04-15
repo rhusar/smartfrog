@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.ReferenceResolverHelper;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -94,14 +96,14 @@ public class FilesImpl extends PrimImpl implements Files {
 
 
     /**
-     * Build a fileset from a Prim component with the Files attributes.
+     * Build a fileset from a ReferenceResolverHelper component with the Files attributes.
      *
-     * @param component component to work with
+     * @param component or  component description to work with
      * @return a newly filled in fileset
      * @throws SmartFrogException if there were problems resolving attributes
      * @throws RemoteException    for networking problems
      */
-    public static Fileset resolveFileset(Prim component)
+    public static Fileset resolveFileset(Object component)
             throws SmartFrogException, RemoteException {
         return Fileset.createFileset(component,
                 FILES_ATTRIBUTE,
@@ -137,7 +139,7 @@ public class FilesImpl extends PrimImpl implements Files {
         }
 
         if (filecount < 0) {
-            component.sfReplaceAttribute(ATTR_MAXFILECOUNT, filecount);
+            component.sfReplaceAttribute(ATTR_FILECOUNT, files.length);
         }
     }
 }
