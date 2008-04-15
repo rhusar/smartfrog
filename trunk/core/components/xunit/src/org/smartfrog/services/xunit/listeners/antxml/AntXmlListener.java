@@ -1,4 +1,4 @@
-/* (C) Copyright 2004-2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2004-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -44,14 +44,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 
-
 /**
  * This class listens to tests on a single host. The XML Listener forwards stuff
  * to it. It is not a component; it is a utility class that components use, so
  * as to log different test suites to different files.
  * <p/>
  */
-public class AntXmlListener implements FileListener,XMLConstants {
+public class AntXmlListener implements FileListener, XMLConstants {
 
     private Document document;
 
@@ -76,23 +75,28 @@ public class AntXmlListener implements FileListener,XMLConstants {
      * when did the test start
      */
     private Date startTime;
-    
+    /**
+     * when did the test finish
+     */
+    private Date finishTime;
+
     /**
      * store summary stats here, rather than duplicate code
      */
-    Statistics stats=new Statistics();
-    
+    private Statistics stats = new Statistics();
+
     /**
      * This is built up as we go along
      */
-    private Element root,stdout,stderr;
-    
+    private Element root, stdout, stderr;
+    private SimpleDateFormat dateFormat;
+
 
     public AntXmlListener(String hostname,
-                                       File destFile,
-                                       String processname,
-                                       String suitename,
-                                       Date startTime) throws RemoteException {
+                          File destFile,
+                          String processname,
+                          String suitename,
+                          Date startTime) throws RemoteException {
         this.destFile = destFile;
         this.hostname = hostname;
         this.processname = processname;
@@ -121,41 +125,72 @@ public class AntXmlListener implements FileListener,XMLConstants {
      */
     public synchronized void open() throws IOException, RemoteException {
         root = new Element(TESTSUITES);
-        document=new Document(root);
-        stdout=new Element(XMLConstants.SYSTEM_OUT);
-        stderr=new Element(XMLConstants.SYSTEM_OUT);
-        maybeAddAttribute(root, XMLConstants.HOSTNAME, hostname);
-        maybeAddAttribute(root, XMLConstants.ATTR_NAME, suitename);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        document = new Document(root);
+        stdout = new Element(SYSTEM_OUT);
+        stderr = new Element(SYSTEM_OUT);
+        maybeAddAttribute(root, HOSTNAME, hostname);
+        maybeAddAttribute(root, ATTR_NAME, suitename);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         TimeZone gmt = TimeZone.getTimeZone("GMT");
-        sdf.setTimeZone(gmt);
-        sdf.setLenient(true);
-        String timestamp = sdf.format(startTime);
-        maybeAddAttribute(root, XMLConstants.TIMESTAMP, timestamp);
+        dateFormat.setTimeZone(gmt);
+        dateFormat.setLenient(true);
+        String timestamp = dateFormat.format(startTime);
+        maybeAddAttribute(root, TIMESTAMP, timestamp);
     }
 
     /**
-     * close the file. This call  must be harmless if the file is already closed
+     * close the file. This call must be harmless if the file is already closed
      *
      * @throws IOException IO trouble
      * @throws RemoteException network trouble
      */
     public synchronized void close() throws IOException, RemoteException {
-        if(document==null) {
+        if (document == null) {
             return;
         }
         //this is where we actually save the file to disk.
         try {
+            buildRootAttributes();
             addLogEntries();
             save();
-            
         } finally {
             //cleanup
-            document=null;
-            stdout=null;
-            stderr=null;
+            document = null;
+            stdout = null;
+            stderr = null;
         }
-        
+    }
+
+    /**
+     * Add the statistics to the root node; replace any that existed testsuite
+     * errors="0" failures="0" hostname="k2" name="org.smartfrog.services.filesystem.csvfiles.test.system.CsvReaderTest"
+     * tests="6" time="20.077" timestamp="2008-04-15T09:05:50">
+     */
+    private synchronized void buildRootAttributes() {
+        String fullname = hostname;
+        if (processname != null) {
+            hostname += '-' + processname;
+        }
+        maybeAddAttribute(root, "hostname", fullname);
+        maybeAddAttribute(root, "name", suitename);
+        double duration = 0;
+        if (finishTime != null) {
+            duration = (finishTime.getTime() - startTime.getTime()) / 1000.0;
+        }
+        maybeAddAttribute(root, "timestamp", dateFormat.format(startTime));
+        maybeAddAttribute(root, "time", Double.toString(duration));
+        addAttribute(root, "tests", stats.getTestsRun());
+        addAttribute(root, "errors", stats.getErrors());
+        addAttribute(root, "failures", stats.getFailures());
+        addPropertiesToRoot();
+    }
+
+    /**
+     * Add the properties to the root. I'm unsure about this for security reasons...maybe we will present other facts
+     * under this element, to sneak them in to existing reports.
+     */
+    private void addPropertiesToRoot() {
+        addElement(root,"properties","");
     }
 
     /**
@@ -166,37 +201,41 @@ public class AntXmlListener implements FileListener,XMLConstants {
      * @throws RemoteException network trouble
      */
     public boolean isOpen() throws RemoteException {
-        return document!=null;
+        return document != null;
     }
 
-   /**
+    /**
      * Teased out into a class for overriding if need be
+     *
      * @param out the output stream
+     *
      * @return a configured serializer
      */
     protected Serializer createSerializer(OutputStream out) {
-        Serializer ser=new Serializer(out);
+        Serializer ser = new Serializer(out);
         return ser;
     }
-    
+
     /**
      * Write the document
+     *
      * @throws IOException for IO trouble
      */
     protected void save() throws IOException {
-        OutputStream out=null;
+        OutputStream out = null;
         try {
-            out=new BufferedOutputStream(new FileOutputStream(destFile));
-            Serializer ser=createSerializer(out);
+            out = new BufferedOutputStream(new FileOutputStream(destFile));
+            Serializer ser = createSerializer(out);
             ser.write(document);
             out.flush();
             out.close();
+            out = null;
         } finally {
             FileSystem.close(out);
         }
     }
-    
-    
+
+
     /**
      * end this test suite. After calling this, caller should discard all
      * references; they may no longer be valid. <i>No further methods may be
@@ -206,7 +245,7 @@ public class AntXmlListener implements FileListener,XMLConstants {
      * @throws SmartFrogException other problems
      */
     public void endSuite() throws RemoteException, SmartFrogException {
-
+        finishTime = new Date(System.currentTimeMillis());
     }
 
     /**
@@ -233,7 +272,7 @@ public class AntXmlListener implements FileListener,XMLConstants {
     public void addError(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incErrors();
-        recordResult(XMLConstants.ERROR, test);
+        recordResult(ERROR, test);
     }
 
     /**
@@ -247,7 +286,7 @@ public class AntXmlListener implements FileListener,XMLConstants {
     public void addFailure(TestInfo test)
             throws RemoteException, SmartFrogException {
         stats.incFailures();
-        recordResult(XMLConstants.FAILURE, test);
+        recordResult(FAILURE, test);
     }
 
     /**
@@ -278,57 +317,69 @@ public class AntXmlListener implements FileListener,XMLConstants {
         target.appendChild(text);
         stats.incLoggedMessages();
     }
-     /**
-     * Add an element to the root node
-     * @param name element name
-     * @param text the text
-     * @return the element
-     */   
-    private Element addElement(String name, String text) {
-        return addElement(root,name,text);
-    }
-    
+
     /**
-     * Add  an element
-     * @param parent parent element
+     * Add an element to the root node
+     *
      * @param name element name
      * @param text the text
+     *
      * @return the element
      */
-     private Element addElement(Element parent,String name, String text) {
+    private Element addElement(String name, String text) {
+        return addElement(root, name, text);
+    }
+
+    /**
+     * Add  an element
+     *
+     * @param parent parent element
+     * @param name   element name
+     * @param text   the text
+     *
+     * @return the element
+     */
+    private Element addElement(Element parent, String name, String text) {
         Element nested = new Element(name);
         nested.appendChild(text);
-        if(text!=null) {
+        if (text != null) {
             parent.appendChild(nested);
         }
         return nested;
     }
-     
-     /**
-      * add an element if the text is not null
-      * @param parent parent element
-      * @param name element name
-      * @param text text
-      * @return the element or null
-      */
-     private Element maybeAddElement(Element parent,String name, String text) {
-        if(text!=null) {
+
+    /**
+     * add an element if the text is not null
+     *
+     * @param parent parent element
+     * @param name   element name
+     * @param text   text
+     *
+     * @return the element or null
+     */
+    private Element maybeAddElement(Element parent, String name, String text) {
+        if (text != null) {
             return addElement(parent, name, text);
         } else {
             return null;
         }
     }
-    
+
     /**
-     * Add an attribute if the value is not null
-     * @param elt element to use
-     * @param name attribute name
+     * Add an attribute if the value is not null. If the attribute exists, it is
+     * replaced
+     *
+     * @param elt   element to use
+     * @param name  attribute name
      * @param value attribute value (optional)
+     *
      * @return the attribute or null
      */
-    private Attribute maybeAddAttribute(Element elt, String name, String value) {
-        if(value!=null) {
-            Attribute a=new Attribute(name,value);
+    private Attribute maybeAddAttribute(Element elt,
+                                        String name,
+                                        String value) {
+        if (value != null) {
+            Attribute a = new Attribute(name, value);
             elt.addAttribute(a);
             return a;
         } else {
@@ -336,51 +387,68 @@ public class AntXmlListener implements FileListener,XMLConstants {
         }
     }
 
-    
 
-    
-/* This is what a single, complex test case looks like. 
- The fault's message goes in the message attribute, the nested text contains that and the stack
- 
- <testcase classname="org.smartfrog.services.restlet.test.system.testwar.TestwarTest" name="testErrorPage" time="1.594">
-    <failure message="Test failed
-(unknown) -TestCompletedEvent at Mon Dec 10 15:18:08 GMT 2007 alive: true
-status: 
-Termination Record: HOST morzine:rootProcess:testErrorPage:tests,  type: abnormal,  description: error in starting next component: exception SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,             depth: 0,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,  cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60) ,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included
-test that error page of the WAR returns the error we want,
-        and that the restlet client can be controlled to ask for different error codes
-succeeded:false
-forcedTimeout:false
-skipped:falsetest that error page of the WAR returns the error we want,
-        and that the restlet client can be controlled to ask for different error codes
-" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Test failed
-(unknown) -TestCompletedEvent at Mon Dec 10 15:18:08 GMT 2007 alive: true
-status: 
-Termination Record: HOST morzine:rootProcess:testErrorPage:tests,  type: abnormal,  description: error in starting next component: exception SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,             depth: 0,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,  cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60) ,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included
-test that error page of the WAR returns the error we want,
-        and that the restlet client can be controlled to ask for different error codes
-succeeded:false
-forcedTimeout:false
-skipped:falsetest that error page of the WAR returns the error we want,
-        and that the restlet client can be controlled to ask for different error codes
+    /**
+     * Add an attribute. If the attribute exists, it is replaced
+     *
+     * @param elt   element to use
+     * @param name  attribute name
+     * @param value attribute value (optional)
+     *
+     * @return the attribute or null
+     */
+    private Attribute addAttribute(Element elt,
+                                   String name,
+                                   int value) {
+        Attribute a = new Attribute(name, Integer.toString(value));
+        elt.addAttribute(a);
+        return a;
+    }
 
-	at org.smartfrog.test.DeployingTestBase.conditionalFail(DeployingTestBase.java:298)
-	at org.smartfrog.test.DeployingTestBase.completeTestDeployment(DeployingTestBase.java:249)
-	at org.smartfrog.test.DeployingTestBase.runTestsToCompletion(DeployingTestBase.java:275)
-	at org.smartfrog.test.DeployingTestBase.expectSuccessfulTestRunOrSkip(DeployingTestBase.java:365)
-	at org.smartfrog.services.restlet.test.system.testwar.TestwarTest.testErrorPage(TestwarTest.java:41)
-</failure>
- */
+
+    /* This is what a single, complex test case looks like.
+    The fault's message goes in the message attribute, the nested text contains that and the stack
+
+    <testcase classname="org.smartfrog.services.restlet.test.system.testwar.TestwarTest" name="testErrorPage" time="1.594">
+       <failure message="Test failed
+   (unknown) -TestCompletedEvent at Mon Dec 10 15:18:08 GMT 2007 alive: true
+   status:
+   Termination Record: HOST morzine:rootProcess:testErrorPage:tests,  type: abnormal,  description: error in starting next component: exception SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,             depth: 0,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,  cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60) ,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included
+   test that error page of the WAR returns the error we want,
+           and that the restlet client can be controlled to ask for different error codes
+   succeeded:false
+   forcedTimeout:false
+   skipped:falsetest that error page of the WAR returns the error we want,
+           and that the restlet client can be controlled to ask for different error codes
+   " type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Test failed
+   (unknown) -TestCompletedEvent at Mon Dec 10 15:18:08 GMT 2007 alive: true
+   status:
+   Termination Record: HOST morzine:rootProcess:testErrorPage:tests,  type: abnormal,  description: error in starting next component: exception SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,             depth: 0,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,  cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,    cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,       cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,          source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,          path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,          depth: 0,          Reference not found,       SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),       primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included,       reference: HOST morzine:rootProcess:testErrorPage:tests:operations,       primContext: included, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests, primContext: included, cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,    cause: SmartFrogDeploymentException: unnamed component. SmartFrogLifecycleException:: [sfStart] Failed to create a new child., cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,    source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,    path(60): HOST morzine:rootProcess:testErrorPage:tests:operations:get ,    depth: 0,    Reference not found, SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT), primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included, reference: HOST morzine:rootProcess:testErrorPage:tests:operations, primContext: included,       cause: SmartFrogLifecycleException:: [sfStart] Failed to create a new child.,          cause: SmartFrogResolutionException:: Unresolved Reference: HERE connectTimeout,             source: HOST morzine:rootProcess:testErrorPage:tests:operations:get,             path(60) ,             Reference not found,          SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),          primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,          reference: HOST morzine:rootProcess:testErrorPage:tests:operations,          primContext: included,    SmartFrog 3.12.015dev (2007-12-10 14:32:19 GMT),    primSFCompleteName: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included,    reference: HOST morzine:rootProcess:testErrorPage:tests,    primContext: included
+   test that error page of the WAR returns the error we want,
+           and that the restlet client can be controlled to ask for different error codes
+   succeeded:false
+   forcedTimeout:false
+   skipped:falsetest that error page of the WAR returns the error we want,
+           and that the restlet client can be controlled to ask for different error codes
+
+       at org.smartfrog.test.DeployingTestBase.conditionalFail(DeployingTestBase.java:298)
+       at org.smartfrog.test.DeployingTestBase.completeTestDeployment(DeployingTestBase.java:249)
+       at org.smartfrog.test.DeployingTestBase.runTestsToCompletion(DeployingTestBase.java:275)
+       at org.smartfrog.test.DeployingTestBase.expectSuccessfulTestRunOrSkip(DeployingTestBase.java:365)
+       at org.smartfrog.services.restlet.test.system.testwar.TestwarTest.testErrorPage(TestwarTest.java:41)
+   </failure>
+    */
     /**
      * Record the outcome of a test
+     *
      * @param type test type (used in element name of the fault)
      * @param test test result info
      */
     private void recordResult(String type, TestInfo test) {
 
         Element testcase = addElement(TESTCASE, null);
-        maybeAddAttribute(testcase, 
-                XMLConstants.ATTR_NAME,
+        maybeAddAttribute(testcase,
+                ATTR_NAME,
                 test.getName());
         maybeAddElement(testcase,
                 "description",
@@ -394,34 +462,33 @@ skipped:falsetest that error page of the WAR returns the error we want,
         maybeAddElement(testcase,
                 "url",
                 test.getUrl());
-          //duration
-        maybeAddAttribute(testcase, 
-                XMLConstants.ATTR_TIME,
+        //duration
+        maybeAddAttribute(testcase,
+                ATTR_TIME,
                 "" + test.getDuration() / 1000.0);
         //also: tags, messages
 
-      
         //process the fault
         ThrowableTraceInfo fault = test.getFault();
         if (fault != null) {
             Element thrown = addElement(testcase, type, fault.toString());
-            maybeAddAttribute(thrown, 
-                    XMLConstants.ATTR_MESSAGE, 
+            maybeAddAttribute(thrown,
+                    ATTR_MESSAGE,
                     fault.getMessage());
-            maybeAddAttribute(thrown, 
-                    XMLConstants.ATTR_TYPE, 
+            maybeAddAttribute(thrown,
+                    ATTR_TYPE,
                     fault.getClassname());
         }
-    }    
+    }
 
     /**
      * append the log elements if they are not already in the document
      */
     void addLogEntries() {
-        if(stdout.getParent()==null) {
+        if (stdout.getParent() == null) {
             root.appendChild(stdout);
         }
-         if(stderr.getParent()==null) {
+        if (stderr.getParent() == null) {
             root.appendChild(stderr);
         }
     }
