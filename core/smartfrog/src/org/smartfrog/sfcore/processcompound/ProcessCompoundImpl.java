@@ -1381,7 +1381,6 @@ public class ProcessCompoundImpl extends CompoundImpl
             sfLog().err("Wrong object type found in conventToClassPath. Object type: "+ o.getClass().getName());
             return null;
         }
-        return null;
     }
 
 
