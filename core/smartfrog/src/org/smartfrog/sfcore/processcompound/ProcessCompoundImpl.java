@@ -21,6 +21,8 @@
 package org.smartfrog.sfcore.processcompound;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.services.filesystem.files.FilesImpl;
+import org.smartfrog.services.filesystem.files.Fileset;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.Diagnostics;
@@ -1294,7 +1296,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
-        String cdClasspath = (String) cd.sfResolve(attributeKey, false);
+        String cdClasspath = conventToClassPath( cd.sfResolve(attributeKey, false));
 
         //This will read the system property for org.smartfrog.sfcore.processcompound.NAME. + key
         String envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
@@ -1348,6 +1350,40 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
         return res;
     }
+
+    /**
+     * Method that checks object o and returns a String classpapth from  Vector, Files ComponentDescription or ComponentDescription.
+     * If o is a String, then it is returnd withouth further modification.
+     * The method uses the platform separator for the classpath.
+     * @param o structured data to create the classpath
+     * @return  String representing a classpath using the platform's separator.  If the wrong data object if found the null is returned and a message is logged
+     */
+    public String conventToClassPath(Object o) {
+        if (o == null) return null;
+
+        if (o instanceof String) {
+            return (String)o;
+        } else if (o instanceof Vector) {
+            String fileSetString = java.util.Arrays.toString(((Vector)o).toArray());
+            fileSetString = fileSetString.substring(1,fileSetString.length()-1);
+            fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
+          return (fileSetString);
+        } else if (o instanceof ComponentDescription) {
+            ComponentDescription cdo = (ComponentDescription) o;
+            try {
+                Fileset fileset = FilesImpl.resolveFileset(cdo);
+                return (fileset.toString());
+            } catch (Exception rex){
+                sfLog().err( rex );
+                return null;
+            }
+        } else {
+            sfLog().err("Wrong object type found in conventToClassPath. Object type: "+ o.getClass().getName());
+            return null;
+        }
+        return null;
+    }
+
 
     /**
      * Constructs sequence of -D statements for the new sub-process by iterating
@@ -1439,16 +1475,14 @@ public class ProcessCompoundImpl extends CompoundImpl
 
             if (secProp != null) {
                 cmd.addElement("-D" +
-                        SFSecurityProperties.propPropertiesFileName + '=' +
-                        secProp);
+                        SFSecurityProperties.propPropertiesFileName + '=' + secProp);
             }
 
             //org.smartfrog.sfcore.security.keyStoreName
             secProp = props.getProperty(SFSecurityProperties.propKeyStoreName);
 
             if (secProp != null) {
-                cmd.addElement("-D" + SFSecurityProperties.propKeyStoreName +
-                        '=' + secProp);
+                cmd.addElement("-D" + SFSecurityProperties.propKeyStoreName + '=' + secProp);
             }
         }
     }
@@ -1467,16 +1501,11 @@ public class ProcessCompoundImpl extends CompoundImpl
                                                       ComponentDescription cd)
             throws SmartFrogResolutionException {
         ComponentDescription sfProcessAttributes = null;
-        sfProcessAttributes = (ComponentDescription) cd.sfResolveHere(
-                SmartFrogCoreKeys.SF_PROCESS_CONFIG,
-                false);
+        sfProcessAttributes = (ComponentDescription) cd.sfResolveHere( SmartFrogCoreKeys.SF_PROCESS_CONFIG,false);
         if (sfProcessAttributes == null) {
-            sfProcessAttributes = new ComponentDescriptionImpl(null,
-                    new ContextImpl(),
-                    false);
+            sfProcessAttributes = new ComponentDescriptionImpl(null, new ContextImpl(), false);
         }
-        ComponentDescriptionImpl.addSystemProperties(SmartFrogCoreProperty.propBaseSFProcess + name,
-                sfProcessAttributes);
+        ComponentDescriptionImpl.addSystemProperties(SmartFrogCoreProperty.propBaseSFProcess + name, sfProcessAttributes);
         return sfProcessAttributes;
     }
 
@@ -1503,9 +1532,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             key = i.next().toString();
             value = sfProcessAttributes.sfResolveHere(key);
             cmd.addElement("-D" +
-                    SmartFrogCoreProperty.propBaseSFProcess +
-                    key.toString() + '=' +
-                    value.toString());
+                    SmartFrogCoreProperty.propBaseSFProcess +  key.toString() + '=' + value.toString());
         }
     }
 
@@ -1521,9 +1548,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      */
     protected void addProcessEnvVars(Vector<String> cmd, ComponentDescription cd)
             throws SmartFrogException {
-        ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere(
-                SmartFrogCoreKeys.SF_PROCESS_ENV_VARS,
-                false);
+        ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere( SmartFrogCoreKeys.SF_PROCESS_ENV_VARS, false);
         if (sfProcessEnvVars == null) {
             return;
         }
