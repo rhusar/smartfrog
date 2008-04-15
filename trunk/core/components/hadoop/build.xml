@@ -50,11 +50,7 @@
 
 
 
-  <target name="ready-to-test" depends="common.ready-to-test,testwar">
-    <property name="test.jetty.home"
-        location="${test.src.dir}/files/jettyhome"/>
-    <property name="test.demo.webapp"
-        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
+  <target name="ready-to-test" depends="common.ready-to-test">
     <echo level="verbose">
       test.ec2.enabled=${test.ec2.enabled}
       test.jetty.home=${test.jetty.home}
@@ -66,15 +62,4 @@
     </echo>
   </target>
 
-  <!--pick up the test war from Ivy-->
-  <target name="testwar" depends="ivy-retrieve">
-    <property name="test.testwar.war"
-        location="${ivy.lib.dir}/testwar/sf-www-testwar-${smartfrog.version}.war"/>
-    <fail>
-      <condition>
-        <not><available file="${test.testwar.war}"/></not>
-      </condition>
-      Not found: ${test.testwar.war}
-    </fail>
-  </target>
 </project>
