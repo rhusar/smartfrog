@@ -80,7 +80,7 @@ public class MainFrame
   /**
    *  Description of the Field
    */
-  public final static String version = "v0.8 r04";
+  public final static String version = "v0.8 r05";
   // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
   static PrintStream msg = System.out;
   static JLabel statusBar = new JLabel();
@@ -1604,6 +1604,7 @@ public class MainFrame
     LoadSFFiles.refreshClassPath();
     String cmdStop = "java" + " "
         + "-cp \"" + classpath + "\" "
+		+ sfDaemonDefIniFileProperty + "" + sfDaemonDefIniFile + "" + " "
         + this.sfSystemClass + " "
         + "-a" + " "
         + this.sfDaemonProcessName + ":TERMINATE:::"
@@ -1641,6 +1642,7 @@ public class MainFrame
 
     cmd = "java" + " "
         + "-cp \"" + classpath + "\" "
+		+ sfDaemonDefIniFileProperty + "" + sfDaemonDefIniFile + "" + " "
         + this.sfSystemClass + " "
         + "-a" + " "
         + this.sfDaemonProcessName + ":TERMINATE:::"
