@@ -21,6 +21,16 @@
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 
+/**
+ * This component does nothing other than verify that it should have all the dependent artifacts present
+ */
+ArtifactCheckingManager extends Prim {
+  sfClass "org.smartfrog.services.rpm.local.ArtifactCheckingManagerImpl";
+  enabled true;
+}
+
+
+
 LocalRPMTool extends Prim {
   rpmPackage TBD;
   options "";

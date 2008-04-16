@@ -19,33 +19,30 @@
  */
 package org.smartfrog.services.rpm.local;
 
+import org.smartfrog.services.rpm.manager.RpmErrors;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * abstract local RPM Tool implementation.
  */
-public abstract class AbstractLocalRPMToolImpl extends PrimImpl implements LocalRPMTool {
+public abstract class AbstractLocalRPMToolImpl extends PrimImpl implements LocalRPMTool, RpmErrors {
     private String rpmPackage;
     private String options;
     private RPMUtils rpmUtils;
-    public static final String ERROR_UNABLE_TO_INSTALL = "Unable to Install RPM package ";
-    public static final String ERROR_UNABLE_TO_UNINSTALL = "Unable to Uninstall RPM package ";
-    protected static final String ERROR_UNABLE_TO_UPGRADE = "Unable to Upgrade RPM package ";
 
     public AbstractLocalRPMToolImpl() throws RemoteException {
     }
 
 
     /**
-     * At deploy time we resolve the package name and the options, and create
-     * a new rpmutils instance
+     * At deploy time we resolve the package name and the options, and create a new rpmutils instance
      *
      * @throws SmartFrogException SmartFrog problems
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
