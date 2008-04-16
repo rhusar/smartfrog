@@ -740,7 +740,7 @@ public class ProcessCompoundImpl extends CompoundImpl
             }
         } else {
             // only send warn when debug enabled.
-            if (sfLog().isDebugEnabled()) sfLog().warn("SubProcessGC not enabled");
+            if (sfLog().isTraceEnabled()) sfLog().warn("SubProcessGC not enabled");
         }
     }
 
