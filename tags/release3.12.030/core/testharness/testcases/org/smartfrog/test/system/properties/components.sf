@@ -1,0 +1,120 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/components.sf"
+
+
+key1 "key.1";
+value1 "value.1";
+key2 "key.2";
+value2 "value.2";
+
+sysprops extends SystemProperties {
+  properties [
+    [ key1, value1 ],
+    [ key2, value2 ]
+  ]
+}
+
+workflowprops extends sysprops {
+    sfShouldTerminate true;
+}
+
+
+workflowAssert extends Assert {
+      sfShouldTerminate true;
+    }
+
+testSetOnDeploy extends ExpectDeploy {
+   description "try setting properties";
+
+  action extends sysprops {
+
+  }
+
+  tests extends Sequence {
+    checkKey1 extends workflowAssert {
+      equalsString1 value1;
+      equalsString2 LAZY PROPERTY "key.1";
+    }
+    checkKey2 extends workflowAssert {
+      equalsString1 value2;
+      equalsString2 LAZY PROPERTY "key.2";
+    }
+
+  }
+
+}
+
+
+testSetOnSequence extends ExpectDeploy {
+
+  description "try setting properties in a workflow";
+
+  action extends Compound {
+
+  }
+
+  tests extends Sequence{
+    -- extends workflowprops {
+      unsetOnTerminate false;
+    }
+
+    checkKey1 extends workflowAssert {
+      equalsString1 value1;
+      equalsString2 LAZY PROPERTY "key.1";
+
+    }
+
+    checkKey2 extends workflowAssert {
+      equalsString1 value2;
+      equalsString2 LAZY PROPERTY "key.2";
+    }
+
+  }
+
+}
+
+
+testUnsetOnSequence extends ExpectDeploy {
+  description "try setting then unsetting properties in a workflow";
+
+  action extends Compound {
+
+  }
+
+  tests extends Sequence{
+    -- extends workflowprops {
+    }
+
+    checkKey1 extends workflowAssert {
+      equalsString1 "";
+      equalsString2 LAZY OPTIONAL("") PROPERTY "key.1";
+    }
+
+    checkKey2 extends workflowAssert {
+      equalsString1 "";
+      equalsString2 LAZY OPTIONAL("") PROPERTY "key.2";
+    }
+
+  }
+
+}

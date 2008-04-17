@@ -1,0 +1,61 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+/* switching off the visual headers.  */
+div.headerDivOuter {
+	display:none;
+}
+
+/* switch on the readerCaptionRow in the dataTable itself.*/
+tr.readerCaptionRow {
+	overflow:visible;
+	height:auto;
+}
+tr.readerCaptionRow th input {
+	display:block;
+}
+/* switch off the scrolling on the dataTable */
+.scrollingDiv {
+	overflow:visible;
+}
+/* undo all the css which was minimizing the appearance of the readerCaptionRow. */
+tr.readerCaptionRow th,
+tr.readerCaptionRow th.sortedDescending,
+tr.readerCaptionRow th.sortedAscending,
+tr.readerCaptionRow th.sortedDescending div,
+tr.readerCaptionRow th.sortedAscending div,
+tr.readerCaptionRow th input {
+	padding:0px 5px;
+	margin:0px;
+	border:0px;
+	visibility:visible;
+	font-size:11px;
+	overflow:visible;
+	height:auto;
+	background-color:#968F89;
+	color:#fff;
+	color:#fff;
+	text-align:left;
+}
+/* Still some problems with scrollableTable printing on mozilla.   */
+table.scrollingTable {
+	margin-bottom:50px;
+	height:auto;
+}

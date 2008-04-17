@@ -1,0 +1,119 @@
+
+// include the core smartfrog components and the components for the arithmetic example
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/regtest/arithmetic/netComponents.sf"
+#include "org/smartfrog/regtest/arithmetic/comparator.sf"
+
+
+
+Example1 extends Compound {
+
+// First the end-point...
+  sink extends Compound {
+    sfProcessHost ATTRIB host29;
+    Evaluator29 extends Evaluator {
+      inputs:G extends Input;
+      operation "(((G+0)-G)+(G*1))";  // = G,  use same variable as input name.
+      outputs:value:to LAZY ATTRIB comparator:inputs:target;
+    }
+
+    comparator extends Comparator {
+      count ATTRIB numMatches;
+      outputs:value:to LAZY ATTRIB printer:inputs:printVal;
+    }
+    printer extends Printer {
+
+    }
+  }
+
+  // Now all the nodes that implement the logic
+
+  // C = 0
+  Constant2 extends Constant {
+        sfProcessHost ATTRIB host2 ;
+        constant 0 ;
+        outputs:value:to LAZY ATTRIB Plus3:inputs:rhs;
+  }
+
+  // G + O = R1 -> P4l => G
+  // G Will be added
+  Plus3 extends Plus {
+     sfProcessHost ATTRIB host1 ;
+     outputs:value:to LAZY ATTRIB Plus4:inputs:lhs;
+  }
+  // - G = R2 -> P4r  => -G
+  Negate22 extends Negate {
+        sfProcessHost ATTRIB host22 ;
+        outputs:value:to LAZY ATTRIB Plus4:inputs:rhs;
+  }
+
+  // R1 + R2 = R3 ->P6l => 0
+  Plus4 extends Plus {
+     sfProcessHost ATTRIB host1 ;
+     outputs:value:to LAZY ATTRIB Plus6:inputs:lhs;
+  }
+
+  // C=1
+  Constant8 extends Constant {
+        sfProcessHost ATTRIB host2 ;
+        constant 1 ;
+        outputs:value:to LAZY ATTRIB Times9:inputs:rhs;
+  }
+  // G*1 = R4 -> P6r => G
+  Times9 extends Times {
+        sfProcessHost ATTRIB host9 ;
+        outputs:value:to LAZY ATTRIB Plus6:inputs:rhs;
+  }
+
+  // --------
+  // R3 + R4 = R5 -> Sink Comparator. Result = G.
+  Plus6 extends Plus {
+     sfProcessHost ATTRIB host19 ;
+     //outputs:value:to LAZY ATTRIB Times28:inputs:lhs;
+     outputs:value:to LAZY ATTRIB   sink:comparator:inputs:candidate;
+  }
+
+
+// Finally the generator with all its outputs
+
+  source extends Compound {
+    sfProcessHost ATTRIB host2;
+
+    generator extends Generator {
+        // Evaluation
+        outputs:value:to  LAZY ATTRIB  sink:Evaluator29:inputs:G;
+        // P3
+        outputs:Generator15  extends  Output;
+        outputs:Generator15:to LAZY ATTRIB Plus3:inputs:lhs;
+        // Negate
+        outputs:Generator16  extends  Output;
+        outputs:Generator16:to LAZY ATTRIB Negate22:inputs:lhs;
+        //T9
+        outputs:Generator26  extends  Output;
+        outputs:Generator26:to LAZY ATTRIB Times9:inputs:lhs;
+
+        interval ATTRIB intervalGen; // speed it up a bit,a number every second
+        min 1;
+        max ATTRIB maxValueGen;
+    }
+  }
+}
+
+/*
+ * sfConfig1 is the special attribute that is deployed by SFSystem
+ * here it is defined to contain Example1
+ */
+
+sfConfig1 extends Compound {
+  sfProcessHost ATTRIB host1;
+  sfLivenessDelay 0;
+  //sfRootLocatorPort ATTRIB port;
+  numMatches 10;
+  maxValueGen 10000;
+  intervalGen 5;
+  example extends Example1;            // add the example itself as a component
+}
+
+// To use in localhost
+#include "org/smartfrog/regtest/arithmetic/templategen/hostTemplateLocalHost.sf"
+

@@ -1,0 +1,432 @@
+/** (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/services/filesystem/components.sf"
+
+/**
+ * This is a development only release of the library logic.
+ * DO NOT USE IN ANY PRODUCTION ENVIRONMENT. THIS CODE IS UNSTABLE
+ * AND PROBABLY DOES NOT WORK. AS EXTERNAL REPOSITORIES CHANGE (eg Maven2),
+ * SO WILL THIS CODE. WE MAY EVEN RENAME THE COMPONENTS
+ *
+ * Caveats aside, any and all help getting this code working is welcome :)
+ *
+ * Note that there is currently no proxy support. Run a daemon with the
+ * -DhttpProxyHost and -DhttpProxyPort options, or use the SetProperty component
+ * to set up the proxy at deploy-time
+ */
+
+
+/**
+ * Policy classes are stateless objects that implement the Policy/Strategy
+ * pattern vis-a-vis naming of local and remote URLs.
+ * There are separate interfaces for local and remote naming policies.
+ *
+ * The Maven1 and Maven2 policies implement both, and can act
+ * as paired entities for a consistent layout at both ends.
+ *
+ * The FlattenLocalFiles policy is a local policy only. It is not
+ * a sensible strategy for servers as it does not scale to large numbers of
+ * artifacts. Indeed, the maven2 policy scales better than maven1
+ * if dotted names are using, as maven1 has too flat a root directory.
+ */
+
+/**
+ * Maven1 provides both a remote and a local naming policy
+ */
+
+Maven1Policy extends Prim {
+    sfClass "org.smartfrog.services.os.java.Maven1Policy";
+}
+
+/**
+ * Maven2 provides both a remote and a local naming policy
+ */
+Maven2Policy extends Prim {
+    sfClass "org.smartfrog.services.os.java.Maven2Policy";
+}
+
+/*
+ * this is the policy for locally cached, remotely downloaded
+ * artifacts
+ */
+IvyLocalPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.IvyLocalCachePolicy";
+}
+
+/*
+ * this is the policy for locally published artifacts. 
+ * These are generated locally, and the cache is ignored 
+ * (as it can only be out of date) 
+ */
+IvyLocalPublishedPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.IvyLocalPublishedPolicy";
+}
+
+/**
+ * This policy declares that remote artifacts are not supported
+ */
+NoRemoteArtifactPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.NoRemoteArtifactPolicy";
+}
+
+/**
+ * This is a local file policy only.
+ * It tells the library to save stuff flat
+ */
+FlattenLocalFilesPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.FlattenLocalFilesPolicy";
+}
+
+
+
+
+/**
+ * at deploy time, we fetch libraries from the repository, if needed
+ *
+ * Note that Library is implemented as an extension of Compound; it will
+ * deploy all immediate child components, before it resolves it own
+ * components.
+ */
+Library extends FileUsingComponent {
+    sfClass "org.smartfrog.services.os.java.LibraryImpl";
+    librariesSchema extends Schema {
+        repositories extends Vector;
+        //cache dir; is created if needed
+        cacheDir extends Compulsory;
+
+        /**
+         * Component implementing local cache policy
+         */
+        localCachePolicy extends CD;
+
+        /**
+         * Component implementing local cache policy
+         */
+        remoteCachePolicy extends CD;
+
+    }
+}
+
+/**
+ * Declare the maven library
+ * To use this, you have to force its instantiation under sfConfig.
+ */
+
+Maven1Library extends Library {
+
+    /**
+     * Maven file policy
+     */
+
+    policy extends Maven1Policy;
+
+    /**
+     * local policy is maven1
+     */
+    localCachePolicy policy;
+
+    /**
+     * Remote policy is maven1
+     */
+    remoteCachePolicy policy;
+
+    /**
+     * Well known cache directory
+     */
+    MavenLocalCacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".maven/repository";
+    }
+
+
+    /**
+     * Maven repository at ibiblio.org.
+     */
+    repositories [ LibraryRepositories:Maven1_at_Ibiblio  ];
+
+    //cache into the well known maven location
+    cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
+
+}
+
+/**
+ * A non-deploying list of repositories
+ */
+LibraryRepositories extends NULL {
+   Maven1_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven" ;
+   Maven2_at_Ibiblio  "http://mirrors.ibiblio.org/pub/mirrors/maven2" ;
+}
+
+Maven2Library extends Library {
+
+    /**
+     * Maven file policy
+     */
+
+    policy extends Maven2Policy;
+
+    /** 
+     * local policy is maven2
+     */
+    localCachePolicy policy;
+
+    /**
+     * Remote policy is maven2
+     */
+    remoteCachePolicy policy;
+
+
+
+    /**
+     * Well known cache directory
+     */
+    localCacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".m2/repository";
+    }
+
+
+
+    /**
+     * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
+     * the mirror list for easy selection.
+     */
+    repositories [ LibraryRepositories:Maven2_at_Ibiblio ];
+
+    //cache into the well known maven location
+    cacheDir LAZY localCacheDirectory:absolutePath;
+
+}
+
+/**
+ * For Ivy artifacts we use the central M2 repository for remote artifacts,
+ * but the local ivy2 cache under for local content. 
+ * This currently causes us to miss out on things published
+ * locally but which are not in cache
+ */
+AbstractIvy2Library extends Library {
+
+
+    /**
+     * Well known cache directory
+     */
+    localCacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".ivy2/cache";
+    }
+
+    /**
+     * Well known published directory
+     */
+    localPublishedDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".ivy2/local";
+    }
+
+
+}
+
+
+
+/**
+ * For Ivy artifacts we use the central M2 repository for remote artifacts,
+ * but the local ivy2 cache under for local content. 
+ * This currently causes us to miss out on things published
+ * locally but which are not in cache
+ */
+IvyLibrary extends AbstractIvy2Library {
+
+    /**
+     * local policy is Ivy cache
+     */
+    localCachePolicy extends IvyLocalPolicy;
+
+    /**
+     * Remote policy is maven2
+     */
+    remoteCachePolicy extends Maven2Policy;
+
+    /**
+     * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
+     * the mirror list for easy selection.
+     */
+    repositories [ LibraryRepositories:Maven2_at_Ibiblio ];
+    
+    //fetch from cache
+    cacheDir LAZY localCacheDirectory:absolutePath;
+    
+}
+
+
+
+/**
+ * This is for artifacts that are published locally
+ * And not available remotely
+ */
+IvyLocallyPublishedLibrary extends AbstractIvy2Library {
+
+    /**
+     * local policy is Ivy published
+     */
+    localCachePolicy extends IvyLocalPublishedPolicy;
+
+    /**
+     * Remote policy is 'none'. 
+     */
+    remoteCachePolicy extends NoRemoteArtifactPolicy;
+
+    //fetch from cache
+    cacheDir LAZY localPublishedDirectory:absolutePath;
+
+    //the repository list is moot.
+    repositories [ ];
+}
+
+
+/**
+ * This is something that you can download
+ * from a repository.
+ * After deployment, it has an absolutePath attribute.
+
+ * It will only successfully deploy if
+ *  owner!=null
+ * or
+ *  it has an ancestor that implements the Libraries interface.
+ * In which case it takes that component as its repository.
+ */
+
+LibraryArtifact extends FileUsingWorkflowComponent {
+    sfClass "org.smartfrog.services.os.java.LibraryArtifactImpl";
+    artifactSchema extends Schema {
+        library extends OptionalCD;
+        project extends String;
+        artifact extends String;
+        classifier extends OptionalString;
+        extension extends OptionalString;
+        version extends String;
+        //true or false
+        synchronousDownload extends Boolean;
+        //sha1 hex string
+        sha1 extends OptionalString;
+        //MD5 is not as secure as sha1, but is retained because the md5 values
+        //of maven artifacts are so common.
+        md5 extends OptionalString;
+        //block size for downloads
+        blocksize extends OptionalInteger;
+       // Attribute to copy a component to. If it is a directory, 
+       // then the file gets copied as is. If is not a dir (or doesnt exist)
+       // it is taken as a filepath.
+        copyTo extends FilenameType;
+
+        //flag for download polocies
+        downloadIfAbsent extends Boolean;
+        downloadAlways extends Boolean;
+        failIfNotPresent extends Boolean;
+        //place to copy to after the download.
+        copyTo extends OptionalString;
+
+        maxCacheAge extends Integer {
+            description "max time in seconds for caching. -1 means don't check";
+        }
+    }
+    artifact ATTRIB project;
+
+    synchronousDownload true;
+    //implict request for sha1 generation. Call it a hint :)
+    sha1 "";
+    //block size
+    blocksize 8192;
+
+    //if we do a download, we want it and not some dated version. A limit of ten minutes lets
+    //clients in a cluster share some workload.
+    maxCacheAge 600;
+
+    //dont download if it is present
+    downloadAlways false;
+
+    //do download if it is absent
+    downloadIfAbsent true;
+
+    //require the file to exist or be downloaded
+    failIfNotPresent true;
+
+}
+
+//some errors for test cases
+LibraryArtifactErrors extends LibraryArtifact {
+    
+    //"The network policy prevents the download of ";
+    ERROR_NO_DOWNLOAD CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_DOWNLOAD" ;
+
+    //"Checksum mismatch on file " 
+    ERROR_CHECKSUM_FAILURE CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE" ;
+    
+    /**
+     * Error text when there is no repository entry anywhere
+     */
+    ERROR_NO_OWNER CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_OWNER" ;
+   
+    /**
+     * Error text when repostiories == [] and a download was needed.
+     */
+    ERROR_NO_REPOSITORIES CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_REPOSITORIES" ;
+
+    /**
+     * Error when a file was not found in any repository
+     */
+    ERROR_ARTIFACT_NOT_FOUND CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_ARTIFACT_NOT_FOUND" ;
+    
+}
+
+/**
+ * JAR artifacts have a well known extension
+ */
+JarArtifact extends LibraryArtifact {
+    extension "jar";
+}
+
+/**
+ * set the parameters to always download an artifact
+ */
+ForcedDownloadArtifact extends LibraryArtifact {
+    downloadAlways true;
+    maxCacheAge 0;
+}
+
+/**
+ * A Maven JAR is a JAR artifact
+ */
+MavenJar extends JarArtifact  {
+}
+
+/**
+ * An Ivy JAR is a JAR artifact
+ */
+IvyJar extends JarArtifact  {
+}

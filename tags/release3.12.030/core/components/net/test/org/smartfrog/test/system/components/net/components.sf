@@ -1,0 +1,67 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/net/telnet.sf"
+#include "/org/smartfrog/services/net/ftp.sf"
+
+NoPasswd CONSTANT "org.smartfrog.services.passwords.FilePasswordProvider.ERROR_MISSING_PASSWORD_FILE";
+
+tcn68Action extends TelnetSession {
+	PasswordProvider:passwordFile "missing-password-file.txt";
+	Telnet:host "ebnt171.india.hp.com";
+  Telnet:username "ritu";
+  Telnet:commands ["cd /home/smartfrog",
+            "mkdir test"
+           ];
+  // optional log file for the telnet session
+  Telnet:logFile "spy.log";
+	Telnet:ostype "linux";
+}
+
+
+ExpectNoPasswordFile extends ExpectDeployFailure {
+
+
+
+    //NoPasswd "Missing password file: ";
+
+    exceptions [
+        [SmartFrogExceptionNames:EXCEPTION_LIFECYCLE,""],
+        [SmartFrogExceptionNames:EXCEPTION_DEPLOYMENT,NoPasswd]
+      ];
+}
+
+tcn68 extends ExpectNoPasswordFile {
+  action tcn68Action;
+}
+
+
+tcn72Action extends FTPClient {
+	PasswordProvider:passwordFile "e:\\test\\missing-password.txt";
+	FTP:ftpHost "ebnt171.india.hp.com";
+	FTP:username "ritu";
+	FTP:localFiles ["D:\\temp\\one.txt","D:\\temp\\two.txt"];
+	FTP:remoteFiles ["/home/ritu/tmp/test1",
+                     "/home/ritu/tmp/test2"];
+}
+
+tcn72 extends ExpectNoPasswordFile {
+  action tcn72Action;
+}
