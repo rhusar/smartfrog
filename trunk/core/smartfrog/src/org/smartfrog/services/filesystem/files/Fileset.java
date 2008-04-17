@@ -195,7 +195,7 @@ public class Fileset implements Serializable {
 
     /**
      * Returns a list of files in String format using the platform file separator.
-     * @return
+     * @return String list of files separated by the platform's path separator.
      */
     public String toString() {
           String fileSetString = java.util.Arrays.toString(listFiles());

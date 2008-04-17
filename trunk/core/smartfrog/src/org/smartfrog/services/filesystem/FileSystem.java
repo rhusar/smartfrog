@@ -268,7 +268,7 @@ public final class FileSystem {
      * string is turned into an absolute path, relative to any directory named, after the string is converted into
      * platform appropriate forward/back slashes.
      *
-     * @param component/component description to look up the path from
+     * @param component  component or component description to look up the path from
      * @param attribute the name of the attribute to look up
      * @param defval    a default value. This should already be in the local format for the target platform, and
      *                  absolute. Can be null. No used when mandatory is true
