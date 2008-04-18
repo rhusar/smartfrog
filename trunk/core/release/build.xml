@@ -642,7 +642,8 @@
       </and>
     </condition>
     <echo
-        level="verbose">can.create.signed.rpms=${can.create.signed.rpms}</echo>
+        level="verbose">can.create.signed.rpms=${can.create.signed.rpms}
+    </echo>
   </target>
 
   <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms"/>
@@ -926,7 +927,6 @@
     </scp>
     <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.jar"/>
     <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.zip"/>
-    <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.tar"/>
     <ssh-remote failonerror="false" command="chmod a+r ${ssh.dir}/*.gz"/>
   </target>
 
@@ -950,13 +950,13 @@
   <target name="can-upload"
       depends="load-server-settings,check-ftp,check-scp"/>
 
-  <target name="dist-upload" depends="can-upload,dist,scp-upload,ftp-upload"
+  <target name="dist-upload" depends="can-upload,dist,ftp-upload"
       description="create the release artifacts and then upload"/>
 
   <target name="upload" depends="upload-no-rebuild"
       description="upload; set server property to choose the destination"/>
 
-  <target name="upload-no-rebuild" depends="can-upload,scp-upload,ftp-upload"
+  <target name="upload-no-rebuild" depends="can-upload,upload-maven-artifacts,ftp-upload"
       description="upload the existing artifacts"/>
 
   <target name="checksums" depends="ready-to-upload-rpms">
