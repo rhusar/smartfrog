@@ -1402,10 +1402,17 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws RemoteException for consistency with the {@link Liveness}
      * interface
      */
-    public void sfPing(Object source)
-            throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         if (Logger.logLiveness && (sfLog().isTraceEnabled())) {
-            sfLog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
+            String sourceName = source.toString();
+            if (source instanceof Prim) {
+                try {
+                    sourceName = ((Prim)source).sfCompleteName().toString();
+                } catch (RemoteException e) {
+                    if (sfLog().isIgnoreEnabled()) sfLog().ignore(e); 
+                }
+            }
+            sfLog().trace("ping received from " + sourceName + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
         }
 
         if (sfIsTerminated) {

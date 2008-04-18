@@ -725,9 +725,12 @@ public class ProcessCompoundImpl extends CompoundImpl
 
         if (gcTimeout > 0) {
             if (sfLog().isDebugEnabled()) sfLog().debug("SPGC lease being checked " + countdown);
-            if ((countdown-- < 0) && (sfChildList().size() == 0) && (sfParent != null)) {
-                if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being activated");
-                sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ this.sfCompleteNameSafe(), this.sfCompleteNameSafe() , null));
+            if ((countdown-- >= 0) && (sfChildList().size() == 0) && (sfParent != null)) {
+                //Finished countdown
+                if (countdown <= 0) {
+                    if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being activated");
+                    sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ this.sfCompleteNameSafe(), this.sfCompleteNameSafe() , null));
+                }
             } else {
                 if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC lease being reset " + this.sfCompleteNameSafe() + " source "+ source );
                 countdown = gcTimeout;

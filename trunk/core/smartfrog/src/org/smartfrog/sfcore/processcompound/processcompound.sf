@@ -39,6 +39,8 @@ ProcessCompound extends Compound {
   sfLivenessFactor 2;
   sfSyncTerminate true;
 
+  sfSubprocessGCTimeout 30; // Number of pings a subprocess will check for components before terminating itself. O = no SubProcGC
+
   sfProcessClass "org.smartfrog.SFSystem";
   sfProcessJavaPath (LAZY PROPERTY "java.home" ++ "/bin/");
   sfProcessJava "java";

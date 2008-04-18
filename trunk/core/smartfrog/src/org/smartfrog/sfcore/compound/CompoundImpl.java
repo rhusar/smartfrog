@@ -801,8 +801,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogLivenessException liveness failed
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException,
-            RemoteException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         // check the timing of the parent pings
         super.sfPing(source);
 
