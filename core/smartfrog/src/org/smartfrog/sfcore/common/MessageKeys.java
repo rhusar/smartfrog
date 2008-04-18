@@ -395,4 +395,9 @@ public interface MessageKeys {
     * Message key: Cannot override an attribute marked sfFinal
     */
    String CANNOT_OVERRIDE_FINAL = "CANNOT_OVERRIDE_FINAL";
+
+    /**
+     * Message Key: Cannot add attribute with the same value of an existing child
+     */
+   String MSG_CANNOT_ADD_VALUE_CHILD = "MSG_CANNOT_ADD_VALUE_CHILD";
 }
