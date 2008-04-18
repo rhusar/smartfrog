@@ -80,4 +80,8 @@ public class LivenessSender extends Timer {
 
         return t;
     }
+
+    public String toString(){
+        return name;        
+    }
 }
