@@ -35,7 +35,7 @@ import java.util.Vector;
 public class InstanceList extends ArrayList<ImageInstance> {
 
 
-    public static InstanceList EMPTY_LIST = new InstanceList(0);
+    public static final InstanceList EMPTY_LIST = new InstanceList(0);
     private static final ArrayList<TerminatingInstanceDescription> EMPTY_TERMINATED_INSTANCE_LIST = new ArrayList<TerminatingInstanceDescription>(
             0);
 
@@ -85,15 +85,14 @@ public class InstanceList extends ArrayList<ImageInstance> {
      */
     public List<TerminatingInstanceDescription> terminate()
             throws EC2Exception {
-        int size = size();
-        List<String> instanceIDs = new ArrayList<String>(size);
-        if (size == 0) {
-            return EMPTY_TERMINATED_INSTANCE_LIST;
-        }
+        List<String> instanceIDs = new ArrayList<String>(size());
         for (ImageInstance instance : this) {
             if (!instance.isTerminated() && !instance.isShuttingDown()) {
                 instanceIDs.add(instance.getInstanceId());
             }
+        }
+        if (instanceIDs.size() == 0) {
+            return EMPTY_TERMINATED_INSTANCE_LIST;
         }
         return get(0).getBinding().terminateInstances(instanceIDs);
     }
