@@ -17,18 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.components;
+package org.smartfrog.services.hadoop.components.submitter;
 
-import org.apache.hadoop.fs.Path;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
-import java.rmi.Remote;
 
 /**
- * This is the hadoop configuration. It defines the names of the many, many hadoop options we want to allow people to
- * configure.
+ * Created 17-Apr-2008 14:39:45
  */
 
 
-public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
+public interface Job extends HadoopConfiguration, FileUsingComponent {
+
+
 }

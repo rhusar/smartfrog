@@ -34,7 +34,22 @@ public interface Submitter extends HadoopConfiguration {
      */
     String ATTR_JOBTRACKER = HadoopCluster.ATTR_JOBTRACKER;
 
-    String ATTR_JARFILE = "jarFile";
+    /**
+     * {@value}
+     */
+    String ATTR_JOB = "job";
 
+    String ATTR_TERMINATEJOB = "terminateJob";
 
+    String ATTR_JOBID = "jobID";
+
+    /**
+     ping the job on liveness by checking its status
+     */
+    String ATTR_PINGJOB ="pingJob";
+
+    /**
+     only relevant when pingJob==true ; should we terminate when the job has finished?
+     */
+    String ATTR_TERMINATEWHENJOBFINISHES = "terminateWhenJobFinishes";
 }
