@@ -134,7 +134,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer, Runnable {
     /**
      * Deploy an EAR file
      *
-     * @param enterpriseApplication
+     * @param enterpriseApplication the EAR app
      * @return an entry referring to the application
      * @throws RemoteException
      * @throws SmartFrogException
