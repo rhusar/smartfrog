@@ -201,13 +201,9 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         try {
-            root = SFProcess.getRootLocator().getRootProcessCompound(null,
-                    ((Number) sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT,
-                            false)).intValue());
+            root = SFProcess.getRootLocator().getRootProcessCompound(null, ((Number) sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false)).intValue());
         } catch (Throwable t) {
-            throw (SmartFrogRuntimeException) SmartFrogRuntimeException.forward(
-                    "ProcessCompoundImpl.sfLocateParent()",
-                    t);
+            throw (SmartFrogRuntimeException) SmartFrogRuntimeException.forward( "ProcessCompoundImpl.sfLocateParent()", t);
         }
         return root;
     }
@@ -705,17 +701,17 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws SmartFrogLivenessException liveness failure
      * @throws RemoteException In case of network/rmi error
      */
-    public void sfPing(Object source)
-            throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+
 
         if (source == null) {
             return;
         }
+
         if (!source.equals(sfLivenessSender)) {
             return;
         }
-
         // only check for subprocess GC if checking self
         if (gcTimeout == -1) {
             try {
@@ -724,23 +720,22 @@ public class ProcessCompoundImpl extends CompoundImpl
                 gcTimeout = 0;
             }
 
-            //System.out.println("SPGC being initialised - " + gcTimeout);
+            if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being initialised - " + gcTimeout);
             countdown = gcTimeout;
         }
 
         if (gcTimeout > 0) {
-            //System.out.println("SPGC lease being checked " + countdown);
-            if ((countdown-- < 0) && (sfChildList().size() == 0) &&
-                    (sfParent != null)) {
-                //System.out.println("SPGC being activated");
-                sfTerminate(TerminationRecord.normal(null));
+            if (sfLog().isDebugEnabled()) sfLog().debug("SPGC lease being checked " + countdown);
+            if ((countdown-- < 0) && (sfChildList().size() == 0) && (sfParent != null)) {
+                if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being activated");
+                sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ this.sfCompleteNameSafe(), this.sfCompleteNameSafe() , null));
             } else {
-                //System.out.println("SPGC lease being reset");
+                if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC lease being reset " + this.sfCompleteNameSafe() + " source "+ source );
                 countdown = gcTimeout;
             }
         } else {
             // only send warn when debug enabled.
-            if (sfLog().isTraceEnabled()) sfLog().warn("SubProcessGC not enabled");
+            if (sfLog().isDebugEnabled()) sfLog().warn("SubProcessGC not enabled");
         }
     }
 
@@ -826,8 +821,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws SmartFrogException In case of resolution failure
      * @throws RemoteException In case of network/rmi error
      */
-    public synchronized Object sfRegister(Object name, Prim comp)
-            throws SmartFrogException, RemoteException {
+    public synchronized Object sfRegister(Object name, Prim comp) throws SmartFrogException, RemoteException {
 
         if ((name != null) && (sfContext.containsKey(name))) {
             throw SmartFrogResolutionException.generic(sfCompleteNameSafe(),
@@ -864,12 +858,15 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws SmartFrogException when component was not registered
      * @throws RemoteException In case of network/rmi error
      */
-    public boolean sfDeRegister(Prim comp)
-            throws SmartFrogException, RemoteException {
+    public boolean sfDeRegister(Prim comp) throws SmartFrogException, RemoteException {
         boolean success = false;
         if (sfContext.contains(comp)) {
             sfContext.remove(sfContext.sfAttributeKeyFor(comp));
             success = true;
+            //Remove all remaining instances of the same component if any. This is just to guard this corner case but it should no happen
+            while (sfContext.contains(comp)){
+               sfContext.remove(sfContext.sfAttributeKeyFor(comp)); 
+            }
         }
         if (sfContainsChild(comp)) {
             success = sfRemoveChild(comp);
@@ -891,10 +888,8 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws Exception attribute not found after timeout
      * @throws RemoteException if there is any network or remote error
      */
-    public Object sfResolveHereOrWait(Object name, long timeout) throws
-            Exception {
+    public Object sfResolveHereOrWait(Object name, long timeout) throws Exception {
         long endTime = (new Date()).getTime() + timeout;
-
         synchronized (processLocks) {
             while (true) {
                 try {
@@ -1149,8 +1144,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         Object processCmd;
         processCmd = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         if (processCmd == null) {
-            processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA,
-                    false);
+            processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         }
         if (processCmd instanceof String) {
             cmd.addElement((String) processCmd);

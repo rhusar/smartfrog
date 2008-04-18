@@ -766,19 +766,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             registerWithProcessCompound();
 
             // Look up delay, if not there never mind looking up factor
-            sfLivenessDelay = sfResolve(refLivenessDelay,
-                    sfLivenessDelay,
-                    false);
-            sfLivenessFactor = sfResolve(refLivenessFactor,
-                    sfLivenessFactor,
-                    false);
+            sfLivenessDelay = sfResolve(refLivenessDelay, sfLivenessDelay, false);
+            sfLivenessFactor = sfResolve(refLivenessFactor, sfLivenessFactor, false);
 
             // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY,
-                    new Long(sfLivenessDelay));
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long(sfLivenessDelay));
             // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR,
-                    new Integer(sfLivenessFactor));
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer(sfLivenessFactor));
 
             sfLivenessCount = sfLivenessFactor;
 
@@ -790,8 +784,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
             } catch (Exception e) {
                 if (sfLog().isWarnEnabled()) {
-                    sfLog().warn("Failed to get a valid value for " + SmartFrogCoreKeys.SF_HOST + " attribute.",
-                            e);
+                    sfLog().warn("Failed to get a valid value for " + SmartFrogCoreKeys.SF_HOST + " attribute.", e);
                 }
             }
             sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS,
@@ -1198,8 +1191,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         try {
             sfTerminateWithHooks.applyHooks(this, status);
         } catch (Exception ex) {
-            // @TODO: Log. Ignore.
-            //Logger.logQuietly(ex);
             if (sfLog().isIgnoreEnabled()) {
                 sfLog().ignore(ex);
             }
@@ -1239,14 +1230,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                 //Usually when disconnected from network and Parent not reachable
                 try {
                     status.id = SFProcess.getProcessCompound().sfCompleteName();
-                    status.id.addElement(ReferencePart.here(
-                            SFProcess.getProcessCompound().sfAttributeKeyFor(
-                                    this)));
+                    status.id.addElement(ReferencePart.here(SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
                 } catch (Exception ex2) {
                     if (sfLog().isIgnoreEnabled()) {
                         sfLog().ignore(ex2);
                     }
-                    //ignore
                 }
             }
         }
@@ -1275,11 +1263,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         //UnExports this component.
         // It has to be placed after comp.sfTerminatedWith(status, this);
         try {
-            org.smartfrog
-                    .sfcore
-                    .security
-                    .SecureRemoteObject
-                    .unexportObject(this, true);
+            org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
@@ -1319,14 +1303,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
                 //Registers with local process compound!
                 SFProcess.getProcessCompound().sfRegister(this.sfResolveHere(
-                        SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false),
-                        this);
+                        SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false),this);
             }
             sfParent = null;
             sfStartLivenessSender();
             sfParentageChanged();
         } catch (SmartFrogResolutionException ex) {
-            //@Todo: log
             sfLog().ignore("unknown at detach time", ex);
             //ignore
         }
