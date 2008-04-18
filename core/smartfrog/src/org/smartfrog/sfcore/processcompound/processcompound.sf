@@ -40,6 +40,7 @@ ProcessCompound extends Compound {
   sfSyncTerminate true;
 
   sfProcessClass "org.smartfrog.SFSystem";
+  sfProcessJavaPath (LAZY PROPERTY "java.home" ++ "/bin/");
   sfProcessJava "java";
   //sfProcessClassPath "smartfrog.jar";
   //sfProcessReplaceClassPath false;
