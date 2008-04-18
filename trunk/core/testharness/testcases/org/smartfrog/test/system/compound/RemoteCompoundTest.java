@@ -54,13 +54,10 @@ public class RemoteCompoundTest extends DeployingTestBase {
         return (Compound) application;
     }
 
-    private Compound getCompound() {
-        return (Compound) application;
-    }
 
     public void testAttributes() throws Throwable {
         Compound comp=deployCompound();
-        Iterator iterator = comp.sfAttributes();
+        Iterator<Object> iterator = comp.sfAttributes();
         int counter = 0;
         int childcount = 0;
         while (iterator.hasNext()) {
@@ -78,7 +75,7 @@ public class RemoteCompoundTest extends DeployingTestBase {
 
     public void testValues() throws Throwable {
         Compound comp = deployCompound();
-        Iterator iterator = comp.sfValues();
+        Iterator<Object> iterator = comp.sfValues();
         int counter = 0;
         int childcount =0;
         while (iterator.hasNext()) {
