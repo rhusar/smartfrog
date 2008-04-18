@@ -724,7 +724,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         if (gcTimeout > 0) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("SPGC lease being checked " + countdown);
+            if (sfLog().isDebugEnabled()) sfLog().debug("SPGC lease being checked for " + this.sfCompleteNameSafe() + " - " + countdown);
             if ((countdown-- >= 0) && (sfChildList().size() == 0) && (sfParent != null)) {
                 //Finished countdown
                 if (countdown <= 0) {
