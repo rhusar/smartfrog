@@ -17,9 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/hadoop/components/classnames.sf"
+#include "/org/smartfrog/services/hadoop/components/hadoopconfiguration.sf"
+#include "/org/smartfrog/services/hadoop/components/submitter/components.sf"
 
 HadoopCluster extends Prim {
   jobTracker TBD;
-  "org.apache.hadoop.mapred.TextOutputFormat";
 }

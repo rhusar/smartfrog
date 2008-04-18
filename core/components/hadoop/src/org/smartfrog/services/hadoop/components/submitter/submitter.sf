@@ -17,129 +17,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
 
-JobSubmitter extends HadoopConfiguration  {
-  //jobTracker TBD;
-  //
-
-  keep.failed.task.files false;
-
-  /*a regular expression for task names that should be kept.
-   * The regular expression ".*_m_000123_0" would keep the files
-   * for the first instance of map 123 that ran.
-   */
-
-  keep.task.files.pattern ".*";
-
-  mapred.input.format.class "org.apache.hadoop.mapred.TextInputFormat";
-  mapred.output.format.class "org.apache.hadoop.mapred.TextOutputFormat";
-  mapred.input.key.class "org.apache.hadoop.io.LongWritable";
-  mapred.input.value.class "org.apache.hadoop.io.Text";
-  mapred.compress.map.output true;
-
-  mapred.map.output.compression.type COMPRESSION_RECORD;
-  mapred.map.runner.class "org.apache.hadoop.mapred.MapRunner";
-  /*
-  the Partitioner class used to partition Mapper-outputs to be sent to the Reducers.
-  */
-  mapred.partitioner.class "org.apache.hadoop.mapred.lib.HashPartitioner";
-  //the Reducer class for the job.
-  mapred.reducer.class "org.apache.hadoop.mapred.lib.IdentityReducer";
-
-  /**
-   * Get the user-defined combiner class used to combine map-outputs
-   * before being sent to the reducers. Typically the combiner is same as the
-   * the Reducer for the job */
-  mapred.combiner.class mapred.reducer.class;
-  //Should speculative execution be used for this job?
-  mapred.speculative.execution true;
-  //Should speculative execution be used for this job for map tasks?
-  mapred.map.tasks.speculative.execution true;
-  /**
-  Should speculative execution be used for this job for reduce tasks?
-  */
-  mapred.reduce.tasks.speculative.execution true;
-
-  /**
-   * The number of map tasks for this job.
-   */
-  mapred.map.tasks  1;
-  /*
-  the number of reduce tasks for this job.
-  */
-  mapred.reduce.tasks 1;
-
-  /*
-  the max number of attempts per map task.
-  */
-  mapred.map.max.attempts 4;
-
-  /**
-   the max number of attempts per reduce task.
-   */
-
-  mapred.reduce.max.attempts 4
-
-  /**
-  * the user-specified job name. This is only used to identify the
-  * job to the user.
-  */
-  mapred.job.name "";
-
- /**
-   * Get the user-specified session identifier. The default is the empty string.
-   *
-   * The session identifier is used to tag metric data that is reported to some
-   * performance metrics system via the org.apache.hadoop.metrics API.  The
-   * session identifier is intended, in particular, for use by Hadoop-On-Demand
-   * (HOD) which allocates a virtual Hadoop cluster dynamically and transiently.
-   * HOD will set the session identifier by modifying the hadoop-site.xml file
-   * before starting the cluster.
-   *
-   * When not running under HOD, this identifer is expected to remain set to
-   * the empty string.
-   *
-   */
-
-  session.id "";
-
-  /**
-   * the maximum no. of failures of a given job per tasktracker. If the no. of task failures exceeds
-   * <code>noFailures</code>, the tasktracker is <i>blacklisted</i> for this job.
-   */
-
-   mapred.max.tracker.failures 4;
-
-   /**
-   the maximum percentage of map tasks that can fail without
-   the job being aborted.
-   */
-   mapred.max.map.failures.percent 0;
-
-
-  /**
-   * the maximum percentage of reduce tasks that can fail without
-   *  the job being aborted
-   */
-  mapred.max.reduce.failures.percent 0;
-
-  /**
- * Used to describe the priority of the running job.
- *
+/*
+ * the comments come from the Apache source
  */
-  JOBPRIORITY_VERY_HIGH "VERY_HIGH";
-  JOBPRIORITY_HIGH "HIGH";
-  JOBPRIORITY_NORMAL "NORMAL";
-  JOBPRIORITY_LOW "LOW";
-  JOBPRIORITY_VERY_LOW "VERY_LOW";
-  /**
-   * the JobPriority for this job.
-   */
-  mapred.job.priority JOBPRIORITY_NORMAL;
+
+
+
+/**
+ * A component that takes a job and submits it.
+ */
+JobSubmitter extends WorkflowPrim  {
 
   /**
-   * whether the task profiling is enabled.
+   reference to a job tracker; can always be in a parent.
+  jobTracker TBD;
+  */
+
+  job TBD;
+  /**
+  terminate on shutdown
+  */
+  terminateJob false;
+  /**
+   ping the job on liveness by checking its status
    */
-  mapred.task.profile false;
+  pingJob true;
+
+  /**
+   only relevant when pingJob==true ; should we terminate when the job has finished?
+   */
+  terminateWhenJobFinishes false;
+
+  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 }
