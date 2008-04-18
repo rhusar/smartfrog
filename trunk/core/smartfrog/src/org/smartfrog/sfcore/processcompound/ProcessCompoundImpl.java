@@ -704,7 +704,6 @@ public class ProcessCompoundImpl extends CompoundImpl
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
-
         if (source == null) {
             return;
         }
@@ -1107,27 +1106,55 @@ public class ProcessCompoundImpl extends CompoundImpl
             throws SmartFrogException, IOException {
         Vector<String> runCmd = new Vector<String>();
 
+
+sfLog().info( runCmd.toString());
+
         addProcessJava(runCmd, cd);
         //addProcessClassName(runCmd,cd);
-
+sfLog().info( runCmd.toString());
         addProcessDefines(runCmd, name);
-
+sfLog().info( runCmd.toString());
         addProcessClassPath(runCmd, name, cd);
         addProcessSFCodeBase(runCmd, name, cd);
-
+sfLog().info( runCmd.toString());
         addProcessEnvVars(runCmd, cd);
         addProcessAttributes(runCmd, name, cd);
         addProcessClassName(runCmd, cd);
-
+sfLog().info( runCmd.toString());
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) {
-            sfLog().trace("startProcess[" + name.toString() + "].runCmd: " + runCmd
-                    .toString());
+            sfLog().trace("startProcess[" + name.toString() + "].runCmd: " + runCmd.toString());
         }
+sfLog().info( runCmd.toString());        
         return Runtime.getRuntime().exec(runCmdArray);
     }
 
+    /**
+     * Gets the process java path start command. Looks up the sfProcessJavaPath
+     * attribute. sfProcessJava could be a String or objects with the right .toString() method.
+     *
+     * @param cd  component description with extra process configuration (ex. sfProcessConfig)
+     *
+     * @throws SmartFrogException failed to construct java command
+     */
+    protected String addProcessJavaPath(ComponentDescription cd) throws SmartFrogException {
+        Object processCmd;
+        processCmd = cd.sfResolve(SmartFrogCoreKeys.SF_PROCESS_JAVA_PATH, false);
+        if (processCmd == null) {
+            try {
+                processCmd = sfResolve(SmartFrogCoreKeys.SF_PROCESS_JAVA_PATH, false);
+            } catch (RemoteException e) {
+                //ignore
+            }
+        }
+        if (processCmd == null ) return "";
+        if (processCmd instanceof String) {
+            return ((String) processCmd);
+        } else {
+            return (processCmd.toString());
+        }
+    }
 
     /**
      * Gets the process java start command. Looks up the sfProcessJava
@@ -1139,19 +1166,20 @@ public class ProcessCompoundImpl extends CompoundImpl
      *
      * @throws SmartFrogException failed to construct java command
      */
-    protected void addProcessJava(Vector<String> cmd, ComponentDescription cd)
-            throws SmartFrogException {
+    protected void addProcessJava(Vector<String> cmd, ComponentDescription cd) throws SmartFrogException {
         Object processCmd;
+        String processPath = addProcessJavaPath( cd);
         processCmd = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         if (processCmd == null) {
             processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         }
         if (processCmd instanceof String) {
-            cmd.addElement((String) processCmd);
-        } else if (processCmd instanceof Collection) {
+            cmd.addElement(processPath + (String) processCmd );
+        } else if (processCmd instanceof Collection) {            
             cmd.addAll((Collection<String>) processCmd);
+            cmd.set(0, processPath + cmd.get(0));
         } else {
-            cmd.addElement(processCmd.toString());
+            cmd.addElement(processPath + processCmd.toString());
         }
     }
 
