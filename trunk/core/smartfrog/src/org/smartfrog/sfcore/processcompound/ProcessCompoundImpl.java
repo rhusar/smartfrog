@@ -719,12 +719,12 @@ public class ProcessCompoundImpl extends CompoundImpl
                 gcTimeout = 0;
             }
 
-            if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC being initialised - " + gcTimeout);
+            if (sfLog().isTraceEnabled()) sfLog().debug ("SubProcessGC being initialised - " + gcTimeout);
             countdown = gcTimeout;
         }
 
         if (gcTimeout > 0) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("SPGC lease being checked for " + this.sfCompleteNameSafe() + " - " + countdown);
+            if (sfLog().isTraceEnabled()) sfLog().trace ("SPGC lease being checked for " + this.sfCompleteNameSafe() + " - " + countdown);
             if ((countdown-- >= 0) && (sfChildList().size() == 0) && (sfParent != null)) {
                 //Finished countdown
                 if (countdown <= 0) {
@@ -732,7 +732,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                     sfTerminate(TerminationRecord.normal ("SubProcessGC self activated for "+ this.sfCompleteNameSafe(), this.sfCompleteNameSafe() , null));
                 }
             } else {
-                if (sfLog().isDebugEnabled()) sfLog().debug ("SubProcessGC lease being reset " + this.sfCompleteNameSafe() + " source "+ source );
+                if (sfLog().isTraceEnabled()) sfLog().trace ("SubProcessGC lease being reset " + this.sfCompleteNameSafe() + " source "+ source );
                 countdown = gcTimeout;
             }
         } else {
