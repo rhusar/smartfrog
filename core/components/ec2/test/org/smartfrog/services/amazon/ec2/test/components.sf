@@ -317,6 +317,7 @@ testCreateBadImageType extends ExpectDeployFailureOnEC2 {
 testListInstances extends  ExpectTerminatingService  {
   description "list the EC2 images running; fail if this is > 0";
   action:service extends ListMyInstances  {
+    state STATE_RUNNING;
     maxCount 0;
     key LAZY authentication;
   }
