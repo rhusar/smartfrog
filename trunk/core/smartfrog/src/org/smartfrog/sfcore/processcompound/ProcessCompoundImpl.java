@@ -1109,27 +1109,24 @@ public class ProcessCompoundImpl extends CompoundImpl
             throws SmartFrogException, IOException {
         Vector<String> runCmd = new Vector<String>();
 
-
-sfLog().info( runCmd.toString());
-
         addProcessJava(runCmd, cd);
         //addProcessClassName(runCmd,cd);
-sfLog().info( runCmd.toString());
+
         addProcessDefines(runCmd, name);
-sfLog().info( runCmd.toString());
+
         addProcessClassPath(runCmd, name, cd);
         addProcessSFCodeBase(runCmd, name, cd);
-sfLog().info( runCmd.toString());
+
         addProcessEnvVars(runCmd, cd);
         addProcessAttributes(runCmd, name, cd);
         addProcessClassName(runCmd, cd);
-sfLog().info( runCmd.toString());
+
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) {
             sfLog().trace("startProcess[" + name.toString() + "].runCmd: " + runCmd.toString());
         }
-sfLog().info( runCmd.toString());        
+        
         return Runtime.getRuntime().exec(runCmdArray);
     }
 
