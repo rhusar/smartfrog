@@ -83,7 +83,7 @@ public class DeployTreeModelSF  implements TreeModel {
     public DeployTreeModelSF(Object entry, boolean isCopy, boolean showRootProcessName,boolean showCDasChild) {
         try {
            boolean newShowRootProcessName = (showRootProcessName&&(entry instanceof ProcessCompound));
-           this.entry = new DeployEntry(entry, isCopy, newShowRootProcessName,showCDasChild);
+           this.entry = new DeployEntry(entry,null, isCopy, newShowRootProcessName,showCDasChild);
            this.listeners = new Vector();
            initLog();
             //System.out.println("DeployTreeModel created");

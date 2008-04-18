@@ -60,6 +60,8 @@ public class DeployEntry implements Entry {
 
     private boolean isCopy = false;
 
+    private String name = null;
+
     /**
      * Constructs the DeployEntry object
      *
@@ -75,12 +77,14 @@ public class DeployEntry implements Entry {
      * Constructs the DeployEntry object
      *
      * @param  entry  object entry.
+     * @param  name   object relative name
      * @param  isCopy is entry a copy of the original object (normally when a CD is accessed remotely)
      * @param showRootProcessName flag indicating to show rootprocess name
      * @param showCDasChild flag indicating to show CD as child
      */
-    public DeployEntry(Object entry,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
+    public DeployEntry(Object entry, String name ,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
         try {
+            if (name!=null) this.name=name;
             this.entry = entry;
             this.isCopy = isCopy;
             this.showRootProcessName = showRootProcessName;
@@ -170,7 +174,7 @@ public class DeployEntry implements Entry {
                 return this;
             }
             if (entry instanceof Prim) {
-               return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),false,this.showRootProcessName,this.showCDasChild));
+               return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),null,false,this.showRootProcessName,this.showCDasChild));
             }
             //return entry;
         } catch (Exception ex) {
@@ -446,7 +450,7 @@ public class DeployEntry implements Entry {
                   obj = context.get(name);
                   if ((isChild(obj))) {
                     data[index][0] = name;
-                    data[index][1] = obj2Entry(obj,isContextCopy);
+                    data[index][1] = obj2Entry(obj, name ,isContextCopy);
                     index++;
                   }
                 } catch (Exception ex1) {
@@ -730,6 +734,8 @@ public class DeployEntry implements Entry {
      */
     private String getRDNProcessCompound() {
         //Special case when Entry is Registered in ProcessCompound.
+        if (name != null) return name;
+
         String entryName ="";
         ProcessCompound pcEntry=null;
         try {
@@ -883,17 +889,18 @@ public class DeployEntry implements Entry {
      *  Replacement method introduced: 12-2-02
      *
      *@param  value  inp object
+     *@param  name  entry relative name
      *@param  isaCopy of the original object?
      *@return        DeployEntry object
      */
-    private DeployEntry obj2Entry(Object value, boolean isaCopy) {
+    private DeployEntry obj2Entry(Object value, String name , boolean isaCopy) {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
             if ((value instanceof Prim)) {
-                return (new DeployEntry(value, false, newShowRootProcessName,this.showCDasChild));
+                return (new DeployEntry(value, name, false, newShowRootProcessName,this.showCDasChild));
             }
             if ((value instanceof ComponentDescription)) {
-                return (new DeployEntry(value, isaCopy, newShowRootProcessName,this.showCDasChild));
+                return (new DeployEntry(value, name, isaCopy, newShowRootProcessName,this.showCDasChild));
             }
 //            else if (value instanceof Reference) {
 //                //sfLog().info("resolving reference...");
