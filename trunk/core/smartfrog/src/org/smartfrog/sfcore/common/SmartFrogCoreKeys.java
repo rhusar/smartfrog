@@ -119,6 +119,13 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
+    String SF_PROCESS_JAVA_PATH ="sfProcessJavaPath";
+
+    /**
+     *  Attribute that holds the process java start command.
+     *
+     * Value {@value}
+     */
     String SF_PROCESS_JAVA ="sfProcessJava";
 
     /**
