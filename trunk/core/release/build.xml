@@ -271,8 +271,22 @@
   everything set up right, at least until ant gets the ability to set up
   symlinks in a <tar> file.
   -->
+  <target name="check-source-artifacts" depends="prepare-executables">
+    <fail>
+      <condition >
+        <not>
+          <available file="${sf-core-install.zip}" />
+        </not>
+      </condition>
+      Unable to locate ${sf-core-install.zip};
+      There is probably a mismatch between the version of SmartFrog that Ivy retrieved
+      and the version that the build file is expecting, which is ${smartfrog.version}, and which
+      is calculated by getting the SmartFrog version off the classpath.
+    </fail>
+  </target>
+
   <target name="init-rpm"
-      depends="check-rpm,ivy-properties,use-smartfrog-tasks">
+      depends="check-rpm,ivy-properties,use-smartfrog-tasks,check-source-artifacts">
 
     <property name="rpm.metadata.dir" location="metadata/rpm"/>
     <loadproperties srcFile="${rpm.metadata.dir}/rpm.properties"/>
