@@ -474,9 +474,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @return enumeration over children
      */
     public Enumeration sfChildren() {
-        //SFOS-750 Regression: a change to core has broken the WWW tests
         return new SerializableEnumeration<Prim>(sfChildren);
-        //return ((Vector) sfChildren.clone()).elements();
     }
 
     /**
@@ -632,13 +630,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
         try {
             super.sfStart();
             sfStartChildren();
-         } catch (Throwable thr) {
-               // any exception causes termination
-               Reference name = sfCompleteNameSafe();
-               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name,thr));
-               sfGetCoreLog().error("caught on start ("+name.toString()+ ')', thr);
-               throw SmartFrogLifecycleException.forward(thr);
-         }
+        } catch (Throwable thr) {
+            // any exception causes termination
+            Reference name = sfCompleteNameSafe();
+            sfGetCoreLog().error("caught on start (" + name.toString() + ')', thr);
+            sfTerminate(TerminationRecord.abnormal("sfStart failure: " + thr, name, thr));
+            throw SmartFrogLifecycleException.forward(thr);
+        }
     }
 
     /**

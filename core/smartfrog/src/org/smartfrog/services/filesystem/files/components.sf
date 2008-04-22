@@ -59,9 +59,10 @@ For more information: www.smartfrog.org
 Files extends Prim {
 
   sfClass "org.smartfrog.services.filesystem.files.FilesImpl";
+
   filesSchema extends FilesSchema;
   /**
-   *
+   * this is our pattern
    */
   pattern "\\w+";
   includeHiddenFiles false;
@@ -71,4 +72,20 @@ Files extends Prim {
   maxfileCount -1;
   //fileSet; //created at runtime
   //fileSetString; //created at runtime and using local platform path.separator
+  // set at runtime a List of files as strings: {@value}
+  // fileList;
+
+}
+
+/**
+ * This class aggregates all children that are sources of files, and returns them
+ * It supports
+ * Instances of the Files component
+ * Components that implement FileIntf, and provide a single file/path
+ * Any child component with an absolutePath attribute that resolves to a string.
+ * All of these are merged, duplicate file path references removed, and the final files[] attribue returned.
+ */
+FilesCompound extends Compound {
+  sfClass "org.smartfrog.services.filesystem.files.FilesCompoundImpl";
+
 }

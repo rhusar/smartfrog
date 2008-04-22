@@ -20,6 +20,7 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +62,8 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
         touch();
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
                 "TouchFile "+getFile().getAbsolutePath()+", "+age,
-                sfCompleteNameSafe(),null);
+                sfCompleteNameSafe(),
+                null);
     }
 
     /**
@@ -88,15 +90,30 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      * @throws IOException for IO error
      * @throws RemoteException In case of network/rmi error
      */
-    public void touch(String filename, long newAge) throws IOException, RemoteException {
+    public synchronized void touch(String filename, long newAge) throws IOException, SmartFrogException {
         File target = new File(filename);
         File parentFile = target.getParentFile();
-        if(parentFile!=null) {
-            parentFile.mkdirs();
+        if(sfLog().isDebugEnabled()) {
+            sfLog().debug("About to touch file "+filename);
         }
-        target.createNewFile();
-        if (newAge >= 0) {
-            target.setLastModified(newAge);
+        if(parentFile!=null) {
+            try {
+                parentFile.mkdirs();
+            } catch (SecurityException e) {
+                //failure to mkdir is turned into a security problem; we catch it and make it meaningful
+                throw new SmartFrogDeploymentException("Security blocked the creation of the parent directories "+parentFile,
+                        e,
+                        this);
+            }
+        }
+        try {
+            target.createNewFile();
+            if (newAge >= 0) {
+                target.setLastModified(newAge);
+            }
+        } catch (SecurityException e) {
+            throw new SmartFrogDeploymentException("Security blocked the touching of file " + target, e, this);
+
         }
     }
 }
