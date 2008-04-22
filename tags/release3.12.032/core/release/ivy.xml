@@ -1,0 +1,269 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
+<ivy-module version="1.0">
+  <info organisation="org.smartfrog" module="sf-release">
+    <license name="LGPL"/>
+    <ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
+    <description>
+      Rerelease the artifacts
+      Created 23-Nov-2006 by slo
+    </description>
+  </info>
+  <!-- FIXME: Ivy 1.4.1 buildlist bug
+  <configurations defaultconfmapping="default">
+    <include file="../antbuild/ivy/configurations.xml"/>
+  </configurations>
+  -->
+  <configurations defaultconfmapping="default">
+    <conf name="default" extends="master,runtime"/>
+    <conf name="build" visibility="private"
+        description="artifacts needed to build the application"/>
+    <conf name="compile" visibility="private"
+        description="artifacts needed to compile the application"/>
+    <conf name="daemon" visibility="private"
+        description="the classpath needed to run smartfrog daemons"/>
+    <conf name="test" extends="default"
+        description="the classpath needed to run tests"/>
+    <conf name="master" description="contains the artifact but no dependencies"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="runtime" description="runtime but not the artifact"
+        extends="redist"/>
+<!--    <conf name="izpack" visibility="private"
+        description="izpack libraries"/>-->
+    <!-- From here on, every Package we bundle in Ivy contains its own configuration -->
+    <conf name="package-core-install"
+        description="The .zip file containing the complete base distribution of SmartFrog"/>
+    <conf name="package-core" extends="package-core-install"
+        description="core smartfrog package"/>
+    <conf name="package-examples"
+        description="examples package"/>
+    <conf name="package-antbuild-minimal"
+        description="minimal directory layout"/>
+    <conf name="package-antbuild-full"
+        description="full build tree"/>
+    <conf name="package-antbuild-source"
+        description="full build tree"/>
+    <!--Component bundles-->
+    <conf name="package-ant"
+        description="ant components"/>
+    <conf name="package-anubis"
+        description="anubis components"/>
+    <conf name="package-csvfiles"
+        description="CSV File components"/>
+    <conf name="package-database"
+        description="database components"/>
+    <conf name="package-jmx"
+        description="jmx components"/>
+    <conf name="package-logging"
+        description="logging components"/>
+    <conf name="package-networking"
+        description="networking components"/>
+    <conf name="package-quartz"
+        description="scheduling components"/>
+    <conf name="package-scripting"
+        description="scripting components"/>
+    <conf name="package-testing"
+        description="testing components"/>
+    <conf name="package-www"
+        description="www components"/>
+    <conf name="package-xml"
+        description="xml components"/>
+    <conf name="package-xmpp"
+        description="xmpp components"/>
+
+    <!--Other things-->
+    <conf name="package-extras"
+        description="extra things"/>
+    <conf name="package-gui"
+        description="gui tools"/>
+    <conf name="package-testharness"
+        description="testharness"/>
+
+
+  </configurations>
+
+  <publications>
+    <!--get the artifact from our module name-->
+    <artifact conf="master" name="sf-install" type="zip"/>
+  </publications>
+  <dependencies>
+    <dependency org="org.smartfrog"
+        name="smartfrog"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-examples->examples;redist->redist;package-core->services,documentation;
+        package-core-install->installation"/>
+    <dependency org="org.smartfrog"
+        name="sf-tasks" changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="redist->redist;package-core->master"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-antbuild" changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-antbuild-minimal->minimal;package-antbuild-full->full;package-antbuild-source->source"/>    
+
+    <!-- ant component. do we omit the ant dist?-->
+    <dependency org="org.smartfrog"
+        name="sf-ant"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-ant->master,redist,documentation"/>
+
+    <!-- anubis -->
+    <dependency org="org.smartfrog"
+        name="sf-anubis"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-anubis->master,redist,documentation"/>
+
+    <!--csvfiles-->
+    <dependency org="org.smartfrog"
+        name="sf-csvfiles"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-csvfiles->master,redist,documentation"/>
+
+    <!--database-->
+    <dependency org="org.smartfrog"
+        name="sf-database"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+
+        conf="package-database->master,redist,documentation"/>
+
+    <!--dns-->
+    <dependency org="org.smartfrog"
+        name="sf-dns"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+    
+    <!--email -->
+    <dependency org="org.smartfrog"
+        name="sf-emailer"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+
+    <!--net-->
+    <dependency org="org.smartfrog"
+        name="sf-net"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+
+    <!--ssh-->
+    <dependency org="org.smartfrog"
+        name="sf-ssh"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+
+    <!--logging-->
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-logging->master,redist,documentation"/>
+
+    <!--scripting -->
+    <dependency org="org.smartfrog"
+        name="sf-scripting"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-scripting->master,redist,documentation"/>
+
+<!--JMX -->
+    <dependency org="org.smartfrog"
+        name="sf-jmx"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-jmx->master,redist,documentation"/>
+
+    <!--scheduling-->
+    <dependency org="org.smartfrog"
+        name="sf-quartz"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-quartz->master,redist,documentation"/>
+    <!--,documentation -->
+
+    <!--SLP-->
+    <!--
+        <dependency org="org.smartfrog"
+            name="sf-slp"
+            changing="true"
+            rev="${ivy.smartfrog.version}"
+            conf="package-slp->master,redist,documentation"/>
+    -->
+
+
+    <!-- XML -->
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-xml->master,redist,documentation"/>
+
+
+
+    <!-- testing-->
+    <dependency org="org.smartfrog"
+        name="sf-junit"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-testing->master,redist,documentation"/>
+    <dependency org="org.smartfrog"
+        name="sf-xunit"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-testing->master,redist,documentation"/>
+
+    <!--web stuff-->
+    <dependency org="org.smartfrog"
+        name="sf-www"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-www->master,redist,documentation,servletapi"/>
+<!--    <dependency org="org.smartfrog"
+        name="sf-tomcat"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-www->master,redist,documentation"/>-->
+    <dependency org="org.smartfrog"
+        name="sf-jetty"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-www->master,redist"/>
+    <!--
+        <dependency org="org.smartfrog"
+            name="sf-cargo"
+            changing="true"
+            rev="${ivy.smartfrog.version}"
+            conf="package-www->master,redist/>
+    -->
+    <!--XMPP-->
+    <dependency org="org.smartfrog"
+        name="sf-xmpp"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-xmpp->master,redist,documentation"/>
+
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-testharness->master"/>
+
+    <!--
+<dependency org="izpack"
+    name="standalone-compiler"
+    rev="${izpack.version}"
+    conf="izpack->default"/>
+<dependency org="izpack"
+    name="installer"
+    rev="${izpack.version}"
+    conf="izpack->default"/>-->
+  </dependencies>
+</ivy-module>

@@ -1,0 +1,7 @@
+*.iml
+build
+dist
+version.properties
+.classpath
+.project
+build.properties

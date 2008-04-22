@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: expandtab shiftwidth=4 softtabstop=4
+-->
+<project name="org.smartfrog.tools" default="build" basedir=".">
+
+<!-- ==================================================================
+    Load common properties, shared among sub-projects.
+======================================================================= -->
+
+    <property file="../build/build.properties"/>
+
+<!-- ==================================================================
+    Plugin-specific targets and properties
+======================================================================= -->
+
+    <property name="plugin" value="${bin.plugin.name}"/>
+
+    <property environment="env"/>
+
+    <!-- Project directories -->
+    <property name="bin" value="bin"/>
+    <property name="build.dir" value="build_area"/>
+    <property name="testbin" value="${build.dir}/bin"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="thirdparty.lib.dir" value="${lib.dir}/3rdParty"/>
+    <property name="src" value="src"/>
+    <property name="test" value="test"/>
+
+    <property name="temp.folder.name" value="temp.folder"/>
+    <property name="temp.folder" value="${build.dir}/${temp.folder.name}"/>
+    <property name="work.folder.name" value="work.folder"/>
+    <property name="work.folder" value="${build.dir}/${work.folder.name}"/>
+    <property name="build.result.name" value="artifacts"/>
+    <property name="build.result.folder" value="${build.dir}/${build.result.name}"/>
+
+    <!-- Utility properties -->
+    <property name="junit.printsummary" value="off" />
+    <property name="junit.fork" value="on" />
+    <property name="junit.haltonerror" value="off" />
+    <property name="junit.haltonfailure" value="off" />
+
+    <property name="javac.deprecation" value="on" />
+
+    <property name="javadoc.build.dest" value="${work.folder}/javadoc"/>
+    <property name="javadoc.pkgs" value="com.hp.*"/>
+
+    <property name="license.files.dir" value="../shared/licenses"/>
+ <property name="buildid.template" value="../shared/misc/buildid.txt"/>
+ 
+ 
+   <!-- bin plugin properties -->
+    <property name="bin.full.name" value="${bin.plugin.external.name}"/>
+    <property name="bin.plugin.zip" value="${bin.plugin.zip.name}"/>
+    <property name="bin.plugin.zip.root.dir" value="${bin.full.name}"/>
+    <property name="bin.plugin.tar" value="${doc.plugin.tar.name}"/>
+    <property name="bin.plugin.tar.root.dir" value="${bin.full.name}"/>
+    <property name="doc.plugin.guts.dir" value="doc"/>
+
+    <!-- Miscellaneous properties -->
+    <property name="buildid.template.file" value="${buildid.template}"/>
+
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++ -->
+
+    <target name="unzip.dependencies"
+        unless="unzip.dependencies.done">
+
+        <property name="unzip.dependencies.done" value="yes"/>
+
+        <delete dir="${work.folder}/depends" quiet="yes"/>
+        <mkdir dir="${work.folder}/depends"/>
+
+    
+    </target>
+    <!--
+    <target name="unzip.xmen.zip"
+        if="xmen.zip.present">
+
+        <unzip src="${build.artifacts.dir}/${xmen.plugin.zip.name}"
+            dest="${work.folder}/depends"/>
+    </target>
+    -->
+
+    <target name="custom.gather.resources">
+        <!-- Called from gather.resources -->
+
+        <copy todir="${plugin.dest}">
+            <fileset dir="${basedir}">
+                <exclude name="**/SVN/**"/>
+                <!-- key directories -->
+                <include name="SmartFrog/**"/>
+                <include name="src/**"/>
+                <include name="icons/**"/>
+                <include name="bin/**"/>
+
+                <!-- key files -->
+                <include name="plugin.properties"/>
+                <include name="plugin.xml"/>
+                <include name="about.html"/>
+                <include name="META-INF/**"/>
+
+                
+                
+            </fileset>
+            
+        </copy>
+<!--
+        <copy todir="${plugin.dest}"
+            file="about.mappings">
+            <filterset>
+                <filter token="FEATUREVERSION" value="${feature.version}"/>
+                <filter token="BUILDID" value="${BUILDID}"/>
+            </filterset>
+        </copy>
+-->
+    </target>
+
+<!-- ==================================================================
+    Task initialization, environment setup, environment verification.
+======================================================================= -->
+
+    <target name="init"
+        unless="init.done"
+        depends="eclipse.home,ide.properties">
+
+        <property name="init.done" value="yes"/>
+
+        <tstamp>
+            <format property="NOW.FORMATTED" pattern="EEEE, MMM d, yyyy, HH:mm:ss"/>
+            <format property="BUILDID" pattern="yyyyMMddHHmmss"/>
+        </tstamp>
+
+        <echo message="Bin Plugin Starting ${NOW.FORMATTED}, build ${BUILDID}"/>
+        <echo message="Ant command line: ${env.ANT_CMD_LINE_ARGS}"/>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${bin}"/>
+        <mkdir dir="${testbin}"/>
+        <mkdir dir="${build.result.folder}"/>
+
+    </target>
+
+    <target name="eclipse.home"
+        depends="eclipse.home.env,eclipse.home.default">
+
+        <echo message="ECLIPSE_HOME: ${eclipse.home}"/>
+    </target>
+
+    <target name="eclipse.home.env"
+        if="env.ECLIPSE_HOME">
+
+        <property name="eclipse.home" value="${env.ECLIPSE_HOME}"/>
+    </target>
+
+    <target name="eclipse.home.default"
+        unless="eclipse.home">
+        <property name="eclipse.home" value="../../.."/>
+    </target>
+
+    <target name="ide.properties" if="eclipse.running">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+    </target>
+
+    <target name="verify.junit" depends="check.junit,no.junit"/>
+
+    <target name="check.junit">
+        <available property="junit.available"
+            classname="junit.framework.TestCase"/>
+    </target>
+
+    <target name="no.junit" unless="junit.available">
+        <fail>
+    ****************************************************************
+    JUnit jar is not available in your classpath!  Please do one of:
+
+        o include junit.jar in your CLASSPATH directly
+        o copy junit.jar to your ANT_HOME/lib directory.
+    ****************************************************************
+        </fail>
+    </target>
+
+    <target name="verify.antoptionaljar" depends="check.antoptionaljar,no.antoptionaljar"/>
+
+    <target name="check.antoptionaljar">
+        <available property="antoptionaljar.available"
+            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTest"/>
+    </target>
+
+    <target name="no.antoptionaljar" unless="antoptionaljar.available">
+        <fail>
+    ****************************************************************
+    The Ant optional jar is not available in classpath!  Please
+    copy the Ant optional tasks jar to your ANT_HOME/lib directory.
+    ****************************************************************
+        </fail>
+    </target>
+
+    <target name="refresh" if="eclipse.running">
+        <eclipse.refreshLocal resource="." depth="infinite"/>
+    </target>
+
+<!-- ==================================================================
+    Utilities
+======================================================================= -->
+
+    <target name="copy.buildid.file">
+        <copy todir="${plugin.dest}"
+            file="${buildid.template}">
+            <filterset>
+                <filter token="PLUGINNAME" value="${plugin.name}"/>
+                <filter token="BUILDID" value="${BUILDID}"/>
+            </filterset>
+        </copy>
+    </target>
+
+<!-- ==================================================================
+    Cleanup
+======================================================================= -->
+
+    <target name="clean"
+        description="--> delete build area except artifacts directory">
+
+        <delete includeEmptyDirs="true" quiet="yes">
+            <fileset dir="${build.dir}">
+                <patternset>
+                    <exclude name="${build.result.name}/**"/>
+                </patternset>
+            </fileset>
+        </delete>
+        <delete dir="${bin}" quiet="yes"/>
+        <antcall target="refresh"/>
+    </target>
+
+    <target name="real.clean"
+        depends="clean"
+        description="--> delete the entire build area">
+
+        <delete dir="${build.dir}" quiet="yes"/>
+        <antcall target="refresh"/>
+    </target>
+
+<!-- ==================================================================
+    Java classpaths used for compiles and testing.
+======================================================================= -->
+
+    <target name="set.classpath"
+        unless="set.classpath.done"
+        depends="init,unzip.dependencies">
+
+        <property name="set.classpath.done" value="yes"/>
+
+        <!-- Include all eclipse and our dependent plugins in classpath -->
+
+        <path id="compile.classpath">
+            <!-- Add our stuff first -->
+            <fileset dir="${work.folder}/depends">
+                <include name="**/*.jar"/>
+            </fileset>
+         <!--   <fileset dir="${lib.dir}">
+                <include name="**/*.jar"/>
+                <include name="**/*.zip"/>
+            </fileset>
+            -->
+            <!-- Include eclipse plugins next -->
+            <fileset dir="${eclipse.home}/plugins">
+                <include name="org.eclipse.*/**/*.jar"/>
+            </fileset>
+            <!-- Include 3rd party plugins last -->
+            <fileset dir="${eclipse.home}/plugins">
+                <exclude name="org.eclipse.*/**"/>
+                <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="${eclipse.home}/plugins">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+    </target>
+
+    <target name="set.testclasspath"
+        unless="set.testclasspath.done"
+        depends="init,set.classpath">
+
+        <property name="set.testclasspath.done" value="yes"/>
+
+        <path id="test.classpath">
+            <pathelement location="${testbin}"/>
+            <pathelement location="${bin}"/>
+            <path refid="compile.classpath"/>
+        </path>
+
+    </target>
+
+<!-- ==================================================================
+    Java compiles.
+======================================================================= -->
+
+    <target name="compile.src"
+        description="--> compile sources"
+        depends="init,set.classpath">
+
+        <!-- compile the source code -->
+        <javac destdir="${bin}" failonerror="true"
+            verbose="false" debug="on" includeAntRuntime="no"
+            deprecation="${javac.deprecation}">
+            <src path="${src}"/>
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="compile.tests"
+        description="--> compile sources and tests"
+        depends="init,verify.junit,set.testclasspath,compile.src">
+
+        <!-- compile the unit test test code -->
+        <javac destdir="${testbin}" failonerror="true"
+            verbose="false" debug="on" includeAntRuntime="no"
+            deprecation="${javac.deprecation}">
+            <src path="${test}"/>
+            <classpath refid="test.classpath"/>
+        </javac>
+    </target>
+
+<!-- ==================================================================
+    Plugin jar.
+======================================================================= -->
+
+    <target name="plugin.jar" depends="init,compile.src,plugin.resources">
+        <jar jarfile="${build.result.folder}/${bin.plugin.jar.name}"
+             basedir="${bin}"/>
+    </target>
+
+    <target name="plugin.resources" depends="init">
+        <!-- copy necessary resources -->
+        <copy todir="${bin}">
+            <fileset dir="${src}" excludes="**/*.java"/>
+        	<fileset dir="${license.files.dir}"/>
+        </copy>
+    </target>
+
+    <target name="gather.bin.parts" depends="plugin.jar">
+        <mkdir dir="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        <mkdir dir="${temp.folder}/${bin.plugin.tar.root.dir}"/>
+        <copy file="${build.result.folder}/${bin.plugin.jar.name}"
+            todir="${temp.folder}/${bin.plugin.zip.root.dir}">
+        	<fileset dir="${license.files.dir}"/>
+    	</copy>
+        <copy file="${build.result.folder}/${bin.plugin.jar.name}"
+            todir="${temp.folder}/${bin.plugin.tar.root.dir}">
+        	<fileset dir="${license.files.dir}"/>
+    	</copy>
+    </target>
+
+    <target name="build.plugin.jar"
+        description="--> create plugin jar file"
+        depends="gather.bin.parts">
+
+        <delete dir="${temp.folder}"/>
+    </target>
+
+<!-- ==================================================================
+    Plugin installation zip.
+======================================================================= -->
+
+    <target name="gather.resources" depends="init">
+        <mkdir dir="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        <mkdir dir="${temp.folder}/${bin.plugin.tar.root.dir}"/>
+        <antcall target="custom.gather.resources">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        </antcall>
+        <antcall target="custom.gather.resources">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.tar.root.dir}"/>
+        </antcall>
+
+        <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+            <param name="plugin.name" value="${bin.plugin.external.name}"/>
+        </antcall>
+        <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.tar.root.dir}"/>
+            <param name="plugin.name" value="${bin.plugin.external.name}"/>
+        </antcall>
+
+    </target>
+
+    <target name="build.plugin.zip"
+        description="--> create plugin installation zip file"
+        depends="gather.bin.parts,gather.resources">
+
+        <zip zipfile="${build.result.folder}/${bin.plugin.zip.name}"
+             basedir="${temp.folder}" filesonly="true"
+             excludes="${plugin}.jar.bin.log"/>
+        <tar tarfile="${build.result.folder}/${bin.plugin.tar.name}"
+             basedir="${temp.folder}" 
+             excludes="${plugin}.jar.bin.log"/>
+
+        <delete dir="${temp.folder}"/>
+        <delete file="${build.result.folder}/${bin.plugin.jar.name}"/>
+        <antcall target="refresh"/>
+    </target>
+
+<!-- ==================================================================
+    Do "production" build
+======================================================================= -->
+
+    <target name="copy.build.artifacts"
+        if="artifacts.dir">
+
+        <copy todir="${artifacts.dir}">
+            <fileset dir="${build.result.folder}"/>
+        </copy>
+
+    </target>
+
+    <target name="build"
+        description="--> create production build artifacts"
+        depends="build.plugin.zip">
+
+        <antcall target="copy.build.artifacts"/>
+    </target>
+
+    <target name="rebuild"
+        description="--> clean, then create build artifacts"
+        depends="real.clean,build"/>
+
+    <target name="test.and.build"
+        description="--> run unit tests, then create build artifacts"
+        depends="test,build"/>
+
+    <target name="test.and.rebuild"
+        description="--> clean, run unit tests, then create build artifacts"
+        depends="real.clean,test,build"/>
+
+    <target name="clean.and.test"
+        description="--> clean, and run unit tests"
+        depends="real.clean,test"/>
+
+<!-- ==================================================================
+    JUnit testing.
+======================================================================= -->
+
+    <target name="test.resources" depends="init">
+        <!-- copy necessary resources -->
+        <copy todir="${testbin}">
+            <fileset dir="${test}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="test"
+        description="--> execute JUnit unit tests"
+        depends="init,verify.antoptionaljar,compile.tests,set.testclasspath,plugin.resources,test.resources">
+
+        <junit printsummary="${junit.printsummary}"
+            fork="${junit.fork}"
+            haltonerror="${junit.haltonerror}"
+            haltonfailure="${junit.haltonfailure}">
+
+            <classpath refid="test.classpath"/>
+            <formatter type="brief" usefile="false"/>
+
+            <sysproperty key="antbasedir" value="${basedir}" />
+
+            <batchtest failureProperty="junit.problem.detected">
+                <fileset dir="${test}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <antcall target="fail.if.junit.problems"/>
+    </target>
+
+    <target name="fail.if.junit.problems"
+        if="junit.problem.detected">
+
+        <fail>
+    ****************************************************************
+    JUnit test errors and/or failures detected!
+    ****************************************************************
+        </fail>
+    </target>
+
+    <target name="test.gui"
+        description="--> launch JUnit Swing GUI"
+        depends="init,verify.junit,set.testclasspath,plugin.resources">
+
+        <java classname="junit.swingui.TestRunner" fork="yes">
+            <classpath refid="test.classpath"/>
+        </java>
+    </target>
+
+</project>

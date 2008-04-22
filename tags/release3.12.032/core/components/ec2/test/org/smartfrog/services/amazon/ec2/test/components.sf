@@ -1,0 +1,352 @@
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/amazon/ec2/components.sf"
+#include "/org/smartfrog/services/amazon/s3/components.sf"
+#include "/org/smartfrog/services/amazon/test/components.sf";
+
+BAD_IMAGE_ID "ami-bad-image-id";
+
+DeployedService extends Compound {
+   authentication extends AwsPassword;
+   service TBD;
+}
+
+
+
+ExpectDeployedService extends  ExpectDeployOnEC2 {
+  action DeployedService;
+}
+
+
+
+ExpectTerminatingService extends  ExpectDeployOnEC2 {
+  expectTerminate true;
+  exitType EXIT_TYPE_NORMAL;
+  action DeployedService;
+}
+
+
+ListMyImages extends ListEC2Images {
+  sfShouldTerminate true;
+  id login;
+}
+
+
+ListMyInstances extends ListInstances {
+  sfShouldTerminate true;
+  timeout test.ec2.startup.delay;
+  id login;
+}
+
+KillMyInstances extends KillInstances {
+  sfShouldTerminate true;
+  id login;
+}
+
+StartupDelay extends Delay {
+  time test.sleep.delay;
+}
+
+WaitForEC2 extends FailingWaitFor {
+  target TBD;
+  interval 100;
+  timeout test.ec2.startup.delay;
+  message "target component did not complete its work"
+
+  condition extends IsWorkCompleted {
+    target PARENT:target;
+  }
+}
+
+ValidateLogin extends ValidateEC2Settings {
+  sfShouldTerminate false;
+  id login;
+  delay 1000;
+  simulateFailure false;
+}
+
+
+testValidateLogin extends  ExpectDeployedService  {
+  description "validate our login";
+  action:service extends ValidateLogin  {
+    key LAZY authentication;
+  }
+
+  tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+      timeout 30000;
+    }
+ }
+}
+
+testValidateLoginSimulatedFailure extends  testValidateLogin  {
+  expectTerminate true;
+  exitType EXIT_TYPE_ABNORMAL;
+  description "simulate a failure when validating our login";
+  action:service:simulateFailure true;
+}
+
+testListEC2Images extends  ExpectTerminatingService  {
+  description "list the EC2 images available to our login";
+  action:service extends ListMyImages  {
+    key LAZY authentication;
+  }
+}
+
+testListAmazonImages extends  testListEC2Images  {
+
+  description "list images that belong to amazon";
+
+  action:service:target LAZY action;
+  action:service:owners [AmazonAMI:AMAZON_ID];
+
+  tests extends Sequence {
+    -- StartupDelay;
+    
+    assertHasValues extends AssertWorkflow {
+      reference LAZY action;
+      attribute "imageList";
+      //at least two
+      attributeVectorMinLength 2;
+      attributeVectorMaxLength 10;
+    }
+
+    assertSingleton extends AssertWorkflow {
+      reference LAZY action;
+      attribute "imageID";
+    }
+  }
+}
+
+testListPrivateImages extends  testListEC2Images  {
+  description "list the private images";
+  action:service:target LAZY action;
+  action:service:includePublic false;
+}
+
+
+testListEC2ImagesBadPassword extends  ExpectDeployFailureOnEC2  {
+
+  description "try to list images with a bad login key";
+
+  action extends ListEC2Images {
+    id login;
+    key "not a valid key";
+  }
+
+  exceptions [
+    ["",""],
+    ["","AWS was not able to validate the provided access credentials"]
+  ];
+}
+
+
+
+testCreateAndSelfTerminateInstance extends ExpectDeployOnEC2 {
+  description "create a real instance and terminate it" ;
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       sfShouldTerminate false;
+       shutdown true;
+       id login;
+       imageID test.ec2.image.id;
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
+ tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+    }
+ }
+}
+
+testCreateInstance extends testCreateAndSelfTerminateInstance {
+  description "create an instance and run tests over it" ;
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       sfShouldTerminate false;
+       id login;
+       imageID test.ec2.image.id;
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
+
+  tests extends Sequence {
+    wait extends WaitForEC2 {
+      target LAZY action:service;
+    }
+
+/*    instancesWithWrongID extends ListMyInstances  {
+        description "expect to find no images when the ID is wrong";
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
+        key LAZY action:authentication;
+    }*/
+
+    //assert that an instance is live
+    Instances extends ListMyInstances  {
+        description "expect to find at least one instance with my name on it";
+        minCount 1;
+        key LAZY action:authentication;
+    }
+
+    instancesWithGivenID extends Instances  {
+        description "test the imageID attribute for validity";
+        imageID test.ec2.image.id;
+    }
+
+
+
+    instancesWithExplicitInstancesWrongImageID extends Instances  {
+        description "expect to find no images when the ID is wrong, even with a list of instances";
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
+        minCount 0;
+        instances LAZY action:service:instances;
+    }
+
+    instancesWithExplicitInstancesList extends Instances  {
+        description "test the instances attribute for validity";
+        instances LAZY action:service:instances;
+    }
+
+
+/*    killBadID extends KillMyInstances {
+        description "nothing is killed if the image ID is wrong";
+        imageID  BAD_IMAGE_ID;
+        maxCount 0;
+        key LAZY action:authentication;
+    }*/
+
+/*
+    killBadIDandInstances extends killBadID {
+        description "the instances are irrelevant if the image ID is wrong";
+        instances LAZY action:service:instances;
+    }
+*/
+/*
+    killWrongState extends kill {
+        description "with the wrong state, there is nothing to kill";
+        maxCount 0;
+        minCount 0;
+        state "not-valid-state";
+    }*/
+
+    kill extends KillMyInstances {
+        minCount 1;
+        key LAZY action:authentication;
+        instances LAZY action:service:instances;
+    }
+
+  }
+
+}
+
+testCreateBadInstance extends ExpectDeployFailureOnEC2 {
+  sfShouldTerminate true;
+  description "try to deploy an image that doesnt exist" ;
+
+  action extends DeployedService {
+    service extends ImageInstance {
+       id login;
+       imageID  BAD_IMAGE_ID;
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+
+}
+
+testCreateEmptyImage extends ExpectDeployFailureOnEC2 {
+  description "try to deploy an image called '' " ;
+  action extends DeployedService {
+    service extends ImageInstance {
+       id login;
+       imageID  "";
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_NO_IMAGE;
+}
+
+testCreateBadImageType extends ExpectDeployFailureOnEC2 {
+  sfShouldTerminate true;
+  description "try to deploy an image of an unknown type" ;
+  action extends DeployedService {
+    service extends ImageInstance {
+       id login;
+       imageID test.ec2.image.id;
+       instanceType "unknown.image.type";
+       imageID  "";
+       userData "test-data";
+       key LAZY authentication;
+    };
+  }
+  action:service:imageID test.ec2.image.id;
+  action:service:imageType "unknown.image.type";
+  exitText CONSTANT org.smartfrog.services.amazon.ec2.EC2InstanceImpl.ERROR_NO_IMAGE;
+}
+
+
+testListInstances extends  ExpectTerminatingService  {
+  description "list the EC2 images running; fail if this is > 0";
+  action:service extends ListMyInstances  {
+    state STATE_RUNNING;
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
+
+testKillInstances extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends KillMyInstances  {
+    key LAZY authentication;
+  }
+}
+
+
+testKillInstancesBadID extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends KillMyInstances  {
+    imageID  BAD_IMAGE_ID;
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
+
+
+testKillUnknownInstance extends  ExpectTerminatingService  {
+  description "kill any images that are running";
+  action:service extends KillMyInstances  {
+    instances  ["unknown-instance-id"];
+    maxCount 0;
+    key LAZY authentication;
+  }
+}
+

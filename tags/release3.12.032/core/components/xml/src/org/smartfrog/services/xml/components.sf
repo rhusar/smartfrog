@@ -1,0 +1,254 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this file declares the XML components
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
+QNameSchema extends Schema {
+    //namespace, can be empty
+    namespace extends OptionalString;
+    //localname itself must be supplied
+    localname extends String;
+}
+
+/**
+ * xmlnodes have an "xml" attribute after deployment, a node
+ * which contains their XML.
+ * The valid flag is an extension point that be used to validate the document.
+ * During generation, after the xml is created, the valid flag is called. This
+ * lets us see if the XML is valid, using whatever rules you want.
+ */
+
+XmlNode extends Prim {
+    //the valid flag lets one add new rules for validation.
+    valid true;
+    //by default, XML nodes are not remotable.
+    //sfExport "false";
+}
+
+/**
+ * any node with Qualified naming; attributes and elements, for example
+ */
+XmlQNameNode extends XmlNode {
+
+    qnameSchema extends QNameSchema;
+
+}
+
+/**
+ * PIs contain strings
+ */
+XmlProcessingInstruction extends XmlNode {
+
+    sfClass "org.smartfrog.services.xml.impl.XmlProcessingInstructionImpl";
+    target TBD;
+    data TBD;
+}
+
+/**
+ * XML comments contain comment text
+ */
+XmlCommentNode extends XmlNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlCommentNodeImpl";
+    comment TBD;
+}
+
+/**
+ * Text node
+ */
+XmlTextNode extends XmlNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlTextNodeImpl";
+    text TBD;
+}
+
+
+/**
+ * describes the document in DTD era document declarations
+ */
+
+XmlDocTypeSchema extends Schema {
+
+    rootElementName extends String;
+    systemID extends OptionalString;
+    publicID extends OptionalString;
+
+}
+
+XmlDocType extends XmlNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlDocTypeImpl";
+    xmlDocTypeschema extends XmlDocTypeSchema ;
+
+}
+
+
+/**
+ * XML Attributes can only be hosted inside an element, something we cannot
+ * declare in the schema; we let Xom work that bit out
+ */
+XmlAttributeSchema extends Schema {
+    value extends String;
+}
+
+XmlAttribute extends XmlQNameNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlAttributeImpl";
+    xmlAttributeSchema extends XmlAttributeSchema;
+    value;
+}
+
+/**
+ * a namespace declaration provides a prefix for a name
+ * These are only used in Element declarations, and not remotable
+ */
+XmlNamespaceDeclarationSchema extends Schema {
+    namespace extends String;
+    prefix extends String;
+}
+
+XmlNameSpaceDeclaration extends Prim {
+    xmlNamespaceDeclarationSchema extends XmlNamespaceDeclarationSchema;
+}
+
+/**
+ * this is all the attributes of the compound class,
+ */
+XmlCompoundNodeSchema extends Schema {
+    sfSyncTerminate extends OptionalBoolean;
+}
+
+/**
+ * XML Elements are compound.
+ * To make text elements easier to work with, we have
+ */
+
+XmlElementSchema extends XmlCompoundNodeSchema {
+    text extends OptionalString;
+}
+
+
+XmlElement extends XmlQNameNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlElementImpl";
+    xmlElementSchema extends XmlElementSchema;
+}
+
+
+
+/**
+ * This represents the document itself.
+ * If a filename is supplied, then the file is saved. The file
+ * is *not* cleaned up afterwards;
+ */
+
+XmlDocumentSchema extends XmlCompoundNodeSchema {
+    //can be a string or a File instance/reference
+    destFile extends OptionalString;
+
+    //can be a string or a File instance/reference
+    sourceFile extends OptionalString;
+
+    //document type of type DocType;
+    docType extends Optional;
+
+    //root node must be a Document Node.
+    //can be omitted if a sourcefile is given instead
+    root extends OptionalCD;
+
+    /**
+    * encoding string when saving
+    *
+    * UTF-8
+    * UTF-16
+    * UTF-16BE
+    * UTF-16LE
+    * ISO-10646-UCS-2
+    * ISO-8859-1
+    * ISO-8859-2
+    * ISO-8859-3
+    * ISO-8859-4
+    * ISO-8859-5
+    * ISO-8859-6
+    * ISO-8859-7
+    * ISO-8859-8
+    * ISO-8859-9
+    * ISO-8859-10
+    * ISO-8859-11 (a.k.a. TIS-620)
+    * ISO-8859-13
+    * ISO-8859-14
+    * ISO-8859-15
+    * ISO-8859-16
+    */
+
+    encoding extends String;
+
+    /*
+    * indentation per level of the hierarchy
+    * set to 0 for no indent. When >0; white space is only preserved
+    * in elements with xml:space="preserve" set
+    */
+    indent extends Integer;
+
+    /**
+     * line width
+     * set to 0 for no auto-split, which is white space preserving
+     */
+    width extends Integer;
+}
+
+/**
+ * By default we use utf-8 encoding, and generate the file on deployment
+ */
+XmlDocument extends XmlNode {
+    sfClass "org.smartfrog.services.xml.impl.XmlDocumentImpl";
+    //XML documents are remotable.
+    xmlDocumentSchema extends XmlDocumentSchema;
+    encoding "UTF-8";
+    indent 2;
+    width 100;
+}
+
+/**
+ */
+XMLCatalogSchema extends Schema {
+    entries extends OptionalVector;
+    sourceFile extends Optional;
+}
+
+/**
+ * an XML Catalog caches uri to filename mappings
+ * for local schema resolution.
+ * Note that Xerces handles classpath://some.class.path to get stuff on the path
+ */
+
+/* XMLCatalog extends Prim {
+    xmlCatalogSchema extends Schema;
+} */
+
+
+
+

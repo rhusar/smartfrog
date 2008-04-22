@@ -1,0 +1,10 @@
+Welcome to SmartFrog!
+
+SmartFrog version $VERSION
+
+
+SmartFrog is a distributed framework for deploying and configuring applications. It is Java based,
+and can be used to bring up everything from a classic three-tier application server to a large-scale
+clustered system consisting of hundreds of hosts.
+
+For more information, see http://smartfrog.org/
