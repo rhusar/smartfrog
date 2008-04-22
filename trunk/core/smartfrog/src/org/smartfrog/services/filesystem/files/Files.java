@@ -86,7 +86,7 @@ public interface Files extends Remote {
     /**
      * This is a count of the max number of files that the pattern should match. If <0, there is no limit.
      */
-    String ATTR_MAXFILECOUNT = "maxfileCount";
+    String ATTR_MAXFILECOUNT = "minFileCount";
 
     /**
      * Return a list of files that match the current pattern. This may be a compute-intensive
