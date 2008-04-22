@@ -44,7 +44,7 @@ public class ParseOptionSet {
 
     /** Usage string for SFParse. */
     public String usage = "\n" +
-        "* Usage: java org.smartfrog.SFParse [-v] [-q] [-d] [-r] [-R] [-f] filename [-D] \n"+
+        "* Usage: java org.smartfrog.SFParse [-v] [-q] [-d] [-r] [-R] [-c] [-f] filename [-D] \n"+
         "   or: java org.smartfrog.SFParse -?";
 
     /** Help string for SFSystem. */
@@ -58,6 +58,7 @@ public class ParseOptionSet {
         "    -f filename:    file with a list of SmartFrog descriptions to parse\n" +
         "                    if -f is not present then filename is directly parsed\n"+
         "    -D:             show diagnostics report \n"+
+        "    -c:             show console\n"+
         "    -?:             this help text.\n"+
         " \n"+
         "   Examples: SFParse -r org/smartfrog/examples/counter/example.sf \n";
@@ -97,6 +98,8 @@ public class ParseOptionSet {
 
     /** Flag indicating if diagnostics was requested. */
     public boolean diagnostics = false;
+    /** Show console. */
+    public boolean showConsole = false;
 
     /**
      * Creates an OptionSet from an array of arguments.
@@ -140,6 +143,9 @@ public class ParseOptionSet {
 
                     case 'f':
                         loadDescriptionsFromFile = true;
+                        break;
+                    case 'c':
+                        showConsole = true;
                         break;
 
                     default:
