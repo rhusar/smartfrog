@@ -62,6 +62,8 @@ public class DeployEntry implements Entry {
 
     private String name = null;
 
+    private boolean isThisRoot = false;
+
     /**
      * Constructs the DeployEntry object
      *
@@ -82,17 +84,32 @@ public class DeployEntry implements Entry {
      * @param showRootProcessName flag indicating to show rootprocess name
      * @param showCDasChild flag indicating to show CD as child
      */
-    public DeployEntry(Object entry, String name ,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
+    public DeployEntry(Object entry, String name ,boolean isCopy, boolean showRootProcessName, boolean showCDasChild, boolean isThisRoot) {
         try {
             if (name!=null) this.name=name;
+
             this.entry = entry;
             this.isCopy = isCopy;
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
+            this.isThisRoot = isThisRoot;
             initLog();
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployEntry1): "+ex.toString(),ex);
         }
+    }
+
+        /**
+     * Constructs the DeployEntry object
+     *
+     * @param  entry  object entry.
+     * @param  name   object relative name
+     * @param  isCopy is entry a copy of the original object (normally when a CD is accessed remotely)
+     * @param showRootProcessName flag indicating to show rootprocess name
+     * @param showCDasChild flag indicating to show CD as child
+     */
+    public DeployEntry(Object entry, String name ,boolean isCopy, boolean showRootProcessName, boolean showCDasChild) {
+       this(entry,name,isCopy,showRootProcessName, showCDasChild, false);
     }
 
     /**
@@ -176,6 +193,9 @@ public class DeployEntry implements Entry {
             if (entry instanceof Prim) {
                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),null,false,this.showRootProcessName,this.showCDasChild));
             }
+            if ( this.isThisRoot){
+                return this;
+            }
             //return entry;
         } catch (Exception ex) {
             //System.out.println(ex.toString());
@@ -247,6 +267,11 @@ public class DeployEntry implements Entry {
             try {
                 ref = ((ComponentDescription) entry).sfCompleteName();
             //    System.out.println("EntryCD: getting name - "+name);
+                if (ref.toString().equals("")){
+                    if (isThisRoot) {
+                        ref = new Reference("sfConfig");
+                    }
+                }
             } catch (Exception ex) {
                 if (sfLog().isErrorEnabled()) sfLog().error(ex);
             }

@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * DeployTreeModelSF is the deployable tree model for SmartFrog component
@@ -83,10 +84,9 @@ public class DeployTreeModelSF  implements TreeModel {
     public DeployTreeModelSF(Object entry, boolean isCopy, boolean showRootProcessName,boolean showCDasChild) {
         try {
            boolean newShowRootProcessName = (showRootProcessName&&(entry instanceof ProcessCompound));
-           this.entry = new DeployEntry(entry,null, isCopy, newShowRootProcessName,showCDasChild);
+           this.entry = new DeployEntry(entry,null, isCopy, newShowRootProcessName,showCDasChild, true);           
            this.listeners = new Vector();
            initLog();
-            //System.out.println("DeployTreeModel created");
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error("sfManagementConsole (DeployTreeModel): "+ex.toString(),ex);
         }
@@ -219,6 +219,8 @@ public class DeployTreeModelSF  implements TreeModel {
         try {
             if (entry.getEntry() instanceof Prim) {
                this.sfLog=LogFactory.getLog((Prim)(entry.getEntry()));
+            } else if (entry.getEntry() instanceof ComponentDescription){
+               this.sfLog=LogFactory.getLog((entry.getEntry()));
             } else {
                this.sfLog=LogFactory.getLog((String)entry.getEntry());
             }

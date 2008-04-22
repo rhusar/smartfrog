@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.services.management.SFDeployDisplay;
 
 /**
  * SFParse provides the utility methods to parse file descriptions and generate
@@ -57,8 +58,7 @@ public class SFParse implements MessageKeys {
     private static Vector phases;
 
     private static Vector errorReport = new Vector();
-
-    private SFParse(){
+                                 private SFParse(){
     }
 
     /**
@@ -158,10 +158,13 @@ public class SFParse implements MessageKeys {
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
             report.add(", parsed in "+ (parseTime) + " millisecs.");
 
+            showConsole(cd);
+
+
         } catch (Exception e) {
             //report.add("Error: "+ e.getMessage());
             //report.add("   "+ phase +" phase: FAILED!");
-            SFSystem.sfLog().out("ERROR '"+fileUrl+"': \n"+ e+"\n");
+            SFSystem.sfLog().err("'"+fileUrl+"': \n"+ e+"\n",e);
             Vector itemError = new Vector();
             itemError.add(fileUrl);
             if (e instanceof SmartFrogException) {
@@ -173,6 +176,13 @@ public class SFParse implements MessageKeys {
             errorReport.add(itemError);
         }
         return report;
+    }
+
+    private static void showConsole(ComponentDescription cd) throws Exception {
+        if (opts.showConsole) {
+            SFDeployDisplay.starParserConsole("ParseConsole",440,600,"N",cd,true);
+            Thread.sleep(3600*100);
+        }
     }
 
     /**
