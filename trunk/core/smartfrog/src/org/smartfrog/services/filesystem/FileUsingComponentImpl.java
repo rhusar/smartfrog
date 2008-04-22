@@ -21,6 +21,7 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -55,7 +56,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @return path of the file
      */
     public String getAbsolutePath()  {
-        if(file==null) {
+        if (file == null) {
             return null;
         } else {
             return file.getAbsolutePath();
@@ -225,7 +226,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
             bind(component, newfile);
         } else {
             if(mandatory) {
-                throw new SmartFrogDeploymentException("No filename supplied");
+                throw new SmartFrogDeploymentException("No filename supplied",component);
             }
         }
         return absolutePath;
@@ -258,7 +259,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @return string form for this component
      */
     public String toString() {
-        return file!=null?file.getAbsolutePath() : "uninitialized component";
+        return file != null ? file.getAbsolutePath() : "uninitialized component";
     }
 
     /**
@@ -280,8 +281,10 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
                     getFile().deleteOnExit();
                 }
             }
-        } catch (Exception e) {
-            //ignore this, as the delete flag will retain its previous value
+        } catch (RemoteException e) {
+            sfLog().ignore(e);
+        } catch (SmartFrogResolutionException e) {
+            sfLog().ignore(e);
         }
     }
 

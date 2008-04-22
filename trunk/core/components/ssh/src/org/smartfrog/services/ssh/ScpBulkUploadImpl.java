@@ -113,6 +113,6 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
      * @throws SmartFrogException if something else went wrong
      */
     public File getBaseDir() throws RemoteException, SmartFrogException {
-        return fileset.baseDir;
+        return fileset.getBaseDir();
     }
 }

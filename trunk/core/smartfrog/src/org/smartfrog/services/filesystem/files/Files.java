@@ -38,6 +38,11 @@ public interface Files extends Remote {
     String ATTR_FILES="files";
 
     /**
+     * set at runtime a List of files as strings: {@value}
+     */
+    String ATTR_FILELIST="fileList";
+
+    /**
      * Fileset attribute:  {@value}
      */
     String ATTR_FILE_SET="fileSet";

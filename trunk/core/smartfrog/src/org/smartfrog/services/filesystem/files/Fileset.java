@@ -21,38 +21,40 @@
 
 package org.smartfrog.services.filesystem.files;
 
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.services.filesystem.FileSystem;
 
-import java.io.Serializable;
 import java.io.File;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
  * This is conceptually similar to an Ant FileSet, but architecturally very
  * different. It represents a set of files with a (possibly null) base directory.
- * It is marked as seriali
+ * It is marked as serialisable... the list of files will get sent over.
  *
  */
 public class Fileset implements Serializable {
 
+
     /**
      * base directory, can be null
      */
-    public File baseDir;
+    private File baseDir;
     /**
      * list of files
      */
-    public File[] files=new File[0];
+    private File[] files= EMPTY_FILES;
 
     /**
      * Filter -may be null.
      */
-    public FilenamePatternFilter filter;
+    private FilenamePatternFilter filter;
+    private static final File[] EMPTY_FILES = null;
 
     /**
      * Simple constructor
@@ -77,18 +79,34 @@ public class Fileset implements Serializable {
      */
     public Fileset(File baseDir, File[] files) {
         this.baseDir = baseDir;
-        this.files = files;
+        setFiles(files);
     }
 
     /**
-     * Construct a filset from a files instance (Which may be remote)
+     * Construct a fileset from a files instance (Which may be remote)
      * @param files the component that knows about the files
      * @throws RemoteException when the network plays up
      * @throws SmartFrogException if something else went wrong
      */
     public Fileset(Files files) throws SmartFrogException, RemoteException {
-        this.baseDir=files.getBaseDir();
-        this.files=files.listFiles();
+        baseDir=files.getBaseDir();
+        setFiles(files.listFiles());
+    }
+
+    /**
+     * Set the files attribute and declare us as built.
+     * @param files
+     */
+    private void setFiles(File[] files) {
+        this.files = files;
+    }
+
+    public File getBaseDir() {
+        return baseDir;
+    }
+
+    public FilenamePatternFilter getFilter() {
+        return filter;
     }
 
     /**
@@ -102,11 +120,32 @@ public class Fileset implements Serializable {
      */
 
     public File[] listFiles() {
+        //return any cached value
+        if (files != null) {
+            return files;
+        }
 
-        return filter!=null?files=baseDir.listFiles(filter):files;
+        //no value? Maybe we should build it
+        if(filter!=null) {
+            recalculate();
+            return files;
+        } else {
+            //now way to bind a file list, so say there is nothing
+            return EMPTY_FILES;
+        }
     }
 
-       /**
+    /**
+     * Recalculate the fileset and update our cache.
+     * Has no effect if the component is caching someone else's value
+     */
+    public void recalculate() {
+        if (filter != null) {
+            setFiles(baseDir.listFiles(filter));
+        }
+    }
+
+    /**
      * Look for a fileset from the various attributes
      *
      * @param component component to work from
@@ -161,12 +200,17 @@ public class Fileset implements Serializable {
             throws SmartFrogException, RemoteException {
 
         Files files = null;
+        ComponentDescription cd=null;
+        Prim prim=null;
         if (component instanceof Prim) {
-            files = (Files) ((Prim)component).sfResolve(filesAttribute, (Prim) null, false);
+            prim = (Prim) component;
+            files = (Files) prim.sfResolve(filesAttribute, (Prim) null, false);
         } else if (component instanceof ComponentDescription) {
-            files = (Files) ((ComponentDescription)component).sfResolve(filesAttribute, (Prim) null, false);
+            cd = (ComponentDescription) component;
+            files = (Files) cd.sfResolve(filesAttribute, (Prim) null, false);
         } else {
-            throw  new SmartFrogResolutionException("Wrong object type. It does not implement Resolve() interfaces: "+component.getClass().getName());
+            throw  new SmartFrogResolutionException("Wrong object type. It does not implement Resolve() interfaces: "
+                            +component.getClass().getName());
         }
 
 
@@ -179,19 +223,21 @@ public class Fileset implements Serializable {
             boolean caseSensitive;
             boolean includeHiddenFiles;
             if (component instanceof Prim) {
-                pattern = ((Prim)component).sfResolve(patternAttribute, "", true);
-                caseSensitive = ((Prim)component).sfResolve(caseAttribute, true, true);
-                includeHiddenFiles = ((Prim)component).sfResolve(hiddenAttribute, true, true);
+                pattern = prim.sfResolve(patternAttribute, "", true);
+                caseSensitive = prim.sfResolve(caseAttribute, true, true);
+                includeHiddenFiles = prim.sfResolve(hiddenAttribute, true, true);
             }  else  {
-                pattern = ((ComponentDescription)component).sfResolve(patternAttribute, "", true);
-                caseSensitive = ((ComponentDescription)component).sfResolve(caseAttribute, true, true);
-                includeHiddenFiles = ((ComponentDescription)component).sfResolve(hiddenAttribute, true, true);
+                pattern = cd.sfResolve(patternAttribute, "", true);
+                caseSensitive = cd.sfResolve(caseAttribute, true, true);
+                includeHiddenFiles = cd.sfResolve(hiddenAttribute, true, true);
             }
 
             FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
             return new Fileset(baseDir, filter);
         }
     }
+
+    
 
     /**
      * Returns a list of files in String format using the platform file separator.
@@ -203,4 +249,7 @@ public class Fileset implements Serializable {
           fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
           return (fileSetString);
     }
+
+
+
 }
