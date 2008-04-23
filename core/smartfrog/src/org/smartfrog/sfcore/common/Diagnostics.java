@@ -59,13 +59,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.Vector;
+import java.util.*;
 
 
 /**
@@ -227,6 +221,9 @@ public final class Diagnostics {
 
         header(out, "System properties");
         doReportSystemProperties(out);
+
+        header(out, "System environment properties");
+        doReportSystemEnvProperties(out);
 
         header(out, Version.versionString() );
         out.append("\n");
@@ -465,6 +462,36 @@ public final class Diagnostics {
         	}
         } catch (SecurityException  e) {
         	out.append("Access to System.getProperties() blocked by a security manager\n");
+        }
+    }
+
+    /**
+     * Report a listing of system environment properties existing in the current vm.
+     * @param out the stream to print the properties to.
+     */
+    private static void doReportSystemEnvProperties(StringBuffer out) {
+        Map sysenvprops = null;
+        try {
+           sysenvprops = System.getenv();
+           Vector<String> keysVector = new Vector<String>();
+           for (Iterator iterator = sysenvprops.entrySet().iterator(); iterator.hasNext(); ) {
+              Map.Entry entry = (Map.Entry)iterator.next();
+              keysVector.add((String)entry.getKey());
+            }
+        	// Order keys
+        	keysVector= JarUtil.sort(keysVector);
+        	for(String key:keysVector) {
+        		String value = "";
+        		try {
+        			if (!(key.trim().equals(""))) value = System.getenv((String)key);
+        		} catch (SecurityException e) {
+        			value = "Access to this environment property blocked by a security manager";
+        		}
+        		out.append(key).append(" : ").append(value);
+        		out.append('\n');
+        	}
+        } catch (SecurityException  e) {
+        	out.append("Access to System.getenv() blocked by a security manager\n");
         }
     }
 
