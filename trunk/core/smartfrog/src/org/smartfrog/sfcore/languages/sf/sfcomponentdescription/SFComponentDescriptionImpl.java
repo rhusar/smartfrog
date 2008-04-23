@@ -24,11 +24,25 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.Set;
+import java.util.Vector;
 
-
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SFByteArray;
+import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SFTempValue;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLinkResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogPlaceResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogTypeResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
@@ -920,7 +934,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     *@return    Vector of Phases
     */
-   public Vector sfGetPhases() {	   
+   public Vector sfGetPhases() throws SmartFrogException {	   
 	   if (phases==null){
 		   phases = new Vector();
 	   	   SFComponentDescription phases_cd = (SFComponentDescription) sfContext.get(PHASE_LIST);
@@ -929,7 +943,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 	        	Enumeration keys = phases_cd.sfContext().keys();
 	        	while (keys.hasMoreElements()){
 	        		Object phase = phases_cd.sfContext().get(keys.nextElement());
-	        		if (!(phase instanceof String)) return (phases=null);
+	        		if (!(phase instanceof String)) throw new SmartFrogParseException("phaseList must be a vector of Strings");
 	        		phases.add((String)phase);
 	        	}
 	            sfContext.remove(PHASE_LIST);
