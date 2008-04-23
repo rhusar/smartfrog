@@ -76,7 +76,7 @@ public interface Phases extends ComponentDescription {
      *
      * @return the phases to apply
      */
-    Vector sfGetPhases();
+    Vector sfGetPhases() throws SmartFrogException;
 
     /**
      * Convert the Phases (resulting from applying the phases) to a
