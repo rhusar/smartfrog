@@ -44,6 +44,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     private boolean pingJob;
     private Job job;
     private TaskCompletionEventLogger events;
+    public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -64,14 +65,17 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATEWHENJOBFINISHES, true, true);
         }
         ManagedConfiguration conf = new ManagedConfiguration(jobPrim);
-        String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, "", true);
-        if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
-        conf.setJar(filePath);
+        String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String)null, false);
+        if (filePath != null) {
+            if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
+            conf.setJar(filePath);
+        }
+        String jobTracker= jobPrim.sfResolve(MAPRED_JOB_TRACKER,"",true);
         try {
-            sfLog().info("Running Job");
+            sfLog().info("Submitting to "+jobTracker);
             runningJob = JobClient.runJob(conf);
         } catch (IOException e) {
-            throw SmartFrogLifecycleException.forward("Failure to start job with JAR " + filePath, e, this);
+            throw SmartFrogLifecycleException.forward(ERROR_FAILED_TO_START_JOB+jobTracker, e, this);
         }
         sfReplaceAttribute(ATTR_JOBID, runningJob.getJobID());
         //set up to log events

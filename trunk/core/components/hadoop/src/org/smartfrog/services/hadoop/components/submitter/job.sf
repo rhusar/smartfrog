@@ -20,5 +20,11 @@ For more information: www.smartfrog.org
 
 
 Job extends JobConfiguration {
-  filename TBD;
+  sfClass "org.smartfrog.services.hadoop.components.submitter.JobImpl";
+  //do we need a filename attribute?
+  fileRequired true;
+}
+
+JobWithoutJARFile extends Job {
+  fileRequired false;
 }
