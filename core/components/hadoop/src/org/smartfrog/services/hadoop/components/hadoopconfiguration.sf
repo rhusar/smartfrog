@@ -161,6 +161,8 @@ JobConfiguration extends HadoopConfiguration  {
    */
   mapred.job.priority JobPriority:Normal;
 
+
+
  /*
   the max number of attempts per map task.
   */

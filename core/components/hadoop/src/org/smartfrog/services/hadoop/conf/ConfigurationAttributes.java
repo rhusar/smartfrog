@@ -147,6 +147,15 @@ public interface ConfigurationAttributes {
      */
     String MAPRED_JOB_NAME = "mapred.job.name";
 
+    /**
+     * the JobPriority for this job.
+     */
+    String MAPRED_JOB_PRIORITY = "mapred.job.priority";
+
+    /**
+     * the job tracker URL
+     */
+    String MAPRED_JOB_TRACKER = "mapred.job.tracker";
 
     /**
      * the maximum no. of failures of a given job per tasktracker. If the no. of task failures exceeds
@@ -164,10 +173,6 @@ public interface ConfigurationAttributes {
      */
     String MAPRED_MAX_REDUCE_FAILURES_PERCENT = "mapred.max.reduce.failures.percent";
 
-    /**
-     * the JobPriority for this job.
-     */
-    String MAPRED_JOB_PRIORITY = "mapred.job.priority";
 
     /**
      * whether the task profiling is enabled.

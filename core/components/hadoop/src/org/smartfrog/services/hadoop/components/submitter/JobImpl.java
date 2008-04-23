@@ -43,10 +43,14 @@ public class JobImpl extends FileUsingComponentImpl implements Job {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        boolean fileRequired=sfResolve(ATTR_FILEREQUIRED,true,true);
         //bind the file
-        bind(true, null);
-        if (!getFile().exists()) {
-            throw new SmartFrogLifecycleException("Missing JAR file " + getFile());
+        if(fileRequired) {
+            bind(true, null);
+            if (!getFile().exists()) {
+                throw new SmartFrogLifecycleException("Missing JAR file " + getFile());
+            }
+            sfReplaceAttribute(MAPRED_JAR,getFile().toString());
         }
     }
 }

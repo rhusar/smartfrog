@@ -28,7 +28,10 @@ Classnames extends NULL {
   IdentityMapper "org.apache.hadoop.mapred.lib.IdentityMapper";
   IdentityReducer "org.apache.hadoop.mapred.lib.IdentityReducer"
   LongWritable "org.apache.hadoop.io.LongWritable";
+  LongSumReducer "org.apache.hadoop.mapred.lib.LongSumReducer";
   MapRunner "org.apache.hadoop.mapred.MapRunner";
+  NullOutputFormat "org.apache.hadoop.mapred.lib.NullOutputFormat";
+  RegexMapper "org.apache.hadoop.mapred.lib.RegexMapper";
   Text "org.apache.hadoop.io.Text";
   TextInputFormat "org.apache.hadoop.mapred.TextInputFormat";
   TextOutputFormat "org.apache.hadoop.mapred.TextOutputFormat";
