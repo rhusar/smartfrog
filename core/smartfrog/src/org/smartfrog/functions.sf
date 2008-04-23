@@ -57,10 +57,6 @@ formatString extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Format";
 }
 
-
-
-
-
 sum extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Sum";
 }
@@ -77,6 +73,18 @@ minus extends Function{
 
 divide extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Divide";
+}
+
+mod extends Function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Mod";
+}
+
+implies extends Function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Implies";
+}
+
+xor extends Function{
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Xor";
 }
 
 and extends Function{
