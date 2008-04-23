@@ -93,7 +93,6 @@ Process extends Prim {
    autoStart true;
 
    sfLog LAZY THIS;
-   //sfExport false;
 }
 
 BashProcess extends Process {
@@ -120,7 +119,6 @@ Shell extends Prim {
    exec extends DATA Exec;
 
    sfLog LAZY THIS;
-   //sfExport false;
 }
 
 BashShell extends Shell {
