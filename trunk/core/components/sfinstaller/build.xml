@@ -40,16 +40,11 @@ For more information: www.smartfrog.org
 
 <!--    <property name="lib.dir" location="lib" description=
                         "place to put third party libraries"/> -->
-       
-  
- <property name="Name.System" value="SFInstaller"/>   
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init" depends="common.init">
-    <echo message="==================================================================="/>
-    <echo message="= ${ant.project.name}"/>
-  </target>
 
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <property name="Name.System" value="SFInstaller"/>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
