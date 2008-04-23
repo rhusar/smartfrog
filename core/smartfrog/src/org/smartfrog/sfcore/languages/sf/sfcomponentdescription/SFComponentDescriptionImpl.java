@@ -920,22 +920,28 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     *@return    Vector of Phases
     */
-   public Vector sfGetPhases() {
-      if (phases == null) {
-         phases = (Vector) sfContext.get(PHASE_LIST);
-
-         if (phases == null) {
-            phases = new Vector();
-            phases.add(PhaseNames.TYPE);
-            phases.add(PhaseNames.PLACE);
-            phases.add(PhaseNames.FUNCTION);
-            phases.add(PhaseNames.SFCONFIG);
-            phases.add(PhaseNames.LINK);
-         } else {
-            sfContext.remove(PHASE_LIST);
-         }
-      }
-
+   public Vector sfGetPhases() {	   
+	   if (phases==null){
+		   phases = new Vector();
+	   	   SFComponentDescription phases_cd = (SFComponentDescription) sfContext.get(PHASE_LIST);
+		   
+	       if (phases_cd!=null){
+	        	Enumeration keys = phases_cd.sfContext().keys();
+	        	while (keys.hasMoreElements()){
+	        		Object phase = phases_cd.sfContext().get(keys.nextElement());
+	        		if (!(phase instanceof String)) return (phases=null);
+	        		phases.add((String)phase);
+	        	}
+	            sfContext.remove(PHASE_LIST);
+	       } else {
+	            phases.add(PhaseNames.TYPE);
+	            phases.add(PhaseNames.PLACE);
+	            phases.add(PhaseNames.FUNCTION);
+	            phases.add(PhaseNames.SFCONFIG);
+	            phases.add(PhaseNames.LINK);
+	      } 
+	      
+	  }
       return phases;
    }
 }
