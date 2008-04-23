@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import org.smartfrog.services.shellscript.FilterImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -186,8 +185,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     // Name can be null
     public RunProcessImpl( String name, Cmd cmd, Prim prim) {
-        if (name == null) name = "";
-        this.name = name;
+        this.name = name==null?"":name;
         setName("RunProcess");
 
         this.cmd = cmd;
@@ -211,7 +209,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     }
 
     public void run() {
-        {
+        do {
             startProcess();
             if ((prim!=null) && (prim instanceof SFReadConfig)){
                 try {
@@ -267,8 +265,10 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
-                  new FilterImpl( sfLog.getLogName(), process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener(),cmd.passPositives()),
-                  new FilterImpl( sfLog.getLogName(), process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener(),cmd.passPositives())
+                  new FilterImpl( sfLog.getLogName(), process.getInputStream(), "out",
+                          cmd.getFiltersOut(), cmd.getFilterOutListener(),cmd.passPositives()),
+                  new FilterImpl( sfLog.getLogName(), process.getErrorStream(), "err",
+                          cmd.getFiltersErr(), cmd.getFilterErrListener(),cmd.passPositives())
                 );
 
             // process may be null by the time we get here after the synchronized
@@ -358,7 +358,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     private void processStarted(){
         //Update counter
         int count = numberOfExecs.intValue()+1;
-        this.numberOfExecs = new Integer(count);
+        numberOfExecs = new Integer(count);
         if (prim!=null) {
             try {
                 prim.sfReplaceAttribute(SFExecution.ATR_NUMBER_OF_EXECS,this.numberOfExecs);
@@ -370,8 +370,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     private void processFinished(){
         //Update counters
         Integer exitCode = new Integer(exitValue);
-        this.execExitCodes.add(0,numberOfExecs);
-        this.execExitCodes.add(exitCode);
+        execExitCodes.add(0,numberOfExecs);
+        execExitCodes.add(exitCode);
         if (prim!=null) {
             try {
                 prim.sfReplaceAttribute(SFExecution.ATR_EXEC_EXIT_CODE, exitCode);
