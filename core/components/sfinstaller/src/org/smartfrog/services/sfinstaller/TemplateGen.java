@@ -89,7 +89,7 @@ public class TemplateGen {
     /**
      * A collection of jar files for dynamic classloading.
      */
-    static Vector httpJars = new Vector();
+    static Vector<String> httpJars = new Vector<String>();
 
     // static String Jars = "";
     /**
@@ -154,8 +154,9 @@ public class TemplateGen {
     public TemplateGen(String[] args, ArrayList<Daemon> listDaemons) throws Exception {
         readOptions(args);
 
-        for (Daemon d : listDaemons)
+        for (Daemon d : listDaemons) {
             allDaemons.add(d);
+        }
 
         if (outputFileName == null)
             instantiateTemplate(System.out);
@@ -255,8 +256,6 @@ public class TemplateGen {
                 tempEmailServer = getWord(st);
                 allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
             }
-        } catch (Exception e) {
-            throw e;
         } finally {
             r.close();
         }
@@ -282,37 +281,39 @@ public class TemplateGen {
      * @throws Exception Error while instantiating the template.
      */
     void instantiateTemplate(PrintStream out) throws Exception {
-	Properties p = new Properties();
-	p.setProperty("file.resource.loader.path", logDir);
+        Properties p = new Properties();
+        p.setProperty("file.resource.loader.path", logDir);
         Velocity.init(p);
         VelocityContext context = new VelocityContext();
         context.put("allDaemons", allDaemons);
-        context.put("dynamicLoadingOn", new Boolean(dynamicLoadingOn));
-        context.put("securityOn", new Boolean(securityOn));
+        context.put("dynamicLoadingOn", Boolean.valueOf(dynamicLoadingOn));
+        context.put("securityOn", Boolean.valueOf(securityOn));
         // context.put("httpServer",httpServer);
         context.put("httpJars", httpJars);
         // context.put("Jars", Jars);
-        context.put("logDir", logDir + System.getProperty("file.separator"));
-        
-	if(avEventServer != null){
-		context.put("avEventServer", avEventServer);
-	}
+        String slash = System.getProperty("file.separator");
+        context.put("logDir", logDir + slash);
+
+        if (avEventServer != null) {
+            context.put("avEventServer", avEventServer);
+        }
 
         file = new File(templateFileName);
-   	tempFile = new File(logDir + System.getProperty("file.separator") + System.getProperty("file.separator") + temp);
+        tempFile = new File(logDir + slash + slash + temp);
         if (file.exists()) {
             file.renameTo(tempFile);
         }
         template = Velocity.getTemplate(temp);
         //template = Velocity.getTemplate(templateFileName);
-        BufferedWriter writer=null;
+        BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(out));
-            if (template != null)
+            if (template != null) {
                 template.merge(context, writer);
+            }
             writer.flush();
         } finally {
-            if(writer!=null) {
+            if (writer != null) {
                 writer.close();
             }
         }
@@ -377,7 +378,9 @@ public class TemplateGen {
      * @param logdir               log directory
      * @throws Exception
      */
-    static public void createHostIgnitionTemplate(ArrayList<Daemon> listDaemons, String templateFile, String outputFile, boolean securityStatus, boolean dynamicLoadingStatus, String[] jars, String logdir, String avServer) throws Exception {
+    static public void createHostIgnitionTemplate(ArrayList<Daemon> listDaemons, String templateFile, String outputFile,
+                                                  boolean securityStatus, boolean dynamicLoadingStatus, String[] jars,
+                                                  String logdir, String avServer) throws Exception {
         try {
             ArrayList<String> dummy = new ArrayList<String>();
 
@@ -386,14 +389,16 @@ public class TemplateGen {
             dummy.add("-t");
             dummy.add(templateFile);
 
-            if (dynamicLoadingStatus)
+            if (dynamicLoadingStatus) {
                 dummy.add("-d");
-            
-            if (securityStatus)
+            }
+
+            if (securityStatus) {
                 dummy.add("-s");
+            }
 
             logDir = logdir;
-	    avEventServer = avServer;
+            avEventServer = avServer;
             createDescription(dummy.toArray(new String[4]), listDaemons, jars);
         } catch (Exception e) {
             System.out.println(e.getMessage());
