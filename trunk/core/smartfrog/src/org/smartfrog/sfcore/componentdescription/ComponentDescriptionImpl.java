@@ -20,33 +20,45 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.componentdescription;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
+import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.PrettyPrinting;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.PrettyPrinting;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-
-//For utility methods
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
-
-import org.smartfrog.sfcore.common.*;
-import java.rmi.*;
-
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.languages.sf.PhaseNames;
-
-import java.io.*;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
 
 /**
@@ -733,7 +745,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             tabPad(ps, indent);
             ps.write('}');
         } else {
-            ps.write(';');
+            ps.write(" {}");
         }
     }
 
