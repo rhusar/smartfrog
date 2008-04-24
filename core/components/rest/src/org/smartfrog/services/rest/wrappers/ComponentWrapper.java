@@ -124,6 +124,7 @@ public class ComponentWrapper implements Restful
 				restResponse.setContentType(XmlConstants.APPLICATION_XML);
 				restResponse.setContentLength(response.length());
 				restResponse.setContents(response.getBytes());
+				restResponse.setStringContents(response);
 			}
 			catch (Exception e)
 			{
@@ -142,12 +143,9 @@ public class ComponentWrapper implements Restful
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(xmlResponse.toXML().length());
 			restResponse.setContents(xmlResponse.toXML().getBytes());
-		} else if (responseType.equals("HTML")){
-			String result = getHTMLRepresentation();
-			restResponse.setContentType("text/html");
-			restResponse.setContentLength(result.length());
-			restResponse.setContents(result.getBytes());
-		}
+			restResponse.setDocument(xmlResponse);
+			restResponse.setStringContents(xmlResponse.toXML());
+		} 
 	}
 
 	public void doPost(HttpRestRequest restRequest, HttpRestResponse restResponse)
@@ -208,6 +206,7 @@ public class ComponentWrapper implements Restful
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
+			restResponse.setStringContents(response);
 		}
 		catch (Exception e)
 		{
@@ -274,6 +273,7 @@ public class ComponentWrapper implements Restful
 			restResponse.setContentType(XmlConstants.APPLICATION_XML);
 			restResponse.setContentLength(response.length());
 			restResponse.setContents(response.getBytes());
+			restResponse.setStringContents(response);
 		}
         catch (RestException e) {
             throw e;
@@ -323,7 +323,7 @@ public class ComponentWrapper implements Restful
 				Object key = i.next();
 				Object val = context.sfResolveAttribute(key);
 
-				Element subResource = new Element("resource");
+				Element subResource = new Element("subresource");
 
 				String subResourceType = "";
 
@@ -354,68 +354,6 @@ public class ComponentWrapper implements Restful
 		catch (SmartFrogContextException ignored) { }
 		return new Document(root);
 	}
-
-		public String getHTMLRepresentation() throws RemoteException
-	{
-		
-		String resourceType = "";
-
-		if (result.getSubject() instanceof Prim)
-			resourceType = "component";
-		else if (result.getSubject() instanceof ComponentDescription)
-			resourceType = "description";
-		else if (result.getSubject() instanceof Reference)
-			resourceType = "reference";
-		else
-			resourceType = "attribute";
-
-		String resourceLink = restRequest.getScheme() + "://" + restRequest.getServerName() + ":" +
-				restRequest.getServerPort() + restRequest.getRequestURI();
-				//restRequest.getServerPort() + restRequest.getContextPath() + restRequest.getRequestURI();
-
-		
-			
-		String out = "<html> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"resourceTable\" id=\"resourceTable\" width=\"100%\">";
-	        out = out + "<caption bgcolor=\"darkblue\"><h2>Resources for <a href=" + resourceLink+ "?responseType=HTML>" +  restRequest.getTargetResourceName() + "</a> " + resourceType + "</h2></caption></table>";
-		out = out + " <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"subresourceTable\" id=\"subresourceTable\" width=\"80%\">";
-		out = out + "<tr class=\"captionRow\" bgcolor=\"lightblue\">  <td width=\"15%\">Resource Name</td>  <td width=\"15%\">Type</td> <td>Class</td> <td>Link</td> </tr>";
-
-		Context context = (result.getSubject() instanceof Prim) ?
-				((Prim) result.getSubject()).sfContext() : ((ComponentDescription) result.getSubject()).sfContext();
-		try
-		{
-			for (Iterator i = context.sfAttributes(); i.hasNext();)
-			{
-				Object key = i.next();
-				Object val = context.sfResolveAttribute(key);
-
-				String subResourceType = "";
-
-				if (val instanceof Prim)
-					subResourceType = "component";
-				else if (val instanceof ComponentDescription)
-					subResourceType = "description";
-				else if (val instanceof Reference)
-					subResourceType = "reference";
-				else
-					subResourceType = "attribute";
-
-				String subResourceLink = resourceLink + key;
-
-	        		out = out + "<tr bgcolor=\"lightyellow\">";
-	    			out = out + "<td><a href=" + subResourceLink + "?responseType=HTML>" + (String)key + "</a></td>";
-	    			out = out + "<td>"+ subResourceType + "</td>";
-	    			out = out + "<td>" + val.getClass().getName() + "</td>";
-	    			out = out + "<td>" + subResourceLink + "</td>";
-				out = out + "</tr>";
-			}
-		}
-		catch (SmartFrogContextException ignored) { }
-		out = out + "</table></html>";
-
-		return out;
-	}
-
 
 	private final Object owner;
 	private final Object subject;
