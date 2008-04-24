@@ -32,17 +32,20 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.io.File;
 
 /**
-
+ * A component to validate files
  */
 public class FileExistsImpl extends FileUsingComponentImpl implements FileExists {
 
-    private long minSize = -1;
+    private long minSize = -1, maxSize=-1;
     private boolean canBeFile, canBeDir;
+    private String lastError="";
 
     public FileExistsImpl() throws RemoteException {
     }
@@ -60,9 +63,21 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
         super.sfStart();
         //set up all the filename bindings
         bindWithDir(true, "");
+        //get te other values
         minSize = sfResolve(ATTR_MIN_SIZE, minSize, true);
+        maxSize = sfResolve(ATTR_MAXSIZE, maxSize, true);
         canBeFile = sfResolve(ATTR_CAN_BE_FILE, true, true);
         canBeDir = sfResolve(ATTR_CAN_BE_DIR, true, true);
+        //maybe check on startup
+        boolean checkOnStartup= sfResolve(ATTR_CHECKONSTARTUP, true, true);
+        if(checkOnStartup) {
+            if(!evaluate()) {
+                //on failure, throw the last error
+                throw new SmartFrogDeploymentException(lastError,this);
+            }
+            //and look at workflow options
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
+        }
     }
 
     /**
@@ -72,25 +87,33 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    public boolean evaluate() throws RemoteException, SmartFrogException {
+    public synchronized boolean evaluate() throws RemoteException, SmartFrogException {
         File f = getFile();
-        boolean debug = sfLog().isDebugEnabled();
         if (!f.exists()) {
-            if (debug) sfLog().debug("Does not exist: " + file);
+            lastError = "Does not exist: " + file;
+            sfLog().debug(lastError);
             return false;
         }
         boolean isFile = f.isFile();
         if (isFile && !canBeFile) {
-            if (debug) sfLog().debug("Is of type file: " + file);
+            lastError = "Is of type file: " + file;
+            sfLog().debug(lastError);
         }
         boolean isDir = f.isDirectory();
         if (isDir && !canBeDir) {
-            if (debug) sfLog().debug("Is a directory: " + file);
+            lastError = "Is a directory: " + file;
+            sfLog().debug(lastError);
         }
         if (minSize >= 0 && f.length() < minSize) {
-            if (debug) {
-                sfLog().debug("Too short " + file + " - size of " + f.length() + " is below the minSize of " + minSize);
-            }
+            lastError = "Too short " + file + " - size of " + f.length() + " is below the minSize of "
+                    + minSize;
+            sfLog().debug(lastError);
+            return false;
+        }
+        if (maxSize >= 0 && f.length() > maxSize) {
+            lastError = "Too long " + file + " - size of " + f.length() + " is above the maxSize of "
+                    + maxSize;
+            sfLog().debug(lastError);
             return false;
         }
         return true;

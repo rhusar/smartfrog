@@ -32,13 +32,18 @@
  *
  * The canBeFile declares that the file can be a simple file; it fails if it is a file and this
  * attribute is false.
+ *
+ * When checkOnStartup is true, this component also checks its workflow attributes (sfShouldTerminate etc) and acts on them.
  */
 
 FileExists extends Conditional {
   sfClass "org.smartfrog.services.filesystem.FileExistsImpl";
   FileExistsSchema extends FileUsingComponentSchema {
-      //the minimum size
+      /** the minimum size */
       minSize extends Integer;
+
+      /** the maximum size */
+      maxSize extends Integer;
 
       /**
        *  Boolean to indicate the file can be a directory:
@@ -49,14 +54,21 @@ FileExists extends Conditional {
        * Boolean to indicate the file can be a file
        */
       canBeFile  extends Boolean;
+
+      /** Check on startup*/
+      checkOnStartup extends Boolean;
   }
 
 
 
   //no minimum size check.
   minSize -1;
+  /** the maximum size */
+  maxSize -1;
   canBeDirectory true;
   canBeFile true;
+  /** Check on startup*/
+  checkOnStartup false;
 }
 
 
