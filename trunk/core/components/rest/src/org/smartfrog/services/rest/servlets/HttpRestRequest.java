@@ -129,6 +129,9 @@ public class HttpRestRequest implements Serializable
 		String[] context = contextPath.replaceAll("(^/|/$)", "").split("/");
 		
 		// remove leading/trailing slashes from URI and explode on "/"
+		String[] servlet = servletPath.replaceAll("(^/|/$)", "").split("/");
+		// remove leading/trailing slashes from URI and explode on "/"
+		
 		String[] raw = requestURI.replaceAll("(^/|/$)", "").split("/");
 
 		// we require at least "/<hostname>/<port number>/"
@@ -136,22 +139,44 @@ public class HttpRestRequest implements Serializable
 			throw new InvalidURIException("Insufficient information was supplied in the URI provided.");
 
 		if (context.length == 0) {
-		 	targetHost = raw[0];
-			try {
-				targetPort = Integer.parseInt(raw[1]);
-			}
+			if ( servlet.length == 0 || servlet[0].equals("")){
+		 		targetHost = raw[0];
+				try {
+					targetPort = Integer.parseInt(raw[1]);
+				}
 				catch (NumberFormatException nfe)
-			{
-				throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				{
+					throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				}	
+			} else{
+				targetHost = raw[servlet.length];
+				try {
+					targetPort = Integer.parseInt(raw[servlet.length + 1]);
+				}
+				catch (NumberFormatException nfe)
+				{
+					throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				}
 			}
 		} else {
-			targetHost = raw[context.length];
-			try {
-				targetPort = Integer.parseInt(raw[context.length+1]);
-			}
+			if ( servlet.length == 0 || servlet[0].equals("")) {
+				targetHost = raw[context.length];
+				try {
+					targetPort = Integer.parseInt(raw[context.length+1]);
+				}
 				catch (NumberFormatException nfe)
-			{
-				throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				{
+					throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				}
+			} else {
+				targetHost = raw[context.length + servlet.length];
+				try {
+					targetPort = Integer.parseInt(raw[context.length+ servlet.length + 1]);
+				}
+				catch (NumberFormatException nfe)
+				{
+					throw new InvalidURIException("The port specified (" + raw[1] + ") could not be parsed as an integer.");
+				}
 			}
 		}
 
@@ -165,34 +190,64 @@ public class HttpRestRequest implements Serializable
 		}*/
 
 		if (context.length == 0) {
-			
+			if ( servlet.length == 0 || servlet[0].equals("")) {	
 		// 2 parts means they're requesting the root context (i.e. an empty resource path)
-			if (raw.length == 2)
-			{
-				resourcePath = new String[]{};
-			}
-			else
-			{
-				resourcePath = new String[raw.length - 2];
-
-				for (int i = 2; i < raw.length; i++)
+				if (raw.length == 2)
 				{
-					resourcePath[i - 2] = raw[i];
+					resourcePath = new String[]{};
+				}	
+				else
+				{
+					resourcePath = new String[raw.length - 2];
+
+					for (int i = 2; i < raw.length; i++)
+					{
+						resourcePath[i - 2] = raw[i];
+					}
 				}
-			}
-
-		} else {
-			if ((raw.length - context.length) == 2)
-			{
-				resourcePath = new String[]{};
-			}
-			else
-			{
-				resourcePath = new String[raw.length - (context.length + 2)];
-
-				for (int i = (context.length + 2) ; i < raw.length ; i++)
+			} else {
+				if (raw.length == 2)
 				{
-					resourcePath[i - (context.length + 2)] = raw[i];
+					resourcePath = new String[]{};
+				}	
+				else
+				{
+					resourcePath = new String[raw.length - (servlet.length + 2)];
+
+					for (int i = (servlet.length + 2) ; i < raw.length; i++)
+					{
+						resourcePath[i - (servlet.length + 2) ] = raw[i];
+					}
+				}
+			}			
+		} else {
+			if (servlet.length == 0 || servlet[0].equals("")) {
+				if ((raw.length - context.length) == 2)
+				{
+					resourcePath = new String[]{};
+				}
+				else
+				{
+					resourcePath = new String[raw.length - (context.length + 2)];
+
+					for (int i = (context.length + 2) ; i < raw.length ; i++)
+					{
+						resourcePath[i - (context.length + 2)] = raw[i];
+					}
+				}
+			} else {
+					if ((raw.length - (context.length + servlet.length)) == 2)
+				{
+					resourcePath = new String[]{};
+				}
+				else
+				{
+					resourcePath = new String[raw.length - (context.length + servlet.length + 2)];
+
+					for (int i = (context.length + servlet.length + 2) ; i < raw.length ; i++)
+					{
+						resourcePath[i - (context.length + servlet.length + 2)] = raw[i];
+					}
 				}
 			}
 		}
