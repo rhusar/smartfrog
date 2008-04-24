@@ -54,7 +54,7 @@ For more information: www.smartfrog.org
 	<description>Avalanche GUI</description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>C:\\project\\smartfrog\\core\\extras\\avalanche\\server</param-value>
+		<param-value>C:\\sf\\2008\\apr04\\svn\\extras\\avalanche\\server</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -69,7 +69,7 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>16.25.169.46</param-value>
+		<param-value>16.181.41.84</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>
@@ -98,6 +98,16 @@ For more information: www.smartfrog.org
 			org.smartfrog.avalanche.server.AvalancheContextListener
 		</listener-class>
 	</listener>
+		<servlet>
+		<servlet-name>RequestHandler</servlet-name>
+		<servlet-class>org.smartfrog.services.rest.servlets.RequestHandler</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>RequestHandler</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
 
 	<session-config>
 		<session-timeout>30</session-timeout>
