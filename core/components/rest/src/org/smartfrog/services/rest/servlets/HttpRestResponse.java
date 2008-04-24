@@ -51,6 +51,16 @@ public class HttpRestResponse
 		return contents;
 	}
 
+	public Document getDocument()
+	{
+		return doc;
+	}
+
+	public String getStringContents()
+	{
+		return stringcontents;
+	}
+
 	/**
 	 * Returns the MIME content type associated with the contents of this response.
 	 *
@@ -121,6 +131,25 @@ public class HttpRestResponse
 		this.contents = contents;
 	}
 
+	/**
+	 * Sets the raw contents of the response to be served to the client.
+	 *
+	 * @param contents A byte array whose raw contents are that of the response to be transmitted.
+	 */
+	public void setStringContents(String stringcontents)
+	{
+		this.stringcontents = stringcontents;
+	}
+
+	/**
+	 * Sets the raw contents of the response to be served to the client.
+	 *
+	 * @param contents A byte array whose raw contents are that of the response to be transmitted.
+	 */
+	public void setDocument(Document doc)
+	{
+		this.doc = doc;
+	}
 	/**
 	 * Sets the MIME content type associated with the contents of this response.
 	 *
@@ -387,6 +416,8 @@ public class HttpRestResponse
 
 
 	private byte[] contents;
+	private Document doc;
+	private String stringcontents;
 	private int status;
 	private int contentLength;
 
