@@ -143,7 +143,7 @@ public class RequestHandler extends HttpServlet {
         }
     }
 
-    private void writeResponse(HttpServletResponse servletResponse,
+  /*  private void writeResponse(HttpServletResponse servletResponse,
                                HttpRestResponse restResponse)
             throws IOException {
         // A buffered output stream is used incase the return content is binary
@@ -155,7 +155,16 @@ public class RequestHandler extends HttpServlet {
             FileSystem.close(os);
         }
     }
+*/
 
+     private void writeResponse(HttpServletResponse servletResponse,
+                               HttpRestResponse restResponse)
+            throws IOException {
+       	PrintWriter out = servletResponse.getWriter();
+        out.println(restResponse.getStringContents());
+    }
+
+   
     /**
      * Performs an HTTP GET request on the resource specified by the URI. Default
      * behaviour is simple to return the value of getXmlRepresentation as specified
