@@ -13,6 +13,7 @@
                     writeMenuHeader("menu2_trigger", "Hosts");
                     writeMenuStart("menu2");
                     writeMenuItem("List Hosts", "host_list.jsp", "2");
+                    writeMenuItem("Host Management", "host_management.jsp", "2");
                     writeMenuItem("Host Groups", "host_group.jsp", "2");
                     writeMenuEnd();
 

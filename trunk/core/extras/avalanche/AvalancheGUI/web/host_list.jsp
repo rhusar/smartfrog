@@ -70,8 +70,8 @@ For more information: www.smartfrog.org
                                 "javascript:deleteHosts()",
                                 "Stop SmartFrog on selected hosts",
                                 "javascript:stopHosts()",
-                                "Start SmartFrog Console",
-                                "javascript:openConsole()",
+                                //"Start SmartFrog Console",
+                               // "javascript:openConsole()",
                                 "Ignite selected hosts",
                                 "javascript:igniteHosts()"); 
         -->

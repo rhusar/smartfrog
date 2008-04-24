@@ -62,7 +62,7 @@ For more information: www.smartfrog.org
                         }
                     }
                     // START THE MANAGEMENT CONSOLE FOR THE SELECTED HOSTS
-                } else if (pageAction.equals("console")) {
+               /* } else if (pageAction.equals("console")) {
                     if (request.getRemoteHost().equals("127.0.0.1")) {
                         SFAdapter adapter = new SFAdapter(factory, scheduler);
                         for (String host : hosts) {
@@ -70,7 +70,7 @@ For more information: www.smartfrog.org
                         }
                     } else {
                         message = "Start sfManagementConsole using your command line.";
-                    }
+                    }*/
                     // DELETE THE SPECIFIED HOSTS FROM THE DATABASE
                 } else if (pageAction.equals("delete")) {
                     try {
