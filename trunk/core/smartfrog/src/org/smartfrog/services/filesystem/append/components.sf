@@ -36,3 +36,14 @@ AppendLines extends FileUsingWorkflowComponent {
   encoding LAZY PROPERTY file.encoding ;
 
 }
+
+/**
+ * Template to append an SSH key
+ */
+
+AppendSSHKey extends AppendLines {
+  key TBD;
+  lines [key];
+  filename ((LAZY PROPERTY user.home) ++ "/.ssh/authorized_keys");
+}
+
