@@ -18,7 +18,7 @@
         description="default configuration contains artifacts and runtime dependencies"/>
   <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-  <conf name="compile" visibility="private"
+  <conf name="compile" visibility="private" extends="runtime"
         description="artifacts needed to compile the application"/>
   <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
@@ -48,7 +48,7 @@
                 name="sf-ssh"
                 changing="true"
                 rev="latest.integration"
-                conf="compile->default;redist->redist;runtime->default"/>
+                conf="redist->redist;runtime->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-tasks"
@@ -66,5 +66,13 @@
         changing="true"
         rev="latest.integration"
         conf="test->default"/>
+
+
+    <!--velocity is used to generate spec files-->
+    <dependency org="velocity"
+        name="velocity"
+        rev="${velocity.version}"
+        conf="redist->default"/>
+
  </dependencies>
 </ivy-module>

@@ -23,9 +23,10 @@
  * all the dependent artifacts present
  */
 ArtifactCheckingManager extends RpmManager {
-  sfClass "org.smartfrog.services.rpm.local.ArtifactCheckingManagerImpl";
+  sfClass "org.smartfrog.services.rpm.manager.local.ArtifactCheckingManagerImpl";
+
   /**
-    * Install the RPMs on startup
+    * check the RPMs on startup
     */
    install true;
 
