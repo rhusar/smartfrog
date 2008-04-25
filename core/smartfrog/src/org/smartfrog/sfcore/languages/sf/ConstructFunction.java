@@ -57,6 +57,7 @@ public class ConstructFunction implements PhaseAction {
         }
 
         ComponentDescription parent = cd.sfParent();
+        
         if (parent != null) {
             Object name = parent.sfContext().keyFor(cd);
             Reference newRef = new SFApplyReference(comp);
@@ -67,6 +68,8 @@ public class ConstructFunction implements PhaseAction {
                 throw new SmartFrogFunctionResolutionException("Problem reading ("+functionLazy+"): " + phaseName + " for component: " + cd.sfCompleteName(), e);
             }
             parent.sfContext().put(name, newRef );
+            
+            comp.sfContext().remove(functionPhase);
         }
     }
 
@@ -74,6 +77,6 @@ public class ConstructFunction implements PhaseAction {
     public void forComponent(SFComponentDescription componentDescription, String phase, Stack pathStack) {
         this.phaseName = phase;
         this.cd = componentDescription;
-        this.path = pathStack;
+        this.path = pathStack;        
     }
 }

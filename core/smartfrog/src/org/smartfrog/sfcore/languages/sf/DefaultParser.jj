@@ -52,6 +52,8 @@ public class DefaultParser {
 
   static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.And";
   static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Or";
+  static final String xorOp = "org.smartfrog.sfcore.languages.sf.functions.Xor";
+  static final String impliesOp = "org.smartfrog.sfcore.languages.sf.functions.Implies";
 
   static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
@@ -62,6 +64,7 @@ public class DefaultParser {
 
   static final String minusOp = "org.smartfrog.sfcore.languages.sf.functions.Minus";
   static final String divOp = "org.smartfrog.sfcore.languages.sf.functions.Divide";
+  static final String modOp = "org.smartfrog.sfcore.languages.sf.functions.Mod";
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
@@ -250,6 +253,7 @@ TOKEN : /* reserved words */
  | <MINUS: "-">
  | <TIMES: "*">
  | <DIV: "/">
+ | <MOD: "%">
  | <CONCAT: "++">
  | <APPEND: "<>">
 
@@ -262,7 +266,9 @@ TOKEN : /* reserved words */
 
  | <AND: "&&">
  | <OR: "||">
+ | <XOR: "x|">
  | <NOT: "!">
+ | <IMPLIES: "->">
 
  | <IF: "IF">
  | <THEN: "THEN">
@@ -596,15 +602,19 @@ Object Operator() :
          |((<TIMES> {operator = timesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<TIMES> (b = SimpleValue() {v.add(b);}))*)
          |((<AND> {operator = andOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<AND> (b = SimpleValue() {v.add(b);}))*)
          |((<OR> {operator = orOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<OR> (b = SimpleValue() {v.add(b);}))*)
-
+         |((<XOR> {operator = xorOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<XOR> (b = SimpleValue() {v.add(b);}))*)
+         |((<IMPLIES> {operator = impliesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<IMPLIES> (b = SimpleValue() {v.add(b);}))*)
+         
      |((<EQ> {operator = eqOp; arity=2;}) (b = SimpleValue()))
      |((<NE> {operator = neOp; arity=2;}) (b = SimpleValue()))
      |((<GE> {operator = geOp; arity=2;}) (b = SimpleValue()))
      |((<LE> {operator = leOp; arity=2;}) (b = SimpleValue()))
      |((<GT> {operator = gtOp; arity=2;}) (b = SimpleValue()))
      |((<LT> {operator = ltOp; arity=2;}) (b = SimpleValue()))
-         |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
-         |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
+     |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
+     |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
+     |((<MOD> {operator = modOp; arity=2;}) (b = SimpleValue()))
+     
      )
       ]
     )
