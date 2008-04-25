@@ -69,7 +69,7 @@ public class Phase implements CDVisitor {
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action).newInstance());
             p.forComponent(cd, phaseName, pathStack);
             return p;
-        } catch (Exception ex){
+        } catch (Exception ex){ 
             String actionClass;
             if (action!=null) {
               actionClass = action.toString();

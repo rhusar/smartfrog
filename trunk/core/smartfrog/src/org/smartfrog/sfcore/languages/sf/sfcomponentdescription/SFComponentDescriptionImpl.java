@@ -934,7 +934,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     *@return    Vector of Phases
     */
-   public Vector sfGetPhases() throws SmartFrogException {	   
+   public Vector sfGetPhases() throws SmartFrogException {	
 	   if (phases==null){
 		   phases = new Vector();
 	   	   SFComponentDescription phases_cd = (SFComponentDescription) sfContext.get(PHASE_LIST);
