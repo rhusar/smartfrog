@@ -11,7 +11,7 @@
   <artifactId>sf-installer</artifactId>
   <packaging>jar</packaging>
   <version>${smartfrog.version}</version>
-  <description></description>
+  <description>Installer</description>
   <dependencies>
     <dependency>
       <groupId>org.smartfrog</groupId>
