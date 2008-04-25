@@ -22,7 +22,7 @@ package org.smartfrog.services.rpm.manager;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,11 +32,29 @@ import java.util.Iterator;
  * Created 14-Apr-2008 17:11:58
  */
 
-public class AbstractRpmManager extends PrimImpl implements RpmManager, Iterable<RpmFile> {
+public class AbstractRpmManager extends EventPrimImpl implements RpmManager, Iterable<RpmFile> {
 
     private ArrayList<RpmFile> rpms = new ArrayList<RpmFile>(1);
+    private boolean probeOnLiveness;
+    private boolean probeOnStartup;
 
     public AbstractRpmManager() throws RemoteException {
+    }
+
+
+    /**
+     * start up
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        probeOnStartup = sfResolve(ATTR_PROBE_ON_STARTUP, true, true);
+        probeOnLiveness = sfResolve(ATTR_PROBE_ON_LIVENESS, true, true);
+        if (probeOnStartup) {
+            probeAllFiles();
+        }
     }
 
     /**
@@ -78,8 +96,14 @@ public class AbstractRpmManager extends PrimImpl implements RpmManager, Iterable
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if(probeOnLiveness) {
+            probeAllFiles();
+        }
+    }
+
+    protected void probeAllFiles() throws SmartFrogLivenessException, RemoteException {
         for (RpmFile rpm : rpms) {
-            ping(rpm);
+            probe(rpm);
         }
     }
 
@@ -90,7 +114,15 @@ public class AbstractRpmManager extends PrimImpl implements RpmManager, Iterable
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
-    protected void ping(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
+    protected void probe(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
 
+    }
+
+    public boolean isProbeOnLiveness() {
+        return probeOnLiveness;
+    }
+
+    public boolean isProbeOnStartup() {
+        return probeOnStartup;
     }
 }

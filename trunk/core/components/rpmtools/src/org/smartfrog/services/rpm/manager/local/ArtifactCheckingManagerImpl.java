@@ -17,14 +17,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.rpm.local;
+package org.smartfrog.services.rpm.manager.local;
 
 import org.smartfrog.services.rpm.manager.AbstractRpmManager;
 import org.smartfrog.services.rpm.manager.RpmFile;
 import org.smartfrog.services.rpm.manager.RpmManager;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
@@ -35,39 +35,39 @@ import java.rmi.RemoteException;
 
 public class ArtifactCheckingManagerImpl extends AbstractRpmManager implements RpmManager {
 
-    boolean enabled;
-    public static final String ATTR_ENABLED = "enabled";
+
 
     public ArtifactCheckingManagerImpl() throws RemoteException {
     }
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * start up
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        enabled = sfResolve(ATTR_ENABLED, true, true);
+        if(isProbeOnStartup()) {
+            probeAllFiles();
+        }
+        //trigger workflow termination if requested
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
     }
 
     /**
-     * Override point: ping the file
+     * Override point: probe the file
      *
-     * @param rpm the file to ping
+     * @param rpm the file to probe
      * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     * @throws RemoteException  for network problems
      */
-    protected void ping(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
-        if (enabled) {
+    protected void probe(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
             try {
                 rpm.verifyAllManagedFilesExist();
             } catch (FileNotFoundException e) {
                 throw new SmartFrogLivenessException(e);
             }
-        }
     }
 }

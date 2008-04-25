@@ -20,8 +20,8 @@
 package org.smartfrog.services.rpm.local;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.rpm.local.AbstractLocalRPMToolImpl;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**

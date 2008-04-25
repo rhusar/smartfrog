@@ -27,7 +27,7 @@ package org.smartfrog.services.rpm.manager;
 public interface RpmErrors {
     String ERROR_NO_SUCH_FILE = "No such file ";
     String ERROR_NOT_AN_RPM_FILE = "Not an RPM file ";
-    String ERROR_UNABLE_TO_INSTALL = "Unable to Install RPM package ";
-    String ERROR_UNABLE_TO_UNINSTALL = "Unable to Uninstall RPM package ";
-    String ERROR_UNABLE_TO_UPGRADE = "Unable to Upgrade RPM package ";
+    String ERROR_UNABLE_TO_INSTALL = "Unable to install RPM package ";
+    String ERROR_UNABLE_TO_UNINSTALL = "Unable to uninstall RPM package ";
+    String ERROR_UNABLE_TO_UPGRADE = "Unable to upgrade RPM package ";
 }

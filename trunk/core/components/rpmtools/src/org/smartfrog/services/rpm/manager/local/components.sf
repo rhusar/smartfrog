@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,30 +17,23 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.rpm.local;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.rpm.local.AbstractLocalRPMToolImpl;
-
-import java.rmi.RemoteException;
-
 
 /**
- * @author sandya
+ * This component does nothing other than verify that it should have
+ * all the dependent artifacts present
  */
-public class RPMUpgradeImpl extends AbstractLocalRPMToolImpl implements LocalRPMTool {
+ArtifactCheckingManager extends RpmManager {
+  sfClass "org.smartfrog.services.rpm.local.ArtifactCheckingManagerImpl";
+  /**
+    * Install the RPMs on startup
+    */
+   install true;
 
-    /**
-     * @throws RemoteException failure in super constructor
-     */
-    public RPMUpgradeImpl() throws RemoteException {
-        super();
-    }
-
-    public synchronized void sfStart()
-            throws SmartFrogException, RemoteException {
-        super.sfStart();
-        upgradePackage(getOptions());
-    }
-
+   /**
+    * uninstall the RPMs on termination?
+    */
+   uninstallOnTermination true;
+  
 }
+
+
