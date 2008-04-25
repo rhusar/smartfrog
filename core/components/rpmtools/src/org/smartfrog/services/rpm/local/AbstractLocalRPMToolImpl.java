@@ -20,6 +20,8 @@
 package org.smartfrog.services.rpm.local;
 
 import org.smartfrog.services.rpm.manager.RpmErrors;
+import org.smartfrog.services.rpm.local.LocalRPMTool;
+import org.smartfrog.services.rpm.local.RPMUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 

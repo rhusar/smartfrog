@@ -31,6 +31,59 @@ import java.rmi.RemoteException;
 
 public interface RpmManager extends Remote {
 
+    /**
+     * Install the RPMs on startup
+     */
+    String ATTR_INSTALL = "install";
+
+    /**
+     * uninstall the RPMs on termination?
+     */
+    String ATTR_UNINSTALL_ON_TERMINATION ="uninstallOnTermination";
+
+    /**
+     * uninstall the RPMs on termination?
+     */
+    String ATTR_UNINSTALL_ON_STARTUP = "uninstallOnStartup";
+
+    /**
+     * Ping for managed files during a liveness check?
+     */
+    String ATTR_PROBE_ON_LIVENESS = "probeOnLiveness";
+
+    /**
+     * Ping for managed files during a liveness check?
+     */
+    String ATTR_PROBE_ON_STARTUP = "probeOnStartup";
+    /**
+     * Should we apply in bulk? That is, group apply everything in one go?
+     */
+    String ATTR_BULK_OPERATION = "bulkOperation";
+
+    /**
+     * How to handle a failure to install
+     */
+    String ATTR_FAIL_ON_INSTALL_ERROR = "failOnInstallError";
+
+    /**
+     * How to handle a failure to uninstall
+     */
+    String ATTR_FAIL_ON_UNINSTALL_ERROR = "failOnUninstallError";
+
+    /**
+     * Should scripts be skipped during installation?
+     */
+    String ATTR_INSTALL_NO_SCRIPTS = "installSkipScripts";
+
+    /**
+     * Should scripts be skipped during uninstallation?
+     */
+    String ATTR_UNINSTALL_NO_SCRIPTS = "uninstallSkipScripts";
+
+    /**
+     * Should dependencies be ignored during uninstallation?
+     */
+    String ATTR_UNINSTALL_IGNORE_DEPENDENCIES = "uninstallIgnoreDependencies";
 
     /**
      * Add another file to the list of RPMs that need managing
@@ -40,6 +93,5 @@ public interface RpmManager extends Remote {
      * @throws RemoteException    network problems
      */
     public void manage(RpmFile rpm) throws SmartFrogException, RemoteException;
-
 
 }
