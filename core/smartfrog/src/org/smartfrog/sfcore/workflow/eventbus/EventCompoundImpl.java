@@ -39,7 +39,6 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 
 /**
@@ -52,8 +51,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, EventCompound {
     private static final Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
     private static final Reference sendRef = new Reference(ATTR_SEND_TO);
-    private Vector<EventRegistration> receiveFrom = new Vector<EventRegistration>();
-    private Vector<EventSink> sendTo = new Vector<EventSink>();
+    private EventRegistrar registrar = new EventRegistrar(this);
 
     protected ComponentDescription action=null;
     protected Context actions=null;
@@ -131,13 +129,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     public synchronized void register(EventSink sink) {
-        if (sfLog().isDebugEnabled()) {
-           sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
-        }
-
-        if (!sendTo.contains(sink)) {
-            sendTo.addElement(sink);
-        }
+        registrar.register(sink);
     }
 
     /**
@@ -147,11 +139,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        if (sfLog().isDebugEnabled()) {
-           sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
-        }
-        sendTo.removeElement(sink);
-    }
+        registrar.deregister(sink);    }
 
     /**
      * Handles the event locally then forward to all registered EventSinks.
@@ -168,7 +156,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Default implmentation of the event Handler hook to be overridden in
      * sub-classes. The default implementation does nothing.
      *
-     * @param event java.lang.Object The event
+     * @param event The event
      */
     protected void handleEvent(Object event) {
         if (sfLog().isDebugEnabled()){
@@ -183,21 +171,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
-        for (EventSink s : sendTo) {
-            try {
-                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
-                if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);  }
-                s.event(event);
-            } catch (Exception ex) {
-                String evStr="null event";
-                if (event!=null ) {
-                    evStr=event.toString()+"["+event.getClass().toString()+"]";
-                }
-                if (sfLog().isErrorEnabled()) {
-                   sfLog().error("Failed to send event: "+evStr+", cause: "+ex.getMessage(),ex);
-               }
-            }
-        }
+        registrar.sendEvent(event);
     }
 
     /**
@@ -219,7 +193,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                 Object k = e.nextElement();
                 Reference l = (Reference) scxt.get(k);
                 EventSink s = (EventSink) sfResolve(l);
-                sendTo.addElement(s);
+                registrar.register(s);
             }
         }
 
@@ -232,7 +206,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                 Object key = keys.nextElement();
                 Reference component = (Reference) rcxt.get(key);
                 EventRegistration event = (EventRegistration) sfResolve(component);
-                receiveFrom.addElement(event);
+                registrar.registerToReceiveFrom(event);
                 event.register(this);
             }
         }
@@ -346,14 +320,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
-        for (EventRegistration sink: receiveFrom) {
-            try {
-                sink.deregister(this);
-            } catch (RemoteException ex) {
-                sfLog().ignore("when deregistering "+sink,ex);
-            }
-        }
-
+        registrar.deregisterFromReceivingAll();
         super.sfTerminateWith(status);
     }
 
@@ -467,7 +434,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         } catch (Throwable thrown) {
             //forget about the finally component as we did not deploy properly.
             ComponentHelper helper = new ComponentHelper(child);
-            child = null;
             helper.sfSelfDetachAndOrTerminate(TerminationRecord.ABNORMAL,
                     "failed to create "+ childname, null, thrown);
             throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
