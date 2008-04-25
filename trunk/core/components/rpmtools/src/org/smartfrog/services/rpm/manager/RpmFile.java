@@ -19,10 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.rpm.manager;
 
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.services.filesystem.FileSystem;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Vector;
+import java.rmi.RemoteException;
 
 /**
  * Serializable RPM class, which models much of the RPM.
@@ -87,6 +92,20 @@ public final class RpmFile implements Serializable, RpmErrors {
         } else {
             this.managedFiles = new Vector<String>(0);
         }
+    }
+
+    /**
+     * Build an RPM file from a source prim
+     * @param source source of the RPM information
+     * @throws SmartFrogResolutionException failure to resolve
+     * @throws RemoteException network trouble
+     */
+    public RpmFile(Prim source) throws SmartFrogResolutionException, RemoteException {
+        name = source.sfResolve(RpmPackage.ATTR_NAME, "", true);
+        version = source.sfResolve(RpmPackage.ATTR_VERSION, "", true);
+        description = source.sfResolve(RpmPackage.ATTR_DESCRIPTION, "", true);
+        rpmFile = FileSystem.lookupAbsolutePath(source, RpmPackage.ATTR_RPMFILE, null, null, false, null);
+        deleteOnTermination = source.sfResolve(RpmPackage.ATTR_DELETEONTERMINATION, false, true);
     }
 
     /**
@@ -170,7 +189,7 @@ public final class RpmFile implements Serializable, RpmErrors {
     /**
      * Convert to a file in the local filesystem syntax
      *
-     * @return
+     * @return a file representing the rpm file
      */
     public File toFile() {
         return new File(rpmFile);
