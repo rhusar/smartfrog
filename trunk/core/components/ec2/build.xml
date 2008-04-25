@@ -42,7 +42,7 @@
   <property name="test.timeout.execute" value="120000" />
   <property name="test.timeout.startup" value="${test.timeout.execute}" />
   <property name="application.name" value="ec2-demo" />
-  <property name="deploy.sf" value="demo.sf" />
+  <property name="deploy.sf" value="org/smartfrog/services/amazon/demo.sf" />
   
 
   <echo
