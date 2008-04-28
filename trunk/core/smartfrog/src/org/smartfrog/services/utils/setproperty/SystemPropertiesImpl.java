@@ -62,7 +62,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      *
      * @param parent parent
      * @param cxt    context
-     * @throws SmartFrogException failure to read attributes, or a wrapped security exception
+     * @throws SmartFrogDeploymentException failure to read attributes, or a wrapped security exception
      * @throws RemoteException    network trouble
      */
     public synchronized void sfDeployWith(Prim parent, Context cxt)
@@ -94,8 +94,6 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             throw e;
         }
     }
-
-//----------------
 
 
     /**
@@ -176,7 +174,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private void loadAndSetProperties() throws SmartFrogException,
             RemoteException {
         loadProperties();
-        Enumeration keys = proplist.propertyNames();
+        Enumeration<?> keys = proplist.propertyNames();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
             String value = proplist.getProperty(key);
@@ -188,7 +186,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      * clear the properties Failures are logged at ignore level.
      */
     private void clearProperties() {
-        Enumeration keys = proplist.propertyNames();
+        Enumeration<?> keys = proplist.propertyNames();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
             try {
