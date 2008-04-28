@@ -1,0 +1,73 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/components.sf"
+
+/**
+ * Velocity support
+ */
+VelocityTransformer extends Prim {
+
+  sfClass "org.smartfrog.services.velocity.VelocityTransformerImpl";
+
+  /**
+   * filename or LAZY reference to a template file
+   */
+  template TBD;
+
+  /**
+   * Optional destination directory
+   */
+  //destDir;
+
+  /**
+   * Optional full destination filename
+   */
+   //destFile;
+
+  /**
+   A component description containing properties to use for the Velocity Engine.
+   It is not deployed, just parsed.
+
+   See http://velocity.apache.org/engine/releases/velocity-1.5/developer-guide.html#velocity_configuration_keys_and_values
+   for a list
+
+   */
+
+
+  CLASSPATH_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader";
+  JAR_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.JarResourceLoader";
+
+  engineProperties extends {
+     runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
+     resource.loader "jar";
+     jar.resource.loader.class JAR_RESOURCE_LOADER;
+  };
+
+  /**
+   a component description containing properties to use. It is not deployed, just parsed.
+   */
+  properties extends {};
+
+  /**
+   And a list of properties which are loaded afterwards; this is to support alternate
+   sources of properties
+   */
+  propertyList [];
+}
