@@ -22,12 +22,14 @@ For more information: www.smartfrog.org
 /**
  * Velocity support
  */
-VelocityTransformer extends Prim {
+VelocityTransformer extends WorkflowPrim {
 
   sfClass "org.smartfrog.services.velocity.VelocityTransformerImpl";
 
+  sfShouldTerminate true;
+
   /**
-   * filename or LAZY reference to a template file
+   * name of a template, as handled by the relevant resolver
    */
   template TBD;
 
@@ -51,15 +53,21 @@ VelocityTransformer extends Prim {
    */
 
 
-  CLASSPATH_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader";
-  JAR_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.JarResourceLoader";
-
   engineProperties extends {
      runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
-     resource.loader "jar";
-     jar.resource.loader.class JAR_RESOURCE_LOADER;
+     resource.loader "classpath";
+     classpath.resource.loader.class CLASSPATH_RESOURCE_LOADER;
   };
 
+  /**
+   * Request a classpath resource loader
+   */
+  CLASSPATH_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader";
+
+  /**
+   * request JAR resource loading
+   */
+  JAR_RESOURCE_LOADER "org.apache.velocity.runtime.resource.loader.JarResourceLoader";
   /**
    a component description containing properties to use. It is not deployed, just parsed.
    */
