@@ -493,7 +493,7 @@ java.class.path=
     override the pattern property to set more
      -->
    <property name="copy.useful.files.pattern"
-       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif,**/*.policy"/>
+       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif,**/*.policy,**/*.vm"/>
    <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
