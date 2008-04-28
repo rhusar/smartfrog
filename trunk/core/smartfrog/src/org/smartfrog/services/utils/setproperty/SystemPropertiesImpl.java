@@ -48,6 +48,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private boolean setOnEarlyDeploy = false;
     private boolean unsetOnTerminate = true;
     private Log log;
+    private static final Reference REF_PROPERTIES = new Reference(ATTR_PROPERTIES);
 
     /**
      * constructor
@@ -158,11 +159,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      */
     private void loadProperties()
             throws SmartFrogException, RemoteException {
-        Vector<Vector<String>> tuples = ListUtils.resolveStringTupleList(this, new Reference(ATTR_PROPERTIES), true);
-        proplist = new Properties();
-        for (Vector<String> tuple : tuples) {
-            proplist.put(tuple.get(0), tuple.get(1));
-        }
+        proplist = ListUtils.resolveProperties(this, REF_PROPERTIES, true);
     }
 
     /**
