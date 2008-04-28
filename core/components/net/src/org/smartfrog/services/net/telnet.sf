@@ -39,8 +39,10 @@ TelnetSchema extends Schema {
 
 
 TelnetSession extends Compound {
-    PasswordProvider extends NetPassword {
-    }
+ //   PasswordProvider extends NetPassword {
+   // }
+	passwordProvider extends FilePassword {
+    	}	
     Telnet extends Prim{
         sfClass "org.smartfrog.services.net.TelnetImpl";
 	telnetSchema extends TelnetSchema;
@@ -63,7 +65,8 @@ TelnetSession extends Compound {
         cmdsFailureMsgs [];
 
         // reference to password provider
-        passwordProvider LAZY PARENT:PasswordProvider;
+        passwordProvider LAZY PARENT:passwordProvider;
+      //  passwordProvider LAZY PARENT:PasswordProvider;
 
         /* ========================================================
          * Optional attributes 
@@ -77,5 +80,25 @@ TelnetSession extends Compound {
         // optional log file for the telnet session
         //logFile "telnetSession.log";
         shouldTerminate true;
+    }
+}
+
+
+/**
+ * this compound uses a file password provider
+  */
+TelnetSessionPasswordFile extends TelnetSession {
+    passwordFile TBD;
+    passwordProvider:passwordFile LAZY PARENT:passwordFile;
+}
+
+/**
+ * this compound uses an inline password provider
+  */
+TelnetSessionInlinePassword extends TelnetSession {
+    password TBD;
+
+    passwordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
     }
 }
