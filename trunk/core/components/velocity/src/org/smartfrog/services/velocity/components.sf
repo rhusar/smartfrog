@@ -44,6 +44,10 @@ VelocityTransformer extends WorkflowPrim {
    //destFile;
 
   /**
+   * encoding for output
+   */
+  encoding "UTF-8";
+  /**
    A component description containing properties to use for the Velocity Engine.
    It is not deployed, just parsed.
 
@@ -57,6 +61,8 @@ VelocityTransformer extends WorkflowPrim {
      runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
      resource.loader "classpath";
      classpath.resource.loader.class CLASSPATH_RESOURCE_LOADER;
+     input.encoding "UTF-8";
+     output.encoding encoding;
   };
 
   /**
