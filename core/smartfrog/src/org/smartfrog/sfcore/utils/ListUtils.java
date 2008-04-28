@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Collection;
 import java.rmi.RemoteException;
 
 /**
@@ -156,7 +155,7 @@ public final class ListUtils {
      */
     public static String stringify(Vector source, String prefix, String separator, String ending) {
         StringBuilder buffer = new StringBuilder();
-        Iterator uris = source.iterator();
+        Iterator<?> uris = source.iterator();
         while (uris.hasNext()) {
             buffer.append(prefix);
             String uri = uris.next().toString();
@@ -176,14 +175,14 @@ public final class ListUtils {
      * @return a properties object containing name,value pairs.
      * @throws SmartFrogResolutionException if one of the list entries is not a tuple
      */
-    public static Properties convertToProperties(List tupleList) throws SmartFrogResolutionException {
+    public static Properties convertToProperties(List<?> tupleList) throws SmartFrogResolutionException {
         Properties properties = new Properties();
         if (tupleList != null) {
             for (Object element : tupleList) {
                 if (!(element instanceof Vector)) {
                     throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
                 }
-                Vector entry = (Vector) element;
+                Vector<?> entry = (Vector<?>) element;
                 if (entry.size() != 2) {
                     throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
                 }
@@ -212,7 +211,7 @@ public final class ListUtils {
                                                                 Reference ref,
                                                                 boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector vector = null;
+        Vector<?> vector = null;
         vector = component.sfResolve(ref, vector, required);
         if (vector == null) {
             return null;
@@ -313,11 +312,11 @@ public final class ListUtils {
                 if(first) {
                     first=false;
                 } else {
-                    builder.append(",");
+                    builder.append(',');
                 }
-                builder.append("\"");
+                builder.append('\"');
                 builder.append(column);
-                builder.append("\"");
+                builder.append('\"');
             }
             builder.append("]\n");
         }
