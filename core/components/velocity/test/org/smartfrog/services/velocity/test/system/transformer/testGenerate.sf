@@ -17,15 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/velocity/test/system/transformer/components.sf"
 
-/**
- * A list of errors for testing
- */
-VelocityTransformerErrors extends  {
-
-  //Failed to load velocity template
-  ERROR_NO_TEMPLATE CONSTANT "org.smartfrog.services.velocity.VelocityTransformerImpl.ERROR_NO_TEMPLATE";
-    //Failed to start velocity
-  ERROR_NO_VELOCITY CONSTANT "org.smartfrog.services.velocity.VelocityTransformerImpl.ERROR_NO_VELOCITY";
-
-}
+sfConfig testGenerate;

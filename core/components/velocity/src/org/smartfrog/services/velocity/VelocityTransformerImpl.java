@@ -63,6 +63,7 @@ public class VelocityTransformerImpl extends PrimImpl {
     public static final String ERROR_NO_TEMPLATE = "Failed to load velocity template ";
     public static final String ERROR_NO_VELOCITY = "Failed to start velocity";
     private File destFile;
+    private String encoding;
 
 
     public VelocityTransformerImpl() throws RemoteException {
@@ -97,8 +98,7 @@ public class VelocityTransformerImpl extends PrimImpl {
         }
 
         destFile = FileSystem.lookupAbsoluteFile(this, "destFile", null, null, true, null);
-
-
+        encoding = sfResolve("encoding","",true);
         worker=new VelocityWorker();
         worker.start();
     }
@@ -143,7 +143,7 @@ public class VelocityTransformerImpl extends PrimImpl {
             BufferedWriter writer = null;
             try {
                 OutputStream output = new FileOutputStream(destFile);
-                writer = new BufferedWriter(new OutputStreamWriter(output));
+                writer = new BufferedWriter(new OutputStreamWriter(output,encoding));
                 template.merge(context, writer);
                 writer.flush();
                 writer.close();

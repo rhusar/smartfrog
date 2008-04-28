@@ -20,17 +20,55 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/velocity/components.sf";
+#include "/org/smartfrog/services/os/java/propertyfile.sf"
+#include "/org/smartfrog/services/velocity/errors.sf";
 
 Velocity extends VelocityTransformer {
-
+  template "org/smartfrog/services/velocity/test/system/transformer/test.vm";
+  sfShouldTerminate true;
 }
 
-testLoad extends ExpectDeploy {
+testLoad extends ExpectDeployFailure {
   action extends Velocity {
     template "";
   }
 
   tests extends Sequence {
     //no-op
+  }
+
+  exitText VelocityTransformerErrors:ERROR_NO_TEMPLATE;
+  
+  exceptions [
+    ["SmartFrogLifecycleException",""],
+    ["org.apache.velocity.exception.ResourceNotFoundException","Unable to find resource"]
+  ];
+
+}
+
+testGenerate extends ExpectDeploy {
+
+  action extends TempFile {
+    suffix ".properties";
+    deleteOnExit true;
+  }
+
+  tests extends Sequence {
+
+    transform extends Velocity {
+      destFile LAZY action;
+    }
+
+    load extends LoadPropertyFile {
+      filename LAZY action;
+      sfShouldTerminate true;
+    }
+
+    checkNewProp extends AssertWorkflow {
+      reference LAZY load;
+      attribute "p1";
+      attributeEquals "p1isSet";
+    }
+    
   }
 }

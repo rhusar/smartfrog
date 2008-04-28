@@ -35,4 +35,8 @@ public class TransformerTest extends DeployingTestBase {
     public void testLoad() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testLoad");
     }
+    
+    public void testGenerate() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testGenerate");
+    }
 }
