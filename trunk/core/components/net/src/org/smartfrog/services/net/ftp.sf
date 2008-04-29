@@ -38,8 +38,10 @@ FTPSchema extends Schema {
 }
 
 FTPClient extends Compound {
-    PasswordProvider extends NetPassword {
-    }
+   // PasswordProvider extends NetPassword {
+   // }
+	passwordProvider extends FilePassword {
+    	}
     FTP extends Prim {
         /* ========================================================
          * Mandatory attributes 
@@ -55,7 +57,8 @@ FTPClient extends Compound {
         //username "ashish";
 
         // reference to password provider
-        passwordProvider LAZY PARENT:PasswordProvider;
+        //passwordProvider LAZY PARENT:PasswordProvider;
+        passwordProvider LAZY PARENT:passwordProvider;
 
         // vector of local files 
         //localFiles ["e:\\temp\\one.txt","e:\\temp\\two.txt"];
@@ -75,5 +78,25 @@ FTPClient extends Compound {
         //transferMode "binary";
         transferMode "ascii";
         shouldTerminate true;
+    }
+}
+
+
+/**
+ * this compound uses a file password provider
+  */
+FTPClientPasswordFile extends FTPClient {
+    passwordFile TBD;
+    passwordProvider:passwordFile LAZY PARENT:passwordFile;
+}
+
+/**
+ * this compound uses an inline password provider
+  */
+FTPClientInlinePassword extends FTPClient {
+    password TBD;
+
+    passwordProvider extends InlinePassword {
+        password LAZY PARENT:ATTRIB password;
     }
 }
