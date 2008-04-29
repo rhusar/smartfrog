@@ -32,12 +32,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/net/telnet.sf"
 
-sfConfig extends TelnetSession {
+sfConfig extends TelnetSessionPasswordFile {
 	Telnet:host "ebnt171.india.hp.com";
   Telnet:commands ["cd /home/smartfrog",
             "mkdir test"
   ];
-	PasswordProvider:passwordFile "passwd.txt";
+	//PasswordProvider:passwordFile "passwd.txt";
+	passwordFile "passwd.txt";
   Telnet:logFile "spy.log";
 	Telnet:ostype "linux";
 }
