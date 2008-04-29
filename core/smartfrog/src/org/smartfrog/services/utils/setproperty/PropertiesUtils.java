@@ -82,9 +82,9 @@ public class PropertiesUtils {
      * @param prim parent
      * @param reference child reference
      * @param required flag if this is required
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @return a new properties file
+     * @throws SmartFrogResolutionException wierd resolution exceptions
+     * @throws RemoteException network problems
      */
     public static Properties resolveAndBuild(Prim prim, Reference reference,boolean required)
             throws SmartFrogResolutionException, RemoteException {
@@ -122,9 +122,9 @@ public class PropertiesUtils {
      * @param overwrite flag to set to true to overwrite things
      */
     public static void concat(Properties p1, Properties p2, boolean overwrite) {
-        for(Object key:p2.keySet()) {
-            if(overwrite || p1.get(key)==null) {
-                p1.put(key,p2.get(key));
+        for (Object key : p2.keySet()) {
+            if (overwrite || p1.get(key) == null) {
+                p1.put(key, p2.get(key));
             }
         }
     }
