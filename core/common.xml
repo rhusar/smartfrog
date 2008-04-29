@@ -1195,12 +1195,14 @@ java.class.path=
       <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
+  <target name="ready-to-rmi" depends="compile" />
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- ========================================================== -->
-  <target name="rmi" depends="compile"
+  <target name="rmi" depends="ready-to-rmi"
       description="create the RMI classes">
       <sf-rmic
           base="${build.classes.dir}"
@@ -1250,31 +1252,17 @@ java.class.path=
   </target>
 
 
+  <target name="ready-to-jar" depends="rmi"/>
+
   <!--
   component only logic to create a versioned jar name.
   this is simpler now we read it from the source file
   -->
   <target name="generateversion" depends="generate-versioned-jar"/>
 
-  <target name="generate-versioned-jar" if="is.component.enabled" depends="rmi">
-    <presetdef name="get-version">
-      <java classname="org.smartfrog.Version" failonerror="true" fork="true">
-        <classpath>
-          <pathelement location="${build.classes.dir}"/>
-          <fileset refid="smartfrog.lib.fileset"/>
-        </classpath>
-      </java>
-    </presetdef>
-<!--    <get-version outputproperty="CVersion">
-      <arg value="-b"/>
-    </get-version>
-    <get-version outputproperty="minVersion">
-      <arg value="-min"/>
-    </get-version>
-    <get-version outputproperty="maxVersion">
-      <arg value="-max"/>
-    </get-version>-->
-    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
+  <target name="generate-versioned-jar" if="is.component.enabled" depends="ready-to-jar">
+    <property name="jar.name"
+              value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
     <sf-jar destfile="${target.jar}"
@@ -1867,7 +1855,10 @@ Exist.
    <!-- look for local then remote definitions of library versions -->
   <target name="load-versions" depends="common.init">
     <property file="libraries.properties"/>
-    <property file="${smartfrog.components.dir}/libraries.properties"/>
+    <property
+        name="libraries.properties"
+        location="${smartfrog.components.dir}/libraries.properties"/>
+    <property file="${libraries.properties}"/>
   </target>
 
   <!-- ========================================================== -->

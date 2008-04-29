@@ -40,6 +40,17 @@
 
 
   <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
+
+  <target name="ready-to-rmi" depends="copy-library-properties" />
+
+  <target name="copy-library-properties" depends="init,load-versions,common.ready-to-rmi" >
+    <property name="versions.dir"
+              location="${build.classes.dir}/org/smartfrog/services/rpm/versions" />
+    <mkdir dir="${versions.dir}" />
+    <copy file="${libraries.properties}"
+      todir="${versions.dir}" />
+  </target>
 
 </project>
+
