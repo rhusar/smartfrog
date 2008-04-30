@@ -936,25 +936,19 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public Vector sfGetPhases() throws SmartFrogException {	
 	   if (phases==null){
-		   phases = new Vector();
-	   	   SFComponentDescription phases_cd = (SFComponentDescription) sfContext.get(PHASE_LIST);
-		   
-	       if (phases_cd!=null){
-	        	Enumeration keys = phases_cd.sfContext().keys();
-	        	while (keys.hasMoreElements()){
-	        		Object phase = phases_cd.sfContext().get(keys.nextElement());
-	        		if (!(phase instanceof String)) throw new SmartFrogParseException("phaseList must be a vector of Strings");
-	        		phases.add((String)phase);
-	        	}
-	            sfContext.remove(PHASE_LIST);
+		   Object phases_obj = sfContext.get(PHASE_LIST);
+		   if (phases_obj!=null){
+			    if (!(phases_obj instanceof java.util.Vector)) throw new SmartFrogParseException("phaseList must be a primitive vector");
+		   		phases = (java.util.Vector) phases_obj;		   
+	   	   		sfContext.remove(PHASE_LIST);
 	       } else {
+	    	    phases = new java.util.Vector();
 	            phases.add(PhaseNames.TYPE);
 	            phases.add(PhaseNames.PLACE);
 	            phases.add(PhaseNames.FUNCTION);
 	            phases.add(PhaseNames.SFCONFIG);
 	            phases.add(PhaseNames.LINK);
 	      } 
-	      
 	  }
       return phases;
    }
