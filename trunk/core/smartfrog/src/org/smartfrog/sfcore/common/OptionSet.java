@@ -36,6 +36,10 @@ import org.smartfrog.SFSystem;
  *
  */
 public class OptionSet {
+    // cache to be able to access the initial args for Diagnostics
+    private static String[] argsCache;
+
+    static {argsCache = null;}
 
     /** Character indicating the start of each option. */
     private static final char optionFlagIndicator = '-';
@@ -149,9 +153,11 @@ public class OptionSet {
      * @param args arguments to create from
      */
     public OptionSet(String[] args) {
+
+        argsCache = args.clone();
         int i = 0;        
         if (SFSystem.sfLog().isDebugEnabled()) {
-           SFSystem.sfLog().debug("Command Line args: "+ Arrays.toString(args));
+           SFSystem.sfLog().debug("Command Line args: "+ Arrays.toString(argsCache));
         }
         while ((i < args.length) && (errorString == null)) {
             try {
@@ -280,5 +286,14 @@ public class OptionSet {
         //Check that the value is correct
         Integer.getInteger(sfRootLocatorPort);        
         return sfRootLocatorPort;
+    }
+
+    /**
+     * Returns initial cmd line args if it has been initialized, otherwise it returns null
+     *
+     * @return cmd line args if it has been initialized, otherwise it returns null
+     */
+    public static String [] getArgs(){
+        return argsCache;
     }
 }
