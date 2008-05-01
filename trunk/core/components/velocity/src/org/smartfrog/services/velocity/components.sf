@@ -20,6 +20,18 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 
 /**
+ * This is the logging settings for velocity
+ */
+VelocityLogEngineSettings extends {
+     runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
+     resource.loader "classpath";
+     classpath.resource.loader.class VelocityTransformer:CLASSPATH_RESOURCE_LOADER;
+     input.encoding "UTF-8";
+     output.encoding encoding;
+  };
+
+
+/**
  * Velocity support
  */
 VelocityTransformer extends WorkflowPrim {
@@ -57,13 +69,7 @@ VelocityTransformer extends WorkflowPrim {
    */
 
 
-  engineProperties extends {
-     runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
-     resource.loader "classpath";
-     classpath.resource.loader.class CLASSPATH_RESOURCE_LOADER;
-     input.encoding "UTF-8";
-     output.encoding encoding;
-  };
+  engineProperties VelocityLogEngineSettings;
 
   /**
    * Request a classpath resource loader
