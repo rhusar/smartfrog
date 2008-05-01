@@ -127,9 +127,10 @@ public class ErrorMessageBundle extends ListResourceBundle
         { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
         { WARN_SECURE_RESOURCES_OFF, "SmartFrog security is active BUT resources can be loaded without restrictions. This should be a secure node"},    
         { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
-        { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, fouund a {0}"},
+        { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, found a {0}"},
         { CANNOT_LINK_TO_PREDICATE, "Attribute {1} is a link to a predicate. Predicates should be extended and not linked to: in component {0}"},
-        { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"}
+        { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"},
+        { MSG_CANNOT_ADD_VALUE_CHILD, "\"{0}\" cannot be added because its value \"{1}\" is already a child of \"{2}\""}
     };
 
     /**
