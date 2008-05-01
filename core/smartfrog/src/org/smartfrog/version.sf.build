@@ -31,6 +31,7 @@ Version extends DATA {
   buildDate "@buildDate@";
   buildOSName "@buildOSName@";
   buildOSVersion "@buildOSVersion@";
+  buildOSArchitecture "@buildOSArch@";
   buildJavaVersion "@buildJavaVersion@";
   buildJavaVendor "@buildJavaVendor@";
   

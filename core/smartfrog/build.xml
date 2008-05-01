@@ -57,7 +57,7 @@
     <echo message="   ${Name.Company}"/>
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
-    <echo message="      OS: ${os.name} ${os.version}"/>
+    <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
     <echo message=" --------------------------------------------------------"/>
     <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
@@ -248,6 +248,7 @@
 	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
 	  <entry key="sf.build.os.name" value="${os.name}"/>
 	  <entry key="sf.build.os.version" value="${os.version}"/>
+	  <entry key="sf.build.os.architecture" value="${os.arch}"/>
 	  
 	  <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
 	  <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
@@ -272,6 +273,7 @@
 		<replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
 		<replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
 		<replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
+		<replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
 		<replacefilter token="@copyright@" value="${Name.Company}"/>
 		
 		<replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
