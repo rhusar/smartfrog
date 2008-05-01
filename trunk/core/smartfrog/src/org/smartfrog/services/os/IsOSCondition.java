@@ -39,6 +39,8 @@ package org.smartfrog.services.os;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Vector;
@@ -75,6 +77,7 @@ public class IsOSCondition extends PrimImpl implements Condition {
     public static final String XP = "xp";
     public static final String VISTA = "vista";
     public static final String MAC = "mac";
+    public static final String DARWIN = "darwin";
     public static final String NONSTOP_KERNEL = "nonstop_kernel";
     public static final String OPENVMS = "openvms";
     public static final String SOLARIS = "solaris";
@@ -97,8 +100,8 @@ public class IsOSCondition extends PrimImpl implements Condition {
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        Vector supportedOS = null;
-        supportedOS = sfResolve(ATTR_OS, supportedOS, true);
+        Vector<String> supportedOS;
+        supportedOS = ListUtils.resolveStringList(this,new Reference(ATTR_OS),true);
         sfReplaceAttribute(ATTR_NAME, OS_NAME);
         sfReplaceAttribute(ATTR_ARCHITECTURE, OS_ARCH);
         sfReplaceAttribute(ATTR_VERSION, OS_VERSION);
@@ -107,7 +110,7 @@ public class IsOSCondition extends PrimImpl implements Condition {
         boolean isWindows = OS_NAME.contains(WINDOWS);
         boolean isXP = isWindows && OS_NAME.contains(XP);
         boolean isVista = isWindows && OS_NAME.contains(VISTA);
-        boolean isMac = OS_NAME.contains(MAC);
+        boolean isMac = OS_NAME.contains(MAC) || OS_NAME.contains(DARWIN);
         boolean isNonstop = OS_NAME.contains(NONSTOP_KERNEL);
         boolean isVMS = OS_NAME.contains(OPENVMS);
         boolean isSolaris = OS_NAME.contains(SOLARIS);
@@ -119,8 +122,8 @@ public class IsOSCondition extends PrimImpl implements Condition {
 
 
         supported = false;
-        for (Object os : supportedOS) {
-            String name = os.toString().toLowerCase(Locale.US);
+        for (String os : supportedOS) {
+            String name = os.toLowerCase(Locale.US);
             if (WINDOWS.equals(name)) {
                 supported = isWindows;
             } else if ("windowsxp".equals(name)) {
@@ -132,6 +135,8 @@ public class IsOSCondition extends PrimImpl implements Condition {
             } else if (SOLARIS.equals(name)) {
                 supported = isSolaris;
             } else if (MAC.equals(name)) {
+                supported = isMac;
+            } else if (DARWIN.equals(name)) {
                 supported = isMac;
             } else if (HP_UX.equals(name)) {
                 supported = isHPUX;

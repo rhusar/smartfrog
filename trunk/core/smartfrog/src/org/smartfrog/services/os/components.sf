@@ -25,6 +25,7 @@ IsOS extends ConditionPrim {
 
   WINDOWS "windows";
   MAC "mac";
+  DARWIN "darwin"
   UNIX "unix";
   FREEBSD "freebsd";
   LINUX "linux";
@@ -39,23 +40,28 @@ IsOS extends ConditionPrim {
 
 
 IsWindows extends IsOS {
-  os [IsOS:WINDOWS];
+  os [WINDOWS];
 }
 
 IsWindowsXP extends IsOS {
-  os [IsOS:WINDOWSXP];
+  os [WINDOWSXP];
 }
 
 IsWindowsVista extends IsOS {
-  os [IsOS:WINDOWSVISTA];
+  os [WINDOWSVISTA];
 }
 
 IsLinux extends IsOS {
-  os [IsOS:LINUX];
+  os [LINUX];
 }
 
 IsUnix extends IsOS {
-  os [IsOS:UNIX];
+  os [UNIX];
+}
+
+
+IsMacintosh extends IsOS {
+  os [MAC,DARWIN];
 }
 
 /**
@@ -63,5 +69,5 @@ IsUnix extends IsOS {
  */
 
 IsSysVUnix extends IsOS {
-  os [IsOS:AIX,IsOS:HPUX,IsOS:SOLARIS];
+  os [AIX,HPUX,SOLARIS];
 }
