@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,8 @@ package org.smartfrog.services.management;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.lang.reflect.Constructor;
@@ -331,7 +332,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null, newDisplay, positionDisplay);
 
          //Show toolbar
-         newDisplay.showToolbar(true);
+         newDisplay.showToolbar(false);
 
          // Add deployTreePanel menu items
          jMenuMng.setText("Parse Console");
