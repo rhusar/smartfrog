@@ -390,8 +390,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfStart() throws SmartFrogException,
-            RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         //Set itself as single instance of process compound for this process
         SFProcess.setProcessCompound(this);
@@ -403,8 +402,7 @@ public class ProcessCompoundImpl extends CompoundImpl
 
         // Add diagnostics report
         if (Logger.processCompoundDiagReport) {
-            sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT,
-                    sfDiagnosticsReport());
+            sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, sfDiagnosticsReport());
         }
         if (sfLog().isDebugEnabled() && Logger.logStackTrace) {
             StringBuffer report = new StringBuffer();
@@ -415,8 +413,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
         // Add boot time only in rootProcess
         if (sfIsRoot) {
-            sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE,
-                    new Date(System.currentTimeMillis()));
+            sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
         }
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root
@@ -428,9 +425,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                 }
             }
         } catch (RemoteException rex) {
-            throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
-                    rex,
-                    this);
+            throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("ProcessCompound '" + sfProcessName + "' started.");
@@ -441,9 +436,9 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @throws RemoteException In case of Remote/nework error
      * @throws SmartFrogException if fail deployment
      */
-    private void deployDefaultProcessDescriptions()
-            throws SmartFrogException, RemoteException {
-        Properties props = System.getProperties();
+    private void deployDefaultProcessDescriptions() throws SmartFrogException, RemoteException {
+        //Get a clone to protect possible concurrency access to it
+        Properties props = (Properties)System.getProperties().clone();
         Context nameContext = null;
         String name ;
         String url;
@@ -457,20 +452,14 @@ public class ProcessCompoundImpl extends CompoundImpl
                     // is started.
                     url = (String) props.get(key);
                     name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
-
-                    ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(
-                            url.trim());
+                    ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url.trim());
                     sfCreateNewApp(name, cd, nameContext);
                 }
             }
         } catch (SmartFrogDeploymentException ex) {
             throw ex;
         } catch (SmartFrogException sfex) {
-            throw new SmartFrogDeploymentException(
-                    "deploying default description for '" + key + '\'',
-                    sfex,
-                    this,
-                    nameContext);
+            throw new SmartFrogDeploymentException("deploying default description for '" + key + '\'', sfex, this, nameContext);
         }
     }
 
@@ -1405,6 +1394,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
     }
 
+    
 
     /**
      * Constructs sequence of -D statements for the new sub-process by iterating
