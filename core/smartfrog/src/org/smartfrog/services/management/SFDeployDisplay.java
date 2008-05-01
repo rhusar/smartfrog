@@ -58,12 +58,13 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
  *  component or it can be started as a separate console.
  */
 public class SFDeployDisplay extends SFDisplay implements ActionListener {
-   protected JButton refreshNode = new JButton();
-   protected JButton refreshPanes = new JButton();
+
+   protected JButton refreshNode = null;
+   protected JButton refreshPanes = null;
    private JPanel panelTree = null;
 
-   final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-   final JMenuItem jMenuScriptingPanel = new JMenuItem();
+   JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = null;
+   JMenuItem jMenuScriptingPanel = null;
 
    static final String scriptingPanelName = "Scripting:";
    /**
@@ -73,6 +74,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public SFDeployDisplay() throws RemoteException {
       super();
+      refreshNode = new JButton();
+      refreshPanes = new JButton();
+      jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+      jMenuScriptingPanel = new JMenuItem();
    }
 
 
@@ -106,8 +111,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       String positionDisplay = opts.windowPosition;
 
       try {
-         if(startConsole(nameDisplay, height, width, positionDisplay,
-               showRootProcess,showCDasChild, showScripting, hostname, port, true)!=null) {
+         if(startConsole(nameDisplay, height, width, positionDisplay, showRootProcess,showCDasChild, showScripting, hostname, port, true)!=null) {
              sflog.out("Running.");
          } else {
              sflog.out("Failed to start console");
@@ -144,20 +148,19 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
    public static Display startConsole(String nameDisplay, int height,
          int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild, final boolean showScripting,
-         final String hostname, final int port, boolean shouldSystemExit)
-          throws Exception {
+         final String hostname, final int port, boolean shouldSystemExit) throws Exception {
+
       final JButton refreshButtonPanes = new JButton();
       final JButton refreshButtonNode = new JButton();
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
       final JMenuItem jMenuScriptingPanel = new JMenuItem();
-      String infoConnection = ("sfManagementConsole connecting to " +
-            hostname + ":" + port);
+
+      String infoConnection = ("sfManagementConsole connecting to " + hostname + ":" + port);
       //Logger.log(infoConnection);
       sfLogStatic().out(infoConnection);
-      nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " +
-            hostname + ":" + port + "]";
+      nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " + hostname + ":" + port + "]";
 
       if (showRootProcess) {
          sfLogStatic().warn(" showing rootProcess");
@@ -296,20 +299,31 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
 
    public static Display starParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
-      final JButton refreshButtonPanes = new JButton();
-      final JButton refreshButtonNode = new JButton();
-      JMenu jMenuMng = new JMenu();
-      final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
-      final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-      final JMenuItem jMenuScriptingPanel = new JMenuItem();
-      String infoConnection = ("sfParseConsole starting ... ");
-      //Logger.log(infoConnection);
-      sfLogStatic().out(infoConnection);
-      nameDisplay = nameDisplay + " [" + "sfParseConsole " +"";
-
-      final Display newDisplay;
+       final JButton refreshButtonPanes;
+       final JButton refreshButtonNode;
+       JMenu jMenuMng;
+       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel;
+       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild;
+       final JMenuItem jMenuScriptingPanel;
+       final Display newDisplay;
 
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
+         refreshButtonPanes = new JButton();
+         refreshButtonNode = new JButton();
+
+         jMenuMng = new JMenu();
+
+         jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
+
+         jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+
+         jMenuScriptingPanel = new JMenuItem();
+
+         String infoConnection = ("sfParseConsole starting ... ");
+         //Logger.log(infoConnection);
+         sfLogStatic().out(infoConnection);
+         nameDisplay = nameDisplay + " [" + "sfParseConsole " +"";
+
          newDisplay = new Display(nameDisplay, null);
 
          addFrogIcon(newDisplay);
@@ -625,6 +639,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     }
 
     protected void createManagementPane() throws SmartFrogResolutionException, RemoteException {
+
+      if (refreshNode==null) refreshNode = new JButton();
+      if (refreshPanes==null) refreshPanes = new JButton();
+      if (jCheckBoxMenuItemShowCDasChild==null) jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();        
+      if (jMenuScriptingPanel==null) jMenuScriptingPanel = new JMenuItem();
+
         boolean isObjCopy = false;
          Object root = null;
          boolean isPC = false;
@@ -671,8 +691,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         refreshNode.setText("Refresh node");
         refreshNode.setActionCommand("refreshButtonNode");
         refreshNode.addActionListener(this);
-        display.mainToolBar.add(this.refreshNode);
-        display.mainToolBar.add(this.refreshPanes);
         JMenu jMenuMng = new JMenu();
 
         jMenuMng.setText("Mng. Console");
