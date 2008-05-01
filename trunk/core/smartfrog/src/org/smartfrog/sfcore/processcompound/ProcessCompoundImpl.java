@@ -1318,7 +1318,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
-        String cdClasspath = conventToClassPath( cd.sfResolve(attributeKey, false));
+        String cdClasspath = convertToClassPath( cd.sfResolve(attributeKey, false));
 
         //This will read the system property for org.smartfrog.sfcore.processcompound.NAME. + key
         String envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
@@ -1374,13 +1374,13 @@ public class ProcessCompoundImpl extends CompoundImpl
     }
 
     /**
-     * Method that checks object o and returns a String classpapth from  Vector, Files ComponentDescription or ComponentDescription.
-     * If o is a String, then it is returnd withouth further modification.
+     * Method that checks object o and returns a String classpath from  Vector, Files ComponentDescription or ComponentDescription.
+     * If o is a String, then it is returned withouth further modification.
      * The method uses the platform separator for the classpath.
      * @param o structured data to create the classpath
      * @return  String representing a classpath using the platform's separator.  If the wrong data object if found the null is returned and a message is logged
      */
-    public String conventToClassPath(Object o) {
+    public String convertToClassPath(Object o) {
         if (o == null) return null;
 
         if (o instanceof String) {
@@ -1400,7 +1400,7 @@ public class ProcessCompoundImpl extends CompoundImpl
                 return null;
             }
         } else {
-            sfLog().err("Wrong object type found in conventToClassPath. Object type: "+ o.getClass().getName());
+            sfLog().err("Wrong object type found in convertToClassPath. Object type: "+ o.getClass().getName());
             return null;
         }
     }
