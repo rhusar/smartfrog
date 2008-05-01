@@ -74,10 +74,6 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     */
    public SFDeployDisplay() throws RemoteException {
       super();
-      refreshNode = new JButton();
-      refreshPanes = new JButton();
-      jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-      jMenuScriptingPanel = new JMenuItem();
    }
 
 
