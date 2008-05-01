@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -58,6 +58,8 @@ public class Version {
     /** SmartFrog attribute name. Value = {@value} */
     final static String ATR_BUILD_OSNAME = "buildOSName";
     /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSARCH = "buildOSArch";
+    /** SmartFrog attribute name. Value = {@value} */
     final static String ATR_BUILD_JAVAVENDOR = "buildJavaVendor";
     /** SmartFrog attribute name. Value = {@value} */
     final static String ATR_BUILD_JAVAVERSION = "buildJavaVersion";
@@ -77,6 +79,7 @@ public class Version {
 
     private static String buildOSName ="@buildOSName@";
     private static String buildOSVersion = "@buildOSVersion@";
+    private static String buildOSArch = "@buildOSArch@";
     private static String buildJavaVersion = "@buildJavaVersion@";
     private static String buildJavaVendor = "@buildJavaVendor@";
 
@@ -87,7 +90,7 @@ public class Version {
 
     // Don't change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
-    private static String copyright = "(C) Copyright 1998-2006 HP Development Company, LP";
+    private static String copyright = "(C) Copyright 1998-2008 HP Development Company, LP";
 
     private static boolean initialized=false;
 
@@ -99,8 +102,7 @@ public class Version {
         if (initialized) return;
         try {
             //Check Class and read configuration...NOT including system.properties
-            ComponentDescription classComponentDescription = ComponentDescriptionImpl.
-                getClassComponentDescription(this, false, null);
+            ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, false, null);
 
             name = classComponentDescription.sfResolve(ATR_NAME, name , false);
             majorRelease = classComponentDescription.sfResolve(ATR_MAJOR_RELEASE, majorRelease , false);
@@ -111,10 +113,11 @@ public class Version {
             minCoreVersion = classComponentDescription.sfResolve(ATR_MIN_CORE_VERSION, minCoreVersion , false);
             maxCoreVersion = classComponentDescription.sfResolve(ATR_MAX_CORE_VERSION, maxCoreVersion , false);
             buildDate = classComponentDescription.sfResolve(ATR_BUILD_DATE, buildDate , false);
-            buildOSName = classComponentDescription.sfResolve(ATR_BUILD_OSNAME, buildDate , false);
-            buildOSVersion = classComponentDescription.sfResolve(ATR_BUILD_OSVERSION, buildDate , false);
-            buildJavaVersion = classComponentDescription.sfResolve(ATR_BUILD_JAVAVERSION, buildDate , false);
-            buildJavaVendor = classComponentDescription.sfResolve(ATR_BUILD_JAVAVENDOR, buildDate , false);
+            buildOSName = classComponentDescription.sfResolve(ATR_BUILD_OSNAME, buildOSName , false);
+            buildOSVersion = classComponentDescription.sfResolve(ATR_BUILD_OSVERSION, buildOSVersion , false);
+            buildOSArch = classComponentDescription.sfResolve(ATR_BUILD_OSARCH, buildOSArch , false);
+            buildJavaVersion = classComponentDescription.sfResolve(ATR_BUILD_JAVAVERSION, buildOSArch , false);
+            buildJavaVendor = classComponentDescription.sfResolve(ATR_BUILD_JAVAVENDOR, buildJavaVendor , false);
 
             //new created
             String newStatus=null;

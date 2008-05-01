@@ -216,6 +216,9 @@ public final class Diagnostics {
             header (out, " WARNING: no SF object to report");
         }
 
+        header(out, "Cmd args");
+        doReportCmdArgs(out);
+        
         header(out, "System Thread Dump");
         doReportThreadDump(out);
 
@@ -538,6 +541,7 @@ public final class Diagnostics {
       //);
       out.append("* OS Name:         ");out.append(System.getProperty("os.name"));out.append("\n");
       out.append("* OS Version:      ");out.append(System.getProperty("os.version"));out.append("\n");
+      out.append("* OS Architecture: ");out.append(System.getProperty("os.arch"));out.append("\n");
       out.append("* User Name:       ");out.append(System.getProperty("user.name"));out.append("\n");
       out.append("* User Home:       ");out.append(System.getProperty("user.home"));out.append("\n");
       out.append("* User Work Dir:   ");out.append(System.getProperty("user.dir"));out.append("\n");
@@ -682,6 +686,17 @@ public final class Diagnostics {
        return failed;
      }
 
+
+    /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+    public static void doReportCmdArgs(StringBuffer out) {
+      Object args = OptionSet.getArgs();
+      if (args!=null) {
+        out.append("Cmd Args: "+ Arrays.toString(OptionSet.getArgs()));
+      }
+    }
 
     /**
      * Report a listing of classpath used in the current vm.
