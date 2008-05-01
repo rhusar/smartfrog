@@ -19,6 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.display;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -96,11 +99,14 @@ public class WindowUtilities {
          Frame f = new Frame();
          f.setVisible(false);
          f.dispose();
-         System.out.println("Graphics mode available");
-
+         if (sfLog().isDebugEnabled()){
+           sfLog().debug("Graphics mode available");
+         }
          return true;
       } catch (Throwable t) {
-         System.out.println("Graphics mode not available");
+          if (sfLog().isWarnEnabled()){
+            sfLog().warn("Graphics mode NOT available",t);
+          }
       }
 
       return false;
@@ -205,8 +211,6 @@ public class WindowUtilities {
                   ((parentBounds.height) - (compSize.height));
          }
       }
-
-      //System.out.println("X:"+x+", Y:"+y);
       comp.setLocation(x, y);
    }
 
@@ -402,7 +406,7 @@ public class WindowUtilities {
       if (c != null) {
          ((Window) c).dispose();
       } else {
-         System.err.println("Progress bar not disposed");
+         if (sfLog().isErrorEnabled()){ sfLog().error("Progress bar not disposed");  }
       }
    }
 
@@ -422,7 +426,7 @@ public class WindowUtilities {
       if (c != null) {
          ((Window) c).setVisible(false);
       } else {
-         System.err.println("Progress bar not hidden");
+         if (sfLog().isErrorEnabled()){ sfLog().error("Progress bar not hidden");}
       }
    }
 
@@ -480,8 +484,7 @@ public class WindowUtilities {
     */
    public static boolean getUserConfirmation(Component cp, String message) {
       Object[] options = {"OK", "CANCEL"};
-      int option = JOptionPane.showConfirmDialog(cp, message,
-            " Please Confirm...", JOptionPane.YES_NO_OPTION);
+      int option = JOptionPane.showConfirmDialog(cp, message,  " Please Confirm...", JOptionPane.YES_NO_OPTION);
 
       if (option == JOptionPane.OK_OPTION) {
          return true;
@@ -498,8 +501,8 @@ public class WindowUtilities {
     *@param  message  message
     */
    public static void showMessage(Component cp, String message) {
-      JOptionPane.showMessageDialog(cp, message, "Information",
-            JOptionPane.INFORMATION_MESSAGE);
+      if (sfLog().isDebugEnabled()){ sfLog().debug("Shown message INFO:" + message);}
+      JOptionPane.showMessageDialog(cp, message, "Information", JOptionPane.INFORMATION_MESSAGE);
    }
 
 
@@ -510,8 +513,8 @@ public class WindowUtilities {
     *@param  message  warning message
     */
    public static void showWarning(Component cp, String message) {
-      JOptionPane.showMessageDialog(cp, message, "Warning",
-            JOptionPane.WARNING_MESSAGE);
+      if (sfLog().isDebugEnabled()){ sfLog().debug("Shown message WARNING:" + message);}
+      JOptionPane.showMessageDialog(cp, message, "Warning",JOptionPane.WARNING_MESSAGE);
    }
 
 
@@ -522,7 +525,21 @@ public class WindowUtilities {
     *@param  message  error message
     */
    public static void showError(Component cp, String message) {
-      JOptionPane.showMessageDialog(cp, message, "Error!",
-            JOptionPane.ERROR_MESSAGE);
+      if (sfLog().isDebugEnabled()){ sfLog().debug("Shown message ERROR:" + message);}
+      JOptionPane.showMessageDialog(cp, message, "Error!", JOptionPane.ERROR_MESSAGE);
    }
+
+
+   private static LogSF sflog =null;
+    /**
+     *
+     * @return LogSF
+     */
+    public static LogSF sfLog(){
+         if (sflog==null) {
+             sflog= LogFactory.getLog("WindowUtilities");
+         }
+         return sflog;
+    }
+
 }
