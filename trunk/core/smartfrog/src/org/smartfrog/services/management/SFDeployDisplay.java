@@ -687,6 +687,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         refreshNode.setText("Refresh node");
         refreshNode.setActionCommand("refreshButtonNode");
         refreshNode.addActionListener(this);
+
+        display.mainToolBar.add(refreshNode);
+        display.mainToolBar.add(refreshPanes);
+
         JMenu jMenuMng = new JMenu();
 
         jMenuMng.setText("Mng. Console");
