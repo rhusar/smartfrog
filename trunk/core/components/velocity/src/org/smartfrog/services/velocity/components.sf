@@ -22,12 +22,12 @@ For more information: www.smartfrog.org
 /**
  * This is the logging settings for velocity
  */
-VelocityLogEngineSettings extends {
+VelocityEngineSettings extends {
      runtime.log.logsystem.class "org.smartfrog.services.velocity.VelocityLogBridge";
      resource.loader "classpath";
      classpath.resource.loader.class VelocityTransformer:CLASSPATH_RESOURCE_LOADER;
      input.encoding "UTF-8";
-     output.encoding encoding;
+     output.encoding input.encoding;
   };
 
 
@@ -69,7 +69,7 @@ VelocityTransformer extends WorkflowPrim {
    */
 
 
-  engineProperties VelocityLogEngineSettings;
+  engineProperties VelocityEngineSettings;
 
   /**
    * Request a classpath resource loader
