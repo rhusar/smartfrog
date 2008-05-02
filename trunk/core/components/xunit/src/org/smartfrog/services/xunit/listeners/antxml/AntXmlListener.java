@@ -32,6 +32,8 @@ import org.smartfrog.services.xunit.serial.TestInfo;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,6 +55,8 @@ import java.util.TimeZone;
 public class AntXmlListener implements FileListener, XMLConstants {
 
     private Document document;
+
+    private LogSF log;
 
     /**
      * file we save to
@@ -102,6 +106,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         this.processname = processname;
         this.suitename = suitename;
         this.startTime = startTime;
+        log = LogFactory.getLog(getClass());
     }
 
 
@@ -123,7 +128,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws IOException for IO trouble
      * @throws RemoteException network trouble
      */
-    public synchronized void open() throws IOException, RemoteException {
+    public synchronized void open() throws IOException {
         root = new Element(TESTSUITES);
         document = new Document(root);
         stdout = new Element(SYSTEM_OUT);
@@ -136,6 +141,7 @@ public class AntXmlListener implements FileListener, XMLConstants {
         dateFormat.setLenient(true);
         String timestamp = dateFormat.format(startTime);
         maybeAddAttribute(root, TIMESTAMP, timestamp);
+        log.info("logging to "+destFile);
     }
 
     /**
@@ -144,12 +150,13 @@ public class AntXmlListener implements FileListener, XMLConstants {
      * @throws IOException IO trouble
      * @throws RemoteException network trouble
      */
-    public synchronized void close() throws IOException, RemoteException {
+    public synchronized void close() throws IOException {
         if (document == null) {
             return;
         }
         //this is where we actually save the file to disk.
         try {
+            log.info("Creating the XML report file "+destFile);
             buildRootAttributes();
             addLogEntries();
             save();
@@ -224,6 +231,10 @@ public class AntXmlListener implements FileListener, XMLConstants {
     protected void save() throws IOException {
         OutputStream out = null;
         try {
+
+            //create the parent directories on demand.
+            destFile.getParentFile().mkdirs();
+            //now the workers
             out = new BufferedOutputStream(new FileOutputStream(destFile));
             Serializer ser = createSerializer(out);
             ser.write(document);

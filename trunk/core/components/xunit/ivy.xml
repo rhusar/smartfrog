@@ -63,7 +63,7 @@
     <dependency org="org.smartfrog"
         name="sf-ant" changing="true"
         rev="latest.integration"
-        conf="test->ant-optional"/>
+        conf="test->runtime,default,ant-optional"/>
 
     <!--Xom is pulled in for AntXML support.
     It is mandatory during compile and test, but only needed at runtime if
