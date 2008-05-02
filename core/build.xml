@@ -362,7 +362,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
 
 
-  <target name="release" depends="clean,ivy-purge,dist"
+  <target name="release" depends="clean,ivy-purge-published,dist"
       description="create a clean release -purges all artifacts from the ivy repository too"
      >
   </target>
