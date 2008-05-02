@@ -47,7 +47,6 @@ import java.rmi.RemoteException;
 public class ClusterStatusCheckerImpl extends PrimImpl
         implements HadoopConfiguration, HadoopCluster, ClusterStatusChecker, Condition {
     private JobClient client;
-    private boolean checkOnStartup;
     private boolean checkOnLiveness;
     private boolean jobTrackerLive;
 
@@ -65,6 +64,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     private int maxSupportedReduceTasks;
     private String jobTracker;
     public static final String STATUS_CHECKED = "Hadoop Cluster status checked against ";
+    public static final String ERROR_CANNOT_CONNECT = "Cannot connect to ";
 
 
     public ClusterStatusCheckerImpl() throws RemoteException {
@@ -80,8 +80,6 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         jobTracker = sfResolve(MAPRED_JOB_TRACKER, "", true);
-        checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, false, true);
-        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         supportedFileSystem = sfResolve(ATTR_SUPPORTEDFILESYSTEM, false, true);
         jobTrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
         minActiveMapTasks = sfResolve(ATTR_MIN_ACTIVE_MAP_TASKS, 0, true);
@@ -90,6 +88,8 @@ public class ClusterStatusCheckerImpl extends PrimImpl
         minActiveReduceTasks = sfResolve(ATTR_MIN_ACTIVE_REDUCE_TASKS, 0, true);
         maxActiveReduceTasks = sfResolve(ATTR_MAX_ACTIVE_REDUCE_TASKS, 0, true);
         maxSupportedReduceTasks = sfResolve(ATTR_MAX_SUPPORTED_REDUCE_TASKS, 0, true);
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
+        boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, false, true);
 
         if (checkOnStartup) {
             checkClusterStatus();
@@ -115,7 +115,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             client = new JobClient(conf);
             return client;
         } catch (IOException e) {
-            throw new SFHadoopException("Cannot connect to" + jobTracker, e, this);
+            throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobTracker, e, this);
         }
     }
 
@@ -177,10 +177,19 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     }
 
 
+    /**
+     * Check that the range is valid
+     * @param min minimum value
+     * @param max maxiumum value
+     * @param actual current value
+     * @param field field name
+     * @throws SFHadoopException
+     */
     private void  checkRange(int min, int max, int actual, String field) throws SFHadoopException {
         checkMin(min,actual,field);
-        checkMax(min, actual, field);
+        checkMax(max, actual, field);
     }
+
     private void checkMin(int min,int actual,String field) throws SFHadoopException {
         if(min >=0 && actual< min) {
             throw new SFHadoopException(field + " count too low - minimum "+ min + " actual "+actual);

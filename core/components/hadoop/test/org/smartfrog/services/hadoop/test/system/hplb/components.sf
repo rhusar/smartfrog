@@ -22,13 +22,33 @@ For more information: www.smartfrog.org
 
 HPLBJobSubmitter extends JobSubmitter {
   terminateJob true;
+  sfShouldTerminate true;
 }
+
+
+Status extends HplbClusterStatus {
+   sfShouldTerminate true;
+   supportedFileSystem false;
+}
+
+/*
+   Configuration configuration = new Configuration();
+     configuration.set("hadoop.tmp.dir", "/home/hadoop/tmp/hadoop-hadoop");
+     configuration.set("fs.default.name", "hadoop-prj-1.hpl.hp.com:54310");
+     configuration.set("mapred.job.tracker", "hadoop-prj-1.hpl.hp.com:54311");
+     JobConf conf = makeJob(configuration);
+     conf.setInputPath(new Path("/datasets/dbpedia"));
+     conf.setOutputPath(new Path("/playground/dbpedia"));
+     */
 
 /**
  * this job has no jar file; it is not needed
  */
 SimpleJob extends HplbJob  {
-  fileRequired false; 
+  fileRequired false;
+  mapred.input.dir "/datasets/dbpedia";
+  mapred.output.dir "/playground/dbpedia";
+  //mapred.working.dir 
 }
 
 SubmissionCompound extends Compound {
@@ -46,13 +66,29 @@ testJobSubmission extends ExpectDeploy {
 
 testClusterLive extends ExpectTerminate {
   exitText "status checked";
-  action extends HplbClusterStatus {
-   supportedFileSystem false;
-   sfShouldTerminate true;
- }
+  action extends Status;
 }
 
 testClusterLiveFileSystemSupported extends testClusterLive {
   action:supportedFileSystem true;
 }
 
+testBadTrackerPort extends ExpectDeployFailure {
+  exitText LAZY CONSTANT "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl.ERROR_CANNOT_CONNECT";
+  action extends Status  {
+   host HplbCluster:jobTrackerHost;
+   port "2020";
+   mapred.job.tracker (host ++ ":" ++ port );
+   sfShouldTerminate true;
+ }
+}
+
+testBadTrackerHost extends testBadTrackerPort {
+ action:host "unknown.example.org";
+}
+
+
+testClusterMaximumSupportedValues extends testClusterLive {
+  action:maxSupportedMapTasks HplbCluster:maxSupportedMapTasks;
+     //maxSupportedReduceTasks HplbCluster:maxSupportedReduceTasks ;
+}
