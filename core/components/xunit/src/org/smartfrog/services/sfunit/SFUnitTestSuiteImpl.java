@@ -143,7 +143,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
 
         //deploy all children. but do not (yet) start them
         Context children = getActions();
-        Iterator iterator = children.sfAttributes();
+        Iterator<Object> iterator = children.sfAttributes();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             ComponentDescription act = (ComponentDescription) children.get(key);
@@ -154,6 +154,7 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         //now start anything that is not a test
         for (Prim elem:sfChildList()) {
             if (!(elem instanceof TestBlock)) {
+                sfLog().info("Starting "+elem.sfCompleteName().toString());
                 elem.sfStart();
             }
         }
@@ -244,21 +245,31 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
             //its a test block. so let the test block handling handle it
 
             //we just remove it from liveness
-            try {
-                sfRemoveChild(comp);
-            } catch (SmartFrogRuntimeException e) {
-                sfLog().error(e);
-            } catch (RemoteException e) {
-                sfLog().error(e);
-            }
+            removeChildQuietly(comp);
             //and notify the caller we want to keep going
             return false;
         } else {
             //something else terminated
             //whatever it was, it signals the end of this run
-            return true;
+            removeChildQuietly(comp);
+            return false;
+            //return true;
         }
 
+    }
+
+    /**
+     * Remove a child quietly; ignore problems
+     * @param comp component to remove
+     */
+    private void removeChildQuietly(Prim comp) {
+        try {
+            sfRemoveChild(comp);
+        } catch (SmartFrogRuntimeException e) {
+            sfLog().error(e);
+        } catch (RemoteException e) {
+            sfLog().error(e);
+        }
     }
 
     /**
@@ -289,8 +300,8 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
         private TestSuiteRun currentTest;
 
         /**
-         * Create a basic thread
-         *
+         * Create a tester run
+         * @param testRuns the list of tests to run
          * @see Thread#Thread(ThreadGroup,Runnable,String)
          */
         private SFUnitChildTester(List<TestSuiteRun> testRuns) {
@@ -305,11 +316,11 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
          * @throws Throwable if anything went wrong
          */
         public void execute() throws Throwable {
-            for(TestSuiteRun testRun:testRuns) {
-                if(isTerminationRequested()) {
+            for (TestSuiteRun testRun : testRuns) {
+                if (isTerminationRequested()) {
                     break;
                 }
-                currentTest=testRun;
+                currentTest = testRun;
                 testOneChild(currentTest);
             }
         }
@@ -320,11 +331,11 @@ public class SFUnitTestSuiteImpl extends AbstractTestSuite
          */
         public synchronized void requestTermination() {
             super.requestTermination();
-            if(currentTest!=null && currentTest.events!=null) {
+            if (currentTest != null && currentTest.events != null) {
                 try {
                     currentTest.events.interrupt();
                 } catch (RemoteException e) {
-                    sfLog().ignore("failed to interrupt",e);
+                    sfLog().ignore("failed to interrupt", e);
                 }
             }
         }
