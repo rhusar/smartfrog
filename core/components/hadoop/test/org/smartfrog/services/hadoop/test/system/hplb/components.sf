@@ -35,6 +35,7 @@ SubmissionCompound extends Compound {
   job extends SimpleJob;
   submitter extends HPLBJobSubmitter {
     job LAZY PARENT:job;
+    sfShouldTerminate true;
   }
 }
 
@@ -43,6 +44,15 @@ testJobSubmission extends ExpectDeploy {
   action extends SubmissionCompound ;
 }
 
-sfConfig extends Compound {
-
+testClusterLive extends ExpectTerminate {
+  exitText "status checked";
+  action extends HplbClusterStatus {
+   supportedFileSystem false;
+   sfShouldTerminate true;
+ }
 }
+
+testClusterLiveFileSystemSupported extends testClusterLive {
+  action:supportedFileSystem true;
+}
+

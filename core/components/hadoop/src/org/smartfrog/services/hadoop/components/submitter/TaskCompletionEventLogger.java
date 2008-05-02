@@ -23,10 +23,10 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.smartfrog.sfcore.logging.LogSF;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -39,15 +39,20 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
     private RunningJob job;
     private LogSF log;
     private List<TaskCompletionEvent> events=new ArrayList<TaskCompletionEvent>();
-    private int eventCounter=0;
+    private int eventCount =0;
 
     public TaskCompletionEventLogger(RunningJob job, LogSF log) {
         this.job = job;
         this.log = log;
     }
 
-    public int pollForNewEvents() throws IOException {
-        TaskCompletionEvent[] taskCompletionEvents = job.getTaskCompletionEvents(eventCounter);
+    /**
+     * poll for new events
+     * @return the new events
+     * @throws IOException for IO problems
+     */
+    public TaskCompletionEvent[] pollForNewEvents() throws IOException {
+        TaskCompletionEvent[] taskCompletionEvents = job.getTaskCompletionEvents(eventCount);
         int result = -1;
         if (taskCompletionEvents.length > 0) {
             synchronized (this) {
@@ -55,11 +60,16 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
                 for (TaskCompletionEvent event : taskCompletionEvents) {
                     log.info(event);
                     events.add(event);
-                    eventCounter++;
+                    eventCount++;
                 }
             }
         }
-        return result;
+        return taskCompletionEvents;
+    }
+
+
+    public int getEventCount() {
+        return eventCount;
     }
 
     /**

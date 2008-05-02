@@ -17,28 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.hplb;
+#include "/org/smartfrog/services/hadoop/test/system/hplb/components.sf"
 
-import org.smartfrog.test.DeployingTestBase;
-
-/**
- *
- * Created 22-Apr-2008 16:56:22
- *
- */
-
-public class HplbJobTest extends DeployingTestBase {
-    private static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/hplb/";
-
-    public HplbJobTest(String name) {
-        super(name);
-    }
-
-    public void testJobSubmission() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
-    }
-    
-    public void testClusterLiveFileSystemSupported() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE,"testClusterLiveFileSystemSupported");
-    }
-}
+sfConfig testClusterLiveFileSystemSupported ;

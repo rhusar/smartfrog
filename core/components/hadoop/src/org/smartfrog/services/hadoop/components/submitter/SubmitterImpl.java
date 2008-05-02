@@ -21,14 +21,17 @@ package org.smartfrog.services.hadoop.components.submitter;
 
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.mapred.TaskCompletionEvent;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -65,21 +68,40 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATEWHENJOBFINISHES, true, true);
         }
         ManagedConfiguration conf = new ManagedConfiguration(jobPrim);
-        String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String)null, false);
+        String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
         if (filePath != null) {
             if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
             conf.setJar(filePath);
         }
-        String jobTracker= jobPrim.sfResolve(MAPRED_JOB_TRACKER,"",true);
+
+        validateOrResolve("mapred.input.dir", "input.dir");
+        validateOrResolve("mapred.output.dir", "output.dir");
+        validateOrResolve("mapred.working.dir", "working.dir");
+        validateOrResolve("mapred.local.dir", "local.dir");
+        String jobTracker = jobPrim.sfResolve(MAPRED_JOB_TRACKER, "", true);
         try {
-            sfLog().info("Submitting to "+jobTracker);
+            sfLog().info("Submitting to " + jobTracker);
             runningJob = JobClient.runJob(conf);
         } catch (IOException e) {
-            throw SmartFrogLifecycleException.forward(ERROR_FAILED_TO_START_JOB+jobTracker, e, this);
+            throw SmartFrogLifecycleException.forward(ERROR_FAILED_TO_START_JOB + jobTracker, e, this);
         }
         sfReplaceAttribute(ATTR_JOBID, runningJob.getJobID());
         //set up to log events
         events = new TaskCompletionEventLogger(runningJob, sfLog());
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Submitted job to "+jobTracker,null, null);
+    }
+
+
+    String validateOrResolve(String hadoopAttr, String sourceAttr) throws SmartFrogRuntimeException, RemoteException {
+        String directory = sfResolve(hadoopAttr, "", false);
+        if (directory == null) {
+            //resolve the directory attribute instead
+            directory = FileSystem.lookupAbsolutePath(this, sourceAttr, null, null, true, null);
+            //set it
+            sfReplaceAttribute(hadoopAttr, directory);
+        }
+        //now validate the directory?
+        return directory;
     }
 
     /**
@@ -90,7 +112,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         super.sfTerminatedWith(status, comp);
-        if(terminateJob) {
+        if (terminateJob) {
             try {
                 terminateJob();
             } catch (IOException e) {
@@ -110,15 +132,17 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
 
     /**
      * Pings by polling for (and logging) remote events, triggering termination if the job has finished
+     * Failure to pull for a running job is an error; failure for liveness events is treated less seriously
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        try {
-            if (pingJob && runningJob != null) {
-                int count = events.pollForNewEvents();
-                if (runningJob.isComplete()) {
+        if (runningJob == null) {
+            return;
+        } else {
+            try {
+                if (pingJob && runningJob.isComplete()) {
                     boolean succeeded = runningJob.isSuccessful();
                     String message = "Job " + runningJob.getJobID() + " has " + (succeeded ? " succeeded" : "failed");
                     sfLog().info(message);
@@ -128,9 +152,15 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                         new ComponentHelper(this).targetForTermination(record, false, false);
                     }
                 }
+                TaskCompletionEvent[] taskEvents = events.pollForNewEvents();
+                if (taskEvents.length > 0) {
+                    for (TaskCompletionEvent event : taskEvents) {
+                        sfLog().info(event.toString());
+                    }
+                }
+            } catch (IOException e) {
+                throw (SmartFrogLivenessException) SmartFrogLifecycleException.forward(e);
             }
-        } catch (IOException e) {
-            throw (SmartFrogLivenessException) SmartFrogLifecycleException.forward(e);
         }
     }
 }
