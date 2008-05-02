@@ -27,12 +27,9 @@ For more information: www.smartfrog.org
 /**
  * A component that takes a job and submits it.
  */
-JobSubmitter extends WorkflowPrim  {
+JobSubmitter extends JobTrackingWorkflowComponent  {
+  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 
-  /**
-   reference to a job tracker; can always be in a parent.
-  jobTracker TBD;
-  */
 
   job TBD;
   /**
@@ -49,5 +46,5 @@ JobSubmitter extends WorkflowPrim  {
    */
   terminateWhenJobFinishes false;
 
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
+
 }

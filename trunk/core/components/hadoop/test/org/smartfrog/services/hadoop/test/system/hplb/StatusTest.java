@@ -23,22 +23,21 @@ import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
- * Created 22-Apr-2008 16:56:22
+ * Created 02-May-2008 11:24:17
  *
  */
 
-public class HplbJobTest extends DeployingTestBase {
-    private static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/hplb/";
-
-    public HplbJobTest(String name) {
+public class StatusTest extends DeployingTestBase {
+    public StatusTest(String name) {
         super(name);
     }
 
-    public void testJobSubmission() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
+    private static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/hplb/";
+
+    public void testClusterLive() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterLive");
     }
-    
     public void testClusterLiveFileSystemSupported() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE,"testClusterLiveFileSystemSupported");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterLiveFileSystemSupported");
     }
 }

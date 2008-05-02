@@ -27,12 +27,7 @@ import org.smartfrog.services.hadoop.components.HadoopConfiguration;
  */
 
 
-public interface Submitter extends HadoopConfiguration {
-
-    /**
-     * {@value}
-     */
-    String ATTR_JOBTRACKER = HadoopCluster.ATTR_JOBTRACKER;
+public interface Submitter extends HadoopConfiguration, HadoopCluster {
 
     /**
      * {@value}

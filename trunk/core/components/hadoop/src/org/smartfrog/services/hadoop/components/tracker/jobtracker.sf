@@ -17,28 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.hplb;
 
-import org.smartfrog.test.DeployingTestBase;
+JobTracker extends HadoopConfiguration {
 
-/**
- *
- * Created 22-Apr-2008 16:56:22
- *
- */
+  mapred.tasktracker.expiry.interval 600000;
+  mapred.jobtracker.retirejob.interval  1440000;
+  mapred.jobtracker.retirejob.check  60000;
+  mapred.jobtracker.taskalloc.loadbalance.epsilon  0.2;
+  mapred.jobtracker.taskalloc.capacitypad  0.01;
+  mapred.jobtracker.completeuserjobs.maximum  100;
+  mapred.job.tracker.handler.count  10;
+  mapred.job.tracker.info.bindAddress NULL;
+  mapred.job.tracker.info.port  NULL;
+  mapred.job.tracker.http.address  NULL;
 
-public class HplbJobTest extends DeployingTestBase {
-    private static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/hplb/";
+/* hosts and exclude hosts files
+conf.get("mapred.hosts  ""),
+conf.get("mapred.hosts.exclude  ""))
+*/
 
-    public HplbJobTest(String name) {
-        super(name);
-    }
 
-    public void testJobSubmission() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
-    }
-    
-    public void testClusterLiveFileSystemSupported() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE,"testClusterLiveFileSystemSupported");
-    }
 }

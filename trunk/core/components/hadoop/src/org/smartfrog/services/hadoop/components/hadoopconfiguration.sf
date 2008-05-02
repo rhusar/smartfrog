@@ -41,10 +41,29 @@ For more information: www.smartfrog.org
 
 HadoopConfiguration extends Prim {
 
+  dfs.info.bindAddress NULL;
+  dfs.info.port  NULL;
+  dfs.http.address  NULL;
+
   //default filesystem name
   fs.default.name "file:///";
   fs.local.block.size ((32 * 1024)* 1024);
 
+  /*
+   This is a list of supported filesystems. The middle part of the element defines the schema supported
+   */
+  fs.file.impl "org.apache.hadoop.fs.LocalFileSystem";
+  fs.hdfs.impl "org.apache.hadoop.dfs.DistributedFileSystem";
+  fs.hftp.impl "org.apache.hadoop.dfs.HftpFileSystem";
+  fs.inmemory.impl "org.apache.hadoop.fs.InMemoryFileSystem";
+  fs.s3.impl "org.apache.hadoop.fs.s3.S3FileSystem";
+
+  //size of memory for an inmemory FS
+  fs.inmemory.size.mb 100;
+
+  //retry policy
+  fs.s3.maxRetries 4;
+  fs.s3.sleepTimeSeconds 10;
 
   //used when fs is ramfs
   io.bytes.per.checksum 512;
@@ -112,9 +131,11 @@ JobConfiguration extends HadoopConfiguration  {
   /**
    directories to define
    */
+   //mapred.output.dir
+   //mapred.input.dir
    //mapred.working.dir
    //mapred.local.dir
-   //mapred.output.dir
+
 
   //enumeration of task statuses
 
@@ -143,6 +164,8 @@ JobConfiguration extends HadoopConfiguration  {
   Should output be compressed?
   */
   mapred.compress.map.output true;
+
+
 
   mapred.input.format.class Classnames:TextInputFormat;
   mapred.input.key.class Classnames:LongWritable;
@@ -279,4 +302,6 @@ JobConfiguration extends HadoopConfiguration  {
 
     session.id "";
     user.name PROPERTY user.name;
+    /* job user group info */
+    hadoop.job.ugi ((PROPERTY user.name) ++ ", users");
 }
