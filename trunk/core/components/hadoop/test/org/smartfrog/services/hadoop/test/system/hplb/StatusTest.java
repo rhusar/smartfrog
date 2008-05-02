@@ -37,7 +37,21 @@ public class StatusTest extends DeployingTestBase {
     public void testClusterLive() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterLive");
     }
+
     public void testClusterLiveFileSystemSupported() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterLiveFileSystemSupported");
     }
+
+    public void testBadTrackerPort() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testBadTrackerPort");
+    }
+
+    public void testBadTrackerHost() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testBadTrackerHost");
+    }
+
+    public void testClusterMaximumSupportedValues() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterMaximumSupportedValues");
+    }
+
 }

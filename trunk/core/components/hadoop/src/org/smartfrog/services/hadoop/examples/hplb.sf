@@ -25,22 +25,24 @@ For more information: www.smartfrog.org
  */
 
 HplbCluster extends HadoopCluster {
- host "hadoop-prj-1.hpl.hp.com";
- jobTrackerPort 54311;
- namenodePort 54310;
- nameWebPort 50070;
- trackerWebPort 50030;
- jobTrackerHost host;
- nameNodeHost host;
- jobTracker (jobTrackerHost ++ ":" ++ jobTrackerPort );
- namenode (nameNodeHost ++ ":" ++ namenodePort );
- filesystem ("hdfs://" ++ namenode);
- trackerUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
- nameUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
- tmpDir "/home/hadoop/tmp/hadoop-hadoop";
- user "hadoop";
- group "supergroup";
- usergroup (user ++ "," ++ group);
+  host "hadoop-prj-1.hpl.hp.com";
+  jobTrackerPort 54311;
+  namenodePort 54310;
+  nameWebPort 50070;
+  trackerWebPort 50030;
+  jobTrackerHost host;
+  nameNodeHost host;
+  jobTracker (jobTrackerHost ++ ":" ++ jobTrackerPort );
+  namenode (nameNodeHost ++ ":" ++ namenodePort );
+  filesystem ("hdfs://" ++ namenode);
+  trackerUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
+  nameUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
+  tmpDir "/home/hadoop/tmp/hadoop-hadoop";
+  user "hadoop";
+  group "supergroup";
+  usergroup (user ++ "," ++ group);
+  maxSupportedMapTasks 100;
+  maxSupportedReduceTasks 100;
 }
 
 
