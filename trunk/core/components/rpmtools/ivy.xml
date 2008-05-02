@@ -45,10 +45,10 @@
       rev="latest.integration"
       conf="compile->services;runtime->services;daemon->services"/>
     <dependency org="org.smartfrog"
-                name="sf-ssh"
-                changing="true"
-                rev="latest.integration"
-                conf="redist->redist;runtime->default"/>
+      name="sf-ssh"
+      changing="true"
+      rev="latest.integration"
+      conf="redist->redist;runtime->default"/>
 
     <dependency org="org.smartfrog"
         name="sf-tasks"
@@ -68,11 +68,6 @@
         conf="test->default"/>
 
 
-    <!--velocity is used to generate spec files-->
-    <dependency org="velocity"
-        name="velocity"
-        rev="${velocity.version}"
-        conf="redist->default"/>
 
  </dependencies>
 </ivy-module>

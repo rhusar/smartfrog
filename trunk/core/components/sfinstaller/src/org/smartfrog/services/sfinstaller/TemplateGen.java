@@ -23,6 +23,7 @@ package org.smartfrog.services.sfinstaller;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.Template;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.PrintStream;
 import java.io.FileOutputStream;
@@ -138,18 +139,19 @@ public class TemplateGen {
 
         readDaemons();
 
-        if (outputFileName == null)
+        if (outputFileName == null) {
             instantiateTemplate(System.out);
-        else
+        } else {
             instantiateTemplate(new
                     PrintStream(new FileOutputStream(outputFileName)));
+        }
     }
 
     /**
      * Constructor to avoid unnecessary writing & parsing of hostfiles.
-     * @param args
+     * @param args arguments
      * @param listDaemons the list containing the daemons
-     * @throws Exception
+     * @throws Exception on a failure to instantaite the template
      */
     public TemplateGen(String[] args, ArrayList<Daemon> listDaemons) throws Exception {
         readOptions(args);
@@ -158,11 +160,12 @@ public class TemplateGen {
             allDaemons.add(d);
         }
 
-        if (outputFileName == null)
+        if (outputFileName == null) {
             instantiateTemplate(System.out);
-        else
+        } else {
             instantiateTemplate(new
                     PrintStream(new FileOutputStream(outputFileName)));
+        }
     }
 
     /**
@@ -268,10 +271,11 @@ public class TemplateGen {
      */
     private String getWord(StreamTokenizer st) throws Exception {
         int token = st.nextToken();
-        if (token == StreamTokenizer.TT_WORD)
+        if (token == StreamTokenizer.TT_WORD) {
             return st.sval;
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -312,10 +316,10 @@ public class TemplateGen {
                 template.merge(context, writer);
             }
             writer.flush();
+            writer.close();
+            writer=null;
         } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            FileSystem.close(writer);
         }
     }
 
