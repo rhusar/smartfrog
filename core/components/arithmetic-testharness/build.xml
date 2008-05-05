@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="arithmetic-testharness" default="default">
+<project name="arithmetic-test" default="default">
 
   <!--
   /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
