@@ -20,6 +20,11 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/hplb.sf"
 
+
+IsHPLBEnabled extends IsPropertyTrue {
+    property "test.hplb.enabled";
+}
+
 HPLBJobSubmitter extends JobSubmitter {
   terminateJob true;
   sfShouldTerminate true;
@@ -60,11 +65,25 @@ SubmissionCompound extends Compound {
 }
 
 
-testJobSubmission extends ExpectDeploy {
+ExpectDeployHPLB extends ExpectDeploy {
+  condition IsHPLBEnabled;
+}
+
+
+ExpectTerminateHPLB extends ExpectTerminate {
+  condition IsHPLBEnabled;
+}
+
+
+ExpectDeployFailureHPLB extends ExpectDeployFailure {
+  condition IsHPLBEnabled;
+}
+
+testJobSubmission extends ExpectDeployHPLB {
   action extends SubmissionCompound ;
 }
 
-testClusterLive extends ExpectTerminate {
+testClusterLive extends ExpectTerminateHPLB {
   exitText "status checked";
   action extends Status;
 }
@@ -73,7 +92,7 @@ testClusterLiveFileSystemSupported extends testClusterLive {
   action:supportedFileSystem true;
 }
 
-testBadTrackerPort extends ExpectDeployFailure {
+testBadTrackerPort extends ExpectDeployFailureHPLB {
   exitText LAZY CONSTANT "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl.ERROR_CANNOT_CONNECT";
   action extends Status  {
    host HplbCluster:jobTrackerHost;
@@ -90,5 +109,5 @@ testBadTrackerHost extends testBadTrackerPort {
 
 testClusterMaximumSupportedValues extends testClusterLive {
   action:maxSupportedMapTasks HplbCluster:maxSupportedMapTasks;
-     //maxSupportedReduceTasks HplbCluster:maxSupportedReduceTasks ;
+  action:maxSupportedReduceTasks HplbCluster:maxSupportedReduceTasks ;
 }

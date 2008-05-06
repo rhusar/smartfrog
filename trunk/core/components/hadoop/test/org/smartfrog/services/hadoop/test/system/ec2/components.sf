@@ -45,7 +45,7 @@ IsAwsEnabled extends IsPropertySet {
 }
 
 
-IsEC2EnabledSet extends IsPropertySet {
+IsEC2EnabledSet extends IsPropertyTrue {
     property "test.ec2.enabled";
 }
 
