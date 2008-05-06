@@ -27,6 +27,7 @@ move %SFHOME_BASE%\dist\lib\avalanche\sf-jmx*.jar %SFHOME_BASE%\dist\lib\avalanc
 move %SFHOME_BASE%\dist\lib\avalanche\sf-loggingservices*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-loggingservices.jar
 move %SFHOME_BASE%\dist\lib\avalanche\sf-net*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-net.jar
 move %SFHOME_BASE%\dist\lib\avalanche\sf-ssh*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-ssh.jar
+move %SFHOME_BASE%\dist\lib\avalanche\sf-rest*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-rest.jar
 move %SFHOME_BASE%\dist\lib\avalanche\sf-avalanche-core*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-avalanche-core.jar
 move %SFHOME_BASE%\dist\lib\avalanche\quartz*.jar %SFHOME_BASE%\dist\lib\avalanche\quartz.jar
 move %SFHOME_BASE%\dist\lib\avalanche\je*.jar %SFHOME_BASE%\dist\lib\avalanche\je.jar

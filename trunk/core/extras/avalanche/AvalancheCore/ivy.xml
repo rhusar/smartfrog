@@ -187,7 +187,12 @@
     <dependency org="xmldb"
         name="xmldb-xupdate"
         rev="${xmldb-xupdate.version}"
-        conf="compile,redist->default"/>
+	conf="compile,redist->default"/>
+	<!--adds rest component-->
+    <dependency org="org.smartfrog"
+        name="sf-rest"
+        rev="latest.integration"
+	conf="runtime->default"/>
 <!--
     <dependency org="kizoom"
         name="lift"
