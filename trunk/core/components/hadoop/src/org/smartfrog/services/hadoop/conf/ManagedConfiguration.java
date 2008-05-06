@@ -47,6 +47,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information
@@ -271,8 +274,8 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
      * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException for resolution problems
      */
-    private Map<String, String> getState() throws RemoteException, SmartFrogResolutionException {
-        Map<String, String> map = new HashMap<String, String>();
+    private SortedMap<String, String> getState() throws RemoteException, SmartFrogResolutionException {
+        SortedMap<String, String> map = new TreeMap<String, String>();
         Iterator<Object> objectIterator = source.sfAttributes();
         while (objectIterator.hasNext()) {
             Object key = objectIterator.next();
@@ -357,6 +360,41 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
      */
     @Override
     public String toString() {
-        return "SmartFrog Managed Configuration bound to " + helper.completeNameSafe().toString();
+        StringBuilder builder=new StringBuilder();
+        builder.append("SmartFrog Managed Configuration bound to ");
+        builder.append(helper.completeNameSafe().toString());
+        return builder.toString();
+    }
+
+    /**
+     * Dump our state to a string; triggers a full resolution.
+     * @return a complete dump of name "value"; pairs, in order
+     * @throws SmartFrogResolutionException problems resolving attributes
+     * @throws RemoteException network trouble
+     */
+    public String dump() throws SmartFrogResolutionException, RemoteException {
+        StringBuilder builder = new StringBuilder();
+        SortedMap<String, String> map=getState();
+        for(String key:map.keySet()) {
+            builder.append(key);
+            builder.append(" \"");
+            builder.append(map.get(key));
+            builder.append("\";\n");
+        }
+        return builder.toString();
+    }
+
+    /**
+     * dump quietly; exceptions are turned into strings
+     * @returnn the dump of name value pairs or an error message
+     */
+    public String dumpQuietly() {
+        try {
+            return dump();
+        } catch (SmartFrogResolutionException e) {
+            return "("+e.toString()+")";
+        } catch (RemoteException e) {
+            return "(" + e.toString() + ")";
+        }
     }
 }
