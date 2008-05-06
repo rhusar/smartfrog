@@ -1,4 +1,4 @@
-<ivyconf>
+<ivysettings>
   <!--
   see http://www.jayasoft.org/ivy/doc/configuration
   -->
@@ -21,7 +21,7 @@
       value="${maven2.pattern}.[ext]" />
   <!-- pull in the local repository -->
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
-  <conf defaultResolver="default"/>
+  <settings defaultResolver="default"/>
   <resolvers>
 <!-- BUGBUG: not a real m2 repo structure
     <filesystem name="team">
@@ -85,4 +85,4 @@
     <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>-->
   </modules>
-</ivyconf>
+</ivysettings>
