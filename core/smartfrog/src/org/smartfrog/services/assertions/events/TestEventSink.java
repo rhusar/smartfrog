@@ -286,7 +286,7 @@ public class TestEventSink implements EventSink {
      *
      * @param clazz   classname
      * @param timeout time to wait between incoming events
-     * @return the event or null for a timeout or interruption
+     * @return the event or null for a timeout 
      * @throws InterruptedException if the thread waiting was interrupted, or a TestInterruptedEvent was encountered
      */
     public synchronized LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
