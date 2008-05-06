@@ -104,7 +104,9 @@ StringEquals extends TwoArgumentCondition {
   caseSensitive true;
 }
 
-
+/**
+ * A test for a property being set and true
+ */
 IsPropertySet extends ConditionPrim {
   sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsPropertySet";
   schema extends Schema {
@@ -113,6 +115,12 @@ IsPropertySet extends ConditionPrim {
   }
 }
 
+/**
+ * A set for a property being set and equal to the value "true"
+ */
+IsPropertyTrue extends IsPropertySet {
+  sfClass "org.smartfrog.sfcore.workflow.conditional.conditions.IsPropertyTrue";
+}
 
 /**
  * Not evaluates true if its nested condition evaluates to false
