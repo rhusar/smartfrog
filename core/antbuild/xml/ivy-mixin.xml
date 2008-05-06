@@ -18,8 +18,12 @@
     </condition>
   </target>
 
-  <target name="ivy-init-antlib" depends="init-core,load-version-info,artifact-names,ivy-probe-antlib" unless="ivy.found">
+  <target name="ivy-init-dir" depends="init-core">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
+  </target>
+  
+  <target name="ivy-init-antlib" depends="ivy-init-dir,load-version-info,artifact-names,ivy-probe-antlib" unless="ivy.found">
+
     <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
         loaderRef="ivyLoader">
       <classpath>
