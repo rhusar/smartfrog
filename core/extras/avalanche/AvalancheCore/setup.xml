@@ -285,6 +285,7 @@
 	<exclude name="smack*.jar" />
         <exclude name="je*.jar" />
         <exclude name="quartz*.jar" />
+        <exclude name="sf-rest*.jar" />
       </fileset>
     </copy>
     
@@ -303,6 +304,7 @@
         <include name="smack*.jar" />
         <include name="je*.jar" />
         <include name="quartz*.jar" />
+        <include name="sf-rest*.jar" />
       </fileset>
 		</copy>
 		
@@ -478,6 +480,10 @@
 		<copy todir="${tomcat.home}/webapps/AvalancheGUI/WEB-INF/lib">
 			<fileset dir="${lib}" includes="*.jar"/>
 		</copy>
+
+		<copy todir="${tomcat.home}/common/lib">
+			<fileset dir="${avalanche.home}/smartfrog/dist/lib" includes="smartfrog*.jar"/>
+		</copy>	
 	</target>
 
 	<target name="copysignedLibs" if="security.on">
