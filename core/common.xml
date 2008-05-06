@@ -1530,8 +1530,8 @@ java.class.path=
     <!-- define the system test post processor-->
     <presetdef name="sf-system-test-validate">
       <fail if="system.test.failed" unless="tests.skip.failing">
-        System Tests for ${ant.project.name} failed - see
-        ${test.reports.dir}
+System Tests for ${ant.project.name} failed - see
+${test.reports.dir}/index.html
       </fail>
     </presetdef>
 
