@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="common" basedir="."
-     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+     xmlns:ivy="antlib:org.apache.ivy.ant"
     >
   <!--
   /** (C) Copyright Hewlett-Packard Development Company, LP
@@ -1971,7 +1971,7 @@ Exist.
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
-      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
     </condition>
 
   </target>
@@ -1979,8 +1979,8 @@ Exist.
   <target name="maybe-declare-ivy" if="ivy.enabled"
       unless="ivy.tasks.loaded"
       depends="ivy-properties">
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             >
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
@@ -1993,14 +1993,14 @@ Exist.
   -->
   <target name="probe-for-ivy-tasks" depends="maybe-declare-ivy">
     <condition property="ivy.tasks.loaded2" >
-      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
     </condition>
   </target>
 
   <target name="declare-ivy" unless="ivy.tasks.loaded2"
           depends="probe-for-ivy-tasks"
           >
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail">
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail" loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
@@ -2010,7 +2010,7 @@ Exist.
     <fail>
     <condition>
       <not>
-       <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+       <typefound name="settings" uri="antlib:org.apache.ivy.ant"/>
       </not>
     </condition>
     No Ivy found in ${ivy.jar}
@@ -2020,7 +2020,7 @@ Exist.
   <target name="maybe-ivy-init"
           depends="declare-ivy"
           if="ivy.enabled" >
-    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
@@ -2077,7 +2077,7 @@ Exist.
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"
@@ -2103,7 +2103,7 @@ ${ivy.reports.dir}
 
   <!--publish master artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
           conf="master"
@@ -2119,7 +2119,7 @@ ${ivy.reports.dir}
 
   <!--publish everything, rather than just artifacts in the master config-->
   <target name="ivy-publish-all" depends="ready-to-publish-all"
-          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+          xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
        overwrite="true"
        haltonmissing="false"
