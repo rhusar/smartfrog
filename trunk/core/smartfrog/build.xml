@@ -15,7 +15,7 @@
   For more information: www.smartfrog.org
   */
 -->
-<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
   <description>
     Introduction
     ============
@@ -1008,7 +1008,7 @@
   </target>
 
   <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
              resource="${ivy.resource}">
       <classpath>
         <pathelement location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>

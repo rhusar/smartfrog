@@ -2,7 +2,7 @@
 <project name="deployapi" default="default"
     xmlns:ac="antlib:net.sf.antcontrib"
     xmlns:sf="antlib:org.smartfrog.tools.ant"
-    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
     xmlns:core="http://smartfrog.org/build/core"
     >
 

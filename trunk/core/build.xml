@@ -434,17 +434,16 @@ For more information: www.smartfrog.org
     <mkdir dir="${ivy2.cache.dir}" />
     <mkdir dir="${ivy2.local.dir}" />
   </target>
-  <!-- =================================================================== -->
-  <!-- Create an ordered list of all ivy-enabled projects-->
-  <!-- Non-ivy projects are ignored-->
-  <!-- we also ignore the deployapi components, as their build is more complex-->
-  <!-- =================================================================== -->
-
-  <target name="ivy-init" depends="init,ivy-dirs"
-          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
 
+  <target name="ivy-probe-antlib" depends="init,ivy-dirs">
+    <condition property="ivy.found">
+      <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+    </condition>
+  </target>
 
+  <target name="ivy-init-antlib" depends="ivy-probe-antlib" unless="ivy.found"
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <!--load up ivy-->
     <fail>
       <condition>
@@ -456,16 +455,26 @@ For more information: www.smartfrog.org
       Either part of the directory tree is missing, or the ivy version,
       currently set to "${ivy.version}" is wrong.
     </fail>
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-        resource="fr/jayasoft/ivy/ant/antlib.xml">
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        resource="fr/jayasoft/ivy/ant/antlib.xml"
+        loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
     <!--create the external dir if it is missing-->
     <mkdir dir="external" />
-    <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="antbuild/ivy/ivyconf.xml" override="true"/>
+  </target>
 
+  <!-- =================================================================== -->
+  <!-- Create an ordered list of all ivy-enabled projects-->
+  <!-- Non-ivy projects are ignored-->
+  <!-- we also ignore the deployapi components, as their build is more complex-->
+  <!-- =================================================================== -->
+
+  <target name="ivy-init" depends="ivy-init-antlib"
+          xmlns:ivy="antlib:org.apache.ivy.ant">
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset file="smartfrog/build.xml" />
@@ -560,7 +569,7 @@ ${child.projects.list}
 
 
   <target name="ivy-report" depends="ivy-init"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:repreport organisation="org.smartfrog" todir="${ivy.report.dir}"
         graph="true" dot="true"/>
   </target>

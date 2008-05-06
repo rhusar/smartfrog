@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="testharness" default="default" xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="testharness" default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!--
   /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
@@ -195,7 +195,7 @@ values as a cue -->
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
-        xmlns:ivy="antlib:fr.jayasoft.ivy.ant"/>
+        xmlns:ivy="antlib:org.apache.ivy.ant"/>
     <path id="testharness.daemon.classpath">
       <!--test running classpath-->
       <path refid="testhelpers.classpath"/>

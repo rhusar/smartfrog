@@ -26,10 +26,14 @@
   <description>
     hadoop with tests on Amazon EC2/S3 support.
 
-    For testing, edit build.properties to add the secret login details for an AWS account
-    test.awsid = id
-    test.awskey = secret key
-    test.ec2.enabled to true for EC2 work
+    For testing, edit build.properties or core/build.properties
+    to add the secret login details for an AWS account
+      test.awsid=id
+      test.awskey=secret key
+      test.ec2.enabled=true
+
+    For testing on the HPLB server farm, set
+     test.hplb.enabled=true
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
