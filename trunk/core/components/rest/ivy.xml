@@ -69,7 +69,24 @@
     <dependency org="httpunit"
         name="httpunit"
         rev="${httpunit.version}"
-        conf="test->default"/>
+	conf="test->default"/>
+ <!--runtime-time dependencies-->
+   <dependency org="xom"
+        name="xom"
+        rev="${xom.version}"
+	conf="runtime->default"/>
+    <dependency org="xml-apis"
+        name="xml-apis"
+        rev="${xml-apis.version}"
+	conf="runtime->default"/>
+    <dependency org="xalan"
+        name="xalan"
+        rev="${xalan.version}"
+	conf="runtime->default"/>
+    <dependency org="xerces"
+        name="xercesImpl"
+        rev="${xerces.version}"
+        conf="runtime->default"/>
 
 
   </dependencies>
