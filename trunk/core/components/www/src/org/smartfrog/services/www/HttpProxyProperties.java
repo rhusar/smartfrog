@@ -26,8 +26,13 @@ package org.smartfrog.services.www;
  */
 
 public class HttpProxyProperties {
+
+    public static final String HTTP_PROXY_HOST = "http.proxyHost";
     public static final String HTTP_PROXY_PORT = "http.proxyPort";
     public static final String HTTP_PROXY_USER = "http.proxyUser";
     public static final String HTTP_PROXY_PASSWORD = "http.proxyPassword";
-    public static final String HTTP_PROXY_HOST = "http.proxyHost";
+    public static final String HTTPS_PROXY_HOST = "https.proxyHost";
+    public static final String HTTPS_PROXY_PORT = "https.proxyPort";
+    public static final String HTTPS_PROXY_USER = "https.proxyUser";
+    public static final String HTTPS_PROXY_PASSWORD = "https.proxyPassword";
 }
