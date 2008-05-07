@@ -50,6 +50,10 @@ NameNode extends FileSystemNode {
   dfs.namenode.startup ACTION_REGULAR;
 
   dfs.http.address "http://localhost:8021";
+/*
+  dfs.info.bindAddress NULL;
+  dfs.info.port NULL;
+  */
 
   //this is set from logDir
   //hadoop.log.dir TBD
@@ -89,10 +93,6 @@ NameNode extends FileSystemNode {
 
 
 
-
-  dfs.info.bindAddress NULL;
-  dfs.info.port NULL;
-  dfs.http.address NULL;
 
   //check the name node is live when we ping the component
   checkRunning true;

@@ -27,8 +27,10 @@ import org.apache.hadoop.mapred.JobConf;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -218,8 +220,6 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
     /**
      * Add a configuration resource.
      *
-     * The properties of this resource will override properties of previously added resources, unless they were marked
-     * <a href="#Final">final</a>.
      *
      * @param url url of the resource to be added, the local filesystem is examined directly to find the resource,
      *            without referring to the classpath.
@@ -278,7 +278,9 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
         while (objectIterator.hasNext()) {
             Object key = objectIterator.next();
             Object value = source.sfResolveHere(key);
-            if (!(value instanceof Remote)) {
+            if (!(value instanceof Remote)
+                    && !(value instanceof ComponentDescription)
+                    && !(value instanceof SFNull)) {
                 map.put(key.toString(), value.toString());
             }
         }
@@ -298,7 +300,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
      * Get an {@link Iterator} to go through the list of <code>String</code> key-value pairs in the configuration.
      *
      * @return an iterator over the entries.
-     * @throws SmartFrogResolutionException for resolution problems
+     * @throws SFHadoopRuntimeException for resolution problems
      */
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
