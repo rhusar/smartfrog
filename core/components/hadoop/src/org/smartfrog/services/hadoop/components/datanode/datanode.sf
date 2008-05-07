@@ -23,9 +23,9 @@ For more information: www.smartfrog.org
  */
 
 
-Datanode extends HadoopConfiguration {
+DataNode extends FileSystemNode {
   dfs.balance.bandwidthPerSec (1024 * 1024);
-  dfs.block.size (64 * 1024 * 1024);
+
   dfs.blockreport.intervalMsec  (60 * 60 * 1000);
   //measured in seconds
   dfs.blockreport.initialDelay 60;
@@ -61,16 +61,11 @@ Datanode extends HadoopConfiguration {
 
   dfs.datanode.simulateddatastorage false;
 
-  io.bytes.per.checksum 512;
-  io.file.buffer.size 4096;
-
-  //the set of operations of a datanode
-  FORMAT "FORMAT";
-  REGULAR "REGULAR";
-  UPGRADE "UPGRADE";
-  ROLLBACK "ROLLBACK";
-  FINALIZE "FINALIZE";
+  dfs.max.objects 0;
 
   dfs.datanode.startup REGULAR;
+
+  io.bytes.per.checksum 512;
+  io.file.buffer.size 4096;
 
 }

@@ -17,15 +17,19 @@
  For more information: www.smartfrog.org
 
  */
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/classnames.sf"
-#include "/org/smartfrog/services/hadoop/components/hadoopconfiguration.sf"
-#include "/org/smartfrog/services/hadoop/components/tracker/components.sf"
-#include "/org/smartfrog/services/hadoop/components/submitter/components.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/components.sf"
-#include "/org/smartfrog/services/hadoop/components/datanode/components.sf"
-#include "/org/smartfrog/services/hadoop/components/namenode/components.sf"
 
-HadoopCluster extends Prim {
-  jobTracker TBD;
+
+package org.smartfrog.services.hadoop.components.cluster;
+
+import org.smartfrog.sfcore.prim.PrimImpl;
+
+import java.rmi.RemoteException;
+
+/**
+ *
+ */
+public class FileSystemNodeImpl extends PrimImpl implements FileSystemNode {
+
+    public FileSystemNodeImpl() throws RemoteException {
+    }
 }

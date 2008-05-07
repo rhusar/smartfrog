@@ -18,23 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-JobTracker extends ClusterNode {
+/**
+ * A clusternode represents any kind of node in the farm
+ */
 
-  mapred.tasktracker.expiry.interval 600000;
-  mapred.jobtracker.retirejob.interval  1440000;
-  mapred.jobtracker.retirejob.check  60000;
-  mapred.jobtracker.taskalloc.loadbalance.epsilon  0.2;
-  mapred.jobtracker.taskalloc.capacitypad  0.01;
-  mapred.jobtracker.completeuserjobs.maximum  100;
-  mapred.job.tracker.handler.count  10;
-  mapred.job.tracker.info.bindAddress NULL;
-  mapred.job.tracker.info.port  NULL;
-  mapred.job.tracker.http.address  NULL;
 
-/* hosts and exclude hosts files
-conf.get("mapred.hosts  ""),
-conf.get("mapred.hosts.exclude  ""))
-*/
-
+ClusterNode extends HadoopConfiguration {
 
 }
