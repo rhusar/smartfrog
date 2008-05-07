@@ -303,8 +303,96 @@ public final class FileSystem {
         return convertToAbsolutePath(pathAttr, baseDir, platform, component, attribute);
     }
 
+
     /**
-     * Convert an attribute into an absolute path.
+     * Resolve a complete list of files held as an attribute on the component
+     * @param component component to look up the path from
+     * @param attribute the name of the attribute to look up
+     * @param baseDir   optional base directory for a relative file when
+     *                  constructing from a string
+     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException
+     *                  when things go wrong
+     * @param platform  a platform to use for converting filetypes. Set to null
+     *                  to use the default helper for this platform.
+     *
+     * @return the absolute path
+     *
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static Vector<String> resolveFileList(Prim component,
+                                          String attribute,
+                                          File baseDir,
+                                          boolean mandatory,
+                                          PlatformHelper platform)
+            throws SmartFrogResolutionException, RemoteException {
+        Reference reference = new Reference(attribute);
+        return resolveFileList(component,
+                reference,
+                baseDir,
+                mandatory,
+                platform);
+    }
+
+    /**
+     * Resolve a complete list of files held as an attribute on the component
+     * @param component component to look up the path from
+     * @param reference the attribute to look up
+     * @param baseDir   optional base directory for a relative file when
+     *                  constructing from a string
+     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException
+     *                  when things go wrong
+     * @param platform  a platform to use for converting filetypes. Set to null
+     *                  to use the default helper for this platform.
+     *
+     * @return the absolute path
+     *
+     * @throws SmartFrogResolutionException error in resolving
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static Vector<String> resolveFileList(Prim component,
+                                                 Reference reference,
+                                                 File baseDir,
+                                                 boolean mandatory,
+                                                 PlatformHelper platform)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector<?> paths = component.sfResolve(reference,
+                (Vector) null,
+                mandatory);
+        if(paths==null) {
+            return new Vector<String>(0);
+        } else {
+            return convertPathVector(paths, baseDir, platform, component,
+                            reference);
+        }
+    }
+
+    /**
+     * Convert a a vector of paths
+     * @param paths a vector containing strings and/or FileIntf interfaces
+     * @param baseDir optional base directory for relative file resolution
+     * @param platform platform converter (can be null)
+     * @param component optional ref to owner (used in the fault)
+     * @param attribute optional reference to the attribute (used in the fault)
+     * @return an absolute path
+     * @throws RemoteException for network problems
+     * @throws SmartFrogResolutionException if the reference cannot be converted to a path
+     */
+    public static Vector<String> convertPathVector(Vector<?> paths,
+                                           File baseDir,
+                                           PlatformHelper platform,
+                                           Object component,
+                                           Reference attribute)
+            throws RemoteException, SmartFrogResolutionException {
+        Vector<String> results=new Vector<String>(paths.size());
+        for(Object element:paths) {
+            results.add(convertToAbsolutePath(element,baseDir, platform, component, attribute));
+        }
+        return results;
+    }
+
+    /**
+     * Convert a resolved attribute into an absolute path.
      * @param pathSource path source: a string or a FileIntf
      * @param baseDir optional base directory for relative file resolution
      * @param platform platform converter (can be null)
@@ -314,7 +402,8 @@ public final class FileSystem {
      * @throws RemoteException for network problems
      * @throws SmartFrogResolutionException if the reference cannot be converted to a path
      */
-    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform, Object component, Reference attribute) throws RemoteException, SmartFrogResolutionException {
+    public static String convertToAbsolutePath(Object pathSource, File baseDir, PlatformHelper platform, Object component, Reference attribute)
+            throws RemoteException, SmartFrogResolutionException {
         String path = null;
         if (pathSource instanceof FileIntf) {
             //file interface: get the info direct from the component
@@ -327,8 +416,10 @@ public final class FileSystem {
             } catch (SmartFrogResolutionException e) {
                 //no attribute? ask for it by name
                 path = fileComponent.getAbsolutePath();
-                if(path==null) {
-                    throw new SmartFrogResolutionException("File component is returning a null path", fileAsPrim);
+                if (path == null) {
+                    throw new SmartFrogResolutionException(
+                            "File component is returning a null path",
+                            fileAsPrim);
                 }
             }
         } else if (pathSource instanceof String) {
@@ -362,15 +453,14 @@ public final class FileSystem {
                     " : " +
                     pathSource.getClass().toString()
                     + " - " + pathSource;
-            Reference owner;
-            if (component instanceof Prim) {
-                owner = (component != null) ? ComponentHelper.completeNameSafe((Prim)component) : null;
-            } else if (component instanceof ComponentDescription) {
-                owner = (component != null) ? ((ComponentDescription)component).sfCompleteName() : null;
-            } else {
-                throw  new SmartFrogResolutionException ("Wrong object type. It does not implement completeName() method: "+component.getClass().getName());    
+            Reference owner = null;
+            if (component != null) {
+                if (component instanceof Prim) {
+                    owner = ComponentHelper.completeNameSafe((Prim) component);
+                } else if (component instanceof ComponentDescription) {
+                    owner = ((ComponentDescription) component).sfCompleteName();
+                }
             }
-
             throw new SmartFrogResolutionException(attribute, owner, message);
         }
         return path;
