@@ -30,4 +30,5 @@ import java.rmi.Remote;
 
 
 public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
+
 }

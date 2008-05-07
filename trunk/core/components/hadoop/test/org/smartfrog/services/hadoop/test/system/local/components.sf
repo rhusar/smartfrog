@@ -23,9 +23,9 @@
 
 
 LocalHadoopCompound extends Compound {
-  fs.default.name "localhost:8020";
+  fs.default.name "hdfs://localhost:8020/";
 
-  hadoop.log.dir extends TempDirWithCleanup {
+  logDir extends TempDirWithCleanup {
 
   }
 
@@ -33,5 +33,8 @@ LocalHadoopCompound extends Compound {
 
   }
 
+  nameDir extends TempDirWithCleanup {
+
+ }
 
 }

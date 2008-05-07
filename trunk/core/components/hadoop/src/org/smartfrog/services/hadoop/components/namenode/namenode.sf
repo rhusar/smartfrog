@@ -36,8 +36,24 @@ For more information: www.smartfrog.org
 
 
 NameNode extends FileSystemNode {
+  sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
+
+  //name directory: a List of directories
+  nameDirectories TBD;
+  //the data directories, again a list of directories
+  dataDirectories TBD;
+
+  //log directory
+  logDir TBD;
+
   //startup mode
-  dfs.namenode.sartup REGULAR;
+  dfs.namenode.startup ACTION_REGULAR;
+
+  dfs.http.address "http://localhost:8021";
+
+  //this is set from logDir
+  //hadoop.log.dir TBD
+
 
   //how many handler threads
   dfs.namenode.handler.count 10;
@@ -71,8 +87,7 @@ NameNode extends FileSystemNode {
   /** Safe mode extension after the threshold. */
   dfs.safemode.extension 0;
 
-  //log directory
-  //hadoop.log.dir TBD
+
 
 
   dfs.info.bindAddress NULL;

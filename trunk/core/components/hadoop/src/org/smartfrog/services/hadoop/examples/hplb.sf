@@ -36,7 +36,7 @@ HplbCluster extends HadoopCluster {
   namenode (nameNodeHost ++ ":" ++ namenodePort );
   filesystem ("hdfs://" ++ namenode);
   trackerUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
-  nameUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
+  nameUrl ("http:" ++ jobTracker ++ ":" ++ nameWebPort ++ "/");
   tmpDir "/home/hadoop/tmp/hadoop-hadoop";
   user "hadoop";
   group "supergroup";

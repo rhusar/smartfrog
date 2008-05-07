@@ -43,8 +43,6 @@ import java.util.Vector;
 
 public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     private DataNode datanode;
-    public static final String DATA_DIRECTORIES = "dataDirectories";
-    private static final String DFS_DATA_DIR = "dfs.data.dir";
 
     public DatanodeImpl() throws RemoteException {
     }
@@ -57,25 +55,16 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Vector<String> dataDirs;
-        ManagedConfiguration conf = new ManagedConfiguration(this);
-        dataDirs = ListUtils.resolveStringList(this, new Reference(
-                DATA_DIRECTORIES), true);
-        StringBuilder path = new StringBuilder();
-        for (String dir : dataDirs) {
-            File directory = new File(dir);
-            directory.mkdirs();
-            if (path.length() > 0) {
-                path.append(',');
-            }
-            path.append(directory.getAbsolutePath());
-        }
-        conf.set(DFS_DATA_DIR, path.toString());
+        createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
+        ManagedConfiguration conf = createConfiguration();
         try {
             datanode = DataNode.run(conf);
         } catch (IOException e) {
             throw new SmartFrogException("Failed to start datanode: "
                     + e.getMessage() + '\n' + conf.dumpQuietly(), e);
+        } catch (IllegalArgumentException e) {
+            throw new SmartFrogException("Failed to start datanode: "
+                    + e.getMessage() + "\n" + conf.dumpQuietly(), e);
         }
     }
 

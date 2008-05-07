@@ -25,11 +25,11 @@ For more information: www.smartfrog.org
 
 FileSystemNode extends ClusterNode {
   //the set of operations of a node on startup
-  FORMAT "FORMAT";
-  REGULAR "REGULAR";
-  UPGRADE "UPGRADE";
-  ROLLBACK "ROLLBACK";
-  FINALIZE "FINALIZE";
+  ACTION_FORMAT "FORMAT";
+  ACTION_REGULAR "REGULAR";
+  ACTION_UPGRADE "UPGRADE";
+  ACTION_ROLLBACK "ROLLBACK";
+  ACTION_FINALIZE "FINALIZE";
 
   dfs.block.size (64 * 1024 * 1024);
 
