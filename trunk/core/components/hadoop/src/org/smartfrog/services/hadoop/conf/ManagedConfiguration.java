@@ -46,8 +46,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 

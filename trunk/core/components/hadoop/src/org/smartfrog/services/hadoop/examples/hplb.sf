@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 
 /**
  * This is the HPLB test cluster.
- * You don't have access to this unless we have your private key, and you are on the right network
+ * You don't have access to this unless you are on the right network
  */
 
 HplbCluster extends HadoopCluster {

@@ -17,23 +17,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.components.datanode;
+package org.smartfrog.services.hadoop.components.namenode;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.dfs.DataNode;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.apache.hadoop.dfs.ExtNameNode;
 
-import java.rmi.RemoteException;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -41,12 +42,16 @@ import java.util.Vector;
  * Created 06-May-2008 16:31:49
  */
 
-public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
-    private DataNode datanode;
-    public static final String DATA_DIRECTORIES = "dataDirectories";
+public class NamenodeImpl extends FileSystemNodeImpl implements HadoopCluster {
+    private ExtNameNode namenode;
+    public static final String ATTR_DATA_DIRECTORIES = "dataDirectories";
     private static final String DFS_DATA_DIR = "dfs.data.dir";
+    /** {@value} */
+    public static final String ATTR_CHECK_RUNNING = "checkRunning";
+    private static final Reference DATA_DIRECTORIES = new Reference(
+            ATTR_DATA_DIRECTORIES);
 
-    public DatanodeImpl() throws RemoteException {
+    public NamenodeImpl() throws RemoteException {
     }
 
     /**
@@ -59,8 +64,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
         super.sfStart();
         Vector<String> dataDirs;
         ManagedConfiguration conf = new ManagedConfiguration(this);
-        dataDirs = ListUtils.resolveStringList(this, new Reference(
-                DATA_DIRECTORIES), true);
+        dataDirs= FileSystem.resolveFileList(this,DATA_DIRECTORIES,null,true,null);
         StringBuilder path = new StringBuilder();
         for (String dir : dataDirs) {
             File directory = new File(dir);
@@ -72,10 +76,11 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
         }
         conf.set(DFS_DATA_DIR, path.toString());
         try {
-            datanode = DataNode.run(conf);
+            namenode = ExtNameNode.createNameNode(conf);
+
         } catch (IOException e) {
-            throw new SmartFrogException("Failed to start datanode: "
-                    + e.getMessage() + '\n' + conf.dumpQuietly(), e);
+            throw new SmartFrogException("Failed to start namenode: "
+                    + e.getMessage() + "\n" + conf.dumpQuietly(), e);
         }
     }
 
@@ -87,14 +92,15 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if (datanode != null) {
-            datanode.shutdown();
-            datanode = null;
+        if (namenode != null) {
+            namenode.stop();
+            namenode = null;
         }
     }
 
     /**
      * Liveness call in to check if this component is still alive.
+     *
      * @param source source of call
      *
      * @throws SmartFrogLivenessException component is terminated
@@ -104,8 +110,10 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(datanode!=null) {
-            //there's no health check here, so no way to see what is going on.
+        synchronized (this) {
+            if (namenode != null) {
+                namenode.ping();
+            }
         }
     }
 }
