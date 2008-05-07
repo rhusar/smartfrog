@@ -202,4 +202,8 @@ public interface ConfigurationAttributes {
      */
     String SESSION_ID = "session.id";
 
+    String DFS_DATA_DIR = "dfs.data.dir";
+    String DFS_NAME_DIR = "dfs.name.dir";
+    String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
+    String HADOOP_LOG_DIR = "hadoop.log.dir";
 }

@@ -41,12 +41,11 @@ For more information: www.smartfrog.org
 
 HadoopConfiguration extends Prim {
 
-  dfs.info.bindAddress NULL;
-  dfs.info.port  NULL;
-  dfs.http.address  NULL;
+
+  //dfs.http.address 
 
   //default filesystem name
-  fs.default.name "file:///";
+//  fs.default.name "file:///";
   fs.local.block.size ((32 * 1024)* 1024);
 
   /*

@@ -20,12 +20,18 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
-import java.rmi.Remote;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+
 
 /**
  *
  */
-public interface FileSystemNode extends Remote {
+public interface FileSystemNode extends HadoopConfiguration {
 
     String ATTR_MIN_DISK_SPACE="minDiskSpaceMB";
+    String ATTR_DATA_DIRECTORIES = "dataDirectories";
+    String ATTR_NAME_DIRECTORIES = "nameDirectories";
+    /** {@value} */
+    String ATTR_CHECK_RUNNING = "checkRunning";
+    String ATTR_LOG_DIR = "logDir";
 }

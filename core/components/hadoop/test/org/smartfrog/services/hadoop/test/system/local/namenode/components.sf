@@ -29,10 +29,13 @@
 LocalNameNodeCompound extends LocalHadoopCompound {
 
   LocalInProcessNameNode extends NameNode {
-
+    fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY dataDir];
-
-
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address "http://localhost:8021";
+    dfs.permissions false;
   }
 }
 
@@ -41,7 +44,8 @@ LocalNameNodeCompound extends LocalHadoopCompound {
  * Test the local name node
  */
 testLocalNameNodeCompound extends ExpectDeploy {
-  action extends LocalNameNodeCompound;
+  action extends LocalNameNodeCompound {
+  }
 
   tests extends Sequence {
     //TODO: some tests
