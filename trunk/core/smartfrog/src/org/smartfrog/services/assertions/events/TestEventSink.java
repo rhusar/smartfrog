@@ -23,6 +23,8 @@ import org.smartfrog.services.assertions.TestFailureException;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
@@ -31,6 +33,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventSink;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
@@ -366,10 +369,33 @@ public class TestEventSink implements EventSink {
      */
     public StartedEvent startApplication(long timeout)
             throws SmartFrogException, RemoteException, InterruptedException {
-        if (!getApplication().sfIsDeployed()) {
+        Prim app = getApplication();
+        Reference appNameRef = app.sfCompleteName();
+        if (!app.sfIsDeployed()) {
             invokeDeploy();
         }
-        invokeStart();
+        try {
+            invokeStart();
+        } catch (SmartFrogLifecycleException e) {
+            Object termRec;
+            TerminationRecord status=null;
+            try {
+                termRec = app.sfResolveHere("sfTerminateWith", false);
+                if (termRec != null && termRec instanceof TerminationRecord) {
+                    status = (TerminationRecord) termRec;
+                } else {
+                    status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
+                }
+            } catch (Exception e1) {
+                status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
+            }
+            TerminatedEvent te=new TerminatedEvent(app,status);
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,te);
+        } catch (RemoteException e) {
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
+                    new TerminatedEvent(app,
+                        TerminationRecord.abnormal("termination during startup", appNameRef, e)));
+        }
         TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
         do {
@@ -403,13 +429,24 @@ public class TestEventSink implements EventSink {
                     TerminationRecord.abnormal("Test component has already terminated",getApplication().sfCompleteName()));
             return termEvent;
         }
-        startApplication(startupTimeout);
+        try {
+            StartedEvent started = startApplication(startupTimeout);
+        } catch (SmartFrogLifecycleException e) {
+            //this is caused by a failure to start the application, which invariably triggers
+            //termination of one kind or another
+            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
+                    TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
+            return termEvent;
+        } catch (TestFailureException tfe) {
+            //startup faied and was intercepted during startup
+            return tfe.getEvent();
+        }
         LifecycleEvent event;
         TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
         do {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + "\n" + dumpHistory(), executeTimeout);
+                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
             }
         } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
                 && !timedout.isTimedOut());
