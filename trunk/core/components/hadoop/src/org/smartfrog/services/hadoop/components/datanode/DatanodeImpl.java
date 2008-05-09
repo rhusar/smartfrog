@@ -19,22 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.datanode;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.dfs.DataNode;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.apache.hadoop.dfs.ExtDataNode;
 
 import java.rmi.RemoteException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -42,7 +39,8 @@ import java.util.Vector;
  */
 
 public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
-    private DataNode datanode;
+    private ExtDataNode datanode;
+    public static final String ERROR_FAILED_TO_START_DATANODE = "Failed to start datanode: ";
 
     public DatanodeImpl() throws RemoteException {
     }
@@ -55,15 +53,17 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
+        Vector<String> dataDirs = createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
+        Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
         ManagedConfiguration conf = createConfiguration();
         try {
-            datanode = DataNode.run(conf);
+            datanode = new ExtDataNode(this,conf,dataDirFiles);
+            datanode.start();
         } catch (IOException e) {
-            throw new SmartFrogException("Failed to start datanode: "
+            throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + '\n' + conf.dumpQuietly(), e);
         } catch (IllegalArgumentException e) {
-            throw new SmartFrogException("Failed to start datanode: "
+            throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + "\n" + conf.dumpQuietly(), e);
         }
     }

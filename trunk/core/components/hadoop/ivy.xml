@@ -29,9 +29,13 @@
   <conf name="master" description="contains the artifact but no dependencies"/>
   <conf name="hadoop-core" description="contains the hadoop-core dependencies"/>
   <conf name="redist" description="redistributals excluding smartfrog artifacts"
+      extends="hadoop-core,client,server"/>
+  <conf name="client" description="client-side dependencies"
+      extends="hadoop-core"/>
+  <conf name="server" description="server-side dependencies"
       extends="hadoop-core"/>
   <conf name="runtime" description="runtime but not the artifact"
-      extends="redist"/>
+    extends="redist"/>
 </configurations> 
 
   <publications>
@@ -52,18 +56,27 @@
         rev="latest.integration"
         conf="compile,runtime,daemon,test->default;testwar->testwar"/>
 
-    <!--XML content-->
-    <dependency org="org.smartfrog"
+    <!--Jetty 6 cannot be used until Hadoop is up to speed-->
+    <!--<dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="latest.integration"
-        conf="runtime->default"/>
+        conf="runtime->default"/>-->
+<!--
 
     <dependency org="org.smartfrog"
         name="sf-xml"
         changing="true"
         rev="latest.integration"
         conf="runtime->default"/>
+-->
+
+    <dependency org="org.smartfrog"
+        name="sf-loggingservices"
+        changing="true"
+        rev="latest.integration"
+        conf="runtime->default"/>
+
 
     <dependency org="org.smartfrog"
         name="sf-testharness"
@@ -93,11 +106,29 @@
         name="commons-cli"
         rev="${commons-cli.version}"
         conf="redist->default"/>
+
     <dependency org="xmlenc"
         name="xmlenc"
         rev="${xmlenc.version}"
         conf="redist->default"/>
 
+    <!--pulls in servlet API 2.4-->
+    <dependency org="jetty"
+        name="org.mortbay.jetty"
+        rev="${jetty5.version}"
+        conf="server->master"/>
+    <dependency org="tomcat"
+        name="jasper-runtime"
+        rev="${jasper.version}"
+        conf="server->master"/>
+    <dependency org="tomcat"
+        name="jsp-api"
+        rev="${jsp-api.version}"
+        conf="server->master"/>
+    <dependency org="commons-el"
+        name="commons-el"
+        rev="${commons-el.version}"
+        conf="server->master"/>
 
   </dependencies>
 </ivy-module>

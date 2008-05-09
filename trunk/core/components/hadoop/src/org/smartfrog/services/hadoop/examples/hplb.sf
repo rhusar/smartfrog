@@ -50,7 +50,7 @@ HplbJob extends Job {
   fs.default.name HplbCluster:filesystem;
   mapred.job.tracker HplbCluster:jobTracker;
   hadoop.tmp.dir HplbCluster:tmpDir;
-  mapred.child.java.opts "-Xmx512m";
+  mapred.child.java.opts "-Xmx512m -d64 -server";
   mapred.tasktracker.map.tasks.maximum 5;
   mapred.tasktracker.reduce.tasks.maximum 1;
   hadoop.job.ugi HplbCluster:usergroup;
