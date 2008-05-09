@@ -35,6 +35,8 @@ import org.smartfrog.SFSystem;
 import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
 
+import junit.framework.AssertionFailedError;
+
 
 /**
  * An extension of SmartFrogTestBase with test awareness created 13-Oct-2006 16:28:33
@@ -359,7 +361,12 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      */
     private void conditionalFail(boolean test, String message, LifecycleEvent event) {
         if (test) {
-            fail(message + '\n' + event);
+            AssertionFailedError afe=new AssertionFailedError(message + '\n' + event);
+            TerminationRecord tr = event.getStatus();
+            if(tr != null ) {
+                afe.initCause(tr.getCause());
+            }
+            throw afe;
         }
     }
 
