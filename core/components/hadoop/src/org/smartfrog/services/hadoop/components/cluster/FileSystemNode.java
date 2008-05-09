@@ -33,5 +33,6 @@ public interface FileSystemNode extends HadoopConfiguration {
     String ATTR_NAME_DIRECTORIES = "nameDirectories";
     /** {@value} */
     String ATTR_CHECK_RUNNING = "checkRunning";
+    String ATTR_EXPECT_NODE_TERMINATION="expectNodeTermination";
     String ATTR_LOG_DIR = "logDir";
 }

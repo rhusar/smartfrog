@@ -37,3 +37,4 @@ FileSystemNode extends ClusterNode {
   //in megabytes that this fs node should deploy on. If it is less, no deployment
   //minDiskSpaceMB;
 }
+

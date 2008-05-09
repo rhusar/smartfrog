@@ -52,7 +52,7 @@ Status extends HplbClusterStatus {
 SimpleJob extends HplbJob  {
   fileRequired false;
   mapred.input.dir "/datasets/dbpedia";
-  mapred.output.dir "/playground/dbpedia";
+  mapred.output.dir "/playground/dbpedia/simpleJob";
   //mapred.working.dir 
 }
 
