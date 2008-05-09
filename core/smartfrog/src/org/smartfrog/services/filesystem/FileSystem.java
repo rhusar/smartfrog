@@ -1155,4 +1155,17 @@ public final class FileSystem {
             close(in);
         }
     }
+
+    /**
+     * Take a string list and turn it into a file list
+     * @param filesAsStrings a list of files as strings
+     * @return a vector of files. There is no validation that the files exist, are of the desired type, etc.
+     */
+    public static Vector<File> convertToFiles(Vector<String> filesAsStrings) {
+        Vector<File> dataDirFiles = new Vector<File>(filesAsStrings.size());
+        for(String dir: filesAsStrings) {
+            dataDirFiles.add(new File(dir));
+        }
+        return dataDirFiles;
+    }
 }
