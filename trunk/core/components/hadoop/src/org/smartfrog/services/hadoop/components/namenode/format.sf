@@ -18,23 +18,15 @@ For more information: www.smartfrog.org
 
 */
 
+/**
+ * Format a file system. This is a workflow component
+ */
 
-NameDirNode extends  FileSystemNode {
+FormatFileSystem extends  NameDirNode {
 
+ sfClass "org.smartfrog.services.hadoop.components.namenode.FormatImpl"
  //name directory: a List of directories
   nameDirectories TBD;
+  sfShouldTerminate true;
 }
-
-NameDataLogNode extends NameDirNode {
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
-
-}
-
-#include "/org/smartfrog/services/hadoop/components/namenode/format.sf"
-#include "/org/smartfrog/services/hadoop/components/namenode/namenode.sf"
 

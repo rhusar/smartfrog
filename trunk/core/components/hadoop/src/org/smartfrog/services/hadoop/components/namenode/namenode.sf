@@ -35,16 +35,10 @@ For more information: www.smartfrog.org
  */
 
 
-NameNode extends FileSystemNode {
+NameNode extends NameDataLogNode {
   sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
 
-  //name directory: a List of directories
-  nameDirectories TBD;
-  //the data directories, again a list of directories
-  dataDirectories TBD;
 
-  //log directory
-  logDir TBD;
 
   //startup mode
   dfs.namenode.startup ACTION_REGULAR;
@@ -96,4 +90,7 @@ NameNode extends FileSystemNode {
 
   //check the name node is live when we ping the component
   checkRunning true;
+  //should we expect the node to terminate itself
+  expectNodeTermination false;
+  sfShouldTerminate false;
 }
