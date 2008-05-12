@@ -108,3 +108,4 @@ LoadClass extends WorkflowPrim {
     create false;
     retain true;
 }
+
