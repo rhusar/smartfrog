@@ -52,3 +52,14 @@ testLocalNameNodeCompound extends ExpectDeploy {
   }
 
 }
+
+
+testLocalFormat extends ExpectTerminate {
+  action extends LocalHadoopCompound {
+    formatLocal extends FormatFileSystem {
+        fs.default.name PARENT:fs.default.name;
+        dataDirectories [LAZY dataDir];
+    }
+
+  }
+}

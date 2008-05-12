@@ -22,9 +22,12 @@
 package org.apache.hadoop.dfs;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.StringUtils;
 import org.smartfrog.services.hadoop.core.HadoopPingable;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,11 +44,13 @@ import java.util.AbstractList;
 public class ExtDataNode extends DataNode implements HadoopPingable {
 
     private boolean stopped;
-    private NameNodeThread worker;
+    private DataNodeThread worker;
+    private Prim owner;
 
-    public ExtDataNode(Configuration conf, AbstractList<File> dataDirs)
+    public ExtDataNode(Prim owner,Configuration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
+        this.owner = owner;
     }
 
     /**
@@ -96,20 +101,24 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
         }
     }
 
+
+    public void start() {
+        startWorkerThread();
+    }
+
+
     /**
      * Ping the node; report an error if we have stopped
      *
      * @throws SmartFrogLivenessException if the node is unhappy
      * @throws RemoteException for network problems
      */
-    public synchronized void ping()
+    public void ping()
             throws SmartFrogLivenessException, RemoteException {
         if (isStopped()) {
             throw new SmartFrogLivenessException("DataNode is stopped");
         }
-        if (worker != null) {
-            worker.ping(false);
-        }
+        SmartFrogThread.ping(worker);
     }
 
     /**
@@ -117,21 +126,23 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
      */
     public synchronized void startWorkerThread() {
         if (worker == null) {
-            worker = new NameNodeThread();
+            worker = new DataNodeThread();
             worker.start();
         }
     }
 
+
+
     /**
-     * This is a private worker thread that cac
+     * This is a private worker thread that can be interrupted better
      */
-    private class NameNodeThread extends SmartFrogThread {
+    private class DataNodeThread extends WorkflowThread {
 
         /**
-         * Allocates a new <code>SmartFrogThread</code> object.
+         * Creates a new thread
          */
-        private NameNodeThread() {
-            super(new Object());
+        private DataNodeThread() {
+            super(ExtDataNode.this.owner, true);
         }
 
         /**
@@ -153,7 +164,7 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
             if (!isTerminationRequested()) {
                 super.requestTermination();
                 //and interrupt
-                this.interrupt();
+                interrupt();
             }
         }
     }

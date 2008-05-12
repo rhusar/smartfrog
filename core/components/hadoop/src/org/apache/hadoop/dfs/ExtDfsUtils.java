@@ -17,24 +17,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.apache.hadoop.dfs;
 
+import org.apache.hadoop.conf.Configuration;
 
-NameDirNode extends  FileSystemNode {
+import java.io.IOException;
+import java.io.File;
+import java.util.Collection;
 
- //name directory: a List of directories
-  nameDirectories TBD;
+/**
+ * Utility mehtods that need to be in the right package
+ *
+ */
+
+public class ExtDfsUtils {
+
+    private ExtDfsUtils() {
+    }
+
+    /**
+     * Format a name node
+     * @param dirsToFormat directories to format
+     * @param conf the configuration
+     * @throws IOException
+     */
+    public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
+        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat), conf);
+        nsys.dir.fsImage.format();
+    }
 }
-
-NameDataLogNode extends NameDirNode {
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
-
-}
-
-#include "/org/smartfrog/services/hadoop/components/namenode/format.sf"
-#include "/org/smartfrog/services/hadoop/components/namenode/namenode.sf"
-

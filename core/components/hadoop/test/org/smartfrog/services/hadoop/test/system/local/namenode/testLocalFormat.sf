@@ -19,25 +19,10 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.namenode;
+#include "/org/smartfrog/services/hadoop/test/system/local/namenode/components.sf"
 
-import org.smartfrog.test.DeployingTestBase;
 
 /**
- *
+ * Test the local name node
  */
-public class NameNodeTest extends DeployingTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
-
-    public NameNodeTest(String name) {
-        super(name);
-    }
-
-    public void testLocalNameNodeCompound() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalNameNodeCompound");
-    }
-    
-    public void testLocalFormat() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE,"testLocalFormat");
-    }
-}
+sfConfig testLocalNameNodeCompound ;

@@ -19,27 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.namenode;
 
-import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ListUtils;
 import org.apache.hadoop.dfs.ExtNameNode;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * Created 06-May-2008 16:31:49
@@ -70,7 +62,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
         ManagedConfiguration conf = createConfiguration();
         try {
-            namenode = ExtNameNode.createNameNode(conf);
+            namenode = ExtNameNode.createNameNode(this, conf);
 
         } catch (IOException e) {
             throw new SmartFrogException("Failed to start namenode: "

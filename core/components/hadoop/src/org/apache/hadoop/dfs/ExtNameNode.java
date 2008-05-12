@@ -23,8 +23,13 @@ package org.apache.hadoop.dfs;
 
 import org.apache.hadoop.conf.Configuration;
 import org.smartfrog.services.hadoop.components.namenode.NamenodeImpl;
+import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.core.HadoopPingable;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -37,11 +42,17 @@ public class ExtNameNode extends NameNode implements HadoopPingable {
     //this defaults to false
     private boolean stopped;
     private boolean checkRunning;
+    private Prim owner;
+    private ManagedConfiguration conf;
+    public static final String NAME_NODE_IS_STOPPED = "NameNode is stopped";
+    public static final String NO_FILESYSTEM = "Filesystem is not running";
+    private boolean expectNodeTermination;
+    private boolean terminationInitiated;
 
-    public static ExtNameNode createNameNode(Configuration conf)
+    public static ExtNameNode createNameNode(Prim owner, ManagedConfiguration conf)
             throws IOException {
         try {
-            ExtNameNode enn = new ExtNameNode(conf);
+            ExtNameNode enn = new ExtNameNode(owner,conf);
             return enn;
         } catch (IOException ioe) {
             //any cleanup here
@@ -57,10 +68,13 @@ public class ExtNameNode extends NameNode implements HadoopPingable {
      *
      * @throws IOException io problems
      */
-    private ExtNameNode(Configuration conf) throws IOException {
+    private ExtNameNode(Prim owner, ManagedConfiguration conf) throws IOException {
         super(conf);
+        this.conf = conf;
+        this.owner = owner;
         //any other config here.
-        checkRunning = conf.getBoolean(NamenodeImpl.ATTR_CHECK_RUNNING, true);
+        checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
+        expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
     }
 
     /**
@@ -75,6 +89,8 @@ public class ExtNameNode extends NameNode implements HadoopPingable {
         stopped = true;
         super.stop();
     }
+
+
 
     /**
      * Get the stopped exception
@@ -94,10 +110,23 @@ public class ExtNameNode extends NameNode implements HadoopPingable {
     public synchronized void ping()
             throws SmartFrogLivenessException, RemoteException {
         if (isStopped()) {
-            throw new SmartFrogLivenessException("NameNode is stopped");
+            if (expectNodeTermination) {
+                if(!terminationInitiated) {
+                    terminationInitiated=true;
+                    new ComponentHelper(owner).targetForWorkflowTermination(
+                        TerminationRecord.normal("Name node has halted",owner.sfCompleteName()));
+                }
+            } else {
+                //the node is stopped and we were not expecting it. throw a liveness failure
+                throw new SmartFrogLivenessException(NAME_NODE_IS_STOPPED);
+            }
         }
-        if (checkRunning && !isFileSystemLive()) {
-            throw new SmartFrogLivenessException("Filesystem is not running");
+        if (!isFileSystemLive()) {
+            if (checkRunning) {
+                throw new SmartFrogLivenessException(NO_FILESYSTEM);
+            } else {
+                //look for sfShouldTerminate options
+            }
         }
     }
 
