@@ -19,37 +19,10 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
-
-/**
- * name node tests
- */
-
-
-testJasperOnClasspath extends ExpectTerminate {
- action extends LoadJSP {
-  sfShouldTerminate true;
- }
-}
-
+#include "/org/smartfrog/services/hadoop/test/system/local/namenode/components.sf"
 
 
 /**
  * Test the local name node
  */
-testLocalNameNodeCompound extends ExpectDeploy {
-  action extends LocalNameNodeCompound {
-  }
-
-  tests extends Sequence {
-    //TODO: some tests
-  }
-
-}
-
-/**
- * Format is a workflow so the test should terminate things
- */
-testLocalFormat extends ExpectTerminate {
-  action LocalFormat;
-}
+sfConfig testJasperOnClasspath ;

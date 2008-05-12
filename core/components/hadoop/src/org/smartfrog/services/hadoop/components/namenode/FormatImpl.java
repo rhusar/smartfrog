@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.namenode;
 
 import org.apache.hadoop.dfs.ExtDfsUtils;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.WorkflowThread;

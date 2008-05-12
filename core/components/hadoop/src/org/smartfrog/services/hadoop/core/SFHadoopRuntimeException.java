@@ -78,7 +78,6 @@ public class SFHadoopRuntimeException extends RuntimeException {
      *              #getCause()} method).  (A <tt>null</tt> value is permitted,
      *              and indicates that the cause is nonexistent or unknown.)
      *
-     * @since 1.4
      */
     public SFHadoopRuntimeException(Throwable cause) {
         super(cause);

@@ -19,15 +19,17 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.namenode;
 
-import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
-import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.apache.hadoop.dfs.ExtNameNode;
+import org.mortbay.util.MultiException;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
+import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.apache.hadoop.dfs.ExtNameNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,13 +65,17 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         ManagedConfiguration conf = createConfiguration();
         try {
             namenode = ExtNameNode.createNameNode(this, conf);
-
         } catch (IOException e) {
-            throw new SmartFrogException("Failed to start namenode: "
-                    + e.getMessage() + "\n" + conf.dumpQuietly(), e);
+            if (e.getCause() != null && e.getCause() instanceof MultiException) {
+                MultiException me = (MultiException) e.getCause();
+                throw SFHadoopException.forward("Failed to start namenode", me, this);
+            } else {
+                throw new SFHadoopException("Failed to start namenode: "
+                        + e.getMessage() + "\n" + conf.dumpQuietly(), e, this);
+            }
         } catch (IllegalArgumentException e) {
-            throw new SmartFrogException("Failed to start namenode: "
-                    + e.getMessage() + "\n" + conf.dumpQuietly(), e);
+            throw new SFHadoopException("Failed to start namenode: "
+                    + e.getMessage() + "\n" + conf.dumpQuietly(), e, this);
         }
     }
 

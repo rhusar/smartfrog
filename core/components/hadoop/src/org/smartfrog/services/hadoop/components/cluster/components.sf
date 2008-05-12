@@ -20,4 +20,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/components/cluster/clusterstatus.sf"
 #include "/org/smartfrog/services/hadoop/components/cluster/clusternode.sf"
 #include "/org/smartfrog/services/hadoop/components/cluster/filesystemnode.sf"
+#include "/org/smartfrog/services/hadoop/components/cluster/jspstatus.sf"
 

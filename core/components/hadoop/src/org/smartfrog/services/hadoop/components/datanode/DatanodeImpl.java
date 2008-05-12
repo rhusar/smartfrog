@@ -19,19 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.datanode;
 
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.apache.hadoop.dfs.ExtDataNode;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.apache.hadoop.dfs.ExtDataNode;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
 import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
@@ -60,9 +60,11 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
             datanode = new ExtDataNode(this,conf,dataDirFiles);
             datanode.start();
         } catch (IOException e) {
+            shutDownDataNode();
             throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + '\n' + conf.dumpQuietly(), e);
         } catch (IllegalArgumentException e) {
+            shutDownDataNode();
             throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + "\n" + conf.dumpQuietly(), e);
         }
@@ -76,6 +78,10 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        shutDownDataNode();
+    }
+
+    private synchronized void shutDownDataNode() {
         if (datanode != null) {
             datanode.shutdown();
             datanode = null;
@@ -93,7 +99,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(datanode!=null) {
+        if (datanode != null) {
             //there's no health check here, so no way to see what is going on.
         }
     }

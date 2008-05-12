@@ -21,20 +21,18 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
 
-import java.rmi.RemoteException;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.Vector;
-import java.io.File;
 
 /**
  *
