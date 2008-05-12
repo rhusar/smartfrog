@@ -25,7 +25,11 @@ For more information: www.smartfrog.org
  */
 LoadJSP extends LoadClass {
   jspservlet "org.apache.jasper.servlet.JspServlet";
-  classes [jspservlet];
+  classes [jspservlet,
+    "org.apache.jasper.JasperException",
+    "org.apache.commons.el.parser.ELParser",
+    "javax.servlet.jsp.SkipPageException",
+    "javax.servlet.ServletException"];
   create false;
   retain false;
 }
