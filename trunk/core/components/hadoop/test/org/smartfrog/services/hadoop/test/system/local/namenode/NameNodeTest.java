@@ -36,6 +36,10 @@ public class NameNodeTest extends DeployingTestBase {
     public void testLocalNameNodeCompound() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalNameNodeCompound");
     }
+
+    public void testJasperOnClasspath() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testJasperOnClasspath");
+    }
     
     public void testLocalFormat() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE,"testLocalFormat");

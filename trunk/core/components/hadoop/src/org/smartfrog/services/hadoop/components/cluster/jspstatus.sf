@@ -17,29 +17,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/os/java/components.sf"
 
 /**
- * A Filesystem node with nameDirectories declared as a required attribute
+ * A component to load the Jasper runtime and check that it is present.
+ * Failure to deploy implies no JSP on the classpath
  */
-NameDirNode extends  FileSystemNode {
-
- //name directory: a List of directories
-  nameDirectories TBD;
+LoadJSP extends LoadClass {
+  jspservlet "org.apache.jasper.servlet.JspServlet";
+  classes [jspservlet];
+  create false;
+  retain false;
 }
-
-/**
- * Extend NameDirNode with dataDirectories and a log directory
- */
-NameDataLogNode extends NameDirNode {
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
-
-}
-
-#include "/org/smartfrog/services/hadoop/components/namenode/format.sf"
-#include "/org/smartfrog/services/hadoop/components/namenode/namenode.sf"
-

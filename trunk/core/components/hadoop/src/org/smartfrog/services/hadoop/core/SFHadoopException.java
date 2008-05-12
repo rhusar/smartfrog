@@ -21,6 +21,14 @@ package org.smartfrog.services.hadoop.core;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.mortbay.util.MultiException;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.util.List;
 
 /**
  *
@@ -96,5 +104,65 @@ public class SFHadoopException extends SmartFrogException {
      */
     public SFHadoopException(String message, Throwable cause, Prim sfObject) {
         super(message, cause, sfObject);
+    }
+
+    public void addConfiguration(ManagedConfiguration conf) {
+        add("configuration",conf.dumpQuietly());
+    }
+
+    /**
+     * Prints this throwable and its backtrace to the specified print writer.
+     *
+     * @param s <code>PrintWriter</code> to use for output
+     * @since JDK1.1
+     */
+    public void printStackTrace(PrintWriter s) {
+        super.printStackTrace(s);
+    }
+
+    /**
+     * Prints this throwable and its backtrace to the specified print stream.
+     *
+     * @param s <code>PrintStream</code> to use for output
+     */
+    public void printStackTrace(PrintStream s) {
+        super.printStackTrace(s);
+    }
+
+    /**
+     * Turn a MultiExcept into a nested exception with the stack traces in the body.
+     * That's pretty nasty, but it stops the information getting lost
+     * @param message header message
+     * @param multiExcept nested exceptions
+     * @param sfObject source
+     * @return a new exception
+     */
+    public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject) {
+        List exceptions = multiExcept.getExceptions();
+        int exCount = exceptions.size();
+        if(exCount==1) {
+            //special case: one child.
+            Exception e=multiExcept.getException(0);
+            return new SFHadoopException(message+"\n"
+                    + e.getMessage(),
+                    e);
+        }
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = null;
+        pw = new PrintWriter(sw);
+        try {
+            for (Object o : exceptions) {
+                Exception ex = (Exception) o;
+                ex.printStackTrace(pw);
+            }
+        } finally {
+            pw.close();
+        }
+        return new SFHadoopException(message
+                +"\nmultiple ("+ exCount + ") nested exceptions: \n"
+                + multiExcept.getMessage() + "\n"
+                + sw.toString(),
+                multiExcept);
     }
 }

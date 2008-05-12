@@ -64,6 +64,17 @@
       test.awskey=${test.awskey}
       system.tests=${system.tests}
     </echo>
+    <fail >
+      <condition >
+        <not>
+          <available classname="org.apache.jasper.servlet.JspServlet" ignoresystemclasses="true"
+              classpathref="tests.run.classpath"/>
+        </not>
+      </condition>
+      Unable to locate org.apache.jasper.servlet.JspServlet, which is needed
+      for JSP support in the test classpath
+      ${toString:tests.run.classpath}
+    </fail>
   </target>
 
 </project>
