@@ -17,8 +17,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/hadoop/components/cluster/clusterstatus.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/clusternode.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/filesystemnode.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/jspstatus.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/checkdiskspace.sf"
+package org.smartfrog.services.hadoop.components.cluster;
+
+import org.smartfrog.sfcore.workflow.conditional.Condition;
+
+import java.rmi.Remote;
+
+/**
+ * Created 12-May-2008 16:06:08
+ */
+
+
+public interface CheckDiskSpace extends Condition {
+
+    /**
+     * Vector of directories
+     */
+    String ATTR_DIRECTORIES ="directories";
+
+    /** minimum MB */
+    String ATTR_MINAVAILABLEMB="minAvailableMB";
+
+    /** minimum GB. A GB=1024*1MB, despite what disk vendors say*/
+    String ATTR_MINAVAILABLEGB ="minAvailableGB";
+
+    /** flag to say: skip any dir that isnt there */
+    String ATTR_SKIPABSENTDIRECTORIES="skipAbsentDirectories";
+
+    String ATTR_CHECKONSTARTUP="checkOnStartup";
+    String ATTR_CHECKONLIVENESS="checkOnLiveness";
+}
