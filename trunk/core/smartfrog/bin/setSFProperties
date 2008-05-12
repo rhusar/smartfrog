@@ -69,36 +69,50 @@ export CLASSPATH
 # export SFLIBPATH="$SFHOME/lib.ext"
 # for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 # export CLASSPATH
-
-
+echo DEFAULT $CLASSPATH
 if test "$SFUSERHOME"; then
     export SFLIBPATH="$SFUSERHOME"
-    for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-    export CLASSPATH
+    ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        export CLASSPATH
+    fi
 fi
 
 if test "$SFUSERHOME1"; then
     export SFLIBPATH="$SFUSERHOME1"
-    for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-    export CLASSPATH
+    ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        export CLASSPATH
+    fi
 fi
 
 if test "$SFUSERHOME2"; then
     export SFLIBPATH="$SFUSERHOME2"
-    for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-    export CLASSPATH
+    ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        export CLASSPATH
+    fi
 fi
 
 if test "$SFUSERHOME3"; then
     export SFLIBPATH="$SFUSERHOME3"
-    for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-    export CLASSPATH
+    ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        export CLASSPATH
+    fi
 fi
 
 if test "$SFUSERHOME4"; then
     export SFLIBPATH="$SFUSERHOME4"
-    for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-    export CLASSPATH
+    ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+    if [ $? -eq 0 ]; then
+	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+        export CLASSPATH
+    fi
 fi
 
 if test "$SFUSERCLASSPATH"; then
@@ -109,3 +123,4 @@ fi
 if [ -f ${SHELL}.exe ]; then
   CLASSPATH=`cygpath -pw "$CLASSPATH"`
 fi
+echo AFTER $CLASSPATH
