@@ -530,6 +530,14 @@
     <ln artifact="sf-junit" version="${smartfrog.version}"/>
     <ln artifact="junit" version="${junit.version}"/>
 
+
+    <rpmpackage package="velocity"/>
+    <ln artifact="sf-velocity" version="${smartfrog.version}"/>
+    <ln artifact="velocity" version="${velocity.version}"/>
+    <ln artifact="velocity-dep" version="${velocity.version}"/>
+    <ln artifact="commons-collections" version="${commons-collections.version}"/>
+    <ln artifact="commons-lang" version="${commons-lang.version}"/>
+
     <!-- WWW -->
     <rpmpackage package="www"/>
     <ln artifact="sf-www" version="${smartfrog.version}"/>

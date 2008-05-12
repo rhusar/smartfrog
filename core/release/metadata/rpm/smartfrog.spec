@@ -288,7 +288,7 @@ for testing deployments, and the listeners/reporters for running tests.
 
 %package junit
 Group:         ${rpm.framework}
-Summary:        Junit testing
+Summary:        JUnit testing
 Requires:       %{name} = %{version}-%{release}  , smartfrog-xunit
 #
 %description junit
@@ -296,6 +296,26 @@ This contains the components for running JUnit ${junit.version} tests, and the
 junit-${junit.version}.jar.
 Prerequisite packages: xunit, Logging.
 # -----------------------------------------------------------------------------
+
+%package velocity
+Group:         ${rpm.framework}
+Summary:        Velocity template engine
+Requires:       %{name} = %{version}-%{release}  , smartfrog-logging
+#
+%description velocity
+
+This package provides the Apache Velocity template engine
+JAR, and a component that can transform a file through it
+during deployment. Velocity can be used to generate
+text, HTML or XML files on the fly.
+
+It includes the files
+velocity-${velocity.version}.jar
+velocity-dep-${velocity.version}.jar
+commons-collections-${commons-collections.version}.jar
+commons-lang-${commons-lang.version}.jar
+
+Prerequisite packages: Logging.
 
 %package www
 Group:         ${rpm.framework}
@@ -662,6 +682,20 @@ fi
 %{linkdir}/sf-junit.jar
 %{linkdir}/junit.jar
 
+
+%files velocity
+%{libdir}/sf-velocity-${smartfrog.version}.jar
+%{libdir}/velocity-${velocity.version}.jar
+%{libdir}/velocity-dep-${velocity.version}.jar
+%{libdir}/commons-collections-${commons-collections.version}.jar
+%{libdir}/commons-lang-${commons-lang.version}.jar
+
+%{linkdir}/sf-velocity.jar
+%{linkdir}/velocity.jar
+%{linkdir}/velocity-dep.jar
+%{linkdir}/commons-collections.jar
+%{linkdir}/commons-lang.jar
+
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
 %{libdir}/sf-jetty-${smartfrog.version}.jar
@@ -745,10 +779,12 @@ Contains JAR files signed by a private CA.
 
 # -----------------------------------------------------------------------------
 
+# to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0027-2.el4
+- add velocity template
 * Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0018-2.el4
 - add ability to generate signed RPM files
-# to get the date, run:   date +"%a %b %d %Y"
 * Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0013-1.el4
 - add the javadocs RPM
 - remove og-w permissions from the log directory 
