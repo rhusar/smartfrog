@@ -382,8 +382,16 @@
     </echo>
   </target>
 
+  <!--This prepares a custom build.xml file ready for signing and RPM
+    creation -->
+  <target name="prepare-rpm-build-file" depends="prepare-binary-rpm">
+    <copy todir="${build.rpm.dir}" file="scripts/ant/rpmbuild.xml" />
+    <propertyfile file="${build.rpm.dir}/rpmbuild.properties">
+      <entry key="rpm-version" value="rpm.release.version" />
+    </propertyfile>
+  </target>
 
-  <target name="ready-to-rpm" depends="prepare-binary-rpm"/>
+  <target name="ready-to-rpm" depends="prepare-rpm-build-file"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
 
