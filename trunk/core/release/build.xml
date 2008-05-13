@@ -295,8 +295,6 @@
 
     <newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
 
-    <newdir name="build.rpm.metadata.dir"
-        location="${build.rpm.dir}/metadata"/>
     <newdir name="rpm.image.dir"
         location="${build.rpm.dir}/rpm"/>
     <newdir name="rpm.SOURCES"
@@ -382,16 +380,8 @@
     </echo>
   </target>
 
-  <!--This prepares a custom build.xml file ready for signing and RPM
-    creation -->
-  <target name="prepare-rpm-build-file" depends="prepare-binary-rpm">
-    <copy todir="${build.rpm.dir}" file="scripts/ant/rpmbuild.xml" />
-    <propertyfile file="${build.rpm.dir}/rpmbuild.properties">
-      <entry key="rpm-version" value="rpm.release.version" />
-    </propertyfile>
-  </target>
 
-  <target name="ready-to-rpm" depends="prepare-rpm-build-file"/>
+  <target name="ready-to-rpm" depends="prepare-private-rpm-build-file"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
 
@@ -633,11 +623,6 @@
       <arg value="var"/>
       <arg value="usr"/>
     </exec>
-    <!--
-       <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
-         <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
-       </sf-tar>
-    -->
     <!-- now we have a sanity check -->
     <loadresource property="homepage">
       <tarentry archive="${smartfrog.rpmfiles.tar}"
@@ -701,7 +686,61 @@
       </fileset>
     </tar>
     <gzip destfile="${rpms.signed.tar.gz}" src="${rpms.signed.tar}"/>
+  </target>
 
+
+  <target name="ready-to-run-private-rpmbuild" depends="ready-to-prepare-binary-rpm,prepare-private-rpm-build-file" >
+
+  </target>
+
+  <!--this is not currently how we release artifacts, but it is a way we allow
+  third parties to issue their own JAR files, containing their own signed JARs-->
+  <target name="run-private-rpmbuild" depends="ready-to-run-private-rpmbuild"
+    description="run a private RPM build for third party signing">
+    <ant antfile="${build.rpm.dir}/build.xml"
+      inheritAll="false"/>
+  </target>
+
+
+  <!--This prepares a custom build.xml file ready for signing and RPM
+ creation -->
+  <target name="prepare-private-rpm-build-file" depends="ready-to-prepare-binary-rpm">
+    <copy todir="${build.rpm.dir}" file="src/ant/build.xml" />
+    <!--propagate state down through a series of files-->
+    <copy file="${rpm.metadata.dir}/rpm.properties" todir="${build.rpm.dir}"/>
+    <propertyfile file="${build.rpm.dir}/rpmbuild.properties">
+      <entry key="rpm.release.version" value="${rpm.release.version}"/>
+      <entry key="rpm-version" value="${rpm.release.version}"/>
+      <entry key="smartfrog.version" value="${smartfrog.version}"/>
+    </propertyfile>
+  </target>
+
+  <target name="package-private-rpm" depends="ready-to-run-private-rpmbuild" >
+    <property name="private-rpm-package.tar"
+      location="${release.dir}/private-rpm-package.tar"/>
+    <property name="private-rpm-package.tar.gz"
+      location="${private-rpm-package.tar}.gz"/>
+    <exec executable="tar" failonerror="true"
+      dir="${build.rpm.dir}/">
+      <arg value="cvvf"/>
+      <arg file="${private-rpm-package.tar}"/>
+      <arg value="root"/>
+      <arg value="rpm"/>
+      <arg value="rpmbuild.properties"/>
+      <arg value="rpm.properties"/>
+      <arg value="build.xml"/>
+    </exec>
+    <!-- now we have a sanity check -->
+    <loadresource property="rpmbuildfile">
+      <tarentry archive="${private-rpm-package.tar}"
+        name="build.xml"/>
+    </loadresource>
+    <loadresource property="smartfrog-file">
+      <tarentry archive="${private-rpm-package.tar}"
+        name="root/etc/sysconfig/smartfrog"/>
+    </loadresource>
+    <gzip src="${private-rpm-package.tar}"
+      destfile="${private-rpm-package.tar.gz}"/>
   </target>
 
 
@@ -787,6 +826,7 @@
         <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-scripting/${smartfrog.version}/*"/>
         <include name="sf-ssh/${smartfrog.version}/*"/>
+        <include name="sf-velocity/${smartfrog.version}/*"/>
         <include name="sf-xml/${smartfrog.version}/*"/>
         <!--testing-->
         <include name="sf-xunit/${smartfrog.version}/*"/>

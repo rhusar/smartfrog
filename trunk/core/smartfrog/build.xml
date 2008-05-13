@@ -23,7 +23,7 @@
     It requires
       -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 2.0alpha2 or later from apache.org
+      -Ivy 2.0 beta 2 or later from ant.apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
