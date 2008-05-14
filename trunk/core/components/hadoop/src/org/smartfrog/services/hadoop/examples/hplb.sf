@@ -37,7 +37,7 @@ HplbCluster extends HadoopCluster {
   filesystem ("hdfs://" ++ namenode);
   trackerUrl ("http:" ++ jobTracker ++ ":" ++ trackerWebPort ++ "/");
   nameUrl ("http:" ++ jobTracker ++ ":" ++ nameWebPort ++ "/");
-  tmpDir "/home/hadoop/tmp/hadoop-hadoop";
+  hadoop.tmp.dir "/home/hadoop/tmp/hadoop-hadoop";
   user "hadoop";
   group "supergroup";
   usergroup (user ++ "," ++ group);
@@ -49,7 +49,10 @@ HplbCluster extends HadoopCluster {
 HplbJob extends Job {
   fs.default.name HplbCluster:filesystem;
   mapred.job.tracker HplbCluster:jobTracker;
-  hadoop.tmp.dir HplbCluster:tmpDir;
+  hadoop.tmp.dir HplbCluster:hadoop.tmp.dir;
+
+  //mapred.system.dir "/tmp/hadoop/mapred/system";
+
   mapred.child.java.opts "-Xmx512m -d64 -server";
   mapred.tasktracker.map.tasks.maximum 5;
   mapred.tasktracker.reduce.tasks.maximum 1;
