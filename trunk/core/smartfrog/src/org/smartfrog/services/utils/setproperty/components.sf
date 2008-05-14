@@ -22,6 +22,12 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
 
 
+/**
+ * see also the propertyfilef component ,
+ * /org/smartfrog/services/os/java/propertyfile.sf
+ * This will read in a property file
+ */
+
 SetPropertySchema extends Schema {
    name extends String {description "java system property name";}
    value extends Compulsory {description "java system property value";}
