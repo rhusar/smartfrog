@@ -77,13 +77,21 @@ public abstract class LifecycleEvent implements Serializable {
     protected LifecycleEvent(Prim component, TerminationRecord status) {
         timestamp = System.currentTimeMillis();
         this.component = component;
+        extractComponentName(component);
+        this.status = status;
+    }
+
+    /**
+     * Extract the component name from a component
+     * @param component the component, may be null
+     */
+    protected void extractComponentName(Prim component) {
         if (component!=null && componentName != null) {
             Reference reference = new ComponentHelper(component).completeNameOrNull();
             componentName = reference != null ? reference.toString() : UNKNOWN_COMPONENT;
         } else {
             componentName = UNKNOWN_COMPONENT;
         }
-        this.status = status;
     }
 
     /**
@@ -152,7 +160,7 @@ public abstract class LifecycleEvent implements Serializable {
         buf.append(Boolean.valueOf(isAlive()));
         if(getStatus()!=null) {
             buf.append("\nstatus: \n");
-            buf.append(getStatus());
+            buf.append(getStatus().toString());
         }
         return buf.toString();
     }
