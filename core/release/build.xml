@@ -381,7 +381,7 @@
   </target>
 
 
-  <target name="ready-to-rpm" depends="prepare-private-rpm-build-file"/>
+  <target name="ready-to-rpm" depends="prepare-private-rpm-build-file,prepare-binary-rpm"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
 
