@@ -17,38 +17,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+#include "/org/smartfrog/services/hadoop/test/system/hplb/components.sf"
 
-/*
- * the comments come from the Apache source
- */
-
-
-
-/**
- * A component that takes a job and submits it.
- */
-JobSubmitter extends JobTrackingWorkflowComponent  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
-
-
-  job TBD;
-  /**
-  terminate on shutdown
-  */
-  terminateJob false;
-  /**
-   ping the job on liveness by checking its status
-   */
-  pingJob true;
-
-  /**
-   only relevant when pingJob==true ; should we terminate when the job has finished?
-   */
-  terminateWhenJobFinishes false;
-
-  /**
-   * should we delete the output directory on startup?
-   */
-  deleteOutputDirOnStartup true;
+sfConfig extends testWordnetJob {
 
 }

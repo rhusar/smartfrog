@@ -24,6 +24,8 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -45,9 +47,13 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     private boolean terminateJob;
     private boolean terminateWhenJobFinishes;
     private boolean pingJob;
+    private boolean deleteOutputDirOnStartup;
     private Job job;
     private TaskCompletionEventLogger events;
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
+    private Prim jobPrim;
+    private String jobURL;
+    private String jobID;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -60,9 +66,10 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim jobPrim = sfResolve(ATTR_JOB, (Prim) null, true);
+        jobPrim = sfResolve(ATTR_JOB, (Prim) null, true);
         job = (Job) jobPrim;
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
+        deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATEWHENJOBFINISHES, true, true);
@@ -74,33 +81,50 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             conf.setJar(filePath);
         }
 
-        validateOrResolve("mapred.input.dir", "input.dir");
-        validateOrResolve("mapred.output.dir", "output.dir");
-        validateOrResolve("mapred.working.dir", "working.dir");
-        validateOrResolve("mapred.local.dir", "local.dir");
+        validateOrResolve(ConfigurationAttributes.MAPRED_INPUT_DIR, Job.ATTR_INPUT_DIR);
+        String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, Job.ATTR_OUTPUT_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, Job.ATTR_WORKING_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, Job.ATTR_LOCAL_DIR);
+
+        if (deleteOutputDirOnStartup) {
+            DfsUtils.deleteDFSDirectory(conf, outputDir);
+        }
+
         String jobTracker = jobPrim.sfResolve(MAPRED_JOB_TRACKER, "", true);
         try {
+            //TODO: move this to a separate thread
             sfLog().info("Submitting to " + jobTracker);
-            runningJob = JobClient.runJob(conf);
+            JobClient jc = new JobClient(conf);
+            runningJob = jc.submitJob(conf);
+
+            //JobClient.runJob(conf);
+            jobID = runningJob.getJobID();
+            sfReplaceAttribute(ATTR_JOBID, jobID);
+            jobURL = runningJob.getTrackingURL();
+            sfReplaceAttribute(ATTR_JOBURL, jobURL);
+            sfLog().info("Job ID: "+ jobID +" URL: "+jobURL);
         } catch (IOException e) {
             throw SmartFrogLifecycleException.forward(ERROR_FAILED_TO_START_JOB + jobTracker, e, this);
         }
-        sfReplaceAttribute(ATTR_JOBID, runningJob.getJobID());
         //set up to log events
         events = new TaskCompletionEventLogger(runningJob, sfLog());
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Submitted job to "+jobTracker,null, null);
+        new ComponentHelper(this)
+                .sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Submitted job "+jobID+" and URL "+jobURL , null, null);
     }
 
 
     String validateOrResolve(String hadoopAttr, String sourceAttr) throws SmartFrogRuntimeException, RemoteException {
-        String directory = sfResolve(hadoopAttr, "", false);
+        String directory = jobPrim.sfResolve(hadoopAttr, "", false);
         if (directory == null) {
             //resolve the directory attribute instead
-            directory = FileSystem.lookupAbsolutePath(this, sourceAttr, null, null, true, null);
+            directory = FileSystem.lookupAbsolutePath(jobPrim, sourceAttr, null, null, true, null);
             //set it
             sfReplaceAttribute(hadoopAttr, directory);
         }
-        //now validate the directory?
+        //now validate the directory
+        if (directory.length() == 0) {
+            throw new SmartFrogRuntimeException("Empty directory attribute: " + hadoopAttr);
+        }
         return directory;
     }
 
@@ -131,8 +155,9 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     }
 
     /**
-     * Pings by polling for (and logging) remote events, triggering termination if the job has finished
-     * Failure to pull for a running job is an error; failure for liveness events is treated less seriously
+     * Pings by polling for (and logging) remote events, triggering termination if the job has finished Failure to pull
+     * for a running job is an error; failure for liveness events is treated less seriously
+     *
      * @param source source of ping
      * @throws SmartFrogLivenessException liveness failed
      */

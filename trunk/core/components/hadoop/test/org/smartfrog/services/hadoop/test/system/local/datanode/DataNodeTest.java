@@ -19,21 +19,21 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
+package org.smartfrog.services.hadoop.test.system.local.datanode;
 
-
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * Test the local name node
+ *
  */
-testLocalDataNode extends ExpectDeploy {
-  description "bring up a data node";
+public class DataNodeTest extends DeployingTestBase {
+    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
 
-  action extends LocalDataNodeCompound {
-  }
+    public DataNodeTest(String name) {
+        super(name);
+    }
 
-  tests extends Sequence {
-    //TODO: some tests
-  }
-
+    public void testLocalDataNode() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalDataNode");
+    }
 }

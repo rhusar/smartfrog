@@ -27,6 +27,7 @@ IsHPLBEnabled extends IsPropertyTrue {
 
 HPLBJobSubmitter extends JobSubmitter {
   terminateJob true;
+  terminateWhenJobFinishes true;
   sfShouldTerminate true;
 }
 
@@ -39,11 +40,27 @@ Status extends HplbClusterStatus {
 /**
  * this job has no jar file; it is not needed
  */
-SimpleJob extends HplbJob  {
+HplbJobNoJAR extends HplbJob  {
   fileRequired false;
+}
+
+/**
+ * this job has no jar file; it is not needed
+ */
+SimpleJob extends HplbJobNoJAR  {
+  name "dbpedia";
   mapred.input.dir "/datasets/dbpedia";
-  mapred.output.dir "/playground/dbpedia/simpleJob";
+  mapred.output.dir "/playground/dbpedia";
   //mapred.working.dir 
+}
+
+/**
+  wordnet identity Job
+ */
+WordnetJob extends HplbJobNoJAR  {
+  name "wordnet";
+  mapred.input.dir "/datasets/wordnet";
+  mapred.output.dir "/playground/wordnet";
 }
 
 SubmissionCompound extends Compound {
@@ -51,6 +68,7 @@ SubmissionCompound extends Compound {
   submitter extends HPLBJobSubmitter {
     job LAZY PARENT:job;
     sfShouldTerminate true;
+    //deleteOutputDirOnStartup true;
   }
 }
 
@@ -69,7 +87,11 @@ ExpectDeployFailureHPLB extends ExpectDeployFailure {
   condition IsHPLBEnabled;
 }
 
-testJobSubmission extends ExpectDeployFailureHPLB {
+testJobSubmission extends ExpectDeployHPLB {
+  action extends SubmissionCompound ;
+}
+
+testJobSubmissionBroken extends ExpectDeployFailureHPLB {
   action extends SubmissionCompound ;
   exitText "Failed to submit job";
   exceptions [
@@ -77,6 +99,11 @@ testJobSubmission extends ExpectDeployFailureHPLB {
   ["java.io.IOException","Job failed!"]
   ];
 }
+
+testWordnetJob extends ExpectDeployHPLB {
+  action extends WordnetJob ;
+}
+
 
 testClusterLive extends ExpectTerminateHPLB {
   exitText "status checked";

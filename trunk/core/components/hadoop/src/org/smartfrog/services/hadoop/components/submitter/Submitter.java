@@ -37,6 +37,7 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster {
     String ATTR_TERMINATEJOB = "terminateJob";
 
     String ATTR_JOBID = "jobID";
+    String ATTR_JOBURL = "jobURL";
 
     /**
      ping the job on liveness by checking its status
@@ -47,4 +48,11 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster {
      only relevant when pingJob==true ; should we terminate when the job has finished?
      */
     String ATTR_TERMINATEWHENJOBFINISHES = "terminateWhenJobFinishes";
+
+    /**
+     * should we delete the output directory on startup?
+     */
+
+    String ATTR_DELETE_OUTPUT_DIR_ON_STARTUP = "deleteOutputDirOnStartup";
+
 }

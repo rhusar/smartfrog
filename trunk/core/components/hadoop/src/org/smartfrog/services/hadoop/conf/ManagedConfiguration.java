@@ -220,7 +220,6 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
     /**
      * Add a configuration resource.
      *
-     *
      * @param url url of the resource to be added, the local filesystem is examined directly to find the resource,
      *            without referring to the classpath.
      * @throws SFHadoopRuntimeException always
@@ -360,7 +359,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
      */
     @Override
     public String toString() {
-        StringBuilder builder=new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         builder.append("SmartFrog Managed Configuration bound to ");
         builder.append(helper.completeNameSafe().toString());
         return builder.toString();
@@ -368,14 +367,15 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
 
     /**
      * Dump our state to a string; triggers a full resolution.
+     *
      * @return a complete dump of name "value"; pairs, in order
      * @throws SmartFrogResolutionException problems resolving attributes
-     * @throws RemoteException network trouble
+     * @throws RemoteException              network trouble
      */
     public String dump() throws SmartFrogResolutionException, RemoteException {
         StringBuilder builder = new StringBuilder();
-        SortedMap<String, String> map=getState();
-        for(String key:map.keySet()) {
+        SortedMap<String, String> map = getState();
+        for (String key : map.keySet()) {
             builder.append(key);
             builder.append(" \"");
             builder.append(map.get(key));
@@ -386,13 +386,14 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
 
     /**
      * dump quietly; exceptions are turned into strings
+     *
      * @returnn the dump of name value pairs or an error message
      */
     public String dumpQuietly() {
         try {
             return dump();
         } catch (SmartFrogResolutionException e) {
-            return "("+e.toString()+")";
+            return "(" + e.toString() + ")";
         } catch (RemoteException e) {
             return "(" + e.toString() + ")";
         }
