@@ -21,16 +21,6 @@
 
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
-/**
- * name node tests
- */
-
-
-testJasperOnClasspath extends ExpectTerminate {
- action extends LoadJSP {
-  sfShouldTerminate true;
- }
-}
 
 
 

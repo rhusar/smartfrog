@@ -39,6 +39,7 @@ checkTmpDirSpace extends CheckDiskSpace {
  }
 
 checkTmpDirSpaceBadDir extends checkTmpDirSpace {
+  description "check for disk space with a bad directory in the list";
   directories [LAZY PROPERTY java.io.tmpdir,"/a/directory/that/doesnt/exist"];
 }
 
@@ -50,6 +51,7 @@ testBasicDiskSpace extends ExpectTerminate {
 
 testPetaByte extends ExpectDeployFailure {
 
+  description "Ask for more disk space than a filesystem can currently support (except for very large clusters)";
   exitText CheckDiskSpace:ERROR_NOT_ENOUGH_SPACE;
 
   action extends checkTmpDirSpace {
@@ -61,14 +63,14 @@ testPetaByte extends ExpectDeployFailure {
 
 testBasicDiskSpaceMissingDir extends ExpectDeployFailure {
 
-  exitText CheckDiskSpace:ERROR_NO_DIRECTORY;
   description "look for a missing dir";
+  exitText CheckDiskSpace:ERROR_NO_DIRECTORY;
   action checkTmpDirSpaceBadDir;
 }
 
 testBasicDiskSpaceSkipMissingDir extends ExpectTerminate {
 
-  description "look for a missing dir";
+  description "look for a missing dir but skip missing directories";
   action extends checkTmpDirSpaceBadDir {
     skipAbsentDirectories true;
   }

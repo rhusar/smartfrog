@@ -19,21 +19,10 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
-
+#include "/org/smartfrog/services/hadoop/test/system/local/datanode/components.sf"
 
 
 /**
- * Test the local name node
+ * Test case
  */
-testLocalDataNode extends ExpectDeploy {
-  description "bring up a data node";
-
-  action extends LocalDataNodeCompound {
-  }
-
-  tests extends Sequence {
-    //TODO: some tests
-  }
-
-}
+sfConfig testLocalDataNode ;

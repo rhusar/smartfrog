@@ -24,6 +24,8 @@
 
 LocalHadoopCompound extends Compound {
   fs.default.name "hdfs://localhost:8020/";
+  nameNodeURL  "http://localhost:8021";
+  dataNodeURL  "http://localhost:8022";
 
   logDir extends TempDirWithCleanup {
 
@@ -47,8 +49,22 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     nameDirectories [LAZY nameDir];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup ACTION_FORMAT;
-    dfs.http.address "http://localhost:8021";
+    dfs.http.address nameNodeURL;
     dfs.permissions false;
+  }
+}
+
+LocalDataNodeCompound extends LocalNameNodeCompound {
+
+  localDataDir extends TempDirWithCleanup {
+
+  }
+  
+  LocalDataNode extends DataNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
   }
 }
 

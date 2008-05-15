@@ -43,14 +43,14 @@ DataNode extends FileSystemNode {
   //set to -1 to turn off
   dfs.datanode.scan.period.hours 0;
 
-  dfs.datanode.bindAddress TBD;
-  dfs.datanode.port TBD;
+  //dfs.datanode.bindAddress TBD;
+  //dfs.datanode.port TBD;
   dfs.datanode.address TBD;
-  dfs.datanode.info.bindAddress TBD;
-  dfs.datanode.info.port TBD;
-  dfs.datanode.http.address TBD;
+  //dfs.datanode.info.bindAddress TBD;
+  //dfs.datanode.info.port TBD;
+  //dfs.datanode.http.address TBD;
   DEFAULT_RACK "/default-rack";
-  dfs.datanode.rack NULL;
+  dfs.datanode.rack DEFAULT_RACK;
 
   //script to exec to determine the rack location
   dfs.network.script NULL;
@@ -64,7 +64,7 @@ DataNode extends FileSystemNode {
 
   dfs.max.objects 0;
 
-  dfs.datanode.startup REGULAR;
+  dfs.datanode.startup ACTION_REGULAR;
 
   io.bytes.per.checksum 512;
   io.file.buffer.size 4096;

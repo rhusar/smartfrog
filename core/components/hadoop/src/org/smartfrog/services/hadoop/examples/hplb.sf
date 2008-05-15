@@ -47,6 +47,7 @@ HplbCluster extends HadoopCluster {
 
 
 HplbJob extends Job {
+  name TBD;
   fs.default.name HplbCluster:filesystem;
   mapred.job.tracker HplbCluster:jobTracker;
   hadoop.tmp.dir HplbCluster:hadoop.tmp.dir;
@@ -56,6 +57,8 @@ HplbJob extends Job {
   mapred.child.java.opts "-Xmx512m -d64 -server";
   mapred.tasktracker.map.tasks.maximum 5;
   mapred.tasktracker.reduce.tasks.maximum 1;
+  mapred.working.dir (hadoop.tmp.dir ++ "/" ++ name ++ "/working");
+  mapred.local.dir (hadoop.tmp.dir ++ "/" ++ name ++ "local");
   hadoop.job.ugi HplbCluster:usergroup;
 }
 
@@ -64,3 +67,4 @@ HplbClusterStatus extends ClusterStatus {
   mapred.job.tracker HplbCluster:jobTracker;
   hadoop.job.ugi HplbCluster:usergroup;
 }
+

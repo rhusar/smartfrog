@@ -17,38 +17,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.core.proposed;
 
-/*
- * the comments come from the Apache source
- */
-
-
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
- * A component that takes a job and submits it.
+ * A source of (key,value) pairs
  */
-JobSubmitter extends JobTrackingWorkflowComponent  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 
 
-  job TBD;
-  /**
-  terminate on shutdown
-  */
-  terminateJob false;
-  /**
-   ping the job on liveness by checking its status
-   */
-  pingJob true;
+public interface ConfigurationSource extends Iterable<String>{
 
-  /**
-   only relevant when pingJob==true ; should we terminate when the job has finished?
-   */
-  terminateWhenJobFinishes false;
+    /**
+     * Get a key
+     * @param key the key to look up
+     * @return the value or null
+     * @throws IOException for any failure to look up the key, other than it not being there.
+     */
+    String get(String key) throws IOException;
 
-  /**
-   * should we delete the output directory on startup?
-   */
-  deleteOutputDirOnStartup true;
+    /**
+     * Create a new configuration source from this one.
+     * @return a new source
+     */
+    ConfigurationSource copy();
+
+    /**
+     * Get an iterator over all the keys.
+     * This iterator should be robust against changes in the source.
+     * @return the iterator
+     */
+    Iterator<String> iterator();
 
 }

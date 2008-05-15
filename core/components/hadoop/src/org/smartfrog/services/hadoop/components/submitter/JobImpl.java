@@ -43,7 +43,7 @@ public class JobImpl extends FileUsingComponentImpl implements Job {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        boolean fileRequired=sfResolve(ATTR_FILEREQUIRED,true,true);
+        boolean fileRequired=sfResolve(ATTR_FILE_REQUIRED,true,true);
         //bind the file
         if(fileRequired) {
             bind(true, null);

@@ -148,30 +148,30 @@ HadoopConfiguration extends Prim {
   should store its blocks before it sends them to the datanode.
   */
 
-  dfs.data.dir  (hadoop.tmp.dir ++ "/dfs/data");
   /**Determines where on the local filesystem an DFS data node
   should store its blocks.  If this is a comma-delimited
   list of directories, then data will be stored in all named
   directories, typically on different devices.
   Directories that do not exist are ignored.
   */
+  dfs.data.dir  (hadoop.tmp.dir ++ "/dfs/data");
 
-  dfs.replication  3;
   /**Default block replication.
   The actual number of replications can be specified when the file is created.
   The default is used if replication is not specified in create time.
   */
+  dfs.replication  3;
 
-  dfs.replication.max  512;
   /**Maximal block replication.
   */
+  dfs.replication.max  512;
 
-  dfs.replication.min  1;
   /**Minimal block replication.
   */
+  dfs.replication.min  1;
 
-  dfs.block.size  67108864;
   /**The default block size for new files.*/
+  dfs.block.size  (65536 * 1024);
 
   dfs.df.interval  60000;
   /**Disk usage statistics refresh interval in msec.*/
@@ -260,17 +260,17 @@ HadoopConfiguration extends Prim {
   */
   fs.trash.interval  0;
 
-  fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";
   /**The FileSystem for file: uris.*/
+  fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";
 
-  fs.hdfs.impl  "org.apache.hadoop.dfs.DistributedFileSystem";
   /**The FileSystem for hdfs: uris.*/
+  fs.hdfs.impl  "org.apache.hadoop.dfs.DistributedFileSystem";
 
-  fs.s3.impl  "org.apache.hadoop.fs.s3.S3FileSystem";
   /**The FileSystem for s3: uris.*/
+  fs.s3.impl  "org.apache.hadoop.fs.s3.S3FileSystem";
 
-  fs.kfs.impl  "org.apache.hadoop.fs.kfs.KosmosFileSystem";
   /**The FileSystem for kfs: uris.*/
+  fs.kfs.impl  "org.apache.hadoop.fs.kfs.KosmosFileSystem";
 
   fs.hftp.impl  "org.apache.hadoop.dfs.HftpFileSystem";
 
@@ -278,10 +278,10 @@ HadoopConfiguration extends Prim {
   fs.ramfs.impl  "org.apache.hadoop.fs.InMemoryFileSystem";
 
 
-  fs.checkpoint.dir  "${hadoop.tmp.dir}/dfs/namesecondary";
   /**Determines where on the local filesystem the DFS secondary
       name node should store the temporary images and edits to merge.
   */
+  fs.checkpoint.dir  "${hadoop.tmp.dir}/dfs/namesecondary";
 
   /**The number of seconds between two periodic checkpoints.
   */
@@ -498,6 +498,15 @@ HadoopConfiguration extends Prim {
   ipc.client.tcpnodelay  false;
 
 
+
+  /**The filter for controlling the output of the task's userlogs sent
+             to the console of the JobClient.
+             The permissible options are: NONE, KILLED, FAILED, SUCCEEDED and
+             ALL.
+  */
+  jobclient.output.filter  "FAILED";
+
+
   /* =============================================================== */
 /* Job Notification Configuration */
 
@@ -534,31 +543,8 @@ HadoopConfiguration extends Prim {
   /* =============================================================== */
   /* map/reduce properties */
 
-  mapred.job.tracker  "local";
-  /**
-  The host and port that the MapReduce job tracker runs
-  at.  If "local", then jobs are run in-process as a single map
-  and reduce task.
-  */
 
-  /**
-  The job tracker http server address and port the server will listen on.
-  If the port is 0 then the server will start on a free port.
-  */
-  mapred.job.tracker.http.address  "0.0.0.0:50030";
-
-  /**
-  The number of server threads for the JobTracker. This should be roughly
-  4% of the number of tasktracker nodes.
-  */
-  mapred.job.tracker.handler.count  10;
-
-  /**
-  The interface and port that task tracker server listens on.
-  Since it is only connected to by the tasks, it uses the local interface.
-  EXPERT ONLY. Should only be changed if your host does not have the loopback
-  interface.*/
-  mapred.task.tracker.report.address  "127.0.0.1:0";
+ 
 
   /**
   The local directory where MapReduce stores intermediate
@@ -579,92 +565,6 @@ HadoopConfiguration extends Prim {
   */
   mapred.temp.dir  (hadoop.tmp.dir ++ "/mapred/temp");
 
-  /**
-  If the space in mapred.local.dir drops under this,
-  do not ask for more tasks.
-  Value in bytes.
-  */
-  mapred.local.dir.minspacestart  0;
-
-  /**
-  If the space in mapred.local.dir drops under this,
-  do not ask more tasks until all the current ones have finished and
-  cleaned up. Also, to save the rest of the tasks we have running,
-  kill one of them, to clean up some space. Start with the reduce tasks,
-  then go with the ones that have finished the least.
-  Value in bytes.
-  */
-  mapred.local.dir.minspacekill  0;
-
-  /**
-  Expert: The time-interval, in miliseconds, after which
-  a tasktracker is declared 'lost' if it doesn't send heartbeats.
-  */
-  mapred.tasktracker.expiry.interval  (600 * 1000);
-
-  /**
-  The default number of map tasks per job.  Typically set
-  to a prime several times greater than number of available hosts.
-  Ignored when mapred.job.tracker is "local".
-  */
-  mapred.map.tasks  2;
-
-  /**
-  The default number of reduce tasks per job.  Typically set
-  to a prime close to the number of available hosts.  Ignored when
-  mapred.job.tracker is "local".
-  */
-  mapred.reduce.tasks  1;
-
-  /**
-  Expert: The maximum number of attempts per map task.
-  In other words, framework will try to execute a map task these many number
-  of times before giving up on it.
-  */
-  mapred.map.max.attempts  4;
-
-  /**
-  Expert: The maximum number of attempts per reduce task.
-  In other words, framework will try to execute a reduce task these many number
-  of times before giving up on it.
-  */
-  mapred.reduce.max.attempts  4;
-
-  /**
-  The default number of parallel transfers run by reduce
-  during the copy(shuffle) phase.
-  */
-  mapred.reduce.parallel.copies  5;
-
-  /**
-  The maximum amount of time (in seconds) a reducer spends on
-  fetching one map output before declaring it as failed.
-  */
-  mapred.reduce.copy.backoff  (5 * 60);
-
-  /**
-  The number of milliseconds before a task will be
-  terminated if it neither reads an input, writes an output, nor
-  updates its status string.
-  */
-  mapred.task.timeout  (600*1000);
-
-  /**
-  The maximum number of map tasks that will be run
-  simultaneously by a task tracker.
-  */
-  mapred.tasktracker.map.tasks.maximum  2;
-
-  /**
-  The maximum number of reduce tasks that will be run
-  simultaneously by a task tracker.
-  */
-  mapred.tasktracker.reduce.tasks.maximum  2;
-
-  /**
-  The maximum number of complete jobs per user to keep around before delegating them to the job history.
-  */
-  mapred.jobtracker.completeuserjobs.maximum  100;
 
   /**
   Java opts for the task tracker child processes.
@@ -686,6 +586,18 @@ HadoopConfiguration extends Prim {
   */
   mapred.child.tmp  "./tmp";
 
+
+  /**Names a file that contains the list of nodes that may
+  connect to the jobtracker.  If the value is empty, all hosts are
+  permitted.*/
+  mapred.hosts  "";
+
+  /**Names a file that contains the list of hosts that
+  should be excluded by the jobtracker.  If the value is empty, no
+  hosts are excluded.*/
+  mapred.hosts.exclude  "";
+
+
   /**
   The threshold, in terms of the number of files
   for the in-memory merge process. When we accumulate threshold number of files
@@ -696,10 +608,104 @@ HadoopConfiguration extends Prim {
   mapred.inmem.merge.threshold  1000;
 
 
+
   /**
-  If true, then multiple instances of some reduce tasks
-  may be executed in parallel.*/
-  mapred.reduce.tasks.speculative.execution  true;
+  The host and port that the MapReduce job tracker runs
+  at.  If "local", then jobs are run in-process as a single map
+  and reduce task.
+  */
+  mapred.job.tracker  "local";
+
+  /**
+  The maximum number of complete jobs per user to keep around before delegating them to the job history.
+  */
+  mapred.jobtracker.completeuserjobs.maximum  100;
+  /**
+  The number of server threads for the JobTracker. This should be roughly
+  4% of the number of tasktracker nodes.
+  */
+  mapred.job.tracker.handler.count  10;
+  /**
+  The job tracker http server address and port the server will listen on.
+  If the port is 0 then the server will start on a free port.
+  */
+  mapred.job.tracker.http.address  "0.0.0.0:50030";
+
+
+  /**Indicates if persistency of job status information is
+  active or not.
+  */
+  mapred.job.tracker.persist.jobstatus.active    false;
+
+  /**The number of hours job status information is persisted in DFS.
+  The job status information will be available after it drops of the memory
+  queue and between jobtracker restarts. With a zero value the job status
+  information is not persisted at all in DFS.
+  */
+  mapred.job.tracker.persist.jobstatus.hours  0;
+
+  /**The directory where the job status information is persisted
+  in a file system to be available after it drops of the memory queue and
+  between jobtracker restarts.
+  */
+  //mapred.job.tracker.persist.jobstatus.dir    "/jobtracker/jobsInfo";
+
+
+
+ /**
+  If the space in mapred.local.dir drops under this,
+  do not ask for more tasks.
+  Value in bytes.
+  */
+  mapred.local.dir.minspacestart  0;
+
+  /**
+  If the space in mapred.local.dir drops under this,
+  do not ask more tasks until all the current ones have finished and
+  cleaned up. Also, to save the rest of the tasks we have running,
+  kill one of them, to clean up some space. Start with the reduce tasks,
+  then go with the ones that have finished the least.
+  Value in bytes.
+  */
+  mapred.local.dir.minspacekill  0;
+
+  /**
+  The default number of map tasks per job.  Typically set
+  to a prime several times greater than number of available hosts.
+  Ignored when mapred.job.tracker is "local".
+  */
+  mapred.map.tasks  2;
+
+  /**
+  Expert: The maximum number of attempts per map task.
+  In other words, framework will try to execute a map task these many number
+  of times before giving up on it.
+  */
+  mapred.map.max.attempts  4;
+
+
+  /**
+  Should the outputs of the maps be compressed before being
+  sent across the network. Uses SequenceFile compression.
+  */
+  mapred.compress.map.output  false;
+
+  /**
+  If the map outputs are to compressed, how should they
+  be compressed? Should be one of NONE, RECORD or BLOCK.
+  */
+  mapred.map.output.compression.type  COMPRESSION_RECORD;
+
+  /**If the map outputs are compressed, how should they be
+             compressed?
+  */
+  mapred.map.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
+
+  /**
+  The number of task-failures on a tasktracker of a given job
+  after which new tasks of that job aren't assigned to it.
+  */
+  mapred.max.tracker.failures  4;
 
   /**
   The minimum size chunk that map input should be split
@@ -709,10 +715,91 @@ HadoopConfiguration extends Prim {
   mapred.min.split.size  0;
 
   /**
+  Should the job outputs be compressed?
+  */
+  mapred.output.compress  false;
+
+
+  /**
+  If the job outputs are to compressed as SequenceFiles, how should
+  they be compressed? Should be one of NONE, RECORD or BLOCK.
+  */
+  mapred.output.compression.type  COMPRESSION_RECORD;
+
+  /**
+  If the job outputs are compressed, how should they be compressed?
+  */
+  mapred.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
+
+
+ /**
+  The maximum amount of time (in seconds) a reducer spends on
+  fetching one map output before declaring it as failed.
+  */
+  mapred.reduce.copy.backoff  (5 * 60);
+
+  /**
+  Expert: The maximum number of attempts per reduce task.
+  In other words, framework will try to execute a reduce task these many number
+  of times before giving up on it.
+  */
+  mapred.reduce.max.attempts  4;
+
+  /**
+  The default number of parallel transfers run by reduce
+  during the copy(shuffle) phase.
+  */
+  mapred.reduce.parallel.copies  5;
+
+  /**
+  The default number of reduce tasks per job.  Typically set
+  to a prime close to the number of available hosts.  Ignored when
+  mapred.job.tracker is "local".
+  */
+  mapred.reduce.tasks  1;
+
+
+  /**
+  If true, then multiple instances of some reduce tasks
+  may be executed in parallel.*/
+  mapred.reduce.tasks.speculative.execution  true;
+
+
+  /**
+  The default sort class for sorting keys.
+  */
+  map.sort.class  "org.apache.hadoop.mapred.MergeSorter";
+
+  /**
   The replication level for submitted job files.  This
   should be around the square root of the number of nodes.
   */
   mapred.submit.replication 10;
+
+
+  /**To set whether the system should collect profiler
+  information for some of the tasks in this job? The information is stored
+  in the the user log directory. The value is true if task profiling
+  is enabled.*/
+  mapred.task.profile    false;
+
+  /** To set the ranges of map tasks to profile.
+  mapred.task.profile has to be set to true for the value to be accounted.
+  */
+  mapred.task.profile.maps    "0-2";
+
+  /** To set the ranges of reduce tasks to profile.
+  mapred.task.profile has to be set to true for the value to be accounted.
+  */
+  mapred.task.profile.reduces    "0-2";
+
+
+  /**
+  The number of milliseconds before a task will be
+  terminated if it neither reads an input, writes an output, nor
+  updates its status string.
+  */
+  mapred.task.timeout  (600*1000);
 
   /**
   The name of the Network Interface from which a task
@@ -727,6 +814,31 @@ HadoopConfiguration extends Prim {
   */
   mapred.tasktracker.dns.nameserver  "default";
 
+  /**
+  Expert: The time-interval, in miliseconds, after which
+  a tasktracker is declared 'lost' if it doesn't send heartbeats.
+  */
+  mapred.tasktracker.expiry.interval  (600 * 1000);
+
+  /**
+  The maximum number of map tasks that will be run
+  simultaneously by a task tracker.
+  */
+  mapred.tasktracker.map.tasks.maximum  2;
+
+  /**
+  The maximum number of reduce tasks that will be run
+  simultaneously by a task tracker.
+  */
+  mapred.tasktracker.reduce.tasks.maximum  2;
+
+ /**
+  The interface and port that task tracker server listens on.
+  Since it is only connected to by the tasks, it uses the local interface.
+  EXPERT ONLY. Should only be changed if your host does not have the loopback
+  interface.*/
+  mapred.task.tracker.report.address  "127.0.0.1:0";
+  
   /**
   The number of worker threads that for the http server. This is
  used for map output fetching
@@ -752,41 +864,6 @@ HadoopConfiguration extends Prim {
   keep.task.files.pattern  ".*_m_123456_0";
   */
 
-  /**
-  Should the job outputs be compressed?
-  */
-  mapred.output.compress  false;
-
-
-  /**If the job outputs are to compressed as SequenceFiles, how should
-             they be compressed? Should be one of NONE, RECORD or BLOCK.
-  */
-  mapred.output.compression.type  COMPRESSION_RECORD;
-
-  /**If the job outputs are compressed, how should they be compressed?
-  */
-  mapred.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
-
-  /**Should the outputs of the maps be compressed before being
-             sent across the network. Uses SequenceFile compression.
-  */
-  mapred.compress.map.output  false;
-
-  /**If the map outputs are to compressed, how should they
-             be compressed? Should be one of NONE, RECORD or BLOCK.
-  */
-  mapred.map.output.compression.type  COMPRESSION_RECORD;
-
-  /**If the map outputs are compressed, how should they be
-             compressed?
-  */
-  mapred.map.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
-
-
-
-  /**The default sort class for sorting keys.
-  */
-  map.sort.class  "org.apache.hadoop.mapred.MergeSorter";
 
   /**The maximum size of user-logs of each task in KB. 0 disables the cap.
   */
@@ -797,61 +874,7 @@ HadoopConfiguration extends Prim {
   */
   mapred.userlog.retain.hours  24;
 
-  /**Names a file that contains the list of nodes that may
-  connect to the jobtracker.  If the value is empty, all hosts are
-  permitted.*/
-  mapred.hosts  "";
 
-  /**Names a file that contains the list of hosts that
-  should be excluded by the jobtracker.  If the value is empty, no
-  hosts are excluded.*/
-  mapred.hosts.exclude  "";
-
-  /**The number of task-failures on a tasktracker of a given job
-             after which new tasks of that job aren't assigned to it.
-  */
-  mapred.max.tracker.failures  4;
-
-  /**The filter for controlling the output of the task's userlogs sent
-             to the console of the JobClient.
-             The permissible options are: NONE, KILLED, FAILED, SUCCEEDED and
-             ALL.
-  */
-  jobclient.output.filter  "FAILED";
-
-  /**Indicates if persistency of job status information is
-  active or not.
-  */
-  mapred.job.tracker.persist.jobstatus.active    false;
-
-  /**The number of hours job status information is persisted in DFS.
-  The job status information will be available after it drops of the memory
-  queue and between jobtracker restarts. With a zero value the job status
-  information is not persisted at all in DFS.
-  */
-  mapred.job.tracker.persist.jobstatus.hours  0;
-
-  /**The directory where the job status information is persisted
-  in a file system to be available after it drops of the memory queue and
-  between jobtracker restarts.
-  */
-  mapred.job.tracker.persist.jobstatus.dir    "/jobtracker/jobsInfo";
-
-  /**To set whether the system should collect profiler
-  information for some of the tasks in this job? The information is stored
-  in the the user log directory. The value is true if task profiling
-  is enabled.*/
-  mapred.task.profile    false;
-
-  /** To set the ranges of map tasks to profile.
-  mapred.task.profile has to be set to true for the value to be accounted.
-  */
-  mapred.task.profile.maps    "0-2";
-
-  /** To set the ranges of reduce tasks to profile.
-  mapred.task.profile has to be set to true for the value to be accounted.
-  */
-  mapred.task.profile.reduces    "0-2";
 
   /* =============================================================== */
 
@@ -1057,11 +1080,6 @@ JobConfiguration extends HadoopConfiguration  {
   mapred.submit.replication 10;
 
   /**
-   * The system directory for Map Reduce work
-   */
-  //mapred.system.dir "/tmp/hadoop/mapred/system";
-
-  /**
    * whether the task profiling is enabled.
    */
   mapred.task.profile false;
@@ -1086,4 +1104,19 @@ JobConfiguration extends HadoopConfiguration  {
     user.name PROPERTY user.name;
     /* job user group info */
     hadoop.job.ugi ((PROPERTY user.name) ++ ", users");
+}
+
+
+/**
+ * Extra configuration from the source
+ */
+JobTrackerConfiguration extends HadoopConfiguration {
+
+ mapred.tasktracker.expiry.interval (10 * 60 * 1000);
+ mapred.jobtracker.retirejob.interval (24 * 60 * 60 * 1000l);
+ mapred.jobtracker.retirejob.check (60 * 1000);
+ mapred.jobtracker.taskalloc.loadbalance.epsilon 0.2f;
+ mapred.jobtracker.taskalloc.capacitypad 0.01f;
+ mapred.jobtracker.completeuserjobs.maximum 100;
+
 }

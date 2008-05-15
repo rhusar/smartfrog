@@ -101,6 +101,8 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
         super.sfPing(source);
         if (datanode != null) {
             //there's no health check here, so no way to see what is going on.
+        } else {
+            throw new SmartFrogLivenessException("No running data node");
         }
     }
 }
