@@ -88,7 +88,7 @@ function updateVmList(inHost) {
                                 // Cell: vmname
                                 var hostNameCell = row.insertCell(1);
                                 hostNameCell.className = "sorted";
-                                hostNameCell.appendChild(document.createTextNode(vms[i].childNodes[0].firstChild.data));
+                                hostNameCell.appendChild(document.createTextNode(vms[i].childNodes[3].firstChild.data));
 
                                 // Cell: Manage
                                 var managementCell = row.insertCell(2);

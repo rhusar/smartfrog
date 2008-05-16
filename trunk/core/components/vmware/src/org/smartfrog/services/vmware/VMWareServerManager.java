@@ -41,7 +41,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 
 public class VMWareServerManager extends PrimImpl implements VMWareServerManagerServices {
@@ -143,6 +146,24 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         public boolean accept(File dir, String name) {
             return name.endsWith(VMX);
         }
+    }
+
+    /**
+     * Converts a powerstate into a readable string.
+     * @param inState The powerstate of a virtual machine.
+     * @return The readable string.
+     */
+    public String convertPowerState(int inState) {
+        return vmComm.convertPowerState(inState);
+    }
+
+    /**
+     * Converts a toolsstate into a readable string.
+     * @param inState The toolsstate of a virtual machine.
+     * @return The readable string.
+     */
+    public String convertToolsState(int inState) {
+        return vmComm.convertToolsState(inState);
     }
 
     /**
@@ -321,6 +342,57 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return strResponse;
     }
 
+    /**
+     * Gets the value of an attribute of a VM.
+     *
+     * @param inVMPath The path to the .vmx file.
+     * @param inKey    The attribute key.
+     * @return The value of the key.
+     * @throws java.rmi.RemoteException
+     */
+    public String getVMAttribute(String inVMPath, String inKey) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                return tmp.getAttribute(inKey);
+            }
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to get attribute of \"" + inVMPath + "\"", e);
+        }
+
+        // an error occurred
+        return "";
+    }
+
+    /**
+     * Sets the value of an attribute of a VM.
+     *
+     * @param inVMPath The path to the .vmx file.
+     * @param inKey    The attribute key.
+     * @param inValue  The value for the key.
+     * @return Returns the old value of the key.
+     * @throws java.rmi.RemoteException
+     */
+    public String setVMAttribute(String inVMPath, String inKey, String inValue) throws RemoteException {
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                return tmp.setAttribute(inKey, inValue);
+            }
+        } catch (SmartFrogException e) {
+            sfLog().error("Failed to rename \"" + inVMPath + "\"", e);
+        }
+
+        // an error occurred
+        return "";
+    }
+
 //    /**
 //     * Copies a file from the host OS into the guest OS of the specified VM.
 //     *
@@ -490,28 +562,66 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
     /**
      * Gets the list of vmware images currently under control of the vmware manager.
-     * @return Returns a new-line-separated list of the paths of the images.
+     * @return The image modules of this machine.
      * @throws RemoteException network problems
-     * @throws SmartFrogException problems with the virtual machines
      */
-    public String getControlledMachines() throws RemoteException, SmartFrogException {
-        return getControlledMachines("\n");
+    public ArrayList<VMWareImageModule> getControlledMachines() throws RemoteException {
+        return vmComm.getImageModuleList();
     }
 
     /**
-     * Gets the list of vmware images currently under control of the vmware manager.
-     * @param inSeparator The separator which should be used.
-     * @return Rrturns a list of the paths of the images separated by inSeparator.
-     * @throws RemoteException network problems
+     * Shuts down the VMWare Server and all running machines as well.
+     * @return "success" or an error message.
      */
-    public String getControlledMachines(String inSeparator) throws RemoteException {
-        String strResult = "";
+    public String shutdownVMWareServerService() throws RemoteException {
+        // error string
+        String strResponse = "success";
 
-        for (VMWareImageModule mod : vmComm.getImageModuleList()) {
-            strResult += mod.getVMPath() + inSeparator;
+        // shutdown the vmware server service, which will automatically shut down all vms
+        try {
+            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                Process ps = Runtime.getRuntime().exec("net.exe stop \"VMware Registration Service\"");
+                try {
+                    ps.waitFor();
+                } catch (InterruptedException e) {
+                    sfLog().error(e);
+                }
+                Runtime.getRuntime().exec("net.exe stop \"VMware Authorization Service\"");
+            } else {
+                Runtime.getRuntime().exec("/etc/init.d/vmware stop");
+            }
+        } catch (IOException e) {
+            sfLog().error("Failed to shut down vmware server", e);
+            strResponse = "Exception while shutting down vmware server: " + e.toString();
         }
 
-        return strResult;
+        return strResponse;
+    }
+
+    /** Starts the vmware server service. */
+    public String startVMWareServerService() throws RemoteException {
+        // error string
+        String strResponse = "success";
+
+        try {
+            // start the vmware server service
+            if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+                Process ps = Runtime.getRuntime().exec("net.exe start \"VMware Authorization Service\"");
+                try {
+                    ps.waitFor();
+                } catch (InterruptedException e) {
+                    sfLog().error(e);
+                }
+                Runtime.getRuntime().exec("net.exe start \"VMware Registration Service\"");
+            } else {
+                Runtime.getRuntime().exec("/etc/init.d/vmware start");
+            }
+        } catch (IOException e) {
+            sfLog().error("Failed to start vmware server", e);
+            strResponse = "Exception while starting vmware server: " + e.toString();
+        }
+
+        return strResponse;
     }
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {
@@ -519,5 +629,12 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 
         // shut down every virtual machine manually to be indepentant of the vmserver service behaviour
         vmComm.disconnect();
+
+        // shut down the vmware server service
+//        try {
+//            shutdownVMWareServerService();
+//        } catch (RemoteException e) {
+//            sfLog().error(e);
+//        }
     }
 }

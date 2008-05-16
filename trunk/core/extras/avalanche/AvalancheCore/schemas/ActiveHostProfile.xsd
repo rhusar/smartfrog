@@ -52,6 +52,7 @@
       <xs:element name="vmPath" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmLastCmd" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmResponse" type="xs:string" minOccurs="1" maxOccurs="1" />
+      <xs:element name="vmName" type="xs:string" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

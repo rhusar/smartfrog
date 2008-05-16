@@ -27,6 +27,7 @@ import org.smartfrog.SFSystem;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 /**
  * Wrapper class for Avalanche server initialization and shutdown. This can be used independently 
@@ -154,12 +155,23 @@ public class ServerSetup {
 
     /**
      * Used by the website to send commands to a host.
-     * @param inTargetMachine
-     * @param inVMPath
-     * @param inCmd
+     * @param inTargetMachine The host of the virtual machine.
+     * @param inVMPath The path to the .vmx file.
+     * @param inCmd The command to execute.
      */
-    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inMasterVM, String inCmd)
+    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd)
     {
+        sendVMCommand(inTargetMachine, inVMPath, inCmd, null);
+    }
+
+    /**
+     * Used by the website to send commands to a host.
+     * @param inTargetMachine The host of the virtual machine.
+     * @param inVMPath The path to the .vmx file.
+     * @param inCmd The command to execute.
+     * @param inAdditionalProperties Additional attributes required for the command.
+     */
+    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd, HashMap<String, String> inAdditionalProperties) {
         XMPPEventExtension ext = new XMPPEventExtension();
 
         try {
@@ -168,11 +180,20 @@ public class ServerSetup {
             ext.setHost("");
         }
         ext.setMessageType(MonitoringConstants.VM_MESSAGE);
+
+        // set the command
         ext.getPropertyBag().put("vmcmd", inCmd);
         if (inVMPath != null)
-            ext.getPropertyBag().put("vmpath", inVMPath);
-        if (inMasterVM != null)
-            ext.getPropertyBag().put("vmmasterpath", inMasterVM);
+
+        // set the path (used like an identifier)
+        ext.getPropertyBag().put("vmpath", inVMPath);
+
+        // add the additional parameters
+        if (inAdditionalProperties != null) {
+            for (String key : inAdditionalProperties.keySet()) {
+                ext.getPropertyBag().put(key, inAdditionalProperties.get(key));
+            }
+        }
 
         try {
             listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, ext);

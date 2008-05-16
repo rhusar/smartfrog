@@ -65,6 +65,7 @@ For more information: www.smartfrog.org
                     XMLHelper.addTextNode(xdoc, subentry, "vmpath", vmt.getVmPath());
                     XMLHelper.addTextNode(xdoc, subentry, "vmcmd", vmt.getVmLastCmd());
                     XMLHelper.addTextNode(xdoc, subentry, "vmresponse", vmt.getVmResponse());
+                    XMLHelper.addTextNode(xdoc, subentry, "vmname", vmt.getVmName());
 
                     entry.appendChild(subentry);
                 }
@@ -94,6 +95,7 @@ For more information: www.smartfrog.org
                         XMLHelper.addTextNode(xdoc, subentry, "vmpath", vmt.getVmPath());
                         XMLHelper.addTextNode(xdoc, subentry, "vmcmd", vmt.getVmLastCmd());
                         XMLHelper.addTextNode(xdoc, subentry, "vmresponse", vmt.getVmResponse());
+                        XMLHelper.addTextNode(xdoc, subentry, "vmname", vmt.getVmName());
 
                         entry.appendChild(subentry);
                     }

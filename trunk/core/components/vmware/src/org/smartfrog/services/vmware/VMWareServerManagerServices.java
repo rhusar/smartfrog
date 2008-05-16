@@ -35,6 +35,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 
 public interface VMWareServerManagerServices extends Remote {
@@ -121,11 +123,25 @@ public interface VMWareServerManagerServices extends Remote {
 
     /**
      * Gets the controlled virtual machines.
-     * @return "success" or an error message
+     * @return The image modules of this machine.
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String getControlledMachines() throws RemoteException, SmartFrogException;
+    public ArrayList<VMWareImageModule> getControlledMachines() throws RemoteException, SmartFrogException;
+
+    /**
+     * Shuts down the VMWare Server and all running machines as well.
+     * @throws RemoteException network problems
+     * @return "success" or an error message
+     */
+    public String shutdownVMWareServerService() throws RemoteException;
+
+    /**
+     * Starts the VMWare Server and all machines in the designated vm folder.
+     * @throws RemoteException network problems
+     * @return "success" or an error message
+     */
+    public String startVMWareServerService() throws RemoteException;
 
     /**
      * Return a list of the vmware images in the master folder.
@@ -163,6 +179,25 @@ public interface VMWareServerManagerServices extends Remote {
      * @throws SmartFrogException problems with the virtual machines
      */
     public String renameVM(String inVMPath, String inNewName) throws RemoteException, SmartFrogException;
+
+    /**
+     * Gets the value of an attribute of a VM.
+     * @param inVMPath The path to the .vmx file.
+     * @param inKey The attribute key.
+     * @return The value of the key.
+     * @throws RemoteException
+     */
+    public String getVMAttribute(String inVMPath, String inKey) throws RemoteException;
+
+    /**
+     * Sets the value of an attribute of a VM.
+     * @param inVMPath The path to the .vmx file.
+     * @param inKey The attribute key.
+     * @param inValue The value for the key.
+     * @return Returns the old value of the key.
+     * @throws RemoteException
+     */
+    public String setVMAttribute(String inVMPath, String inKey, String inValue) throws RemoteException;
 
 //    /**
 //     * Copies a file from the host OS into the guest OS of the specified VM.

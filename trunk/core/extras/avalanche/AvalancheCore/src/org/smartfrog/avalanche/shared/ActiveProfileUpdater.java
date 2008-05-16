@@ -140,12 +140,14 @@ public class ActiveProfileUpdater {
             String strCommand = ext.getPropertyBag().get("vmcmd");
             String strResponse = ext.getPropertyBag().get("vmresponse");
             String strVMPath = ext.getPropertyBag().get("vmpath");
+            String strVMName = ext.getPropertyBag().get("vmname");
 
             if (strCommand != null) {
                 if (strCommand.equals("create")) {
                     if (strResponse.equals("success")) {
                         // create a new type
                         VmStateType vst = type.addNewVmState();
+                        vst.setVmName(strVMName);
                         vst.setVmLastCmd(strCommand);
                         vst.setVmPath(strVMPath);
                         vst.setVmResponse(strResponse);
@@ -172,15 +174,13 @@ public class ActiveProfileUpdater {
                         type.removeVmState(0);
 
                     // add the new data
-                    String[] strMachines = strResponse.split("\n");
-                    for (String s : strMachines) {
-                        if (s.equals(""))
-                                continue;
-
+                    int iCount = Integer.parseInt(ext.getPropertyBag().get("list_count"));
+                    for(int i = 0; i < iCount; ++i) {
                         VmStateType newType = type.addNewVmState();
-                        newType.setVmPath(s);
+                        newType.setVmPath(ext.getPropertyBag().get(String.format("list_%d_vmpath", i)));
                         newType.setVmLastCmd("list");
-                        newType.setVmResponse("success");
+                        newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
+                        newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
                     }
                 } else if (strCommand.equals("delete")) {
                     // find the entry
@@ -200,6 +200,7 @@ public class ActiveProfileUpdater {
                             bFound = true;
                             t.setVmLastCmd(strCommand);
                             t.setVmResponse(strResponse);
+                            t.setVmName(strVMName);
                         }
                     }
                     if (!bFound)
@@ -209,13 +210,15 @@ public class ActiveProfileUpdater {
                         newType.setVmLastCmd(strCommand);
                         newType.setVmResponse(strResponse);
                         newType.setVmPath(strVMPath);
+                        newType.setVmName(strVMName);
                     }
                 }
 
                 // add a new message
                 MessageType newMsg = type.addNewMessagesHistory();
                 newMsg.setTime(ext.getTimestamp());
-                newMsg.setMsg("VM Path: " + strVMPath +
+                newMsg.setMsg("VM Name: " + strVMName +
+                                ", Path: " + strVMPath +
                                 ", Command: " + strCommand +
                                 ", Response: " + strResponse);
             }
