@@ -51,7 +51,6 @@ SimpleJob extends HplbJobNoJAR  {
   name "dbpedia";
   mapred.input.dir "/datasets/dbpedia";
   mapred.output.dir "/playground/dbpedia";
-  //mapred.working.dir 
 }
 
 /**

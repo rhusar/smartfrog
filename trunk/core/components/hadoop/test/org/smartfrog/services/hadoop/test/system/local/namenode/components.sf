@@ -37,6 +37,12 @@ testLocalNameNodeCompound extends ExpectDeploy {
 
 }
 
+testNameNodeForked extends testLocalNameNodeCompound {
+  action:sfProcessName "testNameNodeForkedProcess";
+}
+
+
+
 /**
  * Format is a workflow so the test should terminate things
  */
