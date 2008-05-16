@@ -137,6 +137,80 @@ public class VMWareCommunicator {
     private ArrayList<VMWareImageModule> listImageModule = new ArrayList<VMWareImageModule>();
 
     /**
+     * Converts a powerstate into a readable string.
+     * @param inState The powerstate of a virtual machine.
+     * @return The readable string.
+     */
+    public String convertPowerState(int inState) {
+        String strResponse = "";
+
+        // the power state is a bitmask
+        int iTmp = inState & 0x000F;
+        switch (iTmp) {
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF:
+                strResponse += "Powered off. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_ON:
+                strResponse += "Powered on. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_OFF:
+                strResponse += "Powering off. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_ON:
+                strResponse += "Powering on. ";
+                break;
+            default:
+                break;
+        }
+
+        iTmp = inState & 0x00F0;
+        switch (iTmp) {
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_RESETTING:
+                strResponse += "Resetting. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED:
+                strResponse += "Suspended. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDING:
+                strResponse += "Suspending. ";
+                break;
+            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_TOOLS_RUNNING:
+                strResponse += "Tools running. ";
+                break;
+            default:
+                break;
+        }
+
+        if ((inState & 0x0F00) == VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_BLOCKED_ON_MSG) {
+            strResponse += "Blocked on message. ";
+        }
+
+        if (strResponse.length() == 0)
+            strResponse = "Could not retrieve power state.";
+
+        return strResponse;
+    }
+
+    /**
+     * Converts a toolsstate into a readable string.
+     * @param inState The toolsstate of a virtual machine.
+     * @return The readable string.
+     */
+    public String convertToolsState(int inState) {
+        switch (inState)
+        {
+            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_NOT_INSTALLED:
+                return "Tools not installed.";
+            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_RUNNING:
+                return "Tools running.";
+            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_UNKNOWN:
+                return "Tools state unknown.";
+            default:
+                return "Unknown tools state: " + inState;
+        }
+    }
+
+    /**
      * Default constructor.
      * @param inVixLibraryPath Path where the vix library can be found.
      * @param inVixLibraryName Name of the vix library.
@@ -379,6 +453,14 @@ public class VMWareCommunicator {
                 throw new SmartFrogException("Source image does not exist: " + inSourceImage);
             }
         } catch (IOException e) {
+            // clean up files that have already been written
+            File destFolder = new File(inDestFolder);
+            if (destFolder.exists()) {
+                for (File file : destFolder.listFiles())
+                    file.delete();
+                destFolder.delete();
+            }
+            
             throw new SmartFrogException("Error while copying VM", e);
         }
     }
