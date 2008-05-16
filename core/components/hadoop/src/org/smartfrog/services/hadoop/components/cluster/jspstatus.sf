@@ -24,6 +24,7 @@ For more information: www.smartfrog.org
  * Failure to deploy implies no JSP on the classpath
  */
 LoadJSP extends LoadClass {
+  message "You need servlet.jar, jasper-runtime.jar, jasper-compiler.jar, jsp-api.jar and commons-el.jar on the classpath";
   jspservlet "org.apache.jasper.servlet.JspServlet";
   classes [jspservlet,
     "org.apache.jasper.JasperException",

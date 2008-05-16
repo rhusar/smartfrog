@@ -33,6 +33,9 @@ public class NameNodeTest extends DeployingTestBase {
         super(name);
     }
 
+    public void testNameNodeForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeForked");
+    }
     public void testLocalNameNodeCompound() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalNameNodeCompound");
     }
