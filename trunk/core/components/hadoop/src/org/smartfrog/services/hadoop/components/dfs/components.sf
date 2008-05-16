@@ -1,0 +1,83 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/**
+ * This package contains components that work with the filesystem
+ * CopyToDFS (source,dest)     -copy a file into DFS
+ * CopyFromDFS (source,dest)   -copy a file from DFS
+ * CopyInDFS (source, dest)  - copy in DNS
+ * MoveInDFS (source, dest)  - move in DNS
+ * DfsDeleteFile : delete a file
+ * DfsCreateDir  : Create a directory
+ * DfsDeleteDir  : delete a directory
+ * DfsListDir : list a directory
+ * DfsChmod : Change file or dir permissions
+
+ * One test function
+ * DfsFileExists : make assertions/condition about the state of a file
+
+ * All of these operations take a Cluster attribute, a LAZY reference to a Component declaring
+ * the settings of the cluster, including login settings. We don't declare it as mandatory in
+ * the schema, so you can pick it up from a parent
+ */
+
+
+ /**
+   * Any DFS operation is workflow enabled
+   */
+
+  DfsOperation extends WorkflowPrim {
+    sfShouldTerminate true;
+
+    //the cluster attribute is required, but not defined in the schema
+    //cluster
+
+    //here are some permissions for use in permission logic
+    permission_a+rw     "-rw-rw-rw-";
+    permission_a+rwx    "-rwxrwxrwx";
+    permission_ug+rw    "-rw-rw----";
+    permission_ug+rwx   "-rwxrwx---";
+    permission_u+rw     "-rw-------";
+    permission_u+rwx    "-rwx------";
+  }
+
+ /**
+  * All directory operations take a directory
+  */
+
+  DfsDirOperation extends DfsOperation {
+    dir TBD;
+    //is it an error when creating or deleting a directory if the action has already been applied
+    idempotent true;
+  }
+
+  DfsCreateDir extends DfsDirOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCreateDirImpl";
+    permissionPattern permission_a+rwx;
+  }
+
+  DfsDeleteDir extends DfsDirOperation {
+  }
+
+  DfsListDir extends DfsDirOperation {
+
+  }
+ 
