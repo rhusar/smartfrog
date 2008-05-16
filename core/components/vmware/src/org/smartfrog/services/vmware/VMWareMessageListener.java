@@ -50,6 +50,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Component that listens for VMWARE messages
@@ -68,7 +69,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
     public static final String ATTR_LISTENER = "listener";
     private static final String VMRESPONSE = "vmresponse";
     private static final String VMPATH = "vmpath";
-    public static final String VMMASTERPATH = "vmmasterpath";
+    private static final String VMNAME = "vmname";
+    private static final String VMCMD = "vmcmd";
 
     /**
      * Constructor.
@@ -146,13 +148,13 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      * @param packet packet to process
      */
     public void processPacket(Packet packet) {
-        sfLog().info("VMWare Message Listener: Received packet: " + packet);
+        sfLog().info("VMWare Message Listener: Received packet: " + packet.getFrom() + ": " + packet.toXML());
         // get the extension
         XMPPEventExtension ext = (XMPPEventExtension) packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
         if (ext != null)
         {
             // use the property bag
-            String command = ext.getPropertyBag().get("vmcmd");
+            String command = ext.getPropertyBag().get(VMCMD);
             String strPath = ext.getPropertyBag().get(VMPATH);
 
             if (command != null) {
@@ -168,7 +170,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                 }
 
                 // fill the response bag
-                response.getPropertyBag().put("vmcmd", command);
+                response.getPropertyBag().put(VMCMD, command);
                 response.getPropertyBag().put(VMPATH, strPath);
 
                 try {
@@ -186,80 +188,48 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                         response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strPath));
                     }
                     else if (command.equals("list")) {
-                        response.getPropertyBag().put(VMRESPONSE, manager.getControlledMachines());
+                        // count the machines
+                        int i = 0;
+                        for (VMWareImageModule mod : manager.getControlledMachines()) {
+                            // add the path
+                            response.getPropertyBag().put("list_" + i + "_vmpath", mod.getVMPath());
+
+                            // and the display name
+                            try {
+                                response.getPropertyBag().put("list_" + i + "_vmname", mod.getAttribute("displayName"));
+                            } catch (SmartFrogException e) {
+                                response.getPropertyBag().put("list_" + i + "_vmpath", "Could not retreive displayName.");
+                            }
+
+                            // and the power state
+                            try {
+                                response.getPropertyBag().put("list_" + i + "_vmstate", manager.convertPowerState(mod.getPowerState()));
+                            } catch (SmartFrogException e) {
+                                response.getPropertyBag().put("list_" + i + "_vmstate", "Could not retreive power state.");
+                            }
+
+                            i++;
+                        }
+                        response.getPropertyBag().put("list_count", String.format("%d", i));
                     }
                     else if (command.equals("powerstate")) {
-                        int iState = manager.getPowerState(strPath);
-                        String strResponse = "";
-
-                        // the power state is a bitmask
-                        int iTmp = iState & 0x000F;
-                        switch (iTmp) {
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF:
-                                strResponse += "Powered off. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_ON:
-                                strResponse += "Powered on. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_OFF:
-                                strResponse += "Powering off. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERING_ON:
-                                strResponse += "Powering on. ";
-                                break;
-                            default:
-                                break;
-                        }
-
-                        iTmp = iState & 0x00F0;
-                        switch (iTmp) {
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_RESETTING:
-                                strResponse += "Resetting. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED:
-                                strResponse += "Suspended. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDING:
-                                strResponse += "Suspending. ";
-                                break;
-                            case VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_TOOLS_RUNNING:
-                                strResponse += "Tools running. ";
-                                break;
-                            default:
-                                break;
-                        }
-
-                        if ((iState & 0x0F00) == VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_BLOCKED_ON_MSG) {
-                            strResponse += "Blocked on message. ";
-                        }
-
-                        if (strResponse.length() == 0)
-                            strResponse = "Could not retrieve power state.";
-
-                        response.getPropertyBag().put(VMRESPONSE, strResponse);
+                        response.getPropertyBag().put(VMRESPONSE, manager.convertPowerState(manager.getPowerState(strPath)));
                     }
                     else if (command.equals("toolsstate")) {
-                        int iState = manager.getToolsState(strPath);
-                        switch (iState)
-                        {
-                            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_NOT_INSTALLED:
-                                response.getPropertyBag().put(VMRESPONSE, "Tools not installed.");
-                                break;
-                            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_RUNNING:
-                                response.getPropertyBag().put(VMRESPONSE, "Tools running.");
-                                break;
-                            case VMWareVixLibrary.VixToolsState.VIX_TOOLSSTATE_UNKNOWN:
-                                response.getPropertyBag().put(VMRESPONSE, "Tools state unknown.");
-                                break;
-                            default:
-                                response.getPropertyBag().put(VMRESPONSE, "Unknown tools state: " + iState);
-                                break;
-                        }
+                        response.getPropertyBag().put(VMRESPONSE, manager.convertToolsState(manager.getToolsState(strPath)));
                     }
                     else if (command.equals("create")) {
+                        // get additional attributes
+                        String  name    = ext.getPropertyBag().get("create_name"),
+                                master  = ext.getPropertyBag().get("create_master");
+
                         // create a vmware from a master model
-                        response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(ext.getPropertyBag().get(VMMASTERPATH), strPath));
-                        response.getPropertyBag().put(VMPATH, manager.getVmImagesFolder() + File.separator + strPath + File.separator + strPath + ".vmx");
+                        response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(master, name));
+
+                        // fill the response
+                        response.getPropertyBag().put(VMNAME, name);
+                        strPath = manager.getVmImagesFolder() + File.separator + name + File.separator + name + ".vmx";
+                        response.getPropertyBag().put(VMPATH, strPath);
                     }
                     else if (command.equals("delete")) {
                         // delete a vmware
@@ -269,11 +239,42 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                         // list the master copies
                         response.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
                     }
+                    else if (command.equals("rename")) {
+                        // get the new name
+                        String newName = ext.getPropertyBag().get("rename_name");
+
+                        // rename the vm
+                        response.getPropertyBag().put(VMRESPONSE, manager.renameVM(strPath, newName));
+
+                        // correct response
+                        response.getPropertyBag().put(VMNAME, newName);
+                    }
+                    else if (command.equals("getattribute")) {
+                        // get the key
+                        String key = ext.getPropertyBag().get("getattrib_key");
+
+                        // get the attribute
+                        response.getPropertyBag().put(VMRESPONSE, manager.getVMAttribute(strPath, key));
+                    }
+                    else if (command.equals("setattribute")) {
+                        // get the key and the new value
+                        String  key = ext.getPropertyBag().get("setattrib_key"),
+                                value = ext.getPropertyBag().get("setattrib_value");
+
+                        // set the attribute
+                        response.getPropertyBag().put(VMRESPONSE, manager.setVMAttribute(strPath, key, value));
+
+                        if (key.equals("displayName"))
+                            response.getPropertyBag().put(VMNAME, value);
+                    }
 //                    else if (command.equals("copyhosttoguest")) {
 //                        String strSrc = ext.getPropertyBag().get("source");
 //                        String strDest = ext.getPropertyBag().get("dest");
 //                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strPath, strSrc, strDest));
 //                    }
+
+                    // set the name of this module
+                    response.getPropertyBag().put(VMNAME, manager.getVMAttribute(strPath, "displayName"));
                 } catch (Exception e) {
                     ProcessException(command, response, e);
                 }

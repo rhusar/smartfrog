@@ -24,6 +24,7 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.VmStateType"%>
 <%@ page import="org.smartfrog.avalanche.server.ServerSetup"%>
+<%@ page import="java.util.HashMap" %>
 
 <%
     String strAction = request.getParameter("action");
@@ -50,31 +51,34 @@ For more information: www.smartfrog.org
                     }
                     // optimization possible here..
                 } else if (strAction.equals("create")) {
-                    ServerSetup.sendVMCommand(strHost, strVMPathes[0], request.getParameter("vmmasterpath"), "create");
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("create_master", request.getParameter("vmmasterpath"));
+                    map.put("create_name", strVMPathes[0]);
+                    ServerSetup.sendVMCommand(strHost, null, "create", map);
                 } else if (strAction.equals("delete")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "delete");
+                        ServerSetup.sendVMCommand(strHost, str, "delete");
                 } else if (strAction.equals("stop")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "stop");
+                        ServerSetup.sendVMCommand(strHost, str, "stop");
                 } else if (strAction.equals("start")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "start");
+                        ServerSetup.sendVMCommand(strHost, str, "start");
                 } else if (strAction.equals("suspend")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "suspend");
+                        ServerSetup.sendVMCommand(strHost, str, "suspend");
                 } else if (strAction.equals("list")) {
-                    ServerSetup.sendVMCommand(strHost, null, null, "list");
-                    ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
+                    ServerSetup.sendVMCommand(strHost, null, "list");
+                    ServerSetup.sendVMCommand(strHost, null, "getmasters");
                 } else if (strAction.equals("getmasters")) {
-                    ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
+                    ServerSetup.sendVMCommand(strHost, null, "getmasters");
                 } else if (strAction.equals("getstate")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "powerstate");
+                        ServerSetup.sendVMCommand(strHost, str, "powerstate");
                 } else if (strAction.equals("gettoolsstate")) {
                     for (String str : strVMPathes)
-                        ServerSetup.sendVMCommand(strHost, str, null, "toolsstate");
-                }
+                        ServerSetup.sendVMCommand(strHost, str, "toolsstate");
+                } 
             }
         } catch (Exception e) {
 
