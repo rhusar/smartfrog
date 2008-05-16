@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.common;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileStatus;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -28,6 +29,7 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -105,6 +107,25 @@ public class DfsUtils {
             throw (SmartFrogRuntimeException) SmartFrogRuntimeException
                     .forward(ERROR_FAILED_TO_CLOSE + dfsURI,
                             e);
+        }
+    }
+
+    /**
+     * Get information about a path.
+     * @param fileSystem filesystem to work with
+     * @param path path to use
+     * @return the status or null for no such path
+     * @throws IOException for communications problems
+     */
+    public static FileStatus stat(DistributedFileSystem fileSystem,Path path) throws IOException {
+        try {
+            if (fileSystem.exists(path)) {
+                return fileSystem.getFileStatus(path);
+            } else {
+                return null;
+            }
+        } catch (FileNotFoundException ignored) {
+            return null;
         }
     }
 }
