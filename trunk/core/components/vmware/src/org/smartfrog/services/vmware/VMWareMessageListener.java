@@ -227,7 +227,6 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                         response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(master, name));
 
                         // fill the response
-                        response.getPropertyBag().put(VMNAME, name);
                         strPath = manager.getVmImagesFolder() + File.separator + name + File.separator + name + ".vmx";
                         response.getPropertyBag().put(VMPATH, strPath);
                     }
@@ -248,6 +247,10 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
                         // correct response
                         response.getPropertyBag().put(VMNAME, newName);
+
+                        response.getPropertyBag().put("old_path", strPath);
+                        strPath = manager.getVmImagesFolder() + File.separator + newName + File.separator + newName + ".vmx";
+                        response.getPropertyBag().put(VMPATH, strPath);
                     }
                     else if (command.equals("getattribute")) {
                         // get the key
