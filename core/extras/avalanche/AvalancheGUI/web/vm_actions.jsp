@@ -33,23 +33,35 @@ For more information: www.smartfrog.org
         ActiveProfileUpdater updater = new ActiveProfileUpdater();
         String strHost = request.getParameter("host");
         String[] strVMPathes = request.getParameterValues("selectedVM");
+        //out.write(strHost + "\n");
 
         try {
             // get the active profile of this machine
             ActiveProfileType type = updater.getActiveProfile(strHost);
             if (type != null) {
                 if (strAction.equals("save")) {
+                    String strVMPath = request.getParameter("vmpath");
+                    //out.write(strVMPath + "\n");
+                    String strVMName = request.getParameter("vmname");
+                    //out.write(strVMName + "\n");
+
                     // get the vmware's profile
-                    for (VmStateType vst : type.getVmStateArray()) {
-                        if (vst.getVmPath().equals(strVMPathes[0])) {
+                    for (int i = 0; i < type.getVmStateArray().length; ++i) {
+                        if (type.getVmStateArray(i).getVmPath().equals(strVMPath)) {
                             // do changes here
 
-                            // store the type
-                            updater.storeActiveProfile(type);
+                            if (!strVMName.equals(type.getVmStateArray(i).getVmName())) {
+                                // remove the vm state
+                                type.removeVmState(i);
+
+                                // send the rename command to the vm
+                                HashMap<String, String> map = new HashMap<String, String>();
+                                map.put("rename_name", strVMName);
+                                ServerSetup.sendVMCommand(strHost, strVMPath, "rename", map);
+                            }
                             break;
                         }
                     }
-                    // optimization possible here..
                 } else if (strAction.equals("create")) {
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("create_master", request.getParameter("vmmasterpath"));
@@ -80,8 +92,10 @@ For more information: www.smartfrog.org
                         ServerSetup.sendVMCommand(strHost, str, "toolsstate");
                 } 
             }
-        } catch (Exception e) {
 
+            updater.storeActiveProfile(type);
+        } catch (Exception e) {
+            throw e;
         }
 
         out.write("WTF");

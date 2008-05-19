@@ -144,7 +144,7 @@ public class ActiveProfileUpdater {
 
             if (strCommand != null) {
                 if (strCommand.equals("create")) {
-                    if (strResponse.equals("success")) {
+                    if (strResponse.equals("success") || strResponse.equals("rename")) {
                         // create a new type
                         VmStateType vst = type.addNewVmState();
                         vst.setVmName(strVMName);

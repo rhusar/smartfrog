@@ -405,7 +405,7 @@ public class VMWareImageModule {
             vmFolder.renameTo(new File(vmFolder.getParent() + File.separator + inNewName));
 
             // refresh the path to this vm
-            imagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
+            imagePath = vmFolder.getParent() + File.separator + inNewName + File.separator + inNewName + ".vmx";
 
             // register the vm again
             registerVM();
