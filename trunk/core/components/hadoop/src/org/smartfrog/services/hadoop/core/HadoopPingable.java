@@ -24,6 +24,7 @@ package org.smartfrog.services.hadoop.core;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  *
@@ -36,7 +37,7 @@ public interface HadoopPingable {
      * @throws RemoteException for network problems
      */
     void ping()
-            throws SmartFrogLivenessException, RemoteException;
+            throws IOException;
 
     /**
      * Shut down
