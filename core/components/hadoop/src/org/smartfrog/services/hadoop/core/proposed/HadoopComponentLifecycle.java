@@ -42,12 +42,13 @@ public interface HadoopComponentLifecycle {
     State getLifecycleState();
 
     /**
-     * The lifecycle state
+     * The lifecycle state. Failure is a wierd one as it often takes a side effecting test (or an oursider) to observe
      */
     public enum State {
         CREATED,
         INITIALIZED,
         STARTED,
+        FAILED,
         TERMINATED
     }
 }

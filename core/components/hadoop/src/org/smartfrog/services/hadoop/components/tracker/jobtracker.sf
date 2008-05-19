@@ -27,8 +27,8 @@ JobTracker extends ClusterNode {
   mapred.jobtracker.taskalloc.capacitypad  0.01;
   mapred.jobtracker.completeuserjobs.maximum  100;
   mapred.job.tracker.handler.count  10;
-  mapred.job.tracker.info.bindAddress NULL;
-  mapred.job.tracker.info.port  NULL;
+  //mapred.job.tracker.info.bindAddress NULL;
+  //mapred.job.tracker.info.port  NULL;
   mapred.job.tracker.http.address  NULL;
 
 /* hosts and exclude hosts files

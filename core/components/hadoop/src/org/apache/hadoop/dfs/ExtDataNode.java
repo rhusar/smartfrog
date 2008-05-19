@@ -24,6 +24,8 @@ package org.apache.hadoop.dfs;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.StringUtils;
 import org.smartfrog.services.hadoop.core.HadoopPingable;
+import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
+import org.smartfrog.services.hadoop.core.proposed.HadoopIOException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
@@ -41,16 +43,36 @@ import java.util.AbstractList;
  * To use these classes in a secure classloader, both the hadoop-core and
  * sf-hadoop JARs will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements HadoopPingable {
+public class ExtDataNode extends DataNode implements HadoopPingable, HadoopComponentLifecycle {
 
     private boolean stopped;
     private DataNodeThread worker;
     private Prim owner;
+    private State state=State.CREATED;
 
     public ExtDataNode(Prim owner,Configuration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
         this.owner = owner;
+    }
+
+
+    /**
+     * Initialize; read in and validate values.
+     *
+     * @throws IOException for any initialisation failure
+     */
+    public void init() throws IOException {
+
+    }
+
+    /**
+     * Get the current state
+     *
+     * @return the lifecycle state
+     */
+    public State getLifecycleState() {
+        return state;
     }
 
     /**
@@ -73,6 +95,7 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
     }
 
     private synchronized void stopped() {
+        state = State.TERMINATED;
         stopped = true;
     }
 
@@ -95,6 +118,7 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
      */
     public void run() {
         try {
+            state = State.STARTED;
             super.run();
         } finally {
             stopped();
@@ -110,15 +134,18 @@ public class ExtDataNode extends DataNode implements HadoopPingable {
     /**
      * Ping the node; report an error if we have stopped
      *
-     * @throws SmartFrogLivenessException if the node is unhappy
-     * @throws RemoteException for network problems
+     * @throws IOException for network problems
      */
     public void ping()
-            throws SmartFrogLivenessException, RemoteException {
+            throws IOException {
         if (isStopped()) {
-            throw new SmartFrogLivenessException("DataNode is stopped");
+            throw new HadoopIOException("DataNode is stopped");
         }
-        SmartFrogThread.ping(worker);
+        try {
+            SmartFrogThread.ping(worker);
+        } catch (SmartFrogLivenessException e) {
+            throw new HadoopIOException(e);
+        }
     }
 
     /**

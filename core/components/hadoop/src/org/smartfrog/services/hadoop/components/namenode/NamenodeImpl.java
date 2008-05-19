@@ -107,7 +107,11 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         super.sfPing(source);
         synchronized (this) {
             if (namenode != null) {
-                namenode.ping();
+                try {
+                    namenode.ping();
+                } catch (IOException e) {
+                    throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+                }
             }
         }
     }

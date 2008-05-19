@@ -37,9 +37,9 @@ import java.util.Vector;
 /**
  *
  */
-public class FileSystemNodeImpl extends PrimImpl implements FileSystemNode {
+public class FileSystemNodeImpl extends HadoopComponentImpl implements FileSystemNode {
 
-    private ManagedConfiguration configuration;
+
     protected static final Reference DATA_DIRECTORIES = new Reference(
             ATTR_DATA_DIRECTORIES);
     protected static final Reference NAME_DIRECTORIES = new Reference(
@@ -69,55 +69,7 @@ public class FileSystemNodeImpl extends PrimImpl implements FileSystemNode {
             throw new SmartFrogLifecycleException("Bad "+ FS_DEFAULT_NAME+ " value :"+filesystemName,e);
         }
 
-
-        configuration = new ManagedConfiguration(this);
-        if(sfLog().isDebugEnabled()) {
-            sfLog().debug(configuration.dumpQuietly());
-        }
+        dumpConfiguration();
     }
 
-    public ManagedConfiguration createConfiguration() {
-        return new ManagedConfiguration(this);
-    }
-
-    /**
-     * Run through the directories, create all that are there
-     * @param dirs list of directories
-     * @param createDirs create the directories?
-     * @return the directories all converted to a list split by commas
-     */
-    protected String createDirectoryList(Vector<String> dirs,boolean createDirs) {
-        StringBuilder path = new StringBuilder();
-        for (String dir : dirs) {
-            File directory = new File(dir);
-            if (createDirs) {
-                directory.mkdirs();
-            }
-            if (path.length() > 0) {
-                path.append(',');
-            }
-            path.append(directory.getAbsolutePath());
-        }
-        String value = path.toString();
-        return value;
-    }
-
-    /**
-     * Go from a list of paths/fileIntfs to a comma separated list, create
-     * directories on demand
-     * @param sourceRef source reference
-     * @param replaceAttribute attribute to replace
-     * @return the directories
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    protected Vector<String> createDirectoryListAttribute(Reference sourceRef,
-                                                String replaceAttribute)
-            throws RemoteException, SmartFrogException {
-        Vector<String> dirs;
-        dirs= FileSystem.resolveFileList(this, sourceRef,null,true,null);
-        String value = createDirectoryList(dirs,true);
-        sfReplaceAttribute(replaceAttribute, value);
-        return dirs;
-    }
 }
