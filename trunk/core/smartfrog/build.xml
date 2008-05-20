@@ -513,6 +513,7 @@
   <target name="init.scripts.pattern" depends="init">
     <patternset id="shellscripts">
       <include name="smartfrog"/>
+      <include name="set*Properties"/>
       <include name="sf*"/>
       <include name="*.pl"/>
       <include name="*.py"/>
