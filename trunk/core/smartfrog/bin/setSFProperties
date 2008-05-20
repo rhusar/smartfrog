@@ -74,7 +74,7 @@ if test "$SFUSERHOME"; then
     export SFLIBPATH="$SFUSERHOME"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
     if [ $? -eq 0 ]; then
-	for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
+	  for i in `ls $SFLIBPATH/*.jar`; do CLASSPATH=$i:$CLASSPATH; done
         export CLASSPATH
     fi
 fi
