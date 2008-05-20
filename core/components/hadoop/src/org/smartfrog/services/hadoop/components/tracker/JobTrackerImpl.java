@@ -30,9 +30,7 @@ import java.rmi.RemoteException;
 import java.io.IOException;
 
 /**
- *
  * Created 19-May-2008 13:55:33
- *
  */
 
 public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster {
@@ -52,9 +50,10 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         try {
-            tracker= new ExtJobTracker(createConfiguration());
+            tracker = new ExtJobTracker(createConfiguration());
+            tracker.offerService();
         } catch (IOException e) {
-            throw new SmartFrogLifecycleException("When creating the job tracker "+e.getMessage(),e,this);
+            throw new SmartFrogLifecycleException("When creating the job tracker " + e.getMessage(), e, this);
         } catch (InterruptedException e) {
             throw new SmartFrogLifecycleException("When creating the job tracker " + e.getMessage(), e, this);
         }
@@ -68,7 +67,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(tracker!=null) {
+        if (tracker != null) {
             tracker.terminate();
         }
     }

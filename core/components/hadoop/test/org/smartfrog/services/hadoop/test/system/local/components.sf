@@ -42,6 +42,7 @@ LocalHadoopCompound extends Compound {
 }
 
 LocalNameNodeCompound extends LocalHadoopCompound {
+  description "A name node";
 
   LocalInProcessNameNode extends NameNode {
     fs.default.name PARENT:fs.default.name;
@@ -55,6 +56,7 @@ LocalNameNodeCompound extends LocalHadoopCompound {
 }
 
 LocalDataNodeCompound extends LocalNameNodeCompound {
+  description "A data node bound to a temporary directory";
 
   localDataDir extends TempDirWithCleanup {
 
@@ -70,8 +72,21 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
 
 LocalFormat extends LocalHadoopCompound {
+  description "Component to format a filesystem";
   formatLocal extends FormatFileSystem {
       fs.default.name PARENT:fs.default.name;
       dataDirectories [LAZY dataDir];
+  }
+}
+
+
+
+LocalJobTrackerCompound extends LocalHadoopCompound {
+  description "A job tracker";
+
+  LocalJobTracker extends JobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
   }
 }
