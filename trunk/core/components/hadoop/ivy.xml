@@ -16,24 +16,24 @@
   <configurations defaultconfmapping="default">
   <conf name="default" extends="master,runtime"/>
   <conf name="build" visibility="private"
-      description="artifacts needed to build the application"/>
+    description="artifacts needed to build the application"/>
   <conf name="compile" visibility="private"
-      extends="redist"
-      description="artifacts needed to compile the application"/>
+    extends="redist"
+    description="artifacts needed to compile the application"/>
   <conf name="daemon" visibility="private" extends="redist,default"
-      description="the classpath needed to run smartfrog daemons"/>
+    description="the classpath needed to run smartfrog daemons"/>
   <conf name="test" extends="compile,default"
-      description="the classpath needed to run tests"/>
+    description="the classpath needed to run tests"/>
   <conf name="testwar"
-      description="the test WAR File" visibility="private"/>
+    description="the test WAR File" visibility="private"/>
   <conf name="master" description="contains the artifact but no dependencies"/>
   <conf name="hadoop-core" description="contains the hadoop-core dependencies"/>
   <conf name="redist" description="redistributals excluding smartfrog artifacts"
-      extends="hadoop-core,client,server"/>
+    extends="hadoop-core,client,server"/>
   <conf name="client" description="client-side dependencies"
-      extends="hadoop-core"/>
+    extends="hadoop-core"/>
   <conf name="server" description="server-side dependencies"
-      extends="hadoop-core"/>
+    extends="hadoop-core"/>
   <conf name="runtime" description="runtime but not the artifact"
     extends="redist"/>
 </configurations> 
@@ -44,17 +44,17 @@
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"
-        name="smartfrog"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime,daemon->services"/>
+      name="smartfrog"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime,daemon->services"/>
 
     <!--we pull in www stuff -->
     <dependency org="org.smartfrog"
-        name="sf-www"
-        changing="true"
-        rev="latest.integration"
-        conf="client,server->httpclient"/>
+      name="sf-www"
+      changing="true"
+      rev="latest.integration"
+      conf="client,server->httpclient"/>
 
     <!--Jetty 6 cannot be used until Hadoop users it-->
     <!--<dependency org="org.smartfrog"
@@ -62,82 +62,82 @@
         changing="true"
         rev="latest.integration"
         conf="runtime->default"/>-->
-<!--
+    <!--
+
+        <dependency org="org.smartfrog"
+            name="sf-xml"
+            changing="true"
+            rev="latest.integration"
+            conf="runtime->default"/>
+    -->
 
     <dependency org="org.smartfrog"
-        name="sf-xml"
-        changing="true"
-        rev="latest.integration"
-        conf="runtime->default"/>
--->
+      name="sf-loggingservices"
+      changing="true"
+      rev="latest.integration"
+      conf="compile,runtime->default;redist->redist"/>
 
     <dependency org="org.smartfrog"
-        name="sf-loggingservices"
-        changing="true"
-        rev="latest.integration"
-        conf="compile,runtime->default"/>
-
-
-    <dependency org="org.smartfrog"
-        name="sf-testharness"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+      name="sf-testharness"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
 
 
     <dependency org="org.smartfrog"
-        name="sf-tasks"
-        rev="latest.integration"
-        changing="true"
-        conf="build->default"/>
+      name="sf-tasks"
+      rev="latest.integration"
+      changing="true"
+      conf="build->default"/>
 
     <dependency org="org.smartfrog"
-        name="sf-xunit"
-        changing="true"
-        rev="latest.integration"
-        conf="test->default"/>
+      name="sf-xunit"
+      changing="true"
+      rev="latest.integration"
+      conf="test->default"/>
 
-    <dependency org="hadoop"
-        name="hadoop-core"
-        rev="${hadoop.version}"
-        conf="redist->default"/>
+    <dependency org="org.apache.hadoop"
+      name="hadoop-core"
+      rev="${hadoop.version}"
+      changing="true"
+      conf="redist->default"/>
 
     <dependency org="commons-cli"
-        name="commons-cli"
-        rev="${commons-cli.version}"
-        conf="redist->default"/>
+      name="commons-cli"
+      rev="${commons-cli.version}"
+      conf="redist->default"/>
 
     <dependency org="xmlenc"
-        name="xmlenc"
-        rev="${xmlenc.version}"
-        conf="redist->default"/>
+      name="xmlenc"
+      rev="${xmlenc.version}"
+      conf="server->default"/>
 
     <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${servletapi.version}"
-        conf="server->master"/>
+      name="servlet-api"
+      rev="${servletapi.version}"
+      conf="server->master"/>
 
     <!--pulls in servlet API 2.4-->
     <dependency org="jetty"
-        name="org.mortbay.jetty"
-        rev="${jetty5.version}"
-        conf="server->master"/>
+      name="org.mortbay.jetty"
+      rev="${jetty5.version}"
+      conf="server->master"/>
     <dependency org="tomcat"
-        name="jasper-runtime"
-        rev="${jasper.version}"
-        conf="server->master"/>
+      name="jasper-runtime"
+      rev="${jasper.version}"
+      conf="server->master"/>
     <dependency org="tomcat"
-        name="jasper-compiler"
-        rev="${jasper.version}"
-        conf="server->master"/>
+      name="jasper-compiler"
+      rev="${jasper.version}"
+      conf="server->master"/>
     <dependency org="tomcat"
-        name="jsp-api"
-        rev="${jsp-api.version}"
-        conf="server->master"/>
+      name="jsp-api"
+      rev="${jsp-api.version}"
+      conf="server->master"/>
     <dependency org="commons-el"
-        name="commons-el"
-        rev="${commons-el.version}"
-        conf="server->master"/>
+      name="commons-el"
+      rev="${commons-el.version}"
+      conf="server->master"/>
 
   </dependencies>
 </ivy-module>
