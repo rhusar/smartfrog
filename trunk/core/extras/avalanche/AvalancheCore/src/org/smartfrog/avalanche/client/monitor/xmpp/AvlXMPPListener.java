@@ -66,9 +66,12 @@ public class AvlXMPPListener extends XmppListenerImpl {
      * we use the network card that RMI is running on
      * @throws SmartFrogException failure to determine our hostname
      */
-    private void determineHostname() throws SmartFrogException {
+    private void determineHostname(boolean inIP) throws SmartFrogException {
         InetAddress localhost = SFProcess.sfDeployedHost();
-        hostname = localhost.getHostName();
+        if (inIP)
+            hostname = localhost.getHostAddress();
+        else
+            hostname = localhost.getHostName();
     }
 
 
@@ -97,9 +100,10 @@ public class AvlXMPPListener extends XmppListenerImpl {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        boolean bUseIP = sfResolve("useIpInsteadOfHostname", false, true);
 
         sfLog().info("AvlXMPPListener deployed.");
-        determineHostname();
+        determineHostname(bUseIP);
     }
 
     /**
