@@ -156,7 +156,8 @@
   <!-- Start the Driver Daemon-->
   <target name="startDriverDaemon" depends="buildATH" description="Starts the Driver node Daemon">
     <!--antcall target="start-daemon-if-needed"/-->
-    <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true"/>
+    <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true"
+                    port="${smartfrog.daemon.port}"/>
 
   </target>
 
@@ -172,7 +173,8 @@
     <sf-waitfordaemon maxwait="20" timeoutproperty="daemon.missing"/>
     <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
 
-    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
+               port="${smartfrog.daemon.port}">
       <application name="startDaemon" descriptor="startRemoteDaemons.sf"/>
     </sf-deploy>
   </target>
@@ -186,7 +188,8 @@
     <sleep minutes="15"/>
 
 
-    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
+               port="${smartfrog.daemon.port}">
       <application name="startApp" descriptor="org/smartfrog/regtest/arithmetic/templategen/exampleTH.sf"/>
     </sf-deploy>
   </target>
