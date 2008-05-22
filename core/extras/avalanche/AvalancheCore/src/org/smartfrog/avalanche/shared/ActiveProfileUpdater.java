@@ -158,11 +158,15 @@ public class ActiveProfileUpdater {
                         type.removeVmMasterCopy(0);
 
                     // add the new ones
-                    String[] strMasters = strResponse.split("\n");
-                    for (String s : strMasters)
-                    {
-                        XmlString str = type.insertNewVmMasterCopy(0);
-                        str.setStringValue(s);
+                    try {
+                        String[] strMasters = strResponse.split("\n");
+                        for (String s : strMasters)
+                        {
+                            XmlString str = type.insertNewVmMasterCopy(0);
+                            str.setStringValue(s);
+                        }
+                    } catch (Exception e) {
+                        log.error(e);
                     }
                 } else if (strCommand.equals("list")) {
                     // a list command has been sent and responded to
@@ -174,13 +178,17 @@ public class ActiveProfileUpdater {
                         type.removeVmState(0);
 
                     // add the new data
-                    int iCount = Integer.parseInt(ext.getPropertyBag().get("list_count"));
-                    for(int i = 0; i < iCount; ++i) {
-                        VmStateType newType = type.addNewVmState();
-                        newType.setVmPath(ext.getPropertyBag().get(String.format("list_%d_vmpath", i)));
-                        newType.setVmLastCmd("list");
-                        newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
-                        newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
+                    try {
+                        int iCount = Integer.parseInt(ext.getPropertyBag().get("list_count"));
+                        for(int i = 0; i < iCount; ++i) {
+                            VmStateType newType = type.addNewVmState();
+                            newType.setVmPath(ext.getPropertyBag().get(String.format("list_%d_vmpath", i)));
+                            newType.setVmLastCmd("list");
+                            newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
+                            newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
+                        }
+                    } catch (NumberFormatException e) {
+                        log.error(e);
                     }
                 } else if (strCommand.equals("delete")) {
                     // find the entry
