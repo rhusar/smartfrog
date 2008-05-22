@@ -37,6 +37,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,12 +71,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-
-        // check wether the VMware Server is installed on this system
-        boolean installed = sfResolve(ATTR_SERVER_INSTALLED, false, true);
-        if (!installed) {
-            throw new SmartFrogDeploymentException("A compatible version of VMware is not installed on this system");
-        }
     }
 
     /**
@@ -84,6 +80,13 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+
+        // check wether the VMware Server is installed on this system
+        VMWareServerCondition installed = null;
+        installed = (VMWareServerCondition) sfResolve(ATTR_SERVER_INSTALLED, installed, true);
+        if (installed == null || !installed.evaluate()) {
+            throw new SmartFrogDeploymentException("A compatible version of VMware is not installed on this system", this);
+        }
 
         // get the vix properties
         String strVixLibPath, strVixLibName;
