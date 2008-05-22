@@ -33,6 +33,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf"
 #include "/org/smartfrog/services/vmware/components.sf"
+#include "/org/smartfrog/services/vmware/vmwarecondition.sf"
+#include "/org/smartfrog/sfcore/workflow/combinators/parallel.sf"
 
 
 
@@ -41,19 +43,25 @@ VMWareMessageListener extends Prim {
 }
 
 sfConfig extends Compound {
-
-    manager extends VMWareServerManager{
-    	serverInstalled true;
-     }
-
-    listener extends AvlXmppListener {
+    AvlListener extends AvlXmppListener {
         server (ENVPROPERTY AVALANCHE_EVENT_SERVER);
         login "x";
         password "x";
     }
 
-    vmMessageListener extends VMWareMessageListener {
-        vmServerManager LAZY PARENT:manager;
-        listener LAZY PARENT:listener;
+    WMware extends Parallel {
+        asynchCreateChild true;
+        terminateOnAbnormalChildDeploy false;
+
+        vmCond extends VMWareServerInstalled;
+
+        manager extends VMWareServerManager{
+            serverInstalled LAZY vmCond;
+         }
+
+        vmMessageListener extends VMWareMessageListener {
+            vmServerManager LAZY manager;
+            listener LAZY AvlListener;
+        }
     }
 }
