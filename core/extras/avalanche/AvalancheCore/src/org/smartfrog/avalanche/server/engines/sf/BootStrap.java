@@ -173,7 +173,7 @@ public class BootStrap {
                 String strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
 
 		if (securityOn.equals("true")) {
-		  	Daemon d = new Daemon(host,                // name
+		  	Daemon d = new Daemon("n" + host,                // name
                         os,                     // os
                         host,               // host
                         transferType,           // transfer type
@@ -197,7 +197,7 @@ public class BootStrap {
                 listDaemons.add(d);
 
 		} else {
-		 Daemon d = new Daemon(host,                // name
+		 Daemon d = new Daemon("n" + host,                // name
                         os,                     // os
                         host,               // host
                         transferType,           // transfer type
@@ -246,7 +246,7 @@ public class BootStrap {
             		 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", true);
 		} else {
 			 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", false);
-	}
+	    }
            SmartFrogAdapterImpl.setLogFilePath(logFileDir);
 
             HashMap attrMap = new HashMap();
