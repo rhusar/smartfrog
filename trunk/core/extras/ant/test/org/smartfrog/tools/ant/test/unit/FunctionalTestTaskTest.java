@@ -19,9 +19,8 @@
  */
 package org.smartfrog.tools.ant.test.unit;
 
-import org.smartfrog.tools.ant.test.TaskTestBase;
 import org.smartfrog.tools.ant.FaultingWaitForTask;
-import org.smartfrog.tools.ant.FunctionalTestTask;
+import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
  */
@@ -51,18 +50,18 @@ public class FunctionalTestTaskTest extends TaskTestBase {
 
     private void assertAppSequenceFollowed(boolean noJunit) {
         String output = getFullLog();
-        if(noJunit) {
+        if (noJunit) {
 //            assertTrue("Not found :"+FunctionalTestTask.MESSAGE_NO_JUNIT+" in \n" + output,
 //                output.indexOf(FunctionalTestTask.MESSAGE_NO_JUNIT)>=0);
         }
-        int setup=output.indexOf(SETUP);
-        int application= output.indexOf(APPLICATION);
+        int setup = output.indexOf(SETUP);
+        int application = output.indexOf(APPLICATION);
         int test = output.indexOf(TEST);
-        int teardown= output.indexOf(TEARDOWN);
-        assertTrue(TEARDOWN+" was not found in \n" + output, teardown >= 0);
-        assertTrue(APPLICATION+" was not called in \n" + output, teardown >= 0);
-        assertTrue(SETUP+" was not found in \n"+output,setup>=0);
-        if(!noJunit) {
+        int teardown = output.indexOf(TEARDOWN);
+        assertTrue(TEARDOWN + " was not found in \n" + output, teardown >= 0);
+        assertTrue(APPLICATION + " was not called in \n" + output, teardown >= 0);
+        assertTrue(SETUP + " was not found in \n" + output, setup >= 0);
+        if (!noJunit) {
             assertTrue(TEST + " was not found in \n" + output,
                     test >= 0);
         }
@@ -98,6 +97,7 @@ public class FunctionalTestTaskTest extends TaskTestBase {
                 "failure!");
         assertAppSequenceFollowed(false);
     }
+
     public void testApplicationFailurePreemptsTeardown() {
         expectBuildExceptionContaining("testApplicationFailurePreemptsTeardown",
                 "failure exception not thrown",

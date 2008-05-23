@@ -2,14 +2,17 @@
 <project name="parse" default="teardown">
 
   <description>
- Tests for the parse.
+    Tests for the parse.
 
- command line invocation
- ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f  undeploy.xml testResource
+    command line invocation
+    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib
+    ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f undeploy.xml testResource
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f undeploy.xml testNoParams
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f undeploy.xml
+    testNoParams
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f undeploy.xml testResource
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib
+    ../../../../smartfrog/dist/lib/sfExamples.jar -f undeploy.xml testResource
   </description>
 
   <import file="test-common.xml"/>
@@ -45,8 +48,25 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         <sf-block/>
         <fail if="block.timeout">No daemon started</fail>
         <sf-ping application="rootProcess" timeout="${medium.timeout}"
-          failonerror="false" successProperty="pinged"/>
+            failonerror="false" successProperty="pinged"/>
         <sf-stopdaemon/>
+      </sequential>
+    </parallel>
+  </target>
+
+
+  <target name="testDifferentPort">
+    <parallel>
+      <sf-startdaemon timeout="${long.timeout}" failonerror="true"
+          port="${new.port}">
+      </sf-startdaemon>
+      <sequential>
+        <sf-block2/>
+        <fail if="block.timeout">No daemon started</fail>
+        <sf-ping application="rootProcess" timeout="${medium.timeout}"
+            port="${new.port}"
+            failonerror="false" successProperty="pinged"/>
+        <sf-stopdaemon port="${new.port}"/>
       </sequential>
     </parallel>
   </target>
@@ -59,7 +79,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         <sf-block/>
         <fail if="block.timeout">No daemon started</fail>
         <sf-ping application="undeployedApp" timeout="${medium.timeout}"
-          failonerror="false" successProperty="pinged"/>
+            failonerror="false" successProperty="pinged"/>
         <sf-stopdaemon/>
       </sequential>
     </parallel>
