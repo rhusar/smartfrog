@@ -19,13 +19,11 @@
  */
 package org.smartfrog.tools.ant.test.system;
 
-import org.smartfrog.tools.ant.DeployingTaskBase;
 import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
- * @author steve loughran
- *         created 27-Feb-2004 16:37:55
+ * @author steve loughran created 27-Feb-2004 16:37:55
  */
 
 public class RunTest extends TaskTestBase {
@@ -45,53 +43,53 @@ public class RunTest extends TaskTestBase {
 
     public void testNoParams() {
         expectBuildExceptionContaining("testNoParams", "no parameters",
-                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
+                ERROR_NO_APPLICATIONS_DECLARED);
     }
+
     /**
-     * failonerror is not deemed to affect the no apps configuration,
-     * as that is a fundamental configuration error
+     * failonerror is not deemed to affect the no apps configuration, as that is a fundamental configuration error
      */
     public void testNoFailure() {
         expectBuildExceptionContaining("testNoFailure", "no parameters",
-                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
+                ERROR_NO_APPLICATIONS_DECLARED);
     }
 
     public void testEmptyApplication() {
         expectBuildExceptionContaining("testEmptyApplication", "anon app",
-                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
+                ERROR_NO_APPLICATION_NAME);
     }
 
     public void testAnonApplication() {
         expectBuildExceptionContaining("testAnonApplication", "anon app",
-                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
+                ERROR_NO_APPLICATION_NAME);
     }
 
     public void testDatalessApplication() {
         expectBuildExceptionContaining("testDatalessApplication", "no descriptor",
-                DeployingTaskBase.Application.ERROR_NO_APPLICATION_DESCRIPTOR);
+                ERROR_NO_APPLICATION_DESCRIPTOR);
     }
 
     public void testBadFile() {
         expectBuildExceptionContaining("testBadFile", "missing file",
-                DeployingTaskBase.Application.ERROR_FILE_NOT_FOUND);
+                ERROR_FILE_NOT_FOUND);
     }
 
 
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "host parameter",
-                "host cannot be set on this task");
+                ERROR_HOST_NOT_SETTABLE);
     }
 
-    public void testRunFile(){
+    public void testRunFile() {
         assertDeployFailsWithUnresolvedReference("testRunFile");
     }
 
     public void testInline() {
         assertDeployFailsWithUnresolvedReference("testInline");
     }
-    
+
     public void testResource() {
-        expectDeployed("testResource","app");
+        expectDeployed("testResource", "app");
         assertInLog("COUNTER: hello - here is a constructed message");
         assertInLog("value is 99");
         assertInLog("goodbye");
@@ -106,7 +104,8 @@ public class RunTest extends TaskTestBase {
         expectBuildExceptionContaining("testStackTrace", "deploy failure",
                 "Could not run");
         assertInLog("Warning: stack trace logging enabled");
-        assertInLog("SmartFrogTypeResolutionException:: , data: [something_that_isntdefined in: HERE sfConfig cause: Reference not found");
+        assertInLog(
+                "SmartFrogTypeResolutionException:: , data: [something_that_isntdefined in: HERE sfConfig cause: Reference not found");
     }
 
 
@@ -122,7 +121,7 @@ public class RunTest extends TaskTestBase {
      * assertions get passed down
      */
     public void testAssertions() {
-        expectDeployed("testAssertions","app");
+        expectDeployed("testAssertions", "app");
         assertInLog("goodbye");
     }
 
@@ -143,7 +142,7 @@ public class RunTest extends TaskTestBase {
     }
 
     public void testValidPropertyFile() {
-        expectDeployed("testValidPropertyFile","EqualsTest");
+        expectDeployed("testValidPropertyFile", "EqualsTest");
     }
 
 

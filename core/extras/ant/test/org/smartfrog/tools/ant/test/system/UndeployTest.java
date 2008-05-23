@@ -20,14 +20,13 @@
 
 package org.smartfrog.tools.ant.test.system;
 
-import junit.framework.TestCase;
-import org.smartfrog.tools.ant.test.TaskTestBase;
 import org.smartfrog.tools.ant.SmartFrogTask;
 import org.smartfrog.tools.ant.StopApplication;
+import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
  * Junit test case for StopApplication
- * 
+ *
  * @author root
  */
 public class UndeployTest extends TaskTestBase {
@@ -56,11 +55,9 @@ public class UndeployTest extends TaskTestBase {
     }
 
     /**
+     * testNoParams:
      *
-     testNoParams:
-
-     BUILD FAILED
-     Missing application name
+     * BUILD FAILED Missing application name
      */
     public void testNoParams() {
         expectBuildExceptionContaining("testNoParams", "no parameters",
@@ -69,8 +66,7 @@ public class UndeployTest extends TaskTestBase {
 
 
     /**
-     * failonerror is not deemed to affect the no apps configuration,
-     * as that is a fundamental configuration error
+     * failonerror is not deemed to affect the no apps configuration, as that is a fundamental configuration error
      */
     public void testNoFailure() {
         expectBuildExceptionContaining("testNoFailure", "no parameters",
@@ -82,12 +78,6 @@ public class UndeployTest extends TaskTestBase {
                 NO_APP);
     }
 
-/*
-    in the log, the started daemon will exit.
-[sf-startdaemon] SmartFrog [rootProcess] dead
-[sf-undeploy] SmartFrog daemon terminated
-
-*/
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "unknown host",
                 StopApplication.ERROR_FAILED_TO_TERMINATE);
@@ -101,7 +91,6 @@ public class UndeployTest extends TaskTestBase {
         assertInLog("SmartFrog daemon terminated");
 
     }
-
 
 
 }

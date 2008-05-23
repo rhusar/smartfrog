@@ -1,4 +1,3 @@
-
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
@@ -23,12 +22,10 @@ package org.smartfrog.tools.ant.test.system;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
- * @author steve loughran
- *         created 27-Feb-2004 14:07:10
+ * @author steve loughran created 27-Feb-2004 14:07:10
  */
 
-public class StopDaemonTest  extends TaskTestBase {
-    private static final String CONNECT_FAILURE = "Connection refused to host";
+public class StopDaemonTest extends TaskTestBase {
 
     private static final String BADHOST = "Unable to locate IP address of the host: no-such-hostname";
 
@@ -45,14 +42,14 @@ public class StopDaemonTest  extends TaskTestBase {
         return "stop.xml";
     }
 
-    public  void testNoParams() {
+    public void testNoParams() {
         String target = "testNoParams";
         expectConnectFailure(target);
     }
 
     private void expectConnectFailure(String target) {
         expectExceptionWithLogContaining(target,
-                CONNECT_FAILURE,
+                CONNECTION_REFUSED,
                 target);
     }
 
@@ -61,7 +58,7 @@ public class StopDaemonTest  extends TaskTestBase {
     }
 
     public void testNoFailure() {
-        expectLogContaining("testNoFailure", CONNECT_FAILURE);
+        expectLogContaining("testNoFailure", CONNECTION_REFUSED);
     }
 
 
