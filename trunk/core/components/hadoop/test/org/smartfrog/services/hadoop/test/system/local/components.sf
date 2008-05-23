@@ -90,3 +90,7 @@ LocalJobTrackerCompound extends LocalHadoopCompound {
     logDir LAZY PARENT:logDir;
   }
 }
+
+LightweightTaskTracker extends TaskTracker {
+  tasktracker.http.threads 4;
+}
