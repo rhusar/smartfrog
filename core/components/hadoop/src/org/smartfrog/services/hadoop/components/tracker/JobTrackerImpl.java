@@ -19,15 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.tracker;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.apache.hadoop.mapred.ExtJobTracker;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
-import org.apache.hadoop.mapred.ExtJobTracker;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Created 19-May-2008 13:55:33
@@ -35,7 +39,7 @@ import java.io.IOException;
 
 public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster {
 
-    ExtJobTracker tracker;
+    private TrackerThread worker;
 
     public JobTrackerImpl() throws RemoteException {
     }
@@ -50,8 +54,16 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         try {
-            tracker = new ExtJobTracker(createConfiguration());
-            tracker.offerService();
+
+            //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
+            //to an empty string if it is not set
+            //see https://issues.apache.org/jira/browse/HADOOP-3438
+            if (System.getProperty("hadoop.log.dir") == null) {
+                System.setProperty("hadoop.log.dir", ".");
+            }
+            ExtJobTracker tracker = new ExtJobTracker(createConfiguration());
+            worker = new TrackerThread(tracker);
+            worker.start();
         } catch (IOException e) {
             throw new SmartFrogLifecycleException("When creating the job tracker " + e.getMessage(), e, this);
         } catch (InterruptedException e) {
@@ -67,8 +79,68 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if (tracker != null) {
-            tracker.terminate();
+        SmartFrogThread t = worker;
+        worker = null;
+        SmartFrogThread.requestThreadTermination(t);
+    }
+
+    /**
+     * Liveness call in to check if this component is still alive.
+     *
+     * @param source source of call
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     */
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        if (worker == null || worker.isFinished()) {
+            throw new SmartFrogLivenessException("Worker is not running");
+        }
+        try {
+            worker.getTracker().ping();
+        } catch (IOException e) {
+            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward("Job Tracker is failing", e);
+        }
+    }
+
+    /**
+     * This is a private worker thread that can be interrupted better
+     */
+    private class TrackerThread extends WorkflowThread {
+        private ExtJobTracker tracker;
+
+        /**
+         * Creates a new thread
+         */
+        private TrackerThread(ExtJobTracker tracker) {
+            super(JobTrackerImpl.this, true);
+            this.tracker = tracker;
+        }
+
+        /**
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
+         * of <code>Thread</code> should override this method.
+         *
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            tracker.offerService();
+        }
+
+        public ExtJobTracker getTracker() {
+            return tracker;
+        }
+
+        /**
+         * Add an interrupt to the thread termination
+         */
+        public synchronized void requestTermination() {
+            if (!isTerminationRequested()) {
+                super.requestTermination();
+                //and interrupt
+                interrupt();
+            }
         }
     }
 }

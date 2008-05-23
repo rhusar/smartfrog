@@ -22,35 +22,30 @@
 package org.apache.hadoop.dfs;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.StringUtils;
-import org.smartfrog.services.hadoop.core.HadoopPingable;
 import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 import org.smartfrog.services.hadoop.core.proposed.HadoopIOException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.AbstractList;
 
 /**
- * This class is in the hadoop dfs package to get at package scoped operations
- * and internal datastructures that are only visible in package scope.
- * <p/>
- * To use these classes in a secure classloader, both the hadoop-core and
- * sf-hadoop JARs will need to be signed by the same entities.
+ * This class is in the hadoop dfs package to get at package scoped operations and internal datastructures that are only
+ * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
+ * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements HadoopPingable, HadoopComponentLifecycle {
+public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
 
     private boolean stopped;
     private DataNodeThread worker;
     private Prim owner;
-    private State state=State.CREATED;
+    private State state = State.CREATED;
 
-    public ExtDataNode(Prim owner,Configuration conf, AbstractList<File> dataDirs)
+    public ExtDataNode(Prim owner, Configuration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
         this.owner = owner;
@@ -109,12 +104,9 @@ public class ExtDataNode extends DataNode implements HadoopPingable, HadoopCompo
     }
 
     /**
-     * No matter what kind of exception we get, keep retrying to offerService().
-     * That's the loop that connects to the NameNode and provides basic DataNode
-     * functionality.
-     * <p/>
-     * Only stop when "shouldRun" is turned off (which can only happen at
-     * shutdown).
+     * No matter what kind of exception we get, keep retrying to offerService(). That's the loop that connects to the
+     * NameNode and provides basic DataNode functionality. <p/> Only stop when "shouldRun" is turned off (which can only
+     * happen at shutdown).
      */
     public void run() {
         try {
@@ -159,7 +151,6 @@ public class ExtDataNode extends DataNode implements HadoopPingable, HadoopCompo
     }
 
 
-
     /**
      * This is a private worker thread that can be interrupted better
      */
@@ -173,10 +164,9 @@ public class ExtDataNode extends DataNode implements HadoopPingable, HadoopCompo
         }
 
         /**
-         * If this thread was constructed using a separate {@link Runnable} run
-         * object, then that <code>Runnable</code> object's <code>run</code>
-         * method is called; otherwise, this method does nothing and returns.
-         * <p> Subclasses of <code>Thread</code> should override this method.
+         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
+         * of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */

@@ -373,11 +373,11 @@ HadoopConfiguration extends Prim {
   /**
    * trash management
    */
-    /**
-     Number of minutes between trash checkpoints.
-    If zero, the trash feature is disabled.
-    */
-    fs.trash.interval 0;
+  /**
+   Number of minutes between trash checkpoints.
+  If zero, the trash feature is disabled.
+  */
+  fs.trash.interval 0;
 
 
 
@@ -389,7 +389,7 @@ HadoopConfiguration extends Prim {
   it is in the local file system at ${hadoop.log.dir}/history.
   */
 
-  //hadoop.job.history.location "jobTracker/history";
+  hadoop.job.history.location "jobTracker/history";
 
   /**
   User can specify a location to store the history files of
@@ -450,10 +450,6 @@ HadoopConfiguration extends Prim {
   /* =============================================================== */
   /* i/o properties */
 
-  /**The number of bytes per checksum.  Must not be larger than
-  io.file.buffer.size.*/
-  //used when fs is ramfs
-  io.bytes.per.checksum  512;
 
 
   /** Do not compress records. */
@@ -463,6 +459,10 @@ HadoopConfiguration extends Prim {
   /** Compress sequences of records together in blocks. */
   COMPRESSION_BLOCK "BLOCK";
 
+  /**The number of bytes per checksum.  Must not be larger than
+  io.file.buffer.size.*/
+  //used when fs is ramfs
+  io.bytes.per.checksum  512;
 
   /**
   A list of the compression codec classes that can be used
@@ -552,26 +552,6 @@ HadoopConfiguration extends Prim {
   /* =============================================================== */
   /* ipc properties */
 
-  /**Defines the timeout for IPC calls in milliseconds.*/
-  ipc.client.timeout  (60*1000);
-
-  /**
-  Defines the threshold number of connections after which
-  connections will be inspected for idleness.
-  */
-  ipc.client.idlethreshold  4000;
-
-  /**
-  Defines the maximum idle time for a connected client after
-  which it may be disconnected.
-  */
-  ipc.client.maxidletime  120000;
-
-  /**
-  Defines the maximum number of clients to disconnect in one go.
-  */
-  ipc.client.kill.max 10;
-
   /**
   The maximum time after which a client will bring down the
   connection to the server.
@@ -583,6 +563,35 @@ HadoopConfiguration extends Prim {
   a server connection.
   */
   ipc.client.connect.max.retries 10;
+
+
+  /**
+  Defines the threshold number of connections after which
+  connections will be inspected for idleness.
+  */
+  ipc.client.idlethreshold  4000;
+
+  /**
+  Defines the maximum number of clients to disconnect in one go.
+  */
+  ipc.client.kill.max 10;
+  /**
+  Defines the maximum idle time for a connected client after
+  which it may be disconnected.
+  */
+  ipc.client.maxidletime  120000;
+
+  /**
+  Turn on/off Nagle's algorithm for the TCP socket connection on
+  the client. Setting to true disables the algorithm and may decrease latency
+  with a cost of more/smaller packets.
+  */
+  ipc.client.tcpnodelay false;
+
+  /**
+  Defines the timeout for IPC calls in milliseconds
+  .*/
+  ipc.client.timeout  (60*1000);
 
   /**
   Indicates the length of the listen queue for servers accepting
@@ -637,6 +646,27 @@ HadoopConfiguration extends Prim {
   calls*/
   job.end.retry.interval   30000;
 
+  /**
+   * these values are from the job tracker source
+   */
+  jobtracker.task.commit.batch.size 5000;
+
+
+  /**
+  Should the files for failed tasks be kept. This should only be
+   used on jobs that are failing, because the storage is never
+   reclaimed. It also prevents the map outputs from being erased
+   from the reduce directory as they are consumed.
+   */
+  keep.failed.task.files  false;
+
+  /**
+  Keep all files from tasks whose task names match the given
+  regular expression. Defaults to none.
+  */
+
+  keep.task.files.pattern  NULL;
+
 
   /* =============================================================== */
   /* This is really a mapred property */
@@ -651,6 +681,11 @@ HadoopConfiguration extends Prim {
   /* map/reduce properties */
 
 
+  /**
+  * SOURCEONLY TaskTracker.taskFinished()
+  * lines of diagnostics to add. -1 means oall
+  */
+  mapred.debug.out.lines -1;
  
 
   /**
@@ -704,7 +739,14 @@ HadoopConfiguration extends Prim {
   Note: mapred.child.ulimit must be greater than or equal to the -Xmx passed to
   JavaVM, else the VM might not start.
   */
-  mapred.child.ulimit
+  mapred.child.ulimit "";
+
+
+  /**
+  Should the outputs of the maps be compressed before being
+  sent across the network. Uses SequenceFile compression.
+  */
+  mapred.compress.map.output false;
 
   /**Names a file that contains the list of nodes that may
   connect to the jobtracker.  If the value is empty, all hosts are
@@ -733,7 +775,7 @@ HadoopConfiguration extends Prim {
   at.  If "local", then jobs are run in-process as a single map
   and reduce task.
   */
-  mapred.job.tracker  "local";
+  mapred.job.tracker  "localhost:8012";
 
   /**
   The maximum number of complete jobs per user to keep around before delegating them
@@ -789,14 +831,6 @@ HadoopConfiguration extends Prim {
   mapred.jobtracker.taskalloc.loadbalance.epsilon  0.2;
   mapred.jobtracker.taskalloc.capacitypad  0.01;
 
-  /**
-  mapred.tasktracker.expiry.interval (10 * 60 * 1000);
-  */
-/**
- * these values are from the job tracker source
- */
-  jobtracker.task.commit.batch.size 5000;
-
 
 
  /**
@@ -836,11 +870,11 @@ HadoopConfiguration extends Prim {
   mapred.map.max.attempts  4;
 
 
-  /**
-  Should the outputs of the maps be compressed before being
-  sent across the network. Uses SequenceFile compression.
+
+  /**If the map outputs are compressed, how should they be
+             compressed?
   */
-  mapred.compress.map.output  false;
+  mapred.map.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
 
   /**
   If the map outputs are to compressed, how should they
@@ -848,10 +882,6 @@ HadoopConfiguration extends Prim {
   */
   mapred.map.output.compression.type  COMPRESSION_RECORD;
 
-  /**If the map outputs are compressed, how should they be
-             compressed?
-  */
-  mapred.map.output.compression.codec  "org.apache.hadoop.io.compress.DefaultCodec";
 
   /**
   The number of task-failures on a tasktracker of a given job
@@ -973,6 +1003,11 @@ HadoopConfiguration extends Prim {
   mapred.tasktracker.dns.nameserver  "default";
 
   /**
+   * SOURCEONLY the probe sample size (?)
+   */
+  mapred.tasktracker.events.batchsize 500;
+
+  /**
   Expert: The time-interval, in miliseconds, after which
   a tasktracker is declared 'lost' if it doesn't send heartbeats.
   */
@@ -987,10 +1022,10 @@ HadoopConfiguration extends Prim {
   mapred.tasktracker.map.tasks.maximum  2;
 
   /**
-  The maximum number of reduce tasks that will be run
+  The minimum number of reduce tasks that will be run
   simultaneously by a task tracker.
   */
-  mapred.tasktracker.reduce.tasks.maximum  2;
+  mapred.tasktracker.reduce.tasks.minimum  2;
 
  /**
   The interface and port that task tracker server listens on.
@@ -1011,21 +1046,10 @@ HadoopConfiguration extends Prim {
   */
   mapred.task.tracker.http.address  "0.0.0.0:50060";
 
-  /**Should the files for failed tasks be kept. This should only be
-   used on jobs that are failing, because the storage is never
-   reclaimed. It also prevents the map outputs from being erased
-   from the reduce directory as they are consumed.*/
-  keep.failed.task.files  false;
 
   /**
-  Keep all files from tasks whose task names match the given
-  regular expression. Defaults to none.*/
-  /*
-  keep.task.files.pattern  ".*_m_123456_0";
-  */
-
-
-  /**The maximum size of user-logs of each task in KB. 0 disables the cap.
+  The maximum size of user-logs of each task in KB.
+   0 disables the cap.
   */
   mapred.userlog.limit.kb  0;
 
@@ -1034,10 +1058,22 @@ HadoopConfiguration extends Prim {
   */
   mapred.userlog.retain.hours  24;
 
+  /**
+   * Used by tasktrackers to determine their name. If not null, it is used instead of the local
+   * hostname
+   */
+  slave.host.name NULL;
 
+  /**
+  enable the server to track time spent waiting on locks
+  */
+  tasktracker.contention.tracking false;
 
+  /**
+   * number of worker threads for the task tracker
+   */
+  tasktracker.http.threads 40;
 
-  //* class with topology awareness
   /**
    The default implementation of the DNSToSwitchMapping. It
     invokes a script specified in topology.script.file.name to resolve
@@ -1084,7 +1120,9 @@ SimpleSite extends HadoopConfiguration{
  dfs.replication 1;
 }
 
-
+/**
+ * These are the task statuses for the jobclient.output.filter property
+ */
 TaskStatus extends  NULL {
   None "NONE";
   Killed "KILLED";
@@ -1271,6 +1309,8 @@ JobConfiguration extends HadoopConfiguration  {
   mapred.task.profile false;
 
 
+
+
  /**
    * The user-specified session identifier. The default is the empty string.
    *
@@ -1287,9 +1327,13 @@ JobConfiguration extends HadoopConfiguration  {
    */
 
     session.id "";
+
+
     user.name PROPERTY user.name;
+
     /* job user group info */
     hadoop.job.ugi ((PROPERTY user.name) ++ ", users");
+
 }
 
 
