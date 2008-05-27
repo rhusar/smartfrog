@@ -39,17 +39,19 @@ public class DependenciesTest extends DeployingTestBase {
 
     public void testManagedEntity() throws Throwable {
     	//deploy
-    	Prim threadpool=deployExpectingSuccess(FILES+"testManagedEntitiesTP.sf","testManagedEntitiesTP");
-        application=deployExpectingSuccess(FILES+"testManagedEntities.sf","testManagedEntities");
-        
-        //test it
-        String output = (String) application.sfResolve("output"); 
-    	System.out.println("*****************************************************");
-    	System.out.println(output);
-    	assertEquals(output,"foo0cfoo1cfoo2cfoo2rfoo1rfoo0r");
-        
-        //clean up
-        terminateApplication();
-        threadpool.sfTerminate(TerminationRecord.normal(null));
+        Prim threadpool = null;
+        try {
+            threadpool = deployExpectingSuccess(FILES + "testManagedEntitiesTP.sf", "testManagedEntitiesTP");
+            application = deployExpectingSuccess(FILES + "testManagedEntities.sf", "testManagedEntities");
+
+            //test it
+            String output = (String) application.sfResolve("output");
+            System.out.println("*****************************************************");
+            System.out.println(output);
+            assertEquals("foo0cfoo1cfoo2cfoo2rfoo1rfoo0r", output);
+
+        } finally {
+            terminateApplication(threadpool);
+        }
     }
 }
