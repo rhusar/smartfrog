@@ -7,7 +7,8 @@
     command line invocation
 
 
-    ant -lib ../../dist/lib/*.jar -lib ../../../../smartfrog/dist/lib/*.jar -f start.xml testResource
+ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHOME/lib/sfServices-3.*.jar -f start.xml testDifferentPortDeployUndeploy 
+    
     ant -lib ..\..\build\dist\lib\sf-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib
     ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f start.xml testResource
   </description>
@@ -254,19 +255,15 @@
           <application name="compound">
             #include "/org/smartfrog/components.sf"
             sfConfig extends Compound {
-            sfProcessName "newProcessName";
             }
           </application>
         </sf-deploy>
         <sleep milliseconds="${short.delay}"/>
-        <sf-undeploy application="compound" port="${new.port}"/>
-        <!--        <sf-ping application="compound" timeout="${medium.timeout}"
-       port="${new.port}"
-       failonerror="false" successProperty="pinged2"/>-->
+        <sf-ping application="compound" timeout="${medium.timeout}"
+         port="${new.port}"
+         failonerror="true" />
+        <sf-undeploy application="compound" port="${new.port}" failonerror="true"/>
         <sf-stopdaemon port="${new.port}" failonerror="true"/>
-        <!--
-                <fail unless="pinged2">Failed to ping the process on port ${new.port}"</fail>
-        -->
       </sequential>
     </parallel>
   </target>
