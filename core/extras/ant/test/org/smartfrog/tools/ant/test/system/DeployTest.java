@@ -93,7 +93,6 @@ public class DeployTest extends TaskTestBase {
         expectBuildExceptionContaining("testBadHost", "unknown host",
                 ERROR_COULD_NOT_DEPLOY);
         assertInLog("Unable to locate IP address of the host: no-such-hostname");
-        //assertInLog("java.net.UnknownHostException: no-such-hostname");
     }
 
     /**
