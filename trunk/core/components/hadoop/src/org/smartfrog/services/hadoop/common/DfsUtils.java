@@ -87,14 +87,15 @@ public class DfsUtils {
      * Delete a DFS directory. Cleans up afterwards
      * @param conf DFS configuration
      * @param dir directory to delete
+     * @param recursive recurseive delete?
      * @throws SmartFrogRuntimeException if anything goes wrong
      */
-    public static void deleteDFSDirectory(ManagedConfiguration conf, String dir) throws SmartFrogRuntimeException {
+    public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive) throws SmartFrogRuntimeException {
         DistributedFileSystem dfs = createFileSystem(conf);
         URI dfsURI = dfs.getUri();
         Path path = new Path(dir);
         try {
-            dfs.delete(path);
+            dfs.delete(path, recursive);
         } catch (IOException e) {
             closeQuietly(dfs);
             throw (SmartFrogRuntimeException) SmartFrogRuntimeException
@@ -117,7 +118,7 @@ public class DfsUtils {
      * @return the status or null for no such path
      * @throws IOException for communications problems
      */
-    public static FileStatus stat(DistributedFileSystem fileSystem,Path path) throws IOException {
+    public static FileStatus stat(DistributedFileSystem fileSystem, Path path) throws IOException {
         try {
             if (fileSystem.exists(path)) {
                 return fileSystem.getFileStatus(path);

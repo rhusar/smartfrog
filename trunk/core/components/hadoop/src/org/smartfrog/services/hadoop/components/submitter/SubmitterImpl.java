@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.submitter;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
+import org.apache.hadoop.mapred.JobID;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
@@ -53,7 +54,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
     private Prim jobPrim;
     private String jobURL;
-    private String jobID;
+    private JobID jobID;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -87,7 +88,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, Job.ATTR_LOCAL_DIR);
 
         if (deleteOutputDirOnStartup) {
-            DfsUtils.deleteDFSDirectory(conf, outputDir);
+            DfsUtils.deleteDFSDirectory(conf, outputDir, true);
         }
 
         String jobTracker = jobPrim.sfResolve(MAPRED_JOB_TRACKER, "", true);
@@ -98,7 +99,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             runningJob = jc.submitJob(conf);
 
             //JobClient.runJob(conf);
-            jobID = runningJob.getJobID();
+            jobID = runningJob.getID();
             sfReplaceAttribute(ATTR_JOBID, jobID);
             jobURL = runningJob.getTrackingURL();
             sfReplaceAttribute(ATTR_JOBURL, jobURL);
