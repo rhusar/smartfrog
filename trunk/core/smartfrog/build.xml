@@ -815,6 +815,7 @@
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
       <arg value="-f"/>
+	  <arg value="-D"/>
       <arg file="parsertargets"/>
     </java>
   </target>
