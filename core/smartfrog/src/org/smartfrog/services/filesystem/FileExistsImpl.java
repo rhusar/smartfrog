@@ -65,7 +65,7 @@ public class FileExistsImpl extends FileUsingComponentImpl implements FileExists
         bindWithDir(true, "");
         //get te other values
         minSize = sfResolve(ATTR_MIN_SIZE, minSize, true);
-        maxSize = sfResolve(ATTR_MAXSIZE, maxSize, true);
+        maxSize = sfResolve(ATTR_MAX_SIZE, maxSize, true);
         canBeFile = sfResolve(ATTR_CAN_BE_FILE, true, true);
         canBeDir = sfResolve(ATTR_CAN_BE_DIR, true, true);
         //maybe check on startup
