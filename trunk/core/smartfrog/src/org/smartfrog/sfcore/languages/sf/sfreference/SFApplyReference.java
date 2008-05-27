@@ -20,6 +20,14 @@ public class SFApplyReference extends SFReference implements ReferencePhases {
         super();
         this.comp = comp;
     }
+    
+    /**
+     * Get the component description that forms the basis of this apply reference
+     * @return Component Description
+     */
+    public ComponentDescription getComponentDescription(){
+    	return comp;
+    }
 
     /**
      * Get tje run-time version of the reference
