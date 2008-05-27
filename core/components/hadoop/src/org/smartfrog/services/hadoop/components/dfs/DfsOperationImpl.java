@@ -25,6 +25,7 @@ import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -34,8 +35,8 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 import java.rmi.RemoteException;
 
 /**
- * Base class for DFS operations does nothing useful at all other than resolve the cluster settings and fail if they are absent. It also has support for a
- * worker thread (which get terminated during shutdown, if set)
+ * Base class for DFS operations does nothing useful at all other than resolve the cluster settings and fail if they are
+ * absent. It also has support for a worker thread (which get terminated during shutdown, if set)
  */
 public class DfsOperationImpl extends PrimImpl implements DfsOperation {
 
@@ -49,7 +50,7 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
      * start up, bind to the cluster
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -57,7 +58,8 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -104,11 +106,22 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
     }
 
     /**
+     * Create a filesystem from our configuration
+     *
+     * @return a new file system
+     * @throws SmartFrogRuntimeException for any problem creating the FS.
+     */
+    protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException {
+        ManagedConfiguration conf = createConfiguration();
+        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
+        return fileSystem;
+    }
+
+    /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
      *
      * @param fileSystem the filesystem; this is closed afterwards
      * @param conf       the configuration driving this operation
-     *
      * @throws Exception on any failure
      */
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf)
@@ -151,7 +164,8 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
     }
 
     /**
-     * This is a worker thread that optionally can be started by the DfsOperationImpl subclass, in which case it calls back to do useful work.
+     * This is a worker thread that optionally can be started by the DfsOperationImpl subclass, in which case it calls
+     * back to do useful work.
      */
     protected class DfsWorkerThread extends WorkflowThread {
 
@@ -165,7 +179,8 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
         }
 
         /**
-         * Call back into the {@link DfsOperationImpl#performDfsOperation()} operation of the owner class; that is where the work should be implemented.
+         * Call back into the {@link DfsOperationImpl#performDfsOperation()} operation of the owner class; that is where
+         * the work should be implemented.
          *
          * @throws Throwable if anything went wrong
          */

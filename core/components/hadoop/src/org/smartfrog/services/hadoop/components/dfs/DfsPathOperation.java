@@ -23,12 +23,12 @@ package org.smartfrog.services.hadoop.components.dfs;
 /**
  * a directory operation needs a directory as well as a cluster
  */
-public interface DfsDirOperation extends DfsOperation {
+public interface DfsPathOperation extends DfsOperation {
 
     /**
      * {@value}
      */
-    String ATTR_DIR = "dir";
+    String ATTR_PATH = "path";
 
     String ATTR_IDEMPOTENT = "idempotent";
 
