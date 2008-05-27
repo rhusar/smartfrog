@@ -32,6 +32,7 @@ ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib
 
   <target name="testDefaults" depends="setup">
     <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf"
+        diagnostics="true"
         timeout="${short.timeout}"/>
   </target>
 

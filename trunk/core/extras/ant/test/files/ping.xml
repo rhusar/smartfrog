@@ -48,7 +48,7 @@
         <sf-block/>
         <fail if="block.timeout">No daemon started</fail>
         <sf-ping application="rootProcess" timeout="${medium.timeout}"
-            failonerror="false" successProperty="pinged"/>
+            failonerror="false" successProperty="pinged" diagnostics="true"/>
         <sf-stopdaemon/>
       </sequential>
     </parallel>
