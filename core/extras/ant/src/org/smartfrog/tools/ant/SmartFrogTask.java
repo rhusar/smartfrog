@@ -63,6 +63,11 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      */
     private boolean spawn;
 
+    /**
+     * Flag to turn diagnostics on
+     */
+    private boolean diagnostics = false;
+
     public static final String MESSAGE_SPAWNED_DAEMON = "Spawned SmartFrog daemon started";
     public static final String MESSAGE_IGNORING_FAILONERROR = "Ignoring failonerror setting for spawned application";
     public static final String MESSAGE_IGNORING_TIMEOUT = "Ignoring timeout setting for spawned application";
@@ -77,6 +82,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     public static final String ERROR_MISSING_INITIAL_SMARTFROG_FILE = "Not found: ";
     public static final String LOCALHOST_IPV4 = "127.0.0.1";
     public static final String EXIT_AFTER_STARTING = "-e";
+    public static final String SF_DIAGNOSTICS = "-d";
 
     protected SmartFrogTask() {
 
@@ -385,6 +391,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         addArg(EXIT_AFTER_STARTING);
     }
 
+
     /**
      * sets the fail on error flag. Once this is done you cannot spawn the process any more.
      */
@@ -401,6 +408,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         this.failOnError = failOnError;
 
     }
+
+
 
     /**
      * assertions to enable in the new JVM.
@@ -431,7 +440,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * is spawen set
+     * is spawn set
      *
      * @return the spawn flag
      */
@@ -440,9 +449,28 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
+     * Is diagnostics enabled?
+     * @return true if it is
+     */
+    public boolean isDiagnostics() {
+        return diagnostics;
+    }
+
+    /**
+     * set the diagnostics flag
+     * @param diagnostics
+     */
+    public void setDiagnostics(boolean diagnostics) {
+        this.diagnostics = diagnostics;
+    }
+
+    /**
      * set various standard properties if they are set in the task
      */
     protected void setStandardSmartfrogProperties() {
+        if(diagnostics) {
+            addArg(SF_DIAGNOSTICS);
+        }
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LOG_STACK_TRACE,
                 logStackTraces);
         addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.ROOT_LOCATOR_PORT,
