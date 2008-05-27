@@ -32,4 +32,5 @@ public interface DfsOperation extends Remote {
      */
     String ATTR_CLUSTER = "cluster";
 
+    String ATTR_RECURSIVE = "recursive";
 }

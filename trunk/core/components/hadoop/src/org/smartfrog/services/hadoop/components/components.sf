@@ -20,6 +20,7 @@
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/hadoop/components/classnames.sf"
 #include "/org/smartfrog/services/hadoop/components/hadoopconfiguration.sf"
+#include "/org/smartfrog/services/hadoop/components/dfs/components.sf"
 #include "/org/smartfrog/services/hadoop/components/tracker/components.sf"
 #include "/org/smartfrog/services/hadoop/components/submitter/components.sf"
 #include "/org/smartfrog/services/hadoop/components/cluster/components.sf"

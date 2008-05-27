@@ -21,23 +21,23 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 import java.rmi.RemoteException;
 
 /**
- * Create a directory
+ *
  */
-public class DfsCreateDirImpl extends DfsPathOperationImpl {
+public class DfsPathOperationImpl extends DfsOperationImpl implements DfsPathOperation {
 
+    private String pathName;
+    private Path path;
+    private boolean idempotent;
 
-    public DfsCreateDirImpl() throws RemoteException {
+    public DfsPathOperationImpl() throws RemoteException {
     }
-
 
     /**
      * start up, bind to the cluster
@@ -47,22 +47,29 @@ public class DfsCreateDirImpl extends DfsPathOperationImpl {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        startWorkerThread();
+        idempotent = sfResolve(ATTR_IDEMPOTENT, true, true);
+        pathName = sfResolve(ATTR_PATH, "", true);
+        try {
+            path = new Path(pathName);
+        } catch (IllegalArgumentException e) {
+            throw new SmartFrogLifecycleException("Failed to create path " + e.getMessage(), e, this);
+        }
     }
 
     /**
-     * do the work
+     * Get the path name
      *
-     * @param fileSystem the filesystem; this is closed afterwards
-     * @param conf       the configuration driving this operation
-     * @throws Exception on any failure
+     * @return the path as a string
      */
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
-        Path path = getPath();
-        if (!fileSystem.exists(path)) {
-            fileSystem.mkdirs(path);
-        } else if (!isIdempotent()) {
-            throw new SmartFrogDeploymentException("Cannot create " + path.toString() + " as it already exists");
-        }
+    public String getPathName() {
+        return pathName;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public boolean isIdempotent() {
+        return idempotent;
     }
 }

@@ -34,7 +34,7 @@ import java.rmi.RemoteException;
 /**
  * delete a directory
  */
-public class DfsDeleteDirImpl extends DfsDirOperationImpl {
+public class DfsDeleteDirImpl extends DfsPathOperationImpl {
 
     public static final String ERROR_CANNOT_DELETE_DIRECTORY = "Cannot delete directory";
     public static final String ERROR_NOT_PRESENT = " as it is not present";
@@ -48,7 +48,7 @@ public class DfsDeleteDirImpl extends DfsDirOperationImpl {
      * start up, bind to the cluster
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -60,11 +60,11 @@ public class DfsDeleteDirImpl extends DfsDirOperationImpl {
      *
      * @param fileSystem the filesystem; this is closed afterwards
      * @param conf       the configuration driving this operation
-     *
      * @throws Exception on any failure
      */
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
+        boolean recursive = sfResolve(ATTR_RECURSIVE, true, true);
         FileStatus status = DfsUtils.stat(fileSystem, path);
         if (status == null) {
             if (isIdempotent()) {
@@ -73,9 +73,10 @@ public class DfsDeleteDirImpl extends DfsDirOperationImpl {
             throw new SmartFrogDeploymentException(ERROR_CANNOT_DELETE_DIRECTORY + path.toString() + ERROR_NOT_PRESENT);
         }
         if (status.isDir()) {
-            fileSystem.delete(path);
+            fileSystem.delete(path, recursive);
         } else {
-            throw new SmartFrogDeploymentException(ERROR_CANNOT_DELETE_DIRECTORY + path.toString() + ERROR_NOT_DIRECTORY);
+            throw new SmartFrogDeploymentException(
+                    ERROR_CANNOT_DELETE_DIRECTORY + path.toString() + ERROR_NOT_DIRECTORY);
         }
 
     }

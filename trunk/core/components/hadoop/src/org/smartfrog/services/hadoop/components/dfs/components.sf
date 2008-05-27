@@ -60,24 +60,76 @@ For more information: www.smartfrog.org
   }
 
  /**
-  * All directory operations take a directory
+  * All path operations take a path
   */
 
-  DfsDirOperation extends DfsOperation {
-    dir TBD;
-    //is it an error when creating or deleting a directory if the action has already been applied
+  DfsPathOperation extends DfsOperation {
+    path TBD;
+
+    //is this operation an error when the action has already been applied?
     idempotent true;
   }
 
-  DfsCreateDir extends DfsDirOperation {
+  DfsCreateDir extends DfsPathOperation {
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCreateDirImpl";
     permissionPattern permission_a+rwx;
   }
 
-  DfsDeleteDir extends DfsDirOperation {
+  /**
+   Delete a directory
+   */
+  DfsDeleteDir extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsDeleteDirImpl";
+    //should deletion be recursive?
+    recursive true;
   }
 
-  DfsListDir extends DfsDirOperation {
-
+  /**
+    * List a directory. The component can also check the min/max file count size
+    */
+  DfsListDir extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsListDirImpl";
+    minFileCount 0;
+    maxFileCount -1;
   }
  
+
+/**
+ * A component to check the status of a directory
+ */
+
+  DfsPathExists extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsPathExistsImpl";
+    //flag to enable startup checking
+    checkOnStartup true;
+    //flag to enable liveness checking
+    checkOnLiveness true;
+    //flag to say the path can resolve to a file
+    canBeFile true;
+    //flag to say the path can resolve to a directory
+    canBeDir true;
+    //minimum size of the file (only checked if the path resolves to a file)
+    minFileSize 0;
+    //maximum size of the file (only checked if the path resolves to a file); -1 means 'dont care'
+    maxFileSize -1;
+  }
+
+
+  /**
+   * This turns the component into a condition by
+   * removing the startup and liveness tests
+   */
+  DfsPathExistsCondition extends DfsPathExists {
+    checkOnStartup false;
+    checkOnLiveness false;
+  }
+
+
+  /**
+   * This turns the component into a workflow by
+   * terminating the path on startup
+   */
+  DfsPathExistsWorkflow extends DfsPathExists {
+    sfShouldTerminate true;
+    checkOnLiveness false;
+  }
