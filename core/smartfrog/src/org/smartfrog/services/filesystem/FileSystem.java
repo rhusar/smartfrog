@@ -62,7 +62,7 @@ public final class FileSystem {
     /**
      * Error text when a looked up reference resolves to something that is not yet deployed. {@value}
      */
-    public static final String ERROR_UNDEPLOYED_CD = "This attribute resolves" +
+    public static final String ERROR_UNDEPLOYED_CD = "This attribute resolves " +
             "to a not-yet-deployed component: ";
     public static final String ERROR_INACCESSIBLE_FILE =
             "Error! File is not accessible : ";
