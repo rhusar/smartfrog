@@ -84,7 +84,7 @@ LocalFormat extends LocalHadoopCompound {
 LocalJobTrackerCompound extends LocalHadoopCompound {
   description "A job tracker";
 
-  LocalJobTracker extends JobTracker {
+  jobTracker extends JobTracker {
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
     logDir LAZY PARENT:logDir;
@@ -92,5 +92,30 @@ LocalJobTrackerCompound extends LocalHadoopCompound {
 }
 
 LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
   tasktracker.http.threads 4;
+}
+
+
+LocalTaskTrackerCompound extends LocalHadoopCompound {
+  description "A task tracker";
+
+  taskTracker extends LightweightTaskTracker {
+  }
+}
+
+
+LocalClusterCompound extends LocalDataNodeCompound {
+
+  description "a full cluster";
+
+  jobTracker extends JobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+  }
+
+  taskTracker extends LightweightTaskTracker {
+    mapred.job.tracker jobTracker:mapred.job.tracker;
+  }
 }

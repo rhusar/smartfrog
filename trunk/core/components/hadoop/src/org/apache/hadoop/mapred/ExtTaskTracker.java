@@ -21,6 +21,7 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 
 import java.io.IOException;
@@ -31,9 +32,9 @@ import java.io.IOException;
 
 public class ExtTaskTracker extends TaskTracker implements HadoopComponentLifecycle {
 
-    private static Log log = LogFactory.getLog(ExtTaskTracker.class);
+    private static final Log log = LogFactory.getLog(ExtTaskTracker.class);
 
-    public ExtTaskTracker(JobConf conf) throws IOException {
+    public ExtTaskTracker(ManagedConfiguration conf) throws IOException {
         super(conf);
     }
 
@@ -61,7 +62,7 @@ public class ExtTaskTracker extends TaskTracker implements HadoopComponentLifecy
      * @throws IOException for any ping failure
      */
     public void ping() throws IOException {
-//no-op
+        //no-op
     }
 
     /**
