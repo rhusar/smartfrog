@@ -20,6 +20,7 @@
   <!-- at the end of every execution, we force a cleanup -->
   <target name="teardown">
     <sf-stopdaemon failonerror="false"/>
+    <sf-stopdaemon failonerror="false" port="${new.port}"/>
   </target>
 
   <target name="testNoParams">
