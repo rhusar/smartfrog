@@ -1407,7 +1407,8 @@ public class Display extends JFrame
 
         String imagesPath = Display.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
-        imagesPath = imagesPath + "frog.gif";
+        //imagesPath = imagesPath + "frog.gif";
+        imagesPath = imagesPath + "SplodgeGreen32.gif";
         this.setIconImage(createImage(imagesPath));
 
         documentScreen = screen.getDocument();
