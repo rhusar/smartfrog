@@ -70,7 +70,7 @@ public final class SFNull implements Serializable {
     /**
      * Print String for display
      *
-     * @return the string "", which is the form required for the unparse
+     * @return the string "NULL", which is the form required for the unparse
      */
     public String toString() {
         return "NULL";
