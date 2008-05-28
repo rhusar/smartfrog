@@ -118,11 +118,14 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @throws SmartFrogException on trouble
      * @throws RemoteException    on trouble
      */
+    @SuppressWarnings("unchecked")
     protected void readConfiguration() throws SmartFrogException,
             RemoteException {
         ifValue = sfResolve(ATTR_IF, ifValue, false);
         unlessValue = sfResolve(ATTR_UNLESS, unlessValue, false);
-        List nestedClasses = (List) sfResolve(ATTR_CLASSES,
+
+        List nestedClasses;
+        nestedClasses = (List) sfResolve(ATTR_CLASSES,
                 (List) null,
                 false);
         classes = ListUtils.flattenStringList(nestedClasses,
@@ -420,7 +423,7 @@ public class JUnit3TestSuiteImpl extends AbstractTestSuite implements JUnitTestS
      * @param context context to inject
      */
     private void injectTestContext(TestSuite tests, HashMap<String, Object> context) {
-        Enumeration t = tests.tests();
+        Enumeration<?> t = tests.tests();
         while (t.hasMoreElements()) {
             Test test = (Test) t.nextElement();
             injectTestContext(test, context);
