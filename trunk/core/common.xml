@@ -421,9 +421,14 @@ java.class.path=
         -set up the classpath. Dont forget to
         include a reference to smartfrog.classpath to get the core stuff
       -->
+    <!-- set to withOutAndErr for more details-->
+    <property name="junit.printsummary" value="off" />
+    <property name="junit.showoutput" value="true" />
+    <!-- set to brief for brief, plain for more -->
+    <property name="junit.printformatter" value="plain" />
     <presetdef name="sf-junit">
-      <junit printsummary="no"
-           fork="true"
+      <junit printsummary="${junit.printsummary}"
+          fork="true"
            forkmode="once"
            includeantruntime="true"
            showoutput="true"
@@ -440,7 +445,7 @@ java.class.path=
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
-        <formatter type="brief" usefile="false"/>
+        <formatter type="${junit.printformatter}" usefile="false"/>
       </junit>
     </presetdef>
 
