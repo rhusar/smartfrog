@@ -24,6 +24,7 @@ package org.smartfrog.services.hadoop.conf;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -42,6 +43,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import java.net.URL;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 import java.io.OutputStream;
@@ -160,9 +163,11 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
     public String get(String name, String defaultValue) {
         try {
             Object result = source.sfResolve(name, false);
-            return result != null ?
-                    result.toString()
-                    : defaultValue;
+            if (result == null || result instanceof SFNull) {
+                return defaultValue;
+            } else {
+                return result.toString();
+            }
         } catch (SmartFrogResolutionException e) {
             throw new SFHadoopRuntimeException(e);
         } catch (RemoteException e) {
@@ -398,4 +403,22 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
             return "(" + e.toString() + ")";
         }
     }
+
+    /**
+     * Bind to a network address; something like  "0.0.0.0:50030" is expected.
+     * @param addressName the property for the address
+     * @param bindAddressName old style hostname
+     * @param bindAddressPort old style host port
+     * @return
+     * @throws IllegalArgumentException if the arguments are bad
+     */
+  public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {
+      String infoAddr =
+              NetUtils.getServerAddress(this,
+                      bindAddressName,
+                      bindAddressPort,
+                      addressName);
+      InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
+      return socketAddress;
+  }
 }

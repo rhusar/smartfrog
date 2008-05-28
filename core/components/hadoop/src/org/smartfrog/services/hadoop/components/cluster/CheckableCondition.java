@@ -17,32 +17,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.apache.hadoop.dfs;
+package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.conf.Configuration;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.services.assertions.AssertComponent;
 
 /**
- * Utility methods that need to be in the right package
- *
+ * An interface for conditions that may choose to check themselves on startup or liveness.
+ * Created 28-May-2008 15:43:54
  */
 
-public class ExtDfsUtils {
 
-    private ExtDfsUtils() {
-    }
-
+public interface CheckableCondition extends Condition {
     /**
-     * Format a name node
-     * @param dirsToFormat directories to format
-     * @param conf the configuration
-     * @throws IOException
+     *  Check on startup {@value}
      */
-    public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat), conf);
-        nsys.dir.fsImage.format();
-    }
+    String ATTR_CHECK_ON_STARTUP = AssertComponent.ATTR_CHECK_ON_STARTUP;
+    /**
+     * Check on liveness {@value}
+     */
+    String ATTR_CHECK_ON_LIVENESS = AssertComponent.ATTR_CHECK_ON_LIVENESS;
+
 }

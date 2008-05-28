@@ -28,22 +28,20 @@ import java.rmi.Remote;
  */
 
 
-public interface CheckDiskSpace extends Condition {
+public interface CheckDiskSpace extends CheckableCondition {
 
     /**
-     * Vector of directories
+     * Vector of directories: {@value}
      */
     String ATTR_DIRECTORIES ="directories";
 
-    /** minimum MB */
-    String ATTR_MINAVAILABLEMB="minAvailableMB";
+    /** minimum MB:{@value} */
+    String ATTR_MIN_AVAILABLE_MB ="minAvailableMB";
 
-    /** minimum GB. A GB=1024*1MB, despite what disk vendors say*/
-    String ATTR_MINAVAILABLEGB ="minAvailableGB";
+    /** minimum GB. A GB=1024*1MB, despite what disk vendors say: {@value}*/
+    String ATTR_MIN_AVAILABLE_GB ="minAvailableGB";
 
-    /** flag to say: skip any dir that isnt there */
-    String ATTR_SKIPABSENTDIRECTORIES="skipAbsentDirectories";
+    /** flag to say: skip any dir that isnt there  {@value}*/
+    String ATTR_SKIP_ABSENT_DIRECTORIES ="skipAbsentDirectories";
 
-    String ATTR_CHECKONSTARTUP="checkOnStartup";
-    String ATTR_CHECKONLIVENESS="checkOnLiveness";
 }

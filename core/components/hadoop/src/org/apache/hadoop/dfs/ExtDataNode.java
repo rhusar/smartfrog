@@ -21,7 +21,7 @@
 
 package org.apache.hadoop.dfs;
 
-import org.apache.hadoop.conf.Configuration;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 import org.smartfrog.services.hadoop.core.proposed.HadoopIOException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -45,7 +45,7 @@ public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
     private Prim owner;
     private State state = State.CREATED;
 
-    public ExtDataNode(Prim owner, Configuration conf, AbstractList<File> dataDirs)
+    public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
         this.owner = owner;

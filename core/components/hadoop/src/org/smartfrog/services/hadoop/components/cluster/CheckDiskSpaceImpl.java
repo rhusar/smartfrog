@@ -59,11 +59,11 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         directories = convertToFiles(resolveFileList(this, ATTR_DIRECTORIES, null, true, null));
-        skipAbsentDirectories = sfResolve(ATTR_SKIPABSENTDIRECTORIES, false, true);
-        checkOnLiveness = sfResolve(ATTR_CHECKONLIVENESS, false, true);
-        checkOnStartup = sfResolve(ATTR_CHECKONLIVENESS, false, true);
-        int minAvailableGB = sfResolve(ATTR_MINAVAILABLEGB, 0, true);
-        int minAvailableMB = sfResolve(ATTR_MINAVAILABLEMB, 0, true);
+        skipAbsentDirectories = sfResolve(ATTR_SKIP_ABSENT_DIRECTORIES, false, true);
+        checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
+        checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
+        int minAvailableGB = sfResolve(ATTR_MIN_AVAILABLE_GB, 0, true);
+        int minAvailableMB = sfResolve(ATTR_MIN_AVAILABLE_MB, 0, true);
         requiredSpace = ((minAvailableGB * 1024L) + minAvailableMB) * MB;
         if (checkOnStartup) {
             String error = checkDiskSpace();

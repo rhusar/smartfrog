@@ -21,20 +21,15 @@
 
 package org.apache.hadoop.dfs;
 
-import org.apache.hadoop.conf.Configuration;
-import org.smartfrog.services.hadoop.components.namenode.NamenodeImpl;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
-import org.smartfrog.services.hadoop.core.HadoopPingable;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 import org.smartfrog.services.hadoop.core.proposed.HadoopIOException;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 /**
  *

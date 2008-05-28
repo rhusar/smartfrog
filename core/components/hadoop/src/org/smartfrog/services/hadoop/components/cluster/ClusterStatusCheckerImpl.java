@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- *
  * Created 30-Apr-2008 14:20:50
- *
  */
 
 
@@ -54,7 +52,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
     private boolean supportedFileSystem;
 
     /**
-     For all the min/max values, <0 means 'dont check'
+     * For all the min/max values, <0 means 'dont check'
      */
     private int minActiveMapTasks;
     private int maxActiveMapTasks;
@@ -101,12 +99,13 @@ public class ClusterStatusCheckerImpl extends PrimImpl
 
     /**
      * Demand create the cluster proxy. This can take time and fail.
+     *
      * @return a client which may exist already
      * @throws SFHadoopException if the connection cannot be made
      */
 
     private synchronized JobClient createClientOnDemand() throws SFHadoopException {
-        if(client!=null) {
+        if (client != null) {
             return client;
         }
         try {
@@ -129,29 +128,32 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(checkOnLiveness) try {
-            checkClusterStatus();
-        } catch (SFHadoopException e) {
-            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+        if (checkOnLiveness) {
+            try {
+                checkClusterStatus();
+            } catch (SFHadoopException e) {
+                throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+            }
         }
     }
 
     /**
      * Check the cluster status
+     *
      * @throws SFHadoopException on any problem with the checks
      */
     private void checkClusterStatus() throws SFHadoopException {
 
         try {
-            JobClient cluster=createClientOnDemand();
+            JobClient cluster = createClientOnDemand();
             ClusterStatus status = cluster.getClusterStatus();
 
-            if(supportedFileSystem) {
+            if (supportedFileSystem) {
                 try {
                     cluster.getFs();
                 } catch (IOException e) {
                     throw new SFHadoopException("File system will not load "
-                            +e.getMessage(),
+                            + e.getMessage(),
                             e,
                             this);
                 } catch (IllegalArgumentException e) {
@@ -161,15 +163,15 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                             this);
                 }
             }
-            if(jobTrackerLive) {
+            if (jobTrackerLive) {
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
-                    throw new SFHadoopException("Job Tracker at "+jobTracker+" is not running",this);
+                    throw new SFHadoopException("Job Tracker at " + jobTracker + " is not running", this);
                 }
             }
             checkRange(minActiveMapTasks, maxActiveMapTasks, status.getMapTasks(), "map task");
-            checkRange(minActiveReduceTasks,maxActiveReduceTasks, status.getReduceTasks(), "reduce task");
-            checkMax(maxSupportedMapTasks,status.getMaxMapTasks(), "supported max map task");
+            checkRange(minActiveReduceTasks, maxActiveReduceTasks, status.getReduceTasks(), "reduce task");
+            checkMax(maxSupportedMapTasks, status.getMaxMapTasks(), "supported max map task");
             checkMax(maxSupportedReduceTasks, status.getMaxReduceTasks(), "supported max reduce task");
         } catch (IOException e) {
             throw new SFHadoopException("Cannot connect to" + jobTracker, e, this);
@@ -179,20 +181,21 @@ public class ClusterStatusCheckerImpl extends PrimImpl
 
     /**
      * Check that the range is valid
-     * @param min minimum value
-     * @param max maxiumum value
+     *
+     * @param min    minimum value
+     * @param max    maxiumum value
      * @param actual current value
-     * @param field field name
+     * @param field  field name
      * @throws SFHadoopException
      */
-    private void  checkRange(int min, int max, int actual, String field) throws SFHadoopException {
-        checkMin(min,actual,field);
+    private void checkRange(int min, int max, int actual, String field) throws SFHadoopException {
+        checkMin(min, actual, field);
         checkMax(max, actual, field);
     }
 
-    private void checkMin(int min,int actual,String field) throws SFHadoopException {
-        if(min >=0 && actual< min) {
-            throw new SFHadoopException(field + " count too low - minimum "+ min + " actual "+actual);
+    private void checkMin(int min, int actual, String field) throws SFHadoopException {
+        if (min >= 0 && actual < min) {
+            throw new SFHadoopException(field + " count too low - minimum " + min + " actual " + actual);
         }
     }
 

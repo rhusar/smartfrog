@@ -20,7 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -30,7 +32,8 @@ import java.io.File;
 import java.rmi.RemoteException;
 
 /**
- *
+ * A base class for hadoop components. It does not export any remote interface and is not very interesting
+ * on its own.
  * Created 19-May-2008 14:29:07
  *
  */
@@ -51,10 +54,37 @@ public class HadoopComponentImpl extends PrimImpl {
         }
     }
 
+    /**
+     * create a configuration against ourselves.
+     * @return the new configuration
+     */
     public ManagedConfiguration createConfiguration() {
         return new ManagedConfiguration(this);
     }
 
+    /**
+     * Create a managed configuration against a different component
+     * @param target target component
+     * @return the target configuration
+     */
+    public ManagedConfiguration createConfiguration(Prim target) {
+        return new ManagedConfiguration(target);
+    }
+
+    /**
+     * Create a managed configuration against a different component,
+     * one identified by an attribute
+     *
+     * @param targetAttribute target attribute that must map to a deployed component
+     * @return the target configuration
+     * @throws SmartFrogResolutionException resolution failure
+     * @throws RemoteException network problems
+     */
+    public ManagedConfiguration createConfiguration(String targetAttribute)
+            throws SmartFrogResolutionException, RemoteException {
+        Prim target=sfResolve(targetAttribute,(Prim)null,true);
+        return new ManagedConfiguration(target);
+    }
     /**
      * Run through the directories, create all that are there
      * @param dirs list of directories
