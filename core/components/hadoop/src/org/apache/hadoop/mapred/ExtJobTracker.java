@@ -19,9 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.apache.hadoop.mapred;
 
-import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
 
 import java.io.IOException;
 
@@ -33,12 +34,13 @@ import java.io.IOException;
 
 public class ExtJobTracker extends JobTracker implements HadoopComponentLifecycle {
 
-    private static Log log= LogFactory.getLog(ExtJobTracker.class);
+    private static final Log log= LogFactory.getLog(ExtJobTracker.class);
 
     private HadoopComponentLifecycle.State lifecycleState = HadoopComponentLifecycle.State.CREATED;
 
-    public ExtJobTracker(JobConf conf) throws IOException, InterruptedException {
+    public ExtJobTracker(ManagedConfiguration conf) throws IOException, InterruptedException {
         super(conf);
+
         lifecycleState = HadoopComponentLifecycle.State.STARTED;
     }
 

@@ -27,17 +27,17 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class JobTrackerTest extends DeployingTestBase  {
+public class TaskTrackerTest extends DeployingTestBase  {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
-    public JobTrackerTest(String name) {
+    public TaskTrackerTest(String name) {
         super(name);
     }
 
-    public void testLocalJobTracker() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
+    public void testLocalTaskTracker() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTracker");
     }
-    public void testLocalJobTrackerForked() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTrackerForked");
+    public void testLocalTaskTrackerForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTrackerForked");
     }
 }

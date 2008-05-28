@@ -170,7 +170,9 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             try {
                 if (pingJob && runningJob.isComplete()) {
                     boolean succeeded = runningJob.isSuccessful();
-                    String message = "Job " + runningJob.getJobID() + " has " + (succeeded ? " succeeded" : "failed");
+                    String message = "Job " + runningJob.getJobName()
+                            +" ID=" + runningJob.getID().toString() 
+                            + " has " + (succeeded ? " succeeded" : "failed");
                     sfLog().info(message);
                     if (terminateWhenJobFinishes) {
                         TerminationRecord record = succeeded ? TerminationRecord.normal(message, name) :

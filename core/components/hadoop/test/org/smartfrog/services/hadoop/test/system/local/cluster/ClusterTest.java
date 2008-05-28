@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.tracker;
+package org.smartfrog.services.hadoop.test.system.local.cluster;
 
 import org.smartfrog.test.DeployingTestBase;
 
@@ -27,17 +27,17 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class JobTrackerTest extends DeployingTestBase  {
-    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
+public class ClusterTest extends DeployingTestBase  {
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/cluster/";
 
-    public JobTrackerTest(String name) {
+    public ClusterTest(String name) {
         super(name);
     }
 
-    public void testLocalJobTracker() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
+    public void testLocalCluster() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalCluster");
     }
-    public void testLocalJobTrackerForked() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTrackerForked");
+    public void testLocalClusterForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalClusterForked");
     }
 }
