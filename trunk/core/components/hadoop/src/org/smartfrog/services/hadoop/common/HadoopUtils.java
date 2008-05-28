@@ -17,32 +17,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.apache.hadoop.dfs;
+package org.smartfrog.services.hadoop.common;
 
-import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.net.NetUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import java.net.InetSocketAddress;
 
 /**
- * Utility methods that need to be in the right package
+ *
+ * Created 28-May-2008 15:22:20
  *
  */
 
-public class ExtDfsUtils {
+public class HadoopUtils {
 
-    private ExtDfsUtils() {
-    }
+  private HadoopUtils() {
+  }
 
-    /**
-     * Format a name node
-     * @param dirsToFormat directories to format
-     * @param conf the configuration
-     * @throws IOException
-     */
-    public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat), conf);
-        nsys.dir.fsImage.format();
-    }
+
 }

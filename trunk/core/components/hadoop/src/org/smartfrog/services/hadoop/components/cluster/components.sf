@@ -22,3 +22,5 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/components/cluster/filesystemnode.sf"
 #include "/org/smartfrog/services/hadoop/components/cluster/jspstatus.sf"
 #include "/org/smartfrog/services/hadoop/components/cluster/checkdiskspace.sf"
+#include "/org/smartfrog/services/hadoop/components/cluster/checkport.sf"
+

@@ -552,6 +552,7 @@ HadoopConfiguration extends Prim {
   /* =============================================================== */
   /* ipc properties */
 
+
   /**
   The maximum time after which a client will bring down the
   connection to the server.
@@ -575,11 +576,13 @@ HadoopConfiguration extends Prim {
   Defines the maximum number of clients to disconnect in one go.
   */
   ipc.client.kill.max 10;
+
+
   /**
   Defines the maximum idle time for a connected client after
   which it may be disconnected.
   */
-  ipc.client.maxidletime  120000;
+  ipc.client.maxidletime  (12*1000);
 
   /**
   Turn on/off Nagle's algorithm for the TCP socket connection on
@@ -590,8 +593,13 @@ HadoopConfiguration extends Prim {
 
   /**
   Defines the timeout for IPC calls in milliseconds
-  .*/
+  */
   ipc.client.timeout  (60*1000);
+
+  /**
+   * time between pings for the client
+   */
+  ipc.ping.interval (60*1000);
 
   /**
   Indicates the length of the listen queue for servers accepting
@@ -1088,7 +1096,7 @@ HadoopConfiguration extends Prim {
     NetworkTopology names. Example: the script would take host.foo.bar as an
     argument, and return /rack1 as the output.
 */
-  topology.script.file.name "";
+  topology.script.file.name NULL;
 
 
    /**

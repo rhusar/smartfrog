@@ -21,13 +21,12 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.FileStatus;
-import org.smartfrog.services.assertions.AssertComponent;
 import org.smartfrog.services.filesystem.FileExists;
+import org.smartfrog.services.hadoop.components.cluster.CheckableCondition;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -36,16 +35,9 @@ import java.rmi.RemoteException;
  * Created 27-May-2008 15:42:48
  */
 
-public class DfsPathExistsImpl extends DfsPathOperationImpl implements Condition, DfsPathOperation {
+public class DfsPathExistsImpl extends DfsPathOperationImpl implements CheckableCondition, DfsPathOperation {
 
-    /**
-     * check when we start up {@value}
-     */
-    public String ATTR_CHECK_ON_STARTUP = AssertComponent.ATTR_CHECK_ON_STARTUP;
-    /**
-     * check on a ping {@value}
-     */
-    public String ATTR_CHECK_ON_LIVENESS = AssertComponent.ATTR_CHECK_ON_LIVENESS;
+
 
 
     private boolean canBeFile = false;
@@ -120,7 +112,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl implements Condition
         try {
             checkPathExists();
             return true;
-        } catch (SmartFrogLivenessException e) {
+        } catch (SmartFrogLivenessException ignored) {
             return false;
         }
     }
