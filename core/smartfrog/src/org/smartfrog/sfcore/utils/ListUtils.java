@@ -62,7 +62,7 @@ public final class ListUtils {
      * @return a merged array or null if an empty list came in.
      * @throws SmartFrogInitException if a list is the wrong width, type or missing
      */
-    public static Vector<String> join(List source, String prefix, String joiner, String suffix,
+    public static Vector<String> join(List<?> source, String prefix, String joiner, String suffix,
         boolean skipEmptyElements) throws SmartFrogInitException {
         if (source == null) {
             return null;
@@ -81,7 +81,7 @@ public final class ListUtils {
             if (!(element instanceof List)) {
                 throw new SmartFrogInitException(ERROR_NOT_A_LIST + element);
             }
-            List subvector = (List) element;
+            List<?> subvector = (List<?>) element;
             int subsize = subvector.size();
             if (subsize == 0) {
                 if(skipEmptyElements) {
@@ -235,6 +235,7 @@ public final class ListUtils {
      * otherwise fails.
      * @throws RemoteException network problems
      */
+    @SuppressWarnings("unchecked")
     public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
         Vector tupleList = null;
@@ -361,6 +362,7 @@ public final class ListUtils {
      * @param properties the properties to work on
      * @return the properties as a list of [name,value] tuples, sorted on name
      */
+    @SuppressWarnings("unchecked")
     public static Vector<Vector<String>> propertiesToTuples(Properties properties) {
         Vector<Vector<String>> propertyTupleList = new Vector<Vector<String>>(properties.size());
         List keyList = new ArrayList(properties.keySet());
@@ -404,7 +406,7 @@ public final class ListUtils {
      * @return a flatter list
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
-    public static List<String> flattenStringList(List src, String listName)
+    public static List<String> flattenStringList(List<?> src, String listName)
             throws SmartFrogInitException {
         if (src == null) {
             return new ArrayList<String>(0);
@@ -412,7 +414,7 @@ public final class ListUtils {
         List<String> dest = new ArrayList<String>(src.size());
         for(Object element:src) {
             if (element instanceof List) {
-                List<String> l2 = flattenStringList((List) element, listName);
+                List<String> l2 = flattenStringList((List<?>) element, listName);
                 for (String s:l2) {
                     dest.add(s);
                 }
