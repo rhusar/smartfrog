@@ -364,7 +364,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         }
         String imagesPath = SFDeployDisplay.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
-        imagesPath = imagesPath + "frogb.gif";
+        // imagesPath = imagesPath + "frogb.gif";
+        imagesPath = imagesPath + "SplodgeLightBlue32.gif";
         Image image = Display.createImage(imagesPath);
         if(image!=null) {
             newDisplay.setIconImage(image);
