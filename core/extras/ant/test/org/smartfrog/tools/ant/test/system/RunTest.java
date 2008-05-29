@@ -81,7 +81,7 @@ public class RunTest extends TaskTestBase {
     }
 
     public void testRunFile() {
-        assertDeployFailsWithUnresolvedReference("testRunFile");
+        expectDeployed("testRunFile", "app");
     }
 
     public void testInline() {
@@ -92,7 +92,6 @@ public class RunTest extends TaskTestBase {
         expectDeployed("testResource", "app");
         assertInLog("COUNTER: hello - here is a constructed message");
         assertInLog("value is 99");
-        assertInLog("goodbye");
         assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
         assertInLog("1");
     }

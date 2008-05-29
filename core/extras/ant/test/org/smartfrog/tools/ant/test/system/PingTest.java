@@ -74,4 +74,10 @@ public class PingTest extends TaskTestBase {
         assertPropertyUnset("pinged");
     }
 
+    public void testUnknownComponentFailing() {
+        expectBuildExceptionContaining("testUnknownComponentFailing", "unknown application",
+                PingTask.ERROR_FAILED_TO_PING+"undeployedApp");
+        assertPropertyUnset("pinged");
+    }
+
 }
