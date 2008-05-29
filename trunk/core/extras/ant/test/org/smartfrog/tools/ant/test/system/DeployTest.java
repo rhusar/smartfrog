@@ -131,19 +131,15 @@ public class DeployTest extends TaskTestBase {
      * cause: SmartFrogResolutionException:: Reference not found, Unresolved Reference: sfClass
      */
     public void testDeployFile() {
-        expectBuildExceptionContaining("testDeployFile", "expected timeout", "Timeout");
-        assertInLog("FAILED when trying DEPLOY of 'app'");
-        assertInLog("Reference not found");
-        assertInLog("Unresolved Reference");
+        executeTarget("testDeployFile");
+        assertInLog("Successfully deployed");
     }
 
 
     public void testDeployResource() {
-        expectBuildExceptionContaining("testDeployResource", "expected timeout", "Timeout");
-        assertInLog("Successfully deployed");
+        executeTarget("testDeployResource");
         assertInLog("COUNTER: hello - here is a constructed message");
         assertInLog("value is 99");
-        assertInLog("goodbye");
         assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
         assertInLog("1");
     }
@@ -157,8 +153,7 @@ public class DeployTest extends TaskTestBase {
     /**
      * turned off; it doesnt add more than the inline one
      */
-    public void notestDeployInline() {
-        expectBuildExceptionContaining("testDeployInline", "expected timeout", "Timeout");
-        assertInLog("goodbye");
+    public void testDeployInline() {
+        executeTarget("testDeployInline");
     }
 }
