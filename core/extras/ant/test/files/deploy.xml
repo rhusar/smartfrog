@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
-<project name="parse" default="teardown">
+<project name="deploy" default="teardown">
 
   <description>
     Tests for the parse.
 
     command line invocation
-    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib
-    ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f deploy.xml testResource
 
-    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f deploy.xml
-    testNoParams
+ant -lib dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHOME/lib/sfServices-3.*.jar -lib $SFHOME/lib/sfExamples-3.*.jar  -f test/files/deploy.xml testDeployResource 
 
-    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib
-    ../../../../smartfrog/dist/lib/sfExamples.jar -f deploy.xml testResource
   </description>
 
   <import file="test-common.xml"/>
+
+  <property name="port" value="8080"/>
+
+  <dirname property="testfile.dir" file="${ant.file}"/>
+  <property name="valid.sf" location="${testfile.dir}/valid.sf" />
 
   <!-- at the end of every execution, we force a cleanup -->
   <target name="teardown">
@@ -82,54 +82,57 @@
 
   <target name="testRunFile">
     <sf-deploy>
-      <application name="app" file="valid.sf"/>
+      <application name="app" file="${valid.sf}"/>
     </sf-deploy>
   </target>
 
   <target name="testDeployFile">
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block/>
-        <fail if="block.timeout">No SmartFrog daemon found</fail>
-        <antcall target="testRunFile"/>
-      </sequential>
-    </parallel>
+    <sf-system-test>
+      <test>
+        <sf-deploy>
+          <application name="testDeployFile" file="${valid.sf}"/>
+        </sf-deploy>
+      </test>
+    </sf-system-test>
   </target>
 
   <target name="testDeployResource">
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block/>
-        <fail if="block.timeout">No SmartFrog daemon found</fail>
-        <antcall target="testResource"/>
-        <!--    <sf-stopdaemon failonerror="false" /> -->
-      </sequential>
-    </parallel>
+    <sf-system-test>
+      <test>
+        <sf-deploy>
+          <application name="testDeployResource" descriptor="${resource.sf}"/>
+        </sf-deploy>
+      </test>
+    </sf-system-test>
   </target>
+
 
   <target name="testDeployInline">
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block/>
-        <fail if="block.timeout">No SmartFrog daemon found</fail>
-        <antcall target="testInline"/>
-      </sequential>
-    </parallel>
+    <sf-system-test>
+      <test>
+        <sf-deploy>
+          <application name="inline">
+            #include "/org/smartfrog/components.sf"
+
+            Server extends Compound {
+            port ${port};
+            }
+
+            sfConfig extends Server{
+            }
+          </application>
+        </sf-deploy>
+      </test>
+    </sf-system-test>
   </target>
 
+
   <target name="testInline">
-    <property name="port" value="8080"/>
     <sf-deploy>
-      <application name="app">
+      <application name="inline">
         #include "/org/smartfrog/components.sf"
 
-        Server extends Prim {
+        Server extends Compound {
         port ${port};
         }
 
