@@ -14,12 +14,10 @@ ant -lib dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHO
 
   <property name="port" value="8080"/>
 
-  <dirname property="testfile.dir" file="${ant.file}"/>
-  <property name="valid.sf" location="${testfile.dir}/valid.sf" />
+
 
   <!-- at the end of every execution, we force a cleanup -->
   <target name="teardown">
-    <sf-stopdaemon failonerror="false"/>
   </target>
 
   <target name="testNoParams">

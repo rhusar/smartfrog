@@ -23,6 +23,9 @@
   <property name="terminator.sf"
       value="/org/smartfrog/examples/workflow/terminateDaemonExample.sf"/>
 
+  <dirname property="testfile.dir" file="${ant.file.test-common}"/>
+  <property name="valid.sf" location="${testfile.dir}/valid.sf" />
+
   <property name="short.delay" value="1000"/>
   <property name="timeout.seconds" value="100"/>
   <property name="timeout" value="${timeout.seconds}000"/>
@@ -33,7 +36,7 @@
   <property name="short.timeout.seconds" value="5"/>
   <property name="short.timeout" value="${short.timeout.seconds}000"/>
   <property name="new.port" value="3805"/>
-  <property name="shutdown.time.seconds" value="10"/>
+  <property name="shutdown.time.seconds" value="5"/>
 
   <presetdef name="sf-waitfor">
     <waitfor maxwait="10" maxwaitunit="second"
@@ -56,7 +59,7 @@
 
   <presetdef name="sf-system-test">
     <sf-functionaltest
-        testTimeout="${medium.timeout.seconds}"
+        testTimeout="${short.timeout.seconds}"
         shutdownTime="${shutdown.time.seconds}">
       <application>
         <sf-startdaemon >
@@ -73,7 +76,7 @@
 
   <presetdef name="sf-system-test2">
     <sf-functionaltest
-        testTimeout="${medium.timeout.seconds}"
+        testTimeout="${short.timeout.seconds}"
         shutdownTime="${shutdown.time.seconds}">
       <application>
         <sf-startdaemon port="${new.port}">

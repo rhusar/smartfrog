@@ -37,7 +37,7 @@ public class PingTask extends SmartFrogTask {
 
     protected String successProperty;
 
-    public static final String ERROR_FAILED_TO_PING = "Failed to ping";
+    public static final String ERROR_FAILED_TO_PING = "Failed to ping ";
 
     public void init() throws BuildException {
         super.init();

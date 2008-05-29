@@ -27,7 +27,6 @@ ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib
   <!-- at the end of every execution, we force a cleanup -->
   <target name="teardown">
     <sf-stopdaemon failonerror="false"/>
-    <sf-stopdaemon port="${new.port}" failonerror="false"/>
   </target>
 
   <target name="testDefaults" depends="setup">
@@ -185,73 +184,37 @@ ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib
 
 
   <target name="testDifferentPort" description="test against a different port">
-    <property name="new.port" value="3805"/>
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}" initialSmartfrogFile="default.sf"
-          port="${new.port}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block2/>
-        <sleep milliseconds="${short.delay}"/>
-        <!--
-        <sf-deploy port="${new.port}">
-          <application name="compound" >
-            #include "/org/smartfrog/components.sf"
-            sfConfig extends Compound {
-            sfProcessName "newProcessName";
-            }
-          </application>
-        </sf-deploy>
-        -->
+    <sf-system-test2>
+      <test>
         <sf-ping application="rootProcess" timeout="${medium.timeout}"
             port="${new.port}"
             failonerror="false" successProperty="pinged"/>
-        <sf-stopdaemon port="${new.port}" failonerror="true"/>
-        <fail unless="pinged">Failed to ping the process on port ${new.port}"</fail>
-      </sequential>
-    </parallel>
+      </test>
+    </sf-system-test2>
   </target>
 
 
   <target name="testDifferentPortDeploy" description="test against a different port">
-    <property name="new.port" value="3805"/>
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}" initialSmartfrogFile="default.sf"
-          port="${new.port}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block2/>
-        <sleep milliseconds="${short.delay}"/>
-        <sf-ping application="rootProcess" timeout="${medium.timeout}"
+    <sf-system-test2>
+      <test>
+        <sf-ping application="rootProcess" timeout="${short.timeout}"
             port="${new.port}"
             failonerror="false" successProperty="pinged"/>
         <sf-deploy port="${new.port}">
           <application name="compound">
             #include "/org/smartfrog/components.sf"
             sfConfig extends Compound {
-            sfProcessName "newProcessName";
             }
           </application>
         </sf-deploy>
-        <sleep milliseconds="${short.delay}"/>
-        <sf-stopdaemon port="${new.port}" failonerror="true"/>
-      </sequential>
-    </parallel>
+      </test>
+    </sf-system-test2>
   </target>
 
 
   <target name="testDifferentPortDeployUndeploy" description="test against a different port">
-    <property name="new.port" value="3805"/>
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}" initialSmartfrogFile="default.sf"
-          port="${new.port}">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block2/>
-        <sleep milliseconds="${short.delay}"/>
-        <sf-ping application="rootProcess" timeout="${medium.timeout}"
-            port="${new.port}"
-            failonerror="false" successProperty="pinged"/>
+    <sf-system-test2>
+      <test>
         <sf-deploy port="${new.port}">
           <application name="compound">
             #include "/org/smartfrog/components.sf"
@@ -259,14 +222,12 @@ ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib
             }
           </application>
         </sf-deploy>
-        <sleep milliseconds="${short.delay}"/>
-        <sf-ping application="compound" timeout="${medium.timeout}"
-         port="${new.port}"
-         failonerror="true" />
+        <sf-ping application="compound" timeout="${short.timeout}"
+            port="${new.port}"
+            failonerror="true" />
         <sf-undeploy application="compound" port="${new.port}" failonerror="true"/>
-        <sf-stopdaemon port="${new.port}" failonerror="true"/>
-      </sequential>
-    </parallel>
+      </test>
+    </sf-system-test2>
   </target>
 
 </project>
