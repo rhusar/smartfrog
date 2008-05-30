@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc -mno-cygwin -D __int64="long long" -I ~/Program\ Files/Java/jdk1.6.0_03/include/ -I ~/Program\ Files/Java/jdk1.6.0_03/include/win32/ -shared -Wl,--add-stdcall-alias -o NuSMVInterface.dll NuSMVInterface.c
