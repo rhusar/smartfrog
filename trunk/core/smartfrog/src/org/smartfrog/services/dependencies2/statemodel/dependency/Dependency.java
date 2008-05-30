@@ -1,0 +1,79 @@
+package org.smartfrog.services.dependencies2.statemodel.dependency;
+
+import org.smartfrog.services.dependencies2.statemodel.state.StateChangeNotification;
+import org.smartfrog.services.dependencies2.statemodel.state.StateDependencies;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.Context;
+
+import java.rmi.RemoteException;
+
+
+/**
+ * Class that implements the dependency between two StateDependencies-implementing objects.
+ * <p/>
+ * On creation will add the dependency, or termination will remove it.
+ */
+public class Dependency extends PrimImpl implements Prim, DependencyValidation, StateChangeNotification {
+   String transition = null;
+   StateDependencies by = null;
+   Prim on = null;
+
+   boolean relevant;
+   boolean enabled;
+   boolean isEnabled; //the result...
+
+   public Dependency() throws RemoteException {
+   }
+
+   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+      super.sfDeploy();
+      
+      Object transition_obj = sfResolve("transition", false);
+      if (transition_obj!=null && transition_obj instanceof String){
+    	  transition = (String) transition_obj;
+      } 
+      by = (StateDependencies) sfResolve("by", true);
+      on = (Prim) sfResolve("on", true);
+   }
+
+   public synchronized void sfStart() throws SmartFrogException, RemoteException {
+      super.sfStart();
+      by.register(this);
+   }
+
+   public synchronized void sfTerminateWith(TerminationRecord tr) {
+      try {
+         by.deregister(this);
+      } catch (Exception e) {
+      }
+      super.sfTerminateWith(tr);
+   }
+
+   public boolean isEnabled() {
+      try {
+         relevant = sfResolve("relevant", true, false);
+         enabled = sfResolve("enabled", true, false);
+         isEnabled = !relevant || enabled && (!(on instanceof DependencyValidation) || ((DependencyValidation) on).isEnabled());
+      } catch (Exception e) {
+         // ?? what to do ??
+         isEnabled = false;
+      }
+      return isEnabled;
+   }
+
+   public void handleStateChange() {
+      //maybe cache and clear cache, or something....
+   }
+
+   public void notifyStateChange() {
+      //TODO deal with this better or split StateChangeNotification interface
+      //not needed on dependency
+   }  
+
+   public String getTransition(){
+	   return transition;
+   }
+}
