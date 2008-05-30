@@ -86,7 +86,7 @@
         <socket port="${new.port}" server="localhost"/>
       </probe>
       <teardown>
-        <sf-stopdaemon port="${new.port}"/>
+        <sf-stopdaemon port="${new.port}" />
       </teardown>
     </sf-functionaltest>
   </presetdef>
