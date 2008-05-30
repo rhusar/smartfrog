@@ -87,8 +87,8 @@ public class UndeployTest extends TaskTestBase {
 
     public void testStopDaemon() {
         executeTarget("testStopDaemon");
+        assertPropertyUnset("pinged");
         assertInLog("SmartFrog [rootProcess] dead");
-        assertInLog("SmartFrog daemon terminated");
 
     }
 
