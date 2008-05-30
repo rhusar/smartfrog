@@ -22,7 +22,6 @@
 package org.smartfrog.services.xunit.testng;
 
 import org.smartfrog.services.xunit.base.AbstractTestSuite;
-import org.smartfrog.services.xunit.base.RunnerConfiguration;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
