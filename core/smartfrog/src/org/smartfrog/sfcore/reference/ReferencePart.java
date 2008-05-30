@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -33,7 +34,13 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
  *
  */
 public abstract class ReferencePart implements Copying, Cloneable, Serializable {
-    public ReferencePart() {
+    
+	/**Resolving History*/
+	public static boolean maintainResolutionHistory=false;
+	public static ReferenceResolver resolutionParentDescription=null;
+	/***/
+	
+	public ReferencePart() {
     }
 
     /**
@@ -274,6 +281,12 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
      */
     protected Object forwardReference(Object rr, Reference r, int index)
         throws SmartFrogResolutionException {
+    	
+    	if (maintainResolutionHistory){
+    		resolutionParentDescription= (ReferenceResolver) rr;
+    	}
+    	
+    	
         if (index >= r.size()) {
             return rr;
         } else if (rr instanceof ReferenceResolver) {
