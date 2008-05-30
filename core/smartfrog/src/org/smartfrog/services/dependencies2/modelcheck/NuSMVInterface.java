@@ -6,7 +6,9 @@ public class NuSMVInterface {
 
 	private static boolean library_loaded=false;	
 	
-	public native static void run(String command);
+	public native static void run(String inputFile, ModelCheckResults mcrs);
+	
+	private ModelCheckResults mcrs = new ModelCheckResults();
 	
 	static {
 		//Just windows for now...
@@ -20,14 +22,14 @@ public class NuSMVInterface {
 	
 	public boolean run_check(){
 		if (!library_loaded) return false;
-		String command = ModelCheck.sfhome+"NuSMV/WIN/bin/NuSMV "+ModelCheck.smv_file+" > "+ModelCheck.dat_file;	
 		
-    	run(command);
+    	run(ModelCheck.smv_file, mcrs);
 		return true;
 	}
 	
-	static public void main(String[] args){
-		NuSMVInterface nusmv = new NuSMVInterface();
-		nusmv.run_check();
+	public ModelCheckResults getResults(){
+		return mcrs;
 	}
+	
+	
 }
