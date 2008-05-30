@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/Auth_tool_builder/src"
+    modelName="Smartfrog" copyrightFields="false">
+  <foreignModel>C:/office_research/smartfrog/Auth_tool/workspace/Auth_tool_builder/Smartfrog.ecore</foreignModel>
+  <genPackages prefix="Smartfrog"  basePackage=""  disposableProviderFactory="true"
+      ecorePackage="Smartfrog.ecore#/">
+    <genClasses ecoreClass="Smartfrog.ecore#//MementoValue">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//MementoValue/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//MementoValue/value"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Memento">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Memento/id"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Memento/data"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Subtype">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Subtype/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Subtype/base"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Subtype/instances"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Subtype/links"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//SubtypeLink">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//SubtypeLink/base"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//SubtypeLink/instance"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//ModelObject">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/X"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Y"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Width"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Height"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/ExpandedWidth"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/ExpandedHeight"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Expanded"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Subtype"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/Visible"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//ModelObject/ModelLinkTarget"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//And"/>
+    <genClasses ecoreClass="Smartfrog.ecore#//Or"/>
+    <genClasses ecoreClass="Smartfrog.ecore#//Component">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Comp"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Group_of_components"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Comps"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Depends_By"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/By"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/DependOn"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/On"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Composit">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/SuperComposit"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/Components"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/Compos"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/Compo"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/ChileComposit"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Composit/Composits"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//DependencyModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//DependencyModel/SFModel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//DependencyModel/Depmodel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//DependencyModel/RootModel"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Attribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Attribute/Attri_Name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Attribute/Value"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Attribute/Attributes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Attribute/Composite_arrtibutes"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Connectors">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Connectors/DepConnector"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Connectors/GenDepConnector"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Connectors/By"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Connectors/On"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//SimpleDependencyConnection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//SimpleDependencyConnection/Source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//SimpleDependencyConnection/Target"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//InputDependencyConnection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//InputDependencyConnection/Source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//InputDependencyConnection/Target"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//OutputDependencyConnection">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//OutputDependencyConnection/Source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//OutputDependencyConnection/Target"/>
+    </genClasses>
+    <genClasses ecoreClass="Smartfrog.ecore#//Root">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/mementos"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/subtypes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/RealRoot"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/And"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/Or"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/Component"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/Composit"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/DependencyModel"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/Attribute"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/Connectors"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/SimpleDependencyConnection"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/InputDependencyConnection"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Root/OutputDependencyConnection"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

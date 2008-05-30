@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ASCII"?>
+<metamodel:Metamodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:metamodel="http://www.sf.net/projects/gems/metamodel2" Name="Smartfrog" Id="ffffffffc0a80121_269" DSMLID="http://www.sf.net/projects/gems/dsml/sfml" FileExtensions="sfml" Category="SFAuthoringTool">
+  <Connection Name="SimpleDependency" Id="ffffffffc0a80121_807" X="92" Y="588" Width="198" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.0"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
+  </Connection>
+  <Connection Name="InputDependency" Id="ffffffffc0a80121_808" X="405" Y="441" Width="198" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.1"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.1"/>
+  </Connection>
+  <Connection Name="OutputDependency" Id="f9e39d5_1320" X="400" Y="702" Width="165" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.2"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.2"/>
+  </Connection>
+  <Entity Name="Component" Id="ffffffffc0a80121_270" X="117" Y="238" Width="172" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.2"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.1"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.0"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.2"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.3"/>
+  </Entity>
+  <Entity Name="Composit" Id="ffffffffc0a80121_352" X="510" Y="30" Width="172" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.0"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.1"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.0"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.2"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.4"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.6"/>
+  </Entity>
+  <Entity Name="DependencyModel" Id="ffffffffc0a80121_353" X="76" Y="47" Width="73" Height="72" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" IsRoot="true">
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.1"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.7"/>
+  </Entity>
+  <Entity Name="Attribute" Id="ffffffffc0a80121_1129" X="414" Y="293" Width="178" ExpandedWidth="132" ExpandedHeight="232">
+    <Attribute Name="Attri_Name" Id="ffffffffc0a80121_1226" ExpandedWidth="124" ExpandedHeight="175"/>
+    <Attribute Name="Value" Id="ffffffffc0a80121_1227" ExpandedWidth="0" ExpandedHeight="15"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.3"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.4"/>
+  </Entity>
+  <Entity Name="And" Id="f9e39d5_499" X="1027" Y="518" Width="133" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" DerivedFrom="//@Inheritance.0"/>
+  <Entity Name="Connectors" Id="f9e39d5_562" X="936" Y="245" Width="133" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" IsAbstract="true" Derived="//@Inheritance.0">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.6"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.7"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.2"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.1"/>
+  </Entity>
+  <Entity Name="Or" Id="f9e39d5_1399" X="815" Y="526" Width="139" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" DerivedFrom="//@Inheritance.0"/>
+  <Inheritance Name="DepConnectors" Id="f9e39d5_563" X="924" Y="380" Width="160" Height="89" Base="//@Entity.5" Derived="//@Entity.4 //@Entity.6"/>
+</metamodel:Metamodel>
