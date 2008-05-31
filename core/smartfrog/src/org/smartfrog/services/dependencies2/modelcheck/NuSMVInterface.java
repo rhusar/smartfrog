@@ -6,7 +6,7 @@ public class NuSMVInterface {
 
 	private static boolean library_loaded=false;	
 	
-	public native static void run(String inputFile, ModelCheckResults mcrs);
+	public native static void run(String inputFile, String filePrefix, String dump_file, ModelCheckResults mcrs);
 	
 	private ModelCheckResults mcrs = new ModelCheckResults();
 	
@@ -20,10 +20,10 @@ public class NuSMVInterface {
 		} catch (Exception e){}
 	}
 	
-	public boolean run_check(){
+	public boolean runCheck(){
 		if (!library_loaded) return false;
 		
-    	run(ModelCheck.smv_file, mcrs);
+    	run(ModelCheck.smv_file, ModelCheck.filePrefix, ModelCheck.filePrefix+"all", mcrs);
 		return true;
 	}
 	
@@ -31,5 +31,12 @@ public class NuSMVInterface {
 		return mcrs;
 	}
 	
+	public void printResults(){
+		int numResults = mcrs.numResults();
+		for (int i=0; i<numResults; i++){
+			String in = mcrs.getIn(i);
+			System.out.println("Prop:"+mcrs.getProp(i)+(in!=null?" in:"+in:"")+" is:"+mcrs.getResult(i));
+		}
+	}
 	
 }

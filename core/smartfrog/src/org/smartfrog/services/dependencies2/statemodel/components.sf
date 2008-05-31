@@ -97,3 +97,9 @@ Transition extends {
     statefunction TBD;
 }
 
+VerificationRecord extends {
+    sfIsVerificationRecord;
+    proposition TBD;
+    ltl false;
+}
+
