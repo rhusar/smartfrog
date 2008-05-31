@@ -36,6 +36,7 @@ public class ModelCheck implements PhaseAction {
 	static String smv_file="";
 	static String dat_file="";
 	static String cpt_id=null;
+	static String filePrefix="";
 	
 	static {
 		sfhome = System.getenv("SFHOME");
@@ -46,6 +47,7 @@ public class ModelCheck implements PhaseAction {
 			}
 			smv_file = sfhome+"/NuSMV/modelcheck.smv";
 			dat_file = sfhome+"/NuSMV/modelcheck.dat";
+			filePrefix = sfhome+"/NuSMV/vrun";
 		} 
 	}
 	
@@ -56,6 +58,8 @@ public class ModelCheck implements PhaseAction {
 	int transition_count;
 	Vector<String> main_decs = new Vector<String>();
 	String mt_terminate_str=null;
+	Vector<ComponentDescription> verificationRecords = null;
+	
 	
 	public void doit() throws SmartFrogResolutionException {
         if (sfhome==null) throw new SmartFrogResolutionException("SFHOME ENVIRONMENT VARIABLE MUST BE SET...");
@@ -69,7 +73,6 @@ public class ModelCheck implements PhaseAction {
 		    model.visit(new ModelVisitor(), true);
 		    
 		} catch (Exception e){
-			System.out.println("Uh-oh..."+e); System.out.flush();
 			return; //nothing fancy for now...
 		}
         
@@ -78,35 +81,52 @@ public class ModelCheck implements PhaseAction {
 		
 		pw.close();
 		
-		/*NuSMVInterface nusmvi = new NuSMVInterface();
-		nusmvi.run_check();
+		boolean notFailed=true;
 		
-		StringBuffer error_s = new StringBuffer();
-		boolean deadlock=false;
-		
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(dat_file));
-			String line;
-			while ((line=in.readLine())!=null){
-				if (line.indexOf("-- specification")!=0) continue;
+		NuSMVInterface nusmvi = new NuSMVInterface();
+		nusmvi.runCheck();
+		ModelCheckResults mcrs = nusmvi.getResults();
+		int numResults = mcrs.numResults();
+		for (int i=0; i<numResults; i++){
+			boolean result=mcrs.getResult(i);
+			if (i==0) {
+				notFailed = result;
+				System.out.println("***DEADLOCK CHECK:"+(result?"PASSES":"FAILS"));
+				if (!result) System.out.println("***See dump in file:"+ModelCheck.filePrefix+i);
+				System.out.println("**********************************************");
+			} else {
+				if (!result) notFailed = false;
+				ComponentDescription vr = (ComponentDescription) verificationRecords.get(i-1);
+				vr.sfContext().put("result", new Boolean(result));
+				vr.sfContext().put("failureRecord", formatFileStr(ModelCheck.filePrefix)+i);
 				
-				if (line.indexOf("is false")>0) deadlock=true;
+				System.out.println("***VERIFICATION RECORD CHECK:"+i+" "+(result?"PASSES":"FAILS"));
+				if (!result) {
+					System.out.println("***Verification record:");
+					System.out.println(vr.toString());
+				}
 				
-				break; //from while once found result...
 			}
-			
-			if (deadlock){
-				while ((line=in.readLine())!=null){
-					if (line.indexOf("-- specification")!=0) error_s.append(line+"\n");
-					else break;  //for now...
-				}		
-			}
-		}catch(Exception e){/****}
+		}
 		
-		if (deadlock) throw new SmartFrogResolutionException("Deadlock detected in model:"+model.toString()+"\n with report:\n"+error_s.toString());
-		*/
+		if (!notFailed) throw new SmartFrogResolutionException("Verification Run failure.  See foregoing output from parse for details.");
 	}
 
+	public String formatFileStr(String fs){
+		String result = "";
+		
+		int i=0;
+		while (i<fs.length()){
+			char ch = fs.charAt(i);
+			if (ch=='\\' || ch=='/'){
+				if (i+1==fs.length() || (!(fs.charAt(i+1)=='\\' || fs.charAt(i+1)=='/'))) result+='/'; 
+			} else result+=ch;
+			i++;
+		}
+		
+		return result;
+	}
+	
 	public void forComponent(SFComponentDescription cd, String phaseName, Stack path) {
 		this.model=cd;
 	}
@@ -124,6 +144,7 @@ public class ModelCheck implements PhaseAction {
 			cpt_id = null;
 		}
 		
+		//Process termination conditions...
 		process_termination_conditions();
 	}
 	
@@ -360,7 +381,7 @@ public class ModelCheck implements PhaseAction {
 		}	
 	}
 	
-	private void write_model(){
+	private void write_model() throws SmartFrogResolutionException {
 		Iterator comp_iter = components.keySet().iterator();
 		while (comp_iter.hasNext()){
 			
@@ -553,8 +574,35 @@ public class ModelCheck implements PhaseAction {
 		pw.println("   modelTerminated := "+(mt_terminate_str!=null?mt_terminate_str:"1")+";");
 		
 		//SPEC
-		pw.println("SPEC");
-		pw.println("   AG(deadlock -> modelTerminated)");
+		pw.println("SPEC AG(deadlock -> modelTerminated)");  //index 0
+		if (verificationRecords!=null){
+			for (int idx=1; idx<=verificationRecords.size();idx++){
+				ComponentDescription vr = (ComponentDescription) verificationRecords.get(idx-1);
+	
+				//Need to break a verification proposition down based on {} curly braces...
+				String vprop_str = (String) vr.sfContext().get("proposition");
+				boolean ltl_spec = ((Boolean) vr.sfContext().get("ltl")).booleanValue();
+				String vprop_out_str = "";
+				while (true){
+					int sidx=0;
+					int eidx=-1;
+					if ((eidx=vprop_str.indexOf('{'))>=0){
+						//save up to {
+						
+						vprop_out_str += vprop_str.substring(sidx, eidx);
+						int eidx2=vprop_str.indexOf('}');
+						String ref_str = vprop_str.substring(eidx+1, eidx2);
+						vprop_str = vprop_str.substring(eidx2+1);
+						sidx=eidx2+1;
+						
+						Resolver resolver = new Resolver();
+						vprop_out_str += resolver.argumentToMCString(Reference.fromString(ref_str), vr);
+					} else break; //from while...
+				}
+				vprop_out_str += vprop_str;
+				pw.println((ltl_spec?"LTL":"")+"SPEC "+vprop_out_str+";");			
+			}
+		}
 	}
 	
 	private static int g_UCID=0;
@@ -591,7 +639,10 @@ public class ModelCheck implements PhaseAction {
 					by.sfContext().put("sfDependencies", deps_vec);
 				}
 				deps_vec.add(cd);
-			} 
+			} else if (cd.sfContext().get("sfIsVerificationRecord")!=null){
+				if (verificationRecords==null) verificationRecords = new Vector<ComponentDescription>();
+				verificationRecords.add(cd);
+			}
 		}
 	}
 }

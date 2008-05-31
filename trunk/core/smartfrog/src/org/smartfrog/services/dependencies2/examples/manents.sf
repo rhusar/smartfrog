@@ -90,5 +90,9 @@ ManagedEntities extends Model {
       on LAZY foo1;
       by LAZY foo0;
    }
+   
+   -- extends VerificationRecord {
+   	  proposition "AG({foo0:created} -> {foo1:created})";
+   }
 }
 

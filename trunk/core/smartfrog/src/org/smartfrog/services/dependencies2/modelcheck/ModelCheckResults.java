@@ -7,29 +7,37 @@ public class ModelCheckResults {
 	private Vector<ModelCheckResult> results = new Vector<ModelCheckResult>();
 	
 	private class ModelCheckResult {
-		int index;
 		String prop;
 		String in;
 		boolean result;
 		
-		ModelCheckResult(int index, String prop, boolean result){
-			this.index=index;
+		ModelCheckResult(String prop, String in, boolean result){
 			this.prop=prop;
 			this.result=result;
+			
+			if (in.equals("")) this.in=null;
+			else this.in=in;
+            
 		}
-		ModelCheckResult(int index, String prop, String in, boolean result){
-			this(index, prop, result);
-			this.in=in;
-		}
 	}
 
-	public void addResult(int index, String prop, boolean result){
-		results.add(new ModelCheckResult(index, prop, result));
+	public void addResult(String prop, String in, boolean result){
+		results.add(new ModelCheckResult(prop, in, result));
 	}
 
-	public void addResult(int index, String prop, String in, boolean result){
-		results.add(new ModelCheckResult(index, prop, in, result));
+	public int numResults(){
+		return results.size();
 	}
-
 	
+	public boolean getResult(int idx){
+		return results.get(idx).result;
+	}
+	
+	public String getProp(int idx){
+		return results.get(idx).prop;
+	}
+	
+	public String getIn(int idx){
+		return results.get(idx).in;
+	}
 }
