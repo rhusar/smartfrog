@@ -21,7 +21,7 @@ package org.smartfrog.services.dependencies.examples;
 
 import java.rmi.RemoteException;
 
-import org.smartfrog.services.dependencies2.statemodel.state.ThreadedState;
+import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
 import org.smartfrog.sfcore.prim.Prim;
 
 public class ManagedEntity extends ThreadedState implements Prim {
