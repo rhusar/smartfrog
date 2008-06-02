@@ -46,11 +46,5 @@ sfConfig extends ExpectDeploy {
 
   }
 
-
-//
-/*
-        assertStringAttributeExists(application, JavaPackage.ATTR_URICLASSPATH);
-        assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);
-        */
 }
 
