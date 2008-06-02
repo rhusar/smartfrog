@@ -24,11 +24,11 @@ set APPNAME="%USERNAME%_%2"
 :run
 if (%4)==(-p) GOTO execute
 rem %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":DEPLOY:\"%3\"::%1: -e
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%APPNAME%\":DEPLOY:\"%3\"::%1: -e
+%SFJVM% %SFCMDPARAMETERS% %SFLIBRARYPATH% org.smartfrog.SFSystem -a \"%APPNAME%\":DEPLOY:\"%3\"::%1: -e
 GOTO end
 :execute
 if (%5)==() goto usage
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%APPNAME%\":DEPLOY:\"%3\"::%1: -p %5 -e
+%SFJVM% %SFCMDPARAMETERS% %SFLIBRARYPATH% org.smartfrog.SFSystem -a \"%APPNAME%\":DEPLOY:\"%3\"::%1: -p %5 -e
 
 
 GOTO end
