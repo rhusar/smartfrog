@@ -18,11 +18,11 @@ For more information: www.smartfrog.org
 
 */
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/dependencies2/statemodel/components.sf"
+#include "org/smartfrog/services/dependencies/statemodel/components.sf"
 #include "org/smartfrog/services/dependencies/threadpool/components.sf"
 
 ManagedEntity extends State {
-   sfClass "org.smartfrog.services.dependencies2.examples.ManagedEntity";
+   sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
 
    [stateData] created false;
    [stateData] removed false;

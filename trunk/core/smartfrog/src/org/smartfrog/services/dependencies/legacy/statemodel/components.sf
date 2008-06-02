@@ -1,11 +1,11 @@
 
 Dependency extends Prim {
-     sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
+     sfClass "org.smartfrog.services.dependencies.legacy.statemodel.dependency.Dependency";
      sfUpdatable true;
 }
 
 State extends Prim {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.State";
+     sfClass "org.smartfrog.services.dependencies.legacy.statemodel.state.State";
      sfUpdatable true;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
@@ -13,7 +13,7 @@ State extends Prim {
 }
 
 Composite extends Compound {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.Composite";
+     sfClass "org.smartfrog.services.dependencies.legacy.statemodel.state.Composite";
      sfUpdatable true;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
@@ -27,7 +27,7 @@ Composite extends Compound {
 }
 
 NWayComposite extends Composite {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.NWayComposite";
+     sfClass "org.smartfrog.services.dependencies.legacy.statemodel.state.NWayComposite";
      sfUpdatable false;
 
      template TBD;
@@ -36,14 +36,14 @@ NWayComposite extends Composite {
 
 
 Model extends Composite {
-     sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
+     sfClass "org.smartfrog.services.dependencies.legacy.statemodel.state.Model";
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
      run true; // set to false if you do not want the model to generate new notification sweeps, true if do
 }
 
 ModelTerminator extends State {
-    sfClass "org.smartfrog.services.dependencies.statemodel.modeltermination.ModelTermination";
+    sfClass "org.smartfrog.services.dependencies.legacy.statemodel.modeltermination.ModelTermination";
 
     toTerminate LAZY ROOT;
     detachFirst false;
@@ -51,22 +51,22 @@ ModelTerminator extends State {
 }
 
 AndConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.AndConnector";
+    sfClass "org.smartfrog.services.dependencies.legacy.statemodel.connector.AndConnector";
     sfUpdatable true;
 }
 
 OrConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.OrConnector";
+    sfClass "org.smartfrog.services.dependencies.legacy.statemodel.connector.OrConnector";
     sfUpdatable true;
 }
 
 NorConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NorConnector";
+    sfClass "org.smartfrog.services.dependencies.legacy.statemodel.connector.NorConnector";
     sfUpdatable true;
 }
 
 NandConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NandConnector";
+    sfClass "org.smartfrog.services.dependencies.legacy.statemodel.connector.NandConnector";
     sfUpdatable true;
 }
 
