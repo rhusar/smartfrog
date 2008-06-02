@@ -89,18 +89,20 @@ public class ModelCheck implements PhaseAction {
 		int numResults = mcrs.numResults();
 		for (int i=0; i<numResults; i++){
 			boolean result=mcrs.getResult(i);
-			if (i==0) {
-				notFailed = result;
-				System.out.println("***DEADLOCK CHECK:"+(result?"PASSES":"FAILS"));
+			if (i<2) {
+				if (!result) notFailed = false;
+				String check = (i==0?"DEADLOCK":"LIVELOCK");
+				System.out.println("*"+i+"*"+check+" CHECK:"+(result?"PASSES":"FAILS"));
 				if (!result) System.out.println("***See dump in file:"+ModelCheck.filePrefix+i);
 				System.out.println("**********************************************");
 			} else {
 				if (!result) notFailed = false;
-				ComponentDescription vr = (ComponentDescription) verificationRecords.get(i-1);
+				ComponentDescription vr = (ComponentDescription) verificationRecords.get(i-2);
 				vr.sfContext().put("result", new Boolean(result));
 				vr.sfContext().put("failureRecord", formatFileStr(ModelCheck.filePrefix)+i);
+				String proposition = (String) vr.sfContext().get("proposition");
 				
-				System.out.println("***VERIFICATION RECORD CHECK:"+i+" "+(result?"PASSES":"FAILS"));
+				System.out.println("*"+i+"*"+proposition+":"+(result?"PASSES":"FAILS"));
 				if (!result) {
 					System.out.println("***Verification record:");
 					System.out.println(vr.toString());
@@ -110,6 +112,8 @@ public class ModelCheck implements PhaseAction {
 		}
 		
 		if (!notFailed) throw new SmartFrogResolutionException("Verification Run failure.  See foregoing output from parse for details.");
+	
+
 	}
 
 	public String formatFileStr(String fs){
@@ -574,7 +578,8 @@ public class ModelCheck implements PhaseAction {
 		pw.println("   modelTerminated := "+(mt_terminate_str!=null?mt_terminate_str:"1")+";");
 		
 		//SPEC
-		pw.println("SPEC AG(deadlock -> modelTerminated)");  //index 0
+		pw.println("SPEC AG(deadlock -> modelTerminated)");  //deadlock
+		pw.println("SPEC AG EF modelTerminated");  //livelock
 		if (verificationRecords!=null){
 			for (int idx=1; idx<=verificationRecords.size();idx++){
 				ComponentDescription vr = (ComponentDescription) verificationRecords.get(idx-1);
