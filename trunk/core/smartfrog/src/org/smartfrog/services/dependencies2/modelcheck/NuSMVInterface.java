@@ -6,24 +6,21 @@ public class NuSMVInterface {
 
 	private static boolean library_loaded=false;	
 	
-	public native static void run(String inputFile, String filePrefix, String dump_file, ModelCheckResults mcrs);
-	
+        public native static void run(String inputFile, String filePrefix, String dump_file, ModelCheckResults mcrs);
+
 	private ModelCheckResults mcrs = new ModelCheckResults();
 	
 	static {
 		//Just windows for now...
-		String prefix = ModelCheck.sfhome+"NuSMV/WIN/lib/NuSMVInterface";
-		File file_check = new File(prefix+".dll");
 		try {
-			if (file_check.exists()) System.load(file_check.getAbsolutePath());
+			System.loadLibrary("NuSMVInterface");
 			library_loaded=true;
 		} catch (Exception e){}
 	}
 	
 	public boolean runCheck(){
 		if (!library_loaded) return false;
-		
-    	run(ModelCheck.smv_file, ModelCheck.filePrefix, ModelCheck.filePrefix+"all", mcrs);
+		run(ModelCheck.smv_file, ModelCheck.filePrefix, ModelCheck.filePrefix+"all", mcrs);
 		return true;
 	}
 	
@@ -39,4 +36,9 @@ public class NuSMVInterface {
 		}
 	}
 	
+
+	public static void main(String args[]){
+	    new NuSMVInterface().runCheck();
+	}
+
 }
