@@ -480,6 +480,8 @@
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
+        <include name="NuSMV/NuSMVInterface.dll"/>
+        <include name="NuSMV/libNuSMVInterface.so"/>
       </fileset>
     </copy>
   </target>
