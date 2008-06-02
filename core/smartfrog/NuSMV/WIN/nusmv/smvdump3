@@ -1,0 +1,146 @@
+Trace Description: CTL Counterexample 
+Trace Type: Counterexample 
+-> State: 1.1 <-
+first.created = 0
+first.removed = 0
+first.transition = 0
+second.created = 0
+second.removed = 0
+second.transition = 0
+third.created = 0
+third.removed = 0
+third.transition = 0
+terminated = 0
+deadlock = 0
+first.deadlock = 0
+first.dremoved = 0
+first.dcreated = 1
+second.deadlock = 1
+second.dremoved = 0
+second.dcreated = 0
+third.deadlock = 1
+third.dremoved = 0
+third.dcreated = 0
+-> Input: 1.2 <-
+_process_selector_ = first
+running = 0
+third.running = 0
+second.running = 0
+first.running = 1
+-> State: 1.2 <-
+first.transition = 1
+-> Input: 1.3 <-
+_process_selector_ = first
+running = 0
+third.running = 0
+second.running = 0
+first.running = 1
+-> State: 1.3 <-
+first.created = 1
+first.transition = 0
+first.deadlock = 1
+first.dcreated = 0
+second.deadlock = 0
+second.dcreated = 1
+-> Input: 1.4 <-
+_process_selector_ = second
+running = 0
+third.running = 0
+second.running = 1
+first.running = 0
+-> State: 1.4 <-
+second.transition = 1
+-> Input: 1.5 <-
+_process_selector_ = second
+running = 0
+third.running = 0
+second.running = 1
+first.running = 0
+-> State: 1.5 <-
+second.created = 1
+second.transition = 0
+second.deadlock = 1
+second.dcreated = 0
+third.deadlock = 0
+third.dcreated = 1
+-> Input: 1.6 <-
+_process_selector_ = third
+running = 0
+third.running = 1
+second.running = 0
+first.running = 0
+-> State: 1.6 <-
+third.transition = 1
+-> Input: 1.7 <-
+_process_selector_ = third
+running = 0
+third.running = 1
+second.running = 0
+first.running = 0
+-> State: 1.7 <-
+third.created = 1
+third.transition = 0
+third.dremoved = 1
+third.dcreated = 0
+-> Input: 1.8 <-
+_process_selector_ = third
+running = 0
+third.running = 1
+second.running = 0
+first.running = 0
+-> State: 1.8 <-
+third.transition = 2
+-> Input: 1.9 <-
+_process_selector_ = third
+running = 0
+third.running = 1
+second.running = 0
+first.running = 0
+-> State: 1.9 <-
+third.removed = 1
+third.transition = 0
+second.deadlock = 0
+second.dremoved = 1
+third.deadlock = 1
+third.dremoved = 0
+-> Input: 1.10 <-
+_process_selector_ = second
+running = 0
+third.running = 0
+second.running = 1
+first.running = 0
+-> State: 1.10 <-
+second.transition = 2
+-> Input: 1.11 <-
+_process_selector_ = second
+running = 0
+third.running = 0
+second.running = 1
+first.running = 0
+-> State: 1.11 <-
+second.removed = 1
+second.transition = 0
+first.deadlock = 0
+first.dremoved = 1
+second.deadlock = 1
+second.dremoved = 0
+-> Input: 1.12 <-
+_process_selector_ = first
+running = 0
+third.running = 0
+second.running = 0
+first.running = 1
+-> State: 1.12 <-
+first.transition = 2
+-> Input: 1.13 <-
+_process_selector_ = first
+running = 0
+third.running = 0
+second.running = 0
+first.running = 1
+-> State: 1.13 <-
+first.removed = 1
+first.transition = 0
+deadlock = 1
+first.deadlock = 1
+first.dremoved = 0
