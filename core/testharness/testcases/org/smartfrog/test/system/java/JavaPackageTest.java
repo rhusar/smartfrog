@@ -20,11 +20,12 @@
 package org.smartfrog.test.system.java;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.os.java.JavaPackage;
 
 /** created Oct 1, 2004 10:54:11 AM */
 
-public class JavaPackageTest extends SmartFrogTestBase {
+public class JavaPackageTest extends DeployingTestBase {
 
     public static final String FILES = "org/smartfrog/test/system/java/";
 
@@ -33,25 +34,26 @@ public class JavaPackageTest extends SmartFrogTestBase {
     }
 
     public void testSimplePackage() throws Throwable {
-        application = deployExpectingSuccess(FILES +
+        expectSuccessfulTestRun(FILES, "testSimplePackage");
+
+/*        application = deployExpectingSuccess(FILES +
                 "testSimplePackage.sf", "testSimplePackage");
         assertStringAttributeExists(application, JavaPackage.ATTR_URICLASSPATH);
-        assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);
+        assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);*/
     }
 
     public void testMissingResource() throws Throwable {
-        deployExpectingException(FILES +
-                "testMissingResource.sf",
-                "testMissingResource",
-                EXCEPTION_LIFECYCLE,
-                null,
-                EXCEPTION_LIVENESS,
-                null);
+        expectSuccessfulTestRun(FILES, "testMissingResource");
+    }
+
+    public void NotestClassAsResource() throws Throwable {
+
+        application = deployExpectingSuccess(FILES +
+                "testClassAsResource.sf", "testClassAsResource");
     }
 
     public void testClassAsResource() throws Throwable {
-        application = deployExpectingSuccess(FILES +
-                "testClassAsResource.sf", "testClassAsResource");
+        expectSuccessfulTestRun(FILES, "testClassAsResource");
     }
 
 }
