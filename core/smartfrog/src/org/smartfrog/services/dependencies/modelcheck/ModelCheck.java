@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.smartfrog.services.dependencies2.statemodel.state.State;
+import org.smartfrog.services.dependencies.statemodel.state.State;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
