@@ -1,4 +1,4 @@
-package org.smartfrog.services.dependencies.statemodel.utils;
+package org.smartfrog.services.dependencies.legacy.statemodel.utils;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.Context;

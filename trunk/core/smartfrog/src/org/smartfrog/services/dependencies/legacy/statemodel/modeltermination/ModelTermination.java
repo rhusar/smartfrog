@@ -1,6 +1,6 @@
-package org.smartfrog.services.dependencies.statemodel.modeltermination;
+package org.smartfrog.services.dependencies.legacy.statemodel.modeltermination;
 
-import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
+import org.smartfrog.services.dependencies.legacy.statemodel.state.ThreadedState;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;

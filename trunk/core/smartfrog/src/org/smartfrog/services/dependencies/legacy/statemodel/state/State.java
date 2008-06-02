@@ -1,4 +1,4 @@
-package org.smartfrog.services.dependencies.statemodel.state;
+package org.smartfrog.services.dependencies.legacy.statemodel.state;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
-import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
-import org.smartfrog.services.dependencies.statemodel.utils.CDUtil;
+import org.smartfrog.services.dependencies.legacy.statemodel.dependency.DependencyValidation;
+import org.smartfrog.services.dependencies.legacy.statemodel.exceptions.SmartFrogStateLifecycleException;
+import org.smartfrog.services.dependencies.legacy.statemodel.utils.CDUtil;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;

@@ -1,8 +1,8 @@
-package org.smartfrog.services.dependencies.statemodel.connector;
+package org.smartfrog.services.dependencies.legacy.statemodel.connector;
 
-import org.smartfrog.services.dependencies.statemodel.dependency.DependencyValidation;
-import org.smartfrog.services.dependencies.statemodel.exceptions.SmartFrogStateLifecycleException;
-import org.smartfrog.services.dependencies.statemodel.state.StateDependencies;
+import org.smartfrog.services.dependencies.legacy.statemodel.dependency.DependencyValidation;
+import org.smartfrog.services.dependencies.legacy.statemodel.exceptions.SmartFrogStateLifecycleException;
+import org.smartfrog.services.dependencies.legacy.statemodel.state.StateDependencies;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
