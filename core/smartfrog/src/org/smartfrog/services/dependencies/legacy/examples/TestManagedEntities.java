@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.dependencies.examples;
+package org.smartfrog.services.dependencies.legacy.examples;
 
 import java.rmi.RemoteException;
 

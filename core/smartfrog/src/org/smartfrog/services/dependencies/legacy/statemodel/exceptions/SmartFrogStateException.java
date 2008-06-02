@@ -1,4 +1,4 @@
-package org.smartfrog.services.dependencies.statemodel.exceptions;
+package org.smartfrog.services.dependencies.legacy.statemodel.exceptions;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;

@@ -1,4 +1,4 @@
-package org.smartfrog.services.dependencies.statemodel.state;
+package org.smartfrog.services.dependencies.legacy.statemodel.state;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

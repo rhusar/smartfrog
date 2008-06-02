@@ -1,7 +1,7 @@
-package org.smartfrog.services.dependencies.statemodel.dependency;
+package org.smartfrog.services.dependencies.legacy.statemodel.dependency;
 
-import org.smartfrog.services.dependencies.statemodel.state.StateChangeNotification;
-import org.smartfrog.services.dependencies.statemodel.state.StateDependencies;
+import org.smartfrog.services.dependencies.legacy.statemodel.state.StateChangeNotification;
+import org.smartfrog.services.dependencies.legacy.statemodel.state.StateDependencies;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;

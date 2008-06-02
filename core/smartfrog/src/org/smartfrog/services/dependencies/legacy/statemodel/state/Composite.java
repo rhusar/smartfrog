@@ -1,4 +1,4 @@
-package org.smartfrog.services.dependencies.statemodel.state;
+package org.smartfrog.services.dependencies.legacy.statemodel.state;
 
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.compound.Compound;
