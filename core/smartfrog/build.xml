@@ -171,6 +171,7 @@
   <property name="dist.private.dir" location="${dist.dir}/${private}"/>
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
+  <property name="dist.runs.dir" location="${dist.dir}/runs"/>
   <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
   <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
   <!--property name="redist" value="redist"/ -->
@@ -332,6 +333,7 @@
     <mkdir dir="${dist.bin.dir}"/>
     <mkdir dir="${dist.docs.dir}"/>
     <mkdir dir="${dist.testCA.dir}"/>
+    <mkdir dir="${dist.runs.dir}"/>
     <mkdir dir="${dist.private.dir}"/>
     <mkdir dir="${dist.signedLib.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
