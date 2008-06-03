@@ -1,0 +1,1 @@
+gcc -g -O2 -fPIC -I $JAVA_HOME/include/ -I $JAVA_HOME/include/linux/ -shared -o libNuSMVInterface.so NuSMVInterface.c smMain.o  .libs/libnusmv.a src/.libs/libnusmvcore.a -L../cudd-2.4.1.0/lib -lcudd -lcudd_util -lmtr -lst src/sm/com_hp_ail_smartfrog_collateOutput.o
