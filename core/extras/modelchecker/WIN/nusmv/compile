@@ -1,0 +1,1 @@
+gcc -g -O2 -mno-cygwin -D __int64="long long" -I ~/Program\ Files/Java/jdk1.6.0_06/include/ -I ~/Program\ Files/Java/jdk1.6.0_06/include/win32/ -shared -Wl,--add-stdcall-alias -o NuSMVInterface.dll NuSMVInterface.c smMain.o  ./.libs/libnusmv.a src/.libs/libnusmvcore.a -L../cudd-2.4.1.0/lib -lcudd -lcudd_util -lmtr -lst src/sm/com_hp_ail_smartfrog_collateOutput.o
