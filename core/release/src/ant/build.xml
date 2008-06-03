@@ -45,9 +45,9 @@
 
    1. Point smartfrog.install.dir (in a security.properties file) at the
     directory in which SmartFrog is installed.
-   2. run
+   2. In that directory, run
     ant initCA
-    in that directory to create a CA
+    to create a CA
 
 
 
@@ -151,8 +151,6 @@
     </echo>
   </target>
 
-
-
   <target name="ready-to-rpm" depends="prepare-binary-rpm,rpmmacros" />
 
 
@@ -168,7 +166,6 @@
       cleanBuildDir="true"
       failOnError="true"/>
   </target>
-
 
   <target name="prepare-binary-rpm"
       depends="ready-to-prepare-binary-rpm">

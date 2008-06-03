@@ -1,0 +1,45 @@
+This is a build file that is designed to be redistributed as part of a tar file,
+then executed to create a new RPM with signed artifacts.
+
+It requires
+* Ant1.7.0+
+* A linux system with rpmbuild on the path
+
+It looks for a build.properties file in
+ - the current directory
+ - the parent.project.dir (Default = ../..)
+
+It looks for security properties in a file called security.properties
+in (and in the current order)
+ - the current directory
+ - the parent.project.dir (Default = ../..)
+ - ~/.ant
+
+To run this build file, you must have a CA set up.
+
+1. Point smartfrog.install.dir (in a security.properties file) at the
+  directory in which SmartFrog is installed.
+2. In that directory, run
+    ant initCA
+  to create a CA
+
+
+How it works
+
+When the main SmartFrog RPMs are released, a directory tree is built up
+containing all the files -and all symbolic links pointing to the files which
+will exist when the RPMs are installed. This tree can only be built up on a
+Unix system, to enable these symlinks to be set up.
+
+As well as building the RPMs, we run the unix tar command to create
+a tar file of the directory tree, including a small Ant build file designed
+to sign the JARs
+
+
+This tar file can then be expanded, and run by other people, to create custom
+signed SmartFrog RPMs. In these RPMs, every JAR file is signed. This means
+ 1. The normal Java classloader now refuses to load class or resource files
+    from JARs not signed by the same signatories.
+ 2. SmartFrog now operates in security enabled mode.
+
+The latter is somewhat more complex than just classloading.
