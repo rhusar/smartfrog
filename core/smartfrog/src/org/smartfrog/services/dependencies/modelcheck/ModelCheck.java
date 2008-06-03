@@ -40,14 +40,11 @@ public class ModelCheck implements PhaseAction {
 	
 	static {
 		sfhome = System.getenv("SFHOME");
+		
 		if (sfhome!=null){
-			int dist = sfhome.indexOf("dist");
-			if (dist>-1 && sfhome.length()==dist+4){
-				sfhome = sfhome.substring(0,dist);
-			}
-			smv_file = sfhome+"/NuSMV/modelcheck.smv";
-			dat_file = sfhome+"/NuSMV/modelcheck.dat";
-			filePrefix = sfhome+"/NuSMV/vrun";
+			smv_file = sfhome+"/runs/modelcheck.smv";
+			dat_file = sfhome+"/runs/modelcheck.dat";
+			filePrefix = sfhome+"/runs/vrun";
 		} 
 	}
 	
