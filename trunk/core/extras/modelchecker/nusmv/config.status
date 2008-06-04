@@ -529,12 +529,12 @@ s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,cygpath -w,;t t
 s,@PACKAGE@,NuSMV,;t t
 s,@VERSION@,2.4.3,;t t
-s,@ACLOCAL@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run aclocal-1.9,;t t
-s,@AUTOCONF@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run autoconf,;t t
-s,@AUTOMAKE@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run automake-1.9,;t t
-s,@AUTOHEADER@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run autoheader,;t t
-s,@MAKEINFO@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run makeinfo,;t t
-s,@install_sh@,/cygdrive/c/NuSMV/WIN/nusmv/helpers/install-sh,;t t
+s,@ACLOCAL@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run aclocal-1.9,;t t
+s,@AUTOCONF@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run autoconf,;t t
+s,@AUTOMAKE@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run automake-1.9,;t t
+s,@AUTOHEADER@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run autoheader,;t t
+s,@MAKEINFO@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run makeinfo,;t t
+s,@install_sh@,/cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/install-sh,;t t
 s,@STRIP@,strip,;t t
 s,@ac_ct_STRIP@,strip,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t
@@ -542,7 +542,7 @@ s,@mkdir_p@,mkdir -p --,;t t
 s,@AWK@,gawk,;t t
 s,@SET_MAKE@,,;t t
 s,@am__leading_dot@,.,;t t
-s,@AMTAR@,${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run tar,;t t
+s,@AMTAR@,${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run tar,;t t
 s,@am__tar@,${AMTAR} chof - "$$tardir",;t t
 s,@am__untar@,${AMTAR} xf -,;t t
 s,@build@,i686-pc-cygwin,;t t
@@ -961,7 +961,7 @@ ${ac_dA}PACKAGE_STRING${ac_dB}PACKAGE_STRING${ac_dC}"NuSMV 2.4.3"${ac_dD}
 ${ac_dA}PACKAGE_BUGREPORT${ac_dB}PACKAGE_BUGREPORT${ac_dC}"nusmv@irst.itc.it"${ac_dD}
 ${ac_dA}PACKAGE${ac_dB}PACKAGE${ac_dC}"NuSMV"${ac_dD}
 ${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"2.4.3"${ac_dD}
-${ac_dA}PACKAGE_BUILD_DATE${ac_dB}PACKAGE_BUILD_DATE${ac_dC}"Wed Jun  4 13:49:13 UTC 2008"${ac_dD}
+${ac_dA}PACKAGE_BUILD_DATE${ac_dB}PACKAGE_BUILD_DATE${ac_dC}"Wed Jun  4 15:39:23 UTC 2008"${ac_dD}
 ${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_SYS_TYPES_H${ac_dB}HAVE_SYS_TYPES_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_SYS_STAT_H${ac_dB}HAVE_SYS_STAT_H${ac_dC}1${ac_dD}
@@ -1052,7 +1052,7 @@ ${ac_uA}PACKAGE_STRING${ac_uB}PACKAGE_STRING${ac_uC}"NuSMV 2.4.3"${ac_uD}
 ${ac_uA}PACKAGE_BUGREPORT${ac_uB}PACKAGE_BUGREPORT${ac_uC}"nusmv@irst.itc.it"${ac_uD}
 ${ac_uA}PACKAGE${ac_uB}PACKAGE${ac_uC}"NuSMV"${ac_uD}
 ${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"2.4.3"${ac_uD}
-${ac_uA}PACKAGE_BUILD_DATE${ac_uB}PACKAGE_BUILD_DATE${ac_uC}"Wed Jun  4 13:49:13 UTC 2008"${ac_uD}
+${ac_uA}PACKAGE_BUILD_DATE${ac_uB}PACKAGE_BUILD_DATE${ac_uC}"Wed Jun  4 15:39:23 UTC 2008"${ac_uD}
 ${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_SYS_TYPES_H${ac_uB}HAVE_SYS_TYPES_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_SYS_STAT_H${ac_uB}HAVE_SYS_STAT_H${ac_uC}1${ac_uD}
