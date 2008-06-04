@@ -171,6 +171,7 @@
   <property name="dist.private.dir" location="${dist.dir}/${private}"/>
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
+  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
   <property name="dist.runs.dir" location="${dist.dir}/runs"/>
   <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
   <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
@@ -482,8 +483,12 @@
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
-        <include name="NuSMV/NuSMVInterface.dll"/>
-        <include name="NuSMV/libNuSMVInterface.so"/>
+      </fileset>
+    </copy>
+    <copy todir="${dist.lib.dir}/NuSMV">
+      <fileset dir="${NuSMV.dir}">
+        <include name="NuSMVInterface.dll"/>
+        <include name="libNuSMVInterface.so"/>
       </fileset>
     </copy>
   </target>
