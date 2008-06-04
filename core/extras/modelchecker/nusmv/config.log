@@ -153,7 +153,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | /* end confdefs.h.  */
 | #include <ac_nonexistent.h>
 configure:3345: result: gcc -E
@@ -172,7 +172,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | /* end confdefs.h.  */
 | #include <ac_nonexistent.h>
 configure:3457: checking for egrep
@@ -285,7 +285,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -347,7 +347,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -426,7 +426,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -503,7 +503,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -559,7 +559,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -595,7 +595,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -647,7 +647,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -971,7 +971,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1023,7 +1023,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1084,7 +1084,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1252,7 +1252,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1399,7 +1399,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1590,7 +1590,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1666,8 +1666,8 @@ configure:26175: $? = 0
 configure:26186: result: void
 configure:26194: checking whether lstat dereferences a symlink specified with a trailing slash
 configure:26225: gcc -o conftest.exe -g -O2 -mno-cygwin -mwindows   conftest.c -lm  >&5
-/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccioCsis.o: In function `main':
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:105: undefined reference to `_lstat'
+/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccSGYeEb.o: In function `main':
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:105: undefined reference to `_lstat'
 collect2: ld returned 1 exit status
 configure:26228: $? = 1
 configure: program exited with status 1
@@ -1681,7 +1681,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1797,7 +1797,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -1912,9 +1912,9 @@ configure:26663: $? = 0
 configure:26675: result: yes
 configure:26682: checking for _doprnt
 configure:26739: gcc -o conftest.exe -g -O2 -mno-cygwin -mwindows   conftest.c -lm  >&5
-/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccs5kwWO.o: In function `main':
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:105: undefined reference to `__doprnt'
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:104: undefined reference to `__doprnt'
+/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/cc4o3wjA.o: In function `main':
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:105: undefined reference to `__doprnt'
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:104: undefined reference to `__doprnt'
 collect2: ld returned 1 exit status
 configure:26745: $? = 1
 configure: failed program was:
@@ -1927,7 +1927,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -2130,7 +2130,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -2240,9 +2240,9 @@ configure: failed program was:
 configure:26892: result: no
 configure:26804: checking for random
 configure:26861: gcc -o conftest.exe -g -O2 -mno-cygwin -mwindows   conftest.c -lm  >&5
-/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccAII6iG.o: In function `main':
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:113: undefined reference to `_random'
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:112: undefined reference to `_random'
+/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccKXnClG.o: In function `main':
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:113: undefined reference to `_random'
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:112: undefined reference to `_random'
 collect2: ld returned 1 exit status
 configure:26867: $? = 1
 configure: failed program was:
@@ -2255,7 +2255,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -2365,9 +2365,9 @@ configure: failed program was:
 configure:26892: result: no
 configure:26804: checking for srandom
 configure:26861: gcc -o conftest.exe -g -O2 -mno-cygwin -mwindows   conftest.c -lm  >&5
-/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccqTAYi1.o: In function `main':
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:113: undefined reference to `_srandom'
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:112: undefined reference to `_srandom'
+/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/cc2mYfI5.o: In function `main':
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:113: undefined reference to `_srandom'
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:112: undefined reference to `_srandom'
 collect2: ld returned 1 exit status
 configure:26867: $? = 1
 configure: failed program was:
@@ -2380,7 +2380,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -2499,9 +2499,9 @@ configure:26880: $? = 0
 configure:26892: result: yes
 configure:26804: checking for mkstemp
 configure:26861: gcc -o conftest.exe -g -O2 -mno-cygwin -mwindows   conftest.c -lm  >&5
-/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/cc2itp3i.o: In function `main':
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:114: undefined reference to `_mkstemp'
-/cygdrive/c/NuSMV/WIN/nusmv/conftest.c:113: undefined reference to `_mkstemp'
+/cygdrive/c/DOCUME~1/anfarr/LOCALS~1/Temp/ccqvjyPs.o: In function `main':
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:114: undefined reference to `_mkstemp'
+/cygdrive/c/trunk/core/extras/modelchecker/nusmv/conftest.c:113: undefined reference to `_mkstemp'
 collect2: ld returned 1 exit status
 configure:26867: $? = 1
 configure: failed program was:
@@ -2514,7 +2514,7 @@ configure: failed program was:
 | #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 | #define PACKAGE "NuSMV"
 | #define VERSION "2.4.3"
-| #define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+| #define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 | #define STDC_HEADERS 1
 | #define HAVE_SYS_TYPES_H 1
 | #define HAVE_SYS_STAT_H 1
@@ -2864,15 +2864,15 @@ lt_lt_cv_sys_global_symbol_to_cdecl='"sed -n -e '\''s/^. .* \\(.*\\)\$/extern in
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run aclocal-1.9'
+ACLOCAL='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run aclocal-1.9'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
-AMTAR='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run tar'
+AMTAR='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run tar'
 AR='ar'
-AUTOCONF='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run autoconf'
-AUTOHEADER='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run autoheader'
-AUTOMAKE='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run automake-1.9'
+AUTOCONF='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run autoconf'
+AUTOHEADER='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run autoheader'
+AUTOMAKE='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run automake-1.9'
 AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
@@ -2937,7 +2937,7 @@ LIBS='-lm '
 LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 LN_S='ln -s'
 LTLIBOBJS=' lstat$U.lo'
-MAKEINFO='${SHELL} /cygdrive/c/NuSMV/WIN/nusmv/helpers/missing --run makeinfo'
+MAKEINFO='${SHELL} /cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/missing --run makeinfo'
 OBJEXT='o'
 PACKAGE='NuSMV'
 PACKAGE_BUGREPORT='nusmv@irst.itc.it'
@@ -2987,7 +2987,7 @@ host_os='cygwin'
 host_vendor='pc'
 includedir='${prefix}/include'
 infodir='${prefix}/info'
-install_sh='/cygdrive/c/NuSMV/WIN/nusmv/helpers/install-sh'
+install_sh='/cygdrive/c/trunk/core/extras/modelchecker/nusmv/helpers/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localstatedir='${prefix}/var'
@@ -3076,7 +3076,7 @@ zchafflibdir='../zchaff_v2007.3.12'
 #define HAVE__BOOL 1
 #define PACKAGE "NuSMV"
 #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
-#define PACKAGE_BUILD_DATE "Wed Jun  4 13:49:13 UTC 2008"
+#define PACKAGE_BUILD_DATE "Wed Jun  4 15:39:23 UTC 2008"
 #define PACKAGE_NAME "NuSMV"
 #define PACKAGE_STRING "NuSMV 2.4.3"
 #define PACKAGE_TARNAME "nusmv"
