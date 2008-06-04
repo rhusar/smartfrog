@@ -1,0 +1,58 @@
+MODULE main
+VAR 
+  first : process component(1, second.removed);
+  second : process component(first.created, third.removed);
+  third : process component(second.created, third.created);
+  terminated : boolean;
+
+ASSIGN
+  terminated := 0;
+
+DEFINE 
+  deadlock := first.deadlock & second.deadlock & third.deadlock;
+  -- design the notion of an end state?
+
+SPEC
+  AG (!deadlock)
+-- livelock check. take notice if deadlock check does not detect deadlock
+
+
+MODULE component(pcreated, sremoved)
+   VAR
+      created : boolean;
+      removed : boolean;
+      
+      transition : 0..2;
+    
+   ASSIGN
+      init(created) := 0;
+      init(removed) := 0;
+      init(transition) := 0; 
+
+      next(created) := case 
+                        transition=1 : 1;
+                        1 : created;
+                       esac;
+
+      next(removed) := case 
+                        transition=2 : 1;
+                        1 : removed;
+                       esac;
+
+      next(transition) := case 
+                          dcreated & transition=0 : 1;
+                          dremoved & transition=0 : 2;
+                          1 : 0;
+                         esac;
+
+   DEFINE
+      dcreated := pcreated & !created;
+      dremoved := sremoved & !removed;
+      deadlock := transition=0 & !dcreated & !dremoved;
+
+   FAIRNESS running
+   SPEC AG(removed -> created)
+
+           
+
+   
