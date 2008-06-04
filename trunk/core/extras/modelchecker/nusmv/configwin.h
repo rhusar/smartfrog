@@ -150,6 +150,9 @@
    */
 /* #undef HAVE_SYS_DIR_H */
 
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#define HAVE_SYS_IOCTL_H 0
+
 /* Defined to 1 if the system provides sys/malloc.h */
 /* #undef HAVE_SYS_MALLOC_H */
 
@@ -159,6 +162,9 @@
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #define HAVE_SYS_PARAM_H 1
+
+/* Define to 1 if you have the <sys/signal.h> header file. */
+#define HAVE_SYS_SIGNAL_H 0
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
@@ -192,7 +198,7 @@
 #define PACKAGE_BUGREPORT "nusmv@irst.itc.it"
 
 /* Build date */
-#define PACKAGE_BUILD_DATE "Mon Jun  2 12:50:05 UTC 2008"
+#define PACKAGE_BUILD_DATE "Wed Jun  4 13:09:31 UTC 2008"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "NuSMV"
