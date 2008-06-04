@@ -1,0 +1,17 @@
+#!/bin/bash
+cd cudd-2.4.1.0
+make -f Makefile.lin
+cd ../nusmv
+cp configurelin configure
+./configure
+cd src/sm
+echo gcc -g -O2 -fPIC -c com_hp_ail_smartfrog_collateOutput.c
+gcc -g -O2 -fPIC -c com_hp_ail_smartfrog_collateOutput.c
+cd ../..
+make 
+echo gcc -g -O2 -fPIC -Iinclude -Iinclude/linux/ -shared -o libNuSMVInterface.so NuSMVInterface.c smMain.o  ./.libs/libnusmv.a src/.libs/libnusmvcore.a -L../cudd-2.4.1.0/lib -lcudd -lcudd_util -lmtr -lst src/sm/com_hp_ail_smartfrog_collateOutput.o
+gcc -g -O2 -fPIC -Iinclude -Iinclude/linux/ -shared -o libNuSMVInterface.so NuSMVInterface.c smMain.o  ./.libs/libnusmv.a src/.libs/libnusmvcore.a -L../cudd-2.4.1.0/lib -lcudd -lcudd_util -lmtr -lst src/sm/com_hp_ail_smartfrog_collateOutput.o
+cd ..
+
+
+
