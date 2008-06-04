@@ -157,9 +157,14 @@
   <target name="startDriverDaemon" depends="buildATH" description="Starts the Driver node Daemon">
     <!--antcall target="start-daemon-if-needed"/-->
     <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true"
-                    port="${smartfrog.daemon.port}"/>
+                    port="3805"/>
 
   </target>
+  <presetdef name="sf-waitfordaemon1">
+        <waitfor maxwait="10" maxwaitunit="second">
+            <socket server="localhost" port="3805"/>
+        </waitfor>
+    </presetdef>
 
 
   <!-- Start the Remote Daemons-->
@@ -170,11 +175,11 @@
       without this the first tests will fail as there is no
       sf daemon around
     -->
-    <sf-waitfordaemon maxwait="20" timeoutproperty="daemon.missing"/>
+    <sf-waitfordaemon1 maxwait="20" timeoutproperty="daemon.missing"/>
     <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
 
     <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
-               port="${smartfrog.daemon.port}">
+               port="3805">
       <application name="startDaemon" descriptor="startRemoteDaemons.sf"/>
     </sf-deploy>
   </target>
