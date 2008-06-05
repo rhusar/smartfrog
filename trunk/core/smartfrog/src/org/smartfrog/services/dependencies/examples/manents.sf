@@ -24,8 +24,8 @@ For more information: www.smartfrog.org
 ManagedEntity extends State {
    sfClass "org.smartfrog.services.dependencies.examples.ManagedEntity";
 
-   [stateData] created false;
-   [stateData] removed false;
+   created false;
+   removed false;
    name TBD;
    
    tcreated extends Transition {       
