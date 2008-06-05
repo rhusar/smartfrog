@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
-import java.rmi.Remote;
 
 /**
  *
@@ -62,13 +61,17 @@ public class RequireSecurityImpl extends PrimImpl implements Condition {
         requireSecureResources = sfResolve(ATTR_REQUIRE_SECURE_RESOURCES, true, true);
         boolean conditional= sfResolve(ATTR_CONDITION, true, true);
         if (!conditional) {
-            if(requireSecure && !SFSecurity.isSecurityOn()) {
-                throw new SmartFrogLifecycleException(ERROR_INSECURE_DAEMON);
-            }
-            if (requireSecureResources && SFSecurity.isSecureResourcesOff()) {
-                throw new SmartFrogLifecycleException(ERROR_INSECURE_RESOURCE_LOADING);
-            }
+            checkSecurityOnStartup();
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,null,null,null);
+        }
+    }
+
+    protected void checkSecurityOnStartup() throws SmartFrogLifecycleException {
+        if (requireSecure && !SFSecurity.isSecurityOn()) {
+            throw new SmartFrogLifecycleException(ERROR_INSECURE_DAEMON);
+        }
+        if (requireSecureResources && SFSecurity.isSecureResourcesOff()) {
+            throw new SmartFrogLifecycleException(ERROR_INSECURE_RESOURCE_LOADING);
         }
     }
 
