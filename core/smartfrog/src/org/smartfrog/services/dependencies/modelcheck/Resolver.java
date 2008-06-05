@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.languages.sf.functions.LT;
 import org.smartfrog.sfcore.languages.sf.functions.Minus;
 import org.smartfrog.sfcore.languages.sf.functions.Mod;
 import org.smartfrog.sfcore.languages.sf.functions.NE;
-import org.smartfrog.sfcore.languages.sf.functions.NXor;
 import org.smartfrog.sfcore.languages.sf.functions.Not;
 import org.smartfrog.sfcore.languages.sf.functions.Or;
 import org.smartfrog.sfcore.languages.sf.functions.Product;
@@ -57,7 +56,6 @@ public class Resolver {
 		else if (functionClass.equals(Or.class.getName())) return " | ";
 		else if (functionClass.equals(Implies.class.getName())) return " -> ";
 		else if (functionClass.equals(Xor.class.getName())) return " xor ";
-		else if (functionClass.equals(NXor.class.getName())) return " xnor ";
 		
 		else if (functionClass.equals(State.class.getName())) return " & ";
 		else if (functionClass.equals(AndConnector.class.getName())) return " & ";
