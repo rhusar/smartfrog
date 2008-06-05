@@ -27,7 +27,6 @@
   <property name="is.component" value="true"/>
   <!--no javadocs until we have source-->
   <!--<property name="javadoc.disabled" value="true" />-->
-  <!--we disable Ivy to let us use a copy of izpack in the lib dir-->
 
   <!-- override point -->
   <property file="build.properties"/>
@@ -46,7 +45,6 @@
       value="[conf]/[artifact]-[revision].[ext]"/>
 
   <!-- override this to get a different release, such as a hard coded version.
-  Doing that
   -->
   <property name="ivy.smartfrog.version" value="latest.integration"/>
 
@@ -313,7 +311,7 @@
         location="${rpm.root.dir}/${rpm.install.dir}"/>
     <newdir name="rpm.lib.dir"
         location="${core.install.dir}/lib"/>
-    <newdir name="rpm.signed.lib.dir"
+    <property name="rpm.signed.lib.dir"
         location="${core.install.dir}/signedLib"/>
 
     <property name="smartfrog.rpmfiles.tar"
@@ -342,6 +340,13 @@
         location="${dist.rpm.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar"/>
     <property name="rpms.signed.tar.gz"
         location="${upload.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar.gz"/>
+    <property name="private-rpm-package.tar"
+        location="${release.dir}/smartfrog-private-rpms-${smartfrog.version}.tar"/>
+    <property name="private-rpm-package.tar.gz"
+        location="${private-rpm-package.tar}.gz"/>
+
+
+
     <property name="remote-smartfrogd" value="/etc/init.d/${rpm.daemon.name}"/>
 
     <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
@@ -567,10 +572,21 @@
 
   </target>
 
+  <!--For the RPMs, we create symbolic links instead of a separate directory-->
+  <target name="symlink-signed-lib" depends="ready-to-sign-rpm-jars"
+      >
+    <delete dir="${rpm.signed.lib.dir}" />
+    <exec executable="ln" failonerror="true">
+      <arg value="-sf"/>
+      <arg value="${rpm.install.dir}/lib"/>
+      <arg value="${rpm.signed.lib.dir}"/>
+    </exec>
+  </target>
+
   <!--we always copy the signed JARs-->
-  <target name="maybe-sign-rpm-jars" depends="ready-to-sign-rpm-jars"
+  <target name="maybe-sign-rpm-jars" depends="ready-to-sign-rpm-jars,symlink-signed-lib"
       xmlns:sec="http://security.smartfrog.org/">
-    <copy todir="${rpm.signed.lib.dir}">
+<!--    <copy todir="${rpm.signed.lib.dir}">
       <fileset dir="${rpm.lib.dir}">
         <include name="smartfrog-*.jar"/>
         <include name="sfServices-*.jar"/>
@@ -579,7 +595,7 @@
         <include name="sf-anubis-*.jar"/>
         <include name="commons-logging-*.jar"/>
         <include name="log4j-*.jar"/>
-        <!--<include name="sf- -*.jar" />-->
+        --><!--<include name="sf- -*.jar" />--><!--
       </fileset>
     </copy>
     <sf-conditional if="security.enabled">
@@ -592,8 +608,7 @@
       <echo level="warn">The signedLib JAR files are not being signed.
         Do not use the -signed RPMs being created.
       </echo>
-    </sf-conditional>
-
+    </sf-conditional>-->
   </target>
 
 
@@ -661,35 +676,21 @@
     </echo>
   </target>
 
-  <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms"/>
 
-  <target name="gzip-unsigned-rpm-files"
+  <target name="gzip-rpm"
       depends="ready-to-gzip-rpm"
       if="has.rpm.tools"
-      description="create a gzip file containing the unsigned rpms">
+      description="create a gzip file containing the RPM files">
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}">
         <include name="*.rpm"/>
-        <exclude name="*-signed*.rpm"/>
       </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}"/>
   </target>
 
-  <target name="gzip-signed-rpms"
-      depends="ready-to-gzip-rpm"
-      if="can.create.signed.rpms"
-      description="create a gzip file containing the signed rpms">
-    <tar destfile="${rpms.signed.tar}">
-      <fileset dir="${dist.rpm.dir}">
-        <include name="*-signed*.rpm"/>
-      </fileset>
-    </tar>
-    <gzip destfile="${rpms.signed.tar.gz}" src="${rpms.signed.tar}"/>
-  </target>
-
-
-  <target name="ready-to-run-private-rpmbuild" depends="ready-to-prepare-binary-rpm,prepare-private-rpm-build-file" >
+  <target name="ready-to-run-private-rpmbuild"
+      depends="ready-to-prepare-binary-rpm,prepare-private-rpm-build-file" >
 
   </target>
 
@@ -698,7 +699,7 @@
   <target name="run-private-rpmbuild" depends="ready-to-run-private-rpmbuild"
     description="run a private RPM build for third party signing">
     <ant antfile="${build.rpm.dir}/build.xml"
-      inheritAll="false"/>
+      inheritAll="false" inheritrefs="false"/>
   </target>
 
 
@@ -716,10 +717,6 @@
   </target>
 
   <target name="package-private-rpm" depends="ready-to-run-private-rpmbuild" >
-    <property name="private-rpm-package.tar"
-      location="${release.dir}/private-rpm-package.tar"/>
-    <property name="private-rpm-package.tar.gz"
-      location="${private-rpm-package.tar}.gz"/>
     <exec executable="tar" failonerror="true"
       dir="${build.rpm.dir}/">
       <arg value="cvvf"/>
@@ -741,6 +738,7 @@
     </loadresource>
     <gzip src="${private-rpm-package.tar}"
       destfile="${private-rpm-package.tar.gz}"/>
+    <echo>Created ${private-rpm-package.tar.gz} for private RPMs</echo>
   </target>
 
 

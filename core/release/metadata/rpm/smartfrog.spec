@@ -507,7 +507,10 @@ rm -rf $RPM_BUILD_ROOT
 #other directories
 %{basedir}/testCA
 %{basedir}/private
-%dir %{basedir}/signedLib
+
+#the signedLib which used to be a directory, but which in the RPMs is a symbolic link 
+#%dir %{basedir}/signedLib
+%{basedir}/signedLib
 
 #the log output directory
 #this is no longer world writeable, as the logging can fall back gracefully now 
@@ -622,7 +625,6 @@ fi
 %{libdir}/sf-loggingservices-${smartfrog.version}.jar
 %{libdir}/commons-logging-${commons-logging.version}.jar
 %{libdir}/log4j-${log4j.version}.jar
-
 %{linkdir}/sf-loggingservices.jar
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
@@ -745,37 +747,37 @@ fi
 # -----------------------------------------------------------------------------
 # this section declares support for signed artifacts of the different components.
 
-%package smartfrog-signed
-Group:         ${rpm.framework}
-Summary:        Signed SmartFrog artifacts
-Requires:       %{name} = %{version}-%{release}
-%description smartfrog-signed
-Contains JAR files signed by a private CA.
-%files smartfrog-signed
-#security
-%{signedlib}/smartfrog-${smartfrog.version}.jar
-%{signedlib}/sfExamples-${smartfrog.version}.jar
-%{signedlib}/sfServices-${smartfrog.version}.jar
-
-%package anubis-signed
-Group:         ${rpm.framework}
-Summary:        Signed Anubis artifacts
-Requires:       %{name}-anubis = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
-%description anubis-signed
-Contains JAR files signed by a private CA.
-%files anubis-signed
-%{signedlib}/sf-anubis-${smartfrog.version}.jar
-
-%package logging-signed
-Group:         ${rpm.framework}
-Summary:       Signed logging artifacts
-Requires:       %{name}-logging = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
-%description logging-signed
-Contains JAR files signed by a private CA.
-%files logging-signed
-%{signedlib}/sf-loggingservices-${smartfrog.version}.jar
-%{signedlib}/commons-logging-${commons-logging.version}.jar
-%{signedlib}/log4j-${log4j.version}.jar
+#%package smartfrog-signed
+#Group:         ${rpm.framework}
+#Summary:        Signed SmartFrog artifacts
+#Requires:       %{name} = %{version}-%{release}
+#%description smartfrog-signed
+#Contains JAR files signed by a private CA.
+#%files smartfrog-signed
+##security
+#%{signedlib}/smartfrog-${smartfrog.version}.jar
+#%{signedlib}/sfExamples-${smartfrog.version}.jar
+#%{signedlib}/sfServices-${smartfrog.version}.jar
+#
+#%package anubis-signed
+#Group:         ${rpm.framework}
+#Summary:        Signed Anubis artifacts
+#Requires:       %{name}-anubis = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
+#%description anubis-signed
+#Contains JAR files signed by a private CA.
+#%files anubis-signed
+#%{signedlib}/sf-anubis-${smartfrog.version}.jar
+#
+#%package logging-signed
+#Group:         ${rpm.framework}
+#Summary:       Signed logging artifacts
+#Requires:       %{name}-logging = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
+#%description logging-signed
+#Contains JAR files signed by a private CA.
+#%files logging-signed
+#%{signedlib}/sf-loggingservices-${smartfrog.version}.jar
+#%{signedlib}/commons-logging-${commons-logging.version}.jar
+#%{signedlib}/log4j-${log4j.version}.jar
 
 # -----------------------------------------------------------------------------
 
