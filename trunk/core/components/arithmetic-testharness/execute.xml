@@ -176,7 +176,7 @@
       sf daemon around
     -->
     <sf-waitfordaemon1 maxwait="20" timeoutproperty="daemon.missing"/>
-    <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
+    <fail if="daemon.missing">No daemon, or daemon not responding at port 3805</fail>
 
     <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
                port="3805">
@@ -194,7 +194,7 @@
 
 
     <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
-               port="${smartfrog.daemon.port}">
+               port="3805">
       <application name="startApp" descriptor="org/smartfrog/regtest/arithmetic/templategen/exampleTH.sf"/>
     </sf-deploy>
   </target>
