@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.prim;
 
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
@@ -187,7 +189,6 @@ public final class TerminationRecord implements Serializable {
      * @return string representation of termination record
      */
     public String toString() {
-        //return id + "(" + errorType + ":" + description + ")";
         StringBuilder builder=new StringBuilder();
         builder.append("Termination Record: ");
         if(id != null && id.size() > 0) {
@@ -199,7 +200,11 @@ public final class TerminationRecord implements Serializable {
         if(description!=null) {
             builder.append(",  description: ").append(description);
         }
+        if (cause != null) {
+            builder.append(buildStackTrace());
+        }
         //recursively attach exceptions
+/*
         Throwable thrown = cause;
         Throwable parent = null;
         while (thrown != null && thrown != parent) {
@@ -208,11 +213,32 @@ public final class TerminationRecord implements Serializable {
                 builder.append(" nested ");
             }
             builder.append("cause: ");
-            builder.append(thrown);
+            builder.append(thrown.toString());
             parent = thrown;
             thrown = thrown.getCause();
         }
+*/
         return builder.toString();
+    }
+
+    public String buildStackTrace() {
+        if (cause == null) {
+            return "";
+        } else {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(sw);
+                pw.println();
+                cause.printStackTrace(pw);
+                pw.println();
+            } finally {
+                if (pw != null) {
+                    pw.close();
+                }
+            }
+            return sw.toString();
+        }
     }
 
     /**
