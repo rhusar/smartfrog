@@ -3,7 +3,7 @@
 
 extern int main_wkr(int  argc, char ** argv, char *dump_out);
 
-JNIEXPORT void JNICALL Java_org_smartfrog_services_dependencies2_modelcheck_NuSMVInterface_run
+JNIEXPORT void JNICALL Java_org_smartfrog_services_dependencies_modelcheck_NuSMVInterface_run
 (JNIEnv *env, jclass cl, jstring input_file, jstring _file_prefix, jstring _dump_out, jobject mcrs){
 
         /*Set the file prefix and get/set the input/output files*/
