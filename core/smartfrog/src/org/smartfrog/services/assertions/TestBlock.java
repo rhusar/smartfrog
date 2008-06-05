@@ -130,6 +130,8 @@ public interface TestBlock extends EventRegistration {
      * turn true if a test is skipped; if some condition caused
      * it not to run
      * @return whether or not the test block skipped deployment of children.
+     * @throws RemoteException on network trouble
+     * @throws SmartFrogException on other problems
      */
     boolean isSkipped() throws RemoteException, SmartFrogException;
 }
