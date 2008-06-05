@@ -39,7 +39,7 @@ import java.rmi.RemoteException;
  *
  */
 
-public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock,LifecycleTester {
+public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, LifecycleTester {
 
 
 
@@ -61,7 +61,8 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock,Life
 
 
     /**
-     * Starts the component. <p/> This will walk the action through its lifecycle, terminating it before it is expected
+     * Starts the component.
+     * This will walk the action through its lifecycle, terminating it before it is expected
      *
      * A TestStartedEvent will always be sent.
      *
