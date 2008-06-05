@@ -27,27 +27,7 @@
     This is a build file that is designed to be redistributed as part of a tar file,
     then executed to create a new RPM with signed artifacts.
 
-    It requires
-    * Ant1.7.0+
-    * A linux system with rpmbuild on the path
-
-    It looks for a build.properties file in
-     - the current directory
-     - the parent.project.dir (Default = ../..)
-
-    It looks for security properties in a file called security.properties
-    in (and in the current order)
-     - the current directory
-     - the parent.project.dir (Default = ../..)
-     - ~/.ant
-     
-   To run this build file, you must have a CA set up.
-
-   1. Point smartfrog.install.dir (in a security.properties file) at the
-    directory in which SmartFrog is installed.
-   2. In that directory, run
-    ant initCA
-    to create a CA
+    See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installations
 
 
 
@@ -64,6 +44,7 @@
   <loadproperties srcFile="rpmbuild.properties" />
   <loadproperties srcFile="rpm.properties"/>
 
+  <property environment="env" />
 
   <!--load in a security properties file ; look in . and ~/.ant -->
   <property file="security.properties" />
@@ -192,30 +173,15 @@
   </target>
 
 
-  <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms"/>
-
-  <target name="gzip-unsigned-rpm-files"
+  <target name="gzip-rpm"
     depends="ready-to-gzip-rpm"
-    description="create a gzip file containing the unsigned rpms">
+    description="create a gzip file containing the RPM files">
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}">
         <include name="*.rpm"/>
-        <exclude name="*-signed*.rpm"/>
       </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}"/>
-  </target>
-
-  <target name="gzip-signed-rpms"
-    depends="ready-to-gzip-rpm"
-    if="can.create.signed.rpms"
-    description="create a gzip file containing the signed rpms">
-    <tar destfile="${rpms.signed.tar}">
-      <fileset dir="${dist.rpm.dir}">
-        <include name="*-signed*.rpm"/>
-      </fileset>
-    </tar>
-    <gzip destfile="${rpms.signed.tar.gz}" src="${rpms.signed.tar}"/>
   </target>
 
   <target name="ready-to-gzip-rpm" depends="build-rpm,copy-rpms">
@@ -235,7 +201,6 @@
     <copy todir="${dist.rpm.dir}">
       <fileset dir="${rpm.noarch}">
         <include name="*.rpm"/>
-        <exclude name="*-signed*.rpm" unless="security.enabled"/>
       </fileset>
     </copy>
     <copy todir="${upload.dir}" flatten="true">
@@ -254,8 +219,7 @@
     description="halt the build if security is not turned on" unless="security.enabled">
     <fail>
       This is not a secure build. To make a secure build
-      1. set security.enabled=true
-      2. Create a CA and point the property security.ca.dir at the location.
+      1. Create a CA and point the property security.ca.dir at the location.
          Currently this property is ${security.ca.dir}
     </fail>
   </target>
@@ -267,40 +231,42 @@
     <property name="security.self.key" value="self" />
 
     <!--this needs to be set up with the CA that I want-->
-    <property name="security.ca.dir" location="${smartfrog.install.dir}/private/ca" />
+    <property name="smartfrog.install.dir" location="${env.SFHOME}" />
+    <property name="security.private.dir" location="${smartfrog.install.dir}/private" />
+    <property name="security.ca.dir" location="${security.private.dir}/ca" />
     <property name="security.code.keystore" location="${security.ca.dir}/codesigner.st"/>
 
     <property name="security.keystore.type" value="JCEKS"/>
 
     <fail>
       <condition>
-        <and>
-          <isset property="${security.enabled}"/>
-          <not>
-            <available file="${security.code.keystore}" />
-          </not>
-        </and>
+        <not>
+          <available file="${security.code.keystore}" />
+        </not>
       </condition>
 The file in the property security.code.keystore:
   ${security.code.keystore}
 Does not exist.
 
-Check that it and the directory in security.ca.dir:
+Check that it exists. It may be the and the CA directory defined in the property security.ca.dir is missing:
   ${security.ca.dir}
-Exist.
+
+To create a new CA, run the target initCA in the directory ${smartfrog.install.dir}
+
+See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installations      
     </fail>
 
     <property name="security.uri" value="http://security.smartfrog.org/" />
 
     <!--the settins for our jar signings-->
     <presetdef name="signjar2" uri="${security.uri}">
-        <signjar
-          preservelastmodified="true"
-          alias="${security.self.key}"
-          keystore="${security.code.keystore}"
-          storetype="${security.keystore.type}"
-          storepass="${security.ca.password}"
-          lazy="true"/>
+      <signjar
+        preservelastmodified="true"
+        alias="${security.self.key}"
+        keystore="${security.code.keystore}"
+        storetype="${security.keystore.type}"
+        storepass="${security.ca.password}"
+        lazy="true"/>
     </presetdef>
   </target>
 
@@ -315,7 +281,7 @@ Exist.
           <available file="${security.code.keystore}" />
         </not>
       </condition>
-Unable to sign JARs unleds security.code.keystore is set to a keystore:
+Unable to sign JARs unless security.code.keystore is set to a keystore:
 security.code.keystore=
 ${security.code.keystore}
     </fail>
