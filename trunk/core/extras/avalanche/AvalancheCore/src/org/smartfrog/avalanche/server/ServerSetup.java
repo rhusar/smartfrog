@@ -75,7 +75,7 @@ public class ServerSetup {
                                                   
     private String xmppServerAdminUser ;
 	private String xmppServerAdminPassword ; 
-	private String useSSLForXMPP ;
+	private boolean useSSLForXMPP ;
 
     private String avalancheHome ;
 	
@@ -105,12 +105,12 @@ public class ServerSetup {
 	}
 
 
-	public String getUseSSLForXMPP() {
+	public boolean getUseSSLForXMPP() {
 		return useSSLForXMPP;
 	}
 
 
-	public void setUseSSLForXMPP(String useSSLForXMPP) {
+	public void setUseSSLForXMPP(boolean useSSLForXMPP) {
 		this.useSSLForXMPP = useSSLForXMPP;
 	}
 
@@ -214,8 +214,6 @@ public class ServerSetup {
         //factory.init(avalancheHome, avalancheServerOS);
         factory.init(avalancheHome);
 
-        boolean useXMPPoverSSL = Boolean.parseBoolean(useSSLForXMPP);
-
         // set up Avalanche XMPP adapters, this assumes XMPP server is already up
         // running
         try {
@@ -227,7 +225,7 @@ public class ServerSetup {
                 adminAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            adminAdapter.setUseSSL(useXMPPoverSSL);
+            adminAdapter.setUseSSL(useSSLForXMPP);
 
             // Setting username and password
             adminAdapter.setXmppUserName(xmppServerAdminUser);
@@ -252,7 +250,7 @@ public class ServerSetup {
                 listenerAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            listenerAdapter.setUseSSL(useXMPPoverSSL);
+            listenerAdapter.setUseSSL(useSSLForXMPP);
 
             // Setting username and password
             listenerAdapter.setXmppUserName(eventListenerUser);
