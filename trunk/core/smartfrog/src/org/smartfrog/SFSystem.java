@@ -86,7 +86,7 @@ public class SFSystem implements MessageKeys {
      * Flag to set to say "always exit with exit code 0" -this lets
      * scripts run without passing their status back upstream
      */
-    private static boolean noExitCode=false;
+    private static boolean noExitCode = false;
 
     /** Core Log  */
     private static  LogSF sflog = null;
@@ -398,7 +398,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * This is the implementation of the main function.
-     * @param args
+     * @param args execution arguments
      */
     public void execute(String args[]) {
 
@@ -515,7 +515,7 @@ public class SFSystem implements MessageKeys {
     private void maybeShowDiagnostics(OptionSet opts) {
       if (opts.diagnostics){
         StringBuffer report = new StringBuffer();
-        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
+        Diagnostics.doReport(report);
         sfLog().out(report.toString());
       }
     }
@@ -633,7 +633,7 @@ public class SFSystem implements MessageKeys {
      * @throws SmartFrogException for a specific SmartFrog problem
      * @throws SFGeneralSecurityException if security does not initialize
      */
-    synchronized public static void initSystem() throws SmartFrogException,
+    public static synchronized void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
         if (!alreadySystemInit) {
             // Initialize SmartFrog Security
@@ -718,11 +718,11 @@ public class SFSystem implements MessageKeys {
      *
      * @return LogSF
      */
-    public static LogSF sfLog(){
-         if (sflog==null) {
-             sflog=LogFactory.sfGetProcessLog();
-         }
-         return sflog;
+    public static synchronized LogSF sfLog() {
+        if (sflog == null) {
+            sflog = LogFactory.sfGetProcessLog();
+        }
+        return sflog;
     }
 
     /**
@@ -765,7 +765,7 @@ public class SFSystem implements MessageKeys {
         DataInputStream iStrm = null;
         try {
             iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
-            byte resourceData[];
+            byte[] resourceData;
             bStrm = new ByteArrayOutputStream();
             int ch;
             while ((ch = iStrm.read())!=-1) {
