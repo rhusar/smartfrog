@@ -24,27 +24,24 @@ For more information: www.smartfrog.org
 tests "org.smartfrog.test.system.reference.constant.ConstantReferenceTest";
 
 errors extends {
-  Constant "org.smartfrog.sfcore.reference.ConstantReferencePart";
-  CLASS_NOT_FOUND CONSTANT "org.smartfrog.sfcore.reference.ConstantReferencePart.CLASS_NOT_FOUND";
-  FIELD_NOT_FOUND CONSTANT "org.smartfrog.sfcore.reference.ConstantReferencePart.FIELD_NOT_FOUND";
-  ILLEGAL_ACCESS CONSTANT "org.smartfrog.sfcore.reference.ConstantReferencePart.ILLEGAL_ACCESS";
-  NOT_A_STATIC_FIELD CONSTANT "org.smartfrog.sfcore.reference.ConstantReferencePart.NOT_A_STATIC_FIELD";
+  CLASS_NOT_FOUND "Class not found:";
+  FIELD_NOT_FOUND "Field not found:";
+  ILLEGAL_ACCESS "Illegal access to:";
+  NOT_A_STATIC_FIELD "Not a static field:";
 }
 
 ExpectResolutionFailure extends ExpectDeployFailure {
   description "a test that expects the resolution to fail";
-
+  TestCompoundSchema "";
   reference TBD;
-  lazyref LAZY reference;
   error TBD;
   undeployAfter 1000;
   startupTimeout 1000;
 
   //the action is an assertion, one we expect to fail
-  action extends Assert {
-    prim PARENT;
-    attribute "lazyref";
-    sfShouldTerminate true;
+  action extends AssertWorkflow {
+    prim LAZY PARENT;
+    attribute "reference";
   }
 
   //the exception that is looked for
@@ -54,37 +51,37 @@ ExpectResolutionFailure extends ExpectDeployFailure {
 
 
 testBadClass extends ExpectResolutionFailure {
-  reference CONSTANT "no.such.class";
+  reference LAZY CONSTANT "no.such.class";
   error errors:CLASS_NOT_FOUND;
 }
 
 testBadField extends ExpectResolutionFailure {
-  reference CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.no-such-field";
+  reference LAZY CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.no-such-field";
   error errors:CLASS_NOT_FOUND;
 }
 
 testNoValue extends ExpectResolutionFailure {
-  reference CONSTANT "";
+  reference LAZY CONSTANT "";
   error errors:CLASS_NOT_FOUND;
 }
 
 testTooShort extends ExpectResolutionFailure {
-  reference CONSTANT "...";
+  reference LAZY CONSTANT "...";
   error errors:CLASS_NOT_FOUND;
 }
 
 testIllegalAccess extends ExpectResolutionFailure {
-  reference CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PRIVATE_STATIC_STRING";
+  reference LAZY CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PRIVATE_STATIC_STRING";
   error errors:ILLEGAL_ACCESS;
 }
 
 testNotStatic extends ExpectResolutionFailure {
-  reference CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PUBLIC_STRING";
+  reference LAZY CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PUBLIC_STRING";
   error errors:NOT_A_STATIC_FIELD;
 }
 
 testResolveConstant extends ExpectResolutionFailure {
-  reference CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PUBLIC_STATIC_STRING";
+  reference LAZY CONSTANT "org.smartfrog.test.system.reference.constant.ConstantReferenceTest.PUBLIC_STATIC_STRING";
   exitType "normal";
 }
 

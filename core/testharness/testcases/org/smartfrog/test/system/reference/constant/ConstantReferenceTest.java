@@ -39,30 +39,50 @@ public class ConstantReferenceTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testResolveConstant() throws Throwable {
         expectSuccessfulTestRun(FILES, "testResolveConstant");
     }
 
-    public void testNoop() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testNoop");
-    }
-
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testBadClass() throws Throwable {
         expectSuccessfulTestRun(FILES,"testBadClass");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testBadField() throws Throwable {
         expectSuccessfulTestRun(FILES, "testBadField");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testNotStatic() throws Throwable {
         expectSuccessfulTestRun(FILES, "testNotStatic");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testIllegalAccess() throws Throwable {
         expectSuccessfulTestRun(FILES, "testIllegalAccess");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testTooShort() throws Throwable {
         expectSuccessfulTestRun(FILES, "testTooShort");
     }
