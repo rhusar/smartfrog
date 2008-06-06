@@ -177,7 +177,7 @@ values as a cue -->
       <exclude name="${systemtests}/reference/constant/ConstantReferenceTest.*"
           unless="run.failing.tests"/>
 
-      <!-- SFOS-654 Create a chmod component. -->
+      <!-- SFOS-890 Chmod "failing" tests are failing and marked as skipped -->
       <exclude name="${systemtests}/filesystem/ChmodFailureTest.*"
           unless="run.failing.tests"/>
 
