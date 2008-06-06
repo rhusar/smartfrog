@@ -107,7 +107,7 @@ public class TestCompoundImpl extends ConditionCompound
     /**
      * {@value}
      */
-    public static final String ERROR_NO_EXCEPTIONS_FOUND = "No exceptions were in the termination record, expected: ";
+    public static final String ERROR_NO_EXCEPTIONS_FOUND = "No exceptions were in the termination record; expected: ";
     /**
      * {@value}
      */
