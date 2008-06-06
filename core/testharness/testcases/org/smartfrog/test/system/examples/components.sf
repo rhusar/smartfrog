@@ -39,6 +39,7 @@ DetachingCompoundInstance extends DetachingCompound {
   detachUpwards true;
   // set to true if you want the compound to terminate at the end of the start phase
   autoDestruct true;
+  sfShouldTerminate true;
 
   timeoutChild extends Timeout {
       //give it a new name, so it can be discovered after detachment.
