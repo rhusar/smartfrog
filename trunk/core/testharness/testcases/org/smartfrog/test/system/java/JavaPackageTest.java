@@ -33,25 +33,27 @@ public class JavaPackageTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testSimplePackage() throws Throwable {
         expectSuccessfulTestRun(FILES, "testSimplePackage");
-
-/*        application = deployExpectingSuccess(FILES +
-                "testSimplePackage.sf", "testSimplePackage");
-        assertStringAttributeExists(application, JavaPackage.ATTR_URICLASSPATH);
-        assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);*/
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testMissingResource() throws Throwable {
         expectSuccessfulTestRun(FILES, "testMissingResource");
     }
 
-    public void NotestClassAsResource() throws Throwable {
-
-        application = deployExpectingSuccess(FILES +
-                "testClassAsResource.sf", "testClassAsResource");
-    }
-
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testClassAsResource() throws Throwable {
         expectSuccessfulTestRun(FILES, "testClassAsResource");
     }

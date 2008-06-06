@@ -62,7 +62,7 @@ public class FileTest extends SmartFrogTestBase {
     /**
      * test a missing file with a parent of another file
      *
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testMissingFile() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -88,7 +88,7 @@ public class FileTest extends SmartFrogTestBase {
     /**
      * test a missing file with a parent of another file
      *
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testUndeployedFile() throws Throwable {
         deployExpectingException(FILES +

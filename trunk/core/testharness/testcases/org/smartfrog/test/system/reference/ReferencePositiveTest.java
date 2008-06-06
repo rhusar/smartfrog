@@ -40,6 +40,11 @@ public class ReferencePositiveTest extends SmartFrogTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testCaseTCP23() throws Throwable {
         Vector expected = new Vector();
         Vector actual = null;
@@ -53,6 +58,11 @@ public class ReferencePositiveTest extends SmartFrogTestBase {
         assertEquals(expected, actual);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testCaseTCP24() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp24.sf", "tcp24");
         assertNotNull(application);
@@ -65,6 +75,10 @@ public class ReferencePositiveTest extends SmartFrogTestBase {
         assertEquals(expected, actual);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseTCP25() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp25.sf", "tcp25");
         assertNotNull(application);
@@ -73,6 +87,10 @@ public class ReferencePositiveTest extends SmartFrogTestBase {
         assertNotNull(address);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseTCP26() throws Throwable {
         application = deployExpectingSuccess(FILES + "tcp26.sf", "tcp26");
         assertNotNull(application);

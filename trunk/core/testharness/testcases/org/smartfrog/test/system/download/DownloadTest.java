@@ -35,11 +35,16 @@ public class DownloadTest extends SmartFrogTestBase {
         super(name);
     }
 
-    public void testNoSuchHostname() throws Exception {
-        Throwable t=deployExpectingException(FILES + "testNoSuchHostname.sf",
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testNoSuchHostname() throws Throwable {
+        Throwable t = deployExpectingException(FILES + "testNoSuchHostname.sf",
                 "testNoSuchHostname",
                 EXCEPTION_LIFECYCLE, null,
-                null,null);
+                null, null);
         /*
         Throwable innermost=t.getCause().getCause();
         assertFaultCauseAndTextContains(innermost,

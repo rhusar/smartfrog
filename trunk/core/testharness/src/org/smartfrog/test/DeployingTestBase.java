@@ -331,8 +331,8 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param packageName name of the package
      * @param filename    test file name, excluding .sf
      * @return the test results
-     * @throws Throwable on any problem. A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates
-     *                   timeout waiting for results A {@link junit.framework.AssertionFailedError} is raised if the
+     * @throws Throwable on any problem. A {@link  TestTimeoutException} indicates
+     *                   timeout waiting for results A {@link  AssertionFailedError} is raised if the
      *                   tests were not successful
      */
     protected TestCompletedEvent runTestsToCompletion(String packageName, String filename) throws Throwable {
@@ -356,8 +356,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param test    condition to evaluate
      * @param message message to print
      * @param event   related event
-     * @throws junit.framework.AssertionFailedError
-     *          if the condition is true
+     * @throws AssertionFailedError if the condition is true
      */
     private void conditionalFail(boolean test, String message, LifecycleEvent event) {
         if (test) {

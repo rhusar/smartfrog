@@ -32,7 +32,12 @@ public class DeadLockTCN18Test extends SmartFrogTestBase {
         super(s);
     }
 
-    public void testCaseTCN18() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseTCN18() throws Throwable {
         deployExpectingException(FILES+"tcn18.sf",
                 "tcn18",
                 "SmartFrogLifecycleException",

@@ -35,8 +35,12 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
-    public void testCaseTCN5() throws Exception {
+    public void testCaseTCN5() throws Throwable {
         deployExpectingException(FILES+"tcn5.sf",
                 "tcn5",
                 EXCEPTION_DEPLOYMENT,
@@ -45,7 +49,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION);
     }
 
-    public void testCaseTCN47() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN47() throws Throwable {
         deployExpectingException(FILES+"tcn47.sf",
                 "tcn47",
                 EXCEPTION_DEPLOYMENT,
@@ -55,14 +63,18 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     }
 
 // Changes in the SF Language made this test obsolete.
-//    public void testCaseTCN6() throws Exception {
+//    public void testCaseTCN6() throws Throwable {
 //        deployExpectingException(FILES + "tcn6.sf",
 //                "tcn6",
 //                "SmartFrogCompileResolutionException",
 //                "Unresolved Reference");
 //    }
 
-    public void testCaseTCN7() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN7() throws Throwable {
         deployExpectingException(FILES + "tcn7.sf",
                 "tcn7",
                 EXCEPTION_DEPLOYMENT,
@@ -72,14 +84,18 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     }
 
 // Changes in the SF Language made this test obsolete.
-//    public void testCaseTCN8() throws Exception {
+//    public void testCaseTCN8() throws Throwable {
 //        deployExpectingException(FILES + "tcn8.sf",
 //            "tcn8",
 //            "SmartFrogCompileResolutionException",
 //            "Unresolved Reference");
 //    }
 
-    public void testCaseTCN9() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN9() throws Throwable {
         deployExpectingException(FILES + "tcn9.sf",
                 "tcn9",
                 EXCEPTION_DEPLOYMENT,
@@ -88,7 +104,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
     }
 
-    public void testCaseTCN10() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN10() throws Throwable {
         deployExpectingException(FILES + "tcn10.sf",
                 "tcn10",
                 EXCEPTION_DEPLOYMENT,
@@ -97,7 +117,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "Encountered \"HOST\" ");
     }
 
-    public void testCaseTCN23() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN23() throws Throwable {
         deployExpectingException(FILES + "tcn23.sf",
                 "tcn23",
                 EXCEPTION_DEPLOYMENT,
@@ -106,7 +130,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 ERROR_UNRESOLVED_REFERENCE_TYPE_RESOLUTION);
     }
 
-    public void testCaseTCN24() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN24() throws Throwable {
         deployExpectingException(FILES + "tcn24.sf",
                 "tcn24",
                 EXCEPTION_DEPLOYMENT,
@@ -114,7 +142,12 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_CLASSNOTFOUND,
                 "Cannot find kk.class");
     }
-    public void testCaseTCN25() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN25() throws Throwable {
         deployExpectingException(FILES + "tcn25.sf",
                 "tcn25",
                 EXCEPTION_DEPLOYMENT,
@@ -123,7 +156,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "Reference not found");
     }
 
-    public void testCaseTCN26() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN26() throws Throwable {
         deployExpectingException(FILES + "tcn26.sf",
                 "tcn26",
                 EXCEPTION_DEPLOYMENT,
@@ -131,7 +168,12 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_RESOLUTION,
                 "Include file: org/smartfrog//sfcore/components.sf not found");
     }
-    public void testCaseTCN27() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN27() throws Throwable {
         deployExpectingException(FILES + "tcn27.sf",
                 "tcn27",
                 EXCEPTION_DEPLOYMENT,
@@ -139,7 +181,12 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_LINKRESOLUTION,
                 ERROR_UNRESOLVED_REFERENCE_LINK_RESOLUTION);
     }
-    public void testCaseTCN28() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN28() throws Throwable {
         deployExpectingException(FILES + "tcn28.sf",
                 "tcn28",
                 EXCEPTION_DEPLOYMENT,
@@ -148,7 +195,11 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "Unresolved Reference: HERE sfClass");
     }
 
-     public void testCaseTCN95() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN95() throws Throwable {
        deployExpectingException(FILES + "tcn95.sf",
                 "tcn95",
                 EXCEPTION_DEPLOYMENT,

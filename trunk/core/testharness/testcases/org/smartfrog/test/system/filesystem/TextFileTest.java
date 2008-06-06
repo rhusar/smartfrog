@@ -39,7 +39,7 @@ public class TextFileTest extends SmartFrogTestBase {
 
     /**
      * test a temp file with some stuff.
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testBasic() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -63,6 +63,10 @@ public class TextFileTest extends SmartFrogTestBase {
         }
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testEncoded() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -75,6 +79,10 @@ public class TextFileTest extends SmartFrogTestBase {
         assertEquals(12,file.length());
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testTextFileDirTest() throws Throwable {
         application = deployExpectingSuccess(FILES +

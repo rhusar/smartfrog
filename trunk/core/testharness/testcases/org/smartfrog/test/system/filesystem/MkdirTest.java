@@ -35,6 +35,11 @@ public class MkdirTest  extends SmartFrogTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testWorking() throws Throwable {
         application = deployExpectingSuccess(FILES + "mkdirTestWorking.sf", "mkdirFileTestWorking");
         File file = null;

@@ -39,6 +39,10 @@ public class FunctionExampleTest extends DeployingTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseFE01() throws Throwable {
         application = deployExpectingSuccess(FILES + "function.sf", "tcFE01");
         assertNotNull(application);

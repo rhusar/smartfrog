@@ -36,6 +36,11 @@ public class LifecycleEventsTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testExpectDeployFailure() throws Throwable {
         expectSuccessfulTestRun(FILES,
                 "testExpectDeployFailure");

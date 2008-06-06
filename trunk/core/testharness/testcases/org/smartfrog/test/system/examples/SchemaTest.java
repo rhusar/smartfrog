@@ -21,7 +21,6 @@
 
 package org.smartfrog.test.system.examples;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.test.SmartFrogTestBase;
 
@@ -36,12 +35,22 @@ public class SchemaTest extends SmartFrogTestBase {
         super(s);
     }
 
-    public void testCaseTCP33() throws SmartFrogException {
+    /**
+     * test case
+     *
+     * @throws Throwable on failure
+     */
+    public void testCaseTCP33() throws Throwable {
         Phases phases = parse(FILES + "schema.sf");
         assertNotNull(phases);
     }
 
-    public void testCaseTCP34() throws SmartFrogException {
+    /**
+     * test case
+     *
+     * @throws Throwable on failure
+     */
+    public void testCaseTCP34() throws Throwable {
         Phases phases = parse(FILES + "test.sf");
         assertNotNull(phases);
     }

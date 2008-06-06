@@ -27,12 +27,11 @@ import java.util.Iterator;
 import java.util.Enumeration;
 
 /**
- *
  * Created 19-Mar-2008 13:31:17
- *
  */
 
 public class RemoteCompoundTest extends DeployingTestBase {
+
     private static final int CHILDCOUNT = 3;
     private static final int ATTRCOUNT = 20;
 
@@ -40,30 +39,33 @@ public class RemoteCompoundTest extends DeployingTestBase {
         super(name);
     }
 
-
     /**
-     * Sets up the fixture,by extracting the hostname and classes dir
+     * Deploy the application and cast to a compound
+     *
+     * @return the deployed application as a compound
+     *
+     * @throws Throwable on failure
      */
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-
     private Compound deployCompound() throws Throwable {
         application = deployExpectingSuccess("/org/smartfrog/test/system/compound/components.sf", "compounds");
         return (Compound) application;
     }
 
 
+    /**
+     * test case
+     *
+     * @throws Throwable on failure
+     */
     public void testAttributes() throws Throwable {
-        Compound comp=deployCompound();
+        Compound comp = deployCompound();
         Iterator<Object> iterator = comp.sfAttributes();
         int counter = 0;
         int childcount = 0;
         while (iterator.hasNext()) {
             Object key = iterator.next();
             Object value = comp.sfResolveHere(key, true);
-            getLog().info(key.toString()+"="+ value);
+            getLog().info(key.toString() + "=" + value);
             counter++;
             if (value instanceof Liveness) {
                 childcount++;
@@ -73,16 +75,21 @@ public class RemoteCompoundTest extends DeployingTestBase {
         assertEquals(CHILDCOUNT, childcount);
     }
 
+    /**
+     * test case
+     *
+     * @throws Throwable on failure
+     */
     public void testValues() throws Throwable {
         Compound comp = deployCompound();
         Iterator<Object> iterator = comp.sfValues();
         int counter = 0;
-        int childcount =0;
+        int childcount = 0;
         while (iterator.hasNext()) {
             Object value = iterator.next();
             getLog().info(value.toString());
             counter++;
-            if(value instanceof Liveness) {
+            if (value instanceof Liveness) {
                 childcount++;
             }
         }
@@ -90,6 +97,11 @@ public class RemoteCompoundTest extends DeployingTestBase {
         assertEquals(CHILDCOUNT, childcount);
     }
 
+    /**
+     * test case
+     *
+     * @throws Throwable on failure
+     */
     public void testChildren() throws Throwable {
         Compound comp = deployCompound();
         Enumeration<Liveness> children = comp.sfChildren();

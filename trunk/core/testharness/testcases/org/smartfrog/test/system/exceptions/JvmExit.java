@@ -41,7 +41,8 @@ public class JvmExit extends PrimImpl implements Prim {
     /**
      * Deploys the component and exits from the JVM.
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException network problems
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();

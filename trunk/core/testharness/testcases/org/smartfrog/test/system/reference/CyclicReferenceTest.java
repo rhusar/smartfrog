@@ -38,7 +38,12 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
         super(s);
     }
 
-    public void testCaseTCN96() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseTCN96() throws Throwable {
         deployExpectingException(FILES + "tcn96.sf",
                 "tcn96",
                 EXCEPTION_DEPLOYMENT,
@@ -47,7 +52,11 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
 
-    public void testCaseTCN97() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN97() throws Throwable {
         deployExpectingException(FILES + "tcn97.sf",
                 "tcn97",
                 EXCEPTION_DEPLOYMENT,
@@ -56,7 +65,11 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
 
-    public void testCaseTCN98() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN98() throws Throwable {
         deployExpectingException(FILES + "tcn98.sf",
                 "tcn98",
                 EXCEPTION_DEPLOYMENT,
@@ -65,7 +78,11 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
 
-    public void testCaseTCN99() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN99() throws Throwable {
         deployExpectingException(FILES + "tcn99.sf",
                 "tcn99",
                 EXCEPTION_DEPLOYMENT,
@@ -73,9 +90,13 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
                 EXCEPTION_TYPERESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
     }
-    
-    
-    public void testCaseTCN19() throws Exception {
+
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN19() throws Throwable {
         deployExpectingException("org/smartfrog/test/system/reference/" + "tcn19.sf",
                 "tcn19",
                 EXCEPTION_DEPLOYMENT,

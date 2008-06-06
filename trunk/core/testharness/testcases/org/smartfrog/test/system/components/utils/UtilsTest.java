@@ -35,7 +35,11 @@ public class UtilsTest
         super(s);
     }
 
-    public void testCaseTCN77() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN77() throws Throwable {
         deployExpectingException(FILES+"tcn77.sf",
                                  "tcn77",
                                  "SmartFrogLifecycleException",
@@ -44,7 +48,11 @@ public class UtilsTest
                                  "java.io.FileNotFoundException: e:\\test\\password.txt");
     }
 
-    public void testCaseTCN78() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN78() throws Throwable {
         deployExpectingException(FILES+"tcn78.sf",
                                  "tcn78",
                                  "SmartFrogDeploymentException",
