@@ -22,10 +22,10 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/test/system/nwfailure/component.sf"
 
 /*
- * try deploying to an IP addr of google. Something in the router chain will reject this
+ * try deploying to an IP addr of a rarely used interface
  */
 
 sfConfig extends Compound {
-    sfProcessHost "216.239.59.99";
+    sfProcessHost "169.254.128.48";
     noop extends Noop;
 }

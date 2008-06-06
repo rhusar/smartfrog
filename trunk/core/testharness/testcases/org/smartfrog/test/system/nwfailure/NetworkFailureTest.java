@@ -29,13 +29,20 @@ import org.smartfrog.test.SmartFrogTestBase;
 
 public class NetworkFailureTest extends SmartFrogTestBase {
     private static final String FILES = "org/smartfrog/test/system/nwfailure/";
+    private static final String CONNECTION_REFUSED = "Connection refused";
+    private static final String CONNECT_IOEXCEPTION = "java.rmi.ConnectIOException";
+    private static final String JAVA_NET_NO_ROUTE_TO_HOST_EXCEPTION = "java.net.NoRouteToHostException";
 
     public NetworkFailureTest(String name) {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
-    public void testUnknownHostTCN50() throws Exception {
+    public void testUnknownHostTCN50() throws Throwable {
 
         deployExpectingException(FILES + "tcn50.sf",
                 "tcn50",
@@ -52,9 +59,9 @@ public class NetworkFailureTest extends SmartFrogTestBase {
      * java.rmi.ConnectIOException: Exception creating connection to: 192.6.19.80;
      * nested exception is: java.net.NoRouteToHostException: connect timed out: 192.6.19.80
      * </pre>
-     * @throws Exception
+     * @throws Throwable on failure
      */
-    public void testConnectionRefusedTCN51() throws Exception {
+    public void testConnectionRefusedTCN51() throws Throwable {
 
         Throwable thrown = deployExpectingException(FILES + "tcn51.sf",
                 "tcn51",
@@ -68,19 +75,25 @@ public class NetworkFailureTest extends SmartFrogTestBase {
         assertNotNull("No nested message", message);
         String faulttype=nested.getClass().getName();
         if("java.rmi.ConnectException".equals(faulttype)) {
-            assertContains(message, "Connection refused");
+            assertContains(message, CONNECTION_REFUSED);
         } else {
-            assertEquals("java.rmi.ConnectIOException",faulttype);
+            assertEquals(CONNECT_IOEXCEPTION,faulttype);
         }
     }
 
-    public void NotestConnectionRefusedTCN51b() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testConnectionRefusedTCN51b() throws Throwable {
 
         deployExpectingException(FILES + "tcn51b.sf",
                 "tcn51b",
                 "SmartFrogDeploymentException",
-                "Connection refused to host: 216.239.59.99",
-                "java.rmi.ConnectException",
-                "Connection refused");
+                "Exception creating connection to",
+                CONNECT_IOEXCEPTION,
+                "No route to host");
     }
 }
