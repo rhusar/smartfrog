@@ -35,10 +35,18 @@ public class ConditionsSkipTest extends DeployingTestBase {
     }
 
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAbnormalRun() throws Throwable {
         expectAbnormalTestRun(FILES, "testAbnormalRun",true, "oops!");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testConditionSkipped() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testConditionSkipped");
     }

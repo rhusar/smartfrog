@@ -32,10 +32,19 @@ public class RunshellTest extends DeployingTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testBashEcho() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testBashEcho");
     }
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testCmdEcho() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testCmdEcho");

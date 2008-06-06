@@ -40,6 +40,11 @@ public class SubProcessExampleTest
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testCaseSubProcessEx01() throws Throwable {
 
         application = deployExpectingSuccess(FILES +
@@ -97,6 +102,11 @@ public class SubProcessExampleTest
         assertEquals(expecteddemoD, actualdemoD);
 
     }
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testCaseExampleProcessComponentName02() throws Throwable {
         application = deployExpectingSuccess("org/smartfrog/examples/subprocesses/" + "exampleProcessComponentName.sf",

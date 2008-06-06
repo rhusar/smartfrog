@@ -35,71 +35,84 @@ import java.io.StringWriter;
  * JUnit test class for test cases related to Subprocess Example
  */
 public class SubProcessExampleDumpTest
-    extends DeployingTestBase {
+        extends DeployingTestBase {
 
-  // In this particular case we use the examples without screens
-  //private static final String FILES = "org/smartfrog/examples/subprocesses/";
-  //#include "org/smartfrog/test/system/deploy/subprocessTestHarness.sf"
-  private static final String FILES = "org/smartfrog/test/system/deploy/";
-  private static final Log log = LogFactory.getLog(SubProcessExampleDumpTest.class);
-  public SubProcessExampleDumpTest(String s) {
-    super(s);
-  }
+    // In this particular case we use the examples without screens
+    //private static final String FILES = "org/smartfrog/examples/subprocesses/";
+    //#include "org/smartfrog/test/system/deploy/subprocessTestHarness.sf"
+    private static final String FILES = "org/smartfrog/test/system/deploy/";
+    private static final Log log = LogFactory.getLog(SubProcessExampleDumpTest.class);
 
-  public void testCaseSubProcessExDump01() throws Throwable {
+    /**
+     * Constructor
+     * @param s name
+     */
+    public SubProcessExampleDumpTest(String s) {
+        super(s);
+    }
 
-    application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
-    assertNotNull(application);
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
-    String actualSfClass = (String) application.sfResolveHere("sfClass");
-    assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
+    public void testCaseSubProcessExDump01() throws Throwable {
 
-    //Some basic check
-    Prim sys = (Prim) application.sfResolveHere("system");
-    //System.out.println();
-    assertEquals("first", sys.sfDeployedProcessName());
+        application = deployExpectingSuccess(FILES + "subprocessTestHarness.sf", "tcSPEDump01");
+        assertNotNull(application);
 
-    Prim foo = (Prim) sys.sfResolveHere("foo");
-    assertEquals("test", foo.sfDeployedProcessName());
+        String actualSfClass = (String) application.sfResolveHere("sfClass");
+        assertEquals("org.smartfrog.sfcore.compound.CompoundImpl", actualSfClass);
 
-    Prim bar = (Prim) foo.sfResolveHere("bar");
-    assertEquals("test2", bar.sfDeployedProcessName());
+        //Some basic check
+        Prim sys = (Prim) application.sfResolveHere("system");
+        assertEquals("first", sys.sfDeployedProcessName());
 
-    ComponentDescription cd = application.sfDiagnosticsReport();
-    assertNotNull("No Diagnostics report", cd);
-    log.info("Diagnostics report: \n"+cd);
-    //Testing Dump now
-    log.info (dumpState (application));
+        Prim foo = (Prim) sys.sfResolveHere("foo");
+        assertEquals("test", foo.sfDeployedProcessName());
 
-      
+        Prim bar = (Prim) foo.sfResolveHere("bar");
+        assertEquals("test2", bar.sfDeployedProcessName());
 
-  }
+        ComponentDescription cd = application.sfDiagnosticsReport();
+        assertNotNull("No Diagnostics report", cd);
+        log.info("Diagnostics report: \n" + cd);
+        //Testing Dump now
+        log.info(dumpState(application));
 
 
-    public String dumpState (Object node) {
-        StringBuffer message=new StringBuffer();
+    }
+
+
+    /**
+     * Cast the parameter toa prim and dump it
+     * @param node node to dump
+     * @return the dup
+     */
+    public String dumpState(Object node) {
+        StringBuffer message = new StringBuffer();
         String name = "error";
         //Only works for Prims.
         if (node instanceof Prim) {
             try {
-                Prim objPrim = ((Prim)node);
-                message.append ("\n*************** State *****************\n");
+                Prim objPrim = ((Prim) node);
+                message.append("\n*************** State *****************\n");
                 Dumper dumper = new DumperCDImpl(objPrim);
                 objPrim.sfDumpState(dumper.getDumpVisitor());
-                message.append (dumper.toString());
+                message.append(dumper.toString());
                 name = (objPrim).sfCompleteName().toString();
             } catch (Exception ex) {
-                log.error (ex);
+                log.error(ex);
                 StringWriter sw = new StringWriter();
-                PrintWriter pr = new PrintWriter(sw,true);
+                PrintWriter pr = new PrintWriter(sw, true);
                 ex.printStackTrace(pr);
                 pr.close();
-                message.append("\n Error: "+ex.toString()+"\n"+sw.toString());
+                message.append("\n Error: " + ex.toString() + "\n" + sw.toString());
                 fail(message.toString());
                 return null;
             }
         }
-        return ("State for "+ name +"\n" + message.toString());
+        return ("State for " + name + "\n" + message.toString());
 
     }
 

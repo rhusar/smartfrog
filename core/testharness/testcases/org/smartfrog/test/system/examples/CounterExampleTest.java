@@ -36,6 +36,11 @@ public class CounterExampleTest
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testCaseCE01() throws Throwable {
          application = deployExpectingSuccess(FILES + "example.sf", "tcCE01");
         assertNotNull(application);
@@ -43,25 +48,40 @@ public class CounterExampleTest
         String actualSfClass = (String) application.sfResolveHere("sfClass");
         assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass);
         int actual = 0;
-        int expected = 20;
         actual = application.sfResolve("limit", actual, true);
-        assertEquals(expected, actual);
+        assertEquals(20, actual);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseCE02() throws Throwable {
         deployExpectingException(FILES + "example2.sf", "tcCE02", "SmartFrogLifecycleException", "Illegal ClassType");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseCE03() throws Throwable {
         deployExpectingException(FILES + "example3.sf", "tcCE03", "SmartFrogLifecycleException",
                 "Unresolved Reference: HERE counter");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseCE04() throws Throwable {
         deployExpectingException(FILES + "example4.sf", "tcCE04", "SmartFrogLifecycleException",
                 "Unresolved Reference: HERE limit");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseCE05() throws Throwable {
         application = deployExpectingSuccess(FILES + "example5.sf", "tcCE05");
         assertNotNull(application);
@@ -80,23 +100,20 @@ public class CounterExampleTest
         assertEquals("org.smartfrog.examples.counter.CounterImpl", actualSfClass1A);
 
         int actual1A = 0;
-        int expected1A = 2;
         actual1A = counter1A.sfResolve("limit", actual1A, true);
-        assertEquals(expected1A, actual1A);
+        assertEquals(2, actual1A);
 
         Prim counter2 = (Prim) application.sfResolveHere("counter2");
         int actual2 = 0;
-        int expected2 = 2;
         actual2 = counter2.sfResolve("limit", actual2, true);
-        assertEquals(expected2, actual2);
+        assertEquals(2, actual2);
 
         Prim counter3 = (Prim) application.sfResolveHere("counter3");
         Prim counter3A = (Prim) counter3.sfResolveHere("counter3A");
 
         int actual3A = 0;
-        int expected3A = 2;
         actual3A = counter3A.sfResolve("limit", actual3A, true);
-        assertEquals(expected3A, actual3A);
+        assertEquals(2, actual3A);
 
     }
 

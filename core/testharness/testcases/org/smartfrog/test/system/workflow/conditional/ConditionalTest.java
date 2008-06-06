@@ -32,22 +32,42 @@ public class ConditionalTest extends DeployingTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testParseConditionFile() throws Throwable {
         runTestsToCompletion(FILES,"testParseConditionFile");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testPassingIf() throws Throwable {
         expectSuccessfulTestRun(FILES, "testPassingIf");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testPassingWaitFor() throws Throwable {
         expectSuccessfulTestRun(FILES, "testPassingWaitFor");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testOneWaitFor() throws Throwable {
         expectSuccessfulTestRun(FILES, "testOneWaitFor");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testOneIf() throws Throwable {
         expectSuccessfulTestRun(FILES, "testOneIf");
     }

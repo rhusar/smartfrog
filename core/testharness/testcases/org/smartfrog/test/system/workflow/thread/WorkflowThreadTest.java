@@ -35,10 +35,18 @@ public class WorkflowThreadTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testNoTerminate() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testNoTerminate");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testShouldTerminate() throws Throwable {
         expectSuccessfulTestRun(PACKAGE,"testShouldTerminate");
     }

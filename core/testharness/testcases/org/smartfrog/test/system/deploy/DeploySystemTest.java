@@ -35,7 +35,12 @@ public class DeploySystemTest extends SmartFrogTestBase {
         super(s);
     }
 
-    public void testCaseTCN2() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testCaseTCN2() throws Throwable {
         deployExpectingException(FILES+"tcn2.sf",
                 "tcn2",
                 "SmartFrogLifecycleException",

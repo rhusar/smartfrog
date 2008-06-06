@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,32 +17,33 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.system.workflow.sequence;
+
+
+package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.services.assertions.SmartFrogAssertionException;
 
 /**
- * This test case tests that the history sequence works.
- * It also acts as a use case for the test callback code
- * Created 12-Jul-2007 12:01:40
+ * Date: 30-Apr-2004
+ * Time: 22:03:23
  */
+public class AssertionsLivenessTest extends DeployingTestBase {
 
-public class HistorySequenceTest extends DeployingTestBase {
+    private static final String FILES = "org/smartfrog/test/system/assertions/";
 
-    protected static final String FILES = "org/smartfrog/test/system/workflow/sequence/";
-
-    public HistorySequenceTest(String name) {
+    public AssertionsLivenessTest(String name) {
         super(name);
     }
 
 
+
     /**
-     * test case
+     //Todo: turn on once we have a way of expecting liveness faults.
      * @throws Throwable on failure
      */
-
-    public void testHistorySequence() throws Throwable {
-        runTestsToCompletion(FILES, "testHistorySequence");
+    public void testFalseIsLazyTrue() throws Throwable {
+        deployExpectingAssertionFailure(FILES + "testFalseIsLazyTrue.sf", "testFalseIsLazyTrue");
     }
 
 
