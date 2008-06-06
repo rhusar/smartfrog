@@ -44,7 +44,6 @@ public class TestCompoundsTest extends DeployingTestBase {
      */
     private TerminationRecord deployToNormalTermination(String test) throws Throwable {
         TestCompletedEvent event = expectSuccessfulTestRun(TestCompoundsTest.FILES, test);
-        expectSuccessfulTermination((TestBlock) application);
         return event.getStatus();
     }
 
