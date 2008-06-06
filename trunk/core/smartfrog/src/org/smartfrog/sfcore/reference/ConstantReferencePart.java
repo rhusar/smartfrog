@@ -21,9 +21,9 @@ public class ConstantReferencePart extends ReferencePart {
 
 
     public String value;
-    public static final String CLASS_NOT_FOUND = "Class not found:";
-    public static final String FIELD_NOT_FOUND = "Field not found:";
-    public static final String ILLEGAL_ACCESS = "Illegal access to :";
+    public static final String CLASS_NOT_FOUND = "Class not found: ";
+    public static final String FIELD_NOT_FOUND = "Field not found: ";
+    public static final String ILLEGAL_ACCESS = "Illegal access to: ";
     public static final String NOT_A_STATIC_FIELD = "Not a static field: ";
     public static final String ILLEGAL_CLASS_NAME_SYNTAX_IN_CONSTANT_REFERENCE_PART
             = "illegal class name syntax in Constant Reference Part: ";
