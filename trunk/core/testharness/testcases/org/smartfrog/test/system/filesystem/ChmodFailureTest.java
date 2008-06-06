@@ -22,10 +22,13 @@ package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.DeployingTestBase;
 
-public class ChmodTest extends DeployingTestBase {
+/**
+ * Test chmod failure semantics
+ */
+public class ChmodFailureTest extends DeployingTestBase {
     public static final String FILES = "org/smartfrog/test/system/filesystem/";
 
-    public ChmodTest(String name) {
+    public ChmodFailureTest(String name) {
         super(name);
     }
 
@@ -33,31 +36,17 @@ public class ChmodTest extends DeployingTestBase {
      * test case
      * @throws Throwable on failure
      */
-    public void testRemoveAllRights() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testRemoveAllRights");
+
+    public void testChmodFails() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testChmodFails");
     }
 
     /**
      * test case
      * @throws Throwable on failure
      */
-    public void testRestoreReadPermissions() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testRestoreReadPermissions");
+    public void testChmodFailsRecursively() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testChmodFailsRecursively");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testRestoreWritePermissions() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testRestoreWritePermissions");
-    }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testRestoreRWPermissions() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testRestoreRWPermissions");
-    }
 }
