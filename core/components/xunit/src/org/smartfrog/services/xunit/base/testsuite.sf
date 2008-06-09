@@ -41,9 +41,6 @@ TestSuiteSchema extends Schema {
     issues extends Vector {
       description "A list of issues, such as defect IDs";
     }
-    tags extends Vector {
-      description "Arbitrary tags for the tests";
-    }
 
 }
 
