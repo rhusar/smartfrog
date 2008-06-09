@@ -481,7 +481,7 @@ For more information: www.smartfrog.org
         <fileset file="testharness/build.xml" />
         <fileset file="antbuild/build.xml" />
         <fileset dir="release">
-          <include name="build.xml" if="java1.5+" unless="do.not.release"/>
+          <include name="build.xml" unless="do.not.release"/>
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
@@ -559,7 +559,7 @@ For more information: www.smartfrog.org
   <target name="published" depends="ivy-publish"/>
 
   <target name="ivy-list-order" depends="ivy-init">
-    <echo>java1.5+=${java1.5+}</echo>
+    <echo>java1.6+=${java1.6+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
     <echo>
