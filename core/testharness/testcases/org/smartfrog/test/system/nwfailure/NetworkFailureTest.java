@@ -32,6 +32,8 @@ public class NetworkFailureTest extends SmartFrogTestBase {
     private static final String CONNECTION_REFUSED = "Connection refused";
     private static final String CONNECT_IOEXCEPTION = "java.rmi.ConnectIOException";
     private static final String JAVA_NET_NO_ROUTE_TO_HOST_EXCEPTION = "java.net.NoRouteToHostException";
+    private static final String EXCEPTION_CREATING_CONNECTION_TO = "Exception creating connection to";
+    private static final String NO_ROUTE_TO_HOST = "No route to host";
 
     public NetworkFailureTest(String name) {
         super(name);
@@ -89,11 +91,29 @@ public class NetworkFailureTest extends SmartFrogTestBase {
 
     public void testConnectionRefusedTCN51b() throws Throwable {
 
-        deployExpectingException(FILES + "tcn51b.sf",
+        Throwable thrown = deployExpectingException(FILES + "tcn51b.sf",
                 "tcn51b",
                 "SmartFrogDeploymentException",
-                "Exception creating connection to",
-                CONNECT_IOEXCEPTION,
-                "No route to host");
+                null,
+                null,
+                null);
+        String message=thrown.getMessage();
+        assertNotNull("No nested message", message);
+        assertTrue("Did not find " + EXCEPTION_CREATING_CONNECTION_TO + " or " + CONNECTION_REFUSED
+                + " in " + message,
+                message.contains(EXCEPTION_CREATING_CONNECTION_TO)
+                        || message.contains(CONNECTION_REFUSED));
+
+        Throwable nested = thrown.getCause();
+        assertNotNull("No nested cause", nested);
+        message = nested.getMessage();
+        assertNotNull("No nested message", message);
+        String faulttype = nested.getClass().getName();
+        if ("java.rmi.ConnectException".equals(faulttype)) {
+            assertContains(message, CONNECTION_REFUSED);
+        } else {
+            assertEquals(CONNECT_IOEXCEPTION, faulttype);
+            assertContains(message, NO_ROUTE_TO_HOST);
+        }
     }
 }
