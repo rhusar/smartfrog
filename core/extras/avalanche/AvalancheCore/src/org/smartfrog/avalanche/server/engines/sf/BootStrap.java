@@ -67,7 +67,7 @@ public class BootStrap {
     public BootStrap(AvalancheFactory f) {
         // additional separator needed for velocity
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-           log.info("Avalanche Server is running on Windows.");
+            log.info("Avalanche Server is running on Windows.");
             this.strOptSeparator = File.separator;
         }
 
@@ -88,8 +88,8 @@ public class BootStrap {
     public void ignite(String[] hosts) throws HostIgnitionException {
         try {
             HostManager hostManager = factory.getHostManager();
-	    String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
-	    String securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
+            String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
+            String securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
             String templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
             String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
             String outputFile = outDir + File.separator + this.strOptSeparator + "hostIgnition" + getDateTime() + ".sf";
@@ -172,54 +172,54 @@ public class BootStrap {
                 // decide about the filename, depending on the target os
                 String strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
 
-		if (securityOn.equals("true")) {
-		  	Daemon d = new Daemon("n" + host,                // name
-                        os,                     // os
-                        host,               // host
-                        transferType,           // transfer type
-                        accessType,             // access type
-                        username,               // username
-                        password,               // password
-                        strLocalfile1,          // localfile1
-                        null,                   // localfile2
-                        null,                   // localfile3
-                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "mykeys.st",                   // keyfile
-                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "SFSecurity.properties",                   // secproperties
-                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "smartfrog.jar",                   // smartfrogjar
-                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfServices.jar",                   // servicesjar
-                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfExamples.jar",                   // examplesjar
-                        sfReleaseName,          // releasename
-                        javaHomeDirectory,              // javahome
-                        avalancheInstallationDirectory,          // installdir
-                        DEFAULT_EMAILTO,        // emailto
-                        DEFAULT_EMAILFROM,      // emailfrom
-                        DEFAULT_EMAILSERVER);   // emailserver
-                listDaemons.add(d);
+                if (securityOn.equals("true")) {
+                    Daemon d = new Daemon("n" + host,                // name
+                            os,                     // os
+                            host,               // host
+                            transferType,           // transfer type
+                            accessType,             // access type
+                            username,               // username
+                            password,               // password
+                            strLocalfile1,          // localfile1
+                            null,                   // localfile2
+                            null,                   // localfile3
+                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "mykeys.st",                   // keyfile
+                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "SFSecurity.properties",                   // secproperties
+                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "smartfrog.jar",                   // smartfrogjar
+                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfServices.jar",                   // servicesjar
+                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfExamples.jar",                   // examplesjar
+                            sfReleaseName,          // releasename
+                            javaHomeDirectory,              // javahome
+                            avalancheInstallationDirectory,          // installdir
+                            DEFAULT_EMAILTO,        // emailto
+                            DEFAULT_EMAILFROM,      // emailfrom
+                            DEFAULT_EMAILSERVER);   // emailserver
+                    listDaemons.add(d);
 
-		} else {
-		 Daemon d = new Daemon("n" + host,                // name
-                        os,                     // os
-                        host,               // host
-                        transferType,           // transfer type
-                        accessType,             // access type
-                        username,               // username
-                        password,               // password
-                        strLocalfile1,          // localfile1
-                        null,                   // localfile2
-                        null,                   // localfile3
-                        null,                   // keyfile
-                        null,                   // secproperties
-                        null,                   // smartfrogjar
-                        null,                   // servicesjar
-                        null,                   // examplesjar
-                        sfReleaseName,          // releasename
-                        javaHomeDirectory,              // javahome
-                        avalancheInstallationDirectory,          // installdir
-                        DEFAULT_EMAILTO,        // emailto
-                        DEFAULT_EMAILFROM,      // emailfrom
-                        DEFAULT_EMAILSERVER);   // emailserver
-                listDaemons.add(d);
-		}
+                } else {
+                    Daemon d = new Daemon("n" + host,                // name
+                            os,                     // os
+                            host,               // host
+                            transferType,           // transfer type
+                            accessType,             // access type
+                            username,               // username
+                            password,               // password
+                            strLocalfile1,          // localfile1
+                            null,                   // localfile2
+                            null,                   // localfile3
+                            null,                   // keyfile
+                            null,                   // secproperties
+                            null,                   // smartfrogjar
+                            null,                   // servicesjar
+                            null,                   // examplesjar
+                            sfReleaseName,          // releasename
+                            javaHomeDirectory,              // javahome
+                            avalancheInstallationDirectory,          // installdir
+                            DEFAULT_EMAILTO,        // emailto
+                            DEFAULT_EMAILFROM,      // emailfrom
+                            DEFAULT_EMAILSERVER);   // emailserver
+                    listDaemons.add(d);
+                }
 
             }
 
@@ -227,12 +227,7 @@ public class BootStrap {
 
             // to read from listDaemons and write to data. all and then create a description
             log.info("TemplateGen Map : " + listDaemons);
-	    if (securityOn.equals("true")) {
-            TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, true, false, null, logFileDir, xmppServer);
-	    } else {
-	    	TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, false, false, null, logFileDir, xmppServer);
-	    }
-		    
+            TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, securityOn.equals("true"), false, null, logFileDir, xmppServer);
 
             File of = new File(outputFile);
             if (!of.exists()) {
@@ -240,19 +235,15 @@ public class BootStrap {
             }
             log.info("SF : " + outputFile);
 
-	   SmartfrogAdapter adapter = null;
-	    
-		if (securityOn.equals("true")) {
-            		 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", true);
-		} else {
-			 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", false);
-	    }
-           SmartFrogAdapterImpl.setLogFilePath(logFileDir);
+            SmartfrogAdapter adapter = null;
+
+            adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", securityOn.equals("true"));
+
+            SmartFrogAdapterImpl.setLogFilePath(logFileDir);
 
             HashMap attrMap = new HashMap();
+
             // run the description on local host for remote deployments.
-
-
             adapter.submit(outputFile, attrMap, new String[]{"localhost"});
         } catch (Exception e) {
             log.error(e);

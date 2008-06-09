@@ -28,6 +28,9 @@ AvalancheServer extends Prim {
         // path to the home directory of the avalanche server
         AvalancheHome extends String;
 
+        // using security?
+        SecurityOn extends String;
+
         // IP address of the xmpp server
         XmppServer extends String;
 
@@ -43,6 +46,7 @@ AvalancheServer extends Prim {
 
     // default values
     AvalancheHome TBD;
+    SecurityOn "false";
     XmppServer TBD;
     XmppPort 5223;
     UseSSLForXmpp true;
