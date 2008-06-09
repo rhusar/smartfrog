@@ -40,8 +40,8 @@ testLocalCluster extends ExpectDeploy {
 
 
 testLocalClusterForked extends testLocalCluster {
-  action:LocalDataNode:sfProcessName "testLocalClusterForked-datanode";
-  action:LocalInProcessNameNode:sfProcessName "testLocalClusterForked-namenode";
+  action:datanode:sfProcessName "testLocalClusterForked-datanode";
+  action:namenode:sfProcessName "testLocalClusterForked-namenode";
   action:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
   action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
   action:jobTracker:mapred.job.tracker  "localhost:8016";
