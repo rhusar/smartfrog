@@ -574,6 +574,7 @@
 
   <!--For the RPMs, we create symbolic links instead of a separate directory-->
   <target name="symlink-signed-lib" depends="ready-to-sign-rpm-jars"
+          if="has.rpm.tools"
       >
     <delete dir="${rpm.signed.lib.dir}" />
     <exec executable="ln" failonerror="true">
