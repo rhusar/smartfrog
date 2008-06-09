@@ -43,7 +43,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import java.net.URL;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
@@ -392,7 +391,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
     /**
      * dump quietly; exceptions are turned into strings
      *
-     * @returnn the dump of name value pairs or an error message
+     * @return the dump of name value pairs or an error message
      */
     public String dumpQuietly() {
         try {
@@ -409,7 +408,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
      * @param addressName the property for the address
      * @param bindAddressName old style hostname
      * @param bindAddressPort old style host port
-     * @return
+     * @return the host/port binding
      * @throws IllegalArgumentException if the arguments are bad
      */
   public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {

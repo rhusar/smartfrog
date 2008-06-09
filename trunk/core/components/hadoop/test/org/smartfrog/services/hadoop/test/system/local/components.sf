@@ -44,7 +44,9 @@ LocalHadoopCompound extends Compound {
 LocalNameNodeCompound extends LocalHadoopCompound {
   description "A name node";
 
-  LocalInProcessNameNode extends NameNode {
+  cluster LAZY namenode;
+
+  namenode extends NameNode {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
@@ -62,7 +64,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
   }
   
-  LocalDataNode extends DataNode {
+  datanode extends DataNode {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;

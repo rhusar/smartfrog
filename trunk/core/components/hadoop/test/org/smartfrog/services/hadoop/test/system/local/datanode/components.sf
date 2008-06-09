@@ -40,6 +40,6 @@ testLocalDataNode extends ExpectDeploy {
 
 
 testDataNodeForked extends testLocalDataNode {
-  action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
-  action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:datanode:sfProcessName "testDataNodeForkedProcess";
+  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
 }

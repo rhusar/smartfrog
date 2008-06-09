@@ -21,8 +21,6 @@
 
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
-
-
 /**
  * Test the local name node
  */
@@ -40,13 +38,13 @@ testLocalJobTracker extends ExpectDeploy {
 
 
 testLocalJobTrackerForked extends testLocalJobTracker {
-  //action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
-  //action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
+  //action:datanode:sfProcessName "testDataNodeForkedProcess";
+  //action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
   action:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
 }
 
 /**
- * Test the local name node
+ * Test the local node
  */
 testLocalTaskTracker extends ExpectDeploy {
   description "bring up a Task Tracker";
