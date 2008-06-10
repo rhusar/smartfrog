@@ -59,15 +59,6 @@
           *
           MyFoo-opts:Name=A Very Special Foo;
         }
-Backup : 
-        
-  DependencyModel:DependencyModel;
-  DependencyModel-desc:Adds a DependencyModel to the model;
-  DependencyModel-image:resources/icons/DependencyModel_s.gif; 
-  Connectors:Connectors;
-  Connectors-desc:Adds a Connectors to the model;
-  Connectors-image:resources/icons/Connectors_s.gif;
-  
   
 ######################################################################
 **/
