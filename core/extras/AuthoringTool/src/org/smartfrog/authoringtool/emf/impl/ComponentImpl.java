@@ -27,6 +27,7 @@ import org.smartfrog.authoringtool.emf.Component;
 import org.smartfrog.authoringtool.emf.Composite;
 import org.smartfrog.authoringtool.emf.Connectors;
 import org.smartfrog.authoringtool.emf.DependencyModel;
+import org.smartfrog.authoringtool.emf.SimpleDependencyConnection;
 import org.smartfrog.authoringtool.emf.SmartfrogPackage;
 
 /**
@@ -108,7 +109,7 @@ public class ComponentImpl extends ModelObjectImpl implements Component
    * @generated
    * @ordered
    */
-  protected Component dependOn;
+  protected SimpleDependencyConnection dependOn;
 
   /**
    * The cached value of the '{@link #getOn() <em>On</em>}' reference list.
@@ -249,7 +250,7 @@ public class ComponentImpl extends ModelObjectImpl implements Component
   {
     if (depends_By == null)
     {
-      depends_By = new EObjectResolvingEList(Component.class, this, SmartfrogPackage.COMPONENT__DEPENDS_BY);
+      depends_By = new EObjectResolvingEList(SimpleDependencyConnection.class, this, SmartfrogPackage.COMPONENT__DEPENDS_BY);
     }
     return depends_By;
   }
@@ -273,12 +274,12 @@ public class ComponentImpl extends ModelObjectImpl implements Component
    * <!-- end-user-doc -->
    * @generated
    */
-  public Component getDependOn()
+  public SimpleDependencyConnection getDependOn()
   {
     if (dependOn != null && dependOn.eIsProxy())
     {
       InternalEObject oldDependOn = (InternalEObject)dependOn;
-      dependOn = (Component)eResolveProxy(oldDependOn);
+      dependOn = (SimpleDependencyConnection)eResolveProxy(oldDependOn);
       if (dependOn != oldDependOn)
       {
         if (eNotificationRequired())
@@ -293,7 +294,7 @@ public class ComponentImpl extends ModelObjectImpl implements Component
    * <!-- end-user-doc -->
    * @generated
    */
-  public Component basicGetDependOn()
+  public SimpleDependencyConnection basicGetDependOn()
   {
     return dependOn;
   }
@@ -303,9 +304,9 @@ public class ComponentImpl extends ModelObjectImpl implements Component
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setDependOn(Component newDependOn)
+  public void setDependOn(SimpleDependencyConnection newDependOn)
   {
-    Component oldDependOn = dependOn;
+    SimpleDependencyConnection oldDependOn = dependOn;
     dependOn = newDependOn;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.COMPONENT__DEPEND_ON, oldDependOn, dependOn));
@@ -398,7 +399,7 @@ public class ComponentImpl extends ModelObjectImpl implements Component
         getBy().addAll((Collection)newValue);
         return;
       case SmartfrogPackage.COMPONENT__DEPEND_ON:
-        setDependOn((Component)newValue);
+        setDependOn((SimpleDependencyConnection)newValue);
         return;
       case SmartfrogPackage.COMPONENT__ON:
         getOn().clear();
@@ -433,7 +434,7 @@ public class ComponentImpl extends ModelObjectImpl implements Component
         getBy().clear();
         return;
       case SmartfrogPackage.COMPONENT__DEPEND_ON:
-        setDependOn((Component)null);
+        setDependOn((SimpleDependencyConnection)null);
         return;
       case SmartfrogPackage.COMPONENT__ON:
         getOn().clear();
