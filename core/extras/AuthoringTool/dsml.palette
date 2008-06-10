@@ -59,6 +59,16 @@
           *
           MyFoo-opts:Name=A Very Special Foo;
         }
+Backup : 
+        
+  DependencyModel:DependencyModel;
+  DependencyModel-desc:Adds a DependencyModel to the model;
+  DependencyModel-image:resources/icons/DependencyModel_s.gif; 
+  Connectors:Connectors;
+  Connectors-desc:Adds a Connectors to the model;
+  Connectors-image:resources/icons/Connectors_s.gif;
+  
+  
 ######################################################################
 **/
 
@@ -70,18 +80,12 @@ Components {
   Composite:Composite;
   Composite-desc:Adds a Composite to the model;
   Composite-image:resources/icons/Composite_s.gif;
-  DependencyModel:DependencyModel;
-  DependencyModel-desc:Adds a DependencyModel to the model;
-  DependencyModel-image:resources/icons/DependencyModel_s.gif;
   Attribute:Attribute;
   Attribute-desc:Adds a Attribute to the model;
   Attribute-image:resources/icons/Attribute_s.gif;
   And:And;
   And-desc:Adds a And to the model;
   And-image:resources/icons/And_s.gif;
-  Connectors:Connectors;
-  Connectors-desc:Adds a Connectors to the model;
-  Connectors-image:resources/icons/Connectors_s.gif;
   Or:Or;
   Or-desc:Adds a Or to the model;
   Or-image:resources/icons/Or_s.gif;
