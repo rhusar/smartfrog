@@ -753,7 +753,7 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getAttribute_Attri_Name()
+  public EAttribute getAttribute_Value()
   {
     return (EAttribute)attributeEClass.getEStructuralFeatures().get(0);
   }
@@ -763,7 +763,7 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
    * <!-- end-user-doc -->
    * @generated
    */
-  public EAttribute getAttribute_Value()
+  public EAttribute getAttribute_StateData()
   {
     return (EAttribute)attributeEClass.getEStructuralFeatures().get(1);
   }
@@ -773,9 +773,39 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getAttribute_StateListen()
+  {
+    return (EAttribute)attributeEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAttribute_StateNotify()
+  {
+    return (EAttribute)attributeEClass.getEStructuralFeatures().get(3);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getAttribute_IsLazyValue()
+  {
+    return (EAttribute)attributeEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getAttribute_Attributes()
   {
-    return (EReference)attributeEClass.getEStructuralFeatures().get(2);
+    return (EReference)attributeEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -785,7 +815,7 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
    */
   public EReference getAttribute_Composite_arrtibutes()
   {
-    return (EReference)attributeEClass.getEStructuralFeatures().get(3);
+    return (EReference)attributeEClass.getEStructuralFeatures().get(6);
   }
 
   /**
@@ -866,6 +896,26 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
   public EReference getSimpleDependencyConnection_Target()
   {
     return (EReference)simpleDependencyConnectionEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getSimpleDependencyConnection_Relevant()
+  {
+    return (EAttribute)simpleDependencyConnectionEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getSimpleDependencyConnection_Enabled()
+  {
+    return (EAttribute)simpleDependencyConnectionEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -1181,8 +1231,11 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
     createEReference(dependencyModelEClass, DEPENDENCY_MODEL__ROOT_MODEL);
 
     attributeEClass = createEClass(ATTRIBUTE);
-    createEAttribute(attributeEClass, ATTRIBUTE__ATTRI_NAME);
     createEAttribute(attributeEClass, ATTRIBUTE__VALUE);
+    createEAttribute(attributeEClass, ATTRIBUTE__STATE_DATA);
+    createEAttribute(attributeEClass, ATTRIBUTE__STATE_LISTEN);
+    createEAttribute(attributeEClass, ATTRIBUTE__STATE_NOTIFY);
+    createEAttribute(attributeEClass, ATTRIBUTE__IS_LAZY_VALUE);
     createEReference(attributeEClass, ATTRIBUTE__ATTRIBUTES);
     createEReference(attributeEClass, ATTRIBUTE__COMPOSITE_ARRTIBUTES);
 
@@ -1195,6 +1248,8 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
     simpleDependencyConnectionEClass = createEClass(SIMPLE_DEPENDENCY_CONNECTION);
     createEReference(simpleDependencyConnectionEClass, SIMPLE_DEPENDENCY_CONNECTION__SOURCE);
     createEReference(simpleDependencyConnectionEClass, SIMPLE_DEPENDENCY_CONNECTION__TARGET);
+    createEAttribute(simpleDependencyConnectionEClass, SIMPLE_DEPENDENCY_CONNECTION__RELEVANT);
+    createEAttribute(simpleDependencyConnectionEClass, SIMPLE_DEPENDENCY_CONNECTION__ENABLED);
 
     inputDependencyConnectionEClass = createEClass(INPUT_DEPENDENCY_CONNECTION);
     createEReference(inputDependencyConnectionEClass, INPUT_DEPENDENCY_CONNECTION__SOURCE);
@@ -1302,9 +1357,9 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
     initEReference(getComponent_Comp(), this.getAttribute(), null, "Comp", null, 0, 2000, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getComponent_Group_of_components(), this.getComposite(), null, "Group_of_components", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getComponent_Comps(), this.getDependencyModel(), null, "Comps", null, 0, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getComponent_Depends_By(), this.getComponent(), null, "Depends_By", null, 0, 2147483647, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getComponent_Depends_By(), this.getSimpleDependencyConnection(), null, "Depends_By", null, 0, 2147483647, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getComponent_By(), this.getConnectors(), null, "By", null, 0, 2147483647, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getComponent_DependOn(), this.getComponent(), null, "DependOn", null, 1, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getComponent_DependOn(), this.getSimpleDependencyConnection(), null, "DependOn", null, 1, 1, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getComponent_On(), this.getConnectors(), null, "On", null, 0, 2147483647, Component.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(compositeEClass, Composite.class, "Composite", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1321,8 +1376,11 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
     initEReference(getDependencyModel_RootModel(), this.getConnectors(), null, "RootModel", null, 0, 2000, DependencyModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(attributeEClass, Attribute.class, "Attribute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getAttribute_Attri_Name(), ecorePackage.getEString(), "Attri_Name", "0", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getAttribute_Value(), ecorePackage.getEString(), "Value", "0", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAttribute_StateData(), ecorePackage.getEBoolean(), "StateData", "false", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAttribute_StateListen(), ecorePackage.getEBoolean(), "StateListen", "false", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAttribute_StateNotify(), ecorePackage.getEBoolean(), "StateNotify", "false", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getAttribute_IsLazyValue(), ecorePackage.getEBoolean(), "IsLazyValue", "false", 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAttribute_Attributes(), this.getComponent(), null, "Attributes", null, 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getAttribute_Composite_arrtibutes(), this.getComposite(), null, "Composite_arrtibutes", null, 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -1335,6 +1393,8 @@ public class SmartfrogPackageImpl extends EPackageImpl implements SmartfrogPacka
     initEClass(simpleDependencyConnectionEClass, SimpleDependencyConnection.class, "SimpleDependencyConnection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getSimpleDependencyConnection_Source(), this.getComponent(), null, "Source", null, 0, 1, SimpleDependencyConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getSimpleDependencyConnection_Target(), this.getComponent(), null, "Target", null, 0, 1, SimpleDependencyConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getSimpleDependencyConnection_Relevant(), ecorePackage.getEString(), "Relevant", "0", 0, 1, SimpleDependencyConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getSimpleDependencyConnection_Enabled(), ecorePackage.getEString(), "Enabled", "0", 0, 1, SimpleDependencyConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(inputDependencyConnectionEClass, InputDependencyConnection.class, "InputDependencyConnection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getInputDependencyConnection_Source(), this.getComponent(), null, "Source", null, 0, 1, InputDependencyConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

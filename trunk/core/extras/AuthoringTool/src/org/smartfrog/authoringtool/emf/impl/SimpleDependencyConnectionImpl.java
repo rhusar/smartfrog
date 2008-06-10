@@ -27,6 +27,8 @@ import org.smartfrog.authoringtool.emf.SmartfrogPackage;
  * <ul>
  *   <li>{@link org.smartfrog.authoringtool.emf.impl.SimpleDependencyConnectionImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.impl.SimpleDependencyConnectionImpl#getTarget <em>Target</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.SimpleDependencyConnectionImpl#getRelevant <em>Relevant</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.SimpleDependencyConnectionImpl#getEnabled <em>Enabled</em>}</li>
  * </ul>
  * </p>
  *
@@ -53,6 +55,46 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
    * @ordered
    */
   protected Component target;
+
+  /**
+   * The default value of the '{@link #getRelevant() <em>Relevant</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getRelevant()
+   * @generated
+   * @ordered
+   */
+  protected static final String RELEVANT_EDEFAULT = "0";
+
+  /**
+   * The cached value of the '{@link #getRelevant() <em>Relevant</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getRelevant()
+   * @generated
+   * @ordered
+   */
+  protected String relevant = RELEVANT_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #getEnabled() <em>Enabled</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getEnabled()
+   * @generated
+   * @ordered
+   */
+  protected static final String ENABLED_EDEFAULT = "0";
+
+  /**
+   * The cached value of the '{@link #getEnabled() <em>Enabled</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getEnabled()
+   * @generated
+   * @ordered
+   */
+  protected String enabled = ENABLED_EDEFAULT;
 
   /**
    * <!-- begin-user-doc -->
@@ -165,6 +207,52 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
    * <!-- end-user-doc -->
    * @generated
    */
+  public String getRelevant()
+  {
+    return relevant;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setRelevant(String newRelevant)
+  {
+    String oldRelevant = relevant;
+    relevant = newRelevant;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__RELEVANT, oldRelevant, relevant));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String getEnabled()
+  {
+    return enabled;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setEnabled(String newEnabled)
+  {
+    String oldEnabled = enabled;
+    enabled = newEnabled;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__ENABLED, oldEnabled, enabled));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public Object eGet(int featureID, boolean resolve, boolean coreType)
   {
     switch (featureID)
@@ -175,6 +263,10 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
       case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__TARGET:
         if (resolve) return getTarget();
         return basicGetTarget();
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__RELEVANT:
+        return getRelevant();
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__ENABLED:
+        return getEnabled();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -193,6 +285,12 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
         return;
       case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__TARGET:
         setTarget((Component)newValue);
+        return;
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__RELEVANT:
+        setRelevant((String)newValue);
+        return;
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__ENABLED:
+        setEnabled((String)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -213,6 +311,12 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
       case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__TARGET:
         setTarget((Component)null);
         return;
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__RELEVANT:
+        setRelevant(RELEVANT_EDEFAULT);
+        return;
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__ENABLED:
+        setEnabled(ENABLED_EDEFAULT);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -230,8 +334,30 @@ public class SimpleDependencyConnectionImpl extends EObjectImpl implements Simpl
         return source != null;
       case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__TARGET:
         return target != null;
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__RELEVANT:
+        return RELEVANT_EDEFAULT == null ? relevant != null : !RELEVANT_EDEFAULT.equals(relevant);
+      case SmartfrogPackage.SIMPLE_DEPENDENCY_CONNECTION__ENABLED:
+        return ENABLED_EDEFAULT == null ? enabled != null : !ENABLED_EDEFAULT.equals(enabled);
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public String toString()
+  {
+    if (eIsProxy()) return super.toString();
+
+    StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (Relevant: ");
+    result.append(relevant);
+    result.append(", Enabled: ");
+    result.append(enabled);
+    result.append(')');
+    return result.toString();
   }
 
 } //SimpleDependencyConnectionImpl
