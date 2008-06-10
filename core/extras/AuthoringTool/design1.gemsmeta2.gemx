@@ -6,11 +6,15 @@
     <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.0"/>
     <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
   </Connection>
-  <Connection Name="InputDependency" Id="ffffffffc0a80121_808" X="405" Y="441" Width="198" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+  <Connection Name="InputDependency" Id="ffffffffc0a80121_808" X="405" Y="441" Width="198" Height="80" ExpandedWidth="104" ExpandedHeight="232" Expanded="true">
+    <Attribute Name="Relevant" Id="ffffffffc0a80121_1675"/>
+    <Attribute Name="Enabled" Id="ffffffffc0a80121_1676"/>
     <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.1"/>
     <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.1"/>
   </Connection>
-  <Connection Name="OutputDependency" Id="f9e39d5_1320" X="400" Y="702" Width="165" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+  <Connection Name="OutputDependency" Id="f9e39d5_1320" X="400" Y="702" Width="165" Height="80" ExpandedWidth="104" ExpandedHeight="232" Expanded="true">
+    <Attribute Name="Relevant" Id="ffffffffc0a80121_1677"/>
+    <Attribute Name="Enabled" Id="ffffffffc0a80121_1678"/>
     <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.2"/>
     <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.2"/>
   </Connection>
@@ -36,7 +40,7 @@
     <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
     <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.7"/>
   </Entity>
-  <Entity Name="Attribute" Id="ffffffffc0a80121_1129" X="414" Y="293" Width="178" ExpandedWidth="575" ExpandedHeight="232" Expanded="true">
+  <Entity Name="Attribute" Id="ffffffffc0a80121_1129" X="414" Y="293" Width="178" ExpandedWidth="575" ExpandedHeight="232">
     <Attribute Name="Value" Id="ffffffffc0a80121_1227" ExpandedWidth="0" ExpandedHeight="15"/>
     <Attribute Name="StateData" Id="ffffffffc0a80121_257" AttributeType="Boolean" DefaultValue="false"/>
     <Attribute Name="StateListen" Id="ffffffffc0a80121_721" AttributeType="Boolean" DefaultValue="false"/>
