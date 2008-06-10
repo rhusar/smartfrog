@@ -82,11 +82,11 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="Comps" upperBound="1"
         eType="#//DependencyModel" containment="false"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="Depends_By" lowerBound="0" upperBound="2147483647"
-        eType="#//Component" />
+        eType="#//SimpleDependencyConnection" />
       <eStructuralFeatures xsi:type="ecore:EReference" name="By" lowerBound="0" upperBound="2147483647"
         eType="#//Connectors" />
       <eStructuralFeatures xsi:type="ecore:EReference" name="DependOn" lowerBound="1" upperBound="1"
-        eType="#//Component" />
+        eType="#//SimpleDependencyConnection" />
       <eStructuralFeatures xsi:type="ecore:EReference" name="On" lowerBound="0" upperBound="2147483647"
         eType="#//Connectors" />
   </eClassifiers>
@@ -119,10 +119,16 @@
 
      
  <eClassifiers xsi:type="ecore:EClass" name="Attribute" eSuperTypes="#//ModelObject">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Attri_Name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        defaultValueLiteral="0"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="Value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="StateData" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="StateListen" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="StateNotify" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsLazyValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Attributes" upperBound="1"
         eType="#//Component" containment="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Composite_arrtibutes" upperBound="1"
@@ -145,6 +151,10 @@
  <eClassifiers xsi:type="ecore:EClass" name="SimpleDependencyConnection">
  	 <eStructuralFeatures xsi:type="ecore:EReference" name="Source" eType="#//Component"/>
      <eStructuralFeatures xsi:type="ecore:EReference" name="Target" eType="#//Component"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Relevant" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Enabled" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="0"/>
   </eClassifiers>
 
      
