@@ -25,8 +25,11 @@ import org.smartfrog.authoringtool.emf.SmartfrogPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#getAttri_Name <em>Attri Name</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#getValue <em>Value</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#isStateData <em>State Data</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#isStateListen <em>State Listen</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#isStateNotify <em>State Notify</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#isIsLazyValue <em>Is Lazy Value</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#getAttributes <em>Attributes</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.impl.AttributeImpl#getComposite_arrtibutes <em>Composite arrtibutes</em>}</li>
  * </ul>
@@ -36,26 +39,6 @@ import org.smartfrog.authoringtool.emf.SmartfrogPackage;
  */
 public class AttributeImpl extends ModelObjectImpl implements Attribute
 {
-  /**
-   * The default value of the '{@link #getAttri_Name() <em>Attri Name</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getAttri_Name()
-   * @generated
-   * @ordered
-   */
-  protected static final String ATTRI_NAME_EDEFAULT = "0";
-
-  /**
-   * The cached value of the '{@link #getAttri_Name() <em>Attri Name</em>}' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see #getAttri_Name()
-   * @generated
-   * @ordered
-   */
-  protected String attri_Name = ATTRI_NAME_EDEFAULT;
-
   /**
    * The default value of the '{@link #getValue() <em>Value</em>}' attribute.
    * <!-- begin-user-doc -->
@@ -75,6 +58,86 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
    * @ordered
    */
   protected String value = VALUE_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #isStateData() <em>State Data</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateData()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean STATE_DATA_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isStateData() <em>State Data</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateData()
+   * @generated
+   * @ordered
+   */
+  protected boolean stateData = STATE_DATA_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #isStateListen() <em>State Listen</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateListen()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean STATE_LISTEN_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isStateListen() <em>State Listen</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateListen()
+   * @generated
+   * @ordered
+   */
+  protected boolean stateListen = STATE_LISTEN_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #isStateNotify() <em>State Notify</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateNotify()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean STATE_NOTIFY_EDEFAULT = false;
+
+  /**
+   * The cached value of the '{@link #isStateNotify() <em>State Notify</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isStateNotify()
+   * @generated
+   * @ordered
+   */
+  protected boolean stateNotify = STATE_NOTIFY_EDEFAULT;
+
+  /**
+   * The default value of the '{@link #isIsLazyValue() <em>Is Lazy Value</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isIsLazyValue()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean IS_LAZY_VALUE_EDEFAULT = false; // TODO The default value literal "0" is not valid.
+
+  /**
+   * The cached value of the '{@link #isIsLazyValue() <em>Is Lazy Value</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #isIsLazyValue()
+   * @generated
+   * @ordered
+   */
+  protected boolean isLazyValue = IS_LAZY_VALUE_EDEFAULT;
 
   /**
    * The cached value of the '{@link #getAttributes() <em>Attributes</em>}' reference.
@@ -121,29 +184,6 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
    * <!-- end-user-doc -->
    * @generated
    */
-  public String getAttri_Name()
-  {
-    return attri_Name;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public void setAttri_Name(String newAttri_Name)
-  {
-    String oldAttri_Name = attri_Name;
-    attri_Name = newAttri_Name;
-    if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__ATTRI_NAME, oldAttri_Name, attri_Name));
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
   public String getValue()
   {
     return value;
@@ -160,6 +200,98 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
     value = newValue;
     if (eNotificationRequired())
       eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__VALUE, oldValue, value));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isStateData()
+  {
+    return stateData;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setStateData(boolean newStateData)
+  {
+    boolean oldStateData = stateData;
+    stateData = newStateData;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__STATE_DATA, oldStateData, stateData));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isStateListen()
+  {
+    return stateListen;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setStateListen(boolean newStateListen)
+  {
+    boolean oldStateListen = stateListen;
+    stateListen = newStateListen;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__STATE_LISTEN, oldStateListen, stateListen));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isStateNotify()
+  {
+    return stateNotify;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setStateNotify(boolean newStateNotify)
+  {
+    boolean oldStateNotify = stateNotify;
+    stateNotify = newStateNotify;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__STATE_NOTIFY, oldStateNotify, stateNotify));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public boolean isIsLazyValue()
+  {
+    return isLazyValue;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public void setIsLazyValue(boolean newIsLazyValue)
+  {
+    boolean oldIsLazyValue = isLazyValue;
+    isLazyValue = newIsLazyValue;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SmartfrogPackage.ATTRIBUTE__IS_LAZY_VALUE, oldIsLazyValue, isLazyValue));
   }
 
   /**
@@ -257,10 +389,16 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
   {
     switch (featureID)
     {
-      case SmartfrogPackage.ATTRIBUTE__ATTRI_NAME:
-        return getAttri_Name();
       case SmartfrogPackage.ATTRIBUTE__VALUE:
         return getValue();
+      case SmartfrogPackage.ATTRIBUTE__STATE_DATA:
+        return isStateData() ? Boolean.TRUE : Boolean.FALSE;
+      case SmartfrogPackage.ATTRIBUTE__STATE_LISTEN:
+        return isStateListen() ? Boolean.TRUE : Boolean.FALSE;
+      case SmartfrogPackage.ATTRIBUTE__STATE_NOTIFY:
+        return isStateNotify() ? Boolean.TRUE : Boolean.FALSE;
+      case SmartfrogPackage.ATTRIBUTE__IS_LAZY_VALUE:
+        return isIsLazyValue() ? Boolean.TRUE : Boolean.FALSE;
       case SmartfrogPackage.ATTRIBUTE__ATTRIBUTES:
         if (resolve) return getAttributes();
         return basicGetAttributes();
@@ -280,11 +418,20 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
   {
     switch (featureID)
     {
-      case SmartfrogPackage.ATTRIBUTE__ATTRI_NAME:
-        setAttri_Name((String)newValue);
-        return;
       case SmartfrogPackage.ATTRIBUTE__VALUE:
         setValue((String)newValue);
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_DATA:
+        setStateData(((Boolean)newValue).booleanValue());
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_LISTEN:
+        setStateListen(((Boolean)newValue).booleanValue());
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_NOTIFY:
+        setStateNotify(((Boolean)newValue).booleanValue());
+        return;
+      case SmartfrogPackage.ATTRIBUTE__IS_LAZY_VALUE:
+        setIsLazyValue(((Boolean)newValue).booleanValue());
         return;
       case SmartfrogPackage.ATTRIBUTE__ATTRIBUTES:
         setAttributes((Component)newValue);
@@ -305,11 +452,20 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
   {
     switch (featureID)
     {
-      case SmartfrogPackage.ATTRIBUTE__ATTRI_NAME:
-        setAttri_Name(ATTRI_NAME_EDEFAULT);
-        return;
       case SmartfrogPackage.ATTRIBUTE__VALUE:
         setValue(VALUE_EDEFAULT);
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_DATA:
+        setStateData(STATE_DATA_EDEFAULT);
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_LISTEN:
+        setStateListen(STATE_LISTEN_EDEFAULT);
+        return;
+      case SmartfrogPackage.ATTRIBUTE__STATE_NOTIFY:
+        setStateNotify(STATE_NOTIFY_EDEFAULT);
+        return;
+      case SmartfrogPackage.ATTRIBUTE__IS_LAZY_VALUE:
+        setIsLazyValue(IS_LAZY_VALUE_EDEFAULT);
         return;
       case SmartfrogPackage.ATTRIBUTE__ATTRIBUTES:
         setAttributes((Component)null);
@@ -330,10 +486,16 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
   {
     switch (featureID)
     {
-      case SmartfrogPackage.ATTRIBUTE__ATTRI_NAME:
-        return ATTRI_NAME_EDEFAULT == null ? attri_Name != null : !ATTRI_NAME_EDEFAULT.equals(attri_Name);
       case SmartfrogPackage.ATTRIBUTE__VALUE:
         return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
+      case SmartfrogPackage.ATTRIBUTE__STATE_DATA:
+        return stateData != STATE_DATA_EDEFAULT;
+      case SmartfrogPackage.ATTRIBUTE__STATE_LISTEN:
+        return stateListen != STATE_LISTEN_EDEFAULT;
+      case SmartfrogPackage.ATTRIBUTE__STATE_NOTIFY:
+        return stateNotify != STATE_NOTIFY_EDEFAULT;
+      case SmartfrogPackage.ATTRIBUTE__IS_LAZY_VALUE:
+        return isLazyValue != IS_LAZY_VALUE_EDEFAULT;
       case SmartfrogPackage.ATTRIBUTE__ATTRIBUTES:
         return attributes != null;
       case SmartfrogPackage.ATTRIBUTE__COMPOSITE_ARRTIBUTES:
@@ -352,10 +514,16 @@ public class AttributeImpl extends ModelObjectImpl implements Attribute
     if (eIsProxy()) return super.toString();
 
     StringBuffer result = new StringBuffer(super.toString());
-    result.append(" (Attri_Name: ");
-    result.append(attri_Name);
-    result.append(", Value: ");
+    result.append(" (Value: ");
     result.append(value);
+    result.append(", StateData: ");
+    result.append(stateData);
+    result.append(", StateListen: ");
+    result.append(stateListen);
+    result.append(", StateNotify: ");
+    result.append(stateNotify);
+    result.append(", IsLazyValue: ");
+    result.append(isLazyValue);
     result.append(')');
     return result.toString();
   }
