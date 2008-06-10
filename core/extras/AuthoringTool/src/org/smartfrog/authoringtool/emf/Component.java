@@ -102,7 +102,7 @@ public interface Component extends ModelObject
 
   /**
    * Returns the value of the '<em><b>Depends By</b></em>' reference list.
-   * The list contents are of type {@link org.smartfrog.authoringtool.emf.Component}.
+   * The list contents are of type {@link org.smartfrog.authoringtool.emf.SimpleDependencyConnection}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Depends By</em>' reference list isn't clear,
@@ -111,7 +111,7 @@ public interface Component extends ModelObject
    * <!-- end-user-doc -->
    * @return the value of the '<em>Depends By</em>' reference list.
    * @see org.smartfrog.authoringtool.emf.SmartfrogPackage#getComponent_Depends_By()
-   * @model type="org.smartfrog.authoringtool.emf.Component" upper="2147483647"
+   * @model type="org.smartfrog.authoringtool.emf.SimpleDependencyConnection" upper="2147483647"
    * @generated
    */
   EList getDepends_By();
@@ -141,12 +141,12 @@ public interface Component extends ModelObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Depend On</em>' reference.
-   * @see #setDependOn(Component)
+   * @see #setDependOn(SimpleDependencyConnection)
    * @see org.smartfrog.authoringtool.emf.SmartfrogPackage#getComponent_DependOn()
    * @model required="true"
    * @generated
    */
-  Component getDependOn();
+  SimpleDependencyConnection getDependOn();
 
   /**
    * Sets the value of the '{@link org.smartfrog.authoringtool.emf.Component#getDependOn <em>Depend On</em>}' reference.
@@ -156,7 +156,7 @@ public interface Component extends ModelObject
    * @see #getDependOn()
    * @generated
    */
-  void setDependOn(Component value);
+  void setDependOn(SimpleDependencyConnection value);
 
   /**
    * Returns the value of the '<em><b>On</b></em>' reference list.

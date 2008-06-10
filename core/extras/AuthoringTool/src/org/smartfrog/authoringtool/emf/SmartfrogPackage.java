@@ -1812,22 +1812,49 @@ public interface SmartfrogPackage extends EPackage
   int ATTRIBUTE__MODEL_LINK_TARGET = MODEL_OBJECT__MODEL_LINK_TARGET;
 
   /**
-   * The feature id for the '<em><b>Attri Name</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int ATTRIBUTE__ATTRI_NAME = MODEL_OBJECT_FEATURE_COUNT + 0;
-
-  /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ATTRIBUTE__VALUE = MODEL_OBJECT_FEATURE_COUNT + 1;
+  int ATTRIBUTE__VALUE = MODEL_OBJECT_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>State Data</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__STATE_DATA = MODEL_OBJECT_FEATURE_COUNT + 1;
+
+  /**
+   * The feature id for the '<em><b>State Listen</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__STATE_LISTEN = MODEL_OBJECT_FEATURE_COUNT + 2;
+
+  /**
+   * The feature id for the '<em><b>State Notify</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__STATE_NOTIFY = MODEL_OBJECT_FEATURE_COUNT + 3;
+
+  /**
+   * The feature id for the '<em><b>Is Lazy Value</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__IS_LAZY_VALUE = MODEL_OBJECT_FEATURE_COUNT + 4;
 
   /**
    * The feature id for the '<em><b>Attributes</b></em>' reference.
@@ -1836,7 +1863,7 @@ public interface SmartfrogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ATTRIBUTE__ATTRIBUTES = MODEL_OBJECT_FEATURE_COUNT + 2;
+  int ATTRIBUTE__ATTRIBUTES = MODEL_OBJECT_FEATURE_COUNT + 5;
 
   /**
    * The feature id for the '<em><b>Composite arrtibutes</b></em>' reference.
@@ -1845,7 +1872,7 @@ public interface SmartfrogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ATTRIBUTE__COMPOSITE_ARRTIBUTES = MODEL_OBJECT_FEATURE_COUNT + 3;
+  int ATTRIBUTE__COMPOSITE_ARRTIBUTES = MODEL_OBJECT_FEATURE_COUNT + 6;
 
   /**
    * The number of structural features of the '<em>Attribute</em>' class.
@@ -1854,7 +1881,7 @@ public interface SmartfrogPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ATTRIBUTE_FEATURE_COUNT = MODEL_OBJECT_FEATURE_COUNT + 4;
+  int ATTRIBUTE_FEATURE_COUNT = MODEL_OBJECT_FEATURE_COUNT + 7;
 
   /**
    * The meta object id for the '{@link org.smartfrog.authoringtool.emf.impl.SimpleDependencyConnectionImpl <em>Simple Dependency Connection</em>}' class.
@@ -1885,13 +1912,31 @@ public interface SmartfrogPackage extends EPackage
   int SIMPLE_DEPENDENCY_CONNECTION__TARGET = 1;
 
   /**
+   * The feature id for the '<em><b>Relevant</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SIMPLE_DEPENDENCY_CONNECTION__RELEVANT = 2;
+
+  /**
+   * The feature id for the '<em><b>Enabled</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SIMPLE_DEPENDENCY_CONNECTION__ENABLED = 3;
+
+  /**
    * The number of structural features of the '<em>Simple Dependency Connection</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int SIMPLE_DEPENDENCY_CONNECTION_FEATURE_COUNT = 2;
+  int SIMPLE_DEPENDENCY_CONNECTION_FEATURE_COUNT = 4;
 
   /**
    * The meta object id for the '{@link org.smartfrog.authoringtool.emf.impl.InputDependencyConnectionImpl <em>Input Dependency Connection</em>}' class.
@@ -2673,17 +2718,6 @@ int ATTRIBUTE__ATTRI__NAME = 0;
   EClass getAttribute();
 
   /**
-   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#getAttri_Name <em>Attri Name</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Attri Name</em>'.
-   * @see org.smartfrog.authoringtool.emf.Attribute#getAttri_Name()
-   * @see #getAttribute()
-   * @generated
-   */
-  EAttribute getAttribute_Attri_Name();
-
-  /**
    * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#getValue <em>Value</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -2693,6 +2727,50 @@ int ATTRIBUTE__ATTRI__NAME = 0;
    * @generated
    */
   EAttribute getAttribute_Value();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#isStateData <em>State Data</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>State Data</em>'.
+   * @see org.smartfrog.authoringtool.emf.Attribute#isStateData()
+   * @see #getAttribute()
+   * @generated
+   */
+  EAttribute getAttribute_StateData();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#isStateListen <em>State Listen</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>State Listen</em>'.
+   * @see org.smartfrog.authoringtool.emf.Attribute#isStateListen()
+   * @see #getAttribute()
+   * @generated
+   */
+  EAttribute getAttribute_StateListen();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#isStateNotify <em>State Notify</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>State Notify</em>'.
+   * @see org.smartfrog.authoringtool.emf.Attribute#isStateNotify()
+   * @see #getAttribute()
+   * @generated
+   */
+  EAttribute getAttribute_StateNotify();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.Attribute#isIsLazyValue <em>Is Lazy Value</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Is Lazy Value</em>'.
+   * @see org.smartfrog.authoringtool.emf.Attribute#isIsLazyValue()
+   * @see #getAttribute()
+   * @generated
+   */
+  EAttribute getAttribute_IsLazyValue();
 
   /**
    * Returns the meta object for the reference '{@link org.smartfrog.authoringtool.emf.Attribute#getAttributes <em>Attributes</em>}'.
@@ -2801,6 +2879,28 @@ int ATTRIBUTE__ATTRI__NAME = 0;
    * @generated
    */
   EReference getSimpleDependencyConnection_Target();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.SimpleDependencyConnection#getRelevant <em>Relevant</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Relevant</em>'.
+   * @see org.smartfrog.authoringtool.emf.SimpleDependencyConnection#getRelevant()
+   * @see #getSimpleDependencyConnection()
+   * @generated
+   */
+  EAttribute getSimpleDependencyConnection_Relevant();
+
+  /**
+   * Returns the meta object for the attribute '{@link org.smartfrog.authoringtool.emf.SimpleDependencyConnection#getEnabled <em>Enabled</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Enabled</em>'.
+   * @see org.smartfrog.authoringtool.emf.SimpleDependencyConnection#getEnabled()
+   * @see #getSimpleDependencyConnection()
+   * @generated
+   */
+  EAttribute getSimpleDependencyConnection_Enabled();
 
   /**
    * Returns the meta object for class '{@link org.smartfrog.authoringtool.emf.InputDependencyConnection <em>Input Dependency Connection</em>}'.
@@ -3499,20 +3599,44 @@ int ATTRIBUTE__ATTRI__NAME = 0;
     EClass ATTRIBUTE = eINSTANCE.getAttribute();
 
     /**
-     * The meta object literal for the '<em><b>Attri Name</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute ATTRIBUTE__ATTRI_NAME = eINSTANCE.getAttribute_Attri_Name();
-
-    /**
      * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     EAttribute ATTRIBUTE__VALUE = eINSTANCE.getAttribute_Value();
+
+    /**
+     * The meta object literal for the '<em><b>State Data</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ATTRIBUTE__STATE_DATA = eINSTANCE.getAttribute_StateData();
+
+    /**
+     * The meta object literal for the '<em><b>State Listen</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ATTRIBUTE__STATE_LISTEN = eINSTANCE.getAttribute_StateListen();
+
+    /**
+     * The meta object literal for the '<em><b>State Notify</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ATTRIBUTE__STATE_NOTIFY = eINSTANCE.getAttribute_StateNotify();
+
+    /**
+     * The meta object literal for the '<em><b>Is Lazy Value</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute ATTRIBUTE__IS_LAZY_VALUE = eINSTANCE.getAttribute_IsLazyValue();
 
     /**
      * The meta object literal for the '<em><b>Attributes</b></em>' reference feature.
@@ -3597,6 +3721,22 @@ int ATTRIBUTE__ATTRI__NAME = 0;
      * @generated
      */
     EReference SIMPLE_DEPENDENCY_CONNECTION__TARGET = eINSTANCE.getSimpleDependencyConnection_Target();
+
+    /**
+     * The meta object literal for the '<em><b>Relevant</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute SIMPLE_DEPENDENCY_CONNECTION__RELEVANT = eINSTANCE.getSimpleDependencyConnection_Relevant();
+
+    /**
+     * The meta object literal for the '<em><b>Enabled</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute SIMPLE_DEPENDENCY_CONNECTION__ENABLED = eINSTANCE.getSimpleDependencyConnection_Enabled();
 
     /**
      * The meta object literal for the '{@link org.smartfrog.authoringtool.emf.impl.InputDependencyConnectionImpl <em>Input Dependency Connection</em>}' class.
