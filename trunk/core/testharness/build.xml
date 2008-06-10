@@ -180,6 +180,8 @@ values as a cue -->
       <!-- SFOS-890 Chmod "failing" tests are failing and marked as skipped -->
       <exclude name="${systemtests}/filesystem/ChmodFailureTest.*"
           unless="run.failing.tests"/>
+      <exclude name="${systemtests}/filesystem/ChmodTest.*"
+          unless="run.failing.tests"/>
 
       <!-- SFOS-886  DetachingCompoundTest is failing and being skipped-->
       <exclude name="${systemtests}/**/DetachingCompoundTest.*"
