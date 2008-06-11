@@ -253,7 +253,7 @@ public final class Diagnostics {
          * @param cd  Component Description
          *
          */
-        private static void doReportCD(StringBuffer out, ComponentDescription cd) {
+        public static void doReportCD(StringBuffer out, ComponentDescription cd) {
             if (cd!=null) {
               try {
                 Diagnostics.header(out, "sfCompleteName");
@@ -313,7 +313,7 @@ public final class Diagnostics {
      * @param out StringBuffer
      * @param prim Compound
      */
-    private static void doReportPrim(StringBuffer out, Prim prim) {
+    public static void doReportPrim(StringBuffer out, Prim prim) {
         if (prim!=null) {
           try {
             Diagnostics.header(out, "sfCompleteName");
@@ -361,7 +361,7 @@ public final class Diagnostics {
       * Report specific information to local process compound.
      * @param out StringBuffer
      */
-    private static void doReportProcessCompound(StringBuffer out) {
+    public static void doReportProcessCompound(StringBuffer out) {
       try {
         ProcessCompound pc = SFProcess.getProcessCompound();
         StringBuffer reportPC = new StringBuffer();
@@ -380,7 +380,7 @@ public final class Diagnostics {
      * @param out StringBuffer
      * @param compound Compound
      */
-    private static void doReportCompound(StringBuffer out, Compound compound) {
+    public static void doReportCompound(StringBuffer out, Compound compound) {
       Enumeration enu = null;
       StringBuilder childrenInfo = new StringBuilder();
       Prim child = null;
@@ -440,7 +440,7 @@ public final class Diagnostics {
      * Report a listing of system properties existing in the current vm.
      * @param out the stream to print the properties to.
      */
-    private static void doReportSystemProperties(StringBuffer out) {
+    public static void doReportSystemProperties(StringBuffer out) {
         Properties sysprops = null;
         try {
         	sysprops = System.getProperties();
@@ -472,7 +472,7 @@ public final class Diagnostics {
      * Report a listing of system environment properties existing in the current vm.
      * @param out the stream to print the properties to.
      */
-    private static void doReportSystemEnvProperties(StringBuffer out) {
+    public static void doReportSystemEnvProperties(StringBuffer out) {
         Map sysenvprops = null;
         try {
            sysenvprops = System.getenv();
@@ -502,7 +502,7 @@ public final class Diagnostics {
       * Report specific information to local process compound.
      * @param out StringBuffer
      */
-    private static void doReportThreadDump(StringBuffer out) {
+    public static void doReportThreadDump(StringBuffer out) {
       try {
         ThreadDump td = new ThreadDump();
         StringBuffer reportTD = new StringBuffer();
@@ -531,7 +531,7 @@ public final class Diagnostics {
      * Report a summary of system properties.
      * @param out the stream to print the properties to.
      */
-    private static void doReportSummary(StringBuffer out) {
+    public static void doReportSummary(StringBuffer out) {
 
       out.append("* Java Version:    ");out.append( System.getProperty("java.version"));out.append("\n");
       out.append("* Java Home:       ");out.append(System.getProperty("java.home"));out.append("\n");
@@ -637,7 +637,7 @@ public final class Diagnostics {
      * @param out the stream to print the report to.
      * @param listURI list of URIs for a host to reach
      */
-    private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
+    public static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
         for (int i = listURI.length; i > 0; i--) {
             doReportRemoteNetwork(out, listURI[i - 1]);
         }
@@ -711,7 +711,7 @@ public final class Diagnostics {
      * Report a listing of codebase used in the current vm.
      * @param out the stream to print the properties to.
      */
-    private static void doReportCodeBase(StringBuffer out) {
+    public static void doReportCodeBase(StringBuffer out) {
 
       String codebaseString = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
       if (codebaseString!=null) {
@@ -726,7 +726,7 @@ public final class Diagnostics {
      * @param multiPath String
      * @param out StringBuffer
      */
-    private static void multiPathReport(String multiPath,StringBuffer out) {
+    public static void multiPathReport(String multiPath,StringBuffer out) {
       String[] array = System.getProperty(multiPath).split(System.getProperty("path.separator"));
       Arrays.sort(array, new StringComparator());
       for (int i = array.length-1 ; i >= 0; i--) {
@@ -744,7 +744,7 @@ public final class Diagnostics {
      * @param libs array of libraries (can be null)
      * @param out String Buffer
      */
-    private static void printLibraries(File[] libs, StringBuffer out) {
+    public static void printLibraries(File[] libs, StringBuffer out) {
         if (libs == null) {
             out.append("No such directory.\n");
             return;
@@ -764,7 +764,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    private static void doReportTempDir(StringBuffer out) {
+    public static void doReportTempDir(StringBuffer out) {
         String tempdir=System.getProperty("java.io.tmpdir");
         if( tempdir == null ) {
             out.append("Warning: java.io.tmpdir is undefined");out.append("\n");
@@ -822,7 +822,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    private static void doReportLocale(StringBuffer out) {
+    public static void doReportLocale(StringBuffer out) {
         //calendar stuff.
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
@@ -842,7 +842,7 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-   private static void doReportClassPathRepeats(StringBuffer out) {
+   public static void doReportClassPathRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
       StringBuffer message = Logger.getRepeatsMessage(words, classpath);
@@ -854,7 +854,7 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-   private static void doReportCodeBaseRepeats(StringBuffer out) {
+   public static void doReportCodeBaseRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       StringBuffer message = null;
       String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
