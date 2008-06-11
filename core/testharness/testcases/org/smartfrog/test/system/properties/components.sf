@@ -110,15 +110,24 @@ testSetOnSequence extends ExpectDeploy {
       unsetOnTerminate false;
     }
 
+
+    isKey1Set extends AssertPropertySet {
+      property key1;
+    }
+
+    isKey2Set extends AssertPropertySet {
+      property key2;
+    }
+
     checkKey1 extends workflowAssert {
       equalsString1 value1;
-      equalsString2 LAZY PROPERTY "key.1";
+      equalsString2 LAZY PROPERTY key.1;
 
     }
 
     checkKey2 extends workflowAssert {
       equalsString1 value2;
-      equalsString2 LAZY PROPERTY "key.2";
+      equalsString2 LAZY PROPERTY key.2;
     }
 
   }
@@ -139,12 +148,12 @@ testUnsetOnSequence extends ExpectDeploy {
 
     checkKey1 extends workflowAssert {
       equalsString1 "";
-      equalsString2 LAZY OPTIONAL("") PROPERTY "key.1";
+      equalsString2 LAZY OPTIONAL("") PROPERTY key.1;
     }
 
     checkKey2 extends workflowAssert {
       equalsString1 "";
-      equalsString2 LAZY OPTIONAL("") PROPERTY "key.2";
+      equalsString2 LAZY OPTIONAL("") PROPERTY key.2;
     }
 
   }
