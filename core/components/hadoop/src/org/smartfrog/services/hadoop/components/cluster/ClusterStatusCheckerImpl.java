@@ -186,7 +186,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @param max    maxiumum value
      * @param actual current value
      * @param field  field name
-     * @throws SFHadoopException
+     * @throws SFHadoopException if we are out of range
      */
     private void checkRange(int min, int max, int actual, String field) throws SFHadoopException {
         checkMin(min, actual, field);
