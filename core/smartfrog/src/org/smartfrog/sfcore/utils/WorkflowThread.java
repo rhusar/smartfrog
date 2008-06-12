@@ -50,6 +50,15 @@ public class WorkflowThread extends SmartFrogThread {
      */
     public WorkflowThread(Prim owner, boolean workflowTermination,Object notifyObject) {
         super(notifyObject);
+        bind(owner, workflowTermination);
+    }
+
+    /**
+     * Bind to the owner
+     * @param owner owner prim
+     * @param workflowTermination workflow policy
+     */
+    private void bind(Prim owner, boolean workflowTermination) {
         this.owner = owner;
         this.workflowTermination=workflowTermination;
         try {
@@ -67,6 +76,18 @@ public class WorkflowThread extends SmartFrogThread {
      */
     public WorkflowThread(Prim owner, boolean workflowTermination) {
         this(owner,workflowTermination, new Object());
+    }
+
+    /**
+     * Create a basic thread bound to a runnable
+     *
+     * @param owner owner prim
+     * @param target the object whose <code>run</code> method is called.
+     * @param workflowTermination workflow policy
+     */
+    public WorkflowThread(Prim owner, Executable target, boolean workflowTermination) {
+        super(target);
+        bind(owner, workflowTermination);
     }
 
     /**
