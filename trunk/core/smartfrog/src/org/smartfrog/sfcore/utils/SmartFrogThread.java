@@ -39,7 +39,7 @@ import java.rmi.RemoteException;
  * notifyObject created 13-Feb-2007 10:39:41
  */
 
-public class SmartFrogThread extends Thread {
+public class SmartFrogThread extends Thread implements Executable {
 
 
     private Throwable thrown;
@@ -48,6 +48,7 @@ public class SmartFrogThread extends Thread {
     private volatile boolean finished;
     private volatile boolean terminationRequested = false;
     private final Object terminationRequestNotifier = new Object();
+    private Executable executable;
 
     /**
      * Create a basic thread
@@ -88,6 +89,15 @@ public class SmartFrogThread extends Thread {
      */
     public SmartFrogThread(Runnable target) {
         init(target, null);
+    }
+
+    /**
+     * Create a basic thread bound to a runnable
+     *
+     * @param target the object whose <code>run</code> method is called.
+     */
+    public SmartFrogThread(Executable target) {
+        init(target);
     }
 
 
@@ -138,6 +148,17 @@ public class SmartFrogThread extends Thread {
     private void init(Runnable target, Object notify) {
         runnable = target;
         notifyObject = notify != null ? notify : this;
+    }
+
+    /**
+     * Internal initialization
+     *
+     * @param target what we want to run
+     * @param notify object to notify after the run. If null, it is set to <code>this</code>
+     */
+    private void init(Executable target) {
+        executable = target;
+        notifyObject = new Object();
     }
 
     /**
@@ -271,14 +292,22 @@ public class SmartFrogThread extends Thread {
     /**
      * If this thread was constructed using a separate {@link Runnable} run
      * object, then that <code>Runnable</code> object's <code>run</code> method
-     * is called; otherwise, this method does nothing and returns. <p>
-     * Subclasses of <code>Thread</code> should override this method.
+     * is called.
+     *
+     * If this thread was constructed using a separate {@link Executable} run
+     * object, then that <code>Executable</code> object's <code>execute</code> method
+     * is called;
+     *
+     * otherwise, this method does nothing and returns. <p>
+     * Subclasses of should override this method.
      *
      * @throws Throwable if anything went wrong
      */
     public void execute() throws Throwable {
         if (runnable != null) {
             runnable.run();
+        } else if (executable != null) {
+            executable.execute();
         }
     }
 
@@ -357,7 +386,8 @@ public class SmartFrogThread extends Thread {
     }
 
     /**
-     * Ping the thread parameter if it is not null
+     * Ping the thread parameter if it is not null. A null thread is not treated
+     * as a liveness failure. 
      *
      * @param thread thread to ping, may be null
      *
