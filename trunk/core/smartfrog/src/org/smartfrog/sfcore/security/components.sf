@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/prim/prim.sf"
 
+
 /**
  * A class that checks the security status
  */
@@ -37,3 +38,10 @@ RequireSecurityCondition extends RequireSecurity {
   condition true;
 }
 
+/**
+ * Check MACData initialization with security on
+ * - requires default key present in key store
+ */
+MACDataKeyStoreCheck extends RequireSecurityCondition {
+  sfClass "org.smartfrog.sfcore.security.MACDataDefaultVerify"
+}
