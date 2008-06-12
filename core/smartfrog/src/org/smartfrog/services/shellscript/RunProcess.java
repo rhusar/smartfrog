@@ -76,4 +76,9 @@ public interface RunProcess {
      */
     public OutputStream getOutputStream();
 
+    /**
+     * The exit code from the execution, or {@link #NOT_YET_EXITED} if there is no real value
+     * @return the exit code.
+     */
+    int getExitValue();
 }

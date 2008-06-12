@@ -40,7 +40,8 @@ import java.util.Vector;
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl extends Thread implements RunProcess {
 
-    private Prim prim = null; // SF wrapper, it can be null.
+    /** SF wrapper, it can be null */
+    private Prim prim = null; // .
 
     /**
      * Used to format times
@@ -56,6 +57,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
     public static final int STATE_STARTED = 2;
     public static final int STATE_PROCESSING = 3;
 
+    /**  current state */
     private int state = 0;
 
     /**
@@ -69,13 +71,90 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
     private Vector<Integer> execExitCodes = new Vector<Integer>();
 
-    // java Exec exitValue
-    int exitValue = -9999;
+    /** java Exec exitValue */
+    private int exitValue = NOT_YET_EXITED;
+    /**
+     * The value that implies we have no exit code yet: {@value}
+     */
+    private static final int NOT_YET_EXITED = -9999;
+
+
+    private Runtime runtime = Runtime.getRuntime();
+
+    // cmd Data
+    /** cmd Data */
+    private Cmd cmd = new Cmd();
+
+    //    private long ID = -1;
+    private String name = null;
+
+    private FilterImpl stdoutFilter = null;
+    private FilterImpl stderrFilter = null;
+
+    /**  the running process */
+
+    private Process process = null;
+
+    /**
+     * Data output stream. It will be used to send commands to process
+     */
+    private DataOutputStream processDos = null;
+
+    /**  volatile used for cross-thread termination */
+
+    private volatile boolean killRequested = false;
+
+    /** Temp log until getting its own. */
+
+    private LogSF sfLog = LogFactory.sfGetProcessLog();
+
+    private int sleepBeforeRestart = 1000;
+
+
+    /**
+     * Construct a process runner
+     * @param name component name - can be null
+     * @param cmd command command to execute
+     * @param prim owner (can be null; is used to bind logging)
+     */
+    public RunProcessImpl(String name, Cmd cmd, Prim prim) {
+        this.name = name == null ? "" : name;
+        setName("RunProcess");
+
+        this.cmd = cmd;
+
+        execExitCodes.add(numberOfExecs);
+
+        this.prim = prim;
+        try {
+            if (prim != null) {
+                sfLog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+            }
+        } catch (Exception ex) {
+            //the log will be the process log
+            if (sfLog.isIgnoreEnabled()) {
+                sfLog.ignore("", ex);
+            }
+        }
+    }
+
+    /**
+     * Ownerless Constructor
+     * @param name component name - can be null
+     * @param cmd command command to execute
+     */
+    public RunProcessImpl(String name, Cmd cmd) {
+        this(name, cmd, null);
+    }
 
     public int getProcessState() {
         return state;
     }
 
+    /**
+     * Flag that is true if the process is consideered active
+     * @return
+     */
     public boolean ready() {
         return (getProcessState() == STATE_PROCESSING);
     }
@@ -87,6 +166,13 @@ public class RunProcessImpl extends Thread implements RunProcess {
         state = newState;
     }
 
+    /**
+     * The exit code from the execution, or {@link #NOT_YET_EXITED} if there is no real value
+     * @return the exit code.
+     */
+    public int getExitValue() {
+        return exitValue;
+    }
 
     /**
      * Will try 4 times. The time to wait is divided in four periods
@@ -134,6 +220,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
         }
     }
 
+
     private String stateToString(int stateValue) {
         String s = null;
 
@@ -160,69 +247,6 @@ public class RunProcessImpl extends Thread implements RunProcess {
         }
 
         return s;
-    }
-
-    private Runtime runtime = Runtime.getRuntime();
-
-    // cmd Data
-    private Cmd cmd = new Cmd();
-
-    //    private long ID = -1;
-    private String name = null;
-
-    private FilterImpl stdoutFilter = null;
-    private FilterImpl stderrFilter = null;
-
-    private Process process = null;
-
-    /**
-     * Data output stream. It will be used to send commands to process
-     */
-    DataOutputStream processDos = null;
-
-    private volatile boolean killRequested = false;
-
-    private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
-
-    private int sleepBeforeRestart = 1000;
-
-    // Name can be null
-    /**
-     *
-     * @param name component name
-     * @param cmd command
-     * @param prim owner
-     */
-    public RunProcessImpl(String name, Cmd cmd, Prim prim) {
-        this.name = name == null ? "" : name;
-        setName("RunProcess");
-
-        this.cmd = cmd;
-
-        killRequested = false;
-        execExitCodes.add(numberOfExecs);
-
-        this.prim = prim;
-        try {
-            if (prim != null) {
-                sfLog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
-            }
-        } catch (Exception ex) {
-            //the log will be the process log
-            if (sfLog.isIgnoreEnabled()) {
-                sfLog.ignore("", ex);
-            }
-        }
-    }
-
-    // Name can be null, not sure if we still need name.
-    /**
-     * Ownerless Constructor
-     * @param name component name
-     * @param cmd command
-     */
-    public RunProcessImpl(String name, Cmd cmd) {
-        this(name, cmd, null);
     }
 
     /**
@@ -264,12 +288,12 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
     private void startProcess() {
         // Check that a kill has not been requested even before the application has started.
-        if (killRequested == true) {
+        if (killRequested) {
             setState(STATE_INACTIVE);
             return;
         }
         setState(STATE_STARTING);
-        exitValue = -9999;
+        exitValue = NOT_YET_EXITED;
 
         try {
             synchronized (cmd) {
@@ -530,6 +554,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
             try {
                 processDos.close();
             } catch (IOException e) {
+                sfLog.ignore("when closing the process stream ",e);
             }
             // Wait for filters to stop before issuing Terminated
             stopFilters();
