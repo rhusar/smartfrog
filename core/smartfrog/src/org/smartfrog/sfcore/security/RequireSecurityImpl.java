@@ -83,7 +83,11 @@ public class RequireSecurityImpl extends PrimImpl implements Condition {
      * @throws SmartFrogException for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
-        return (!requireSecure || SFSecurity.isSecurityOn())
-                && (!requireSecureResources || !SFSecurity.isSecureResourcesOff());
+        try {
+            checkSecurityOnStartup();
+            return true;
+        } catch (SmartFrogLifecycleException e) {
+            return false;
+        }
     }
 }
