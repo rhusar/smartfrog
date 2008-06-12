@@ -141,13 +141,13 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
                     boolean needsVector = attributeVectorMinLength != null
                             || attributeVectorIndex != null
                             || attributeVectorMaxLength != null;
-                    Vector v;
+                    Vector<?> v;
                     int length;
                     if (needsVector) {
                         if (!(resolved instanceof Vector)) {
                             return "Not a list " + resolved;
                         }
-                        v = (Vector) resolved;
+                        v = (Vector<?>) resolved;
                         length = v.size();
                         if (attributeVectorMinLength != null &&
                                 length < attributeVectorMinLength) {
@@ -213,14 +213,14 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         equals2 = sfResolve(Assert.ATTR_EQUALS_STRING2, equals2, false);
         if (equals1 != null) {
             if (equals2 == null) {
-                return "Not defined " + ATTR_EQUALS_STRING2;
+                return "Undefined attribute: " + ATTR_EQUALS_STRING2;
             }
             if (!equal(equals1, equals2, equalityIgnoresCase)) {
                 return "Expected <" + equals1 + "> actual <" + equals2 + '>';
             }
         } else {
             if (equals2 != null) {
-                return "Not defined " + ATTR_EQUALS_STRING1;
+                return "Undefined attribute: " + ATTR_EQUALS_STRING1;
             }
 
         }
