@@ -23,6 +23,8 @@
  * This defines the abstract RPM manager
  */
 AbstractRpmManager extends WorkflowPrim {
+
+
   /**
   * Install the RPMs on startup
   */
@@ -77,5 +79,41 @@ AbstractRpmManager extends WorkflowPrim {
   * Should dependencies be ignored during uninstallation?
   */
   uninstallIgnoreDependencies false;
+
+}
+
+
+AbstractExecutableRpmManager extends AbstractRpmManager {
+
+  /**
+  Executable to run
+  */
+  executable "rpm";
+
+  command TBD;
+
+  /**
+   * A list of arguments for this operation
+   */
+  arguments [];
+
+  /**
+   * These are some strings that we look for for to generate different messages.
+   * Only change them if you are running on systems that generate different response messages
+   */
+
+  DEBIAN_SYSTEM "To install rpm packages on Debian systems, use alien."
+
+  /**
+   * This error string implies the RPM database is missing.
+   * It could be a debian system; it could be something else
+   */
+  MISSING_DATABASE "cannot open Packages";
+
+  /**
+   * This is the string we look for to see if a file is unowned
+   */
+  IS_NOT_OWNED "is not owned by any package";
+
 
 }

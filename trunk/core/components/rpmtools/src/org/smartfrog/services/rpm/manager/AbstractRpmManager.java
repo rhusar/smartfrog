@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -55,6 +57,15 @@ public class AbstractRpmManager extends EventPrimImpl implements RpmManager, Ite
         if (probeOnStartup) {
             probeAllFiles();
         }
+        triggerWorkflowTerminationInStartup();
+    }
+
+    /**
+     * Override point
+     */
+    protected void triggerWorkflowTerminationInStartup() {
+        //trigger workflow termination if requested
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null, null, null, null);
     }
 
     /**
@@ -102,7 +113,7 @@ public class AbstractRpmManager extends EventPrimImpl implements RpmManager, Ite
     }
 
     protected void probeAllFiles() throws SmartFrogLivenessException, RemoteException {
-        for (RpmFile rpm : rpms) {
+        for (RpmFile rpm : this) {
             probe(rpm);
         }
     }

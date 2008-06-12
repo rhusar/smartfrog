@@ -28,13 +28,58 @@ ArtifactCheckingManager extends RpmManager {
   /**
     * check the RPMs on startup
     */
-   install true;
 
-   /**
-    * uninstall the RPMs on termination?
-    */
-   uninstallOnTermination true;
-  
+  probeOnStartup true;
+
+  probeOnLiveness true;
+
+
 }
 
+/**
+ Check the artifacts actually belong to the component by doing an rpm -query operation.
+ */
+LocalRpmQueryChecker extends AbstractExecutableRpmManager {
+  sfClass "org.smartfrog.services.rpm.manager.local.LocalRpmQueryCheckerImpl";
 
+  probeOnStartup true;
+
+  probeOnLiveness true;
+
+  /** executable to run */
+  executable "rpm";
+
+  command "--query";
+
+  /** list of arguments to use in the command */
+  options ["--file"];
+}
+
+LocalRpmInstaller extends LocalRpmQueryChecker {
+  sfClass "org.smartfrog.services.rpm.manager.local.LocalRpmQueryCheckerImpl";
+
+  probeOnStartup true;
+
+  probeOnLiveness false;
+
+  /** executable to run */
+  executable "rpm";
+
+  command "--install";
+
+  /** list of arguments to use in the command */
+  options ["--file"];
+
+
+  /** list of arguments to use in the command before the file */
+  arguments ["-vh",];
+
+}
+
+/**
+ Doesnt need to be root to run; good for testing.
+ */
+LocalRpmTestInstaller extends LocalRpmInstaller {
+  arguments ["--test",];
+
+}

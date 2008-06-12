@@ -21,12 +21,15 @@ package org.smartfrog.services.rpm.manager;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Vector;
+import java.util.List;
 import java.rmi.RemoteException;
 
 /**
@@ -64,6 +67,7 @@ public final class RpmFile implements Serializable, RpmErrors {
      * A list of managed files
      */
     public Vector<String> managedFiles = new Vector<String>(0);
+    private static final Reference REF_FILES = new Reference(RpmPackage.ATTR_FILES);
 
 
     /**
@@ -94,6 +98,26 @@ public final class RpmFile implements Serializable, RpmErrors {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getRpmFile() {
+        return rpmFile;
+    }
+
+    public List<String> getManagedFiles() {
+        return managedFiles;
+    }
+
     /**
      * Build an RPM file from a source prim
      * @param source source of the RPM information
@@ -106,6 +130,7 @@ public final class RpmFile implements Serializable, RpmErrors {
         description = source.sfResolve(RpmPackage.ATTR_DESCRIPTION, "", true);
         rpmFile = FileSystem.lookupAbsolutePath(source, RpmPackage.ATTR_RPMFILE, null, null, false, null);
         deleteOnTermination = source.sfResolve(RpmPackage.ATTR_DELETEONTERMINATION, false, true);
+        managedFiles = ListUtils.resolveStringList(source, REF_FILES,true);
     }
 
     /**
@@ -141,13 +166,23 @@ public final class RpmFile implements Serializable, RpmErrors {
     }
 
     /**
+     * Get the standard package name
+     * @return the package name of the form name-version
+     */
+    public String getRpmPackageName() {
+        StringBuilder b = new StringBuilder();
+        b.append(name).append('-').append(version);
+        return b.toString();
+    }
+
+    /**
      * Returns a string representation of the object.
      *
      * @return a string representation of the object.
      */
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("RPM file").append(name).append('-').append(version);
+        b.append("RPM file").append(getRpmPackageName());
         b.append('\n');
         b.append(rpmFile);
         if (deleteOnTermination) {
@@ -181,7 +216,7 @@ public final class RpmFile implements Serializable, RpmErrors {
             throw new FileNotFoundException(ERROR_NO_SUCH_FILE + file + '\n' + this);
         }
 
-        if (!file.isFile()) {
+        if (!file.isFile() && !file.isDirectory()) {
             throw new FileNotFoundException(ERROR_NOT_AN_RPM_FILE + file + '\n' + this);
         }
     }

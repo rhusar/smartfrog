@@ -31,6 +31,17 @@ import java.rmi.RemoteException;
 
 public interface RpmManager extends Remote {
 
+    /** executable to run */
+    String ATTR_EXECUTABLE="executable";
+
+    /**
+     * The rpm command before the file
+     */
+    String ATTR_COMMAND = "command";
+
+    /** list of arguments to use in the command before the file */
+    String ATTR_ARGUMENTS="arguments";
+
     /**
      * Install the RPMs on startup
      */
@@ -85,6 +96,28 @@ public interface RpmManager extends Remote {
      */
     String ATTR_UNINSTALL_IGNORE_DEPENDENCIES = "uninstallIgnoreDependencies";
 
+
+    /**
+     * String used to detect a debian system and bail out early:
+     * {@value}
+     * "To install rpm packages on Debian systems, use alien."
+     */
+    String ATTR_DEBIAN_SYSTEM="DEBIAN_SYSTEM";
+
+    /**
+     * String used to detect a missing database: {@value}
+     * "cannot open Packages"
+     */
+    String ATTR_MISSING_DATABASE = "MISSING_DATABASE";
+
+
+    /**
+     * String used to detect an unowned file: {@value}.
+     * "is not owned by any package"
+     */
+    String ATTR_IS_NOT_OWNED = "IS_NOT_OWNED";
+
+    
     /**
      * Add another file to the list of RPMs that need managing
      *
@@ -93,5 +126,7 @@ public interface RpmManager extends Remote {
      * @throws RemoteException    network problems
      */
     public void manage(RpmFile rpm) throws SmartFrogException, RemoteException;
+
+
 
 }
