@@ -1057,8 +1057,6 @@ ${ivy.reports.dir}
         artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-
-   
   
   <target name="published" depends="ivy-publish,m2-install"
       description="Publish artifacts to the local repositories"
@@ -1159,6 +1157,7 @@ ${ivy.reports.dir}
   <patternset id="unix.bin">
     <include name="smartfrog"/>
     <include name="sf*"/>
+    <include name="set*Properties"/>
     <include name="*.pl"/>
     <include name="*.py"/>
     <exclude name="*.bat"/>
@@ -1172,6 +1171,7 @@ ${ivy.reports.dir}
     <include name="metadata/*"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
+    <exclude name="set*Properties"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <patternset refid="excluded.cruft"/>
