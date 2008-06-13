@@ -48,6 +48,10 @@
   -->
   <property name="ivy.smartfrog.version" value="latest.integration"/>
 
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
   <!-- Import common stuff -->
   <import file="../common.xml"/>
 
@@ -1014,6 +1018,24 @@
         remotedir="${ftp.dir}">
       <fileset refid="upload.fileset"/>
     </ftp>
+  </target>
+
+
+  <target name="sftp-upload" depends="upload-init" if="sftp.enabled">
+    <property name="sftp.server" value="frs.sourceforge.net"/>
+    <property name="sftp.user" value="${ssh.user}"/>
+    <property name="sftp.dir" value="uploads"/>
+    <property name="sftp.path"
+        value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
+    <echo>SFTP target is ${sftp.server}</echo>
+    <scp remoteToDir="${sftp.path}"
+        sftp="true"
+        password="${sftp.password}"
+        trust="${ssh.trust}"
+        verbose="${sftp.verbose}">
+      <fileset refid="upload.fileset"/>
+    </scp>
+
   </target>
 
   <target name="can-upload"
