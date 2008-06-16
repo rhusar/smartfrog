@@ -363,7 +363,9 @@ public class VMWareImageModule {
         // shut down the vm if it's not powered off or suspended
         if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
             iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED) {
-            shutDown();
+            if (!vmComm.convertPowerState(iPowerState).equals("Could not retrieve power state.")) {
+                shutDown();
+            }
         }
 
         // unregister the vm
@@ -389,17 +391,23 @@ public class VMWareImageModule {
             // files contain a little amount of configuration information additionally
             // to the data
 
-            // set the display name
-            setAttribute("displayName", inNewName);
-
             File vmxFile = new File(imagePath);
             File vmFolder = vmxFile.getParentFile();
+
+            String newVMPath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
+
+            // check if there is already a VM existing with that name
+            if (vmComm.getImageModule(newVMPath) != null)
+                throw new SmartFrogException("A VM with the desired name \"" + inNewName + "\" is already existing");
+
+            // set the display name
+            setAttribute("displayName", inNewName);
 
             // set the execution rights
             vmxFile.setExecutable(true, false);
 
             // rename the .vmx file
-            vmxFile.renameTo(new File(vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx"));
+            vmxFile.renameTo(new File(newVMPath));
 
             // rename the folder
             vmFolder.renameTo(new File(vmFolder.getParent() + File.separator + inNewName));
@@ -427,5 +435,9 @@ public class VMWareImageModule {
         }
 
         vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
+    }
+
+    public void executeInGuestOS(String inCommand, String inParameters, boolean inNoWait) throws SmartFrogException {
+        vmComm.executeInGuestOS(this, inCommand, inParameters, inNoWait);
     }
 }

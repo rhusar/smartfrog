@@ -23,6 +23,7 @@
       <xs:element name="moduleState" type="this:moduleStateType" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="vmState" type="this:vmStateType" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="vmMasterCopy" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="useIpForXmpp" type="xs:boolean" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -49,7 +50,6 @@
 
   <xs:complexType name="vmStateType">
     <xs:sequence>
-      <xs:element name="vmPath" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmLastCmd" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmResponse" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmName" type="xs:string" minOccurs="1" maxOccurs="1" />

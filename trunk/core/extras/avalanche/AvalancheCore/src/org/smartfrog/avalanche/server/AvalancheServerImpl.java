@@ -31,6 +31,8 @@ import org.smartfrog.avalanche.core.host.ArgumentType;
 import org.smartfrog.avalanche.core.host.AccessModeType;
 import org.smartfrog.avalanche.core.host.DataTransferModeType;
 import org.smartfrog.avalanche.core.module.PlatformSelectorType;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
+import org.jivesoftware.smack.XMPPException;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -268,7 +270,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
         }
     }
 
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS) throws RemoteException, SmartFrogException {
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, boolean inUseIpForXmpp) throws RemoteException, SmartFrogException {
         // get the host manager
         try {
             HostManager hm = getAvalancheFactory().getHostManager();
@@ -288,6 +290,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);
                 pst.setArch(inArchitecture);
+                pst.setUseIpForXmpp(inUseIpForXmpp);
 
                 // create the lists
                 ht.addNewAccessModes();
@@ -301,6 +304,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);
                 pst.setArch(inArchitecture);
+                pst.setUseIpForXmpp(inUseIpForXmpp);
             }
 
             // store the changes
@@ -333,6 +337,15 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
             throw SmartFrogException.forward(e);
         } catch (DatabaseAccessException e) {
             sfLog().error("Error while accessing the database", e);
+            throw SmartFrogException.forward(e);
+        }
+    }
+
+    public void addXMPPHandler(XMPPPacketHandler inHandler) throws RemoteException, SmartFrogException {
+        try {
+            avlServer.addXmppPacketHandler(inHandler);
+        } catch (XMPPException e) {
+            sfLog().error("Error when trying to add a xmpp packet handler", e);
             throw SmartFrogException.forward(e);
         }
     }

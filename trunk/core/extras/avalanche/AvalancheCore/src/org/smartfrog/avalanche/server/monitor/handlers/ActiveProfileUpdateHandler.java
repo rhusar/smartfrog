@@ -31,13 +31,8 @@ import org.jivesoftware.smack.XMPPException;
  * @author sanjaydahiya
  */
 public class ActiveProfileUpdateHandler implements XMPPPacketHandler {
-    private ActiveProfileManager profileManager;
-    private XMPPAdapter refXMPPAdapter;
     private static Log log = LogFactory.getLog(ActiveProfileUpdateHandler.class);
 
-    public ActiveProfileUpdateHandler(XMPPAdapter inAdapter) {
-        refXMPPAdapter = inAdapter;
-    }
     
     /**
      * Callback method, this is invoked by event listener on the server when a

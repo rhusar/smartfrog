@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
         // Be able to query ActiveProfile
         ActiveProfileUpdater updater = new ActiveProfileUpdater();
         String strHost = request.getParameter("host");
-        String[] strVMPathes = request.getParameterValues("selectedVM");
+        String[] strVMNames = request.getParameterValues("selectedVM");
         //out.write(strHost + "\n");
 
         try {
@@ -40,44 +40,38 @@ For more information: www.smartfrog.org
             ActiveProfileType type = updater.getActiveProfile(strHost);
             if (type != null) {
                 if (strAction.equals("save")) {
-                    String strVMPath = request.getParameter("vmpath");
-                    //out.write(strVMPath + "\n");
                     String strVMName = request.getParameter("vmname");
+                    String strOldName = request.getParameter("oldname");
                     //out.write(strVMName + "\n");
 
-                    // get the vmware's profile
-                    for (int i = 0; i < type.getVmStateArray().length; ++i) {
-                        if (type.getVmStateArray(i).getVmPath().equals(strVMPath)) {
-                            // do changes here
-
-                            if (!strVMName.equals(type.getVmStateArray(i).getVmName())) {
-                                // remove the vm state
-                                type.removeVmState(i);
-
+                    if (!strVMName.equals(strOldName)) {
+                        // get the vmware's profile
+                        for (int i = 0; i < type.getVmStateArray().length; ++i) {
+                            if (type.getVmStateArray(i).getVmName().equals(strOldName)) {
                                 // send the rename command to the vm
                                 HashMap<String, String> map = new HashMap<String, String>();
                                 map.put("rename_name", strVMName);
-                                ServerSetup.sendVMCommand(strHost, strVMPath, "rename", map);
+                                ServerSetup.sendVMCommand(strHost, strOldName, "rename", map);
+                                break;
                             }
-                            break;
                         }
                     }
                 } else if (strAction.equals("create")) {
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("create_master", request.getParameter("vmmasterpath"));
-                    map.put("create_name", strVMPathes[0]);
+                    map.put("create_name", strVMNames[0]);
                     ServerSetup.sendVMCommand(strHost, null, "create", map);
                 } else if (strAction.equals("delete")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "delete");
                 } else if (strAction.equals("stop")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "stop");
                 } else if (strAction.equals("start")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "start");
                 } else if (strAction.equals("suspend")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "suspend");
                 } else if (strAction.equals("list")) {
                     ServerSetup.sendVMCommand(strHost, null, "list");
@@ -85,10 +79,10 @@ For more information: www.smartfrog.org
                 } else if (strAction.equals("getmasters")) {
                     ServerSetup.sendVMCommand(strHost, null, "getmasters");
                 } else if (strAction.equals("getstate")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "powerstate");
                 } else if (strAction.equals("gettoolsstate")) {
-                    for (String str : strVMPathes)
+                    for (String str : strVMNames)
                         ServerSetup.sendVMCommand(strHost, str, "toolsstate");
                 } 
             }
