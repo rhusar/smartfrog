@@ -133,5 +133,17 @@ MyDummyExampleTrigger {
  on:Foo.*;
  invoke:msg;
  msg: You have a type named Foo in your model;
+  bean:org.smartfrog.authoringtool.service.SFCodeGenTrigger;
+   method:generate;
+   
 }
 **/
+
+SFCodeGenActionTrigger {
+    on:menuitem.SF_Code_Gen_Event;
+    invoke:bean;
+ 	 bean:org.smartfrog.authoringtool.services.SFCodeGenTrigger;
+     method:generate;
+ 
+ }
+ 
