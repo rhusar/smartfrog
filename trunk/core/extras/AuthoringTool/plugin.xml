@@ -34,5 +34,21 @@
             class="org.smartfrog.authoringtool.Serializer"
             models="readers,http://www.smartfrog.org/sfml"/>
    </extension>
+      <extension
+            point="org.eclipse.ui.popupMenus">
+         <viewerContribution
+               id="Auth_tool.SFviewerContribution"
+               targetID="Auth_tool.SFviewerContribution">
+            <action
+                  class="org.smartfrog.authoringtool.services.Sfcodegen"
+                  definitionId="SmartFrogCodeGen"
+                  enablesFor="1"
+                  id="Auth_tool.SF_Code_Generator"
+                  label="SF Code Generator"
+                  menubarPath="SmartFrog"
+                  style="push">
+            </action>
+         </viewerContribution>
+      </extension>
 
 </plugin>
