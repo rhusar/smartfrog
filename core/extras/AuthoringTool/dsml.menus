@@ -98,3 +98,16 @@ type:item;
 name:Test Item2;
 }
 **/
+
+SFMenu {
+ type:menu;
+ name:SmartFrog;
+ 0:sfcodegen;
+ }
+sfcodegen{
+ type:item;
+ name:SFCodeGenerator;
+ event:SF_Code_Gen_Event;
+ }
+
+
