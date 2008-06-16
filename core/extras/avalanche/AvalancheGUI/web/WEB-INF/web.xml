@@ -54,7 +54,7 @@ For more information: www.smartfrog.org
 	<description>Avalanche GUI</description>
 	<context-param>
 		<param-name>avalancheHome</param-name>
-		<param-value>C:\\sf\\2008\\apr04\\svn\\extras\\avalanche\\server</param-value>
+		<param-value>[Insert your Avalanche Server Home here.]</param-value>
 		<description>Path to Avalanche Home.</description>
 	</context-param>
 	<context-param>
@@ -69,7 +69,7 @@ For more information: www.smartfrog.org
 	</context-param>
 	<context-param>
 		<param-name>xmppServer</param-name>
-		<param-value>16.181.41.84</param-value>
+		<param-value>[Insert your XMPP Server's IP here.]</param-value>
 		<description>XMPP Server Address</description>
 	</context-param>
 	<context-param>
