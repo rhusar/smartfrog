@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.avalanche.server;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
+import org.jivesoftware.smack.XMPPException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -50,10 +52,11 @@ public interface AvalancheServer extends Remote {
      * @param inArchitecture Architecture of the host.
      * @param inPlatform Platform of the host.
      * @param inOS Operating System of the host.
+     * @param inUseIpForXmpp Determines whether the host should use its ip for communicating with the xmpp server.
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS)
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, boolean inUseIpForXmpp)
             throws RemoteException, SmartFrogException;
 
     /**
@@ -146,5 +149,14 @@ public interface AvalancheServer extends Remote {
      * @throws SmartFrogException
      */
     public void igniteHosts(String[] inHosts)
+            throws RemoteException, SmartFrogException;
+
+    /**
+     * Adds a xmpp packet handler to the avalanche listener adapter.
+     * @param inHandler The handler to attach.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void addXMPPHandler(XMPPPacketHandler inHandler)
             throws RemoteException, SmartFrogException;
 }

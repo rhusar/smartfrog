@@ -80,15 +80,8 @@ For more information: www.smartfrog.org
         <%
         } else {
             strCaption = "Save Changes";
-            strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=save&host=" + strHost + "'; document.addVMFrm.submit();";
+            strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=save&host=" + strHost + "&oldname=" + strVM + "'; document.addVMFrm.submit();";
 
-            String strVMName = "";
-            for (VmStateType vm : type.getVmStateArray()) {
-                if (vm.getVmPath().equals(strVM)) {
-                    strVMName = vm.getVmName();
-                    break;
-                }
-            }
             %>
                 <tr>
                     <td class="medium" align="right">Path to the VM:</td>
@@ -99,7 +92,7 @@ For more information: www.smartfrog.org
                 <tr>
                     <td class="medium" align="right">Name of the VM:</td>
                     <td class="medium">
-                        <input type="text" name="vmname" id="host" value="<%= strVMName %>" class="default" />
+                        <input type="text" name="vmname" id="host" value="<%= strVM %>" class="default" />
                     </td>
                 </tr>
     <%  // add further information here

@@ -65,61 +65,61 @@ public interface VMWareServerManagerServices extends Remote {
     /**
      * Starts a virtual machine. Has to be powered off or suspended.
      *
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return "success" or an error message
      * @throws SmartFrogException problems with the virtual machines
      * @throws RemoteException network problems
      */
-    public String startVM(String inVMPath) throws RemoteException, SmartFrogException;
+    public String startVM(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Starts a virtual machine. Has to be powered off or suspended.
      *
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return "success" or an error message
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String shutDownVM(String inVMPath) throws RemoteException, SmartFrogException;
+    public String shutDownVM(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Suspends a virtual machine. Has to be running.
      *
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return "success" or an error message
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String suspendVM(String inVMPath) throws RemoteException, SmartFrogException;
+    public String suspendVM(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Resets a virtual machine.
      *
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return "success" or an error message
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String resetVM(String inVMPath) throws RemoteException, SmartFrogException;
+    public String resetVM(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Gets the power state of a virtual machine.
      *
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return The power state or 0
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public int getPowerState(String inVMPath) throws RemoteException, SmartFrogException;
+    public int getPowerState(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Gets the tools state of a virtual machine.
-     * @param inVMPath The full path to the machine.
+     * @param inVMName The name of the VM.
      * @return The state of the tools or 0.
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public int getToolsState(String inVMPath) throws RemoteException, SmartFrogException;
+    public int getToolsState(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Gets the controlled virtual machines.
@@ -155,49 +155,51 @@ public interface VMWareServerManagerServices extends Remote {
      * Create a new instance of a master copy.
      * @param inVMMaster Name of the master image.
      * @param inVMCopyName Name of the new copy.
+     * @param inGuestUser User account of the guest OS.
+     * @param inGuestPass Password for the user account.
      * @return "success" or an error message
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String createCopyOfMaster(String inVMMaster, String inVMCopyName) throws RemoteException, SmartFrogException;
+    public String createCopyOfMaster(String inVMMaster, String inVMCopyName, String inGuestUser, String inGuestPass) throws RemoteException, SmartFrogException;
 
     /**
      * Delete a instance of a master copy.
-     * @param inVMPath  The path to the .vmx file.
+     * @param inVMName  The name of the VM.
      * @return "success" or an error message
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String deleteCopy(String inVMPath) throws RemoteException, SmartFrogException;
+    public String deleteCopy(String inVMName) throws RemoteException, SmartFrogException;
 
     /**
      * Changes the display name of a virtual machine.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName The name of the VM.
      * @param inNewName The new name for the machine.
      * @return "success" or an error message.
      * @throws RemoteException network problems
      * @throws SmartFrogException problems with the virtual machines
      */
-    public String renameVM(String inVMPath, String inNewName) throws RemoteException, SmartFrogException;
+    public String renameVM(String inVMName, String inNewName) throws RemoteException, SmartFrogException;
 
     /**
      * Gets the value of an attribute of a VM.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName The name of the VM.
      * @param inKey The attribute key.
      * @return The value of the key.
      * @throws RemoteException
      */
-    public String getVMAttribute(String inVMPath, String inKey) throws RemoteException;
+    public String getVMAttribute(String inVMName, String inKey) throws RemoteException;
 
     /**
      * Sets the value of an attribute of a VM.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName The name of the VM.
      * @param inKey The attribute key.
      * @param inValue The value for the key.
      * @return Returns the old value of the key.
      * @throws RemoteException
      */
-    public String setVMAttribute(String inVMPath, String inKey, String inValue) throws RemoteException;
+    public String setVMAttribute(String inVMName, String inKey, String inValue) throws RemoteException;
 
 //    /**
 //     * Copies a file from the host OS into the guest OS of the specified VM.
@@ -208,4 +210,15 @@ public interface VMWareServerManagerServices extends Remote {
 //     * @throws RemoteException
 //     */
 //    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException;
+
+    /**
+     * Executes a program within the guest os.
+     * @param inVMName The name of the VM.
+     * @param inCommand The (full!) path to the program.
+     * @param inParameters The parameters for the program. (No relative pathes allowed here, too.)
+     * @param inNoWait Wait for the program to exit?
+     * @return "success" or an error message.
+     * @throws RemoteException
+     */
+    public String executeInGuestOS(String inVMName, String inCommand, String inParameters, boolean inNoWait) throws RemoteException, SmartFrogException;
 }

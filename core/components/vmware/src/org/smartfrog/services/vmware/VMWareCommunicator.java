@@ -845,7 +845,9 @@ public class VMWareCommunicator {
             // ensure that a connection is established
             acquireVMHandle(inImg);
 
-            // resets the virtual machine
+
+            // logs into the virtual machine
+            log.info(String.format("logging into guest os as: %s, using password: %s",inImg.getGuestOSUser(), inImg.getGuestOSPasswd()));
             iJobHandle = vixLib.VixVM_LoginInGuest(inImg.getVMHandle().getValue(),
                                                             inImg.getGuestOSUser(),
                                                             inImg.getGuestOSPasswd(),
@@ -933,6 +935,48 @@ public class VMWareCommunicator {
         } catch (Exception e) {
             // any exception will be caught and wrapped because the native vix library may produce exceptions
             throw new SmartFrogException(inImg.getVMPath() + ": Error while copying file from host to guest OS", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Executes a program within the guest os.
+     * @param inImg image to work with
+     * @param inCommand The (full!) path to the program.
+     * @param inParameters The parameters for the program. (No relative pathes allowed here, too.)
+     * @param inNoWait Wait for the program to exit?
+     * @throws SmartFrogException
+     */
+    public void executeInGuestOS(VMWareImageModule inImg, String inCommand, String inParameters, boolean inNoWait) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that user credentials are established
+            loginInGuestOS(inImg);
+
+            int iOption = (inNoWait ? VMWareVixLibrary.VixRunProgramOptions.VIX_RUNPROGRAM_RETURN_IMMEDIATELY : 0);
+
+            iJobHandle = vixLib.VixVM_RunProgramInGuest( inImg.getVMHandle().getValue(),
+                                                                inCommand,
+                                                                inParameters,
+                                                                iOption,
+                                                                VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+                                                                null,
+                                                                null);
+
+            // wait for the job to complete
+            long lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+            convertToException(lErr, true);
+
+            // delete the user credentials again
+            // seems not to be existant in the vix library delivered with vmware server
+            // his.logoutFromGuestOS(inImg);
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while executing program in guest OS", e);
         } finally {
             releaseHandle(iJobHandle);
         }

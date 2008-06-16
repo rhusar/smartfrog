@@ -139,18 +139,26 @@ public class ActiveProfileUpdater {
 
             String strCommand = ext.getPropertyBag().get("vmcmd");
             String strResponse = ext.getPropertyBag().get("vmresponse");
-            String strVMPath = ext.getPropertyBag().get("vmpath");
             String strVMName = ext.getPropertyBag().get("vmname");
 
             if (strCommand != null) {
                 if (strCommand.equals("create")) {
-                    if (strResponse.equals("success") || strResponse.equals("rename")) {
+                    if (strResponse.equals("success")) {
                         // create a new type
                         VmStateType vst = type.addNewVmState();
                         vst.setVmName(strVMName);
                         vst.setVmLastCmd(strCommand);
-                        vst.setVmPath(strVMPath);
                         vst.setVmResponse(strResponse);
+                    }
+                } else if (strCommand.equals("rename")) {
+                    if (strResponse.equals("success")) {
+                        // set the new name
+                        String strOldName = ext.getPropertyBag().get("rename_old_name");
+                        for (VmStateType vst : type.getVmStateArray()) {
+                            if (vst.getVmName().equals(strOldName)) {
+                                vst.setVmName(strVMName);
+                            }
+                        }
                     }
                 } else if (strCommand.equals("getmasters")) {
                     // delete the old masters list
@@ -182,7 +190,6 @@ public class ActiveProfileUpdater {
                         int iCount = Integer.parseInt(ext.getPropertyBag().get("list_count"));
                         for(int i = 0; i < iCount; ++i) {
                             VmStateType newType = type.addNewVmState();
-                            newType.setVmPath(ext.getPropertyBag().get(String.format("list_%d_vmpath", i)));
                             newType.setVmLastCmd("list");
                             newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
                             newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
@@ -194,21 +201,20 @@ public class ActiveProfileUpdater {
                     // find the entry
                     for (int i = 0; i < type.getVmStateArray().length; i++) {
                         VmStateType t = type.getVmStateArray()[i];
-                        if (t.getVmPath().equals(strVMPath)) {
+                        if (t.getVmName().equals(strVMName)) {
                             type.removeVmState(i);
                             break;
                         }
                     }
-                } else if (strVMPath != null) {
+                } else if (strVMName != null) {
                     // find the appropriate type
                     boolean bFound = false;
                     for (VmStateType t : type.getVmStateArray()) {
-                        if (t.getVmPath().equals(strVMPath))
+                        if (t.getVmName().equals(strVMName))
                         {
                             bFound = true;
                             t.setVmLastCmd(strCommand);
                             t.setVmResponse(strResponse);
-                            t.setVmName(strVMName);
                         }
                     }
                     if (!bFound)
@@ -217,7 +223,6 @@ public class ActiveProfileUpdater {
                         VmStateType newType = type.addNewVmState();
                         newType.setVmLastCmd(strCommand);
                         newType.setVmResponse(strResponse);
-                        newType.setVmPath(strVMPath);
                         newType.setVmName(strVMName);
                     }
                 }
@@ -226,7 +231,6 @@ public class ActiveProfileUpdater {
                 MessageType newMsg = type.addNewMessagesHistory();
                 newMsg.setTime(ext.getTimestamp());
                 newMsg.setMsg("VM Name: " + strVMName +
-                                ", Path: " + strVMPath +
                                 ", Command: " + strCommand +
                                 ", Response: " + strResponse);
             }

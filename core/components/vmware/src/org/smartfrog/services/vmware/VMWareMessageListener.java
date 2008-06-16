@@ -51,7 +51,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import java.util.HashMap;
 
 /**
  * Component that listens for VMWARE messages
@@ -74,13 +73,12 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
     private XmppListenerImpl refXmppListener;
     public static final String ATTR_LISTENER = "listener";
     private static final String VMRESPONSE = "vmresponse";
-    private static final String VMPATH = "vmpath";
     private static final String VMNAME = "vmname";
     private static final String VMCMD = "vmcmd";
 
     /**
      * Constructor.
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public VMWareMessageListener() throws RemoteException {
 
@@ -98,6 +96,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+
         sfLog().info("VMWare Message Listener deployed.");
     }
 
@@ -126,7 +125,6 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         }
         refXmppListener = (XmppListenerImpl) xmppListener;
 
-
         // register this listener to the xmpp message listener
         refXmppListener.registerPacketHandler(this);
 
@@ -154,6 +152,17 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         return new VMWareMessageFilter();
     }
 
+    private boolean isManagerLive() {
+        if(manager==null) {
+            return false;
+        }
+        Prim managerPrim =  manager;
+        try {
+            return managerPrim.sfIsStarted();
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
     /**
      * {@inheritDoc}
      * @param packet packet to process
@@ -165,9 +174,15 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         XMPPEventExtension ext = (XMPPEventExtension) packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
         if (ext != null)
         {
+            // print the content of the property bag
+            sfLog().info("Printing content of received property bag:");
+            for (String key : ext.getPropertyBag().keySet()) {
+                sfLog().info(String.format("%s = %s", key, ext.getPropertyBag().get(key)));
+            }
+
             // use the property bag
             String command = ext.getPropertyBag().get(VMCMD);
-            String strPath = ext.getPropertyBag().get(VMPATH);
+            String strName = ext.getPropertyBag().get(VMNAME);
 
             if (command != null) {
                 // extension for the response message
@@ -183,38 +198,35 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
                 // fill the response bag
                 response.getPropertyBag().put(VMCMD, command);
-                response.getPropertyBag().put(VMPATH, strPath);
+                response.getPropertyBag().put(VMNAME, strName);
 
-                if (manager == null) {
-                    response.getPropertyBag().put(VMRESPONSE, "No VMWareServerManager present: " + strResolutionError);
+                if (!isManagerLive()) {
+                    response.getPropertyBag().put(VMRESPONSE, "No VMWareServerManager running");
                 }
                 else {
                     try {
                         if (command.equals("start")) {
                             // attempt to start the machine
-                            response.getPropertyBag().put(VMRESPONSE, manager.startVM(strPath));
+                            response.getPropertyBag().put(VMRESPONSE, manager.startVM(strName));
                         }
                         else if (command.equals("stop")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.shutDownVM(strPath));
+                            response.getPropertyBag().put(VMRESPONSE, manager.shutDownVM(strName));
                         }
                         else if (command.equals("suspend")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.suspendVM(strPath));
+                            response.getPropertyBag().put(VMRESPONSE, manager.suspendVM(strName));
                         }
                         else if (command.equals("reset")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strPath));
+                            response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strName));
                         }
                         else if (command.equals("list")) {
                             // count the machines
                             int i = 0;
                             for (VMWareImageModule mod : manager.getControlledMachines()) {
-                                // add the path
-                                response.getPropertyBag().put("list_" + i + "_vmpath", mod.getVMPath());
-
                                 // and the display name
                                 try {
                                     response.getPropertyBag().put("list_" + i + "_vmname", mod.getAttribute("displayName"));
                                 } catch (SmartFrogException e) {
-                                    response.getPropertyBag().put("list_" + i + "_vmpath", "Could not retreive displayName.");
+                                    response.getPropertyBag().put("list_" + i + "_vmname", "Could not retreive displayName.");
                                 }
 
                                 // and the power state
@@ -229,26 +241,25 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             response.getPropertyBag().put("list_count", String.format("%d", i));
                         }
                         else if (command.equals("powerstate")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.convertPowerState(manager.getPowerState(strPath)));
+                            response.getPropertyBag().put(VMRESPONSE, manager.convertPowerState(manager.getPowerState(strName)));
                         }
                         else if (command.equals("toolsstate")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.convertToolsState(manager.getToolsState(strPath)));
+                            response.getPropertyBag().put(VMRESPONSE, manager.convertToolsState(manager.getToolsState(strName)));
                         }
                         else if (command.equals("create")) {
                             // get additional attributes
                             String  name    = ext.getPropertyBag().get("create_name"),
-                                    master  = ext.getPropertyBag().get("create_master");
+                                    master  = ext.getPropertyBag().get("create_master"),
+                                    user    = ext.getPropertyBag().get("create_user"),
+                                    pass    = ext.getPropertyBag().get("create_pass");
 
                             // create a vmware from a master model
-                            response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(master, name));
-
-                            // fill the response
-                            strPath = manager.getVmImagesFolder() + File.separator + name + File.separator + name + ".vmx";
-                            response.getPropertyBag().put(VMPATH, strPath);
+                            response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(master, name, user, pass));
+                            response.getPropertyBag().put(VMNAME, name);
                         }
                         else if (command.equals("delete")) {
                             // delete a vmware
-                            response.getPropertyBag().put(VMRESPONSE, manager.deleteCopy(strPath));
+                            response.getPropertyBag().put(VMRESPONSE, manager.deleteCopy(strName));
                         }
                         else if (command.equals("getmasters")) {
                             // list the master copies
@@ -259,46 +270,54 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             String newName = ext.getPropertyBag().get("rename_name");
 
                             // rename the vm
-                            response.getPropertyBag().put(VMRESPONSE, manager.renameVM(strPath, newName));
+                            response.getPropertyBag().put(VMRESPONSE, manager.renameVM(strName, newName));
 
                             // correct response
                             response.getPropertyBag().put(VMNAME, newName);
 
-                            response.getPropertyBag().put("old_path", strPath);
-                            strPath = manager.getVmImagesFolder() + File.separator + newName + File.separator + newName + ".vmx";
-                            response.getPropertyBag().put(VMPATH, strPath);
+                            response.getPropertyBag().put("rename_old_name", strName);
                         }
                         else if (command.equals("getattribute")) {
                             // get the key
                             String key = ext.getPropertyBag().get("getattrib_key");
 
                             // get the attribute
-                            response.getPropertyBag().put(VMRESPONSE, manager.getVMAttribute(strPath, key));
+                            response.getPropertyBag().put(VMRESPONSE, manager.getVMAttribute(strName, key));
                         }
                         else if (command.equals("setattribute")) {
                             // get the key and the new value
                             String  key = ext.getPropertyBag().get("setattrib_key"),
                                     value = ext.getPropertyBag().get("setattrib_value");
 
-                            // set the attribute
-                            response.getPropertyBag().put(VMRESPONSE, manager.setVMAttribute(strPath, key, value));
+                            if (key.equals("displayName")) {
+                                response.getPropertyBag().put(VMRESPONSE, "Please use the rename command to rename a VM.");
+                            }
+                            else {
+                                // set the attribute
+                                response.getPropertyBag().put(VMRESPONSE, manager.setVMAttribute(strName, key, value));
+                            }
+                        }
+                        else if (command.equals("executeinguest")) {
+                            String strCommand = ext.getPropertyBag().get("exec_cmd");
+                            String strParameters = ext.getPropertyBag().get("exec_param");
+                            boolean bNoWait = (ext.getPropertyBag().get("exec_nowait") != null);
 
-                            if (key.equals("displayName"))
-                                response.getPropertyBag().put(VMNAME, value);
+                            response.getPropertyBag().put(VMRESPONSE, manager.executeInGuestOS(strName, strCommand, strParameters, bNoWait));
                         }
     //                    else if (command.equals("copyhosttoguest")) {
     //                        String strSrc = ext.getPropertyBag().get("source");
     //                        String strDest = ext.getPropertyBag().get("dest");
-    //                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strPath, strSrc, strDest));
+    //                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strName, strSrc, strDest));
     //                    }
                         // set the name of this module
-                        response.getPropertyBag().put(VMNAME, manager.getVMAttribute(strPath, "displayName"));
+
                     } catch (Exception e) {
                         ProcessException(command, response, e);
                     }
                 }
 
                 // send the message
+                sfLog().info("sending message: " + response);
                 refXmppListener.sendMessage(packet.getFrom(), "", "AE", response);
             }
         }
