@@ -397,9 +397,9 @@ public class ManagedConfiguration extends JobConf implements PrimSource, Configu
         try {
             return dump();
         } catch (SmartFrogResolutionException e) {
-            return "(" + e.toString() + ")";
+            return '(' + e.toString() + ')';
         } catch (RemoteException e) {
-            return "(" + e.toString() + ")";
+            return '(' + e.toString() + ')';
         }
     }
 

@@ -49,11 +49,7 @@ public class DfsPathOperationImpl extends DfsOperationImpl implements DfsPathOpe
         super.sfStart();
         idempotent = sfResolve(ATTR_IDEMPOTENT, true, true);
         pathName = sfResolve(ATTR_PATH, "", true);
-        try {
-            path = new Path(pathName);
-        } catch (IllegalArgumentException e) {
-            throw new SmartFrogLifecycleException("Failed to create path " + e.getMessage(), e, this);
-        }
+        path = resolveDfsPath(ATTR_PATH);
     }
 
     /**
