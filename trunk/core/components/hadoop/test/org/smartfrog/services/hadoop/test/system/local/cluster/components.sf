@@ -32,7 +32,8 @@ testLocalCluster extends ExpectDeploy {
   }
 
   tests extends Sequence {
-    //TODO: some tests
+    //run some workflow operations
+    
   }
 
 }
@@ -46,6 +47,5 @@ testLocalClusterForked extends testLocalCluster {
   action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
   action:jobTracker:mapred.job.tracker  "localhost:8016";
   action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50033";
-
 }
 

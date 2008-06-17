@@ -133,3 +133,19 @@ For more information: www.smartfrog.org
     sfShouldTerminate true;
     checkOnLiveness false;
   }
+
+  /**
+   * copy a source file to a destination file or directory
+   * There is no dependency checking, but destination files that exist can be skipped
+   */
+  DfsCopyOperation extends DfsOperation {
+    source TBD;
+    dest TBD;
+    overwrite true;
+  }
+
+  DfsCopyFileIn extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileInImpl";
+  }
+
+

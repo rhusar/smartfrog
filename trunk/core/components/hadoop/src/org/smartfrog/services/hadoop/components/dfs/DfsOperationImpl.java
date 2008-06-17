@@ -22,10 +22,12 @@
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
+import org.apache.hadoop.fs.Path;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -88,10 +90,29 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
 
 
     /**
-     * Get the cluster binding
-     *
-     * @return the cluster
+     * Resolve an attribute to a DFS path
+     * @param attribute name of the attribute
+     * @return the path
+     * @throws SmartFrogException resolution problems
+     * @throws SmartFrogLifecycleException for a failure to create the path
+     * @throws RemoteException network problems
      */
+    protected Path resolveDfsPath(String attribute) throws SmartFrogException, RemoteException {
+        String pathName = sfResolve(attribute, "", true);
+        try {
+            return new Path(pathName);
+        } catch (IllegalArgumentException e) {
+            throw new SmartFrogLifecycleException("Failed to create the path defined by attribute "+ attribute
+                    +" with value "+pathName
+                    +" : "+ e.getMessage(), e, this);
+        }
+    }
+
+    /**
+    * Get the cluster binding
+    *
+    * @return the cluster
+    */
     public Prim getCluster() {
         return cluster;
     }
@@ -139,7 +160,7 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
         DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
         try {
             performDfsOperation(fileSystem, conf);
-            fileSystem.close();
+            DfsUtils.closeDfs(fileSystem);
         } finally {
             DfsUtils.closeQuietly(fileSystem);
         }

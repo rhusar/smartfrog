@@ -47,13 +47,32 @@ public class DfsUtils {
     private DfsUtils() {
     }
 
+    /**
+     * Close the DFS quietly
+     * @param dfs the dfs reference; can be null
+     */
     public static void closeQuietly(DistributedFileSystem dfs) {
         if (dfs != null) {
             try {
                 dfs.close();
             } catch (IOException e) {
-                LogFactory.getLog(DfsUtils.class);
+                LogFactory.getLog(DfsUtils.class).info("Failed to close DFS",e);
             }
+        }
+    }
+
+    /**
+     * This is the non-quiet close operation
+     * @param dfs filesystem
+     * @throws SmartFrogRuntimeException if the filesystem does not close
+     */
+    public static void closeDfs(DistributedFileSystem dfs) throws SmartFrogRuntimeException {
+        try {
+            dfs.close();
+        } catch (IOException e) {
+            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
+                    .forward(ERROR_FAILED_TO_CLOSE + dfs.getUri(),
+                            e);
         }
     }
 
@@ -92,6 +111,18 @@ public class DfsUtils {
      */
     public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive) throws SmartFrogRuntimeException {
         DistributedFileSystem dfs = createFileSystem(conf);
+        deleteDFSDirectory(dfs, dir, recursive);
+    }
+
+    /**
+     * Delete a DFS directory. Cleans up afterwards
+     * @param dfs DFS configuration
+     * @param dir directory to delete
+     * @param recursive recurseive delete?
+     * @throws SmartFrogRuntimeException if anything goes wrong
+     */
+    public static void deleteDFSDirectory(DistributedFileSystem dfs, String dir, boolean recursive)
+            throws SmartFrogRuntimeException {
         URI dfsURI = dfs.getUri();
         Path path = new Path(dir);
         try {
@@ -102,13 +133,7 @@ public class DfsUtils {
                     .forward(ERROR_FAILED_TO_DELETE_PATH + path + " on " + dfsURI,
                             e);
         }
-        try {
-            dfs.close();
-        } catch (IOException e) {
-            throw (SmartFrogRuntimeException) SmartFrogRuntimeException
-                    .forward(ERROR_FAILED_TO_CLOSE + dfsURI,
-                            e);
-        }
+        closeDfs(dfs);
     }
 
     /**

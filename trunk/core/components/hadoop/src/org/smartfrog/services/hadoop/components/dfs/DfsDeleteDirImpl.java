@@ -78,7 +78,6 @@ public class DfsDeleteDirImpl extends DfsPathOperationImpl {
             throw new SmartFrogDeploymentException(
                     ERROR_CANNOT_DELETE_DIRECTORY + path.toString() + ERROR_NOT_DIRECTORY);
         }
-
     }
 
 }
