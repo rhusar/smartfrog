@@ -141,6 +141,11 @@ public class Daemon {
     String emailserver;
 
     /**
+     * Use the ip address for the xmpp connection?
+     */
+    String useipforxmpp;
+
+    /**
      * A common workflow type for staring the daemon.
      */
     public final static String TYPE = "Sequence";
@@ -205,7 +210,7 @@ public class Daemon {
      * @param emailfrom     email address from which mail is being send
      * @param emailserver   SMTP Server used to send emails over SMTP protocol
      */
-    public Daemon(String name, String os, String host, String transfertype, String logintype, String user, String password, String localfile1, String localfile2, String localfile3, String keyfile, String secproperties, String smartfrogjar, String servicesjar, String examplesjar, String releasename, String javahome, String installdir, String emailto, String emailfrom, String emailserver) {
+    public Daemon(String name, String os, String host, String transfertype, String logintype, String user, String password, String localfile1, String localfile2, String localfile3, String keyfile, String secproperties, String smartfrogjar, String servicesjar, String examplesjar, String releasename, String javahome, String installdir, String emailto, String emailfrom, String emailserver, String useipforxmpp) {
 
         require("name", name);
         require("os", os);
@@ -221,6 +226,7 @@ public class Daemon {
         require("emailto", emailto);
         require("emailfrom", emailfrom);
         require("emailserver", emailserver);
+        require("useipforxmpp", useipforxmpp);
 
         if (os.equals(WINDOWS)) {
             require("localfile2", localfile2);
@@ -248,6 +254,7 @@ public class Daemon {
         this.emailto = emailto;
         this.emailfrom = emailfrom;
         this.emailserver = emailserver;
+        this.useipforxmpp = useipforxmpp;
     }
 
     /**
@@ -361,6 +368,10 @@ public class Daemon {
 
     public boolean isTelnet() {
         return logintype.equals(TELNET);}
+
+    public String getUseipforxmpp() {
+        return useipforxmpp;
+    }
 
   public boolean isSsh() { return logintype.equals(SSH);}
 }

@@ -52,11 +52,10 @@ public interface AvalancheServer extends Remote {
      * @param inArchitecture Architecture of the host.
      * @param inPlatform Platform of the host.
      * @param inOS Operating System of the host.
-     * @param inUseIpForXmpp Determines whether the host should use its ip for communicating with the xmpp server.
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, boolean inUseIpForXmpp)
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS)
             throws RemoteException, SmartFrogException;
 
     /**

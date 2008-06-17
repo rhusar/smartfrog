@@ -79,7 +79,8 @@ sfConfig extends Parallel {
  							 "export SFSECURITY_ON=ENABLED",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
 				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/$jar #end",
-				 			 "cd ${daemon.installdir}/${daemon.releasename}",
+							 "export USEIPFORXMPP=${daemon.useipforxmpp}",
+				 			 "cd ${daemon.installdir}/$daemon.releasename",
                         	 			 "nohup sfDaemon -headless"];  
 				#else 
 					Telnet:commands ["mkdir -p ${daemon.installdir}",
@@ -96,7 +97,8 @@ sfConfig extends Parallel {
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
  				 		 	 "export SFSECURITY_ON=ENABLED",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
-						 	 "cd ${daemon.installdir}/${daemon.releasename}",
+							"export USEIPFORXMPP=${daemon.useipforxmpp}",
+						 	 "cd ${daemon.installdir}/$daemon.releasename",
                         	 			 "nohup sfDaemon -headless"];  
 				#end
 			#else
@@ -108,6 +110,7 @@ sfConfig extends Parallel {
                         		 		 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
                         		 		 "export PATH=$SFHOME/bin:$PATH",
 					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=${daemon.useipforxmpp}",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 							 "nohup sfDaemon -headless"]; 
 				#else
@@ -117,7 +120,8 @@ sfConfig extends Parallel {
 				        		 "tar -xf release.tar",
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
                                  			 "export PATH=$SFHOME/bin:$PATH",
-							 "cd ${daemon.installdir}/${daemon.releasename}",
+										"export USEIPFORXMPP=${daemon.useipforxmpp}",
+							 "cd ${daemon.installdir}/$daemon.releasename",
 		                        		 "nohup sfDaemon -headless"];
 				#end
 			#end
@@ -199,6 +203,7 @@ sfConfig extends Parallel {
  							 "export SFSECURITY_ON=ENABLED",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
 				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",
 				 			 "cd ${daemon.installdir}/${daemon.releasename}",
                         	 			 "nohup sfDaemon -headless"];  
 				#else 
@@ -217,6 +222,7 @@ sfConfig extends Parallel {
                         		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
  				 		 	 "export SFSECURITY_ON=ENABLED",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",			 
 						 	 "cd ${daemon.installdir}/${daemon.releasename}",
                         	 			 "nohup sfDaemon -headless"];  
 				#end
@@ -230,6 +236,7 @@ sfConfig extends Parallel {
                         		 		 "export PATH=$SFHOME/bin:$PATH",
                         		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
 					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 							 "nohup sfDaemon -headless"]; 
 				#else
@@ -240,6 +247,7 @@ sfConfig extends Parallel {
                         				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
                         		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
                                  			 "export PATH=$SFHOME/bin:$PATH",
+										"export USEIPFORXMPP=$daemon.useipforxmpp",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
 	                        			 "nohup sfDaemon -headless"];
 				#end

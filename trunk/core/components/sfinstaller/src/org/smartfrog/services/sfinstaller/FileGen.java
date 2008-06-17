@@ -139,6 +139,8 @@ public class FileGen {
                 writer.write(seperator);
                 writer.write(host.emailserver);
                 writer.write(seperator);
+                writer.write(host.useipforxmpp);
+                writer.write(seperator);
                 writer.write("\n");
             }
             writer.flush();

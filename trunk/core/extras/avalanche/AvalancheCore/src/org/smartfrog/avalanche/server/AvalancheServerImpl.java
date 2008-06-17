@@ -36,6 +36,7 @@ import org.jivesoftware.smack.XMPPException;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
     /**
@@ -270,7 +271,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
         }
     }
 
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, boolean inUseIpForXmpp) throws RemoteException, SmartFrogException {
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS) throws RemoteException, SmartFrogException {
         // get the host manager
         try {
             HostManager hm = getAvalancheFactory().getHostManager();
@@ -280,6 +281,9 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 // host not existing, create a new one
                 try {
                     ht = hm.newHost(inName);
+
+                    boolean bIp = Pattern.matches("((1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\\.){3}(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))", inName);
+                    ht.setUseIpForXmpp(bIp);
                 } catch (Exception e) {
                     sfLog().error("Error while creating host type for: " + inName, e);
                     throw SmartFrogException.forward(e);
@@ -290,7 +294,6 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);
                 pst.setArch(inArchitecture);
-                pst.setUseIpForXmpp(inUseIpForXmpp);
 
                 // create the lists
                 ht.addNewAccessModes();
@@ -304,7 +307,6 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);
                 pst.setArch(inArchitecture);
-                pst.setUseIpForXmpp(inUseIpForXmpp);
             }
 
             // store the changes
