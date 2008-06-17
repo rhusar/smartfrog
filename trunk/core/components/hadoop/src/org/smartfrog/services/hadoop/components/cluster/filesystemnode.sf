@@ -35,6 +35,6 @@ FileSystemNode extends ClusterNode {
 
   //if this is set to a number >0, it specifies the minimum disk space
   //in megabytes that this fs node should deploy on. If it is less, no deployment
-  //minDiskSpaceMB;
+  minDiskSpaceMB 0;
 }
 

@@ -24,7 +24,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.mortbay.util.MultiException;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.PrintStream;
 import java.io.StringWriter;
@@ -138,11 +137,11 @@ public class SFHadoopException extends SmartFrogException {
      * @return a new exception
      */
     public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject) {
-        List exceptions = multiExcept.getExceptions();
+        List<Throwable> exceptions = multiExcept.getThrowables();
         int exCount = exceptions.size();
-        if(exCount==1) {
+        if(exCount == 1) {
             //special case: one child.
-            Exception e=multiExcept.getException(0);
+            Throwable e = multiExcept.getThrowable(0);
             return new SFHadoopException(message+"\n"
                     + e.getMessage(),
                     e);
@@ -152,9 +151,8 @@ public class SFHadoopException extends SmartFrogException {
         PrintWriter pw = null;
         pw = new PrintWriter(sw);
         try {
-            for (Object o : exceptions) {
-                Exception ex = (Exception) o;
-                ex.printStackTrace(pw);
+            for (Throwable thrown : exceptions) {
+                thrown.printStackTrace(pw);
             }
         } finally {
             pw.close();

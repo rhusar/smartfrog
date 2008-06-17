@@ -56,7 +56,7 @@ HadoopConfiguration extends Prim {
   can utilize for the balancing purpose in term of
   the number of bytes per second.
   */
-  dfs.balance.bandwidthPerSec  1048576;
+  dfs.balance.bandwidthPerSec  (1024 * 1024);
 
   /**The default block size for new files.*/
   dfs.block.size  (65536 * 1024);
