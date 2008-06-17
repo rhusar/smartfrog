@@ -205,8 +205,9 @@ public class XMPPAdapter {
             // Setup and send the event as message
             Message msg = new Message(recipient, Message.Type.HEADLINE);
             msg.setBody("AE");
-			msg.addExtension(new XMPPEventExtension(event));
-            log.info("Sending message: " + msg + ". " + getCurrentConnectionInfo());
+            XMPPEventExtension ext = new XMPPEventExtension(event);
+            msg.addExtension(ext);
+            log.info("Sending message: " + ext + ". " + getCurrentConnectionInfo());
             connection.sendPacket(msg);
         } catch(XMPPException e ){
 			// Failed sending message. Log this message and move on.

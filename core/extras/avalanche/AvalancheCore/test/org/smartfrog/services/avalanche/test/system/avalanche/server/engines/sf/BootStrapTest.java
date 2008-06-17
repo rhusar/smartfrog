@@ -21,6 +21,7 @@ import org.smartfrog.avalanche.server.ServerSetup;
 import org.smartfrog.avalanche.server.engines.sf.BootStrap;
 
 import java.net.InetAddress;
+import java.util.regex.Pattern;
 
 public class BootStrapTest extends TestCase {
 
@@ -58,7 +59,9 @@ public class BootStrapTest extends TestCase {
 			HostType host = null ; 
 			try{
 				host = hm.newHost(hostId) ;
-			}catch(Exception e){
+                boolean bIp = Pattern.matches("((1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\\.){3}(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))", hostId);
+                host.setUseIpForXmpp(bIp);
+            }catch(Exception e){
 				host = hm.getHost(hostId);
 			}
 			host.setUser(user) ;

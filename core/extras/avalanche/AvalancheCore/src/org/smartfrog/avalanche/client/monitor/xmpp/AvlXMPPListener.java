@@ -100,10 +100,11 @@ public class AvlXMPPListener extends XmppListenerImpl {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        boolean bUseIP = sfResolve("useIpInsteadOfHostname", false, true);
+        String strUseIP = sfResolve("useIpInsteadOfHostname", "false", false).toLowerCase();
+
+        determineHostname(strUseIP.equals("true"));
 
         sfLog().info("AvlXMPPListener deployed.");
-        determineHostname(bUseIP);
     }
 
     /**

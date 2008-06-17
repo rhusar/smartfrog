@@ -17,6 +17,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.avalanche.server.monitor.handlers.*;
 import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
+import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -167,11 +168,11 @@ public class ServerSetup {
     /**
      * Used by the website to send commands to a host.
      * @param inTargetMachine The host of the virtual machine.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName Name of the virtual machine.
      * @param inCmd The command to execute.
      * @param inAdditionalProperties Additional attributes required for the command.
      */
-    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd, HashMap<String, String> inAdditionalProperties) {
+    public static void sendVMCommand(String inTargetMachine, String inVMName, String inCmd, HashMap<String, String> inAdditionalProperties) {
         XMPPEventExtension ext = new XMPPEventExtension();
 
         try {
@@ -183,10 +184,10 @@ public class ServerSetup {
 
         // set the command
         ext.getPropertyBag().put("vmcmd", inCmd);
-        if (inVMPath != null)
+        if (inVMName != null)
 
         // set the path (used like an identifier)
-        ext.getPropertyBag().put("vmpath", inVMPath);
+        ext.getPropertyBag().put("vmname", inVMName);
 
         // add the additional parameters
         if (inAdditionalProperties != null) {
@@ -268,7 +269,7 @@ public class ServerSetup {
 
             // TODO: Should be streamlined in the future!
             // Adding MessageHandlers to the handler chain for events coming from client nodes
-            listenerAdapter.addHandler(new ActiveProfileUpdateHandler(listenerAdapter));
+            listenerAdapter.addHandler(new ActiveProfileUpdateHandler());
             // Register the added Handlers as well as the built-in handlers
             listenerAdapter.registerListeners();
 
@@ -283,6 +284,15 @@ public class ServerSetup {
         } catch (XMPPException e) {
             log.fatal("Avalanche Initialization failed : ", e);
         }
+    }
+
+    /**
+     * Adds a packet handler to the xmpp listener.
+     * @param inHandler
+     * @throws org.jivesoftware.smack.XMPPException
+     */
+    public void addXmppPacketHandler(XMPPPacketHandler inHandler) throws XMPPException {
+        listenerAdapter.addHandler(inHandler);
     }
 
     /**
