@@ -172,7 +172,6 @@
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
   <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
-  <property name="dist.runs.dir" location="${dist.dir}/runs"/>
   <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
   <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
   <!--property name="redist" value="redist"/ -->
@@ -245,18 +244,17 @@
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
-	  
-	  <entry key="sf.build.java.version" value="${java.version}"/>
-	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
-	  <entry key="sf.build.os.name" value="${os.name}"/>
-	  <entry key="sf.build.os.version" value="${os.version}"/>
-	  <entry key="sf.build.os.architecture" value="${os.arch}"/>
-	  
-	  <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
-	  <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
-	  	  
+      <entry key="sf.build.java.version" value="${java.version}"/>
+      <entry key="sf.build.java.vendor" value="${java.vendor}"/>
+      <entry key="sf.build.os.name" value="${os.name}"/>
+      <entry key="sf.build.os.version" value="${os.version}"/>
+      <entry key="sf.build.os.architecture" value="${os.arch}"/>
+      <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
+      <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
     </propertyfile>
+
     <property file="${sf.version.file}"/>
+
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
 
     <copy file="${sf.version.file}" todir="${dist.dir}" />
@@ -265,22 +263,19 @@
     <copy file="${src}/org/smartfrog/version.sf.build"
           tofile="${src}/org/smartfrog/version.sf" overwrite="true" />
     <replace file="${src}/org/smartfrog/version.sf">
-        <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
-        <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
-        <replacefilter token="@build@" value="${sf.build}"/>
-        <replacefilter token="@status@" value="${sf.status}"/>
-        <replacefilter token="@buildDate@" value="${sf.build.date}"/>
-		
-		<replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
-		<replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
-		<replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
-		<replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
-		<replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
-		<replacefilter token="@copyright@" value="${Name.Company}"/>
-		
-		<replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
-		<replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
-		
+      <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
+      <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
+      <replacefilter token="@build@" value="${sf.build}"/>
+      <replacefilter token="@status@" value="${sf.status}"/>
+      <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+      <replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
+      <replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
+      <replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
+      <replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
+      <replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
+      <replacefilter token="@copyright@" value="${Name.Company}"/>
+      <replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
+      <replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
@@ -334,7 +329,6 @@
     <mkdir dir="${dist.bin.dir}"/>
     <mkdir dir="${dist.docs.dir}"/>
     <mkdir dir="${dist.testCA.dir}"/>
-    <mkdir dir="${dist.runs.dir}"/>
     <mkdir dir="${dist.private.dir}"/>
     <mkdir dir="${dist.signedLib.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
@@ -350,12 +344,13 @@
   </target>
 
   <!-- =================================================================== -->
-  <!--                                                                     -->
+  <!--     Javacc the parser files - both sf and csf                                                                  -->
   <!-- =================================================================== -->
   <target name="createParser" depends="init"> 
-    <!-- Javacc the parser files - both sf and csf -->
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
+        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj"
+        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
   <!-- =================================================================== -->
@@ -563,11 +558,6 @@
         <include name="**/*"/>
       </fileset>
     </copy>
-    <copy todir="${dist.docs.dir}" failonerror="false">
-      <fileset dir="../extras/sfgui/${docs}">
-        <include name="**/*.pdf"/>
-      </fileset>  
-    </copy>  
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
@@ -845,7 +835,7 @@
 
     <macrodef name="sha1">
       <attribute name="file"/>
-	  <attribute name="todir"/>
+	    <attribute name="todir"/>
       <sequential>
         <checksum file="@{file}" algorithm="md5"  todir="@{todir}"/>
         <checksum file="@{file}" algorithm="sha1" todir="@{todir}"/>
@@ -1092,6 +1082,9 @@ ${ivy.reports.dir}
         <!--this can be turned on/off-->
         <exclude name="docs/jdocs" unless="install.includes.javadocs"/>
         <exclude name="lib/*" />
+        <!--this strips out any internal CA-->
+        <exclude name="private/*-internal-ca/" />
+        <exclude name="private/*-internal-ca/**" />
         <exclude name="bin/sfGui*" />
       </zipfileset>
       <zipfileset dir="${dist.dir}/lib" prefix="lib">
@@ -1271,7 +1264,39 @@ ${ivy.reports.dir}
       description="Prepares distribution package,and publishes it the local repository ready for clover code coverage">
   </target>
   <!-- CLOVER  end-->
-  
+
+  <!--some extra targets to test the distribution works-->
+
+  <target name="ready-to-run-dist" depends="dist">
+    <presetdef name="dist">
+      <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" />
+    </presetdef>
+  </target>
+
+  <target name="dist.test" depends="dist.build,dist.initCA,dist.newDaemon,dist.sfParseTest,dist.jdocs">
+  </target>
+
+  <target name="dist.build" depends="ready-to-run-dist">
+    <dist target="build" />
+  </target>
+
+  <target name="dist.initCA" depends="dist">
+    <dist target="initCA" />
+    <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" target="initCA" />
+  </target>
+
+  <target name="dist.newDaemon" depends="dist">
+    <dist target="newDaemon" />
+  </target>
+
+  <target name="dist.sfParseTest" depends="dist">
+    <dist target="sfParseTest" />
+  </target>
+
+  <target name="dist.jdocs" depends="dist">
+    <dist target="jdocs" />
+  </target>
+
 </project>
 
 <!-- End of file -->

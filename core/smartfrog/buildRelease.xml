@@ -239,6 +239,8 @@
   <!--directories that security needs -->
   <patternset id="security.pattern">
     <include name="private/**"/>
+    <!--this strips out any internal CA that may have been created-->
+    <exclude name="private/*-internal-ca" />
     <include name="testCA/**"/>
     <patternset refid="excluded.cruft"/>
   </patternset>

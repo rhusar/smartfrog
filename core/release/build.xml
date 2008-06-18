@@ -21,6 +21,9 @@
   <description>
     This build file aggregates artifacts from other projects to cut a release.
 
+    set the property security.keys.redistributable to include the security-keys RPM in bundles
+    that are created for redistribution -by default they are disabled.
+
   </description>
 
   <!--we are a component -->
@@ -390,7 +393,7 @@
   </target>
 
 
-  <target name="ready-to-rpm" depends="prepare-private-rpm-build-file,prepare-binary-rpm"/>
+  <target name="ready-to-rpm" depends="prepare-private-rpm,prepare-binary-rpm"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
 
@@ -659,7 +662,6 @@
     <copy todir="${dist.rpm.dir}">
       <fileset dir="${rpm.noarch}">
         <include name="*.rpm"/>
-        <exclude name="*-signed*.rpm" unless="security.enabled"/>
       </fileset>
     </copy>
     <copy todir="${upload.dir}" flatten="true">
@@ -689,28 +691,31 @@
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}">
         <include name="*.rpm"/>
+        <exclude name="smartfrog-private-security-keys*.rpm" unless="security.keys.redistributable"/>
       </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}"/>
   </target>
 
-  <target name="ready-to-run-private-rpmbuild"
-      depends="ready-to-prepare-binary-rpm,prepare-private-rpm-build-file" >
+  <target name="ready-to-run-private-rpm"
+      depends="ready-to-prepare-binary-rpm,prepare-private-rpm" >
 
   </target>
 
   <!--this is not currently how we release artifacts, but it is a way we allow
   third parties to issue their own JAR files, containing their own signed JARs-->
-  <target name="run-private-rpmbuild" depends="ready-to-run-private-rpmbuild"
+  <target name="private-rpm-ant" depends="ready-to-run-private-rpm"
     description="run a private RPM build for third party signing">
+    <property name="private-target" value="default" />
     <ant antfile="${build.rpm.dir}/build.xml"
+      target="${private-target}"
       inheritAll="false" inheritrefs="false"/>
   </target>
 
 
   <!--This prepares a custom build.xml file ready for signing and RPM
  creation -->
-  <target name="prepare-private-rpm-build-file" depends="ready-to-prepare-binary-rpm">
+  <target name="prepare-private-rpm" depends="ready-to-prepare-binary-rpm">
     <copy todir="${build.rpm.dir}" file="src/ant/build.xml" />
     <!--propagate state down through a series of files-->
     <copy file="${rpm.metadata.dir}/rpm.properties" todir="${build.rpm.dir}"/>
@@ -721,7 +726,7 @@
     </propertyfile>
   </target>
 
-  <target name="package-private-rpm" depends="ready-to-run-private-rpmbuild" >
+  <target name="package-private-rpm" depends="ready-to-run-private-rpm" >
     <exec executable="tar" failonerror="true"
       dir="${build.rpm.dir}/">
       <arg value="cvvf"/>
