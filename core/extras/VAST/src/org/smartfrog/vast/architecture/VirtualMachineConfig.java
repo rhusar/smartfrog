@@ -23,16 +23,28 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
     public static String ATTR_AFFINITY = "Affinity";
     public static String ATTR_NAME = "Name";
     public static String ATTR_SOURCE_IMAGE = "SourceImage";
+    public static String ATTR_GUEST_USER = "GuestUser";
+    public static String ATTR_GUEST_PASS = "GuestPass";
+    public static String ATTR_DISPLAY_NAME = "DisplayName";
+    public static String ATTR_GUEST_OS_READY_INTERVAL = "GuestOSReadyInterval";
 
     // affinity to a physical machine
     private String Affinity;
 
-    // name of the virtual machine
-    private String Name;
-
     // name of the master image from which this
     // virtual machine should be created
     private String SourceImage;
+
+    // user account for the guest os
+    private String GuestUser;
+
+    // password for the user account
+    private String GuestPass;
+
+    // the display name for the vm
+    private String DisplayName;
+
+    private Integer GuestReadyInterval;
 
     public String getAffinity() {
         return Affinity;
@@ -42,19 +54,43 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
         Affinity = affinity;
     }
 
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
     public String getSourceImage() {
         return SourceImage;
     }
 
     public void setSourceImage(String sourceImage) {
         SourceImage = sourceImage;
+    }
+
+    public String getGuestPass() {
+        return GuestPass;
+    }
+
+    public void setGuestPass(String guestPass) {
+        GuestPass = guestPass;
+    }
+
+    public String getGuestUser() {
+        return GuestUser;
+    }
+
+    public void setGuestUser(String guestUser) {
+        GuestUser = guestUser;
+    }
+
+    public String getDisplayName() {
+        return DisplayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        DisplayName = displayName;
+    }
+
+    public Integer getGuestReadyInterval() {
+        return GuestReadyInterval;
+    }
+
+    public void setGuestReadyInterval(Integer guestReadyInterval) {
+        GuestReadyInterval = guestReadyInterval;
     }
 }

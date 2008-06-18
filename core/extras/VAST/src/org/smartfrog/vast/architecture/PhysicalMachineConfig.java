@@ -22,8 +22,7 @@ package org.smartfrog.vast.architecture;
 import java.util.ArrayList;
 
 public class PhysicalMachineConfig {
-    public static String ATTR_HOSTNAME = "Hostname";
-    public static String ATTR_IPADDRESS = "IpAddress";
+    public static String ATTR_HOST_ADDRESS = "HostAddress";
     public static String ATTR_ACCESS_MODES = "AccessModes";
     public static String ATTR_TRANSFER_MODES = "TransferModes";
     public static String ATTR_MODE_TYPE = "Type";
@@ -38,8 +37,7 @@ public class PhysicalMachineConfig {
     public static String ATTR_OS = "OS";
 
     // one of the following has to be specified
-    private String Hostname;
-    private String IpAddress;
+    private String HostAddress;
 
     // list of access modes
     private ArrayList<ConnectionMode> listAccessModes = new ArrayList<ConnectionMode>();
@@ -65,6 +63,9 @@ public class PhysicalMachineConfig {
     // operating system (windows, linux)
     private String OS;
 
+    // is the machine up and running?
+    private boolean Running;
+
     public String getArchitecture() {
         return Architecture;
     }
@@ -79,22 +80,6 @@ public class PhysicalMachineConfig {
 
     public void setAvalancheHome(String avalancheHome) {
         AvalancheHome = avalancheHome;
-    }
-
-    public String getHostname() {
-        return Hostname;
-    }
-
-    public void setHostname(String hostname) {
-        Hostname = hostname;
-    }
-
-    public String getIpAddress() {
-        return IpAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        IpAddress = ipAddress;
     }
 
     public String getJavaHome() {
@@ -145,11 +130,19 @@ public class PhysicalMachineConfig {
         this.listArguments = listArguments;
     }
 
-    /**
-     * Returns the name for this machine. Hostname has a higher priority than IpAddress if both are set.
-     * @return
-     */
-    public String getName() {
-        return (Hostname.equals("") ? IpAddress : Hostname);
+    public boolean isRunning() {
+        return Running;
+    }
+
+    public void setRunning(boolean running) {
+        Running = running;
+    }
+
+    public String getHostAddress() {
+        return HostAddress;
+    }
+
+    public void setHostAddress(String hostAddress) {
+        HostAddress = hostAddress;
     }
 }

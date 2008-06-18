@@ -22,17 +22,29 @@ For more information: www.smartfrog.org
 
 VirtualMachineSchema extends Schema {
     // affinity to a physical machine
-    Affinity extends OptionalString;
-
-    // name of the virtual machine
-    Name extends String;
+    Affinity extends String;
 
     // name of the master image from which this
     // virtual machine should be created
     SourceImage extends String;
+
+    // user account for the guest os
+    GuestUser extends String;
+
+    // password for the user account
+    GuestPass extends String;
+
+    // the display name of the vm
+    DisplayName extends String;
+
+    // the interval in miliseconds that should
+    // be used to check if a guest os has finished
+    // booting and is ready for interaction
+    GuestOSReadyInterval extends Integer;
 }
 
 VirtualMachineConfig extends PhysicalMachineConfig {
     vmSchema extends VirtualMachineSchema;
-        
+
+    GuestOSReadyInterval 10000;
 }

@@ -28,11 +28,13 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.avalanche.server.AvalancheServer;
 import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.ArrayList;
-import java.net.UnknownHostException;
+import java.util.HashMap;
 
 /**
  * The environment builder class.
@@ -53,6 +55,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
      */
     private ArrayList<VirtualMachineConfig> listVirtualMachines = new ArrayList<VirtualMachineConfig>();
 
+    /**
+     * Indicates whether the VMs have been created already or not to ensure it's only once attempted to create them.
+     */
+    private boolean bVMsCreated = false;
+
     public EnvironmentConstructorImpl() throws RemoteException {
 
     }
@@ -61,9 +68,6 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
         super.sfDeploy();
         
         sfLog().info("deploying");
-
-        // get the reference to the avalanche server
-        refAvlServer = (AvalancheServer) sfResolve(ATTR_AVALANCHE, true);
 
         sfLog().info("successfully deployed");
     }
@@ -122,9 +126,13 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
                             try {
                                 resolveBasicMachineAttributes(virtObj, conf);
 
-                                conf.setAffinity(virtObj.sfResolve(VirtualMachineConfig.ATTR_AFFINITY, "", false));
-                                conf.setName((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_NAME, true));
+                                conf.setAffinity((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_AFFINITY, true));
                                 conf.setSourceImage((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_SOURCE_IMAGE, true));
+                                conf.setDisplayName((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_DISPLAY_NAME, true));
+                                conf.setGuestUser((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_USER, true));
+                                conf.setGuestPass((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_PASS, true));
+                                conf.setGuestReadyInterval((Integer) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_OS_READY_INTERVAL, true));
+
                             } catch (SmartFrogResolutionException ex) {
                                 sfLog().error("error while resolving a virtual machine description", ex);
                                 throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
@@ -174,11 +182,7 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
         }
 
         // resolve the remaining unique attributes
-        inConf.setHostname(inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_HOSTNAME, "", false));
-        inConf.setIpAddress(inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_IPADDRESS, "", false));
-        if (inConf.getHostname().equals("") && inConf.getIpAddress().equals(""))
-            throw new SmartFrogDeploymentException("Neither Hostname nor IpAddress are set.");
-
+        inConf.setHostAddress((String)inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_HOST_ADDRESS, true));
         inConf.setArchitecture((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_ARCHITECTURE, true));
         inConf.setOS((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_OS, true));
         inConf.setPlatform((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_PLATFORM, true));
@@ -200,7 +204,7 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
                 // add an connection mode to the list
                 ConnectionMode conMode = new ConnectionMode();
 
-                conMode.setType((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_TYPE, true));
+                conMode.setType(((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_TYPE, true)).toLowerCase());
                 conMode.setUser((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_USERNAME, true));
                 conMode.setPassword((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_PASSWORD, true));
                 conMode.setIsDefault(Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_IS_DEFAULT, false, false));
@@ -215,10 +219,16 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
         sfLog().info("starting");
 
-        // update/create the physical machines in the database
-        updatePhysicalMachines();
+        // get the reference to the avalanche server
+        refAvlServer = (AvalancheServer) sfResolve(ATTR_AVALANCHE, true);
 
-        // ignite them
+        // register the listener with avalanche
+        refAvlServer.addXMPPHandler(new VastListener(this));
+
+        // update/create the physical machines in the database
+        updateMachines();
+
+        // trigger setup
         ignitePhysicalHosts();
 
         sfLog().info("successfully started");
@@ -227,8 +237,26 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
+        // stop the virtual machines
+        stopVirtualMachines();
+
         // stop the daemons on the ignites machines
         stopPhysicalHosts();
+    }
+
+    /**
+     * Deletes the virtual machines.
+     */
+    private void deleteVirtualMachines() {
+        for (VirtualMachineConfig virt : listVirtualMachines) {
+            if (checkPhysicalExistance(virt.getAffinity())) {
+                try {
+                    refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "delete");
+                } catch (Exception e) {
+                    sfLog().error("Error while trying to delete virtual machines", e);
+                }
+            }
+        }
     }
 
     /**
@@ -237,57 +265,85 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
     private void stopPhysicalHosts() {
         for (PhysicalMachineConfig phy : listPhysicalMachines) {
             try {
-                SFAdapter.stopDaemon(phy.getName());
+                SFAdapter.stopDaemon(phy.getHostAddress());
             } catch (Exception e) {
-                sfLog().error("Error while stopping physical host: " + phy.getName(), e);
+                sfLog().error("Error while stopping physical host: " + phy.getHostAddress(), e);
             }
         }
     }
 
     /**
-     * Physical machines will be created/updated according to the sf description file.
+     * Sends a stop command to all virtual machines.
+     */
+    private void stopVirtualMachines() {
+        for (VirtualMachineConfig virt : listVirtualMachines) {
+            if (checkPhysicalExistance(virt.getAffinity())) {
+                try {
+                    refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "stop");
+                } catch (Exception e) {
+                    sfLog().error("Error while trying to stop virtual machines", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Machines will be created/updated according to the sf description file.
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    private void updatePhysicalMachines() throws RemoteException, SmartFrogException {
+    private void updateMachines() throws RemoteException, SmartFrogException {
         // first add the physical hosts which should be ignited
         // to the database of avalanche
-        for (PhysicalMachineConfig phy : listPhysicalMachines) {
-            // update the unique attributes
-            refAvlServer.updateHost(    phy.getName(),
-                                        phy.getArchitecture(),
-                                        phy.getPlatform(),
-                                        phy.getOS());
+        for (PhysicalMachineConfig phy : listPhysicalMachines)
+            updateMachine(phy);
 
-            // clear the lists
-            refAvlServer.clearAccessModes(phy.getName());
-            refAvlServer.clearTransferModes(phy.getName());
-            refAvlServer.clearArguments(phy.getName());
+        // then add the virtual hosts
+        for (VirtualMachineConfig vm : listVirtualMachines)
+            updateMachine(vm);
+    }
 
-            // add the access modes
-            for (ConnectionMode mode : phy.getListAccessModes()) {
-                refAvlServer.addAccessMode( phy.getName(),
+    /**
+     * Insert the machine config into the avalanche database.
+     * @param inMachineConfig
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    private void updateMachine(PhysicalMachineConfig inMachineConfig) throws RemoteException, SmartFrogException {
+        // update the unique attributes
+        refAvlServer.updateHost(    inMachineConfig.getHostAddress(),
+                                    inMachineConfig.getArchitecture(),
+                                    inMachineConfig.getPlatform(),
+                                    inMachineConfig.getOS());
+
+        // clear the lists
+        refAvlServer.clearAccessModes(inMachineConfig.getHostAddress());
+        refAvlServer.clearTransferModes(inMachineConfig.getHostAddress());
+        refAvlServer.clearArguments(inMachineConfig.getHostAddress());
+
+        // add the access modes
+        for (ConnectionMode mode : inMachineConfig.getListAccessModes()) {
+            refAvlServer.addAccessMode( inMachineConfig.getHostAddress(),
+                                        mode.getType(),
+                                        mode.getUser(),
+                                        mode.getPassword(),
+                                        mode.getIsDefault());
+        }
+
+        // add the transfer modes
+        for (ConnectionMode mode : inMachineConfig.getListTransferModes()) {
+            refAvlServer.addTransferMode(   inMachineConfig.getHostAddress(),
                                             mode.getType(),
                                             mode.getUser(),
                                             mode.getPassword(),
                                             mode.getIsDefault());
-            }
+        }
 
-            // add the transfer modes
-            for (ConnectionMode mode : phy.getListTransferModes()) {
-                refAvlServer.addTransferMode(   phy.getName(),
-                                                mode.getType(),
-                                                mode.getUser(),
-                                                mode.getPassword(),
-                                                mode.getIsDefault());
-            }
-
-            // add the arguments
-            for (Argument arg : phy.getListArguments()) {
-                refAvlServer.addArgument(   phy.getName(),
-                                            arg.getName(),
-                                            arg.getValue());
-            }
+        // add the arguments
+        for (Argument arg : inMachineConfig.getListArguments()) {
+            refAvlServer.addArgument(   inMachineConfig.getHostAddress(),
+                                        arg.getName(),
+                                        arg.getValue());
         }
     }
 
@@ -296,11 +352,205 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
         sfLog().info("igniting hosts:");
         String [] hostNames = new String [listPhysicalMachines.size()];
         for (int i = 0; i < hostNames.length; ++i) {
-            sfLog().info(listPhysicalMachines.get(i).getName());
-            hostNames[i] = listPhysicalMachines.get(i).getName();
+            sfLog().info(listPhysicalMachines.get(i).getHostAddress());
+            hostNames[i] = listPhysicalMachines.get(i).getHostAddress();
         }
 
         // ignite the hosts
         refAvlServer.igniteHosts(hostNames);
+    }
+
+    /**
+     * Checks whether the physical part of the environment is ready for the next step.
+     */
+    private boolean checkPhysicalEnv() {
+        for (PhysicalMachineConfig phy : listPhysicalMachines)
+            if (!phy.isRunning())
+                return false;
+
+        sfLog().info("all physical hosts running");
+        return true;
+    }
+
+    /**
+     * Checks whether the virtual part of the environment is ready for the next step.
+     */
+    private boolean checkVirtualEnv() {
+        for (VirtualMachineConfig vm : listVirtualMachines)
+            if (!vm.isRunning())
+                return false;
+
+        sfLog().info("all virtual machines are running");
+        return true;
+    }
+
+    /**
+     * A host started.
+     * @param inHost
+     */
+    public void hostStarted(String inHost) {
+        for (PhysicalMachineConfig phy : listPhysicalMachines) {
+            if (phy.getHostAddress().equals(inHost)) {
+                // set the machine to be running
+                phy.setRunning(true);
+
+                // check if all machines are running
+                if (checkPhysicalEnv()) {
+                    // delete old machines
+                    deleteVirtualMachines();
+
+                    // create the virtual machines
+                    createVirtualMachines();
+                }
+
+                return;
+            }
+        }
+
+        for (VirtualMachineConfig vm : listVirtualMachines) {
+            if (vm.getHostAddress().equals(inHost)) {
+                // set the vm to be running
+                vm.setRunning(true);
+
+                // check if all virtual machines are running
+                if (checkVirtualEnv()) {
+                    // TODO: perform SUT setup
+                }
+
+                return;
+            }
+        }
+    }
+
+    /**
+     * A host vanished from xmpp.
+     * @param inHost
+     */
+    public void hostVanished(String inHost) {
+        for (PhysicalMachineConfig phy : listPhysicalMachines) {
+            if (phy.getHostAddress().equals(inHost)) {
+                // set the machine to be stopped
+                phy.setRunning(false);
+
+                // TODO: consequence: vms of this physical host must be down, too
+
+                return;
+            }
+        }
+
+        for (VirtualMachineConfig vm : listVirtualMachines) {
+            if (vm.getHostAddress().equals(inHost)) {
+                // set the vm to be stopped
+                vm.setRunning(false);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Creates the virtual machines on the physical hosts.
+     */
+    private synchronized void createVirtualMachines() {
+        if (!bVMsCreated) {
+            // iterate through the virtual machines
+            for (VirtualMachineConfig vm : listVirtualMachines) {
+                // if the machines affinity exists
+                if (checkPhysicalExistance(vm.getAffinity())) {
+                    // send the create command
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("create_master", vm.getSourceImage());
+                    map.put("create_name", vm.getDisplayName());
+                    map.put("create_user", vm.getGuestUser());
+                    map.put("create_pass", vm.getGuestPass());
+                    try {
+                        refAvlServer.sendVMCommand(vm.getAffinity(), null, "create", map);
+                    } catch (Exception e) {
+                        sfLog().error(String.format("Error when trying to send create command with: create_master: %s, create_name: %s, target host: %s",
+                                                vm.getSourceImage(),
+                                                vm.getHostAddress(),
+                                                vm.getAffinity()), e);
+                    }
+                }
+            }
+
+            // vms have been (attempted to be) created
+            bVMsCreated = true;
+        }
+    }
+
+    /**
+     * Checks if a physical host is existing in the description data.
+     * @param inName Name of the host.
+     * @return True if it is, false if it is not existing.
+     */
+    private boolean checkPhysicalExistance(String inName) {
+        for (PhysicalMachineConfig phy : listPhysicalMachines)
+            if (phy.getHostAddress().equals(inName))
+                return true;
+        return false;
+    }
+
+    /**
+     * Handles incoming VM messages.
+     * @param inPacket The packet containing the message.
+     * @param inPacketExtension The packet extension containing the relevant data.
+     */
+    public void handleVMMessages(Packet inPacket, XMPPEventExtension inPacketExtension) {
+        // retrieve the basic attributes
+        String strCommand = inPacketExtension.getPropertyBag().get("vmcmd");
+        String strResponse = inPacketExtension.getPropertyBag().get("vmresponse");
+        String strVMName = inPacketExtension.getPropertyBag().get("vmname");
+
+        // get the according vm
+        for (VirtualMachineConfig vmTarget : listVirtualMachines)
+            if (vmTarget.getDisplayName().equals(strVMName)
+                    && vmTarget.getAffinity().equals(inPacketExtension.getHost())) {
+
+                try{
+                    if (strCommand.equals("create")) {
+                        // a response to a create command
+                        if (strResponse.equals("success")) {
+                            sfLog().info("vm created: " + strVMName);
+
+                            // vm created, start it
+                            refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, "start");
+                        }
+                        else sfLog().error("Failed to create vm: " + inPacketExtension);
+                    }
+                    else if (strCommand.equals("start")) {
+                        if (strResponse.equals("success")) {
+                            refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, "toolsstate");
+                        }
+                        else sfLog().error("Failed to start vm: " + inPacketExtension);
+                    }
+                    else if (strCommand.equals("toolsstate")) {
+                        if (!strResponse.contains("Tools state unknown")) {
+                            sfLog().info("vm started " + strVMName);
+
+                            // vm started, set network
+                            HashMap<String, String> map = new HashMap<String, String>();
+                            map.put("exec_cmd", "/sbin/ifconfig");
+                            // TODO: implement a better method
+                            map.put("exec_param", "eth3 " + vmTarget.getHostAddress());
+                            refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, "executeinguest", map);
+                        }
+                        else {
+                            // wait for tools to come up
+                            Thread.sleep(vmTarget.getGuestReadyInterval());
+                            refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, "toolsstate");
+                        }
+                    }
+                    else if(strCommand.equals("executeinguest")) {
+                        if (strResponse.equals("success")) {                            
+                            // network should be running now, ignite the vm
+                            refAvlServer.igniteHosts(new String[] {vmTarget.getHostAddress()});
+                        }
+                        else sfLog().error("Failed to execute program in guest os: " + inPacketExtension);
+                    }
+                }
+                catch (Exception e) {
+                    sfLog().error(e);
+                }
+            }
     }
 }
