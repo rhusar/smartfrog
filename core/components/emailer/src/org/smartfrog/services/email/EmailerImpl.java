@@ -33,9 +33,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.Authenticator;
 import java.util.Properties;
 import java.util.Date;
 import java.util.Vector;
+import javax.mail.PasswordAuthentication;
 
 import java.rmi.RemoteException;
 
@@ -79,7 +81,9 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     private String message = "SmartFrog Message";
     private boolean sendOnStartup=false;
     private boolean sendOnShutdown = false;
-
+	private String port=null;
+	private String user=null;
+	private String password=null;
     private static final String PROP_HOST_NAME = "mail.smtp.host";
 
     /**
@@ -110,7 +114,19 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         readSFAttributes();
         Properties props = new Properties();
         props.put(PROP_HOST_NAME, host);
-        session = Session.getInstance(props, null);
+		Authenticator auth = null;
+		
+		if(user!=null && password!=null){
+			SecurityManager security = System.getSecurityManager();
+			props.put("mail.smtp.user", user);
+			props.put("mail.smtp.auth","true");
+			props.put("mail.smtp.password", password);
+			auth = new SMTPAuthenticator();
+		}
+		if(port!=null){
+			props.put("mail.smtp.port", port);
+		}
+        session = Session.getInstance(props, auth);
         //then parent
         super.sfDeploy();
     }
@@ -145,12 +161,16 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws RemoteException
      */
     public void sendConfiguredMessage() throws SmartFrogException, RemoteException {
+		try{
         if(attachmentList == null)
             sendEmail(toList ,ccList, from, subject, message);
         else {
             sendEmailWithAttachments(toList ,ccList, from, subject,
                                      message, attachmentList);
         }
+		}catch(Exception e){
+			log.info("EXCEPTION:\n" + e);
+		}
     }
 
     /**
@@ -192,7 +212,11 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         message =  sfResolve(MESSAGE, message, false);
         attachmentList = sfResolve(ATTACHMENTS, attachmentList,false);
         sendOnStartup= sfResolve(SEND_ON_STARTUP, sendOnStartup,false);
-        sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);    }
+        sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);   
+		port = sfResolve(SMTP_PORT, port, false); 
+		user = sfResolve(SMTP_USER, user, false); 
+		password = sfResolve(SMTP_PASSWORD, password, false); 
+	}
 
     // Utility methods to send Emails used when Emailer is to be used multiple
     // times by other components.
@@ -384,4 +408,9 @@ public class EmailerImpl extends PrimImpl implements Emailer {
 	    msg.setContent(mp);
         return msg;
     }
+	private class SMTPAuthenticator extends Authenticator {
+		public PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication(user,password);
+		}
+	}
 }
