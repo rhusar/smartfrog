@@ -281,9 +281,6 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 // host not existing, create a new one
                 try {
                     ht = hm.newHost(inName);
-
-                    boolean bIp = Pattern.matches("((1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\\.){3}(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))", inName);
-                    ht.setUseIpForXmpp(bIp);
                 } catch (Exception e) {
                     sfLog().error("Error while creating host type for: " + inName, e);
                     throw SmartFrogException.forward(e);

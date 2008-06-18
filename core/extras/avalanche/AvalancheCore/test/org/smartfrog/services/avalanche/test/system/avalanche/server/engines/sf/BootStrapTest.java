@@ -59,8 +59,6 @@ public class BootStrapTest extends TestCase {
 			HostType host = null ; 
 			try{
 				host = hm.newHost(hostId) ;
-                boolean bIp = Pattern.matches("((1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\\.){3}(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))", hostId);
-                host.setUseIpForXmpp(bIp);
             }catch(Exception e){
 				host = hm.getHost(hostId);
 			}

@@ -99,9 +99,6 @@ public class AvalancheFactoryTest extends TestCase {
 			host.setUser(user) ;
 			host.setPassword(passwd) ;
 
-            boolean bIp = Pattern.matches("((1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\\.){3}(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))", hostId);
-            host.setUseIpForXmpp(bIp);
-
             PlatformSelectorType plaf = host.addNewPlatformSelector();
 			plaf.setOs("Linux");
 			plaf.setArch("x86");

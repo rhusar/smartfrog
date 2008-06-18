@@ -57,23 +57,11 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setModuleId("None");
         ext.setModuleState("None");
 
+        sfLog().info("Sending host presence: " + ext);
+
         if (!sendMessage("avl@" + getServer(), "None", "AE", ext))
             sfLog().error("Error sending packet.");
     }
-
-    /**
-     * Determine the local hostname. If there is more than one port,
-     * we use the network card that RMI is running on
-     * @throws SmartFrogException failure to determine our hostname
-     */
-    private void determineHostname(boolean inIP) throws SmartFrogException {
-        InetAddress localhost = SFProcess.sfDeployedHost();
-        if (inIP)
-            hostname = localhost.getHostAddress();
-        else
-            hostname = localhost.getHostName();
-    }
-
 
     /**
      * Some classes may override this
@@ -100,9 +88,7 @@ public class AvlXMPPListener extends XmppListenerImpl {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        String strUseIP = sfResolve("useIpInsteadOfHostname", "false", false).toLowerCase();
-
-        determineHostname(strUseIP.equals("true"));
+        hostname = (String) sfResolve("hostAddress", true);
 
         sfLog().info("AvlXMPPListener deployed.");
     }
@@ -117,7 +103,7 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setHost(hostname);
         ext.setInstanceName("None");
         ext.setLastAction("None");
-        ext.setMessageType(MonitoringConstants.HOST_STARTED);
+        ext.setMessageType(MonitoringConstants.HOST_SHUTTING_DOWN);
         ext.setTimestamp(String.format("%d", Calendar.getInstance().getTimeInMillis()));
         ext.setMsg("Host going down.");
         ext.setModuleId("None");
