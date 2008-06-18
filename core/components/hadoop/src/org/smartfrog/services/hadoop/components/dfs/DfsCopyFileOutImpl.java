@@ -34,9 +34,9 @@ import java.rmi.RemoteException;
  * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
 
-public class DfsCopyFileInImpl extends DfsOperationImpl implements DfsCopyOperation {
+public class DfsCopyFileOutImpl extends DfsOperationImpl implements DfsCopyOperation {
 
-    public DfsCopyFileInImpl() throws RemoteException {
+    public DfsCopyFileOutImpl() throws RemoteException {
     }
 
     /**
@@ -59,15 +59,16 @@ public class DfsCopyFileInImpl extends DfsOperationImpl implements DfsCopyOperat
      * @throws Exception on any failure
      */
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
-        Path dest = resolveDfsPath(ATTR_DEST);
-        File source = FileSystem.lookupAbsoluteFile(this, ATTR_SOURCE, null, null, true, null);
-        if (!source.exists()) {
-            throw new SmartFrogRuntimeException("Missing source file : " + source, this);
-        }
-        Path localSource = new Path(source.toURI().toString());
+        Path source = resolveDfsPath(ATTR_SOURCE);
+        File dest = FileSystem.lookupAbsoluteFile(this, ATTR_DEST, null, null, true, null);
+        Path destPath = new Path(dest.toURI().toString());
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
+        if(!overwrite && dest.exists()) {
+            //bail out if the dest file exists and overwrite==false
+            return;
+        }
         try {
-            fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
+            fileSystem.copyToLocalFile(source, destPath);
         } catch (IOException e) {
             throw new SmartFrogRuntimeException("Failed to copy " + source + " to " + dest, e, this);
         }
