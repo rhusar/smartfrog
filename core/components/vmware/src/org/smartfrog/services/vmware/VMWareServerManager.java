@@ -59,6 +59,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     private static final String VMPATH = "vmpath";
     private static final String VMACTION = "vmaction";
 
+    // number of retries
+    private int NumRetries = 0;
+
     public VMWareServerManager() throws RemoteException {
 
     }
@@ -71,13 +74,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-
-        // check wether the VMware Server is installed on this system
-        VMWareServerCondition installed = null;
-        installed = (VMWareServerCondition) sfResolve(ATTR_SERVER_INSTALLED, installed, true);
-        if (installed == null || !installed.evaluate()) {
-            throw new SmartFrogDeploymentException("A compatible version of VMware is not installed on this system", this);
-        }
 
         // get the vix properties
         String strVixLibPath, strVixLibName;
@@ -101,6 +97,9 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         // get the vm image folders
         setVmImagesFolder((String)sfResolve(ATTR_COPY_IMAGES_DIR, true));
         setVmMasterFolder((String)sfResolve(ATTR_MASTER_IMAGES_DIR, true));
+
+        // get the number of retries
+        NumRetries = sfResolve(ATTR_NUM_RETRIES, 0, false);
 
         // generate the control modules for the vm images
         loadExistingVMImages();
@@ -209,19 +208,27 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResponse = "success";
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+        // get a machine module
+        VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
 
-            // check if it worked
-            if (tmp != null) {
-                tmp.startUp();
+        // check if it worked
+        SmartFrogException ex = null;
+        if (tmp != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    tmp.startUp();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    continue;
+                }
+                ex = null;
+                break;
             }
-            else strResponse = "Failed to start \"" + strVMPath + "\": Image module not existing.";
-
-        } catch (SmartFrogException e) {
-            throw failure("start",strVMPath,e);
         }
+        else strResponse = "Failed to start \"" + strVMPath + "\": Image module not existing.";
+
+        if (ex != null)
+            throw failure("start",strVMPath,ex);
 
         return strResponse;
     }
@@ -367,20 +374,33 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public String getVMAttribute(String inVMName, String inKey) throws RemoteException {
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+        String strResult = "";
 
-            // check if it worked
-            if (tmp != null) {
-                return tmp.getAttribute(inKey);
+        // get a machine module
+        VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        SmartFrogException ex = null;
+        if (tmp != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    strResult = tmp.getAttribute(inKey);
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying getVMAttribute");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-        } catch (SmartFrogException e) {
-            sfLog().error("Failed to get attribute of \"" + strVMPath + "\"", e);
         }
 
+        if (ex != null)
+            sfLog().error("Failed to get attribute of \"" + strVMPath + "\"", ex);
+
+
         // an error occurred
-        return "";
+        return strResult;
     }
 
     /**
@@ -395,52 +415,33 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public String setVMAttribute(String inVMName, String inKey, String inValue) throws RemoteException {
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+        String strResult = "";
 
-            // check if it worked
-            if (tmp != null) {
-                return tmp.setAttribute(inKey, inValue);
+        // get a machine module
+        VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        SmartFrogException ex = null;
+        if (tmp != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    strResult = tmp.setAttribute(inKey, inValue);
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying setVMAttribute");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-        } catch (SmartFrogException e) {
-            sfLog().error("Failed to rename \"" + strVMPath + "\"", e);
         }
 
-        // an error occurred
-        return "";
-    }
+        if (ex != null)
+            sfLog().error("Failed to rename \"" + strVMPath + "\"", ex);
 
-//    /**
-//     * Copies a file from the host OS into the guest OS of the specified VM.
-//     *
-//     * @param inVMPath     The vm which contains the guest OS.
-//     * @param inSourceFile The path on the host OS.
-//     * @param inTargetFile The path on the guest OS.
-//     * @return "success" or an error message.
-//     * @throws java.rmi.RemoteException
-//     */
-//    public String copyFileFromHostToGuestOS(String inVMPath, String inSourceFile, String inTargetFile) throws RemoteException {
-//        // error string
-//        String strResponse = "success";
-//
-//        try {
-//            // get a machine module
-//            VMWareImageModule tmp = vmComm.getImageModule(inVMPath);
-//
-//            // check if it worked
-//            if (tmp != null) {
-//                tmp.copyFileFromHostToGuestOS(inSourceFile, inTargetFile);
-//            }
-//            else strResponse = "Failed to copy file from host OS to guest OS in \"" + inVMPath + "\": Image module not existing.";
-//        } catch (SmartFrogException e) {
-//            sfLog().error("Failed to copy file from host OS to guest OS in \"" + inVMPath + "\"", e);
-//            strResponse = "Exception while copying file from host OS to guest OS in \"" + inVMPath + "\": " + e.toString();
-//        }
-//
-//        // an error occurred
-//        return strResponse;
-//    }
+        // an error occurred
+        return strResult;
+    }
 
     /**
      * Shuts down a virtual machine. Has to be powered on.
@@ -455,18 +456,28 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResponse = "success";
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
 
-            // check if it worked
-            if (module != null) {
-                module.shutDown();
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    module.shutDown();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying shutDownVM");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-            else strResponse = "Failed to shut down \"" + strVMPath + "\": Image module not existing.";
-        } catch (SmartFrogException e) {
-            throw failure("shutdown",strVMPath , e);
         }
+        else strResponse = "Failed to shut down \"" + strVMPath + "\": Image module not existing.";
+
+        if (ex != null)
+            throw failure("shutdown",strVMPath , ex);
 
         // an error occurred
         return strResponse;
@@ -485,19 +496,29 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResponse = "success";
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
 
-            // check if it worked
-            if (module != null) {
-                module.suspend();
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    module.suspend();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying suspendVM");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-            else strResponse = "Failed to suspend \"" + strVMPath + "\": Image module does not exist";
-
-        } catch (SmartFrogException e) {
-            throw failure("suspend",strVMPath, e);
         }
+        else strResponse = "Failed to suspend \"" + strVMPath + "\": Image module does not exist";
+
+        if (ex != null)
+            throw failure("suspend",strVMPath, ex);
 
         return strResponse;
     }
@@ -514,19 +535,28 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResponse = "success";
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
 
-            // check if it worked
-            if (module != null) {
-                module.reset();
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    module.reset();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying resetVM");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-            else strResponse = "Failed to reset \"" + strVMPath + "\": Image module not existing.";
-
-        } catch (SmartFrogException e) {
-            throw failure("reset",strVMPath , e);
         }
+        else strResponse = "Failed to reset \"" + strVMPath + "\": Image module not existing.";
+
+        if (ex != null)
+            throw failure("reset", strVMPath, ex);
 
         // an error occurred
         return strResponse;
@@ -542,20 +572,32 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public int getPowerState(String inVMName) throws RemoteException, SmartFrogException {
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
+        int iResult = 0;
 
-            // check if it worked
-            if (module != null) {
-                return module.getPowerState();
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    iResult = module.getPowerState();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying getPowerState");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-        } catch (SmartFrogException e) {
-            throw failure("get power state",strVMPath , e);
         }
 
+        if (ex != null)
+            throw failure("get power state",strVMPath , ex);
+
         // an error occurred
-        return 0;
+        return iResult;
     }
 
     /**
@@ -569,20 +611,32 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
     public int getToolsState(String inVMName) throws RemoteException, SmartFrogException {
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
+        int iResult = 0;
 
-            // check if it worked
-            if (module != null) {
-                return module.getToolsState();
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    iResult = module.getToolsState();
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying getToolsState");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-        } catch (SmartFrogException e) {
-            throw failure("get tool state", strVMPath , e);
         }
 
+        if (ex != null)
+            throw failure("get tool state", strVMPath, ex);
+
         // an error occurred
-        return 0;
+        return iResult;
     }
 
     /**
@@ -654,21 +708,28 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         String strResponse = "success";
         String strVMPath = constructVMPath(inVMName);
 
-        try {
-            // get a machine module
-            VMWareImageModule module = vmComm.getImageModule(strVMPath);
+        // get a machine module
+        VMWareImageModule module = vmComm.getImageModule(strVMPath);
 
-            // check if it worked
-            if (module != null) {
-                sfLog().info("executing program in guest");
-                module.executeInGuestOS(inCommand, inParameters, inNoWait);
-                sfLog().info("executed program in guest");
+        // check if it worked
+        SmartFrogException ex = null;
+        if (module != null) {
+            for (int i = NumRetries; i >= 0; --i) {
+                try {
+                    module.executeInGuestOS(inCommand, inParameters, inNoWait);
+                } catch (SmartFrogException e) {
+                    ex = e;
+                    sfLog().info("retrying executeInGuestOS");
+                    continue;
+                }
+                ex = null;
+                break;
             }
-            else strResponse = String.format("Failed to execute: \"%s %s\": Image module not existing.", inCommand, inParameters);
+        } else
+            strResponse = String.format("Failed to execute: \"%s %s\": Image module not existing.", inCommand, inParameters);
 
-        } catch (SmartFrogException e) {
-            throw failure(String.format("execute \"%s %s\" in guest os of", inCommand, inParameters), strVMPath , e);
-        }
+        if (ex != null)
+            throw failure(String.format("execute \"%s %s\" in guest os of", inCommand, inParameters), strVMPath, ex);
 
         return strResponse;
     }

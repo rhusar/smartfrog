@@ -63,18 +63,13 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
     private VMWareServerManager manager;
 
     /**
-     * Contains the SF resolution error if resolution of VMWareServerManager failed.
-     */
-    private String strResolutionError = "";
-
-    /**
      * Reference to the XMPP listener.
      */
     private XmppListenerImpl refXmppListener;
     public static final String ATTR_LISTENER = "listener";
-    private static final String VMRESPONSE = "vmresponse";
-    private static final String VMNAME = "vmname";
-    private static final String VMCMD = "vmcmd";
+    public static final String VMRESPONSE = "vmresponse";
+    public static final String VMNAME = "vmname";
+    public static final String VMCMD = "vmcmd";
 
     /**
      * Constructor.
@@ -111,12 +106,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
         super.sfStart();
 
         // get the reference to the vmware server manager
-        try {
-            manager = (VMWareServerManager)sfResolve("vmServerManager", manager, true);
-        } catch (SmartFrogResolutionException e) {
-            strResolutionError = e.getMessage();
-            sfLog().error("Resolution of VMWareServerManager failed.", e);
-        }
+        manager = (VMWareServerManager)sfResolve("vmServerManager", manager, true);
 
         // get the reference to the xmpp message listener
         XmppListener xmppListener = (XmppListener) sfResolve(ATTR_LISTENER, refXmppListener, true);
@@ -139,6 +129,17 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+
+        sfLog().info("VMWareMessageListener going down.");
+
+        // unregister this listener from the xmpp message listener
+        refXmppListener.unregisterPacketHandler(this);
+    }
+
+    public void sfTerminate(TerminationRecord status) {
+        super.sfTerminate(status);
+
+        sfLog().info("VMWareMessageListener going down.");
 
         // unregister this listener from the xmpp message listener
         refXmppListener.unregisterPacketHandler(this);
