@@ -1,5 +1,5 @@
 <project name="rpmbuild" basedir="."
-  default="rpm"
+  default="default"
   xmlns:sec="http://security.smartfrog.org/">
 
   <!--
@@ -51,6 +51,8 @@
   <property file="${parent.project.dir}/security.properties"/>
   <property file="${user.home}/.ant/security.properties"/>
 
+
+  <target name="default" depends="rpm" />
   
   <!--
     Initialise everything. We assume the directories are all set up
@@ -58,7 +60,9 @@
   <target name="init">
     <property name="build.rpm.dir" location="${basedir}"/>
     <property name="rpm.build.dir" location="${basedir}"/>
+    <!--the root of the rpm-->
     <property name="rpm.root.dir" location="${build.rpm.dir}/root"/>
+
     <property name="dist.dir" location="dist"/>
     <property name="dist.rpm.dir" location="${dist.dir}/rpm"/>
     <property name="dist.signed.rpm.dir" location="${dist.dir}/signedrpm"/>
@@ -270,6 +274,21 @@ See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installati
     </presetdef>
   </target>
 
+
+  <target name="ready-to-run-dist" depends="init">
+    <presetdef name="dist">
+      <ant inheritall="false" inheritrefs="false" dir="${core.install.dir}" />
+    </presetdef>
+  </target>
+
+
+  <target name="create-new-daemon-keys" depends="ready-to-run-dist,init-security"
+      description="Create a new set of daemon host keys ">
+    <dist target="newDaemon">
+      <property name="host.dir.suffix" value="" />
+      <property name="CA.dir" location="security.ca.dir" />
+    </dist>
+  </target>
 
   <target name="ready-to-sign" depends="init,init-security" if="sign.jars"/>
 

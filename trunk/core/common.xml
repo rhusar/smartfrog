@@ -1490,9 +1490,10 @@ java.class.path=
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
-            <!--all properties beginning with test-->
+            <!--all properties beginning with test. or run.-->
             <syspropertyset>
               <propertyref prefix="test."/>
+              <propertyref prefix="run."/>
             </syspropertyset>
           </sf-startdaemon-debug>
           </sf-conditional>

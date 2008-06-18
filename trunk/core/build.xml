@@ -506,7 +506,7 @@ For more information: www.smartfrog.org
           <exclude name="ec2/build.xml" unless="java1.6+"/>
 
           <!--Not yet functional -->
-          <exclude name="hadoop/build.xml" />
+          <exclude name="hadoop/build.xml"  unless="java1.6+"/>
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
@@ -560,7 +560,7 @@ For more information: www.smartfrog.org
   <target name="published" depends="ivy-publish"/>
 
   <target name="ivy-list-order" depends="ivy-init">
-    <echo>java1.6+=${java1.6+}</echo>
+    <echo>java1.5+=${java1.5+}</echo>
     <pathconvert pathsep="&#10;" refid="child.projects"
       property="child.projects.list" />
     <echo>

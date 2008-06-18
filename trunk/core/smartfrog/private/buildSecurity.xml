@@ -37,7 +37,7 @@
     <property name="dist.signedLib.dir" location="${dist.dir}/signedLib"/>
     <property name="disttestCA" value="${dist.testCA.dir}"/>
     <!-- dist.dir and others are set by surrounding build.xml -->
-    <!--   <property name="disttestCA" value="${dist.testCA.dir}"/>
+    <!--
      <property name="dist.private.dir" value="${dist.dir}/${private}"/>
      <property name="distsignedLib" value="${dist.signedLib.dir}"/>
      <property name="distlib" value="${dist.lib.dir}"/>
@@ -49,10 +49,10 @@
     <property name="security.uri" value="http://security.smartfrog.org/" />
     <!-- REVISIT if the private dir is already defined, this assigment is harmless.
       if it is unassigned, it takes.-->
-    <property name="dist.private.dir" value="${dist.dir}/${private}"/>
+    <property name="dist.private.dir" value="${dist.dir}/private"/>
     <property name="dist.lib.dir" location="${dist.dir}/lib"/>
 
-    <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
+    <property name="CA.dir" location="${dist.private.dir}/${CAFromPrivate}"/>
     <property name="CAsubdir" value="demoCA"/>
 
 
@@ -73,9 +73,18 @@
 
     <property name="randomFile" value=".rnd"/>
     <property name="tempPasswdFile" value="passwd"/>
-    <property name="hostDirPrefix" value="host"/>
+    <property name="host.dir.prefix" value="host"/>
+    <!--the host dir suffix is, by default, set to "1"-->
+    <property name="host.dir.suffix" value="1" />
+    <!--the full host directory comes from concatenating the two-->
+    <property name="host.subdir" value="${host.dir.prefix}${host.dir.suffix}" />
+    <property name="openssl.cnf" location="${CA.dir}/openssl.cnf" />
 
-    <property name="openssl.cnf" location="${CA}/openssl.cnf" />
+    <property name="CA.field.CN" value="sfCodeSigner"/>
+    <property name="CA.field.OU" value="HPLaboratories"/>
+    <property name="CA.field.O" value="HP"/>
+    <property name="CA.field.C" value="UK"/>
+
   </target>
 
 
@@ -86,6 +95,16 @@
       </condition>
       Not found: ${openssl.cnf}
       Have all the setup/copy targets been run?
+    </fail>
+  </target>
+
+  <target name="validate-daemon-CA-setup" depends="initCAProperties">
+    <fail>
+      <condition>
+        <not><available file="${CA.dir}/codesigner.st"/></not>
+      </condition>
+      Not found: ${CA.dir}/codesigner.st
+      There is no Certification Authority. Run the "initCA" target to creat a new CA.
     </fail>
   </target>
 
@@ -101,11 +120,11 @@
 
   <target name="initCAPrograms" depends="initCAProperties">
     <presetdef name="openssl" uri="${security.uri}">
-      <exec dir="${CA}" executable="openssl">
+      <exec dir="${CA.dir}" executable="openssl">
       </exec>
     </presetdef>
     <presetdef name="keytool" uri="${security.uri}">
-      <exec dir="${CA}" executable="keytool">
+      <exec dir="${CA.dir}" executable="keytool">
       </exec>
     </presetdef>
 
@@ -116,7 +135,7 @@
             jar="${dist.lib.dir}/@{name}"
             signedjar="${dist.signedLib.dir}/@{name}"
             alias="${aliasSelfKey}"
-            keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+            keystore="${CA.dir}/${defaultCodeSignerCAKeyStore}"
             storetype="${keystoreType}"
             storepass="${defaultCAPassword}"/>
       </sequential>
@@ -129,10 +148,10 @@
 
   <target name="initCommunityCA" depends="ready-to-create-CA">
     <!-- Configure some setup files -->
-    <mkdir dir="${CA}/${CAsubdir}"/>
-    <mkdir dir="${CA}/${CAsubdir}/newcerts"/>
-    <touch file="${CA}/${CAsubdir}/index.txt"/>
-    <echo message="01" file="${CA}/${CAsubdir}/serial"/>
+    <mkdir dir="${CA.dir}/${CAsubdir}"/>
+    <mkdir dir="${CA.dir}/${CAsubdir}/newcerts"/>
+    <touch file="${CA.dir}/${CAsubdir}/index.txt"/>
+    <echo message="01" file="${CA.dir}/${CAsubdir}/serial"/>
 
     <!--rand  -rand ${randomFile} -out ${randomFile} 64"-->
     <sec:openssl>
@@ -179,13 +198,13 @@
     </sec:openssl>
 
 
-    <copy file="${CA}/cacert.pem" todir="${CA}/${CAsubdir}"/>
+    <copy file="${CA.dir}/cacert.pem" todir="${CA.dir}/${CAsubdir}"/>
   </target>
 
   <target name="initCodeSignerCA" depends="initCAPrograms">
     <!-- First generate new keys  -->
     <genkey alias="${aliasSelfKey}"
-        keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+        keystore="${CA.dir}/${defaultCodeSignerCAKeyStore}"
         keyalg="RSA"
         verbose="true"
         validity="${certificate.duration}"
@@ -193,10 +212,10 @@
         storetype="${keystoreType}"
         >
       <dname>
-        <param name="CN" value="sfCodeSigner"/>
-        <param name="OU" value="HPLaboratories"/>
-        <param name="O" value="HP"/>
-        <param name="C" value="UK"/>
+        <param name="CN" value="${CA.field.CN}"/>
+        <param name="OU" value="${CA.field.OU}"/>
+        <param name="O" value="${CA.field.O}"/>
+        <param name="C" value="${CA.field.C}"/>
       </dname>
     </genkey>
 
@@ -220,11 +239,11 @@
       <arg value="-password"/>
       <arg value="${defaultCAPassword}"/>
       <arg value="-file"/>
-      <arg value="${CA}/${defaultCodeSignerCAKeyStore}"/>
+      <arg value="${CA.dir}/${defaultCodeSignerCAKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasMACDataKey}"/>
       <classpath>
-	<fileset dir="${dist.lib.dir}" includes="*.jar" />
+        <fileset dir="${dist.lib.dir}" includes="*.jar" />
         <pathelement path="${java.class.path}"/>
       </classpath>
     </java>
@@ -238,7 +257,7 @@
     </touch>
   </target>
 
-  <target name="initCA" depends="cleanCA,initCodeSignerCA,initCommunityCA,touchDistLibs">
+  <target name="initCA" depends="cleanCA, initCodeSignerCA, initCommunityCA, touchDistLibs">
   </target>
 
 
@@ -246,7 +265,7 @@
   <target name="signjarbuild" depends="ready-to-create-CA">
     <signjar jar="${jarname}"
         alias="${aliasSelfKey}"
-        keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+        keystore="${CA.dir}/${defaultCodeSignerCAKeyStore}"
         signedjar="${signedjarname}"
         storetype="${keystoreType}"
         storepass="${defaultCAPassword}"/>
@@ -282,31 +301,33 @@
     <delete file="${dist.private.dir}/header.txt"/>
   </target>
 
-  <!-- 1.4 Initialize security credentials for new daemon -->
-  <target name="newDaemon" depends="randomPasswd,initCAPrograms,ready-to-create-CA">
+  <target name="ready.to.create.daemon.credentials"
+      depends="validate-daemon-CA-setup,randomPasswd, initCAPrograms, ready-to-create-CA" />
+
+  <!-- Initialize security credentials for new daemon -->
+  <target name="newDaemon" depends="ready.to.create.daemon.credentials"
+      description="Create the security credentials for a new daemon">
     <!-- Clean old key store, init timestamp -->
+
     <tstamp>
-      <format property="suffix" pattern="mmss"/>
+      <format property="unique.timestamp" pattern="yyyymmddhhmmss"/>
     </tstamp>
-    <tstamp>
-      <format property="Unique" pattern="yyyymmddhhmmss"/>
-    </tstamp>
-    <property name="daemonFromPrivate" value="${hostDirPrefix}${suffix}"/>
-    <property name="daemonDir" location="${dist.private.dir}/${hostDirPrefix}${suffix}"/>
-    <mkdir dir="${daemonDir}"/>
+    <property name="daemon.hostkey.dir" location="${dist.private.dir}/${host.subdir}"/>
+    <echo>Creating a new daemon key in ${daemon.hostkey.dir}</echo>
+    <mkdir dir="${daemon.hostkey.dir}"/>
 
     <!-- First generate new keys -->
     <genkey alias="${aliasSelfKey}"
-        keystore="${daemonDir}/${defaultKeyStore}"
+        keystore="${daemon.hostkey.dir}/${defaultKeyStore}"
         keyalg="RSA"
         storepass="${defaultPassword}"
         storetype="${keystoreType}"
-        dname="CN=SmartFrog${Unique}, OU=HPL, O=HP, C=UK"/>
+        dname="CN=SmartFrog${unique.timestamp}, OU=HPL, O=HP, C=UK"/>
 
     <!-- Generate request for certificate -->
     <sec:keytool dir="${dist.private.dir}">
       <arg value="-keystore"/>
-      <arg value="${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="${host.subdir}/${defaultKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasSelfKey}"/>
       <arg value="-certreq"/>
@@ -317,7 +338,7 @@
       <arg value="-storetype"/>
       <arg value="${keystoreType}"/>
 
-      <!--line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs  -storetype ${ketstoreType}"-->
+      <!--line="-keystore ${host.subdir}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs  -storetype ${ketstoreType}"-->
     </sec:keytool>
 
     <!-- Get the CA to sign it -->
@@ -361,11 +382,11 @@
 
     <!-- Add public of Community CA to Root of Trust -->
     <!--
-      -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem  -storetype ${keystoreType}
+      -keystore ${host.subdir}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem  -storetype ${keystoreType}
     -->
     <sec:keytool dir="${dist.private.dir}">
       <arg value="-keystore"/>
-      <arg value="${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="${host.subdir}/${defaultKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasCommunityKey}"/>
       <arg value="-import"/>
@@ -380,11 +401,11 @@
 
     <!-- Add certificate to my keys storage -->
     <!--
-              line="-storepass ${defaultPassword} -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der -storetype ${keystoreType}"/>
+              line="-storepass ${defaultPassword} -keystore ${host.subdir}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der -storetype ${keystoreType}"/>
     -->
     <sec:keytool dir="${dist.private.dir}">
       <arg value="-keystore"/>
-      <arg value="${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="${host.subdir}/${defaultKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasSelfKey}"/>
       <arg value="-import"/>
@@ -397,10 +418,10 @@
     </sec:keytool>
 
     <!-- Add public of CodeSigner CA to Root of Trust -->
-    <!--          line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer" -storetype ${keystoreType}/>-->
+    <!--          line="-keystore ${host.subdir}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer" -storetype ${keystoreType}/>-->
     <exec dir="${dist.private.dir}" executable="keytool">
       <arg value="-keystore"/>
-      <arg value="${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="${host.subdir}/${defaultKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasCSKey}"/>
       <arg value="-import"/>
@@ -419,22 +440,22 @@
       <arg value="-sourcepassword"/>
       <arg value="${defaultCAPassword}"/>
       <arg value="-sourcefile"/>
-      <arg value="${CA}/${defaultCodeSignerCAKeyStore}"/>
+      <arg value="${CA.dir}/${defaultCodeSignerCAKeyStore}"/>
       <arg value="-destpassword"/>
       <arg value="${defaultPassword}"/>
       <arg value="-destfile"/>
-      <arg value="${dist.private.dir}/${daemonFromPrivate}/${defaultKeyStore}"/>
+      <arg value="${dist.private.dir}/${host.subdir}/${defaultKeyStore}"/>
       <arg value="-alias"/>
       <arg value="${aliasMACDataKey}"/>
       <classpath>
-	<fileset dir="${dist.lib.dir}" includes="*.jar" />
+        <fileset dir="${dist.lib.dir}" includes="*.jar" />
         <pathelement path="${java.class.path}"/>
       </classpath>
     </java>
 
     <!-- Create ad-hoc security properties file -->
-    <copy file="${dist.private.dir}/${defaultSecProp}" tofile="${daemonDir}/${defaultSecProp}"/>
-    <propertyfile file="${daemonDir}/${defaultSecProp}">
+    <copy file="${dist.private.dir}/${defaultSecProp}" tofile="${daemon.hostkey.dir}/${defaultSecProp}"/>
+    <propertyfile file="${daemon.hostkey.dir}/${defaultSecProp}">
       <entry key="org.smartfrog.sfcore.security.keyStorePassword" value="${defaultPassword}"/>
     </propertyfile>
 
@@ -444,18 +465,18 @@
 
   <target name="cleanCA" description=" Cleans the Certificate Authority"
       depends="initCAProperties">
-    <delete dir="${CA}/${CAsubdir}"/>
-    <delete file="${CA}/cacert.pem"/>
-    <delete file="${CA}/codesigner.cer"/>
-    <delete file="${CA}/codesigner.st"/>
-    <delete file="${CA}/ca.key"/>
-    <delete file="${CA}/client.crs"/>
-    <delete file="${CA}/client.crs.der"/>
+    <delete dir="${CA.dir}/${CAsubdir}"/>
+    <delete file="${CA.dir}/cacert.pem"/>
+    <delete file="${CA.dir}/codesigner.cer"/>
+    <delete file="${CA.dir}/codesigner.st"/>
+    <delete file="${CA.dir}/ca.key"/>
+    <delete file="${CA.dir}/client.crs"/>
+    <delete file="${CA.dir}/client.crs.der"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${dist.private.dir}" includes="host*/*"/>
       <fileset dir="${dist.private.dir}" includes="host*"/>
     </delete>
-    <delete file="${CA}/client.crs.pem"/>
+    <delete file="${CA.dir}/client.crs.pem"/>
   </target>
 
   <!-- 1.6 Dummy CA initialization when openssl is not available -->
@@ -463,12 +484,12 @@
       depends="cleanCA,touchDistLibs"
       description="Initialise a dummy CA">
     <copy todir="${dist.private.dir}">
-      <fileset dir="${disttestCA}">
+      <fileset dir="${dist.testCA.dir}">
         <include name="host*/*"/>
       </fileset>
     </copy>
-    <copy file="${disttestCA}/${defaultCodeSignerCAKeyStore}"
-        todir="${CA}"/>
+    <copy file="${dist.testCA.dir}/${defaultCodeSignerCAKeyStore}"
+        todir="${CA.dir}"/>
   </target>
 
 
