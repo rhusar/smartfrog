@@ -23,7 +23,6 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.Path;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 import java.rmi.RemoteException;
 
