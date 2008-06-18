@@ -49,8 +49,7 @@ Argument extends LAZY {
 
 MachineSchema extends Schema {
     // one of the following has to be specified
-    Hostname extends OptionalString;
-    IpAddress extends OptionalString;
+    HostAddress extends OptionalString;
 
     // x86 or IA64?
     Architecture extends String;
