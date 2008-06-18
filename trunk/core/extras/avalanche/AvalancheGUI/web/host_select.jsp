@@ -22,6 +22,9 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
+<%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater"%>
+<%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
+<%@ page import="java.util.ArrayList"%>
 <%@ include file="header.inc.jsp"%>
 <%
     String errMsg = null; 
@@ -52,8 +55,21 @@ For more information: www.smartfrog.org
     ActionType action = null;
     SfDescriptionType sfDesc = null; 
 
-    String []hosts = hostManager.listHosts();
-    
+    String []hostlist = hostManager.listHosts();
+	String []hosts= new String[0];
+	ArrayList listHolder = new ArrayList();
+	ActiveProfileUpdater updater = new ActiveProfileUpdater();
+	 ActiveProfileType type = null;
+	for(int p=0;p<hostlist.length;p++){
+		boolean active = false;
+		int q =0;
+		 type = updater.getActiveProfile(hostlist[p]);
+		 active = type.getHostState().equals("Available");
+		 if(active)
+			listHolder.add(hostlist[p]);
+	}
+    hosts = (String[])listHolder.toArray(hosts);
+
     VersionType[] versions = module.getVersionArray();
     for( int i=0;i<versions.length;i++){
 	if( version.equals(versions[i].getNumber()) ){
@@ -234,7 +250,9 @@ setNextSubtitle("Select Host Page");
 </div>
 
 <%@ include file="message.inc.jsp" %>
-
+<% if (hosts.length==0){%>
+	<p><b><font size="3">No Active nodes available.</font></b></p>
+	<%}%>
 <!-- Actual Body starts here -->
 <table  border="0" cellpadding="0" cellspacing="0" class="dataTable" id="moduleTable">
   <caption>Action Information</caption>
