@@ -103,8 +103,6 @@ public class BootStrap {
                 String username = h.getUser();
                 String password = h.getPassword();
 
-                String useIpForXmpp = h.getUseIpForXmpp() ? "true" : "false";
-
                 // Setting the AccessMode
                 HostType.AccessModes am = h.getAccessModes();
                 String accessType = "ssh";
@@ -195,8 +193,7 @@ public class BootStrap {
                             avalancheInstallationDirectory,          // installdir
                             DEFAULT_EMAILTO,        // emailto
                             DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER,    // emailserver
-                            useIpForXmpp);
+                            DEFAULT_EMAILSERVER);
                     listDaemons.add(d);
 
                 } else {
@@ -220,8 +217,7 @@ public class BootStrap {
                             avalancheInstallationDirectory,          // installdir
                             DEFAULT_EMAILTO,        // emailto
                             DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER,    // emailserver
-                            useIpForXmpp);
+                            DEFAULT_EMAILSERVER);
                     listDaemons.add(d);
                 }
 
