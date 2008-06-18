@@ -60,7 +60,7 @@ public interface VMWareServerManagerServices extends Remote {
     String ATTR_VIXLIBRARYPNAME_LINUX = "vixLibraryNameLinux";
 
     /** {@value} */
-    String ATTR_SERVER_INSTALLED = "serverInstalled";
+    String ATTR_NUM_RETRIES = "numRetries";
 
     /**
      * Starts a virtual machine. Has to be powered off or suspended.

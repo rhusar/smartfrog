@@ -36,6 +36,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 VMWareServerManager extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareServerManager";
 
+    // the vix api shows no stable behaviour and sometimes
+    // things fail without an apparent reason and then
+    // just work fine on a retry
+    // this is the number of retries the vmware server manage
+    // should do before reporting an error
+    numRetries 2;
+
     copyImages ((ENVPROPERTY SFHOME) ++ "/vmcopyimages");
     masterImages ((ENVPROPERTY SFHOME) ++ "/vmmasterimages");
 
@@ -53,18 +60,18 @@ VMWareMessageListener extends Prim {
     sfClass "org.smartfrog.services.vmware.VMWareMessageListener";
 }
 
-sfConfig extends Compound {
-
-    manager extends VMWareServerManager;
-
-    listener extends AvlXmppListener {
-        server (ENVPROPERTY AVALANCHE_EVENT_SERVER);
-        login "x";
-        password "x";
-    }
-
-    vmMessageListener extends VMWareMessageListener {
-        vmServerManager LAZY PARENT:manager;
-        listener LAZY PARENT:listener;
-    }
-}
+//sfConfig extends Compound {
+//
+//    manager extends VMWareServerManager;
+//
+//    listener extends AvlXmppListener {
+//        server (ENVPROPERTY AVALANCHE_EVENT_SERVER);
+//        login "x";
+//        password "x";
+//    }
+//
+//    vmMessageListener extends VMWareMessageListener {
+//        vmServerManager LAZY PARENT:manager;
+//        listener LAZY PARENT:listener;
+//    }
+//}
