@@ -348,7 +348,7 @@
     <property name="rpms.signed.tar.gz"
         location="${upload.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar.gz"/>
     <property name="private-rpm-package.tar"
-        location="${release.dir}/smartfrog-private-rpms-${smartfrog.version}.tar"/>
+        location="${upload.dir}/smartfrog-private-rpms-${smartfrog.version}.tar"/>
     <property name="private-rpm-package.tar.gz"
         location="${private-rpm-package.tar}.gz"/>
 
@@ -399,7 +399,7 @@
 
   <target name="rpm" depends="gzip-rpm" description="create the gzipped RPM"/>
 
-  <target name="build-rpm" depends="ready-to-rpm"
+  <target name="build-rpm" depends="package-private-rpm,ready-to-rpm"
       if="has.rpm.tools"
       description="create an RPM file of the core smartfrog libraries">
     <rpm
@@ -416,7 +416,7 @@
 
   <target name="copy-scripts" depends="init-rpm">
     <expandingcopy todir="${rpm.root.dir}">
-      <fileset dir="scripts" includes="**/*"/>
+      <fileset dir="scripts" includes="etc/**/*"/>
     </expandingcopy>
     <property name="profile.d" location="${rpm.root.dir}/etc/profile.d"/>
     <property name="init.d" location="${rpm.root.dir}/etc/init.d"/>
@@ -576,7 +576,6 @@
 
   <target name="ready-to-sign-rpm-jars"
       depends="copy-rpm-specs,create-link-dir,init-security">
-
   </target>
 
   <!--For the RPMs, we create symbolic links instead of a separate directory-->
@@ -591,32 +590,8 @@
     </exec>
   </target>
 
-  <!--we always copy the signed JARs-->
-  <target name="maybe-sign-rpm-jars" depends="ready-to-sign-rpm-jars,symlink-signed-lib"
+  <target name="maybe-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security,symlink-signed-lib"
       xmlns:sec="http://security.smartfrog.org/">
-<!--    <copy todir="${rpm.signed.lib.dir}">
-      <fileset dir="${rpm.lib.dir}">
-        <include name="smartfrog-*.jar"/>
-        <include name="sfServices-*.jar"/>
-        <include name="sfExamples-*.jar"/>
-        <include name="sf-loggingservices-*.jar"/>
-        <include name="sf-anubis-*.jar"/>
-        <include name="commons-logging-*.jar"/>
-        <include name="log4j-*.jar"/>
-        --><!--<include name="sf- -*.jar" />--><!--
-      </fileset>
-    </copy>
-    <sf-conditional if="security.enabled">
-      <echo>Signing the JAR files</echo>
-      <sec:signjar2>
-        <fileset dir="${rpm.signed.lib.dir}"/>
-      </sec:signjar2>
-    </sf-conditional>
-    <sf-conditional unless="security.enabled">
-      <echo level="warn">The signedLib JAR files are not being signed.
-        Do not use the -signed RPMs being created.
-      </echo>
-    </sf-conditional>-->
   </target>
 
 
@@ -627,16 +602,19 @@
     </expandingcopy>
   </target>
 
-  <target name="ready-to-prepare-binary-rpm"
-      depends="copy-and-patch-rpm-scripts,rpm-components,create-link-dir,rpm-javadocs,maybe-sign-rpm-jars">
+  <target name="prepare-other-root-dirs" depends="create-link-dir,symlink-signed-lib,create-link-dir,copy-and-patch-rpm-scripts,rpm-components">
+    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
+  </target>
 
+
+  <target name="ready-to-prepare-binary-rpm"
+      depends="prepare-other-root-dirs,rpm-javadocs,copy-rpm-specs,init-security">
   </target>
 
 
   <target name="prepare-binary-rpm"
       if="has.rpm.tools"
       depends="ready-to-prepare-binary-rpm">
-    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
     <exec executable="tar" failonerror="true"
         dir="${build.rpm.dir}/root/">
       <arg value="cvvf"/>
