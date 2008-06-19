@@ -33,7 +33,6 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/avalanche/client/monitor/xmpp/AvlXMPPListener.sf"
 #include "/org/smartfrog/services/vmware/components.sf"
-#include "/org/smartfrog/services/vmware/vmwarecondition.sf"
 #include "/org/smartfrog/sfcore/workflow/conditional/components.sf"
 
 
