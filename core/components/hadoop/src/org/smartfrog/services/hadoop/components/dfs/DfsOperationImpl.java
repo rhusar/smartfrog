@@ -23,6 +23,7 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -35,6 +36,7 @@ import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * Base class for DFS operations does nothing useful at all other than resolve the cluster settings and fail if they are
@@ -44,6 +46,11 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
 
     private Prim cluster;
     private WorkflowThread worker;
+    /**
+     * Error string {@value}
+     */
+    public static final String FAILED_TO_COPY = "Failed to copy ";
+
 
     public DfsOperationImpl() throws RemoteException {
     }
@@ -183,6 +190,7 @@ public class DfsOperationImpl extends PrimImpl implements DfsOperation {
         setWorker(new DfsWorkerThread(workflowTermination));
         getWorker().start();
     }
+
 
     /**
      * This is a worker thread that optionally can be started by the DfsOperationImpl subclass, in which case it calls

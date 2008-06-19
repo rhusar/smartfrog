@@ -144,8 +144,24 @@ For more information: www.smartfrog.org
     overwrite true;
   }
 
+  /**
+   * copy a local file into HDFS.
+   */
   DfsCopyFileIn extends DfsCopyOperation {
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileInImpl";
   }
 
+  /**
+   * copy an HDFS file into a local file
+   */
+  DfsCopyFileOut extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileOutImpl";
+  }
 
+
+  /**
+   * copy an HDFS file into another HDFS file
+   */
+  DfsCopyFile extends DfsCopyOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileImpl";
+  }

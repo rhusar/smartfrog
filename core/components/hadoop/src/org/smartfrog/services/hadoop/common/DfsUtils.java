@@ -22,14 +22,20 @@ package org.smartfrog.services.hadoop.common;
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.io.IOUtils;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.dfs.DfsOperationImpl;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -42,7 +48,12 @@ public class DfsUtils {
     public static final String ERROR_FAILED_TO_INITIALISE_FILESYSTEM = "Failed to initialise filesystem";
     public static final String ERROR_FAILED_TO_DELETE_PATH = "Failed to delete path ";
     public static final String ERROR_FAILED_TO_CLOSE = "Failed to close ";
-
+    public static final String ERROR_MKDIR_FAILED = "Unable to create the destination directories for ";
+    public static final String ERROR_MISSING_SOURCE_FILE = "Missing source file : ";
+    public static final String ERROR_COPY_FAILED = "Unable to copy ";
+    public static final String ERROR_NO_DIRECTORY_COPY = "Directory copy is not supported for ";
+    public static final String ERROR_NO_STAT = "Unable to stat ";
+    public static final String ERROR_CANNOT_COPY = "Cannot copy ";
 
     private DfsUtils() {
     }
@@ -152,6 +163,114 @@ public class DfsUtils {
             }
         } catch (FileNotFoundException ignored) {
             return null;
+        }
+    }
+
+    /**
+     * Check the dest is not under the source
+     * Credit: Apache Hadoop team;
+     * @param srcFS source filesystem
+     * @param src source path
+     * @param dstFS dest filesystem
+     * @param dst dest path
+     * @throws SmartFrogRuntimeException if there is a match.
+     */
+
+    public static void assertNotDependent(FileSystem srcFS,
+                                      Path src,
+                                      FileSystem dstFS,
+                                      Path dst)
+            throws SmartFrogRuntimeException {
+        if (srcFS.getUri().equals(dstFS.getUri())) {
+            String srcq = src.makeQualified(srcFS).toString() + Path.SEPARATOR;
+            String dstq = dst.makeQualified(dstFS).toString() + Path.SEPARATOR;
+            if (dstq.startsWith(srcq)) {
+                if (srcq.length() == dstq.length()) {
+                    throw new SmartFrogRuntimeException(ERROR_CANNOT_COPY + src + " to itself.");
+                } else {
+                    throw new SmartFrogRuntimeException(ERROR_CANNOT_COPY + src + " to its subdirectory " +
+                            dst);
+                }
+            }
+        }
+    }
+
+    /**
+     * Create the parent directories of a given path
+     *
+     * @param fileSystem filesystem to work with
+     * @param dest       file
+     * @throws SmartFrogRuntimeException failure to create the directories
+     */
+    public static void mkParentDirs(DistributedFileSystem fileSystem, Path dest) throws SmartFrogRuntimeException {
+        try {
+            if (!fileSystem.mkdirs(dest)) {
+                throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest);
+            }
+        } catch (IOException e) {
+            throw new SmartFrogRuntimeException(ERROR_MKDIR_FAILED + dest + " : " + e, e);
+        }
+    }
+
+
+    public static void copyFile(FileSystem srcFS,
+                                Path src,
+                                FileSystem dstFS,
+                                Path dst,
+                                boolean overwrite,
+                                int blocksize) throws SmartFrogRuntimeException {
+        assertNotDependent(srcFS, src, dstFS, dst);
+        FileStatus status;
+        try {
+            status = srcFS.getFileStatus(src);
+        } catch (FileNotFoundException fe) {
+            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + src + " in " + srcFS.getUri(), fe);
+        } catch (IOException e) {
+            throw new SmartFrogRuntimeException(ERROR_NO_STAT + src + " in " + srcFS.getUri() + " : " + e, e);
+        }
+        if (status.isDir()) {
+            throw new SmartFrogRuntimeException(ERROR_NO_DIRECTORY_COPY + src + " in " + srcFS.getUri());
+        }
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = srcFS.open(src);
+            out = dstFS.create(dst, overwrite);
+        } catch (IOException e) {
+            //close the input stream if it is not already in there
+            org.smartfrog.services.filesystem.FileSystem.close(in);
+            org.smartfrog.services.filesystem.FileSystem.close(out);
+        }
+        try {
+            IOUtils.copyBytes(in, out, blocksize, true);
+        } catch (IOException e) {
+            throw new SmartFrogRuntimeException(ERROR_COPY_FAILED + src + " in " + srcFS.getUri()
+                    + " to " + dst + " in " + dstFS.getUri()
+                    + " : " + e,
+                    e);
+        }
+
+    }
+
+    /**
+     * Copy a local file into HDFS
+     * @param fileSystem filesystem for the destination
+     * @param source source file
+     * @param dest dest path
+     * @param overwrite should there be an overwrite?
+     * @throws SmartFrogRuntimeException
+     */
+    public static void copyLocalFileIn(DistributedFileSystem fileSystem, File source, Path dest, boolean overwrite)
+            throws SmartFrogRuntimeException {
+        if (!source.exists()) {
+            throw new SmartFrogRuntimeException(ERROR_MISSING_SOURCE_FILE + source);
+        }
+        Path localSource = new Path(source.toURI().toString());
+        mkParentDirs(fileSystem, dest);
+        try {
+            fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
+        } catch (IOException e) {
+            throw new SmartFrogRuntimeException(DfsOperationImpl.FAILED_TO_COPY + source + " to " + dest, e);
         }
     }
 }

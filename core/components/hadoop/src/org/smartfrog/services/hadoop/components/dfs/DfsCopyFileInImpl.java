@@ -23,11 +23,11 @@ import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -61,15 +61,8 @@ public class DfsCopyFileInImpl extends DfsOperationImpl implements DfsCopyOperat
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path dest = resolveDfsPath(ATTR_DEST);
         File source = FileSystem.lookupAbsoluteFile(this, ATTR_SOURCE, null, null, true, null);
-        if (!source.exists()) {
-            throw new SmartFrogRuntimeException("Missing source file : " + source, this);
-        }
-        Path localSource = new Path(source.toURI().toString());
-        boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
-        try {
-            fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
-        } catch (IOException e) {
-            throw new SmartFrogRuntimeException("Failed to copy " + source + " to " + dest, e, this);
-        }
+         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
+        DfsUtils.copyLocalFileIn(fileSystem, source, dest, overwrite);
     }
+
 }

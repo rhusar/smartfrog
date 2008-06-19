@@ -21,12 +21,11 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
@@ -34,9 +33,9 @@ import java.rmi.RemoteException;
  * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
 
-public class DfsCopyFileOutImpl extends DfsOperationImpl implements DfsCopyOperation {
+public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
 
-    public DfsCopyFileOutImpl() throws RemoteException {
+    public DfsCopyFileImpl() throws RemoteException {
     }
 
     /**
@@ -60,15 +59,12 @@ public class DfsCopyFileOutImpl extends DfsOperationImpl implements DfsCopyOpera
      */
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path source = resolveDfsPath(ATTR_SOURCE);
-        File dest = FileSystem.lookupAbsoluteFile(this, ATTR_DEST, null, null, true, null);
-        Path destPath = new Path(dest.toURI().toString());
+        Path dest = resolveDfsPath(ATTR_DEST);
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
-        if(!overwrite && dest.exists()) {
-            //bail out if the dest file exists and overwrite==false
-            return;
-        }
+        DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
+        DfsUtils.mkParentDirs(fileSystem, dest);
         try {
-            fileSystem.copyToLocalFile(source, destPath);
+            //fileSystem.copyToLocalFile(source, destPath);
         } catch (IOException e) {
             throw new SmartFrogRuntimeException(FAILED_TO_COPY + source + " to " + dest, e, this);
         }
