@@ -23,7 +23,7 @@ public class SFCodeGenTrigger {
 	{
 		System.out.println("Trigger invoked");
 		
-		String wfFile = "somePath\\workflow.oaw";
+		String wfFile = "workflow\\generator.oaw";
 		Map properties = new HashMap();
 		Map slotContents = new HashMap();
 		new WorkflowRunner().run(wfFile ,new NullProgressMonitor(), properties, slotContents);
