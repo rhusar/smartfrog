@@ -306,7 +306,7 @@ ${security.code.keystore}
     </fail>
 
     <sec:signjar2>
-      <fileset dir="${rpm.lib.dir}"/>
+      <fileset dir="${rpm.lib.dir}" includes="*.jar"/>
     </sec:signjar2>
   </target>
 
