@@ -36,10 +36,10 @@ public class SingleInstanceTest extends DeployingTestBase {
     public void testValidateLogin() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testValidateLogin");
     }
-    public void NotestCreateAndSelfTerminateInstance() throws Throwable {
+    public void testCreateAndSelfTerminateInstance() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testCreateAndSelfTerminateInstance");
     }
-    public void NotestCreateInstance() throws Throwable {
+    public void testCreateInstance() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testCreateInstance");
     }
 
