@@ -41,12 +41,10 @@ import org.smartfrog.services.xmpp.XmppListener;
 import org.smartfrog.services.xmpp.XmppListenerImpl;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -299,11 +297,43 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             }
                         }
                         else if (command.equals("executeinguest")) {
-                            String strCommand = ext.getPropertyBag().get("exec_cmd");
-                            String strParameters = ext.getPropertyBag().get("exec_param");
+                            String  strCommand = ext.getPropertyBag().get("exec_cmd"),
+                                    strParameters = ext.getPropertyBag().get("exec_param");
                             boolean bNoWait = (ext.getPropertyBag().get("exec_nowait") != null);
 
                             response.getPropertyBag().put(VMRESPONSE, manager.executeInGuestOS(strName, strCommand, strParameters, bNoWait));
+                        }
+                        else if (command.equals("waitfortools")) {
+                            int iTimeout = Integer.parseInt(ext.getPropertyBag().get("wait_timeout"));
+                            response.getPropertyBag().put(VMRESPONSE, manager.waitForTools(strName, iTimeout));
+                        }
+                        else if (command.equals("takesnapshot")) {
+                            String  strSnapName = ext.getPropertyBag().get("tsnap_name"),
+                                    strSnapDesc = ext.getPropertyBag().get("tsnap_desc");
+                            boolean bIncMem = Boolean.parseBoolean(ext.getPropertyBag().get("tsnap_incmem"));
+
+                            response.getPropertyBag().put(VMRESPONSE, manager.takeSnapshot(strName, strSnapName, strSnapDesc, bIncMem));
+                        }
+                        else if (command.equals("reverttosnapshot")) {
+                            String strSnapName = ext.getPropertyBag().get("rsnap_name");
+                            if (strSnapName != null)
+                                response.getPropertyBag().put(VMRESPONSE, manager.revertVMToSnapshot(strName, strSnapName));
+                            else
+                                response.getPropertyBag().put(VMRESPONSE, manager.revertVMToSnapshot(strName));
+                        }
+                        else if (command.equals("setguestcred")) {
+                            String  strUser = ext.getPropertyBag().get("setgcred_user"),
+                                    strPass = ext.getPropertyBag().get("setgcred_pass");
+
+                            response.getPropertyBag().put(VMRESPONSE, manager.setGuestOSCredentials(strName, strUser, strPass));
+                        }
+                        else if(command.equals("deletesnapshot")) {
+                            boolean bDelChildren = Boolean.parseBoolean(ext.getPropertyBag().get("dsnap_delchild"));
+                            String strSnapName = ext.getPropertyBag().get("dsnap_name");
+                            if (strSnapName != null)
+                                response.getPropertyBag().put(VMRESPONSE, manager.deleteVMSnapshot(strName, strSnapName, bDelChildren));
+                            else
+                                response.getPropertyBag().put(VMRESPONSE, manager.deleteVMSnapshot(strName, bDelChildren));
                         }
     //                    else if (command.equals("copyhosttoguest")) {
     //                        String strSrc = ext.getPropertyBag().get("source");

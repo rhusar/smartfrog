@@ -994,4 +994,246 @@ public class VMWareCommunicator {
         }
         return NULL_HANDLE;
     }
+
+    /**
+     * Takes a snapshot of a virtual machine.
+     * @param inImg The VM image.
+     * @param inDesc A descriptino for the snapshot.
+     * @param inName The name for the snapshot.
+     * @param inIncludeMemory Also include the whole memory?
+     */
+    public void takeSnapshot(VMWareImageModule inImg, String inName, String inDesc, boolean inIncludeMemory) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // take the snapshot
+            iJobHandle = vixLib.VixVM_CreateSnapshot( inImg.getVMHandle().getValue(),
+                                                        inName,
+                                                        inDesc,
+                                                        (inIncludeMemory ? VMWareVixLibrary.VixCreateSnapshotOptions.VIX_SNAPSHOT_INCLUDE_MEMORY : 0),
+                                                        VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+                                                        null,
+                                                        null);
+
+            // wait for the job to complete
+            long lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+            convertToException(lErr, true);
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while taking snapshot of VM", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Deletes a named snapshot of a virtual machine.
+     * @param inImg The virtual machine image.
+     * @param inName The name of the snapshot.
+     * @param inRemoveChildren Remove the children of this snashot, too?
+     * @throws SmartFrogException
+     */
+    public void deleteSnapshot(VMWareImageModule inImg, String inName, boolean inRemoveChildren) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // get the snapshot handle
+            IntByReference snapHandle = new IntByReference(VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE);
+            long lErr = vixLib.VixVM_GetNamedSnapshot(inImg.getVMHandle().getValue(),
+                                                        inName,
+                                                        snapHandle);
+
+            convertToException(lErr, true);
+
+            if (snapHandle.getValue() != VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE) {
+                iJobHandle = vixLib.VixVM_RemoveSnapshot(inImg.getVMHandle().getValue(),
+                                                            snapHandle.getValue(),
+                                                            (inRemoveChildren ? VMWareVixLibrary.VixRemoveSnapshotOptions.VIX_SNAPSHOT_REMOVE_CHILDREN : 0),
+                                                            null,
+                                                            null);
+
+                // wait for the job to complete
+                lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+                convertToException(lErr, true);
+            }
+            else throw new SmartFrogException("Failed to delete named snapshot: " + inName);
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while deleting named snapshot", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Deletes the current snapshot of a virtual machine.
+     * @param inImg The virtual machine image.
+     * @param inRemoveChildren Remove the children of this snashot, too?
+     * @throws SmartFrogException
+     */
+    public void deleteSnapshot(VMWareImageModule inImg, boolean inRemoveChildren) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // get the snapshot handle
+            IntByReference snapHandle = new IntByReference(VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE);
+            long lErr = vixLib.VixVM_GetCurrentSnapshot(inImg.getVMHandle().getValue(),
+                                                        snapHandle);
+
+            convertToException(lErr, true);
+
+            if (snapHandle.getValue() != VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE) {
+                iJobHandle = vixLib.VixVM_RemoveSnapshot(inImg.getVMHandle().getValue(),
+                                                            snapHandle.getValue(),
+                                                            (inRemoveChildren ? VMWareVixLibrary.VixRemoveSnapshotOptions.VIX_SNAPSHOT_REMOVE_CHILDREN : 0),
+                                                            null,
+                                                            null);
+
+                // wait for the job to complete
+                lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+                convertToException(lErr, true);
+            }
+            else throw new SmartFrogException("Failed to delete current snapshot");
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while deleting current snapshot", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Reverts a virtual machine to the snapshot with the given name.
+     * @param inImg The VM image.
+     * @param inName The name of the snapshot.
+     * @throws SmartFrogException
+     */
+    public void revertToSnapshot(VMWareImageModule inImg, String inName) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // get the snapshot handle
+            IntByReference snapHandle = new IntByReference(VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE);
+            long lErr = vixLib.VixVM_GetNamedSnapshot(inImg.getVMHandle().getValue(),
+                                                        inName,
+                                                        snapHandle);
+
+            convertToException(lErr, true);
+
+            if (snapHandle.getValue() != VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE) {
+                // revert to snapshot and prevent it from powering on
+                iJobHandle = vixLib.VixVM_RevertToSnapshot(inImg.getVMHandle().getValue(),
+                                                            snapHandle.getValue(),
+                                                            VMWareVixLibrary.VixVMPowerOpOptions.VIX_VMPOWEROP_SUPPRESS_SNAPSHOT_POWERON,
+                                                            VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+                                                            null,
+                                                            null);
+
+                // wait for the job to complete
+                lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+                convertToException(lErr, true);
+            }
+            else throw new SmartFrogException("Failed to get named snapshot: " + inName);
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while getting named snapshot", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Reverts a virtual machine to its current snapshot.
+     * @param inImg The VM image.
+     * @throws SmartFrogException
+     */
+    public void revertToSnapshot(VMWareImageModule inImg) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // get the snapshot handle
+            IntByReference snapHandle = new IntByReference(VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE);
+            long lErr = vixLib.VixVM_GetCurrentSnapshot(inImg.getVMHandle().getValue(),
+                                                            snapHandle);
+
+            convertToException(lErr, true);
+
+            if (snapHandle.getValue() != VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE) {
+                // revert to snapshot and prevent it from powering on
+                iJobHandle = vixLib.VixVM_RevertToSnapshot(inImg.getVMHandle().getValue(),
+                                                            snapHandle.getValue(),
+                                                            VMWareVixLibrary.VixVMPowerOpOptions.VIX_VMPOWEROP_SUPPRESS_SNAPSHOT_POWERON,
+                                                            VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+                                                            null,
+                                                            null);
+
+                // wait for the job to complete
+                lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+                convertToException(lErr, true);
+            }
+            else throw new SmartFrogException("Failed to get current snapshot");
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while getting current snapshot", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
+
+    /**
+     * Waits for the tools to come up in a virtual machine.
+     * @param inImg The VM image.
+     * @param inTimeout The timeout in seconds. 0 means no timeout.
+     * @throws SmartFrogException
+     */
+    public void waitForTools(VMWareImageModule inImg, int inTimeout) throws SmartFrogException {
+        int iJobHandle = NULL_HANDLE;
+        try {
+            // ensure that a connection is established
+            acquireVMHandle(inImg);
+
+            // wait for the tools the virtual machine
+            iJobHandle = vixLib.VixVM_WaitForToolsInGuest( inImg.getVMHandle().getValue(),
+                                                        inTimeout,
+                                                        null,
+                                                        null);
+
+            // wait for the job to complete
+            long lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+            convertToException(lErr, true);
+        } catch(SmartFrogException e) {
+            // don't convert vix exceptions into smartfrog exceptions
+            throw e;
+        } catch (Exception e) {
+            // any exception will be caught and wrapped because the native vix library may produce exceptions
+            throw new SmartFrogException(inImg.getVMPath() + ": Error while waiting for tools", e);
+        } finally {
+            releaseHandle(iJobHandle);
+        }
+    }
 }
