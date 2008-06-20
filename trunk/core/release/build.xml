@@ -1009,7 +1009,7 @@
   <target name="upload" depends="upload-no-rebuild"
       description="upload; set server property to choose the destination"/>
 
-  <target name="upload-no-rebuild" depends="can-upload,upload-maven-artifacts,sftp-upload"
+  <target name="upload-no-rebuild" depends="can-upload,sftp-upload,upload-maven-artifacts"
       description="upload the existing artifacts"/>
 
   <target name="checksums" depends="ready-to-upload-rpms">
