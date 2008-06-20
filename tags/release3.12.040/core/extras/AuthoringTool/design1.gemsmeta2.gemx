@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ASCII"?>
+<metamodel:Metamodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:metamodel="http://www.sf.net/projects/gems/metamodel2" Name="Smartfrog" Id="ffffffffc0a80121_269" DSMLID="http://www.smartfrog.org/sfml" FileExtensions="sfml" Category="SFAuthoringTool">
+  <Connection Name="SimpleDependency" Id="ffffffffc0a80121_807" X="92" Y="588" Width="198" Height="80" ExpandedWidth="121" ExpandedHeight="232" Expanded="true">
+    <Attribute Name="Relevant" Id="ffffffffc0a80121_1037"/>
+    <Attribute Name="Enabled" Id="ffffffffc0a80121_1039"/>
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.0"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
+  </Connection>
+  <Connection Name="InputDependency" Id="ffffffffc0a80121_808" X="405" Y="441" Width="198" Height="80" ExpandedWidth="104" ExpandedHeight="232" Expanded="true">
+    <Attribute Name="Relevant" Id="ffffffffc0a80121_1675"/>
+    <Attribute Name="Enabled" Id="ffffffffc0a80121_1676"/>
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.1"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.1"/>
+  </Connection>
+  <Connection Name="OutputDependency" Id="f9e39d5_1320" X="400" Y="702" Width="165" Height="80" ExpandedWidth="104" ExpandedHeight="232" Expanded="true">
+    <Attribute Name="Relevant" Id="ffffffffc0a80121_1677"/>
+    <Attribute Name="Enabled" Id="ffffffffc0a80121_1678"/>
+    <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.2"/>
+    <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.2"/>
+  </Connection>
+  <Entity Name="Component" Id="ffffffffc0a80121_270" X="117" Y="238" Width="172" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.2"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.1"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.0"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.2"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.3"/>
+  </Entity>
+  <Entity Name="Composite" Id="ffffffffc0a80121_352" X="510" Y="30" Width="172" ExpandedWidth="0" ExpandedHeight="0" Expanded="true">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.0"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.1"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.0"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.2"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.4"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.6"/>
+  </Entity>
+  <Entity Name="DependencyModel" Id="ffffffffc0a80121_353" X="76" Y="47" Width="73" Height="72" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" IsRoot="true">
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.1"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
+    <ChildEntities href="design1.gemsmeta2#//@ContainmentConnectionConnection.7"/>
+  </Entity>
+  <Entity Name="Attribute" Id="ffffffffc0a80121_1129" X="414" Y="293" Width="178" ExpandedWidth="575" ExpandedHeight="232">
+    <Attribute Name="Value" Id="ffffffffc0a80121_1227" ExpandedWidth="0" ExpandedHeight="15"/>
+    <Attribute Name="StateData" Id="ffffffffc0a80121_257" AttributeType="Boolean" DefaultValue="false"/>
+    <Attribute Name="StateListen" Id="ffffffffc0a80121_721" AttributeType="Boolean" DefaultValue="false"/>
+    <Attribute Name="StateNotify" Id="ffffffffc0a80121_722" AttributeType="Boolean" DefaultValue="false"/>
+    <Attribute Name="IsLazyValue" Id="ffffffffc0a80121_880" AttributeType="Boolean" DefaultValue="false"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.3"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.4"/>
+  </Entity>
+  <Entity Name="And" Id="f9e39d5_499" X="1145" Y="494" Width="27" Height="52" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" DerivedFrom="//@Inheritance.0"/>
+  <Entity Name="Connectors" Id="f9e39d5_562" X="987" Y="136" Width="63" Height="52" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" IsAbstract="true" Derived="//@Inheritance.0">
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.6"/>
+    <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.7"/>
+    <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.2"/>
+    <ConnectionTargets href="design1.gemsmeta2#//@ConnectionTargetConnection.1"/>
+  </Entity>
+  <Entity Name="Or" Id="f9e39d5_1399" X="815" Y="526" Width="139" Height="80" ExpandedWidth="0" ExpandedHeight="0" DerivedFrom="//@Inheritance.0"/>
+  <Entity Name="Nor" Id="10b52583_221" X="822" Y="694" ExpandedWidth="0" ExpandedHeight="0" DerivedFrom="//@Inheritance.0"/>
+  <Entity Name="Nand" Id="10b52583_222" X="1011" Y="728" ExpandedWidth="0" ExpandedHeight="0" DerivedFrom="//@Inheritance.0"/>
+  <Inheritance Name="DepConnectors" Id="f9e39d5_563" X="993" Y="356" Width="36" Height="24" Base="//@Entity.5" Derived="//@Entity.4 //@Entity.6 //@Entity.8 //@Entity.7"/>
+</metamodel:Metamodel>

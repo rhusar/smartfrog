@@ -1,0 +1,115 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/www/components.sf"
+#include "/org/smartfrog/version.sf"
+
+/**
+ * Dynamic DNS extensions. This registers a new dns entry or updates an existing one.
+ * See: http://www.dyndns.com/developers/specs/syntax.html
+ * the main change over a normal liveness page is that we want to update on deployment only
+ * and set a user agent that make it easy for the dyndns people to block us
+
+ * We also set a cache control flag to keep the caches out the way
+ GET /nic/update?hostname=yourhostname&myip=ipaddress&wildcard=NOCHG&mx=NOCHG&backmx=NOCHG HTTP/1.0
+ Host: members.dyndns.org
+ Authorization: Basic base-64-authorization
+ User-Agent: Company - Device - Version Number
+
+members.dyndns.org
+
+  * WARNING: DynDNS are very strict about over abuse of their systems. This should really go in a workflow
+  * Where we check the IP address of the current host and only submit a change if it is different.
+  * If you are deploying to something like EC2, your hostnames move around a lot. For home deployment,
+  * movement is rare, and you will get blocked. Apparently they count the number of nochg responses issued by
+  * a host, and block you if you make too many no-changed requests
+ */
+
+
+ DynDnsRequest extends LivenessPage {
+  checkFrequency 0;
+  checkOnStartup true;
+  checkOnLiveness false;
+
+  userAgent ("HP SmartFrog " ++ Version:jarVersion);
+  headers [
+   [HttpHeaders:UserAgent,userAgent],
+   [HttpHeaders:CacheControl,"no-cache"]
+  ];
+
+ }
+
+ DynDnsRegistration extends DynDnsRequest {
+
+  //the hostname for the deployed entity
+  hostname TBD;
+  authenticationRequired true;
+
+  host "members.dyndns.org";
+
+  path "/nic/update";
+  page "";
+  queries [
+    ["hostname",hostname],
+    ["wildcard",NOCHG],
+    ["mx",NOCHG],
+    ["backmx",NOCHG]
+  ];
+
+  NOCHG "NOCHG";
+  responseRegexp "\\s*(good|nochg).*";
+
+}
+
+/**
+ * register over HTTPS
+ */
+DynDnsHttpsRegistration extends DynDnsRegistration {
+  protocol HttpCodes:HTTPS;
+}
+
+/**
+ * This component will set the group1 attribiute to the returned IP Address
+ */
+
+DynDnsCheckIP extends DynDnsRequest {
+  host "checkip.dyndns.org";
+  responseRegexp "\\s*<html><head><title>Current IP Check</title></head><body>Current IP Address: ([\\d.]+)</body></html>\\s*";
+}
+
+
+
+/**
+ * This is the variant for use in a workflow sequence; it blocks
+ * the sequence until the page arrives.
+ *
+ * In WaitForPage, checkFrequency becomes the time in milliseconds between
+ * polls on the page
+ */
+
+  WaitForDynDnsCheckIP extends DynDnsCheckIP {
+    waitForPageSchema extends WaitForPageSchema;
+    sfClass "org.smartfrog.services.www.WaitForPageImpl";
+    checkFrequency 500;
+    fetchErrorText false;
+    checkOnLiveness false;
+    sfShouldTerminate true;
+  }
+
+

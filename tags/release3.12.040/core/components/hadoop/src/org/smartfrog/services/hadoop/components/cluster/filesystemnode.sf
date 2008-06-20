@@ -1,0 +1,40 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * A cluster node that is bound to a filesystem
+ */
+
+
+FileSystemNode extends ClusterNode {
+  //the set of operations of a node on startup
+  ACTION_FORMAT "FORMAT";
+  ACTION_REGULAR "REGULAR";
+  ACTION_UPGRADE "UPGRADE";
+  ACTION_ROLLBACK "ROLLBACK";
+  ACTION_FINALIZE "FINALIZE";
+
+  dfs.block.size (64 * 1024 * 1024);
+
+  //if this is set to a number >0, it specifies the minimum disk space
+  //in megabytes that this fs node should deploy on. If it is less, no deployment
+  minDiskSpaceMB 0;
+}
+

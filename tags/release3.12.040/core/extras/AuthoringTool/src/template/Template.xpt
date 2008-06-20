@@ -1,0 +1,49 @@
+«IMPORT smartfrog»
+«DEFINE SF FOR Root»
+	«FILE RealRoot.Name.toString()+".sf"»
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/dependencies/legacy/statemodel/components.sf"
+#include "org/smartfrog/services/dependencies/threadpool/components.sf"
+	
+	    «EXPAND SuperCompositeDescription FOREACH  RealRoot.SFModel.SuperComposite»
+		«EXPAND ChildCompositeDescription FOREACH  RealRoot.SFModel.ChildComposite»
+		«EXPAND ComponentDescription FOREACH  RealRoot.SFModel.Components»
+	«ENDFILE»
+«ENDDEFINE»
+
+«DEFINE SuperCompositeDescription FOR Composite»
+«Name» extends Model {
+	
+ }
+«ENDDEFINE»
+
+«DEFINE ChildCompositeDescription FOR Composite»
+«Name» extends Composite {
+	«EXPAND ComponentDescription FOREACH  ChildComposite.Components»
+ }
+«ENDDEFINE»
+
+
+
+«DEFINE ComponentDescription FOR Component»
+«Name» extends State {
+
+«EXPAND AddAttribute FOREACH Comp.Attributes.Comp» 
+	
+ }
+«ENDDEFINE»
+
+«DEFINE AddAttribute FOR Attribute»
+«IF StateData&&StateListen&&StateNotify» [statedata,StateListen,StateNotify]«ENDIF»   «Name» «IF IsLazyValue» LAZY «ENDIF»  «Value»;
+«ENDDEFINE»
+
+«DEFINE AndDescription FOR smartfrog::And»
+«Name» extends AndConnector  {
+ }
+«ENDDEFINE»
+
+«DEFINE OrDescription FOR smartfrog::Or»
+«Name» extends OrConnector  {
+ }
+«ENDDEFINE»
+

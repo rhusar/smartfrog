@@ -1,0 +1,1302 @@
+<?xml version="1.0"?>
+<!--
+  /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  For more information: www.smartfrog.org
+  */
+-->
+<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+  <description>
+    Introduction
+    ============
+    The build script for the kernel SmartFrog framework.
+    It requires
+      -Java1.5 or later. 
+      -Ant 1.7 or later
+      -Ivy 2.0 beta 2 or later from ant.apache.org
+
+    A copy of JavaCC is needed if the language itself is changed.
+
+    Installing the build tools
+    ==========================
+    Please go though the installation guide and install Ant1.7 or later.
+    Reference URL:http://ant.apache.org
+
+    For JavaCC, download it from https://javacc.dev.java.net/ and install the
+    relevant JAR files into the javacc subdirectory
+  </description>
+
+
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property name="core.dir" location=".."/>
+    <tstamp/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="CORE"/>
+    <echo message="  "/>
+    <echo message="  "/>
+    <echo message=" ======================================================="/>
+    <echo message=" Build info - Project: ${Name.System} ${version}"/>
+    <echo message="   ${Name.Company}"/>
+    <echo message="      Java: ${java.version} ${java.vendor} "/>
+    <echo message="            ${java.home} "/>
+    <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
+    <echo message=" --------------------------------------------------------"/>
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
+    <echo message=" ======================================================="/>
+    <echo message="  "/>
+    <echo level="verbose">
+      ===================================================================
+      = ${Name.System} ${version}
+      = ${Name.Company}
+      = Java: ${java.version} ${java.vendor}
+      = ${java.home}
+      = OS: ${os.name} ${os.version}
+      ===================================================================
+    </echo>
+    <fail>
+      <condition>
+        <not>
+          <available
+              classname="org.apache.tools.ant.types.resources.FileResourceIterator"/>
+        </not>
+      </condition>
+      This version of Ant is not supported.
+      Please upgrade to Ant1.7 or later and build this project again
+    </fail>
+  </target>
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="help" depends="init" description="Help">
+    <echo message=""/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message="${Name.System} ${version} Build file"/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message="* General: "/>
+    <echo message=" build        --> recompiles and creates all packages"/>
+    <echo message=" dist         --> prepares distribution package (Default)"/>
+    <echo message=" compile      --> compiles the contributed source code"/>
+    <echo message=" sfParseTest  --> runs sfParser for 'parsertargets' file"/>
+    <echo message=" jdocs        --> generates the Java Docs API documentation"/>
+    <echo message=" clean        --> restores the distribution to its clean state"/>
+    <echo message=" release      --> clean, dist, jdocs"/>
+    <echo message=" all          --> builds all the packages"/>
+    <echo message=" cleanall     --> cleans all the packages"/>
+    <echo message="* Security: "/>
+    <echo message=" initCA       --> initializes a Certificate Authority"/>
+    <echo message=" dummyInitCA  --> initialise a dummyCA. Needed first time before any build"/>
+    <echo message=" cleanCA      --> cleans the Certificate Authority"/>
+    <echo message=" signJars     --> signs the jar files and copies from lib to signedLib"/>
+    <echo message=" "/>
+    <echo message=" help         -->  this help"/>
+    <echo message="See the comments inside the build.xml file for more details."/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Initialization path (Libs needed for compiling)                     -->
+  <!-- =================================================================== -->
+  <path id="smartfrog.class.path">
+    <pathelement path="${classpath}"/>
+    <!-- <pathelement path="./lib/ProActive.jar"/>-->
+  </path>
+  <!-- to get the classpath in a printable form -->
+  <pathconvert pathsep="${line.separator}|   |-- "  
+               property="echo.smartfrog.class.path" 
+               refid="smartfrog.class.path">
+  </pathconvert>
+   
+  
+  <!-- =================================================================== -->
+  <!-- Global properties                                                   -->
+  <!-- =================================================================== -->
+  <!-- local and one level up settings are read in before anything else -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <!-- properties file to modify version.sf -->
+  <property file="sf-build-version.properties"/>
+
+  <property environment="env"/>
+  <!-- Release Directories -->
+  <property name="src" value="src"/>
+  <!-- where the source is -->
+  <property name="src.dir" location="src"/>
+  <!-- where all compiled artifacts should go -->
+  <property name="build.dir" location="build"/>
+  <property name="build" location="${build.dir}"/>
+  <!-- where the files for the jar file go -->
+  <property name="build.classes.dir" location="${build.dir}"/>
+  <property name="build.extra.dir" location="buildextra"/>
+  <property name="dist.dir" location="dist"/>
+  <!-- where the files to zip go -->
+  <property name="releases.dir" location="releases"/>
+  <!-- where the dated zips go, don't clean -->
+  <property name="bin" value="bin"/>
+  <!-- where all the executables go -->
+  <property name="lib" value="lib"/>
+  <!-- where all the jar files go -->
+  <property name="signedLib" value="signedLib"/>
+  <!-- dir to export jar files -->
+  <property name="testCA" value="testCA"/>
+  <!-- all protected files -->
+  <property name="private" value="private"/>
+  <property name="docs" value="docs"/>
+  <property name="doc.dir" location="${docs}"/>
+  <property name="jdocs" value="${doc.dir}/jdocs"/>
+  <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
+  <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
+  <property name="dist.metadata.dir" location="${dist.lib.dir}/metadata"/>
+  <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
+  <property name="dist.src.dir" location="${dist.dir}/${src}"/>
+  <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
+  <property name="dist.private.dir" location="${dist.dir}/${private}"/>
+  <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
+  <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
+  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
+  <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
+  <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
+  <!--property name="redist" value="redist"/ -->
+  <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
+
+
+  <!-- Compile options for Smartfrog Release -->
+  <property name="javac.debug.mode" value="on"/>
+  <!-- turn on compile -g -->
+  <property name="javac.debug.level" value="lines,vars,source"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="build.compiler" value="modern"/>
+  <property name="javac.compiler" value="${build.compiler}"/>
+  <property name="javac.max.memory" value="192m" />
+    
+  <!--use the forking compiler with tuned memory use and profiling diagnostics-->
+  <property name="rmic.compiler" value="forking"/>
+  <property name="rmic.max.memory" value="192m" />
+  <property name="rmic.forking.commandline.extras" value="" />
+  <property name="rmic.forking.commandline" 
+    value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
+ 
+  <!-- override point for javacc -->
+  <property name="javacc.dir" location="javacc"/>
+  <!-- Security related files -->
+  <property name="manifestName" value="${private}/sealManifest.mf"/>
+
+
+
+  <!-- ================================================================== -->
+  <!-- Import the security-related ant file -->
+  <!-- ================================================================== -->
+  <import file="${private}/buildSecurity.xml"/>
+
+  <target name="ready-to-create-CA" depends="copyPrivate,security.ready-to-create-CA">
+
+  </target>
+
+
+
+  <!-- ================================================================== -->
+  <!-- running Version.java to generate version information               -->
+  <!-- ================================================================== -->
+
+  <target name="generateversion" depends="initbuild">
+
+    <!-- This code can be use to read SF version from smartfrog.jar file and put it in a Version property -->
+    <!--
+    <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
+      <arg value="-b"/>
+      <classpath>
+        <pathelement location="${build.classes.dir}"/>
+      </classpath>
+    </java>
+    -->
+    <!-- save everything to a file -->
+    <property name="smartfrog.version" value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}"/>
+    <property name="Version" value="${smartfrog.version}"/>
+
+    <!-- save everything to a file -->
+    <!-- keep this in sync w/ common.xml's declaration -->
+    <property name="sf.version.file" location="smartfrog-version.properties" />
+
+    <propertyfile
+        file="${sf.version.file}"
+        comment="This is machine generated. Do Not Edit!">
+      <entry  key="sf.build.date" type="date"  pattern="yyyy-MM-dd HH:mm:ss z"  value="now"/>
+      <entry  key="sf.build.version" value = "${Version}"/>
+      <entry key="sf.majorRelease" value="${sf.majorRelease}"/>
+      <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
+      <entry key="sf.build" value="${sf.build}"/>
+      <entry key="sf.status" value="${sf.status}"/>
+      <entry key="sf.build.java.version" value="${java.version}"/>
+      <entry key="sf.build.java.vendor" value="${java.vendor}"/>
+      <entry key="sf.build.os.name" value="${os.name}"/>
+      <entry key="sf.build.os.version" value="${os.version}"/>
+      <entry key="sf.build.os.architecture" value="${os.arch}"/>
+      <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
+      <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
+    </propertyfile>
+
+    <property file="${sf.version.file}"/>
+
+    <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
+
+    <copy file="${sf.version.file}" todir="${dist.dir}" />
+
+    <!-- Create/modify version.sf -->
+    <copy file="${src}/org/smartfrog/version.sf.build"
+          tofile="${src}/org/smartfrog/version.sf" overwrite="true" />
+    <replace file="${src}/org/smartfrog/version.sf">
+      <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
+      <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
+      <replacefilter token="@build@" value="${sf.build}"/>
+      <replacefilter token="@status@" value="${sf.status}"/>
+      <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+      <replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
+      <replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
+      <replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
+      <replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
+      <replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
+      <replacefilter token="@copyright@" value="${Name.Company}"/>
+      <replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
+      <replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
+    </replace>
+
+    <echo level="verbose">version=${sfversion}</echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  Generate Forrest Docs -->
+  <!-- =================================================================== -->
+
+
+  <target name="ready-to-forrest" depends="init, dist, jdocs">
+    <condition property="execute.forrest">
+      <and>
+        <isset property="env.FORREST_HOME" />
+        <istrue value="${forrest.enabled}" />
+      </and>
+    </condition>
+  </target>
+
+  <target name="generatedoc" depends="ready-to-forrest"
+      description="Document Generation"
+      if="execute.forrest">
+	  <ant antfile="documentation.xml" inheritall="false"/> 
+    <!-- Forrest build dir -->
+  </target>
+  
+  <!-- =================================================================== -->
+  <!--  Release                                                            -->
+  <!-- =================================================================== -->
+  <target name="release" depends="clean, dist,jdocs, generatedoc"
+      description="Creates clean new release"/>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="initbuild" depends="init">
+    <!--for redistributions, the lib dir is empty-->
+    <mkdir dir="lib"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${build.extra.dir}"/>
+  </target>
+  
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="initdist" depends="init">
+    <mkdir dir="${dist.dir}"/>
+    <delete dir="${dist.lib.dir}" failonerror="false"/>
+    <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.bin.dir}"/>
+    <mkdir dir="${dist.docs.dir}"/>
+    <mkdir dir="${dist.testCA.dir}"/>
+    <mkdir dir="${dist.private.dir}"/>
+    <mkdir dir="${dist.signedLib.dir}"/>
+    <mkdir dir="${dist.src.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="initrelease" depends="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <mkdir dir="${releases.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--     Javacc the parser files - both sf and csf                                                                  -->
+  <!-- =================================================================== -->
+  <target name="createParser" depends="init"> 
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
+        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj"
+        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Compiles source directory                                         -->
+  <!-- =================================================================== -->
+  <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
+    <!-- Compile the java code -->
+    <echo level="verbose">${javac.java.version}
+      build.compiler=${build.compiler}
+      javac.compiler=${javac.compiler}</echo>
+    <javac compiler="${javac.compiler}" 
+      srcdir="${src.dir}"
+      includes="**/*.java" 
+      destdir="${build.classes.dir}"
+      debug="${javac.debug.mode}"
+      debuglevel="${javac.debug.level}"
+      fork="true"
+      includeAntRuntime="false" 
+      source="${javac.java.version}" 
+      target="${javac.java.version}"
+      memoryMaximumSize="${javac.max.memory}"
+      >
+      <classpath refid="smartfrog.class.path"/>
+    </javac>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- =================================================================== -->
+  <target name="rmi" depends="compile-source" description="create the RMI classes">
+      <rmic
+        stubversion="1.2"
+        base="${build.classes.dir}"
+        verify="true"
+        compiler="${rmic.compiler}"
+        includes="**/*.class">
+        <classpath refid="smartfrog.class.path"/>
+        <compilerarg line="${rmic.forking.commandline}" compiler="forking" />
+      </rmic>
+  </target>
+
+  <!-- another name for rmi -->
+  <target name="compile-rmi" depends="rmi" />
+
+  <target name="compile" depends="compile-rmi" description="Compiles the source code"/>
+
+  <!-- =================================================================== -->
+  <!--   Copy default.sf and default.ini files to "src/org/smartfrog" directory -->
+  <!--   so that they can be used with security on                         -->
+  <!-- =================================================================== -->
+  <target name="copyDefault" depends="initbuild">
+    <copy todir="${build.classes.dir}/org/smartfrog">
+      <fileset dir="${bin}">
+        <include name="default.sf"/>
+        <include name="default.ini"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .sf files to "build" directories                             -->
+  <!-- =================================================================== -->
+  <target name="copySF" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.sf*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .prolog files to "build" directories                             -->
+  <!-- =================================================================== -->
+  <target name="copyProlog" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.prolog*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .sfcd  files to "build" directories                          -->
+  <!--   These files should contain a list of configuration descriptors    -->
+  <!-- =================================================================== -->
+  <target name="copySFCD" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.sfcd*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .bat files to "build" directories                            -->
+  <!-- =================================================================== -->
+  <target name="copyBAT" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.bat*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .html files to "build" directories                           -->
+  <!-- =================================================================== -->
+  <target name="copyHTML" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.htm*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--  Copy Gif files to "build" directories                              -->
+  <!-- =================================================================== -->
+  <target name="copyGif" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.gif"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copylibs" depends="initbuild">
+    <copy todir="${dist.lib.dir}">
+      <fileset dir="${lib}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copyPrivate" depends="initbuild">
+    <copy todir="${dist.private.dir}">
+      <fileset dir="${private}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <chmod dir="${dist.private.dir}" perm="go-rxw" includes="**/*"/>
+  </target>
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copyTestCA" depends="initbuild">
+    <copy todir="${dist.testCA.dir}">
+      <fileset dir="${testCA}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!-- Copy binary files.                                                  -->
+  <!-- execute permissions are set on binary stuff, permissions that get   -->
+  <!--     lost                                                            -->
+  <!-- =================================================================== -->
+  <target name="init.scripts.pattern" depends="init">
+    <patternset id="shellscripts">
+      <include name="smartfrog"/>
+      <include name="set*Properties"/>
+      <include name="sf*"/>
+      <include name="*.pl"/>
+      <include name="*.py"/>
+      <exclude name="*.bat"/>
+      <exclude name="*.cmd"/>
+    </patternset>
+  </target>
+
+  <target name="copybins" depends="initdist,init.scripts.pattern">
+    <copy todir="${dist.bin.dir}">
+      <fileset dir="${bin}">
+        <include name="**/*"/>
+        <exclude name="**/*.bak"/>
+        <exclude name="**/tools"/>
+      </fileset>
+    </copy>
+    <!-- recursively set all batch files to DOS-->
+    <fixcrlf srcdir="${dist.bin.dir}" eol="dos" includes="**/*.bat,**/*.cmd" />
+    <!-- set the shell scripts to unix and executable-->
+    <fixcrlf srcdir="${dist.bin.dir}" eol="unix" eof="remove" >
+      <patternset refid="shellscripts"/>
+    </fixcrlf>
+    <chmod dir="${dist.bin.dir}" perm="ugo+rx" >
+      <patternset refid="shellscripts"/>
+    </chmod>
+    <!-- set the security shell scripts to unix and executable-->
+    <fixcrlf srcdir="${dist.bin.dir}/security" eol="unix" eof="remove" >
+      <patternset refid="shellscripts"/>
+    </fixcrlf>
+    <chmod dir="${dist.bin.dir}/security" perm="ugo+rx" >
+      <patternset refid="shellscripts"/>
+    </chmod>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Copy PDF, HTML files from docs to dist/docs                         -->
+  <!-- =================================================================== -->
+  <target name="copydocs" depends="initdist">
+    <copy todir="${dist.docs.dir}">
+      <fileset dir="${docs}">
+        <include name="**/*.pdf"/>
+        <include name="**/*.html"/>
+        <include name="**/*.htm"/>
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copyexamples" depends="initdist">
+    <copy todir="${dist.src.dir}">
+      <fileset dir="${src.dir}">
+        <include name="${examplesFiles}"/>
+        <exclude name="**/*.dfPackage"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   JavaDocs                                                          -->
+  <!-- =================================================================== -->
+
+
+  <target name="ready-to-javadoc"
+      depends="initdist,generateversion,jars">
+
+    <mkdir dir="${dist.jdocs.dir}"/>
+  </target>
+
+  <target name="jdocs"
+  depends="ready-to-javadoc,jjdocs"
+  unless="javadoc.disabled"
+  description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo>
+    ------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------
+    To skip this stage, set javadoc.disabled=true
+    </echo>
+    <javadoc
+      packagenames="org.smartfrog.*"
+      sourcepath="${src.dir}"
+      destdir="${dist.jdocs.dir}"
+      author="true"
+      version="true"
+      use="true"
+      windowtitle="${Name.System}"
+      Header="${Name.System} ${Version}"
+      Footer="${Name.System} ${version} ${Version}"
+      doctitle="${Name.System}"
+      bottom="${Name.Company}"
+      source="${javac.java.version}">
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+      <classpath refid="smartfrog.class.path"/>
+    </javadoc>
+  </target>
+
+  <target name="jjdocs" depends="ready-to-javadoc" unless="javadoc.disabled">
+    <!--  Java doc for the grammars -->
+    <property name="jjdoc.failonerror" value="false" />
+    <java classname="jjdoc" failonerror="${jjdoc.failonerror}">
+      <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
+      <arg value="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
+      <classpath>
+        <pathelement location="${javacc.dir}/javacc.jar"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
+
+ <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+      description="package up all the javadocs">
+    <property name="javadocs.zipfile.package" value="" />
+    <zip destfile="${javadocs.zip}" whenempty="create">
+      <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
+          prefix="${javadocs.zipfile.package}"/>
+    </zip>
+  </target>
+
+  <target name="documentation" depends="copydocs,target-names,package-javadocs">
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  BUILD                                                              -->
+  <!-- =================================================================== -->
+  <target name="prebuild"
+    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD, copyProlog" />
+
+  <target name="build"
+    depends="prebuild"
+    description="Recompile and create all packages"/>
+
+  <!-- =================================================================== -->
+  <!--  Jar Files                                                              -->
+  <!-- =================================================================== -->
+
+  <target name="target-names" depends="init,generateversion">
+    <property name="smartfrog.title"
+        value="smartfrog" />
+    <property name="smartfrog.stub"
+      value="${smartfrog.title}-${Version}" />
+    <property name="smartfrog.jar"
+      location="${dist.lib.dir}/${smartfrog.stub}.jar" />
+
+    <property name="sf-services.title"
+        value="sfServices" />
+    <property name="sf-services.stub"
+      value="${sf-services.title}-${Version}" />
+    <property name="sf-services.jar"
+      location="${dist.lib.dir}/${sf-services.stub}.jar" />
+
+    <property name="sf-examples.title"
+        value="sfExamples" />
+
+    <property name="sf-examples.stub"
+      value="${sf-examples.title}-${Version}" />
+    <property name="sf-examples.jar"
+      location="${dist.lib.dir}/${sf-examples.stub}.jar" />
+
+  </target>
+
+  <!--  SmartFrog Jar                                                     -->
+  <target name="sfJar" depends="build,target-names">
+    <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+  </target>
+  <!--  sfServices.jar                                               -->
+
+  <target name="sfServicesJar" depends="build,target-names">
+    <jar jarfile="${sf-services.jar}" basedir="${build.classes.dir}"
+      includes="**/services/**" manifest="${manifestName}"/>
+  </target>
+
+  <!--  sfExamples.jar                                               -->
+  <target name="sfExamplesJar" depends="build">
+    <!-- Create sfExamples.jar file -->
+    <jar jarfile="${sf-examples.jar}"
+      basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
+  </target>
+
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
+  </target>
+
+  <!-- =================================================================== -->
+  <!--  build, create jars and signs them.                                 -->
+  <!-- =================================================================== -->
+  <target name="secureBuild" depends="build,jars,signJars"/>
+
+  <!-- =================================================================== -->
+  <!--  create security build file                                          -->
+  <!-- =================================================================== -->
+  <target name="buildSetup">
+    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+    <copy tofile="${dist.dir}/parsertargets" file="parsertargets"/>
+    <copy tofile="${dist.dir}/COPYRIGHT.txt" file="COPYRIGHT.txt"/>
+    <copy tofile="${dist.dir}/LICENSE.txt" file="LICENSE.txt"/>
+    <copy tofile="${dist.dir}/readme.txt" file="readme.txt"/>
+  </target>
+
+
+  <target name="gump"
+    depends="dist"
+    description="the target that apache gump runs" />
+
+  <!-- =================================================================== -->
+  <!--  DIST                                                               -->
+  <!-- =================================================================== -->
+
+  <target name="published-distribution" depends="dist"
+      description="create a distribution and publish all artifacts with Ivy"/>
+  <target name="dis"
+      depends="build,jars,copybins,copyPrivate,copydocs,
+      copylibs,copyexamples,copyTestCA,buildSetup"
+      description="Fast dist. No ivy publish">
+  </target>
+	  
+  <target name="dist"
+      depends="ready-to-dist,published"
+      description="Prepares distribution package,and publishes it the local repository">
+  </target>
+
+  <target name="ready-to-dist"
+      depends="build,jars,copybins,copyPrivate,copydocs,
+      copylibs,copyexamples,copyTestCA,buildSetup,srczip"
+      />
+
+  <!-- =================================================================== -->
+  <!--  SECUREDIST                                                         -->
+  <!-- =================================================================== -->
+  <target name="securedist" depends="dist" description="Updates dist and sign jars if CA initialized">
+    <ant dir="${dist.dir}" target="signJars" inheritAll="false"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- src.zip                                                             -->
+  <!-- =================================================================== -->
+  <target name="srczip" depends="initdist" description="Creates src.zip with SF sources">
+    <zip destfile="${dist.dir}/src.zip">
+      <zipfileset dir="${src}">
+        <include name="**/**"/>
+        <exclude name="**/*.dfPackage"/>
+      </zipfileset>
+    </zip>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- clean                                                               -->
+  <!-- =================================================================== -->
+  <target name="clean" depends="init" description="Restores the distribution to its clean state">
+    <!-- Delete the ${build} ${dist.dir} ${jdocs} directory trees -->
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${build.extra.dir}" failonerror="false"/>
+    <delete dir="${dist.dir}" failonerror="false"/>
+    <delete dir="${src.dir}/documentation" failonerror="false"/>
+	<!-- remove parser source files -->
+	 <!-- sf parser source files -->
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserConstants.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserTokenManager.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/JavaCharStream.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/ParseException.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/Token.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/TokenMgrError.java" failonerror="false"/>
+	 <!-- csf parser source files -->
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserConstants.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserTokenManager.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/JavaCharStream.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/ParseException.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/Token.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/TokenMgrError.java" failonerror="false"/>
+	
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- a clean distribution                                               -->
+  <!-- =================================================================== -->
+  <target name="fromclean" depends="clean,test,dist"/>
+
+  <!-- =================================================================== -->
+  <!-- sfParse parsertargets                                                -->
+  <!-- =================================================================== -->
+  <target name="sfParseTest" depends="build,jars" description="runs sfParser for 'parsertargets' file">
+    <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
+      <classpath>
+        <pathelement location="${smartfrog.jar}"/>
+        <pathelement location="${sf-services.jar}"/>
+        <pathelement location="${sf-examples.jar}"/>
+        <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>
+      </classpath>
+      <arg value="-R"/>
+      <!--<arg value="-r"/> -->
+      <arg value="-q"/>
+      <arg value="-f"/>
+	  <arg value="-D"/>
+      <arg file="parsertargets"/>
+    </java>
+  </target>
+
+
+  <target name="test" depends="sfParseTest"
+      description="run all tests"/>
+
+  <target name="tested" depends="test"
+      description="enter the tested state"/>
+
+  <!-- =================================================================== -->
+  <!-- do everything -->
+  <!-- =================================================================== -->
+  <target name="all" depends="dist,test"
+      description="creates all the packages required to run smartfrog, and validate any .sf in the package">
+  </target>
+
+  <target name="default" depends="all" description="default target for the project; invokes 'all'"/>
+
+  <target name="installed" depends="dist" description="install everything ready to run"/>
+
+  <target name="sha1macro">
+
+    <macrodef name="sha1">
+      <attribute name="file"/>
+	    <attribute name="todir"/>
+      <sequential>
+        <checksum file="@{file}" algorithm="md5"  todir="@{todir}"/>
+        <checksum file="@{file}" algorithm="sha1" todir="@{todir}"/>
+      </sequential>
+    </macrodef>
+
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- define a macro to checksum a jar, then checksum all the output jars-->
+  <!-- =================================================================== -->
+  <target name="checksum-target-jar"
+    description="checksum our target jars" depends="jars,sha1macro">
+
+    <sha1 file="${smartfrog.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-examples.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-services.jar}" todir="${dist.metadata.dir}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- init all the maven2 support   -->
+  <!-- ========================================================== -->
+  <target name="m2-init" depends="init,generateversion,target-names">
+
+    <!-- Maven2 stuff
+      All components build into the org.smartfrog group, unless otherwise stated, but
+      are their own artifacts.
+      -->
+    <property name="m2.repository" location="${user.home}/.m2/repository"/>
+    <!-- and by default, they publish somewhere other than the local repository-->
+    <property name="m2.publish.repository" location="${core.dir}/build/m2/repository"/>
+    <mkdir dir="${m2.publish.repository}"/>
+
+    <!-- make the root path of an artifact -->
+    <macrodef name="m2-makepath">
+      <attribute name="property"/>
+      <attribute name="groupIDpath"/>
+      <attribute name="artifactID" default="@{groupIDpath}"/>
+      <attribute name="version"/>
+      <sequential>
+        <property name="@{property}"
+          location="${m2.publish.repository}/@{groupIDpath}/@{artifactID}/@{version}" />
+      </sequential>
+    </macrodef>
+
+    <property name="m2.groupID" value="org.smartfrog" />
+    <property name="m2.groupID.path" value="org/smartfrog" />
+    <m2-makepath property="m2.subdir"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="smartfrog"
+      version="${Version}" />
+    <m2-makepath property="m2.sf-services"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="sfServices"
+      version="${Version}" />
+    <m2-makepath property="m2.sf-examples"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="sfExamples"
+      version="${Version}" />
+	  
+    <property name="smartfrog.pom"
+      location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
+    <property name="target.pom"
+      value="${smartfrog.pom}" />
+    <property name="sf-services.pom"
+      location="${dist.metadata.dir}/${sf-services.stub}.pom" />
+    <property name="sf-examples.pom"
+      location="${dist.metadata.dir}/${sf-examples.stub}.pom" />
+	  
+     <property name="metadata.dir" location="bin/metadata" />
+     <presetdef name="expandingcopy">
+       <copy >
+         <filterchain >
+           <expandproperties />
+         </filterchain>
+       </copy>
+     </presetdef>
+   </target>
+
+
+   <!-- create POMs from templates held in the metadata dir -->
+   <target name="m2-pom" depends="m2-init,sha1macro" >
+   
+     <expandingcopy file="${metadata.dir}/smartfrog.pom"
+       tofile="${smartfrog.pom}"/>
+     <expandingcopy file="${metadata.dir}/sfServices.pom"
+         tofile="${sf-services.pom}"/>
+     <expandingcopy file="${metadata.dir}/sfExamples.pom"
+         tofile="${sf-examples.pom}"/>
+		 
+     <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
+   </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is not  normally for overriding -->
+  <!-- install the jar, to the maven2 publish repository -->
+  <!-- ========================================================== -->
+  <target name="m2-install" depends="checksum-target-jar,m2-pom"
+      description="copy the JAR file maven publish repository">
+
+    <macrodef name="m2-install">
+      <attribute name="destdir"/>
+      <attribute name="target"/>
+	  <attribute name="target.md5"/>
+      <attribute name="pom" />
+      <attribute name="pom.md5" default="@{pom}.md5"/>
+      <sequential>
+        <mkdir dir="@{destdir}"/>
+        <copy file="@{target}" todir="@{destdir}"/>
+        <!-- copy a pom -->
+        <copy file="@{pom}" todir="@{destdir}" failonerror="false"/>
+        <copy file="@{target.md5}" todir="@{destdir}" failonerror="false"/>
+      </sequential>
+    </macrodef>
+
+    <m2-install
+      destdir="${m2.subdir}"
+      target="${smartfrog.jar}"
+	  target.md5="${dist.metadata.dir}/${smartfrog.stub}.jar.md5"
+      pom="${smartfrog.pom}"
+      />
+    <m2-install
+      destdir="${m2.sf-services}"
+      target="${sf-services.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-services.stub}.jar.md5"
+      pom="${sf-services.pom}"
+      />
+    <m2-install
+      destdir="${m2.sf-examples}"
+      target="${sf-examples.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
+      pom="${sf-examples.pom}"
+      />
+  </target>
+
+
+  <target name="ivy-properties" depends="init,target-names"    >
+    <property name="ivy.dir" location="${build.extra.dir}/ivy" />
+    <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
+    <property name="ivy.version" value="2.0.0-beta1" />
+    <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
+    <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
+    <property name="antbuild.dir" location="../antbuild" />
+    <property name="ivy.jar"
+        location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
+    <available property="ivy.jar.found" file="${ivy.jar}" />
+    <available property="ivy.resource.found" resource="${ivy.resource}" />
+    <condition property="ivy.found" >
+      <or >
+        <isset property="ivy.jar.found"/>
+        <isset property="ivy.resource.found"/>
+      </or>
+    </condition>
+  </target>
+
+  <target name="ivy-warn-no-ivy" depends="ivy-properties" unless="ivy.found">
+    <echo level="error">
+      No Ivy file found:
+      ${ivy.jar}
+      Artifacts created in this build will not be published.
+    </echo>
+  </target>
+
+  <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+             resource="${ivy.resource}">
+      <classpath>
+        <pathelement location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
+      </classpath>
+    </typedef>
+    <ivy:configure file="ivyconf.xml"/>
+  </target>
+
+  <target name="ivy-resolve" depends="ivy-init" if="ivy.found">
+    <ivy:resolve />
+  </target>
+
+  <target name="ivy-retrieve" depends="ivy-resolve" if="ivy.found">
+    <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
+  </target>
+  
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">   	
+    <ivy:retrieve />  
+  </target>
+
+  <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
+    <ivy:report todir="${ivy.reports.dir}"/>
+    <echo> published Ivy report to 
+${ivy.reports.dir}
+    </echo>
+  </target>
+
+  <!--copy these in to the same dir that the other artifacts go,
+  so that they can be published together-->
+  <target name="copy-target-jars" depends="jars,artifact-names">
+    <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
+    <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
+    <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
+  </target>
+
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
+
+  <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
+    <ivy:publish resolver="local" pubrevision="${Version}"
+        overwrite="true"
+        artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
+  </target>
+
+  
+  <target name="published" depends="ivy-publish,m2-install"
+      description="Publish artifacts to the local repositories"
+      />
+
+  <target name="artifact-names" depends="target-names">
+    <property name="artifacts.dir" location="${build.extra.dir}/artifacts" />
+    <mkdir  dir="${artifacts.dir}" />
+    <property name="sf-core-install.zip"
+        location="${artifacts.dir}/sf-core-install-${Version}.zip" />
+    <property name="sf-core-source.zip"
+        location="${artifacts.dir}/sf-core-source-${Version}.zip" />
+    <property name="sf-core-documentation.zip"
+        location="${artifacts.dir}/sf-core-documentation-${Version}.zip" />
+    <property name="sf-core-javadocs.zip"
+        location="${artifacts.dir}/sf-core-javadocs-${Version}.zip" />
+    <property name="javadocs.zip" location="${sf-core-javadocs.zip}" />
+  </target>
+
+  <target name="package-source-artifact" depends="artifact-names">
+    <zip destfile="${sf-core-source.zip}">
+      <fileset refid="source.pattern"/>
+    </zip>
+  </target>
+
+  <!--
+  the install artifact is the core component that is published to Ivy
+  -->
+  <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
+    <zip destfile="${sf-core-install.zip}">
+      <zipfileset dir="${dist.dir}" >
+        <include name="**/*" />
+        <!--this can be turned on/off-->
+        <exclude name="docs/jdocs" unless="install.includes.javadocs"/>
+        <exclude name="lib/*" />
+        <!--this strips out any internal CA-->
+        <exclude name="private/*-internal-ca/" />
+        <exclude name="private/*-internal-ca/**" />
+        <exclude name="bin/sfGui*" />
+      </zipfileset>
+      <zipfileset dir="${dist.dir}/lib" prefix="lib">
+        <include name="${smartfrog.stub}.*" />
+        <include name="${sf-services.stub}.*" />
+        <include name="${sf-examples.stub}.*" />
+      </zipfileset>
+    </zip>
+  </target>
+
+  <target name="unzip-install-artifact" depends="package-install-artifact,declare-assertions" >
+    <property name="unzip.install.dir" location="${artifacts.dir}/install" />
+    <unzip src="${sf-core-install.zip}" dest="${unzip.install.dir}"/>
+    <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
+    <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
+    <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
+  </target>
+
+  <target name="publish-all" depends="published" />  
+
+  <!--declare some useful assertions-->
+  <target name="declare-assertions">
+    <macrodef name="fileexists">
+      <attribute name="file"/>
+      <sequential >
+        <fail>
+          <condition>
+            <not>
+              <available file="@{file}" />
+            </not>
+          </condition>
+          Missing file:@{file}
+        </fail>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- print meaningful diagnostics -->
+  <!-- ========================================================== -->
+  <target name="diagnostics" depends="init"
+      description="build file diagnostics">
+    <diagnostics/>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- define the patterns for different parts of the archives             -->
+  <!-- patterns are not bound to a specific directory, so can be reused    -->
+  <!-- and can be declared before the artifacts actually exist, unlike filesets-->
+  <!-- =================================================================== -->
+  <patternset id="excluded.cruft">
+    <exclude name="**/SVN" />
+    <exclude name="**/svn" />
+    <exclude name="**/*.dfPackage" />
+    <exclude name="**/Cvs" />
+    <exclude name="**/CVS" />
+    <exclude name="**/.#*" />
+    <exclude name="**/*.*~" />
+  </patternset>
+
+  <!--Shell scripts from the bin/ directories-->
+  <patternset id="unix.bin">
+    <include name="smartfrog"/>
+    <include name="sf*"/>
+    <include name="set*Properties"/>
+    <include name="*.pl"/>
+    <include name="*.py"/>
+    <exclude name="*.bat"/>
+    <exclude name="*.cmd"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--everything in the bin dir other than the unix stuff-->
+  <patternset id="other.bin">
+    <include name="*"/>
+    <include name="metadata/*"/>
+    <exclude name="smartfrog"/>
+    <exclude name="sf*"/>
+    <exclude name="set*Properties"/>
+    <exclude name="*.pl"/>
+    <exclude name="*.py"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!-- pattern for documentation; can be applied to doc/ and dist/doc-->
+  <patternset id="docs.pattern">
+    <include name="dir.JPG"/>
+    <include name="*.html"/>
+    <include name="*.pdf"/>
+    <include name="jedit-smartfrog.pdf"/>
+    <include name="antTasksManual/*.html"/>
+    <include name="components/*.pdf"/>
+    <include name="images/**"/>
+    <include name="jdocs/**"/>
+    <include name="skin/**"/>
+    <include name="smartfrogdoc/**"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--directories that security needs -->
+  <patternset id="security.pattern">
+    <include name="private/**"/>
+    <include name="testCA/**"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <!--all the source files.-->
+  <patternset id="source.pattern">
+    <include name="src/**"/>
+    <include name="private/**"/>
+    <include name="testCA/**"/>
+    <include name="javacc/*"/>
+    <include name="build.xml"/>
+    <include name="releaseBuild.xml"/>
+    <include name="parsertargets"/>
+    <include name="COPYRIGHT.txt"/>
+    <include name="LICENSE.txt"/>
+    <include name="readme.txt"/>
+    <include name="sf-build-version.properties"/>
+    <patternset refid="excluded.cruft"/>
+  </patternset>
+
+  <patternset id="lib.pattern">
+    <include name="lib/**/*.jar"/>
+  </patternset>
+
+  <!-- ======================================================  -->
+  <!-- Here's some conversion of SXW into .PDF by OOo itself   -->
+  <!-- see http://www.oooforum.org/forum/viewtopic.phtml?t=3772 -->
+  <!-- ======================================================  -->
+
+  <target name="init-ooo">
+    <property name="ooffice.exe" value="ooffice" />
+
+    <presetdef name="ooo">
+      <exec executable="${ooffice.exe}" failonerror="true">
+      </exec>
+    </presetdef>
+
+    <macrodef name="pdf">
+      <attribute name="file" />
+      <sequential>
+        <ooo>
+          <arg value="macro:///SmartFrog.Utils.ConvertWordToPDF(@{file})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+
+    <macrodef name="bulkpdf">
+      <attribute name="dir" />
+      <sequential>
+        <echo>Bulk PDF conversion of @{dir}</echo>
+        <ooo>
+          <!--<arg value="-invisible" />-->
+          <arg value="macro:///SmartFrog.Utils.BulkConvert(@{dir})" />
+        </ooo>
+      </sequential>
+    </macrodef>
+  </target>
+
+  <target name="pdf-doc-folder" depends="init, init-ooo"
+      description="Generate PDFs from all .SXW files in the documentation folder">
+    <bulkpdf dir="${doc.dir}" />
+    <bulkpdf dir="${doc.dir}/components" />
+  </target>
+  
+  <!-- CLOVER -->
+  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
+	
+  <target name="with.clover">
+   <clover-setup/>
+  </target>
+  
+  <target name="dist.with.clover"
+      depends="clean, with.clover, ready-to-dist,published"
+      description="Prepares distribution package,and publishes it the local repository ready for clover code coverage">
+  </target>
+  <!-- CLOVER  end-->
+
+  <!--some extra targets to test the distribution works-->
+
+  <target name="ready-to-run-dist" depends="dist">
+    <presetdef name="dist">
+      <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" />
+    </presetdef>
+  </target>
+
+  <target name="dist.test" depends="dist.build,dist.initCA,dist.newDaemon,dist.sfParseTest,dist.jdocs">
+  </target>
+
+  <target name="dist.build" depends="ready-to-run-dist">
+    <dist target="build" />
+  </target>
+
+  <target name="dist.initCA" depends="dist">
+    <dist target="initCA" />
+    <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" target="initCA" />
+  </target>
+
+  <target name="dist.newDaemon" depends="dist">
+    <dist target="newDaemon" />
+  </target>
+
+  <target name="dist.sfParseTest" depends="dist">
+    <dist target="sfParseTest" />
+  </target>
+
+  <target name="dist.jdocs" depends="dist">
+    <dist target="jdocs" />
+  </target>
+
+</project>
+
+<!-- End of file -->

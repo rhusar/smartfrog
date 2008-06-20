@@ -1,0 +1,123 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+
+#include "/org/smartfrog/services/hadoop/test/system/components.sf"
+
+
+LocalHadoopCompound extends Compound {
+  fs.default.name "hdfs://localhost:8020/";
+  nameNodeURL  "http://localhost:8021";
+  dataNodeURL  "http://localhost:8022";
+
+  logDir extends TempDirWithCleanup {
+
+  }
+
+  dataDir extends TempDirWithCleanup {
+
+  }
+
+  nameDir extends TempDirWithCleanup {
+
+ }
+
+}
+
+LocalNameNodeCompound extends LocalHadoopCompound {
+  description "A name node";
+
+  cluster LAZY namenode;
+
+  namenode extends NameNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address nameNodeURL;
+    dfs.permissions false;
+  }
+}
+
+LocalDataNodeCompound extends LocalNameNodeCompound {
+  description "A data node bound to a temporary directory";
+
+  localDataDir extends TempDirWithCleanup {
+
+  }
+  
+  datanode extends DataNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
+  }
+}
+
+
+LocalFormat extends LocalHadoopCompound {
+  description "Component to format a filesystem";
+  formatLocal extends FormatFileSystem {
+      fs.default.name PARENT:fs.default.name;
+      dataDirectories [LAZY dataDir];
+  }
+}
+
+
+
+LocalJobTrackerCompound extends LocalHadoopCompound {
+  description "A job tracker";
+
+  jobTracker extends JobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+  }
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  tasktracker.http.threads 4;
+}
+
+
+LocalTaskTrackerCompound extends LocalHadoopCompound {
+  description "A task tracker";
+
+  taskTracker extends LightweightTaskTracker {
+  }
+}
+
+
+LocalClusterCompound extends LocalDataNodeCompound {
+
+  description "a full cluster";
+
+  jobTracker extends JobTracker {
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+  }
+
+  taskTracker extends LightweightTaskTracker {
+    mapred.job.tracker jobTracker:mapred.job.tracker;
+  }
+}

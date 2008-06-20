@@ -1,0 +1,269 @@
+\#include "org/smartfrog/components.sf"
+\#include "org/smartfrog/services/net/ftp.sf"
+\#include "org/smartfrog/services/net/telnet.sf"
+\#include "org/smartfrog/services/ssh/scp.sf"
+\#include "org/smartfrog/services/ssh/sshexecute.sf"
+\#include "org/smartfrog/sfcore/workflow/components.sf"
+
+
+sfConfig extends Parallel {
+    asynchCreateChild true;
+    actions extends LAZY {
+#foreach ($daemon in $allDaemons)
+      $daemon.name extends $daemon.type {
+	#if ($daemon.isFtp())
+	a extends FTPClient {
+            FTP:ftpHost "$daemon.host";
+            FTP:username "$daemon.user";
+            FTP:password "$daemon.password";
+	    #if ($daemon.isLinux())
+		#if ($securityOn)
+            		FTP:localFiles ["${daemon.localfile1}", "${daemon.keyfile}", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
+            		FTP:remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
+		#else
+			FTP:localFiles ["${daemon.localfile1}"];
+            	        FTP:remoteFiles ["${daemon.installdir}/release.tar.gz"];
+		#end
+	    #elseif ($daemon.isWindows())
+		#if ($securityOn)
+		 	FTP:localFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}", "${daemon.keyfile}", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
+             	 	FTP:remoteFiles ["${daemon.installdir}\\release.zip", "${daemon.installdir}\\JavaService.exe", "${daemon.installdir}\\start_sfdaemon.bat", "${daemon.installdir}\\mykeys.st", "${daemon.installdir}\\SFSecurity.properties", "${daemon.installdir}\\smartfrog.jar", "${daemon.installdir}\\sfServices.jar", "${daemon.installdir}\\sfExamples.jar"];
+		#else
+			FTP:localFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}"];
+             	 	FTP:remoteFiles ["${daemon.installdir}\\release.zip", "${daemon.installdir}\\JavaService.exe", "${daemon.installdir}\\start_sfdaemon.bat"];
+		#end
+	    #end
+            FTP:transferType "put";
+            FTP:transferMode "binary";
+        }
+        #elseif ($daemon.isScp())
+	a extends ScpSessionInlinePassword {
+            SCP:host "${daemon.host}";
+            SCP:username "${daemon.user}";
+            password "${daemon.password}";
+	    #if ($daemon.isLinux())
+		#if ($securityOn)
+            		localFiles ["${daemon.localfile1}", "$daemon.keyfile", "${daemon.secproperties}", "${daemon.smartfrogjar}", "${daemon.servicesjar}", "${daemon.examplesjar}"];
+            		remoteFiles ["${daemon.installdir}/release.tar.gz", "${daemon.installdir}/mykeys.st", "${daemon.installdir}/SFSecurity.properties", "${daemon.installdir}/smartfrog.jar", "${daemon.installdir}/sfServices.jar", "${daemon.installdir}/sfExamples.jar"];
+		#else
+            		localFiles ["${daemon.localfile1}"];
+            		remoteFiles ["${daemon.installdir}/release.tar.gz"];
+		#end
+	    #end
+            SCP:transferType "put";
+        }
+        #end
+	#if ($daemon.isTelnet())
+	b extends TelnetSession {
+            Telnet:host "$daemon.host";
+            Telnet:username "$daemon.user";
+            Telnet:password "$daemon.password";
+            Telnet:logFile "${logDir}${daemon.name}.log";
+	    Telnet:timeout 70000;
+	    #if ($daemon.isLinux())            
+            	Telnet:ostype "linux";
+			#if ($securityOn)
+				#if ($dynamicLoadingOn)
+					Telnet:commands ["mkdir -p ${daemon.installdir}",
+							"cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+				 			 "tar -xf release.tar",
+				 			 "cd ${daemon.installdir}/${daemon.releasename}",
+							 "mkdir -p dist/private/host1",
+				 			 "mv -f ${daemon.installdir}/mykeys.st dist/private/host1/mykeys.st",
+				 			 "mv -f ${daemon.installdir}/SFSecurity.properties dist/private/host1/SFSecurity.properties",
+				 			 "mv -f ${daemon.installdir}/smartfrog.jar dist/signedLib/smartfrog.jar",
+							 "mv -f ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
+							 "mv -f ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+ 							 "export SFSECURITY_ON=ENABLED",
+                        	 			 "export PATH=$SFHOME/bin:$PATH",
+				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/$jar #end",
+							 "export USEIPFORXMPP=${daemon.useipforxmpp}",
+							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
+				 			 "cd ${daemon.installdir}/$daemon.releasename",
+                        	 			 "nohup sfDaemon -headless"];  
+				#else 
+					Telnet:commands ["mkdir -p ${daemon.installdir}",
+							"cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+							 "tar -xf release.tar",
+				 			 "cd "${daemon.installdir}/${daemon.releasename}",
+				 			 "mkdir -p dist/private/host1",
+				 			 "mv -f ${daemon.installdir}/mykeys.st dist/private/host1/mykeys.st",
+				 			 "mv -f ${daemon.installdir}/SFSecurity.properties dist/private/host1/SFSecurity.properties",
+				 			 "mv -f ${daemon.installdir}/smartfrog.jar dist/signedLib/smartfrog.jar",
+				 			 "mv -f ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
+				 			 "mv -f ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+ 				 		 	 "export SFSECURITY_ON=ENABLED",
+                        	 			 "export PATH=$SFHOME/bin:$PATH",
+							"export USEIPFORXMPP=${daemon.useipforxmpp}",
+							"export AVALANCHE_HOST_ADDRESS=$daemon.host",
+						 	 "cd ${daemon.installdir}/$daemon.releasename",
+                        	 			 "nohup sfDaemon -headless"];  
+				#end
+			#else
+				#if ($dynamicLoadingOn)
+					Telnet:commands ["mkdir -p ${daemon.installdir}",
+							 "cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+					 		 "tar -xf release.tar",
+                        		 		 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                        		 		 "export PATH=$SFHOME/bin:$PATH",
+					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=${daemon.useipforxmpp}",
+							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
+							 "cd ${daemon.installdir}/${daemon.releasename}",
+							 "nohup sfDaemon -headless"]; 
+				#else
+					Telnet:commands ["mkdir -p ${daemon.installdir}",
+							 "cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+				        		 "tar -xf release.tar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                                 			 "export PATH=$SFHOME/bin:$PATH",
+										"export USEIPFORXMPP=${daemon.useipforxmpp}",
+										"export AVALANCHE_HOST_ADDRESS=$daemon.host",
+							 "cd ${daemon.installdir}/$daemon.releasename",
+		                        		 "nohup sfDaemon -headless"];
+				#end
+			#end
+	    #elseif ($daemon.isWindows())
+            	Telnet:ostype "windows";
+	        Telnet:shellPrompt "C:\\>";
+			#if ($securityOn)
+				#if ($dynamicLoadingOn)
+					Telnet:commands ["md ${daemon.installdir}",
+							"cd ${daemon.installdir}",
+							 "wzunzip -d release.zip",
+							 ("cd ${daemon.installdir}\\" ++ "${daemon.releasename}"),
+							 "md dist\\private\\host1",
+							 "move "${daemon.installdir}\\mykeys.st dist\\private\\host1\\mykeys.st",
+							 "move ${daemon.installdir}\\SFSecurity.properties dist\\private\\host1\\SFSecurity.properties",
+							 "move ${daemon.installdir}\\smartfrog.jar dist\\signedLib\\smartfrog.jar",
+							 "move ${daemon.installdir}\\sfServices.jar dist\\signedLib\\sfServices.jar",
+							 "move ${daemon.installdir}\\sfExamples.jar dist\\signedLib\\sfExamples.jar",
+							 "cd ${daemon.installdir}\\",
+	                				 ("start_sfdaemon.bat ${daemon.javahome} ${daemon.installdir}\\" ++ "${daemon.releasename}\\dist server -s -d #foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end"),
+							 "net start Daemon"];
+				#else 
+					Telnet:commands ["md ${daemon.installdir}",
+\							"cd ${daemon.installdir}",
+							"wzunzip -d release.zip",
+							("cd ${daemon.installdir}\\" ++ "${daemon.releasename}"),
+							"md dist\\private\\host1",
+							"move ${daemon.installdir}\\mykeys.st dist\\private\\host1\\mykeys.st",
+							"move ${daemon.installdir}\\SFSecurity.properties dist\\private\\host1\\SFSecurity.properties",
+							"move ${daemon.installdir}\\smartfrog.jar dist\\signedLib\\smartfrog.jar",
+							"move ${daemon.installdir}\\sfServices.jar dist\\signedLib\\sfServices.jar",
+							"move ${daemon.installdir}\\sfExamples.jar dist\\signedLib\\sfExamples.jar",
+							"cd ${daemon.installdir}\\",
+	                				("start_sfdaemon.bat ${daemon.javahome} ${daemon.installdir}\\" ++ "${daemon.releasename}\\dist server -s"),
+							"net start Daemon"]; 
+				#end
+			#else
+				#if ($dynamicLoadingOn)
+					Telnet:commands ["md ${daemon.installdir}",
+							"cd ${daemon.installdir}",
+							 "wzunzip -d release.zip ",
+	                        			 ("start_sfdaemon.bat ${daemon.javahome} ${daemon.installdir}\\" ++"${daemon.releasename}\\dist server -d #foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end"),
+							 "net start Daemon"];
+				#else
+					Telnet:commands ["md ${daemon.installdir}",
+							"cd ${daemon.installdir}",
+							"wzunzip -d release.zip ",
+	                				("start_sfdaemon.bat ${daemon.javahome} ${daemon.installdir}\\" ++"${daemon.releasename}\\dist server"), 
+							"net start Daemon"];
+				#end
+			#end
+                
+	    #end
+	}
+	#elseif ($daemon.isSsh())
+	b extends SSHSessionInlinePassword {
+            SSHCmdExec:host "$daemon.host";
+            SSHCmdExec:username "$daemon.user";
+            password "$daemon.password";
+            SSHCmdExec:logFile "${logDir}${daemon.name}.log";
+	    SSHCmdExec:timeout 70000;
+	    SSHCmdExec:failOnError false;
+	    #if ($daemon.isLinux())
+			#if ($securityOn)
+				#if ($dynamicLoadingOn)
+					commands ["mkdir -p ${daemon.installdir}",
+							 "cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+				 			 "tar -xf release.tar",
+				 			 "cd ${daemon.installdir}/${daemon.releasename}",
+							 "mkdir -p dist/private/host1",
+				 			 "mv -f ${daemon.installdir}/mykeys.st dist/private/host1/mykeys.st",
+				 			 "mv -f ${daemon.installdir}/SFSecurity.properties dist/private/host1/SFSecurity.properties",
+				 			 "mv -f ${daemon.installdir}/smartfrog.jar dist/signedLib/smartfrog.jar",
+							 "mv -f ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
+							 "mv -f ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
+ 							 "export SFSECURITY_ON=ENABLED",
+                        	 			 "export PATH=$SFHOME/bin:$PATH",
+				 			 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",
+							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
+				 			 "cd ${daemon.installdir}/${daemon.releasename}",
+                        	 			 "nohup sfDaemon -headless"];  
+				#else 
+					commands ["mkdir -p ${daemon.installdir}",
+							 "cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+							 "tar -xf release.tar",
+				 			 "cd ${daemon.installdir}/${daemon.releasename}",
+				 			 "mkdir -p dist/private/host1",
+				 			 "mv -f ${daemon.installdir}/mykeys.st dist/private/host1/mykeys.st",
+				 			 "mv -f ${daemon.installdir}/SFSecurity.properties dist/private/host1/SFSecurity.properties",
+				 			 "mv -f ${daemon.installdir}/smartfrog.jar dist/signedLib/smartfrog.jar",
+				 			 "mv -f ${daemon.installdir}/sfServices.jar dist/signedLib/sfServices.jar",
+				 			 "mv -f ${daemon.installdir}/sfExamples.jar dist/signedLib/sfExamples.jar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
+ 				 		 	 "export SFSECURITY_ON=ENABLED",
+                        	 			 "export PATH=$SFHOME/bin:$PATH",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",	
+							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",							 
+						 	 "cd ${daemon.installdir}/${daemon.releasename}",
+                        	 			 "nohup sfDaemon -headless"];  
+				#end
+			#else
+				#if ($dynamicLoadingOn)
+					commands ["mkdir -p ${daemon.installdir}",
+								cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+					 		 "tar -xf release.tar",
+                        		 		 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                        		 		 "export PATH=$SFHOME/bin:$PATH",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
+					 		 "export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${httpServer}:8080/${jar} #end",
+							 "export USEIPFORXMPP=$daemon.useipforxmpp",
+							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
+							 "cd ${daemon.installdir}/${daemon.releasename}",
+							 "nohup sfDaemon -headless"]; 
+				#else
+					commands ["mkdir -p ${daemon.installdir}",
+								"cd ${daemon.installdir}",
+							 "gunzip -f release.tar.gz", 
+				        		 "tar -xf release.tar",
+                        				 "export SFHOME=${daemon.installdir}/${daemon.releasename}/dist",
+                        		 		 "export AVALANCHE_EVENT_SERVER=${avEventServer}",
+                                 			 "export PATH=$SFHOME/bin:$PATH",
+										"export USEIPFORXMPP=$daemon.useipforxmpp",
+										"export AVALANCHE_HOST_ADDRESS=$daemon.host",
+							 "cd ${daemon.installdir}/${daemon.releasename}",
+	                        			 "nohup sfDaemon -headless"];
+				#end
+			#end
+	    #end
+	}
+        #end
+ }
+ #end
+ }
+}

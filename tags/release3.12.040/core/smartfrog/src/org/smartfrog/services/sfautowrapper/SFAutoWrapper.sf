@@ -1,0 +1,51 @@
+/** (C) Copyright 1998-2006 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+//*#############################################
+//*# Automatic SmartFrog wrapper base template
+//*#############################################
+#include "org/smartfrog/components.sf"
+
+SFAutoWrapper extends Prim {
+
+    sfClass "org.smartfrog.services.sfautowrapper.SFAutoWrapper";
+    libPattern "*(jar|zip)";
+
+/*    // Name of the object's class to be deployed by the wrapper
+    // jclass "org.smartfrog.nullclass";
+
+    // Constructor's parameter values in order of appearence
+    //
+//    jconstructorpars extends DATA {
+    }
+
+    // Name of the start method (if any) of the object's task
+    // jstart "startMethodName";
+
+    // Start method's parameter values in order od appearence
+//    jstartpars extends DATA {  }
+
+    // Field definitions of the fields to set up before start the object's task
+//    jfields extends DATA {  }
+
+    // Field values in the same number and order as their definitions above
+//    jfieldvalues extends DATA {  }
+*/
+}
