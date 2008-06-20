@@ -18,33 +18,23 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/email/emailer.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/services/email/components.sf"
+#include "/org/smartfrog/sfcore/workflow/components.sf"
 
 Example extends Sequence {
-    //actions extends LAZY {
-        /*Foo extends Prim {
-        	sfClass "org.smartfrog.services.email.EmailerTest";
-        	sfProcessHost "eb97201.india.hp.com";
-        	sfProcessComponentName "Foo";
-        }
-        Bar extends Prim {
-            	sfClass "org.smartfrog.services.email.EmailerTest";
-            	sfProcessHost "eb97201.india.hp.com";
-            	sfProcessComponentName "Bar";
-        }*/
+
        mailer extends Emailer {
                 // mail will be send when mailer executes as part of work-flow
-                runAsWorkFlowComponent true; 
-                to "pranavi.k@hp.com";
-		from "pranavi.k@hp.com";
-                message "This is a test message \n thanks";
-                subject "SF Emailer Test";
-                smtpHost "SMTP1.HP.COM";//"SMTP.GMAIL.COM";     // SMTP1.HP.COM
-		smtpHostUser "pranavi.k@hp.com";
-		smtpHostUserPassword "mypassword";
-		smtpPort "25";//"465";
+          runAsWorkFlowComponent true;
+          to "pranavi.k@hp.com";
+          from "pranavi.k@hp.com";
+          message "This is a test message \n thanks";
+          subject "SF Emailer Test";
+          smtpHost "SMTP1.HP.COM";//"SMTP.GMAIL.COM";     // SMTP1.HP.COM
+          smtpHostUser "pranavi.k@hp.com";
+          smtpHostUserPassword "mypassword";
+          smtpPort "25";//"465";
        }
     //}
 }
