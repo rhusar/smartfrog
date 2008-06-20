@@ -21,9 +21,7 @@
   <description>
     This build file aggregates artifacts from other projects to cut a release.
 
-    set the property security.keys.redistributable to include the security-keys RPM in bundles
-    that are created for redistribution -by default they are disabled.
-
+    In a normal distribution, the RPM smartfrog-private-security-keys contains nothing sensitive.
   </description>
 
   <!--we are a component -->
@@ -650,7 +648,6 @@
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}">
         <include name="*.rpm"/>
-        <exclude name="smartfrog-private-security-keys*.rpm" unless="security.keys.redistributable"/>
       </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}"/>
@@ -767,6 +764,7 @@
     <property name="maven.zip.sha1" location="${maven.zip}.sha1"/>
   </target>
 
+  <!--Build up a zip file containing all the maven artifacts-->
   <target name="package-maven-artifacts"
       depends="ready-to-package-maven-artifacts">
     <zip destfile="${maven.zip}" duplicate="fail">
@@ -795,6 +793,7 @@
         <include name="sf-ssh/${smartfrog.version}/*"/>
         <include name="sf-velocity/${smartfrog.version}/*"/>
         <include name="sf-xml/${smartfrog.version}/*"/>
+        <include name="sf-xmpp/${smartfrog.version}/*"/>
         <!--testing-->
         <include name="sf-xunit/${smartfrog.version}/*"/>
         <include name="sf-junit/${smartfrog.version}/*"/>
@@ -802,7 +801,6 @@
         <include name="sf-www/${smartfrog.version}/*"/>
         <include name="sf-tomcat/${smartfrog.version}/*"/>
         <include name="sf-jetty/${smartfrog.version}/*"/>
-        <include name="sf-xmpp/${smartfrog.version}/*"/>
       </zipfileset>
 
     </zip>
@@ -1011,7 +1009,7 @@
   <target name="upload" depends="upload-no-rebuild"
       description="upload; set server property to choose the destination"/>
 
-  <target name="upload-no-rebuild" depends="can-upload,upload-maven-artifacts,ftp-upload"
+  <target name="upload-no-rebuild" depends="can-upload,upload-maven-artifacts,sftp-upload"
       description="upload the existing artifacts"/>
 
   <target name="checksums" depends="ready-to-upload-rpms">
@@ -1074,7 +1072,6 @@
 
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
-      <exclude name="smartfrog-private-security-keys*.rpm" unless="security.keys.redistributable"/>
     </fileset>
     <echo level="verbose">
       files to upload: ${toString:rpm.upload.fileset}
@@ -1087,12 +1084,12 @@
     <!--list of rpms-->
 
     <property name="rpms.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity smartfrog-private-keys"/>
     <!--here are all the signed RPMs that are generated-->
 
 
     <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
-    <property name="rpms.dependent.list" value="smartfrog-private-keys"/>
+    <property name="rpms.dependent.list" value=""/>
     <echo>
       remote server is ${rpm.ssh.server}
       remote directory is ${rpm.full.ssh.dir}
@@ -1251,12 +1248,12 @@ rpm -qf ${rpm.install.dir}/bin/security ;
 rpm -qf ${rpm.install.dir}/bin/metadata ;
 rpm -qf ${rpm.log.dir} ;
 rpm -qf ${rpm.etc.dir} ;
-rpm -qf ${rpm.install.dir}/testCA ;
-rpm -qf ${rpm.install.dir}/signedLib ;
-rpm -qf /etc/profile.d/smartfrog.sh ;
-rpm -qf /etc/profile.d/smartfrog.csh ;
-rpm -qf ${rpm.install.dir}/docs ;
-rpm -qf ${rpm.install.dir}/src ;
+rpm -qf ${rpm.install.dir}/private;
+rpm -qf ${rpm.install.dir}/signedLib;
+rpm -qf /etc/profile.d/smartfrog.sh;
+rpm -qf /etc/profile.d/smartfrog.csh;
+rpm -qf ${rpm.install.dir}/docs;
+rpm -qf ${rpm.install.dir}/src;
 rpm -qf ${rpm.install.dir}/src.zip ;
 rpm -qf ${rpm.install.dir}/lib/sf-ant-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/lib/ant-${apache.ant.version}.jar;

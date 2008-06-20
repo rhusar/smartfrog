@@ -1,9 +1,9 @@
 <html>
 <head>
-  <title>SmartFrog ${smartfrog.version}</title>
+  <title>SmartFrog 3.12.040</title>
 </head>
 <body>
-<h1>SmartFrog ${smartfrog.version}</h1>
+<h1>SmartFrog 3.12.040</h1>
 
 <p>
   This is a new release of SmartFrog, the Java-based, LPGL-licensed distributed
@@ -22,7 +22,8 @@
 </p>
 
 <p>
-  This release is ${smartfrog.version}; built from revision ${svn.revision}
+  This release is 3.12.040; built from revision 6740
+
   of the SVN repository. This release has an extended language
   with the ability to tag attributes, and includes the following items:
 </p>
@@ -55,9 +56,10 @@
   </li>
   <li> Testing: Distributed JUnit and component testing with SFUnit.
   </li>
-   <li>
+  <li>
     Velocity: generation/transformation of text files during deployment
   </li>
+  
   <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
     is provided for all application servers that support, and a tomcat-specific
     component can communicate with Apache Tomcat. The Jetty component can
@@ -90,8 +92,8 @@
     The original smartfrog distribution as .zip and .tar.gz (deprecated)
   </li>
 </ol>
-
 <p>
+
   The RPM installation is for RPM-based Linux systems. It comprises the following RPMs:
 </p>
 
@@ -149,10 +151,6 @@
   <tr>
     <td><code>smartfrog-scripting</code></td>
     <td>Scripted components</td>
-  </tr>
-  <tr>
-    <td><code>smartfrog-velocity</code></td>
-    <td>Velocity template processing</td>
   </tr>
   <tr>
     <td><code>smartfrog-www</code></td>
@@ -218,9 +216,10 @@
 
 <p>
 
-  This release was built with revision ${svn.revision} of the repository, which
+  This release was built with revision 6740
+ of the repository, which
   is available under the SVN branch
-  <a href="${svn.branch.url}">${svn.branch.url}</a>
+  <a href="https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.040">https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.040</a>
 </p>
 
 <p>
@@ -245,6 +244,87 @@
 
 
 <h3>Changes since last release</h3>
+
+Release Notes - SmartFrog - Version 3.12.040
+
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-516'>SFOS-516</a>] -         some tests raise a non-serializable exception in the server, when it tries to publish the events
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-841'>SFOS-841</a>] -         Remove commons-logging.properties from the source tree where it is found
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-860'>SFOS-860</a>] -         Get automated releases working again by adding support for SourceForge's new file upload process
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-862'>SFOS-862</a>] -         sfDaemon not coming up under Ubuntu
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-865'>SFOS-865</a>] -         Setting the default port from Ant tasks doesn't appear to work
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-870'>SFOS-870</a>] -         Ant starttests have been commented out for some time
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-887'>SFOS-887</a>] -         IDE is complaining about SFSystem
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-888'>SFOS-888</a>] -         A Network test is commented out
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-889'>SFOS-889</a>] -         TestCompoundsTest.testFailureWrongMessageNested() is failing and commented out
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-894'>SFOS-894</a>] -         Properties Test is failing on Hudson and (sometimes) Steve's desktop
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-898'>SFOS-898</a>] -         setSfDefaultProperties has the wrong line endings if a release is made from windows
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-902'>SFOS-902</a>] -         emailer tests are failing
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-903'>SFOS-903</a>] -         clean up email code and tests
+</li>
+</ul>
+
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-843'>SFOS-843</a>] -         propagate exception received in a lifecycle event to the AssertionFailed error in Junit, hence better stack trace output
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-863'>SFOS-863</a>] -         add more env variable diagnostics to sfDiag
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-874'>SFOS-874</a>] -         change FileExists.ATTR_MAXSIZE to FileExists.ATTR_MAX_SIZE
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-877'>SFOS-877</a>] -         move JavaPackage tests to TestCompound
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-895'>SFOS-895</a>] -         fix spelling error in method names in org.smartfrog.services.shellscript.Cmd
+</li>
+</ul>
+
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-811'>SFOS-811</a>] -         Create Velocity component -using sfInstaller as a template
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-833'>SFOS-833</a>] -         Add IsPropertyTrue condition to test for a property being set and == &quot;true&quot;
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-836'>SFOS-836</a>] -         add method to FileSystem to convert a vector of paths or FileIntf interfaces into a vector of absolute paths
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-857'>SFOS-857</a>] -         add ability to specify a diagnostics message when LoadClass fails to load a class
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-873'>SFOS-873</a>] -         Add diagnostics attribute to SF tasks, so that we can dump internal state
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-897'>SFOS-897</a>] -         add a new Executable interface, like Runnable but with the ability to throw Exceptions
+</li>
+</ul>
+
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-670'>SFOS-670</a>] -         Add new sfinterface submit API to support secure deployment
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-827'>SFOS-827</a>] -         Upgrade IVY to 2.0 Beta 2
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-882'>SFOS-882</a>] -         Release SmartFrog 3.12.040
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-885'>SFOS-885</a>] -         Walk through all the test cases, looking for commented out tests that arent logged
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-896'>SFOS-896</a>] -         test component to check ability to obtain key and initialise MACData objects
+</li>
+</ul>
+
 
 </body>
 </html>
