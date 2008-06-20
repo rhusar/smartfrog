@@ -1092,7 +1092,7 @@
 
 
     <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
-    <property name="rpms.dependent.list" value=""/>
+    <property name="rpms.dependent.list" value="smartfrog-private-keys"/>
     <echo>
       remote server is ${rpm.ssh.server}
       remote directory is ${rpm.full.ssh.dir}
@@ -1252,7 +1252,6 @@ rpm -qf ${rpm.install.dir}/bin/metadata ;
 rpm -qf ${rpm.log.dir} ;
 rpm -qf ${rpm.etc.dir} ;
 rpm -qf ${rpm.install.dir}/testCA ;
-rpm -qf ${rpm.install.dir}/private ;
 rpm -qf ${rpm.install.dir}/signedLib ;
 rpm -qf /etc/profile.d/smartfrog.sh ;
 rpm -qf /etc/profile.d/smartfrog.csh ;
