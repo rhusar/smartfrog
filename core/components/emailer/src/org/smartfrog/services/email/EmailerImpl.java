@@ -161,16 +161,12 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws RemoteException
      */
     public void sendConfiguredMessage() throws SmartFrogException, RemoteException {
-		try{
         if(attachmentList == null)
             sendEmail(toList ,ccList, from, subject, message);
         else {
             sendEmailWithAttachments(toList ,ccList, from, subject,
                                      message, attachmentList);
         }
-		}catch(Exception e){
-			log.info("EXCEPTION:\n" + e);
-		}
     }
 
     /**
