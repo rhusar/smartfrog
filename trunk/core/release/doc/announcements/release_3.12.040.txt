@@ -1,4 +1,4 @@
-SmartFrog ${smartfrog.version}
+SmartFrog 3.12.040
 ======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed
@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is ${smartfrog.version}; built from revision ${svn.revision}
+This release is 3.12.040; built from revision 6740
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -40,7 +40,6 @@ with the ability to tag attributes, and includes the following items:
 * XML: XML support with XOM.
 * XMPP: Presence and messaging over Jabber.
 
-
 Packaging
 =========
 
@@ -48,9 +47,10 @@ This release is available as:
 
 * RPM files inside a .tar.gz file.
 * A JAR installer.
-* The original core smartfrog distribution as .zip and .tar.gz (deprecated).
+* The original core smartfrog distribution as .zip and .tar.gz (deprecated)
 * A .tar.gz file containing everything needed to create a private set of RPM files
   containing JAR files signed by a private Certification Authority.
+  
 
 
 The RPM installation is for RPM-based Linux systems. The archive contains the
@@ -110,9 +110,9 @@ entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 to check out smartfrog/trunk/core from our repository.
 
-This release was built with revision ${svn.revision} of the repository, which
+This release was built with revision 6740 of the repository, which
 is available under the SVN branch
-${svn.branch.url}
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.12.040
 
 We strongly encourage anyone interested in building or extending
 SmartFrog to get involved in the SmartFrog developer mailing list, which
@@ -131,6 +131,50 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+
+
+Release Notes - SmartFrog - Version 3.12.040
+
+** Bug
+    * [SFOS-516] - some tests raise a non-serializable exception in the server, when it tries to publish the events
+    * [SFOS-841] - Remove commons-logging.properties from the source tree where it is found
+    * [SFOS-860] - Get automated releases working again by adding support for SourceForge's new file upload process
+    * [SFOS-862] - sfDaemon not coming up under Ubuntu
+    * [SFOS-865] - Setting the default port from Ant tasks doesn't appear to work
+    * [SFOS-870] - Ant starttests have been commented out for some time
+    * [SFOS-887] - IDE is complaining about SFSystem
+    * [SFOS-888] - A Network test is commented out
+    * [SFOS-889] - TestCompoundsTest.testFailureWrongMessageNested() is failing and commented out
+    * [SFOS-894] - Properties Test is failing on Hudson and (sometimes) Steve's desktop
+    * [SFOS-898] - setSfDefaultProperties has the wrong line endings if a release is made from windows
+    * [SFOS-902] - emailer tests are failing
+    * [SFOS-903] - clean up email code and tests
+
+
+** Improvement
+    * [SFOS-843] - propagate exception received in a lifecycle event to the AssertionFailed error in Junit,
+                   hence better stack trace output
+    * [SFOS-863] - add more env variable diagnostics to sfDiag
+    * [SFOS-874] - change FileExists.ATTR_MAXSIZE to FileExists.ATTR_MAX_SIZE
+    * [SFOS-877] - move JavaPackage tests to TestCompound
+    * [SFOS-895] - fix spelling error in method names in org.smartfrog.services.shellscript.Cmd
+
+** New Feature
+    * [SFOS-811] - Create Velocity component -using sfInstaller as a template
+    * [SFOS-833] - Add IsPropertyTrue condition to test for a property being set and == "true"
+    * [SFOS-836] - add method to FileSystem to convert a vector of paths or FileIntf interfaces into a vector
+                   of absolute paths
+    * [SFOS-857] - add ability to specify a diagnostics message when LoadClass fails to load a class
+    * [SFOS-873] - Add diagnostics attribute to SF tasks, so that we can dump internal state
+    * [SFOS-897] - add a new Executable interface, like Runnable but with the ability to throw Exceptions
+
+
+** Task
+    * [SFOS-670] - Add new sfinterface submit API to support secure deployment
+    * [SFOS-827] - Upgrade IVY to 2.0 Beta 2
+    * [SFOS-882] - Release SmartFrog 3.12.040
+    * [SFOS-885] - Walk through all the test cases, looking for commented out tests that arent logged
+    * [SFOS-896] - test component to check ability to obtain key and initialise MACData objects
 
 
   

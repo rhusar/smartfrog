@@ -1909,9 +1909,10 @@ Exist.
   <!-- ========================================================== -->
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the local maven2 repository -->
+  <!-- This is used when we release artifacts-->
   <!-- ========================================================== -->
   <target name="m2-install" depends="checksum-target-jar,m2-pom"
-      description="copy the JAR file local maven repository">
+      description="copy the JAR file to the local maven repository">
 
     <mkdir dir="${m2.subdir}"/>
     <copy file="${target.jar}" todir="${m2.subdir}"/>
@@ -2132,7 +2133,7 @@ ${ivy.reports.dir}
        artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-  <target name="published" depends="ivy-publish-all"
+  <target name="published" depends="ivy-publish-all,m2-install"
       description="Publish artifacts to the local repositories"
       />
 
