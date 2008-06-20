@@ -234,25 +234,6 @@
 
   <!-- ============================================================================================= -->
 
-
-  <!--
-    Building an RPM is tricky. Here are some links that are useful
-      http://www.rpm.org/
-      http://www.rpm.org/max-rpm/
-      http://www-128.ibm.com/developerworks/linux/library/l-rpm3.html?dwzone=linux
-      http://www.ibm.com/developerworks/library/l-rpm1/
-      http://www.ibm.com/developerworks/library/l-rpm2/
-
-    JPackage and layout rules:
-      http://www.jpackage.org/develdocs.php
-      http://www.pathname.com/fhs/  rules for app/dir layout
-
-    Presentations:
-    http://www-uxsup.csx.cam.ac.uk/talks/rpmbuild/rpmbuild.pdf
-    http://www.gurulabs.com/GURULABS-RPM-LAB/GURULABS-RPM-GUIDE-v1.0.PDF
-
-  -->
-
   <target name="check-rpm" depends="init">
     <condition property="has.rpm.tools">
       <and>
@@ -1093,6 +1074,7 @@
 
     <fileset id="rpm.upload.fileset" dir="${upload.dir}">
       <include name="*.rpm"/>
+      <exclude name="smartfrog-private-security-keys*.rpm" unless="security.keys.redistributable"/>
     </fileset>
     <echo level="verbose">
       files to upload: ${toString:rpm.upload.fileset}
@@ -1105,10 +1087,9 @@
     <!--list of rpms-->
 
     <property name="rpms.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit"/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
     <!--here are all the signed RPMs that are generated-->
-    <property name="rpms.signed.list"
-        value="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed"/>
+
 
     <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
     <property name="rpms.dependent.list" value=""/>
@@ -1188,7 +1169,7 @@
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
     <rootssh
-        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.signed.list} ${rpms.dependent.list}"
+        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.dependent.list}"
         failonerror="false"/>
   </target>
 
