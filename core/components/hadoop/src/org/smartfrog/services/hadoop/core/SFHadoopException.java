@@ -137,11 +137,11 @@ public class SFHadoopException extends SmartFrogException {
      * @return a new exception
      */
     public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject) {
-        List<Throwable> exceptions = multiExcept.getThrowables();
+        List<Throwable> exceptions = multiExcept.getExceptions();
         int exCount = exceptions.size();
         if(exCount == 1) {
             //special case: one child.
-            Throwable e = multiExcept.getThrowable(0);
+            Throwable e = multiExcept.getException(0);
             return new SFHadoopException(message+"\n"
                     + e.getMessage(),
                     e);
