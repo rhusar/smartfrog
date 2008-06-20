@@ -219,6 +219,29 @@ public interface VMWareServerManagerServices extends Remote {
      * @param inNoWait Wait for the program to exit?
      * @return "success" or an error message.
      * @throws RemoteException
+     * @throws SmartFrogException
      */
     public String executeInGuestOS(String inVMName, String inCommand, String inParameters, boolean inNoWait) throws RemoteException, SmartFrogException;
+
+    /**
+     * Takes a snapshot of a virtual machine.
+     * @param inVMName The name of the virtual machine.
+     * @param inSnapshotName The name for the snapshot.
+     * @param inSnapshotDescription The description of the snapshot.
+     * @param inIncludeMemory Should the memory of the virtual machine be included in the snapshot, too?
+     * @return "success" or an error message.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String takeSnapshot(String inVMName, String inSnapshotName, String inSnapshotDescription, boolean inIncludeMemory) throws RemoteException, SmartFrogException;
+
+    /**
+     * Reverts a virtual machine to a snapshot.
+     * @param inVMName The name of the virtual machine.
+     * @param inSnapshotName The name of the snapshot.
+     * @return "success" or an error message.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String revertVMToSnapshot(String inVMName, String inSnapshotName) throws RemoteException, SmartFrogException;
 }

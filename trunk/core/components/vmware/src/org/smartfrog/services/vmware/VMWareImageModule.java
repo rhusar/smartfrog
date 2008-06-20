@@ -437,7 +437,70 @@ public class VMWareImageModule {
         vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
     }
 
+    /**
+     * Executes a command in the guest os.
+     * @param inCommand
+     * @param inParameters
+     * @param inNoWait
+     * @throws SmartFrogException
+     */
     public void executeInGuestOS(String inCommand, String inParameters, boolean inNoWait) throws SmartFrogException {
         vmComm.executeInGuestOS(this, inCommand, inParameters, inNoWait);
+    }
+
+    /**
+     * Takes a snapshot of a virtual machine.
+     * @param inDesc A descriptino for the snapshot.
+     * @param inName The name for the snapshot.
+     * @param inIncludeMemory Also include the whole memory?
+     * @throws SmartFrogException
+     */
+    public void takeSnapshot(String inName, String inDesc, boolean inIncludeMemory) throws SmartFrogException {
+        vmComm.takeSnapshot(this, inName, inDesc, inIncludeMemory);
+    }
+
+    /**
+     * Deletes a named snapshot of a virtual machine.
+     * @param inName The name of the snapshot.
+     * @param inRemoveChildren Remove the children of this snashot, too?
+     * @throws SmartFrogException
+     */
+    public void deleteSnapshot(String inName, boolean inRemoveChildren) throws SmartFrogException {
+        vmComm.deleteSnapshot(this, inName, inRemoveChildren);
+    }
+
+    /**
+     * Deletes a named snapshot of a virtual machine.
+     * @param inRemoveChildren Remove the children of this snashot, too?
+     * @throws SmartFrogException
+     */
+    public void deleteSnapshot(boolean inRemoveChildren) throws SmartFrogException {
+        vmComm.deleteSnapshot(this, inRemoveChildren);
+    }
+
+    /**
+     * Reverts a virtual machine to the snapshot with the given name.
+     * @param inName The name of the snapshot.
+     * @throws SmartFrogException
+     */
+    public void revertToSnapshot(String inName) throws SmartFrogException {
+        vmComm.revertToSnapshot(this, inName);
+    }
+
+    /**
+     * Reverts a virtual machine to its current snapshot.
+     * @throws SmartFrogException
+     */
+    public void revertToSnapshot() throws SmartFrogException {
+        vmComm.revertToSnapshot(this);
+    }
+
+    /**
+     * Waits for the tools in the guest OS to come up.
+     * @param inTimeout The timeout in seconds. 0 means there is not timeout.
+     * @throws SmartFrogException
+     */
+    public void waitForTools(int inTimeout) throws SmartFrogException {
+        vmComm.waitForTools(this, inTimeout);
     }
 }

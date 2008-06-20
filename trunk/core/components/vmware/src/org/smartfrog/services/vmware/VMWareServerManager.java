@@ -32,20 +32,16 @@
 
 package org.smartfrog.services.vmware;
 
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 
@@ -218,6 +214,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                 try {
                     tmp.startUp();
                 } catch (SmartFrogException e) {
+                    sfLog().info("retrying startVM", e);
                     ex = e;
                     continue;
                 }
@@ -387,7 +384,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     strResult = tmp.getAttribute(inKey);
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying getVMAttribute");
+                    sfLog().info("retrying getVMAttribute", e);
                     continue;
                 }
                 ex = null;
@@ -428,7 +425,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     strResult = tmp.setAttribute(inKey, inValue);
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying setVMAttribute");
+                    sfLog().info("retrying setVMAttribute", e);
                     continue;
                 }
                 ex = null;
@@ -467,7 +464,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     module.shutDown();
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying shutDownVM");
+                    sfLog().info("retrying shutDownVM", e);
                     continue;
                 }
                 ex = null;
@@ -508,7 +505,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     module.suspend();
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying suspendVM");
+                    sfLog().info("retrying suspendVM", e);
                     continue;
                 }
                 ex = null;
@@ -546,7 +543,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     module.reset();
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying resetVM");
+                    sfLog().info("retrying resetVM", e);
                     continue;
                 }
                 ex = null;
@@ -585,7 +582,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     iResult = module.getPowerState();
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying getPowerState");
+                    sfLog().info("retrying getPowerState", e);
                     continue;
                 }
                 ex = null;
@@ -624,7 +621,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     iResult = module.getToolsState();
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying getToolsState");
+                    sfLog().info("retrying getToolsState", e);
                     continue;
                 }
                 ex = null;
@@ -719,7 +716,7 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
                     module.executeInGuestOS(inCommand, inParameters, inNoWait);
                 } catch (SmartFrogException e) {
                     ex = e;
-                    sfLog().info("retrying executeInGuestOS");
+                    sfLog().info("retrying executeInGuestOS", e);
                     continue;
                 }
                 ex = null;
@@ -734,6 +731,162 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         return strResponse;
     }
 
+    public String takeSnapshot(String inVMName, String inSnapshotName, String inSnapshotDescription, boolean inIncludeMemory) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.takeSnapshot(inSnapshotName, inSnapshotDescription, inIncludeMemory);
+            }
+            else strResponse = "Failed to take a snapshot of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("takeSnapshot", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    public String revertVMToSnapshot(String inVMName, String inSnapshotName) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.revertToSnapshot(inSnapshotName);
+            }
+            else strResponse = "Failed to revert to named snapshot of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("revertVMToSnapshot", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    public String revertVMToSnapshot(String inVMName) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.revertToSnapshot();
+            }
+            else strResponse = "Failed to revert to current snapshot of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("revertVMToSnapshot", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    /**
+     * Deletes the current snapshot of a virtual machine.
+     * @param inVMName The name of the virtual machine.
+     * @param inDeleteChildren Delete the children of the snapshot as well?
+     * @return "success" or an error message.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String deleteVMSnapshot(String inVMName, boolean inDeleteChildren) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.deleteSnapshot(inDeleteChildren);
+            }
+            else strResponse = "Failed to delete to current snapshot of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("deleteVMSnapshot", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    /**
+     * Deletes a named snapshot of a virtual machine.
+     * @param inVMName The name of the virtual machine.
+     * @param inSnapshotName The name of the snapshot.
+     * @param inDeleteChildren Delete the children of the snapshot as well?
+     * @return "success" or an error message.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String deleteVMSnapshot(String inVMName, String inSnapshotName, boolean inDeleteChildren) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.deleteSnapshot(inSnapshotName, inDeleteChildren);
+            }
+            else strResponse = "Failed to delete to a named snapshot of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("deleteVMSnapshot", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
+    /**
+     * Waits for the tools in the guest OS to come up.
+     * @param inVMName Name of the virtual machine.
+     * @param inTimeout The timeout in seconds. 0 means there is no timeout.
+     * @return "success" or an error message.
+     * @throws SmartFrogException
+     */
+    public String waitForTools(String inVMName, int inTimeout) throws SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.waitForTools(inTimeout);
+            }
+            else strResponse = "Failed to wait for tools to come up in guest os of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("waitForTools", strVMPath, e);
+        }
+
+        // an error occurred
+        return strResponse;
+    }
+
     /**
      * Constructs the full path to the .vmx file of a VM.
      * @param inVMName The name of the VM.
@@ -741,6 +894,32 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
      */
     private String constructVMPath(String inVMName) {
         return vmImagesFolder + File.separator + inVMName + File.separator + inVMName + ".vmx";
+    }
+
+    /**
+     * Sets the username and password for the guest operating system of a virtual machine.
+     * @param inVMName The name of the virtual machine.
+     * @param inUser The username.
+     * @param inPass The password.
+     * @return "success" or an error message.
+     */
+    public String setGuestOSCredentials(String inVMName, String inUser, String inPass) {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        // get a machine module
+        VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+        // check if it worked
+        if (tmp != null) {
+            tmp.setGuestOSUser(inUser);
+            tmp.setGuestOSPasswd(inPass);
+        }
+        else strResponse = "Failed to set credentials for guest os of \"" + strVMPath + "\": Image module not existing.";
+
+        // an error occurred
+        return strResponse;
     }
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {
