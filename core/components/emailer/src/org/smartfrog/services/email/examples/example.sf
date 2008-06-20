@@ -19,26 +19,22 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/email/emailer.sf"
+#include "/org/smartfrog/services/email/components.sf"
 
 Example extends Compound {
     mailer extends Emailer {
-	to "ritu@india.hp.com";
-	from "smartfrog@india.hp.com";
+        to "ritu@india.hp.com";
+        from "smartfrog@india.hp.com";
         smtpHost "mysmtphost.india.hp.com";
         runAsWorkFlowComponent false; 
     }
-    Foo extends Prim {
-        sfClass "org.smartfrog.services.email.EmailerTest";
+    Foo extends EmailSender {
         sfProcessHost "ebnt171.india.hp.com";
-        sfProcessComponentName "Foo";
-        myMailer LAZY PARENT:mailer;
+        message "Foo";
+        mailer LAZY PARENT:mailer;
     }
-    Bar extends Prim {
-        sfClass "org.smartfrog.services.email.EmailerTest";
-        sfProcessHost "ebnt17.india.hp.com";
-        sfProcessComponentName "Bar";
-        myMailer LAZY PARENT:mailer;
+    Bar extends Foo {
+        message "Bar";
     }
 }
 sfConfig extends Example;
