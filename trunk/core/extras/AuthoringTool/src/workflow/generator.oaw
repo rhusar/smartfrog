@@ -11,7 +11,7 @@
 	<!-- load model and store it in slot 'model' -->
 	<component class="org.eclipse.mwe.emf.Reader">
 		<uri value="platform:/resource/${model}" />
-		<modelSlot value="Root" />
+		<modelSlot value="Real" />
 	</component>
 
 	
