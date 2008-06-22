@@ -34,7 +34,13 @@
 «ENDDEFINE»
 
 «DEFINE AddAttribute FOR Attribute»
-«IF StateData&&StateListen&&StateNotify» [statedata,StateListen,StateNotify]«ENDIF»   «Name» «IF IsLazyValue» LAZY «ENDIF»  «Value»;
+«IF StateData&&StateListen&&StateNotify» [statedata,StateListen,StateNotify]
+«ELSEIF StateData&&StateListen&&!StateNotify» [statedata,StateListen]
+«ELSEIF StateData&&!StateListen&&StateNotify» [statedata,StateNotify]
+«ELSEIF !StateData&&!StateListen&&StateNotify» [StateListen,StateNotify]
+«ELSEIF !StateData&&!StateListen&&StateNotify» [StateNotify]
+«ELSEIF !StateData&&StateListen&&!StateNotify» [StateListen]
+«ELSEIF StateData&&!StateListen&&!StateNotify» [statedata] «ENDIF»   «Name» «IF IsLazyValue» LAZY «ENDIF»  «Value»;
 «ENDDEFINE»
 
 «DEFINE AndDescription FOR smartfrog::And»
