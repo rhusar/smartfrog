@@ -39,6 +39,10 @@ public class WorkflowThread extends SmartFrogThread {
      * termination message: {@value}
      */
     public static final String WORKER_THREAD_COMPLETED = "Worker thread completed";
+    /**
+     * abnormal termination message: {@value}
+     */
+    public static final String WORKER_THREAD_FAILED = "Worker thread failed";
 
     /**
      * Allocates a new <code>SmartFrogThread</code> object.
@@ -60,7 +64,7 @@ public class WorkflowThread extends SmartFrogThread {
      */
     private void bind(Prim owner, boolean workflowTermination) {
         this.owner = owner;
-        this.workflowTermination=workflowTermination;
+        this.workflowTermination = workflowTermination;
         try {
             ownerID = owner.sfCompleteName();
         } catch (RemoteException e) {
@@ -128,9 +132,9 @@ public class WorkflowThread extends SmartFrogThread {
 
     /**
      * Override point: the termination message
-     * @return {@link #WORKER_THREAD_COMPLETED}
+     * @return {@link #WORKER_THREAD_COMPLETED} or {@link #WORKER_THREAD_FAILED} depending on the outcome
      */
     protected String getTerminationMessage() {
-        return WORKER_THREAD_COMPLETED;
+        return getThrown() == null ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
     }
 }
