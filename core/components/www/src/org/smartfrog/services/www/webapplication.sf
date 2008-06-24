@@ -160,7 +160,7 @@ ServletSchema extends Schema {
     pathSpec extends String;
     //the class that implements the servlet
     className extends String;
-    //mappings.
+    //mappings are a list of strings.
     mappings extends OptionalVector;
     //initialisation parameters as a list of [name,value] pairs
     initParams extends OptionalVector;
