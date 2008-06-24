@@ -52,6 +52,7 @@ public class JettyServletDelegate
      * a log
      */
     private Log log;
+    private static final Reference mappingsRef = new Reference(ATTR_MAPPINGS);
 
     /**
      * Create the delegate and configure the {@link org.mortbay.jetty.servlet.Context} of Jetty
@@ -93,18 +94,22 @@ public class JettyServletDelegate
                 throw new SmartFrogDeploymentException("No servlet context is currently live");
             }
 
-            holder = servletContext.addServlet(className, pathSpec);
-            holder.setDisplayName(name);
+            holder = new ServletHolder();
+            holder.setName(className);
+            holder.setClassName(className);
 
             //get and apply init order
             int initOrder = prim.sfResolve(ATTR_INIT_ORDER,
                     DEFAULT_INIT_ORDER,
                     false);
-            holder.setInitOrder(initOrder);
+            if (initOrder > 0) {
+                //the init order is only set if positive, because of SFOS-906.
+                holder.setInitOrder(initOrder);
+            }
 
             //apply initialisation params
             Vector<Vector<String>> paramTuples = ListUtils.resolveStringTupleList(prim, initParamsRef, true);
-            for(Vector<String> tuple:paramTuples) {
+            for (Vector<String> tuple : paramTuples) {
                 holder.setInitParameter(tuple.firstElement(), tuple.get(1));
             }
 
@@ -117,19 +122,26 @@ public class JettyServletDelegate
                     absolutePath);
 
             //extract mappings
-            Vector mappings = null;
-            mappings = prim.sfResolve(ATTR_MAPPINGS, mappings, false);
+            Vector<String> mappings = ListUtils.resolveStringList(prim, mappingsRef, false);
             if (mappings != null) {
-                String[] pathSpecs=new String[mappings.size()];
-                int counter=0;
-                for (Object mapping : mappings) {
-                    pathSpecs[counter++]= mapping.toString();
+                String[] pathSpecs = new String[mappings.size()];
+                int counter = 0;
+                for (String mapping : mappings) {
+                    pathSpecs[counter++] = mapping;
                 }
                 ServletHandler servletHandler = servletContext.getServletHandler();
                 ServletMapping servletMapping = new ServletMapping();
                 servletMapping.setPathSpecs(pathSpecs);
                 servletMapping.setServletName(name);
                 servletHandler.addServletMapping(servletMapping);
+            }
+
+            //add the servlet
+            servletContext.addServlet(holder, pathSpec);
+
+            //now start it up if the context is already live.
+            if(servletContext.isStarted()) {
+                holder.doStart();
             }
 
         } catch (RemoteException ex) {
