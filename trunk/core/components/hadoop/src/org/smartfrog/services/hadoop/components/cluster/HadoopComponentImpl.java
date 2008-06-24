@@ -85,13 +85,14 @@ public class HadoopComponentImpl extends PrimImpl {
         Prim target=sfResolve(targetAttribute,(Prim)null,true);
         return new ManagedConfiguration(target);
     }
+
     /**
      * Run through the directories, create all that are there
      * @param dirs list of directories
      * @param createDirs create the directories?
      * @return the directories all converted to a list split by commas
      */
-    protected String createDirectoryList(Vector<String> dirs,boolean createDirs) {
+    public static String createDirectoryList(Vector<String> dirs,boolean createDirs) {
         StringBuilder path = new StringBuilder();
         for (String dir : dirs) {
             File directory = new File(dir);
@@ -107,6 +108,26 @@ public class HadoopComponentImpl extends PrimImpl {
         return value;
     }
 
+
+    /**
+     * Go from a list of paths/fileIntfs to a comma separated list, create directories on demand
+     * @param prim the component to work with
+     * @param sourceRef        source reference
+     * @param replaceAttribute attribute to replace
+     * @return the directories
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public static Vector<String> createDirectoryListAttribute(Prim prim, Reference sourceRef,
+                                                          String replaceAttribute)
+            throws RemoteException, SmartFrogException {
+        Vector<String> dirs;
+        dirs = FileSystem.resolveFileList(prim, sourceRef, null, true, null);
+        String value = createDirectoryList(dirs, true);
+        prim.sfReplaceAttribute(replaceAttribute, value);
+        return dirs;
+    }
+
     /**
      * Go from a list of paths/fileIntfs to a comma separated list, create
      * directories on demand
@@ -119,10 +140,6 @@ public class HadoopComponentImpl extends PrimImpl {
     protected Vector<String> createDirectoryListAttribute(Reference sourceRef,
                                                 String replaceAttribute)
             throws RemoteException, SmartFrogException {
-        Vector<String> dirs;
-        dirs= FileSystem.resolveFileList(this, sourceRef,null,true,null);
-        String value = createDirectoryList(dirs,true);
-        sfReplaceAttribute(replaceAttribute, value);
-        return dirs;
+        return createDirectoryListAttribute(this,sourceRef, replaceAttribute);
     }
 }

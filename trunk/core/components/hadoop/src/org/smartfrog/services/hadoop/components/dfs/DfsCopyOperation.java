@@ -26,8 +26,21 @@ package org.smartfrog.services.hadoop.components.dfs;
  */
 
 public interface DfsCopyOperation extends DfsOperation {
-
+    /**
+     * {@value}
+     */
     String ATTR_SOURCE="source";
+    /**
+     * {@value}
+     */
     String ATTR_DEST = "dest";
+    /**
+     * {@value}
+     */
     String ATTR_OVERWRITE = "overwrite";
+
+    /**
+     * {@value}
+     */
+    String ATTR_BLOCKSIZE = "blocksize";
 }

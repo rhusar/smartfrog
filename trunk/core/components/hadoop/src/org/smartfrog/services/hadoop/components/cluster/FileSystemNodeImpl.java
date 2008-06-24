@@ -40,9 +40,9 @@ import java.util.Vector;
 public class FileSystemNodeImpl extends HadoopComponentImpl implements FileSystemNode {
 
 
-    protected static final Reference DATA_DIRECTORIES = new Reference(
+    public static final Reference DATA_DIRECTORIES = new Reference(
             ATTR_DATA_DIRECTORIES);
-    protected static final Reference NAME_DIRECTORIES = new Reference(
+    public static final Reference NAME_DIRECTORIES = new Reference(
             ATTR_NAME_DIRECTORIES);
 
     public FileSystemNodeImpl() throws RemoteException {

@@ -23,8 +23,8 @@ package org.apache.hadoop.dfs;
 
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
-import org.smartfrog.services.hadoop.core.proposed.HadoopIOException;
+import org.apache.hadoop.util.HadoopComponentLifecycle;
+import org.apache.hadoop.util.HadoopIOException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;

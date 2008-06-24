@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -33,9 +34,9 @@ import java.rmi.RemoteException;
  * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
 
-public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
+public class DfsCreateFileImpl extends DfsPathOperationImpl implements DfsPathOperation {
 
-    public DfsCopyFileImpl() throws RemoteException {
+    public DfsCreateFileImpl() throws RemoteException {
     }
 
     /**
@@ -58,12 +59,21 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @throws Exception on any failure
      */
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
-        Path source = resolveDfsPath(ATTR_SOURCE);
-        Path dest = resolveDfsPath(ATTR_DEST);
-        boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
-        int blocksize = sfResolve(ATTR_BLOCKSIZE, 0, true);
-        DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
-        DfsUtils.mkParentDirs(fileSystem, dest);
-        DfsUtils.copyFile(fileSystem,source, fileSystem, dest, overwrite, blocksize);
+        String text = sfResolve("text", "", true);
+        Path path = getPath();
+        boolean overwrite = sfResolve(DfsCopyOperation.ATTR_OVERWRITE,true,true);
+        FSDataOutputStream out = null;
+        try {
+            out = fileSystem.create(path, overwrite);
+            if (text.length() > 0) {
+                out.writeChars(text);
+            }
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+
+
     }
 }

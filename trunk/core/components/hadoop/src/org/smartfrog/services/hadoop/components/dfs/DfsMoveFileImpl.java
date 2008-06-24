@@ -33,9 +33,9 @@ import java.rmi.RemoteException;
  * Component to copy a file into DFS Created 17-Jun-2008 15:06:23
  */
 
-public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
+public class DfsMoveFileImpl extends DfsOperationImpl implements DfsCopyOperation {
 
-    public DfsCopyFileImpl() throws RemoteException {
+    public DfsMoveFileImpl() throws RemoteException {
     }
 
     /**
@@ -60,10 +60,8 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path source = resolveDfsPath(ATTR_SOURCE);
         Path dest = resolveDfsPath(ATTR_DEST);
-        boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
-        int blocksize = sfResolve(ATTR_BLOCKSIZE, 0, true);
-        DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
+        DfsUtils.assertNotDependent(fileSystem, source, fileSystem, dest);
         DfsUtils.mkParentDirs(fileSystem, dest);
-        DfsUtils.copyFile(fileSystem,source, fileSystem, dest, overwrite, blocksize);
+        DfsUtils.rename(fileSystem, source, dest);
     }
 }

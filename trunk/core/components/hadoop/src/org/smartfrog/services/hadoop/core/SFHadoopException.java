@@ -36,6 +36,7 @@ import java.util.List;
  */
 
 public class SFHadoopException extends SmartFrogException {
+    public static final String CONFIGURATION = "configuration";
 
     /**
      * Constructs a SmartFrogException with no message.
@@ -105,28 +106,14 @@ public class SFHadoopException extends SmartFrogException {
         super(message, cause, sfObject);
     }
 
+    /**
+     * Dump the configuration to the {@link #CONFIGURATION} attribute
+     * @param conf
+     */
     public void addConfiguration(ManagedConfiguration conf) {
-        add("configuration",conf.dumpQuietly());
+        add(CONFIGURATION,conf.dumpQuietly());
     }
 
-    /**
-     * Prints this throwable and its backtrace to the specified print writer.
-     *
-     * @param s <code>PrintWriter</code> to use for output
-     * @since JDK1.1
-     */
-    public void printStackTrace(PrintWriter s) {
-        super.printStackTrace(s);
-    }
-
-    /**
-     * Prints this throwable and its backtrace to the specified print stream.
-     *
-     * @param s <code>PrintStream</code> to use for output
-     */
-    public void printStackTrace(PrintStream s) {
-        super.printStackTrace(s);
-    }
 
     /**
      * Turn a MultiExcept into a nested exception with the stack traces in the body.
@@ -144,7 +131,8 @@ public class SFHadoopException extends SmartFrogException {
             Throwable e = multiExcept.getException(0);
             return new SFHadoopException(message+"\n"
                     + e.getMessage(),
-                    e);
+                    e,
+                    sfObject);
         }
 
         StringWriter sw = new StringWriter();
@@ -161,6 +149,7 @@ public class SFHadoopException extends SmartFrogException {
                 +"\nmultiple ("+ exCount + ") nested exceptions: \n"
                 + multiExcept.getMessage() + "\n"
                 + sw.toString(),
-                multiExcept);
+                multiExcept,
+                sfObject);
     }
 }

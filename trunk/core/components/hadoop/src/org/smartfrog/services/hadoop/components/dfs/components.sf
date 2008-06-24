@@ -47,7 +47,8 @@ For more information: www.smartfrog.org
   DfsOperation extends WorkflowPrim {
     sfShouldTerminate true;
 
-    //the cluster attribute is required, but not defined in the schema
+    //the cluster attribute is required, but not defined in the schema, so
+    //can be picked up from parents
     //cluster
 
     //here are some permissions for use in permission logic
@@ -138,9 +139,17 @@ For more information: www.smartfrog.org
    * copy a source file to a destination file or directory
    * There is no dependency checking, but destination files that exist can be skipped
    */
-  DfsCopyOperation extends DfsOperation {
+  DfsSourceDestOperation extends DfsOperation {
     source TBD;
     dest TBD;
+  }
+
+
+  /**
+   * copy a source file to a destination file or directory
+   * There is no dependency checking, but destination files that exist can be skipped
+   */
+  DfsCopyOperation extends DfsSourceDestOperation {
     overwrite true;
   }
 
@@ -163,5 +172,42 @@ For more information: www.smartfrog.org
    * copy an HDFS file into another HDFS file
    */
   DfsCopyFile extends DfsCopyOperation {
+    blocksize 65536;
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileImpl";
+  }
+
+  /**
+   * move a file in the filesystem
+   */
+  DfsMoveFile extends DfsSourceDestOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsMoveFileImpl";
+  }
+
+  /**
+   * Format a file system. This is a workflow component
+   */
+  DfsFormatFileSystem extends DfsOperation {
+
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsFormatFileSystemImpl";
+    //name directory: a List of directories
+    nameDirectories TBD;
+    sfShouldTerminate true;
+  }
+
+  /**
+  * Create a file with the given text streamed out using the DataOutputStream libraries -that is,
+  * it ends up UTF16 big-endian.
+  * if text=="", then nothing is written; a 0 byte file is pushed out.
+  */
+  DfsCreateFile extends DfsPathOperation {
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCreateFileImpl";
+    text "";
+    overwrite true;
+  }
+
+  /**
+  * Touch a file to zero bytes. Anything there is deleted
+  */
+  DfsTouchFile extends DfsCreateFile {
+    text "";
   }

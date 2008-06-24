@@ -26,3 +26,5 @@ For more information: www.smartfrog.org
 ClusterNode extends HadoopConfiguration {
 
 }
+
+

@@ -76,7 +76,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 LocalFormat extends LocalHadoopCompound {
   description "Component to format a filesystem";
   formatLocal extends FormatFileSystem {
-      fs.default.name PARENT:fs.default.name;
+      cluster LAZY PARENT:cluster;
       dataDirectories [LAZY dataDir];
   }
 }

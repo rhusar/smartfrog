@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -58,8 +59,8 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
             //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
             //to an empty string if it is not set
             //see https://issues.apache.org/jira/browse/HADOOP-3438
-            if (System.getProperty("hadoop.log.dir") == null) {
-                System.setProperty("hadoop.log.dir", ".");
+            if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
+                System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
             }
             ExtJobTracker tracker = new ExtJobTracker(createConfiguration());
             worker = new TrackerThread(tracker);

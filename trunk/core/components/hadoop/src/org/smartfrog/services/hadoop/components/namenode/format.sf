@@ -24,8 +24,8 @@ For more information: www.smartfrog.org
 
 FormatFileSystem extends  NameDirNode {
 
- sfClass "org.smartfrog.services.hadoop.components.namenode.FormatImpl"
- //name directory: a List of directories
+  sfClass "org.smartfrog.services.hadoop.components.namenode.FormatImpl";
+  //name directory: a List of directories
   nameDirectories TBD;
   sfShouldTerminate true;
 }
