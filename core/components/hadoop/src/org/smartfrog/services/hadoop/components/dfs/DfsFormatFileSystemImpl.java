@@ -22,20 +22,26 @@
 package org.smartfrog.services.hadoop.components.dfs;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.dfs.DistributedFileSystem;
+import org.apache.hadoop.dfs.ExtDfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
+import java.io.File;
 
 /**
- *
+ * Format a file system
  */
-public abstract class DfsPathOperationImpl extends DfsOperationImpl implements DfsPathOperation {
+public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPathOperation {
 
-    private String pathName;
-    private Path path;
-    private boolean idempotent;
 
-    protected DfsPathOperationImpl() throws RemoteException {
+    public DfsFormatFileSystemImpl() throws RemoteException {
     }
 
     /**
@@ -46,25 +52,21 @@ public abstract class DfsPathOperationImpl extends DfsOperationImpl implements D
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        idempotent = sfResolve(ATTR_IDEMPOTENT, true, true);
-        pathName = sfResolve(ATTR_PATH, "", true);
-        path = resolveDfsPath(ATTR_PATH);
+        startWorkerThread();
     }
 
     /**
-     * Get the path name
+     * Format the name node
      *
-     * @return the path as a string
+     * @param fileSystem the filesystem; this is closed afterwards
+     * @param conf the configuration driving this operation
+     * @throws Exception on any failure
      */
-    public String getPathName() {
-        return pathName;
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    public boolean isIdempotent() {
-        return idempotent;
+    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
+        Vector<String> files = HadoopComponentImpl
+                .createDirectoryListAttribute(this, FileSystemNodeImpl.NAME_DIRECTORIES,
+                        ConfigurationAttributes.DFS_NAME_DIR);
+        Vector<File> nameDirs = FileSystem.convertToFiles(files);
+        ExtDfsUtils.formatNameNode(nameDirs, conf);
     }
 }

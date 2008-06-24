@@ -29,7 +29,9 @@ public interface DfsPathOperation extends DfsOperation {
      * {@value}
      */
     String ATTR_PATH = "path";
-
+    /**
+     * {@value}
+     */
     String ATTR_IDEMPOTENT = "idempotent";
 
 }

@@ -22,7 +22,7 @@ package org.apache.hadoop.mapred;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.proposed.HadoopComponentLifecycle;
+import org.apache.hadoop.util.HadoopComponentLifecycle;
 
 import java.io.IOException;
 

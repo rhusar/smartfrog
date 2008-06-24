@@ -37,9 +37,6 @@ import java.rmi.RemoteException;
 
 public class DfsPathExistsImpl extends DfsPathOperationImpl implements CheckableCondition, DfsPathOperation {
 
-
-
-
     private boolean canBeFile = false;
     private boolean canBeDir = false;
     private long minFileSize = 0;

@@ -27,6 +27,9 @@
 #include "/org/smartfrog/services/hadoop/components/datanode/components.sf"
 #include "/org/smartfrog/services/hadoop/components/namenode/components.sf"
 
+
+
 HadoopCluster extends Prim {
   jobTracker TBD;
 }
+

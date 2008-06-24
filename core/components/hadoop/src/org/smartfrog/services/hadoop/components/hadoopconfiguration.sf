@@ -1358,3 +1358,13 @@ JobTrackerConfiguration extends HadoopConfiguration {
 
 
 }
+
+
+
+/**
+ * A prim that is tied to a cluster
+ */
+ClusterPrim extends Prim  {
+  /** lazy reference to a cluster configuration */
+  cluster TBD;
+}

@@ -39,7 +39,7 @@ public class ExtDfsUtils {
      * Format a name node
      * @param dirsToFormat directories to format
      * @param conf the configuration
-     * @throws IOException
+     * @throws IOException for formatting problems
      */
     public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
         FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat), conf);

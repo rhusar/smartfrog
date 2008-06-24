@@ -26,6 +26,8 @@
 testLocalCluster extends ExpectDeploy {
   description "bring up a full cluster";
 
+
+
   action extends LocalClusterCompound {
     jobTracker:mapred.job.tracker  "localhost:8014";
     jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50032";
@@ -33,6 +35,24 @@ testLocalCluster extends ExpectDeploy {
 
   tests extends Sequence {
     //run some workflow operations
+
+    //the cluster for all the tests
+    cluster LAZY action:cluster;
+
+
+    formatLocal extends DfsFormatFileSystem {
+      cluster LAZY PARENT:cluster;
+      nameDirectories [LAZY cluster:nameDirectories];
+    }
+
+    touch extends DfsCreateFile {
+      path "/test/filename";
+      text "this is a very small file for Hadoop";
+    }
+
+    assertFileExists extends DfsPathExistsWorkflow {
+      path touch:path;
+    }
     
   }
 
