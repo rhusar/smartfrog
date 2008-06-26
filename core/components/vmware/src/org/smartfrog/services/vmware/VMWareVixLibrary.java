@@ -1251,43 +1251,43 @@ public interface VMWareVixLibrary extends Library {
                                             VixEventProc callbackProc,
                                             Pointer clientData);
 
-    /**
-     * Not documented in the vmware API documentation.
-     *
-     * @param vmHandle     Identifies a virtual machine. Call VixVM_Open() to create a virtual machine handle.
-     * @param variableType VIX_VM_GUEST_VARIABLE, VIX_VM_CONFIG_RUNTIME_ONLY or VIX_GUEST_ENVIRONMENT_VARIABLE
-     * @param name         Name of the variable.
-     * @param options      Must be 0.
-     * @param callbackProc A callback function that will be invoked when the operation is complete.
-     * @param clientData   A parameter that will be passed to the callbackProc function.
-     * @return A job handle that describes the state of this asynchronous operation.
-     */
-    public int VixVM_ReadVariable(int vmHandle,
-                                  int variableType,
-                                  String name,
-                                  int options,
-                                  VixEventProc callbackProc,
-                                  Pointer clientData);
+//    /**
+//     * Not documented in the vmware API documentation.
+//     *
+//     * @param vmHandle     Identifies a virtual machine. Call VixVM_Open() to create a virtual machine handle.
+//     * @param variableType VIX_VM_GUEST_VARIABLE, VIX_VM_CONFIG_RUNTIME_ONLY or VIX_GUEST_ENVIRONMENT_VARIABLE
+//     * @param name         Name of the variable.
+//     * @param options      Must be 0.
+//     * @param callbackProc A callback function that will be invoked when the operation is complete.
+//     * @param clientData   A parameter that will be passed to the callbackProc function.
+//     * @return A job handle that describes the state of this asynchronous operation.
+//     */
+//    public int VixVM_ReadVariable(int vmHandle,
+//                                  int variableType,
+//                                  String name,
+//                                  int options,
+//                                  VixEventProc callbackProc,
+//                                  Pointer clientData);
 
-    /**
-     * Not documented in the vmware API documentation.
-     *
-     * @param vmHandle     Identifies a virtual machine. Call VixVM_Open() to create a virtual machine handle.
-     * @param variableType VIX_VM_GUEST_VARIABLE, VIX_VM_CONFIG_RUNTIME_ONLY or VIX_GUEST_ENVIRONMENT_VARIABLE
-     * @param valueName    Name of the variable.
-     * @param value        Value of the variable.
-     * @param options      Must be 0.
-     * @param callbackProc A callback function that will be invoked when the operation is complete.
-     * @param clientData   A parameter that will be passed to the callbackProc function.
-     * @return A job handle that describes the state of this asynchronous operation.
-     */
-    public int VixVM_WriteVariable(int vmHandle,
-                                   int variableType,
-                                   String valueName,
-                                   String value,
-                                   int options,
-                                   VixEventProc callbackProc,
-                                   Pointer clientData);
+//    /**
+//     * Not documented in the vmware API documentation.
+//     *
+//     * @param vmHandle     Identifies a virtual machine. Call VixVM_Open() to create a virtual machine handle.
+//     * @param variableType VIX_VM_GUEST_VARIABLE, VIX_VM_CONFIG_RUNTIME_ONLY or VIX_GUEST_ENVIRONMENT_VARIABLE
+//     * @param valueName    Name of the variable.
+//     * @param value        Value of the variable.
+//     * @param options      Must be 0.
+//     * @param callbackProc A callback function that will be invoked when the operation is complete.
+//     * @param clientData   A parameter that will be passed to the callbackProc function.
+//     * @return A job handle that describes the state of this asynchronous operation.
+//     */
+//    public int VixVM_WriteVariable(int vmHandle,
+//                                   int variableType,
+//                                   String valueName,
+//                                   String value,
+//                                   int options,
+//                                   VixEventProc callbackProc,
+//                                   Pointer clientData);
 
     /**
      * This function returns the number of top-level (root) snapshots belonging to a virtual machine.
