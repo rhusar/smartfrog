@@ -57,8 +57,9 @@ public class SFParse implements MessageKeys {
 
     private static Vector phases;
 
-    private static Vector errorReport = new Vector();
-                                 private SFParse(){
+    private static Vector errorReport = null;
+    
+    private SFParse(){
     }
 
     /**
@@ -83,6 +84,20 @@ public class SFParse implements MessageKeys {
         }
     }
 
+    /**
+     * Ascertains whether a file is parseable
+     *
+     * @param fileUrl the fileurl to be parsed
+     * @return success or not
+     */
+
+    public static boolean fileParses(String fileUrl) { 
+    	if (opts==null) opts = new ParseOptionSet(new String[]{"sfParse"});
+    	errorReport= new Vector();
+    	parseFile(fileUrl);
+    	return (errorReport.size()>0);
+    }
+    
     /**
      * Parses a file.
      *
@@ -276,6 +291,7 @@ public class SFParse implements MessageKeys {
 
             showVersionInfo();
             opts = new ParseOptionSet(args);
+            errorReport = new Vector();
             //SFSystem.SFSystem.sfLog().out(opts.toString());
 
             showDiagnostics(opts);
@@ -421,6 +437,10 @@ public class SFParse implements MessageKeys {
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         SFSystem.sfLog().out(report.toString());
       }
+    }
+    
+    public static boolean isVerboseOptSet(){
+    	return opts.verbose;
     }
 
 }
