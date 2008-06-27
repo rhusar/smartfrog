@@ -4,7 +4,7 @@ Bundle-Name: Smartfrog Plug-in
 Bundle-SymbolicName: org.smartfrog.authoringtool;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.smartfrog.authoringtool.SmartfrogPlugin
-Bundle-Vendor: GEMS
+Bundle-Vendor: HP
 Require-Bundle: org.gems.designer.dsml,
  org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -19,10 +19,18 @@ Require-Bundle: org.gems.designer.dsml,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.platform,
  org.gems.designer.dsml.emf,
- org.openarchitectureware.core.workflow
+ org.openarchitectureware.dependencies,
+ org.gems.designer.oawgenerator
 Export-Package: org.smartfrog.authoringtool,
  org.smartfrog.authoringtool.emf,
  org.smartfrog.authoringtool.emf.impl,
- org.smartfrog.authoringtool.emf.util
+ org.smartfrog.authoringtool.emf.util,
+ org.smartfrog.authoringtool.icons,
+ org.smartfrog.authoringtool.oawgenerator,
+ org.smartfrog.authoringtool.oawgenerator.check,
+ org.smartfrog.authoringtool.oawgenerator.templates,
+ org.smartfrog.authoringtool.oawgenerator.utils,
+ org.smartfrog.authoringtool.oawgenerator.workflows,
+ org.smartfrog.authoringtool.oawgenerator.xtend
 Bundle-ClassPath: .
 Eclipse-LazyStart: true
