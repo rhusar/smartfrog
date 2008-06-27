@@ -29,8 +29,8 @@
 
     <!-- override point -->
 
-    <property file="build.properties"/>
-    <property name="root.dir" location="../../"/>
+    <!--<property file="build.properties"/>-->
+    <property name="root.dir" location="../.."/>
     <property name="ivy.enabled" value="true"/>
 
 
@@ -40,5 +40,14 @@
 
     <echo message="==================================================================="/>
     <echo message="= ${ant.project.name}"/>
+
+    <target name="helperJar" depends="ready-to-jar">
+        <jar jarfile="${dist.dir}/lib/helper.jar" basedir="${build.classes.dir}"
+             includes="**/helper/**">
+            <manifest>
+                <attribute name="Main-Class" value="org.smartfrog.vast.helper.Setup"/>
+            </manifest>
+        </jar>
+    </target>
 
 </project>
