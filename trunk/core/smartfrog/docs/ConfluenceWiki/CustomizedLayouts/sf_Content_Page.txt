@@ -1,11 +1,17 @@
 ## PAGE SPECIFIC DECORATOR
 ## Here the context is the page. Modes are 'view', 'edit', 'edit-preview', 'view-information', and 'view-attachments'.
 
-
 #set ($helper = $params.get("helper"))
 #set ($mode = $params.get("mode"))
 #set ($confPage = $helper.page)
 #set ($infoPanelWidth = $params.get("infopanel-width"))
+
+## pwt: Set up variable to customize for viewing-only (not logged in) users
+#if ($permissionCheckDispatcher.isPermitted("/pages/editpage.action?pageId=$helper.page.id") == true)
+  #set($sfeditor = true)
+#else
+  #set($sfeditor = false)
+#end
 
 #infoPanelInitFromParams()
 ## GENERAL PAGE DECORATING BEGINS
@@ -20,7 +26,7 @@
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 
-#if ($action.isPrintableVersion() == false)
+#if ($action.isPrintableVersion() == false && $sfeditor == true)
     <tr>
         <td>
             <ul class="tabnav">
@@ -65,8 +71,10 @@
 
                             #set ($labelable = $page)
                             #permitSearchEngines()
-                            <table width="100%" cellspacing="0">
+#if($sfeditor) 
+                           <table width="100%" cellspacing="0">
                                 <tr>
+
                                     <td align="left" valign="top">
                                         <span class="smalltext">
                                             #editReport()
@@ -88,6 +96,7 @@
                                     </td>
                                 </tr>
                             </table>
+#end
 
                             #if ($helper.isHistoricalVersion())
                                 <content tag="suppressPdfLink">true</content>
@@ -95,6 +104,10 @@
                             #if ($helper.isHistoricalVersion() || $helper.action.navigatingVersions)
                                 #versionInfo()
                             #end
+
+## pwt: This section adds a left-hand navigation list that is displayed on every page
+## It relies on a page called "TreeNavigation" at the root of the space
+## End of the left-hand navigation section #########################
 
 #if ($action.isPrintableVersion() == false)
 <style>
@@ -111,11 +124,13 @@ padding-left:5px;
 
 <table cellspacing="0" cellspacing="0">
 <tr>
-<td valign="top" align="left" width="22%" bgcolor="#F9F9F9">
+<td valign="top" align="left" width="22%" bgcolor="#F9F9F9" class="noprint">
 <div class="tabletitle">Contents</div>
 <div class="spacetree">
 <span class="smalltext">
-#includePage($helper.spaceKey "Navigation")
+##includePage($helper.spaceKey "TreeNavigation")
+## Use the PageTree plugin instead
+$helper.renderConfluenceMacro("{pagetree:root=Home|sort=natural|excerpt=false|reverse=false|startDepth=2|expandCollapseAll=true|searchBox=false}")
 </span>
 </div>
 </td>
@@ -133,10 +148,10 @@ $body
 #end
 
                             #trackbackRdf ($trackbackUtils.getContentIdentifier($page) $page.title $trackbackUtils.getPingUrl($page))
-
+#if($sfeditor)
                             #renderChildren()
-
                             #renderCommentsWithProfilePics($page $sitemeshPage)
+#end
                         </div>
                     ## EDIT || PREVIEW-EDIT
                     #elseif ($mode == "edit" || $mode == "edit-preview")
