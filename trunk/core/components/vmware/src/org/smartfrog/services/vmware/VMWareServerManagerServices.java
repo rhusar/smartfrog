@@ -244,4 +244,36 @@ public interface VMWareServerManagerServices extends Remote {
      * @throws SmartFrogException
      */
     public String revertVMToSnapshot(String inVMName, String inSnapshotName) throws RemoteException, SmartFrogException;
+
+    /**
+     * Copies a file from the host (of the virtual machine) to the guest operating system (running within the virtual machine).
+     * @param inVMName Name of the virtual machine.
+     * @param inHostFile Full path to the file in the host os.
+     * @param inGuestFile Full path to the file in the guest os.
+     * @return "success" or an error message.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String copyFileFromHostToGuest(String inVMName, String inHostFile, String inGuestFile) throws RemoteException, SmartFrogException;
+
+//    /**
+//     * Writes an environment variable in a guest os.
+//     * @param inVMName The name of the virtual machine hosting the guest os.
+//     * @param inVarName The name of the environment variable.
+//     * @param inVarValue The value of the environment variable.
+//     * @return "success" or an error message.
+//     * @throws RemoteException
+//     * @throws SmartFrogException
+//     */
+//    public String writeGuestEnvVar(String inVMName, String inVarName, String inVarValue) throws RemoteException, SmartFrogException;
+//
+//    /**
+//     * Read the value of an environment variable of a guest os.
+//     * @param inVMName The name of the virtual machine hosting the guest os.
+//     * @param inVarName The name of the environment variable.
+//     * @return The value of the environment variable.
+//     * @throws RemoteException
+//     * @throws SmartFrogException
+//     */
+//    public String readGuestEnvVar(String inVMName, String inVarName) throws RemoteException, SmartFrogException;
 }

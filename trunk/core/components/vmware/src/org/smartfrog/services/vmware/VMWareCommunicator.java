@@ -1236,4 +1236,81 @@ public class VMWareCommunicator {
             releaseHandle(iJobHandle);
         }
     }
+
+//    /**
+//     * Writes an environment variable within the guest operating system.
+//     * @param inImg The VM image.
+//     * @param inName The name of the environment variable.
+//     * @param inValue The value of the environment variable.
+//     */
+//    public void writeGuestEnvVar(VMWareImageModule inImg, String inName, String inValue) throws SmartFrogException {
+//        int iJobHandle = NULL_HANDLE;
+//        try {
+//            // ensure that a connection is established
+//            loginInGuestOS(inImg);
+//
+//            // wait for the tools the virtual machine
+//            iJobHandle = vixLib.VixVM_WriteVariable( inImg.getVMHandle().getValue(),
+//                                                        VMWareVixLibrary.VixGuestVariableTypes.VIX_GUEST_ENVIRONMENT_VARIABLE,
+//                                                        inName,
+//                                                        inValue,
+//                                                        0,
+//                                                        null,
+//                                                        null);
+//
+//            // wait for the job to complete
+//            long lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+//            convertToException(lErr, true);
+//        } catch(SmartFrogException e) {
+//            // don't convert vix exceptions into smartfrog exceptions
+//            throw e;
+//        } catch (Exception e) {
+//            // any exception will be caught and wrapped because the native vix library may produce exceptions
+//            throw new SmartFrogException(inImg.getVMPath() + ": Error while writing environment variable in guest os", e);
+//        } finally {
+//            releaseHandle(iJobHandle);
+//        }
+//    }
+
+//    /**
+//     * Reads a environment variable of the guest os.
+//     * @param inImg The VM image.
+//     * @param inName The name of the environment variable.
+//     * @return The content of the variable.
+//     * @throws SmartFrogException
+//     */
+//    public String readGuestEnvVar(VMWareImageModule inImg, String inName) throws SmartFrogException {
+//        int iJobHandle = NULL_HANDLE;
+//        String strResult = "";
+//        try {
+//            // ensure that a connection is established
+//            loginInGuestOS(inImg);
+//
+//            // wait for the tools the virtual machine
+//            iJobHandle = vixLib.VixVM_ReadVariable( inImg.getVMHandle().getValue(),
+//                                                        VMWareVixLibrary.VixGuestVariableTypes.VIX_GUEST_ENVIRONMENT_VARIABLE,
+//                                                        inName,
+//                                                        0,
+//                                                        null,
+//                                                        null);
+//
+//            // wait for the job to complete
+//            long lErr = vixLib.VixJob_Wait(iJobHandle,
+//                                            VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_JOB_RESULT_VM_VARIABLE_STRING,
+//                                            strResult,
+//                                            VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+//
+//            convertToException(lErr, true);
+//
+//            return strResult;
+//        } catch(SmartFrogException e) {
+//            // don't convert vix exceptions into smartfrog exceptions
+//            throw e;
+//        } catch (Exception e) {
+//            // any exception will be caught and wrapped because the native vix library may produce exceptions
+//            throw new SmartFrogException(inImg.getVMPath() + ": Error while reading environment variable in guest os", e);
+//        } finally {
+//            releaseHandle(iJobHandle);
+//        }
+//    }
 }
