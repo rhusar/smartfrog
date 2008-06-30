@@ -46,5 +46,9 @@
                     name="sf-avalanche-core"
                     rev="latest.integration"
                     conf="compile,runtime->default"/>
-    </dependencies>
+		<dependency org="org.smartfrog"
+					name="sf-vmware"
+					rev="latest.integration"
+					conf="compile,runtime->default"/>
+	</dependencies>
 </ivy-module>

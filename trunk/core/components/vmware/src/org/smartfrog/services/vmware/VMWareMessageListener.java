@@ -65,11 +65,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      */
     private XmppListenerImpl refXmppListener;
     public static final String ATTR_LISTENER = "listener";
-    public static final String VMRESPONSE = "vmresponse";
-    public static final String VMNAME = "vmname";
-    public static final String VMCMD = "vmcmd";
 
-    /**
+	/**
      * Constructor.
      * @throws RemoteException In case of network/rmi error
      */
@@ -180,8 +177,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
             }
 
             // use the property bag
-            String command = ext.getPropertyBag().get(VMCMD);
-            String strName = ext.getPropertyBag().get(VMNAME);
+            String command = ext.getPropertyBag().get(VMWareConstants.VMCMD);
+            String strName = ext.getPropertyBag().get(VMWareConstants.VMNAME);
 
             if (command != null) {
                 // extension for the response message
@@ -196,28 +193,28 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                 }
 
                 // fill the response bag
-                response.getPropertyBag().put(VMCMD, command);
-                response.getPropertyBag().put(VMNAME, strName);
+                response.getPropertyBag().put(VMWareConstants.VMCMD, command);
+                response.getPropertyBag().put(VMWareConstants.VMNAME, strName);
 
                 if (!isManagerLive()) {
-                    response.getPropertyBag().put(VMRESPONSE, "No VMWareServerManager running");
+                    response.getPropertyBag().put(VMWareConstants.VMRESPONSE, "No VMWareServerManager running");
                 }
                 else {
                     try {
-                        if (command.equals("start")) {
+                        if (command.equals(VMWareConstants.VM_CMD_START)) {
                             // attempt to start the machine
-                            response.getPropertyBag().put(VMRESPONSE, manager.startVM(strName));
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.startVM(strName));
                         }
-                        else if (command.equals("stop")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.shutDownVM(strName));
+                        else if (command.equals(VMWareConstants.VM_CMD_STOP)) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.shutDownVM(strName));
                         }
-                        else if (command.equals("suspend")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.suspendVM(strName));
+                        else if (command.equals(VMWareConstants.VM_CMD_SUSPEND)) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.suspendVM(strName));
                         }
-                        else if (command.equals("reset")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.resetVM(strName));
+                        else if (command.equals(VMWareConstants.VM_CMD_RESET)) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.resetVM(strName));
                         }
-                        else if (command.equals("list")) {
+                        else if (command.equals(VMWareConstants.VM_CMD_LIST)) {
                             // count the machines
                             int i = 0;
                             for (VMWareImageModule mod : manager.getControlledMachines()) {
@@ -237,109 +234,135 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
                                 i++;
                             }
-                            response.getPropertyBag().put("list_count", String.format("%d", i));
+                            response.getPropertyBag().put(VMWareConstants.VM_LIST_COUNT, String.format("%d", i));
                         }
-                        else if (command.equals("powerstate")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.convertPowerState(manager.getPowerState(strName)));
+                        else if (command.equals(VMWareConstants.VM_CMD_POWERSTATE)) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.convertPowerState(manager.getPowerState(strName)));
                         }
-                        else if (command.equals("toolsstate")) {
-                            response.getPropertyBag().put(VMRESPONSE, manager.convertToolsState(manager.getToolsState(strName)));
+                        else if (command.equals(VMWareConstants.VM_CMD_TOOLSSTATE)) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.convertToolsState(manager.getToolsState(strName)));
                         }
-                        else if (command.equals("create")) {
+                        else if (command.equals(VMWareConstants.VM_CMD_CREATE)) {
                             // get additional attributes
-                            String  name    = ext.getPropertyBag().get("create_name"),
-                                    master  = ext.getPropertyBag().get("create_master"),
-                                    user    = ext.getPropertyBag().get("create_user"),
-                                    pass    = ext.getPropertyBag().get("create_pass");
+                            String  name    = ext.getPropertyBag().get(VMWareConstants.VM_CREATE_NAME),
+                                    master  = ext.getPropertyBag().get(VMWareConstants.VM_CREATE_MASTER),
+                                    user    = ext.getPropertyBag().get(VMWareConstants.VM_CREATE_USER),
+                                    pass    = ext.getPropertyBag().get(VMWareConstants.VM_CREATE_PASS);
 
                             // create a vmware from a master model
-                            response.getPropertyBag().put(VMRESPONSE, manager.createCopyOfMaster(master, name, user, pass));
-                            response.getPropertyBag().put(VMNAME, name);
-                        }
-                        else if (command.equals("delete")) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.createCopyOfMaster(master, name, user, pass));
+                            response.getPropertyBag().put(VMWareConstants.VMNAME, name);
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_DELETE)) {
                             // delete a vmware
-                            response.getPropertyBag().put(VMRESPONSE, manager.deleteCopy(strName));
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.deleteCopy(strName));
                         }
-                        else if (command.equals("getmasters")) {
+                        else if (command.equals(VMWareConstants.VM_CMD_GETMASTERS)) {
                             // list the master copies
-                            response.getPropertyBag().put(VMRESPONSE, manager.getMasterImages());
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.getMasterImages());
                         }
-                        else if (command.equals("rename")) {
+                        else if (command.equals(VMWareConstants.VM_CMD_RENAME)) {
                             // get the new name
-                            String newName = ext.getPropertyBag().get("rename_name");
+                            String newName = ext.getPropertyBag().get(VMWareConstants.VM_RENAME_NAME);
 
                             // rename the vm
-                            response.getPropertyBag().put(VMRESPONSE, manager.renameVM(strName, newName));
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.renameVM(strName, newName));
 
                             // correct response
-                            response.getPropertyBag().put(VMNAME, newName);
+                            response.getPropertyBag().put(VMWareConstants.VMNAME, newName);
 
-                            response.getPropertyBag().put("rename_old_name", strName);
+                            response.getPropertyBag().put(VMWareConstants.VM_RENAME_OLD_NAME, strName);
                         }
-                        else if (command.equals("getattribute")) {
+                        else if (command.equals(VMWareConstants.VM_CMD_GETATTRIBUTE)) {
                             // get the key
-                            String key = ext.getPropertyBag().get("getattrib_key");
+                            String key = ext.getPropertyBag().get(VMWareConstants.VM_GETATTRIBUTE_KEY);
 
                             // get the attribute
-                            response.getPropertyBag().put(VMRESPONSE, manager.getVMAttribute(strName, key));
-                        }
-                        else if (command.equals("setattribute")) {
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.getVMAttribute(strName, key));
+							response.getPropertyBag().put(VMWareConstants.VM_GETATTRIBUTE_KEY, key);
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_SETATTRIBUTE)) {
                             // get the key and the new value
-                            String  key = ext.getPropertyBag().get("setattrib_key"),
-                                    value = ext.getPropertyBag().get("setattrib_value");
+                            String  key = ext.getPropertyBag().get(VMWareConstants.VM_SETATTRIBUTE_KEY),
+                                    value = ext.getPropertyBag().get(VMWareConstants.VM_SETATTRIBUTE_VALUE);
 
                             if (key.equals("displayName")) {
-                                response.getPropertyBag().put(VMRESPONSE, "Please use the rename command to rename a VM.");
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, "Please use the rename command to rename a VM.");
                             }
                             else {
                                 // set the attribute
-                                response.getPropertyBag().put(VMRESPONSE, manager.setVMAttribute(strName, key, value));
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.setVMAttribute(strName, key, value));
                             }
-                        }
-                        else if (command.equals("executeinguest")) {
-                            String  strCommand = ext.getPropertyBag().get("exec_cmd"),
-                                    strParameters = ext.getPropertyBag().get("exec_param");
-                            boolean bNoWait = (ext.getPropertyBag().get("exec_nowait") != null);
+							response.getPropertyBag().put(VMWareConstants.VM_SETATTRIBUTE_KEY, key);
+							response.getPropertyBag().put(VMWareConstants.VM_SETATTRIBUTE_VALUE, value);
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_EXECUTE)) {
+                            String  strCommand = ext.getPropertyBag().get(VMWareConstants.VM_EXECUTE_CMD),
+                                    strParameters = ext.getPropertyBag().get(VMWareConstants.VM_EXECUTE_PARAM);
+                            boolean bNoWait = (ext.getPropertyBag().get(VMWareConstants.VM_EXECUTE_NOWAIT) != null);
 
-                            response.getPropertyBag().put(VMRESPONSE, manager.executeInGuestOS(strName, strCommand, strParameters, bNoWait));
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.executeInGuestOS(strName, strCommand, strParameters, bNoWait));
+							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_CMD, strCommand);
+							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_PARAM, strParameters);
+							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_NOWAIT, (bNoWait ? "true" : "false"));
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
+                            int iTimeout = Integer.parseInt(ext.getPropertyBag().get(VMWareConstants.VM_WAIT_FOR_TOOLS_TIMEOUT));
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.waitForTools(strName, iTimeout));
                         }
-                        else if (command.equals("waitfortools")) {
-                            int iTimeout = Integer.parseInt(ext.getPropertyBag().get("wait_timeout"));
-                            response.getPropertyBag().put(VMRESPONSE, manager.waitForTools(strName, iTimeout));
-                        }
-                        else if (command.equals("takesnapshot")) {
-                            String  strSnapName = ext.getPropertyBag().get("tsnap_name"),
-                                    strSnapDesc = ext.getPropertyBag().get("tsnap_desc");
-                            boolean bIncMem = Boolean.parseBoolean(ext.getPropertyBag().get("tsnap_incmem"));
+                        else if (command.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
+                            String  strSnapName = ext.getPropertyBag().get(VMWareConstants.VM_TAKE_SNAPSHOT_NAME),
+                                    strSnapDesc = ext.getPropertyBag().get(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION);
+                            boolean bIncMem = Boolean.parseBoolean(ext.getPropertyBag().get(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY));
 
-                            response.getPropertyBag().put(VMRESPONSE, manager.takeSnapshot(strName, strSnapName, strSnapDesc, bIncMem));
-                        }
-                        else if (command.equals("reverttosnapshot")) {
-                            String strSnapName = ext.getPropertyBag().get("rsnap_name");
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.takeSnapshot(strName, strSnapName, strSnapDesc, bIncMem));
+							response.getPropertyBag().put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, strSnapName);
+							response.getPropertyBag().put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, strSnapDesc);
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_REVERT)) {
+                            String strSnapName = ext.getPropertyBag().get(VMWareConstants.VM_REVERT_NAME);
                             if (strSnapName != null)
-                                response.getPropertyBag().put(VMRESPONSE, manager.revertVMToSnapshot(strName, strSnapName));
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.revertVMToSnapshot(strName, strSnapName));
                             else
-                                response.getPropertyBag().put(VMRESPONSE, manager.revertVMToSnapshot(strName));
-                        }
-                        else if (command.equals("setguestcred")) {
-                            String  strUser = ext.getPropertyBag().get("setgcred_user"),
-                                    strPass = ext.getPropertyBag().get("setgcred_pass");
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.revertVMToSnapshot(strName));
+							response.getPropertyBag().put(VMWareConstants.VM_REVERT_NAME, strSnapName);
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_SET_GUEST_CRED)) {
+                            String  strUser = ext.getPropertyBag().get(VMWareConstants.VM_SET_GUEST_CRED_USER),
+                                    strPass = ext.getPropertyBag().get(VMWareConstants.VM_SET_GUEST_CRED_PASS);
 
-                            response.getPropertyBag().put(VMRESPONSE, manager.setGuestOSCredentials(strName, strUser, strPass));
-                        }
-                        else if(command.equals("deletesnapshot")) {
-                            boolean bDelChildren = Boolean.parseBoolean(ext.getPropertyBag().get("dsnap_delchild"));
-                            String strSnapName = ext.getPropertyBag().get("dsnap_name");
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.setGuestOSCredentials(strName, strUser, strPass));
+							response.getPropertyBag().put(VMWareConstants.VM_SET_GUEST_CRED_USER, strUser);
+							response.getPropertyBag().put(VMWareConstants.VM_SET_GUEST_CRED_PASS, strPass);
+						}
+                        else if(command.equals(VMWareConstants.VM_CMD_DELETE_SNAPSHOT)) {
+                            boolean bDelChildren = Boolean.parseBoolean(ext.getPropertyBag().get(VMWareConstants.VM_DELETE_SNAPSHOT_DEL_CHILD));
+                            String strSnapName = ext.getPropertyBag().get(VMWareConstants.VM_DELETE_SNAPSHOT_NAME);
                             if (strSnapName != null)
-                                response.getPropertyBag().put(VMRESPONSE, manager.deleteVMSnapshot(strName, strSnapName, bDelChildren));
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.deleteVMSnapshot(strName, strSnapName, bDelChildren));
                             else
-                                response.getPropertyBag().put(VMRESPONSE, manager.deleteVMSnapshot(strName, bDelChildren));
-                        }
-    //                    else if (command.equals("copyhosttoguest")) {
-    //                        String strSrc = ext.getPropertyBag().get("source");
-    //                        String strDest = ext.getPropertyBag().get("dest");
-    //                        response.getPropertyBag().put(VMRESPONSE, manager.copyFileFromHostToGuestOS(strName, strSrc, strDest));
-    //                    }
+                                response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.deleteVMSnapshot(strName, bDelChildren));
+							response.getPropertyBag().put(VMWareConstants.VM_DELETE_SNAPSHOT_NAME, strSnapName);
+							response.getPropertyBag().put(VMWareConstants.VM_DELETE_SNAPSHOT_DEL_CHILD, (bDelChildren ? "true" : "false"));
+						}
+                        else if (command.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
+                            String strSrc = ext.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_SOURCE);
+                            String strDest = ext.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST);
+                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.copyFileFromHostToGuest(strName, strSrc, strDest));
+							response.getPropertyBag().put(VMWareConstants.VM_COPY_HTOG_SOURCE, strSrc);
+							response.getPropertyBag().put(VMWareConstants.VM_COPY_HTOG_DEST, strDest);
+						}
+//                        else if (command.equals("writeguestenv")) {
+//                            String  strVarName = ext.getPropertyBag().get("wenv_name"),
+//                                    strVarValue = ext.getPropertyBag().get("wenv_value");
+//
+//                            response.getPropertyBag().put(VMRESPONSE, manager.writeGuestEnvVar(strName, strVarName, strVarValue));
+//                        }
+//                        else if (command.equals("readguestenv")) {
+//                            String strVarName = ext.getPropertyBag().get("renv_name");
+//
+//                            response.getPropertyBag().put(VMRESPONSE, manager.readGuestEnvVar(strName, strVarName));
+//                        }
                         // set the name of this module
 
                     } catch (Exception e) {
@@ -356,6 +379,6 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
 
     private void ProcessException(String command, XMPPEventExtension newExt, Throwable thrown) {
         sfLog().error("Failing command "+ command, thrown);
-        newExt.getPropertyBag().put(VMRESPONSE, thrown.toString());
+        newExt.getPropertyBag().put(VMWareConstants.VMRESPONSE, thrown.toString());
     }
 }
