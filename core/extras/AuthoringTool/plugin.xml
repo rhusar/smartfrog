@@ -34,5 +34,21 @@
             class="org.smartfrog.authoringtool.Serializer"
             models="readers,http://www.smartfrog.org/sfml"/>
    </extension>
+      <extension
+            id="product"
+            point="org.eclipse.core.runtime.products">
+         <product
+               application="org.eclipse.ui.ide.workbench"
+               name="SmartFrog Authoring Tool">
+            <property
+                  name="appName"
+                  value="SmartFrog Authoring Tool">
+            </property>
+            <property
+                  name="aboutText"
+                  value="This is an Authoring Tool for Smartfrog Dependency Engine">
+            </property>
+         </product>
+      </extension>
 
 </plugin>
