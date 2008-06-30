@@ -356,7 +356,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("rename", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -395,8 +394,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             sfLog().error("Failed to get attribute of \"" + strVMPath + "\"", ex);
 
-
-        // an error occurred
         return strResult;
     }
 
@@ -436,7 +433,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             sfLog().error("Failed to rename \"" + strVMPath + "\"", ex);
 
-        // an error occurred
         return strResult;
     }
 
@@ -476,7 +472,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             throw failure("shutdown",strVMPath , ex);
 
-        // an error occurred
         return strResponse;
     }
 
@@ -555,7 +550,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             throw failure("reset", strVMPath, ex);
 
-        // an error occurred
         return strResponse;
     }
 
@@ -593,7 +587,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             throw failure("get power state",strVMPath , ex);
 
-        // an error occurred
         return iResult;
     }
 
@@ -632,7 +625,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         if (ex != null)
             throw failure("get tool state", strVMPath, ex);
 
-        // an error occurred
         return iResult;
     }
 
@@ -749,7 +741,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("takeSnapshot", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -771,7 +762,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("revertVMToSnapshot", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -793,7 +783,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("revertVMToSnapshot", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -823,7 +812,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("deleteVMSnapshot", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -854,7 +842,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("deleteVMSnapshot", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -883,7 +870,6 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
             throw failure("waitForTools", strVMPath, e);
         }
 
-        // an error occurred
         return strResponse;
     }
 
@@ -918,9 +904,71 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
         }
         else strResponse = "Failed to set credentials for guest os of \"" + strVMPath + "\": Image module not existing.";
 
-        // an error occurred
         return strResponse;
     }
+
+    public String copyFileFromHostToGuest(String inVMName, String inHostFile, String inGuestFile) throws RemoteException, SmartFrogException {
+        // error string
+        String strResponse = "success";
+        String strVMPath = constructVMPath(inVMName);
+
+        try {
+            // get a machine module
+            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+
+            // check if it worked
+            if (tmp != null) {
+                tmp.copyFileFromHostToGuestOS(inHostFile, inGuestFile);
+            }
+            else strResponse = "Failed to copy file into the guest os of \"" + strVMPath + "\": Image module not existing.";
+        } catch (SmartFrogException e) {
+            throw failure("copyFileFromHostToGuest", strVMPath, e);
+        }
+
+        return strResponse;
+    }
+
+//    public String readGuestEnvVar(String inVMName, String inVarName) throws RemoteException, SmartFrogException {
+//        // error string
+//        String strResponse;
+//        String strVMPath = constructVMPath(inVMName);
+//
+//        try {
+//            // get a machine module
+//            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+//
+//            // check if it worked
+//            if (tmp != null) {
+//                strResponse = tmp.readGuestEnvVar(inVarName);
+//            }
+//            else strResponse = "Failed to read environment variable of guest os of \"" + strVMPath + "\": Image module not existing.";
+//        } catch (SmartFrogException e) {
+//            throw failure("readGuestEnvVar", strVMPath, e);
+//        }
+//
+//        return strResponse;
+//    }
+//
+//    public String writeGuestEnvVar(String inVMName, String inVarName, String inVarValue) throws RemoteException, SmartFrogException {
+//         // error string
+//        String strResponse = "success";
+//        String strVMPath = constructVMPath(inVMName);
+//
+//        try {
+//            // get a machine module
+//            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+//
+//            // check if it worked
+//            if (tmp != null) {
+//                tmp.writeGuestEnvVar(inVarName, inVarValue);
+//            }
+//            else strResponse = "Failed to write environment variable of guest os of \"" + strVMPath + "\": Image module not existing.";
+//        } catch (SmartFrogException e) {
+//            throw failure("writeGuestEnvVar", strVMPath, e);
+//        }
+//
+//        return strResponse;
+//    }
 
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);

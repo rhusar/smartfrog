@@ -430,10 +430,6 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void copyFileFromHostToGuestOS(String inSourceFile, String inTargetFile) throws SmartFrogException {
-        if (guestOSUser.length() == 0) {
-            throw new SmartFrogException(imagePath + ": Username required for copying files from host to guest OS.");
-        }
-
         vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
     }
 
@@ -503,4 +499,23 @@ public class VMWareImageModule {
     public void waitForTools(int inTimeout) throws SmartFrogException {
         vmComm.waitForTools(this, inTimeout);
     }
+
+//    /**
+//     * Writes an environment variable within the guest operating system.
+//     * @param inName The name of the environment variable.
+//     * @param inValue The value of the environment variable.
+//     */
+//    public void writeGuestEnvVar(String inName, String inValue) throws SmartFrogException {
+//        vmComm.writeGuestEnvVar(this, inName, inValue);
+//    }
+//
+//    /**
+//     * Reads a environment variable of the guest os.
+//     * @param inName The name of the environment variable.
+//     * @return The content of the variable.
+//     * @throws SmartFrogException
+//     */
+//    public String readGuestEnvVar(String inName) throws SmartFrogException {
+//        return vmComm.readGuestEnvVar(this, inName);
+//    }
 }
