@@ -1134,7 +1134,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData    A parameter that will be passed to the callbackProc function.
      * @return VixHandle. A job handle that describes the state of this asynchronous operation.
      */
-    public int VixVM_DeleteFileInGuest(int vmHandle,
+    public int VixVM_DeleteFileOnGuest(int vmHandle,
                                        String guestPathName,
                                        VixEventProc callbackProc,
                                        Pointer clientData);
@@ -1148,7 +1148,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData    A parameter that will be passed to the callbackProc function.
      * @return VixHandle. A job handle that describes the state of this asynchronous operation.
      */
-    public int VixVM_FileExistsInGuest(int vmHandle,
+    public int VixVM_FileExistsOnGuest(int vmHandle,
                                        String guestPathName,
                                        VixEventProc callbackProc,
                                        Pointer clientData);
@@ -1165,7 +1165,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData         A parameter that will be passed to the callbackProc function.
      * @return VixHandle. A job handle that describes the state of this asynchronous operation.
      */
-    public int VixVM_RenameFileInGuest(int vmHandle,
+    public int VixVM_RenameFileOnGuest(int vmHandle,
                                        String oldName,
                                        String newName,
                                        int options,
@@ -1215,7 +1215,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData
      * @return A parameter that will be passed to the callbackProc function.
      */
-    public int VixVM_CreateDirectoryInGuest(int vmHandle,
+    public int VixVM_CreateDirectoryOnGuest(int vmHandle,
                                             String pathName,
                                             int propertyListHandle,
                                             VixEventProc callbackProc,
@@ -1231,7 +1231,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData   A parameter that will be passed to the callbackProc function.
      * @return VixHandle. A job handle that describes the state of this asynchronous operation.
      */
-    public int VixVM_DeleteDirectoryInGuest(int vmHandle,
+    public int VixVM_DeleteDirectoryOnGuest(int vmHandle,
                                             String pathName,
                                             int options,
                                             VixEventProc callbackProc,
@@ -1246,7 +1246,7 @@ public interface VMWareVixLibrary extends Library {
      * @param clientData   A parameter that will be passed to the callbackProc function.
      * @return VixHandle. A job handle that describes the state of this asynchronous operation.
      */
-    public int VixVM_DirectoryExistsInGuest(int vmHandle,
+    public int VixVM_DirectoryExistsOnGuest(int vmHandle,
                                             String pathName,
                                             VixEventProc callbackProc,
                                             Pointer clientData);
