@@ -348,4 +348,8 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
             throw SmartFrogException.forward(e);
         }
     }
+
+    public String getAvalancheHome() throws RemoteException, SmartFrogException {
+        return strAvalancheHome;
+    }
 }

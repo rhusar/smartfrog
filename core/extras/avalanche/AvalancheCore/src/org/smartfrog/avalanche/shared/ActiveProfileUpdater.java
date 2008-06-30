@@ -17,6 +17,7 @@ import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.core.activeHostProfile.*;
 import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.vmware.VMWareConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlString;
@@ -137,12 +138,12 @@ public class ActiveProfileUpdater {
             while (type.getMessagesHistoryArray().length > XMPP_HISTORY_LIMIT)
                 type.removeMessagesHistory(0);
 
-            String strCommand = ext.getPropertyBag().get("vmcmd");
-            String strResponse = ext.getPropertyBag().get("vmresponse");
-            String strVMName = ext.getPropertyBag().get("vmname");
+            String strCommand = ext.getPropertyBag().get(VMWareConstants.VMCMD);
+            String strResponse = ext.getPropertyBag().get(VMWareConstants.VMRESPONSE);
+            String strVMName = ext.getPropertyBag().get(VMWareConstants.VMNAME);
 
             if (strCommand != null) {
-                if (strCommand.equals("create")) {
+                if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
                     if (strResponse.equals("success")) {
                         // create a new type
                         VmStateType vst = type.addNewVmState();
@@ -150,17 +151,17 @@ public class ActiveProfileUpdater {
                         vst.setVmLastCmd(strCommand);
                         vst.setVmResponse(strResponse);
                     }
-                } else if (strCommand.equals("rename")) {
+                } else if (strCommand.equals(VMWareConstants.VM_CMD_RENAME)) {
                     if (strResponse.equals("success")) {
                         // set the new name
-                        String strOldName = ext.getPropertyBag().get("rename_old_name");
+                        String strOldName = ext.getPropertyBag().get(VMWareConstants.VM_RENAME_OLD_NAME);
                         for (VmStateType vst : type.getVmStateArray()) {
                             if (vst.getVmName().equals(strOldName)) {
                                 vst.setVmName(strVMName);
                             }
                         }
                     }
-                } else if (strCommand.equals("getmasters")) {
+                } else if (strCommand.equals(VMWareConstants.VM_CMD_GETMASTERS)) {
                     // delete the old masters list
                     while (type.getVmMasterCopyArray().length > 0)
                         type.removeVmMasterCopy(0);
@@ -176,7 +177,7 @@ public class ActiveProfileUpdater {
                     } catch (Exception e) {
                         log.error(e);
                     }
-                } else if (strCommand.equals("list")) {
+                } else if (strCommand.equals(VMWareConstants.VM_CMD_LIST)) {
                     // a list command has been sent and responded to
                     // the response contains the list of running
                     // machines divided by '\n'
@@ -187,17 +188,17 @@ public class ActiveProfileUpdater {
 
                     // add the new data
                     try {
-                        int iCount = Integer.parseInt(ext.getPropertyBag().get("list_count"));
+                        int iCount = Integer.parseInt(ext.getPropertyBag().get(VMWareConstants.VM_LIST_COUNT));
                         for(int i = 0; i < iCount; ++i) {
                             VmStateType newType = type.addNewVmState();
-                            newType.setVmLastCmd("list");
+                            newType.setVmLastCmd(VMWareConstants.VM_CMD_LIST);
                             newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
                             newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
                         }
                     } catch (NumberFormatException e) {
                         log.error(e);
                     }
-                } else if (strCommand.equals("delete")) {
+                } else if (strCommand.equals(VMWareConstants.VM_CMD_DELETE)) {
                     // find the entry
                     for (int i = 0; i < type.getVmStateArray().length; i++) {
                         VmStateType t = type.getVmStateArray()[i];
