@@ -1313,4 +1313,79 @@ public class VMWareCommunicator {
 //            releaseHandle(iJobHandle);
 //        }
 //    }
+
+	// apparently not supported by VMware server
+//	/**
+//	 * Creates a directory in the guest operating system.
+//	 * @param inImg The image module.
+//	 * @param inDir The directory which should be created.
+//	 * @throws SmartFrogException
+//	 */
+//	public void mkdirInGuest(VMWareImageModule inImg, String inDir) throws SmartFrogException {
+//		int iJobHandle = NULL_HANDLE;
+//		try {
+//			// log into the guest os
+//			loginInGuestOS(inImg);
+//
+//			// create the dir
+//			iJobHandle = vixLib.VixVM_CreateDirectoryOnGuest(inImg.getVMHandle().getValue(),
+//																inDir,
+//																VMWareVixLibrary.VixHandle.VIX_INVALID_HANDLE,
+//																null,
+//																null);
+//
+//			// wait for the job to complete
+//			long lErr = vixLib.VixJob_Wait(iJobHandle, VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+//			convertToException(lErr, true);
+//		} catch(SmartFrogException e) {
+//			// don't convert vix exceptions into smartfrog exceptions
+//			throw e;
+//		} catch (Exception e) {
+//			// any exception will be caught and wrapped because the native vix library may produce exceptions
+//			throw new SmartFrogException(inImg.getVMPath() + ": Error while creating a directory", e);
+//		} finally {
+//			releaseHandle(iJobHandle);
+//		}
+//	}
+
+	// apparently not supported by VMware server
+//	/**
+//	 * Checks whether a directory exists in a guest os.
+//	 * @param inImg The image module.
+//	 * @param inDir The directory.
+//	 * @throws SmartFrogException
+//	 */
+//	public boolean existsDirInGuest(VMWareImageModule inImg, String inDir) throws SmartFrogException {
+//		int iJobHandle = NULL_HANDLE;
+//		try {
+//			// log into the guest os
+//			loginInGuestOS(inImg);
+//
+//			// check for the dir
+//			iJobHandle = vixLib.VixVM_DirectoryExistsOnGuest(inImg.getVMHandle().getValue(),
+//																inDir,
+//																null,
+//																null);
+//
+//			IntByReference iResult = new IntByReference();
+//
+//			// wait for the job to complete
+//			long lErr = vixLib.VixJob_Wait(iJobHandle,
+//											VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_JOB_RESULT_GUEST_OBJECT_EXISTS,
+//											iResult,
+//											VMWareVixLibrary.VixPropertyID.VIX_PROPERTY_NONE);
+//
+//			convertToException(lErr, true);
+//
+//			return (iResult.getValue() != 0);
+//		} catch(SmartFrogException e) {
+//			// don't convert vix exceptions into smartfrog exceptions
+//			throw e;
+//		} catch (Exception e) {
+//			// any exception will be caught and wrapped because the native vix library may produce exceptions
+//			throw new SmartFrogException(inImg.getVMPath() + ": Error while checking for a directory", e);
+//		} finally {
+//			releaseHandle(iJobHandle);
+//		}
+//	}
 }
