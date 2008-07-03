@@ -30,565 +30,667 @@ import org.smartfrog.avalanche.server.AvalancheServer;
 import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.vmware.VMWareConstants;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.vast.architecture.archive.ZipArchive;
+import org.smartfrog.vast.architecture.archive.TarArchive;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.zip.GZIPOutputStream;
+import java.io.*;
 
 /**
  * The environment builder class.
  */
 public class EnvironmentConstructorImpl extends CompoundImpl implements EnvironmentConstructor {
-    /**
-     * Reference to the avalanche server component.
-     */
-    AvalancheServer refAvlServer = null;
+	/**
+	 * Reference to the avalanche server component.
+	 */
+	AvalancheServer refAvlServer = null;
 
-    /**
-     * The list containing the configuration details for the physical machine.
-     */
-    private ArrayList<PhysicalMachineConfig> listPhysicalMachines = new ArrayList<PhysicalMachineConfig>();
+	/**
+	 * The list containing the configuration details for the physical machine.
+	 */
+	private ArrayList<PhysicalMachineConfig> listPhysicalMachines = new ArrayList<PhysicalMachineConfig>();
 
-    /**
-     * The list containing the configuration details for the virtual machines.
-     */
-    private ArrayList<VirtualMachineConfig> listVirtualMachines = new ArrayList<VirtualMachineConfig>();
+	/**
+	 * The list containing the configuration details for the virtual machines.
+	 */
+	private ArrayList<VirtualMachineConfig> listVirtualMachines = new ArrayList<VirtualMachineConfig>();
 
-    public EnvironmentConstructorImpl() throws RemoteException {
+	public EnvironmentConstructorImpl() throws RemoteException {
 
-    }
+	}
 
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        
-        sfLog().info("deploying");
+	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+		super.sfDeploy();
 
-        sfLog().info("successfully deployed");
-    }
+		sfLog().info("deploying");
 
-    protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
-        super.sfDeployWithChildren();
+		sfLog().info("successfully deployed");
+	}
 
-        sfLog().info("deploying with children");
+	protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
+		super.sfDeployWithChildren();
 
-        // iterate through the attributes of this description
-        Enumeration e = sfContext().keys();
-        while (e.hasMoreElements()) {
-            Object key = e.nextElement();
+		sfLog().info("deploying with children");
 
-            if (key.equals(ATTR_PHYSICAL_MACHINES)) {
-                // entries of the physical machines found
-                ComponentDescription phyParent = (ComponentDescription) sfContext().get(key);
-                if (phyParent != null) {
+		// iterate through the attributes of this description
+		Enumeration e = sfContext().keys();
+		while (e.hasMoreElements()) {
+			Object key = e.nextElement();
 
-                    // iterate through the phycial machine descriptions
-                    Enumeration phy = phyParent.sfContext().keys();
-                    while (phy.hasMoreElements()) {
-                        ComponentDescription phyObj = (ComponentDescription) phyParent.sfContext().get(phy.nextElement());
-                        if (phyObj != null) {
-                            // create a new physical machine object
-                            PhysicalMachineConfig conf = new PhysicalMachineConfig();
+			if (key.equals(ATTR_PHYSICAL_MACHINES)) {
+				// entries of the physical machines found
+				ComponentDescription phyParent = (ComponentDescription) sfContext().get(key);
+				if (phyParent != null) {
 
-                            // set the appropriate values
-                            try {
-                                // set the access mode
-                                resolveBasicMachineAttributes(phyObj, conf);
+					// iterate through the phycial machine descriptions
+					Enumeration phy = phyParent.sfContext().keys();
+					while (phy.hasMoreElements()) {
+						ComponentDescription phyObj = (ComponentDescription) phyParent.sfContext().get(phy.nextElement());
+						if (phyObj != null) {
+							// create a new physical machine object
+							PhysicalMachineConfig conf = new PhysicalMachineConfig();
 
-                            } catch (SmartFrogResolutionException ex) {
-                                sfLog().error("error while resolving a physical machine description", ex);
-                                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
-                            }
-
-                            this.listPhysicalMachines.add(conf);
-                        }
-                    }
-                }
-            } else if (key.equals(ATTR_VIRTUAL_MACHINES)) {
-                // entries of the physical machines found
-                ComponentDescription virtParent = (ComponentDescription) sfContext().get(key);
-                if (virtParent != null) {
-
-                    // iterate through the phycial machine descriptions
-                    Enumeration virt = virtParent.sfContext().keys();
-                    while (virt.hasMoreElements()) {
-                        ComponentDescription virtObj = (ComponentDescription) virtParent.sfContext().get(virt.nextElement());
-                        if (virtObj != null) {
-                            // create a new physical machine object
-                            VirtualMachineConfig conf = new VirtualMachineConfig();
-
-                            // set the appropriate values
-                            try {
-                                resolveBasicMachineAttributes(virtObj, conf);
-
-                                conf.setAffinity((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_AFFINITY, true));
-                                conf.setSourceImage((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_SOURCE_IMAGE, true));
-                                conf.setDisplayName((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_DISPLAY_NAME, true));
-                                conf.setGuestUser((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_USER, true));
-                                conf.setGuestPass((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_PASS, true));
-                                conf.setToolsTimeout((Integer) virtObj.sfResolve(VirtualMachineConfig.ATTR_TOOLS_TIMEOUT, true));
-								conf.setVastNetworkIP((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_NETWORK_IP, true));
+							// set the appropriate values
+							try {
+								// set the access mode
+								resolveBasicMachineAttributes(phyObj, conf);
 
 							} catch (SmartFrogResolutionException ex) {
-                                sfLog().error("error while resolving a virtual machine description", ex);
-                                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
-                            }
+								sfLog().error("error while resolving a physical machine description", ex);
+								throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(ex);
+							}
 
-                            this.listVirtualMachines.add(conf);
-                        }
-                    }
-                }
-            }
-        }
-
-        sfLog().info("successfully deployed with children");
-    }
-
-    /**
-     * Resolves the basic attributes which are equal for physical and virtual machines.
-     * @param inMachineDesc The ComponentDescription with the attributes.
-     * @param inConf The configuration where the attributes should be stored.
-     * @throws SmartFrogResolutionException
-     * @throws SmartFrogDeploymentException
-     */
-    private void resolveBasicMachineAttributes(ComponentDescription inMachineDesc, PhysicalMachineConfig inConf) throws SmartFrogResolutionException, SmartFrogDeploymentException {
-        // resolve the access modes
-        ComponentDescription AModes = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_ACCESS_MODES);
-        resolveConnectionModes(AModes, inConf.getListAccessModes());
-
-        // resolve the transfer modes
-        ComponentDescription TModes = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_TRANSFER_MODES);
-        resolveConnectionModes(TModes, inConf.getListTransferModes());
-
-        // resolve the arguments
-        ComponentDescription Arguments = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_ARGUMENTS);
-        if (Arguments != null) {
-            // for each argument
-            Enumeration enumArgs = Arguments.sfContext().keys();
-            while (enumArgs.hasMoreElements()) {
-                // add the argument to the list
-                ComponentDescription arg = (ComponentDescription) Arguments.sfContext().get(enumArgs.nextElement());
-
-                Argument newArg = new Argument();
-                newArg.setName((String) arg.sfResolve(PhysicalMachineConfig.ATTR_ARG_NAME, true));
-                newArg.setValue((String) arg.sfResolve(PhysicalMachineConfig.ATTR_ARG_VALUE, true));
-
-                inConf.getListArguments().add(newArg);
-            }
-        }
-
-        // resolve the remaining unique attributes
-        inConf.setHostAddress((String)inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_HOST_ADDRESS, true));
-        inConf.setArchitecture((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_ARCHITECTURE, true));
-        inConf.setOS((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_OS, true));
-        inConf.setPlatform((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_PLATFORM, true));
-    }
-
-    /**
-     * Resolves the connection modes of a component description.
-     * @param inModeList The list where the modes should be stored.
-     * @param inModes The parent component description which contains the connection modes.
-     * @throws SmartFrogResolutionException
-     */
-    private void resolveConnectionModes(ComponentDescription inModes, ArrayList<ConnectionMode> inModeList) throws SmartFrogResolutionException {
-        if (inModes != null) {
-            // for each connection mode
-            Enumeration enumModes = inModes.sfContext().keys();
-            while (enumModes.hasMoreElements()) {
-                ComponentDescription Mode = (ComponentDescription) inModes.sfContext().get(enumModes.nextElement());
-
-                // add an connection mode to the list
-                ConnectionMode conMode = new ConnectionMode();
-
-                conMode.setType(((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_TYPE, true)).toLowerCase());
-                conMode.setUser((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_USERNAME, true));
-                conMode.setPassword((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_PASSWORD, true));
-                conMode.setIsDefault(Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_IS_DEFAULT, false, false));
-
-                inModeList.add(conMode);
-            }
-        }
-    }
-
-    public void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-
-        sfLog().info("starting");
-
-        // get the reference to the avalanche server
-        refAvlServer = (AvalancheServer) sfResolve(ATTR_AVALANCHE, true);
-
-        // register the listener with avalanche
-        refAvlServer.addXMPPHandler(new VastListener(this));
-
-        // update/create the physical machines in the database
-        updateMachines();
-
-        // trigger setup
-        ignitePhysicalHosts();
-
-        sfLog().info("successfully started");
-    }
-
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-
-        // stop the virtual machines
-        stopVirtualMachines();
-
-        // stop the daemons on the ignites machines
-        stopPhysicalHosts();
-    }
-
-    /**
-     * Deletes the virtual machines.
-     */
-    private void revertVMsToSnapshots() {
-        for (VirtualMachineConfig virt : listVirtualMachines) {
-            if (checkPhysicalExistance(virt.getAffinity())) {
-                try {
-                    refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "reverttosnapshot");
-                } catch (Exception e) {
-                    sfLog().error("Error while trying send reverttosnapshot command", e);
-                }
-            }
-        }
-    }
-
-    /**
-     * Stops the daemons running on the physical hosts.
-     */
-    private void stopPhysicalHosts() {
-        for (PhysicalMachineConfig phy : listPhysicalMachines) {
-            try {
-                SFAdapter.stopDaemon(phy.getHostAddress());
-            } catch (Exception e) {
-                sfLog().error("Error while stopping physical host: " + phy.getHostAddress(), e);
-            }
-        }
-    }
-
-    /**
-     * Sends a stop command to all virtual machines.
-     */
-    private void stopVirtualMachines() {
-        for (VirtualMachineConfig virt : listVirtualMachines) {
-            if (checkPhysicalExistance(virt.getAffinity())) {
-                try {
-                    refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "stop");
-                } catch (Exception e) {
-                    sfLog().error("Error while trying to stop virtual machines", e);
-                }
-            }
-        }
-    }
-
-    /**
-     * Machines will be created/updated according to the sf description file.
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    private void updateMachines() throws RemoteException, SmartFrogException {
-        // first add the physical hosts which should be ignited
-        // to the database of avalanche
-        for (PhysicalMachineConfig phy : listPhysicalMachines)
-            updateMachine(phy);
-
-        // then add the virtual hosts
-        for (VirtualMachineConfig vm : listVirtualMachines)
-            updateMachine(vm);
-    }
-
-    /**
-     * Insert the machine config into the avalanche database.
-     * @param inMachineConfig
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    private void updateMachine(PhysicalMachineConfig inMachineConfig) throws RemoteException, SmartFrogException {
-        // update the unique attributes
-        refAvlServer.updateHost(    inMachineConfig.getHostAddress(),
-                                    inMachineConfig.getArchitecture(),
-                                    inMachineConfig.getPlatform(),
-                                    inMachineConfig.getOS());
-
-        // clear the lists
-        refAvlServer.clearAccessModes(inMachineConfig.getHostAddress());
-        refAvlServer.clearTransferModes(inMachineConfig.getHostAddress());
-        refAvlServer.clearArguments(inMachineConfig.getHostAddress());
-
-        // add the access modes
-        for (ConnectionMode mode : inMachineConfig.getListAccessModes()) {
-            refAvlServer.addAccessMode( inMachineConfig.getHostAddress(),
-                                        mode.getType(),
-                                        mode.getUser(),
-                                        mode.getPassword(),
-                                        mode.getIsDefault());
-        }
-
-        // add the transfer modes
-        for (ConnectionMode mode : inMachineConfig.getListTransferModes()) {
-            refAvlServer.addTransferMode(   inMachineConfig.getHostAddress(),
-                                            mode.getType(),
-                                            mode.getUser(),
-                                            mode.getPassword(),
-                                            mode.getIsDefault());
-        }
-
-        // add the arguments
-        for (Argument arg : inMachineConfig.getListArguments()) {
-            refAvlServer.addArgument(   inMachineConfig.getHostAddress(),
-                                        arg.getName(),
-                                        arg.getValue());
-        }
-    }
-
-    private void ignitePhysicalHosts() throws SmartFrogException, RemoteException {
-        // construct the host name array
-        sfLog().info("igniting hosts:");
-        String [] hostNames = new String [listPhysicalMachines.size()];
-        for (int i = 0; i < hostNames.length; ++i) {
-            sfLog().info(listPhysicalMachines.get(i).getHostAddress());
-            hostNames[i] = listPhysicalMachines.get(i).getHostAddress();
-        }
-
-        // ignite the hosts
-        refAvlServer.igniteHosts(hostNames);
-    }
-
-    /**
-     * Checks whether the physical part of the environment is ready for the next step.
-     */
-    private boolean checkPhysicalEnv() {
-        for (PhysicalMachineConfig phy : listPhysicalMachines)
-            if (!phy.isRunning())
-                return false;
-
-        sfLog().info("all physical hosts running");
-        return true;
-    }
-
-    /**
-     * Checks whether the virtual part of the environment is ready for the next step.
-     */
-    private boolean checkVirtualEnv() {
-        for (VirtualMachineConfig vm : listVirtualMachines)
-            if (!vm.isRunning())
-                return false;
-
-        sfLog().info("all virtual machines are running");
-        return true;
-    }
-
-    /**
-     * A host started.
-     * @param inHost
-     */
-    public void hostStarted(String inHost) {
-        for (PhysicalMachineConfig phy : listPhysicalMachines) {
-            if (phy.getHostAddress().equals(inHost)) {
-                // set the machine to be running
-                phy.setRunning(true);
-
-                // check if all machines are running
-                if (checkPhysicalEnv()) {
-                    // first try to revert to snapshots
-                    revertVMsToSnapshots();
-                }
-
-                return;
-            }
-        }
-
-        for (VirtualMachineConfig vm : listVirtualMachines) {
-            if (vm.getHostAddress().equals(inHost)) {
-                // set the vm to be running
-                vm.setRunning(true);
-
-                // check if all virtual machines are running
-                if (checkVirtualEnv()) {
-                    // TODO: perform SUT setup
-                }
-
-                return;
-            }
-        }
-    }
-
-    /**
-     * A host vanished from xmpp.
-     * @param inHost
-     */
-    public void hostVanished(String inHost) {
-        for (PhysicalMachineConfig phy : listPhysicalMachines) {
-            if (phy.getHostAddress().equals(inHost)) {
-                // set the machine to be stopped
-                phy.setRunning(false);
-
-                // TODO: consequence: vms of this physical host must be down, too
-
-                return;
-            }
-        }
-
-        for (VirtualMachineConfig vm : listVirtualMachines) {
-            if (vm.getHostAddress().equals(inHost)) {
-                // set the vm to be stopped
-                vm.setRunning(false);
-                return;
-            }
-        }
-    }
-
-    /**
-     * Checks if a physical host is existing in the description data.
-     * @param inName Name of the host.
-     * @return True if it is, false if it is not existing.
-     */
-    private boolean checkPhysicalExistance(String inName) {
-        for (PhysicalMachineConfig phy : listPhysicalMachines)
-            if (phy.getHostAddress().equals(inName))
-                return true;
-        return false;
-    }
-
-    /**
-     * Handles incoming VM messages.
-     * @param inPacket The packet containing the message.
-     * @param inPacketExtension The packet extension containing the relevant data.
-     */
-    public void handleVMMessages(Packet inPacket, XMPPEventExtension inPacketExtension) {
-        // retrieve the basic attributes
-        String strCommand = inPacketExtension.getPropertyBag().get(VMWareConstants.VMCMD);
-        String strResponse = inPacketExtension.getPropertyBag().get(VMWareConstants.VMRESPONSE);
-        String strVMName = inPacketExtension.getPropertyBag().get(VMWareConstants.VMNAME);
-
-        // get the physical host
-        PhysicalMachineConfig phyHost = null;
-        for (PhysicalMachineConfig cur : listPhysicalMachines)
-            if (cur.getHostAddress().equals(inPacketExtension.getHost())) {
-                phyHost = cur;
-                break;
-            }
-
-        // get the according vm
-        VirtualMachineConfig vmTarget = null;
-        for (VirtualMachineConfig cur : listVirtualMachines)
-            if (cur.getDisplayName().equals(strVMName)
-                    && cur.getAffinity().equals(inPacketExtension.getHost())) {
-                vmTarget = cur;
-                break;
-            }
-
-        if (phyHost != null && vmTarget != null) {
-            try {
-                if (strCommand.equals(VMWareConstants.VM_CMD_REVERT)) {
-					afterRevert(inPacket, strResponse, strVMName, vmTarget);
+							this.listPhysicalMachines.add(conf);
+						}
+					}
 				}
-                else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
-					afterCreate(inPacket, inPacketExtension, strResponse, strVMName);
+			} else if (key.equals(ATTR_VIRTUAL_MACHINES)) {
+				// entries of the physical machines found
+				ComponentDescription virtParent = (ComponentDescription) sfContext().get(key);
+				if (virtParent != null) {
+
+					// iterate through the phycial machine descriptions
+					Enumeration virt = virtParent.sfContext().keys();
+					while (virt.hasMoreElements()) {
+						ComponentDescription virtObj = (ComponentDescription) virtParent.sfContext().get(virt.nextElement());
+						if (virtObj != null) {
+							// create a new physical machine object
+							VirtualMachineConfig conf = new VirtualMachineConfig();
+
+							// set the appropriate values
+							try {
+								resolveBasicMachineAttributes(virtObj, conf);
+
+								conf.setAffinity((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_AFFINITY, true));
+								conf.setSourceImage((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_SOURCE_IMAGE, true));
+								conf.setDisplayName((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_DISPLAY_NAME, true));
+								conf.setGuestUser((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_USER, true));
+								conf.setGuestPass((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_GUEST_PASS, true));
+								conf.setToolsTimeout((Integer) virtObj.sfResolve(VirtualMachineConfig.ATTR_TOOLS_TIMEOUT, true));
+								conf.setVastNetworkIP((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_NETWORK_IP, true));
+								conf.setVastNetworkMask((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_NETWORK_MASK, true));
+								conf.setHostMask((String) virtObj.sfResolve(VirtualMachineConfig.ATTR_HOST_NETWORK_MASK, true));
+								conf.setVastController((Boolean) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_CONTROLLER, true));
+								conf.setSUTPackage(virtObj.sfResolve(VirtualMachineConfig.ATTR_SUT_PACKAGE, "", false));
+
+							} catch (SmartFrogResolutionException ex) {
+								sfLog().error("error while resolving a virtual machine description", ex);
+								throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(ex);
+							}
+
+							this.listVirtualMachines.add(conf);
+						}
+					}
 				}
-                else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
-                    if (!strResponse.equals("success"))
-                        sfLog().warn("Failed to take snapshot of vm: " + inPacketExtension);
-
-                    // start the vm, regardless of the success or failure of taking a snapshot
-                    refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-                }
-                else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
-					afterStart(inPacket, inPacketExtension, strResponse, strVMName, vmTarget);
-				}
-                else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
-					afterTools(inPacket, inPacketExtension, strResponse, strVMName, phyHost, vmTarget);
-				}
-                else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
-                    if (strResponse.equals("success")) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-
-                        for (Argument arg : vmTarget.getListArguments())
-                            if (arg.getName().equals("VAST_HOME"))
-                                map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-classpath %s test", arg.getValue()));
-                            else if (arg.getName().equals("JAVA_HOME"))
-                                map.put(VMWareConstants.VM_EXECUTE_CMD, String.format("%s/bin/java", arg.getValue()));
-
-                        refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_EXECUTE, map);
-                    }
-                    else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
-                }
-            }
-            catch (Exception e) {
-                sfLog().error(e);
-            }
-        }
-    }
-
-	private void afterTools(Packet inPacket, XMPPEventExtension inPacketExtension, String strResponse, String strVMName, PhysicalMachineConfig phyHost, VirtualMachineConfig vmTarget) throws RemoteException, SmartFrogException {
-		if (strResponse.equals("success")) {
-			sfLog().info("vm started and tools are running " + strVMName);
-
-			// vm started, copy the test runner into the vm
-			HashMap<String, String> map = new HashMap<String, String>();
-
-			for (Argument arg : phyHost.getListArguments())
-				if (arg.getName().equals("AVALANCHE_HOME"))
-					map.put(VMWareConstants.VM_COPY_HTOG_SOURCE, String.format("%s/test.class", arg.getValue()));
-
-			for (Argument arg : vmTarget.getListArguments())
-				if (arg.getName().equals("VAST_HOME"))
-					map.put(VMWareConstants.VM_COPY_HTOG_DEST, String.format("%s/test.class", arg.getValue()));
-
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST, map);
+			}
 		}
-		else sfLog().error("Error while waiting for tools to come up: " + inPacketExtension);
+
+		sfLog().info("successfully deployed with children");
 	}
 
-	private void afterStart(Packet inPacket, XMPPEventExtension inPacketExtension, String strResponse, String strVMName, VirtualMachineConfig vmTarget) throws RemoteException, SmartFrogException {
-		if (strResponse.equals("success")) {
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(VMWareConstants.VM_WAIT_FOR_TOOLS_TIMEOUT, String.format("%d", vmTarget.getToolsTimeout()));
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_WAIT_FOR_TOOLS, map);
+	/**
+	 * Prepares the SUT packages.
+	 */
+	private void prepareSUTPackages() throws SmartFrogException, RemoteException {
+		String strBasePath = String.format("%s/temp/", refAvlServer.getAvalancheHome());
+
+		for (VirtualMachineConfig conf : listVirtualMachines) {
+			if (!conf.isVastController()) {
+				// prepare SUT package
+				try {
+					// copy the appropriate sut package to the sf distribution package
+					File dest = new File(strBasePath + "smartfrog/dist/SUT/" + conf.getSUTPackage());
+					FileSystem.fCopy(new File(strBasePath + "SUT/" + conf.getSUTPackage()),
+										dest);
+
+					// create the archive
+					if (conf.getOS().equals("windows")) {
+						// zip
+						ZipArchive archive = new ZipArchive();
+						archive.create(strBasePath + conf.getSUTPackage() + ".zip");
+						archive.add(strBasePath + "smartfrog/");
+						archive.close();
+
+						conf.setSUTPackage(conf.getSUTPackage() + ".zip");
+					} else {
+						// tar
+						TarArchive archive = new TarArchive();
+					    archive.create(strBasePath + conf.getSUTPackage() + ".tar");
+						archive.add(strBasePath + "smartfrog/");
+						archive.close();
+
+						// gzip
+						GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(strBasePath + conf.getSUTPackage() + ".tar.gz"));
+						FileInputStream in = new FileInputStream(strBasePath + conf.getSUTPackage() + ".tar");
+						byte [] buffer = new byte[2048];
+						int bytes;
+						while ((bytes = in.read(buffer, 0, buffer.length)) > 0)
+							gzip.write(buffer, 0, bytes);
+						in.close();
+						gzip.close();
+
+						conf.setSUTPackage(conf.getSUTPackage() + ".tar.gz");
+					}
+
+					// delete it so it wont be contained in the
+					// following packages
+					dest.delete();
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new SmartFrogException(e);
+				}
+			} else {
+				// TODO: prepare vast controller
+
+			}
 		}
-		else sfLog().error("Failed to start vm: " + inPacketExtension);
 	}
 
-	private void afterCreate(Packet inPacket, XMPPEventExtension inPacketExtension, String strResponse, String strVMName) throws RemoteException, SmartFrogException {
-		// a response to a create command
-		if (strResponse.equals("success")) {
-			sfLog().info("vm created: " + strVMName);
+	/**
+	 * Resolves the basic attributes which are equal for physical and virtual machines.
+	 *
+	 * @param inMachineDesc The ComponentDescription with the attributes.
+	 * @param inConf		The configuration where the attributes should be stored.
+	 * @throws SmartFrogResolutionException
+	 * @throws SmartFrogDeploymentException
+	 */
+	private void resolveBasicMachineAttributes(ComponentDescription inMachineDesc, PhysicalMachineConfig inConf) throws SmartFrogResolutionException, SmartFrogDeploymentException {
+		// resolve the access modes
+		ComponentDescription AModes = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_ACCESS_MODES);
+		resolveConnectionModes(AModes, inConf.getListAccessModes());
 
-			// vm created, start it
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, "vast_snapshot");
-			map.put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, "Snapshot taken by VAST");
-			map.put(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY, "false");
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_TAKE_SNAPSHOT, map);
+		// resolve the transfer modes
+		ComponentDescription TModes = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_TRANSFER_MODES);
+		resolveConnectionModes(TModes, inConf.getListTransferModes());
+
+		// resolve the arguments
+		ComponentDescription Arguments = (ComponentDescription) inMachineDesc.sfContext().get(PhysicalMachineConfig.ATTR_ARGUMENTS);
+		if (Arguments != null) {
+			// for each argument
+			Enumeration enumArgs = Arguments.sfContext().keys();
+			while (enumArgs.hasMoreElements()) {
+				// add the argument to the list
+				ComponentDescription arg = (ComponentDescription) Arguments.sfContext().get(enumArgs.nextElement());
+
+				Argument newArg = new Argument();
+				newArg.setName((String) arg.sfResolve(PhysicalMachineConfig.ATTR_ARG_NAME, true));
+				newArg.setValue((String) arg.sfResolve(PhysicalMachineConfig.ATTR_ARG_VALUE, true));
+
+				inConf.getListArguments().add(newArg);
+			}
 		}
-		else sfLog().error("Failed to create vm: " + inPacketExtension);
+
+		// resolve the remaining unique attributes
+		inConf.setHostAddress((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_HOST_ADDRESS, true));
+		inConf.setArchitecture((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_ARCHITECTURE, true));
+		inConf.setOS((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_OS, true));
+		inConf.setPlatform((String) inMachineDesc.sfResolve(PhysicalMachineConfig.ATTR_PLATFORM, true));
 	}
 
-	private void afterRevert(Packet inPacket, String strResponse, String strVMName, VirtualMachineConfig vmTarget) throws RemoteException, SmartFrogException {
-		if (strResponse.equals("success")) {
-			// send credentials
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(VMWareConstants.VM_SET_GUEST_CRED_USER, vmTarget.getGuestUser());
-			map.put(VMWareConstants.VM_SET_GUEST_CRED_PASS, vmTarget.getGuestPass());
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_SET_GUEST_CRED, map);
+	/**
+	 * Resolves the connection modes of a component description.
+	 *
+	 * @param inModeList The list where the modes should be stored.
+	 * @param inModes	The parent component description which contains the connection modes.
+	 * @throws SmartFrogResolutionException
+	 */
+	private void resolveConnectionModes(ComponentDescription inModes, ArrayList<ConnectionMode> inModeList) throws SmartFrogResolutionException {
+		if (inModes != null) {
+			// for each connection mode
+			Enumeration enumModes = inModes.sfContext().keys();
+			while (enumModes.hasMoreElements()) {
+				ComponentDescription Mode = (ComponentDescription) inModes.sfContext().get(enumModes.nextElement());
 
-			// send the start command
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-		}
-		else {
-			// send delete command
-			refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_DELETE);
+				// add an connection mode to the list
+				ConnectionMode conMode = new ConnectionMode();
 
-			// send create command
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put(VMWareConstants.VM_CREATE_MASTER, vmTarget.getSourceImage());
-			map.put(VMWareConstants.VM_CREATE_NAME, vmTarget.getDisplayName());
-			map.put(VMWareConstants.VM_CREATE_USER, vmTarget.getGuestUser());
-			map.put(VMWareConstants.VM_CREATE_PASS, vmTarget.getGuestPass());
-			refAvlServer.sendVMCommand(vmTarget.getAffinity(), null, VMWareConstants.VM_CMD_CREATE, map);
+				conMode.setType(((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_TYPE, true)).toLowerCase());
+				conMode.setUser((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_USERNAME, true));
+				conMode.setPassword((String) Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_PASSWORD, true));
+				conMode.setIsDefault(Mode.sfResolve(PhysicalMachineConfig.ATTR_MODE_IS_DEFAULT, false, false));
+
+				inModeList.add(conMode);
+			}
 		}
+	}
+
+	public void sfStart() throws SmartFrogException, RemoteException {
+		super.sfStart();
+
+		sfLog().info("starting");
+
+		// get the reference to the avalanche server
+		refAvlServer = (AvalancheServer) sfResolve(ATTR_AVALANCHE, true);
+
+		// register the listener with avalanche
+		refAvlServer.addXMPPHandler(new VastListener(this));
+
+		try {
+			prepareSUTPackages();
+		} catch (Exception e1) {
+			throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e1);
+		}
+
+		// update/create the physical machines in the database
+		updateMachines();
+
+		// trigger setup
+		ignitePhysicalHosts();
+
+		sfLog().info("successfully started");
+	}
+
+	protected synchronized void sfTerminateWith(TerminationRecord status) {
+		super.sfTerminateWith(status);
+
+		// stop the virtual machines
+		stopVirtualMachines();
+
+		// stop the daemons on the ignites machines
+		stopPhysicalHosts();
+	}
+
+	/**
+	 * Deletes the virtual machines.
+	 */
+	private void revertVMsToSnapshots() {
+		for (VirtualMachineConfig virt : listVirtualMachines) {
+			if (checkPhysicalExistance(virt.getAffinity())) {
+				try {
+					refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "reverttosnapshot");
+				} catch (Exception e) {
+					sfLog().error("Error while trying send reverttosnapshot command", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Stops the daemons running on the physical hosts.
+	 */
+	private void stopPhysicalHosts() {
+		for (PhysicalMachineConfig phy : listPhysicalMachines) {
+			try {
+				SFAdapter.stopDaemon(phy.getHostAddress());
+			} catch (Exception e) {
+				sfLog().error("Error while stopping physical host: " + phy.getHostAddress(), e);
+			}
+		}
+	}
+
+	/**
+	 * Sends a stop command to all virtual machines.
+	 */
+	private void stopVirtualMachines() {
+		for (VirtualMachineConfig virt : listVirtualMachines) {
+			if (checkPhysicalExistance(virt.getAffinity())) {
+				try {
+					refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "stop");
+				} catch (Exception e) {
+					sfLog().error("Error while trying to stop virtual machines", e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Machines will be created/updated according to the sf description file.
+	 *
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	private void updateMachines() throws RemoteException, SmartFrogException {
+		// first add the physical hosts which should be ignited
+		// to the database of avalanche
+		for (PhysicalMachineConfig phy : listPhysicalMachines)
+			updateMachine(phy);
+
+		// then add the virtual hosts
+		for (VirtualMachineConfig vm : listVirtualMachines)
+			updateMachine(vm);
+	}
+
+	/**
+	 * Insert the machine config into the avalanche database.
+	 *
+	 * @param inMachineConfig
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	private void updateMachine(PhysicalMachineConfig inMachineConfig) throws RemoteException, SmartFrogException {
+		// update the unique attributes
+		refAvlServer.updateHost(inMachineConfig.getHostAddress(),
+			inMachineConfig.getArchitecture(),
+			inMachineConfig.getPlatform(),
+			inMachineConfig.getOS());
+
+		// clear the lists
+		refAvlServer.clearAccessModes(inMachineConfig.getHostAddress());
+		refAvlServer.clearTransferModes(inMachineConfig.getHostAddress());
+		refAvlServer.clearArguments(inMachineConfig.getHostAddress());
+
+		// add the access modes
+		for (ConnectionMode mode : inMachineConfig.getListAccessModes()) {
+			refAvlServer.addAccessMode(inMachineConfig.getHostAddress(),
+				mode.getType(),
+				mode.getUser(),
+				mode.getPassword(),
+				mode.getIsDefault());
+		}
+
+		// add the transfer modes
+		for (ConnectionMode mode : inMachineConfig.getListTransferModes()) {
+			refAvlServer.addTransferMode(inMachineConfig.getHostAddress(),
+				mode.getType(),
+				mode.getUser(),
+				mode.getPassword(),
+				mode.getIsDefault());
+		}
+
+		// add the arguments
+		for (Argument arg : inMachineConfig.getListArguments()) {
+			refAvlServer.addArgument(inMachineConfig.getHostAddress(),
+				arg.getName(),
+				arg.getValue());
+		}
+	}
+
+	private void ignitePhysicalHosts() throws SmartFrogException, RemoteException {
+		// construct the host name array
+		sfLog().info("igniting hosts:");
+		String[] hostNames = new String[listPhysicalMachines.size()];
+		for (int i = 0; i < hostNames.length; ++i) {
+			sfLog().info(listPhysicalMachines.get(i).getHostAddress());
+			hostNames[i] = listPhysicalMachines.get(i).getHostAddress();
+		}
+
+		// ignite the hosts
+		refAvlServer.igniteHosts(hostNames);
+	}
+
+	/**
+	 * Checks whether the physical part of the environment is ready for the next step.
+	 */
+	private boolean checkPhysicalEnv() {
+		for (PhysicalMachineConfig phy : listPhysicalMachines)
+			if (!phy.isRunning())
+				return false;
+
+		sfLog().info("all physical hosts running");
+		return true;
+	}
+
+	/**
+	 * Checks whether the virtual part of the environment is ready for the next step.
+	 */
+	private boolean checkVirtualEnv() {
+		for (VirtualMachineConfig vm : listVirtualMachines)
+			if (!vm.isRunning())
+				return false;
+
+		sfLog().info("all virtual machines are running");
+		return true;
+	}
+
+	/**
+	 * A host started.
+	 *
+	 * @param inHost
+	 */
+	public void hostStarted(String inHost) {
+		for (PhysicalMachineConfig phy : listPhysicalMachines) {
+			if (phy.getHostAddress().equals(inHost)) {
+				// set the machine to be running
+				phy.setRunning(true);
+
+				// check if all machines are running
+				if (checkPhysicalEnv()) {
+					// first try to revert to snapshots
+					revertVMsToSnapshots();
+				}
+
+				return;
+			}
+		}
+
+		for (VirtualMachineConfig vm : listVirtualMachines) {
+			if (vm.getHostAddress().equals(inHost)) {
+				// set the vm to be running
+				vm.setRunning(true);
+
+				// check if all virtual machines are running
+				if (checkVirtualEnv()) {
+					// TODO: perform tests
+				}
+
+				return;
+			}
+		}
+	}
+
+	/**
+	 * A host vanished from xmpp.
+	 *
+	 * @param inHost
+	 */
+	public void hostVanished(String inHost) {
+		for (PhysicalMachineConfig phy : listPhysicalMachines) {
+			if (phy.getHostAddress().equals(inHost)) {
+				// set the machine to be stopped
+				phy.setRunning(false);
+
+				return;
+			}
+		}
+
+		for (VirtualMachineConfig vm : listVirtualMachines) {
+			if (vm.getHostAddress().equals(inHost)) {
+				// set the vm to be stopped
+				vm.setRunning(false);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Checks if a physical host is existing in the description data.
+	 *
+	 * @param inName Name of the host.
+	 * @return True if it is, false if it is not existing.
+	 */
+	private boolean checkPhysicalExistance(String inName) {
+		for (PhysicalMachineConfig phy : listPhysicalMachines)
+			if (phy.getHostAddress().equals(inName))
+				return true;
+		return false;
+	}
+
+	/**
+	 * Handles incoming VM messages.
+	 *
+	 * @param inPacket		  The packet containing the message.
+	 * @param inPacketExtension The packet extension containing the relevant data.
+	 */
+	public void handleVMMessages(Packet inPacket, XMPPEventExtension inPacketExtension) {
+		// retrieve the basic attributes
+		String strCommand = inPacketExtension.getPropertyBag().get(VMWareConstants.VMCMD);
+		String strResponse = inPacketExtension.getPropertyBag().get(VMWareConstants.VMRESPONSE);
+		String strVMName = inPacketExtension.getPropertyBag().get(VMWareConstants.VMNAME);
+
+		// get the physical host
+		PhysicalMachineConfig phyHost = null;
+		for (PhysicalMachineConfig cur : listPhysicalMachines)
+			if (cur.getHostAddress().equals(inPacketExtension.getHost())) {
+				phyHost = cur;
+				break;
+			}
+
+		// get the according vm
+		VirtualMachineConfig vmTarget = null;
+		for (VirtualMachineConfig cur : listVirtualMachines)
+			if (cur.getDisplayName().equals(strVMName)
+				&& cur.getAffinity().equals(inPacketExtension.getHost())) {
+				vmTarget = cur;
+				break;
+			}
+
+		if (phyHost != null && vmTarget != null) {
+			try {
+				if (strCommand.equals(VMWareConstants.VM_CMD_REVERT)) {
+					if (strResponse.equals("success")) {
+						// send credentials
+						HashMap<String, String> map = new HashMap<String, String>();
+						map.put(VMWareConstants.VM_SET_GUEST_CRED_USER, vmTarget.getGuestUser());
+						map.put(VMWareConstants.VM_SET_GUEST_CRED_PASS, vmTarget.getGuestPass());
+						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_SET_GUEST_CRED, map);
+
+						// send the start command
+						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
+					}
+					else {
+						// send delete command
+						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_DELETE);
+
+						// send create command
+						HashMap<String, String> map = new HashMap<String, String>();
+						map.put(VMWareConstants.VM_CREATE_MASTER, vmTarget.getSourceImage());
+						map.put(VMWareConstants.VM_CREATE_NAME, vmTarget.getDisplayName());
+						map.put(VMWareConstants.VM_CREATE_USER, vmTarget.getGuestUser());
+						map.put(VMWareConstants.VM_CREATE_PASS, vmTarget.getGuestPass());
+						refAvlServer.sendVMCommand(vmTarget.getAffinity(), null, VMWareConstants.VM_CMD_CREATE, map);
+					}
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
+					// a response to a create command
+					if (strResponse.equals("success")) {
+						takeSnapshot(inPacket, strVMName);
+					}
+					else sfLog().error("Failed to create vm: " + inPacketExtension);
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
+					if (!strResponse.equals("success"))
+						sfLog().warn("Failed to take snapshot of vm: " + inPacketExtension);
+
+					// start the vm, regardless of the success or failure of taking a snapshot
+					refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
+					if (strResponse.equals("success")) {
+						sfLog().info("vm created: " + strVMName);
+						waitForTools(inPacket, strVMName, vmTarget);
+					}
+					else sfLog().error("Failed to start vm: " + inPacketExtension);
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
+					if (strResponse.equals("success")) {
+						sfLog().info("tools running");
+						// home dir created, copy the helper into the vm
+						copyHelper(inPacket, strVMName, phyHost, vmTarget);
+					}
+					else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
+					if (strResponse.equals("success")) {
+						if (inPacketExtension.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST).endsWith("helper.jar"))						{
+							sfLog().info("vast helper copied");
+							// helper copied, start it
+							executeHelper(inPacket, strVMName, vmTarget);
+						}
+					}
+					else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
+				}
+				else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
+					if (strResponse.equals("success")) {
+						// vast helper executed, now ignite the virtual machines
+						// with the appropriate package (sf + test runner + SUT)
+						igniteVirtualMachine(vmTarget);
+					}
+				}
+			}
+			catch (Exception e) {
+				sfLog().error(e);
+			}
+		}
+	}
+
+	private void executeHelper(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+		HashMap<String, String> map = new HashMap<String, String>();
+
+		String gwAddr = inVMTarget.getHostAddress().substring(0, inVMTarget.getHostAddress().lastIndexOf(".")) + ".1";
+		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s",
+																			inVMTarget.getHostAddress(),
+																			inVMTarget.getHostMask(),
+																			gwAddr,
+																			inVMTarget.getVastNetworkIP(),
+																			inVMTarget.getVastNetworkMask()));
+
+		for (Argument arg : inVMTarget.getListArguments())
+			if (arg.getName().equals("JAVA_HOME"))
+				map.put(VMWareConstants.VM_EXECUTE_CMD, String.format("%s/bin/java", arg.getValue()));
+
+		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_EXECUTE, map);
+	}
+
+	private void copyHelper(Packet inPacket, String inVMName, PhysicalMachineConfig inPhyHost, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+		HashMap<String, String> map = new HashMap<String, String>();
+
+		for (Argument arg : inPhyHost.getListArguments())
+			if (arg.getName().equals("AVALANCHE_HOME"))
+				map.put(VMWareConstants.VM_COPY_HTOG_SOURCE, String.format("%s/smartfrog/dist/vast/helper.jar", arg.getValue()));
+
+		for (Argument arg : inVMTarget.getListArguments())
+			if (arg.getName().equals("AVALANCHE_HOME"))
+				map.put(VMWareConstants.VM_COPY_HTOG_DEST, String.format("%s/helper.jar", arg.getValue()));
+
+		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST, map);
+	}
+
+	private void waitForTools(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(VMWareConstants.VM_WAIT_FOR_TOOLS_TIMEOUT, String.format("%d", inVMTarget.getToolsTimeout()));
+		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_WAIT_FOR_TOOLS, map);
+	}
+
+	private void takeSnapshot(Packet inPacket, String inVMName) throws RemoteException, SmartFrogException {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, "vast_snapshot");
+		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, "Snapshot taken by VAST");
+		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY, "false");
+		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_TAKE_SNAPSHOT, map);
+	}
+
+	/**
+	 * Ignites a virtual machine.
+	 * @param inVM
+	 */
+	private void igniteVirtualMachine(VirtualMachineConfig inVM) throws SmartFrogException, RemoteException {
+		// ignite it with the according package
+		refAvlServer.igniteHosts(new String[] {inVM.getHostAddress()}, String.format("%s/temp/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()));
 	}
 }

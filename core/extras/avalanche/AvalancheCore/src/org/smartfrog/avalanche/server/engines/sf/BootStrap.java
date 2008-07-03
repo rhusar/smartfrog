@@ -48,7 +48,12 @@ public class BootStrap {
 
     private static Log log = LogFactory.getLog(BootStrap.class);
 
-    public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
+	/**
+	 * Path to the package with should be used for the host ignition.
+	 */
+	private String IgnitionPackage = null;
+
+	public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
     public static final String sfReleaseFileWindows = "smartfrog.zip";
 
     public static final String sfReleaseName = "smartfrog";
@@ -69,15 +74,41 @@ public class BootStrap {
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             log.info("Avalanche Server is running on Windows.");
             this.strOptSeparator = File.separator;
-        }
 
-        this.factory = f;
+		}
+
+		this.factory = f;
         this.avalancheHome = f.getAvalancheHome();
         this.sfDirectory = this.avalancheHome + File.separator + this.strOptSeparator + "smartfrog";
         this.sfBootDirectory = this.sfDirectory + File.separator + this.strOptSeparator + "boot";
-    }
 
-    /**
+	}
+
+	public String getIgnitionPackage() {
+		return IgnitionPackage;
+	}
+
+	public void setIgnitionPackage(String ignitionPackage) {
+		IgnitionPackage = ignitionPackage;
+	}
+
+	/**
+     * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
+     * picks up host properties and access details from Avalanche database and uses that information
+     * to ignite the hosts.
+     *
+     * @param hosts is the list of hosts to be ignited
+	 * @param inPackage The package which should be used for the ignition. Will only used for this ignition. If you want to set a default package use <code>setIgnitionPackage()</code>.
+     * @throws HostIgnitionException if ignition failed
+     */
+	public void ignite(String[] hosts, String inPackage) throws HostIgnitionException {
+		String old = IgnitionPackage;
+		IgnitionPackage = inPackage;
+		ignite(hosts);
+		IgnitionPackage = old;
+	}
+
+	/**
      * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
      * picks up host properties and access details from Avalanche database and uses that information
      * to ignite the hosts.
@@ -155,7 +186,14 @@ public class BootStrap {
 
                 String os = h.getPlatformSelector().getOs();
 
-                // if the install location hasn't been set use the default locations
+				// decide about the filename, depending on the target os
+				String strLocalfile1;
+				if (IgnitionPackage == null)
+					strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
+				else
+					strLocalfile1 = IgnitionPackage;
+
+				// if the install location hasn't been set use the default locations
                 if (avalancheInstallationDirectory == null)
                     avalancheInstallationDirectory = (os.equals("windows") ? sfInstallLocationWindows : sfInstallLocationUnix);
 
@@ -168,9 +206,6 @@ public class BootStrap {
                         "\nUsername: " + username +
                         "\n\nJAVA_HOME: " + javaHomeDirectory +
                         "\nAVALANCHE_HOME:" + avalancheInstallationDirectory);
-
-                // decide about the filename, depending on the target os
-                String strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
 
                 if (securityOn.equals("true")) {
                     Daemon d = new Daemon("n" + host,                // name
