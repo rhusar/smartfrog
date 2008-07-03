@@ -42,7 +42,8 @@
     <echo message="= ${ant.project.name}"/>
 
     <target name="helperJar" depends="ready-to-jar">
-        <jar jarfile="${dist.dir}/lib/helper.jar" basedir="${build.classes.dir}"
+		<mkdir dir="dist/helper" />
+		<jar jarfile="${dist.dir}/helper/helper.jar" basedir="${build.classes.dir}"
              includes="**/helper/**">
             <manifest>
                 <attribute name="Main-Class" value="org.smartfrog.vast.helper.Setup"/>
