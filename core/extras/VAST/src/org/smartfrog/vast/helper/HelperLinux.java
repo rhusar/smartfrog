@@ -89,4 +89,24 @@ public class HelperLinux implements Helper {
             }
         }
     }
+
+	public void setDefaultGateway(String inGatewayAddress, String inNICName) {
+		if (Validator.isValidIP(inGatewayAddress)) {
+			try {
+                Process ps = Runtime.getRuntime().exec(String.format("route add default gw %s %s", inGatewayAddress, inNICName));
+
+				// just for blocking prevention
+				ArrayList<String> outBuffer = new ArrayList<String>();
+				ArrayList<String> errBuffer = new ArrayList<String>();
+				ReaderThread rtOut = new ReaderThread(ps.getInputStream(), outBuffer);
+				ReaderThread rtErr = new ReaderThread(ps.getErrorStream(), errBuffer);
+				rtOut.start();
+				rtErr.start();
+
+				ps.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+		}
+	}
 }

@@ -39,4 +39,11 @@ public interface Helper {
      * @param inMask The according network mask of the ip address.
      */
     public void setNetworkAddress(String inNICName, String inIP, String inMask);
+
+	/**
+	 * Sets the default gateway for the network.
+	 * @param inGatewayAddress The gateway address.
+	 * @param inNICName The name of the NIC.
+	 */
+	public void setDefaultGateway(String inGatewayAddress, String inNICName);
 }
