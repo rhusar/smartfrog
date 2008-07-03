@@ -54,13 +54,10 @@ public class HelperWin implements Helper {
 
 			// parse the output
 			Pattern pattern = Pattern.compile("^Ethernet\\sadapter\\s([\\w\\s]+)\\:$");
-			System.out.println("pattern: " + pattern);
 			for (String strLine : outBuffer)
 			{
-				System.out.println("line: " + strLine);
 				Matcher matcher = pattern.matcher(strLine);
 				if (matcher.matches()) {
-					System.out.println("matched: " + matcher.group(1));
 					names.add(matcher.group(1));
 				}
 			}
@@ -90,6 +87,26 @@ public class HelperWin implements Helper {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void setDefaultGateway(String inGatewayAddress, String inNICName) {
+		if (Validator.isValidIP(inGatewayAddress)) {
+			try {
+                Process ps = Runtime.getRuntime().exec(String.format("netsh interface ip set address name=\"%s\" gateway=%s gwmetric=1", inNICName, inGatewayAddress));
+
+				// just for blocking prevention
+				ArrayList<String> outBuffer = new ArrayList<String>();
+				ArrayList<String> errBuffer = new ArrayList<String>();
+				ReaderThread rtOut = new ReaderThread(ps.getInputStream(), outBuffer);
+				ReaderThread rtErr = new ReaderThread(ps.getErrorStream(), errBuffer);
+				rtOut.start();
+				rtErr.start();
+
+				ps.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 		}
 	}
 }
