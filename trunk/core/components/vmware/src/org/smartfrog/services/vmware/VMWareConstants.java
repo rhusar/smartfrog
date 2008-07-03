@@ -51,4 +51,8 @@ public abstract class VMWareConstants {
 	public static final String VM_COPY_HTOG_SOURCE = "copyhtog_source";
 	public static final String VM_COPY_HTOG_DEST = "copyhtog_dest";
 	public static final String VM_LIST_COUNT = "list_count";
+	public static final String VM_CMD_MKDIR = "mkdir";
+	public static final String VM_MKDIR_PATH = "mkdir_path";
+	public static final String VM_CMD_EXISTS_DIR = "existsdir";
+	public static final String VM_EXISTS_DIR_PATH = "existsdir_path";
 }

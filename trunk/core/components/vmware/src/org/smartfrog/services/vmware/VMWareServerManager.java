@@ -970,7 +970,51 @@ public class VMWareServerManager extends PrimImpl implements VMWareServerManager
 //        return strResponse;
 //    }
 
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
+	// apparently not supported by VMware server
+//	public String mkdirInGuest(String inVMName, String inDir) throws RemoteException, SmartFrogException {
+//		// error string
+//        String strResponse = "success";
+//        String strVMPath = constructVMPath(inVMName);
+//
+//        try {
+//            // get a machine module
+//            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+//
+//            // check if it worked
+//            if (tmp != null) {
+//                tmp.mkdirInGuest(inDir);
+//            }
+//            else strResponse = "Failed to make directory in the guest os of \"" + strVMPath + "\": Image module not existing.";
+//        } catch (SmartFrogException e) {
+//            throw failure("mkdirInGuest", strVMPath, e);
+//        }
+//
+//        return strResponse;
+//	}
+
+	// apparently not supported by VMware server
+//	public String existsDirInGuest(String inVMName, String inDir) throws RemoteException, SmartFrogException {
+//		// error string
+//        String strResponse;
+//        String strVMPath = constructVMPath(inVMName);
+//
+//        try {
+//            // get a machine module
+//            VMWareImageModule tmp = vmComm.getImageModule(strVMPath);
+//
+//            // check if it worked
+//            if (tmp != null) {
+//                strResponse = (tmp.existsDirInGuest(inDir) ? "true" : "false");
+//            }
+//            else strResponse = "Failed to check for directory in the guest os of \"" + strVMPath + "\": Image module not existing.";
+//        } catch (SmartFrogException e) {
+//            throw failure("existsDirInGuest", strVMPath, e);
+//        }
+//
+//        return strResponse;
+//	}
+
+	protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
 
         // shut down every virtual machine manually to be indepentant of the vmserver service behaviour

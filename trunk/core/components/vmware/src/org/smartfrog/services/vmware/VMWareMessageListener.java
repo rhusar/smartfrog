@@ -302,6 +302,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             boolean bNoWait = (ext.getPropertyBag().get(VMWareConstants.VM_EXECUTE_NOWAIT) != null);
 
                             response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.executeInGuestOS(strName, strCommand, strParameters, bNoWait));
+
 							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_CMD, strCommand);
 							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_PARAM, strParameters);
 							response.getPropertyBag().put(VMWareConstants.VM_EXECUTE_NOWAIT, (bNoWait ? "true" : "false"));
@@ -316,6 +317,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                             boolean bIncMem = Boolean.parseBoolean(ext.getPropertyBag().get(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY));
 
                             response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.takeSnapshot(strName, strSnapName, strSnapDesc, bIncMem));
+
 							response.getPropertyBag().put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, strSnapName);
 							response.getPropertyBag().put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, strSnapDesc);
 						}
@@ -332,6 +334,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                                     strPass = ext.getPropertyBag().get(VMWareConstants.VM_SET_GUEST_CRED_PASS);
 
                             response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.setGuestOSCredentials(strName, strUser, strPass));
+
 							response.getPropertyBag().put(VMWareConstants.VM_SET_GUEST_CRED_USER, strUser);
 							response.getPropertyBag().put(VMWareConstants.VM_SET_GUEST_CRED_PASS, strPass);
 						}
@@ -342,16 +345,33 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                                 response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.deleteVMSnapshot(strName, strSnapName, bDelChildren));
                             else
                                 response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.deleteVMSnapshot(strName, bDelChildren));
+
 							response.getPropertyBag().put(VMWareConstants.VM_DELETE_SNAPSHOT_NAME, strSnapName);
 							response.getPropertyBag().put(VMWareConstants.VM_DELETE_SNAPSHOT_DEL_CHILD, (bDelChildren ? "true" : "false"));
 						}
                         else if (command.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
                             String strSrc = ext.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_SOURCE);
                             String strDest = ext.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST);
-                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.copyFileFromHostToGuest(strName, strSrc, strDest));
+
+							response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.copyFileFromHostToGuest(strName, strSrc, strDest));
+
 							response.getPropertyBag().put(VMWareConstants.VM_COPY_HTOG_SOURCE, strSrc);
 							response.getPropertyBag().put(VMWareConstants.VM_COPY_HTOG_DEST, strDest);
 						}
+//						else if (command.equals(VMWareConstants.VM_CMD_MKDIR)) {
+//							String strPath = ext.getPropertyBag().get(VMWareConstants.VM_MKDIR_PATH);
+//
+//							response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.mkdirInGuest(strName, strPath));
+//
+//							response.getPropertyBag().put(VMWareConstants.VM_MKDIR_PATH, strPath);
+//						}
+//						else if (command.equals(VMWareConstants.VM_CMD_EXISTS_DIR)) {
+//							String strPath = ext.getPropertyBag().get(VMWareConstants.VM_EXISTS_DIR_PATH);
+//
+//							response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.existsDirInGuest(strName, strPath));
+//
+//							response.getPropertyBag().put(VMWareConstants.VM_EXISTS_DIR_PATH, strPath);
+//						}
 //                        else if (command.equals("writeguestenv")) {
 //                            String  strVarName = ext.getPropertyBag().get("wenv_name"),
 //                                    strVarValue = ext.getPropertyBag().get("wenv_value");

@@ -276,4 +276,24 @@ public interface VMWareServerManagerServices extends Remote {
 //     * @throws SmartFrogException
 //     */
 //    public String readGuestEnvVar(String inVMName, String inVarName) throws RemoteException, SmartFrogException;
+
+//	/**
+//	 * Creates a directory in the guest operating system of a virtual machine.
+//	 * @param inVMName The name of the virtual machine.
+//	 * @param inDir The path of the directory.
+//	 * @return "success" or an error message.
+//	 * @throws RemoteException
+//	 * @throws SmartFrogException
+//	 */
+//	public String mkdirInGuest(String inVMName, String inDir) throws RemoteException, SmartFrogException;
+//
+//	/**
+//	 * Checks if a directory exists in the guest operating system of a virtual machine.
+//	 * @param inVMName The name of the virtual machine.
+//	 * @param inDir The path of the directory.
+//	 * @return "true", "false" or an error message.
+//	 * @throws RemoteException
+//	 * @throws SmartFrogException
+//	 */
+//	public String existsDirInGuest(String inVMName, String inDir) throws RemoteException, SmartFrogException;
 }

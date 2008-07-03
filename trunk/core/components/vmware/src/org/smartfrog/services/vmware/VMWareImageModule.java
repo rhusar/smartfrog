@@ -518,4 +518,25 @@ public class VMWareImageModule {
 //    public String readGuestEnvVar(String inName) throws SmartFrogException {
 //        return vmComm.readGuestEnvVar(this, inName);
 //    }
+
+	// apparently not supported by VMware server
+//	/**
+//	 * Creates a directory in the guest os of this vm.
+//	 * @param inDir The path of the directory.
+//	 * @throws SmartFrogException
+//	 */
+//	public void mkdirInGuest(String inDir) throws SmartFrogException {
+//		vmComm.mkdirInGuest(this, inDir);
+//	}
+
+	// apparently not supported by VMware server
+//	/**
+//	 * Checks if a directory exists in the guest operating system of this vm.
+//	 * @param inDir The directory.
+//	 * @return <code>true</code> or <code>false</code>.
+//	 * @throws SmartFrogException
+//	 */
+//	public boolean existsDirInGuest(String inDir) throws SmartFrogException {
+//		return vmComm.existsDirInGuest(this, inDir);
+//	}
 }
