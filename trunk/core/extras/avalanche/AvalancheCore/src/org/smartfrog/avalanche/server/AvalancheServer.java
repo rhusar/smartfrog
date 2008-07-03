@@ -125,20 +125,20 @@ public interface AvalancheServer extends Remote {
     /**
      * Send a vm command to a host.
      * @param inTargetMachine The host of the virtual machine.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName The name of the virtual machine.
      * @param inCmd The command to execute.
      */
-    public void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd)
+    public void sendVMCommand(String inTargetMachine, String inVMName, String inCmd)
             throws RemoteException, SmartFrogException;
 
     /**
      * Send a vm command to a host.
      * @param inTargetMachine The host of the virtual machine.
-     * @param inVMPath The path to the .vmx file.
+     * @param inVMName The name of the virtual machine.
      * @param inCmd The command to execute.
      * @param inAdditionalProperties Additional attributes required for the command.
      */
-    public void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd, HashMap<String, String> inAdditionalProperties)
+    public void sendVMCommand(String inTargetMachine, String inVMName, String inCmd, HashMap<String, String> inAdditionalProperties)
             throws RemoteException, SmartFrogException;
 
     /**
@@ -151,6 +151,16 @@ public interface AvalancheServer extends Remote {
             throws RemoteException, SmartFrogException;
 
     /**
+     * Ignites the given hosts if they are present in the database.
+     * @param inHosts The list of hostnames.
+	 * @param inPackage The package which should be used for the ignition. Will only be used for this ignition. Use <code>setIgnitionPackage()</code> to set a default package.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void igniteHosts(String[] inHosts, String inPackage)
+            throws RemoteException, SmartFrogException;
+
+	/**
      * Adds a xmpp packet handler to the avalanche listener adapter.
      * @param inHandler The handler to attach.
      * @throws RemoteException
@@ -158,4 +168,28 @@ public interface AvalancheServer extends Remote {
      */
     public void addXMPPHandler(XMPPPacketHandler inHandler)
             throws RemoteException, SmartFrogException;
+
+    /**
+     * Gets the home directory of the avalanche server.
+     * @return The home directory of the avalanche server.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public String getAvalancheHome() throws RemoteException, SmartFrogException;
+
+	/**
+	 * Sets the default package for host ignitions.
+	 * @param inPackage The path to the package.
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	public void setIgnitionPackage(String inPackage) throws RemoteException, SmartFrogException;
+
+	/**
+	 * Gets the default package for host ignitions.
+	 * @return The path to the package.
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	public String getIgnitionPackage() throws RemoteException, SmartFrogException;
 }
