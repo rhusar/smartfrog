@@ -41,6 +41,8 @@ public class TarArchive extends BaseArchive {
 		// create an entry in the tar file
 		TarEntry entry = new TarEntry(inRelPath);
 		entry.setSize(file.length());
+		if (file.canExecute())
+			entry.setMode(755);
 		out.putNextEntry(entry);
 
 		if (file.isFile()) {
