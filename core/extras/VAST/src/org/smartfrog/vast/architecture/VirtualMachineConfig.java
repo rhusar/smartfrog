@@ -26,10 +26,15 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
     public static String ATTR_GUEST_USER = "GuestUser";
     public static String ATTR_GUEST_PASS = "GuestPass";
     public static String ATTR_DISPLAY_NAME = "DisplayName";
-    public static String ATTR_GUEST_OS_READY_INTERVAL = "GuestOSReadyInterval";
+    public static String ATTR_TOOLS_TIMEOUT = "toolsTimeout";
+	public static String ATTR_VAST_NETWORK_IP = "VastNetworkIP";
+	public static String ATTR_VAST_NETWORK_MASK = "VastNetworkMask";
+	public static String ATTR_HOST_NETWORK_MASK = "HostMask";
+	public static String ATTR_SUT_PACKAGE = "SUTPackage";
+	public static String ATTR_VAST_CONTROLLER = "VastController";
 
-    // affinity to a physical machine
-    private String Affinity;
+	// affinity to a physical machine
+	private String Affinity;
 
     // name of the master image from which this
     // virtual machine should be created
@@ -44,9 +49,42 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
     // the display name for the vm
     private String DisplayName;
 
-    private Integer GuestReadyInterval;
+	// timeout in seconds for the guest os to boot up
+	private Integer ToolsTimeout;
 
-    public String getAffinity() {
+	// network address for the vast
+	// test controller
+	private String VastNetworkIP;
+
+	// network mask for the vast network
+	private String VastNetworkMask;
+
+	// nework mask for the SUT network
+	private String HostMask;
+
+	// name of the sut package
+	private String SUTPackage;
+
+	// is this the vast controller vm?
+	private boolean VastController;
+
+	public String getSUTPackage() {
+		return SUTPackage;
+	}
+
+	public void setSUTPackage(String SUTPackage) {
+		this.SUTPackage = SUTPackage;
+	}
+
+	public boolean isVastController() {
+		return VastController;
+	}
+
+	public void setVastController(boolean vastController) {
+		VastController = vastController;
+	}
+
+	public String getAffinity() {
         return Affinity;
     }
 
@@ -86,11 +124,35 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
         DisplayName = displayName;
     }
 
-    public Integer getGuestReadyInterval() {
-        return GuestReadyInterval;
+    public Integer getToolsTimeout() {
+        return ToolsTimeout;
     }
 
-    public void setGuestReadyInterval(Integer guestReadyInterval) {
-        GuestReadyInterval = guestReadyInterval;
+    public void setToolsTimeout(Integer toolsTimeout) {
+        ToolsTimeout = toolsTimeout;
     }
+
+	public String getVastNetworkIP() {
+		return VastNetworkIP;
+	}
+
+	public void setVastNetworkIP(String vastNetworkIP) {
+		VastNetworkIP = vastNetworkIP;
+	}
+
+	public String getHostMask() {
+		return HostMask;
+	}
+
+	public void setHostMask(String hostMask) {
+		HostMask = hostMask;
+	}
+
+	public String getVastNetworkMask() {
+		return VastNetworkMask;
+	}
+
+	public void setVastNetworkMask(String vastNetworkMask) {
+		VastNetworkMask = vastNetworkMask;
+	}
 }
