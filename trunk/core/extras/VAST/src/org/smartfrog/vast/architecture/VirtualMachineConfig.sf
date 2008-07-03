@@ -37,14 +37,34 @@ VirtualMachineSchema extends Schema {
     // the display name of the vm
     DisplayName extends String;
 
-    // the interval in miliseconds that should
-    // be used to check if a guest os has finished
-    // booting and is ready for interaction
-    GuestOSReadyInterval extends Integer;
+    // how long should vast be waiting
+    // for the tools to come up in a
+    // virtual machine (in seconds)
+    toolsTimeout extends Integer;
+
+    // virtual machines are required
+    // to have 2 NIC, 1 for the
+    // SUT and 1 for vast (which
+    // should operate in a different
+    // network)
+    VastNetworkIP extends String;
+    
+    // subnet mask
+    VastNetworkMask extends String;
+
+    // subnet mask
+    HostMask extends String;
+
+    // is this vm the controlling vm? there may only be one
+    VastController extends Boolean;
+
+    // name of the SUT package which should be
+    // deployed to this machine
+    SUTPackage extends OptionalString;
 }
 
 VirtualMachineConfig extends PhysicalMachineConfig {
     vmSchema extends VirtualMachineSchema;
 
-    GuestOSReadyInterval 10000;
+    toolsTimeout 600;
 }
