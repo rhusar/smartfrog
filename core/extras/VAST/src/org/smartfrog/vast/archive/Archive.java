@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.architecture.archive;
+package org.smartfrog.vast.archive;
 
 import java.io.IOException;
 
@@ -30,9 +30,8 @@ interface Archive {
 
 	/**
 	 * Creates an archive at the given location.
-	 * @param inPath The path to the archive.
 	 */
-	public void create(String inPath) throws IOException;
+	public void create() throws IOException;
 
 	/**
 	 * Closes the archive.
@@ -46,4 +45,11 @@ interface Archive {
 	 * @throws IOException
 	 */
 	public void putNextEntry(String inPath, String inRelPath) throws IOException;
+
+	/**
+	 * Extracts an archive.
+	 * @param inDestination The destination folder.
+	 * @throws IOException
+	 */
+	public void extract(String inDestination) throws IOException;
 }

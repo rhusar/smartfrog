@@ -18,10 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.architecture.archive;
+package org.smartfrog.vast.archive;
 
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -30,13 +31,17 @@ import java.io.File;
 public class ZipArchive extends BaseArchive {
 	ZipOutputStream out;
 
+	public ZipArchive(String inPath) {
+		ArchivePath = inPath;
+	}
+
 	public void close() throws IOException {
 		out.close();
 	}
 
-	public void create(String inPath) throws IOException {
+	public void create() throws IOException {
 		// open the zip output stream
-		out = new ZipOutputStream(new FileOutputStream(inPath));
+		out = new ZipOutputStream(new FileOutputStream(ArchivePath));
 	}
 
 	public void putNextEntry(String inPath, String inRelPath) throws IOException {
@@ -60,5 +65,41 @@ public class ZipArchive extends BaseArchive {
 
 		// close entry
 		out.closeEntry();
+	}
+
+	public void extract(String inDestination) throws IOException {
+		File destFolder = new File(inDestination);
+		if (!destFolder.isDirectory())
+			throw new IOException("Destination is not a folder.");
+
+		// open the archive
+		ZipInputStream in = new ZipInputStream(new FileInputStream(ArchivePath));
+		ZipEntry entry;
+		File dest;
+		byte [] buffer = new byte[BUFFER_SIZE];
+		int read;
+
+		// parse the entries
+		while ((entry = in.getNextEntry()) != null) {
+			dest = new File(destFolder.getPath() + "/" + entry.getName());
+			if (entry.isDirectory())
+				// create the directory
+				dest.mkdir();
+			else {
+				// create the file
+				FileOutputStream out = new FileOutputStream(dest);
+
+				// extract the data
+				while ((read = in.read(buffer, 0, BUFFER_SIZE)) > 0) {
+					out.write(buffer, 0, read);
+				}
+
+				// close the file
+				out.close();
+			}
+		}
+
+		// close the archive
+		in.close();
 	}
 }

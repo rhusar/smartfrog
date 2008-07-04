@@ -55,7 +55,7 @@
 
 	<target name="architectureJar">
 		<jar jarfile="${dist.dir}/lib/vast-arch.jar" basedir="${build.classes.dir}"
-             includes="**/architecture/**" >
+             includes="**/architecture/**,**/archive/**" >
         </jar>
 	</target>
 
@@ -67,7 +67,7 @@
 
 	<target name="runnerJar">
 		<jar jarfile="${dist.dir}/lib/vast-runner.jar" basedir="${build.classes.dir}"
-             includes="**/runner/**" >
+             includes="**/runner/**,**/archive/**" >
         </jar>
 	</target>
 
