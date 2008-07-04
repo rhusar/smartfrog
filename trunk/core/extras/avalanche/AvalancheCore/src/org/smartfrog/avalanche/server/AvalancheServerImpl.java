@@ -271,7 +271,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
         }
     }
 
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS) throws RemoteException, SmartFrogException {
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, String inBindIP) throws RemoteException, SmartFrogException {
         // get the host manager
         try {
             HostManager hm = getAvalancheFactory().getHostManager();
@@ -286,20 +286,23 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                     throw SmartFrogException.forward(e);
                 }
 
-                // platform settings
+				ht.setBindIP(inBindIP);
+
+				// platform settings
                 PlatformSelectorType pst = ht.addNewPlatformSelector();
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);
                 pst.setArch(inArchitecture);
 
-                // create the lists
+				// create the lists
                 ht.addNewAccessModes();
                 ht.addNewTransferModes();
                 ht.addNewArguments();
             } else {
                 // host existing, update
+				ht.setBindIP(inBindIP);
 
-                // platform settings
+				// platform settings
                 PlatformSelectorType pst = ht.getPlatformSelector();
                 pst.setPlatform(inPlatform);
                 pst.setOs(inOS);

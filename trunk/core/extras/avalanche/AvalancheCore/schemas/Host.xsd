@@ -1,78 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xs:schema 
-  targetNamespace="http://smartfrog.org/avalanche/core/Host"
-  xmlns:xs='http://www.w3.org/2001/XMLSchema'
-  xmlns:this='http://smartfrog.org/avalanche/core/Host'
-  xmlns:mc='http://smartfrog.org/avalanche/core/Module'>
+<xs:schema
+	targetNamespace="http://smartfrog.org/avalanche/core/Host"
+	xmlns:xs='http://www.w3.org/2001/XMLSchema'
+	xmlns:this='http://smartfrog.org/avalanche/core/Host'
+	xmlns:mc='http://smartfrog.org/avalanche/core/Module'>
 
-  <xs:import namespace="http://smartfrog.org/avalanche/core/Module"
-    schemaLocation="ModuleConfiguration.xsd"/>
-    
-  <xs:element name="Host" type="this:hostType"/>
+	<xs:import namespace="http://smartfrog.org/avalanche/core/Module"
+			   schemaLocation="ModuleConfiguration.xsd"/>
 
-  <xs:complexType name="hostType">
-    <xs:sequence>
-      <!-- Host ID, this is the network identifiable name of the host-->
-      <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <!--Default username/password for the host -->
-      <xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="platformSelector" type="mc:platformSelectorType" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="accessModes">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="mode" type="this:accessModeType" minOccurs="0" 
-              maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="transferModes">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="mode" type="this:dataTransferModeType" 
-              minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="arguments" type="this:argumentType" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
-  </xs:complexType>
+	<xs:element name="Host" type="this:hostType"/>
 
-  <!--There can be special access methods and seperate user control for them
-    this allows for setting user details per access mode -->
-  <xs:complexType name="accessModeType">
-    <xs:sequence>
-      <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="arguments" type="this:argumentType" minOccurs="0" 
-        maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="isDefault" type="xs:boolean"/>
-   </xs:complexType>
+	<xs:complexType name="hostType">
+		<xs:sequence>
+			<!-- Host ID, this is the network identifiable name of the host-->
+			<xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<!--Default username/password for the host -->
+			<xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="platformSelector" type="mc:platformSelectorType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="bindIP" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="accessModes">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mode" type="this:accessModeType" minOccurs="0"
+									maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="transferModes">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mode" type="this:dataTransferModeType"
+									minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="arguments" type="this:argumentType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
 
-  <!-- Same as access but meant for data transfer -->
-  <xs:complexType name="dataTransferModeType">
-    <xs:sequence>
-      <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="arguments" type="this:argumentType" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="isDefault" type="xs:boolean"/>
-   </xs:complexType>
-	
+	<!--There can be special access methods and seperate user control for them
+		this allows for setting user details per access mode -->
+	<xs:complexType name="accessModeType">
+		<xs:sequence>
+			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="arguments" type="this:argumentType" minOccurs="0"
+						maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="isDefault" type="xs:boolean"/>
+	</xs:complexType>
+
+	<!-- Same as access but meant for data transfer -->
+	<xs:complexType name="dataTransferModeType">
+		<xs:sequence>
+			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="arguments" type="this:argumentType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="isDefault" type="xs:boolean"/>
+	</xs:complexType>
+
 	<xs:complexType name="argumentType">
 		<xs:sequence>
-      <!--Host properties, these can be used by some special component like HostIgnition
-        example of property can be JAVA_HOME, TOMCAT_HOME etc-->
+			<!--Host properties, these can be used by some special component like HostIgnition
+					example of property can be JAVA_HOME, TOMCAT_HOME etc-->
 			<xs:element name="argument" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
-          <xs:sequence>
-            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
-          </xs:sequence>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1"/>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>

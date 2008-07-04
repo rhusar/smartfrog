@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="vast" default="default">
+<project name="vast" default="allJars">
 
     <!--
     /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -50,5 +50,25 @@
             </manifest>
         </jar>
     </target>
+
+	<target name="allJars" depends="helperJar,controllerJar,architectureJar,runnerJar" />
+
+	<target name="architectureJar">
+		<jar jarfile="${dist.dir}/lib/vast-arch.jar" basedir="${build.classes.dir}"
+             includes="**/architecture/**" >
+        </jar>
+	</target>
+
+	<target name="controllerJar">
+		<jar jarfile="${dist.dir}/lib/vast-controller.jar" basedir="${build.classes.dir}"
+             includes="**/controller/**" >
+        </jar>
+	</target>
+
+	<target name="runnerJar">
+		<jar jarfile="${dist.dir}/lib/vast-runner.jar" basedir="${build.classes.dir}"
+             includes="**/runner/**" >
+        </jar>
+	</target>
 
 </project>

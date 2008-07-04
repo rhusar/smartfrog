@@ -52,10 +52,11 @@ public interface AvalancheServer extends Remote {
      * @param inArchitecture Architecture of the host.
      * @param inPlatform Platform of the host.
      * @param inOS Operating System of the host.
+	 * @param inBindIP IP the sfDaemon should be bound to.
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS)
+    public void updateHost(String inName, String inArchitecture, String inPlatform, String inOS, String inBindIP)
             throws RemoteException, SmartFrogException;
 
     /**

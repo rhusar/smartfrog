@@ -140,7 +140,12 @@ public class Daemon {
 
     String emailserver;
 
-    /**
+	/**
+	 * Which IP the sfDaemon on the target host should bind to.
+	 */
+	String bindip;
+
+	/**
      * A common workflow type for staring the daemon.
      */
     public final static String TYPE = "Sequence";
@@ -205,7 +210,7 @@ public class Daemon {
      * @param emailfrom     email address from which mail is being send
      * @param emailserver   SMTP Server used to send emails over SMTP protocol
      */
-    public Daemon(String name, String os, String host, String transfertype, String logintype, String user, String password, String localfile1, String localfile2, String localfile3, String keyfile, String secproperties, String smartfrogjar, String servicesjar, String examplesjar, String releasename, String javahome, String installdir, String emailto, String emailfrom, String emailserver) {
+    public Daemon(String name, String os, String host, String transfertype, String logintype, String user, String password, String localfile1, String localfile2, String localfile3, String keyfile, String secproperties, String smartfrogjar, String servicesjar, String examplesjar, String releasename, String javahome, String installdir, String emailto, String emailfrom, String emailserver, String bindip) {
 
         require("name", name);
         require("os", os);
@@ -222,7 +227,7 @@ public class Daemon {
         require("emailfrom", emailfrom);
         require("emailserver", emailserver);
 
-        if (os.equals(WINDOWS)) {
+		if (os.equals(WINDOWS)) {
             require("localfile2", localfile2);
             require("localfile3", localfile3);
         }
@@ -248,7 +253,8 @@ public class Daemon {
         this.emailto = emailto;
         this.emailfrom = emailfrom;
         this.emailserver = emailserver;
-    }
+		this.bindip = bindip;
+	}
 
     /**
      * Check that a value is not null
@@ -363,6 +369,9 @@ public class Daemon {
         return logintype.equals(TELNET);
     }
 
+	public String getBindip() {
+		return bindip;
+	}
 
   public boolean isSsh() { return logintype.equals(SSH);}
 }
