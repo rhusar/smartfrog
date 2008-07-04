@@ -154,10 +154,11 @@ public interface AvalancheServer extends Remote {
      * Ignites the given hosts if they are present in the database.
      * @param inHosts The list of hostnames.
 	 * @param inPackage The package which should be used for the ignition. Will only be used for this ignition. Use <code>setIgnitionPackage()</code> to set a default package.
+	 * @param inTemplate The template which should be used for the ignition. Will only be used for this ignition. Use <code>setIgnitionTemplate()</code> to set a default template. 
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void igniteHosts(String[] inHosts, String inPackage)
+    public void igniteHosts(String[] inHosts, String inPackage, String inTemplate)
             throws RemoteException, SmartFrogException;
 
 	/**
@@ -192,4 +193,20 @@ public interface AvalancheServer extends Remote {
 	 * @throws SmartFrogException
 	 */
 	public String getIgnitionPackage() throws RemoteException, SmartFrogException;
+
+	/**
+	 * Gets the default template for host ignitions.
+	 * @return The path to the template.
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	public String getIgnitionTemplate() throws RemoteException, SmartFrogException;
+
+	/**
+	 * Sets the default template for host ignitions.
+	 * @param inTemplate The path to the template.
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	public void setIgnitionTemplate(String inTemplate) throws RemoteException, SmartFrogException;
 }
