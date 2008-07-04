@@ -3,3 +3,9 @@ SFCodeGenConfig{
 	workflowFile:org/smartfrog/authoringtool/oawgenerator/workflows/workflow.oaw;
 	successMessage:The SF Code Generator was run!;
 }
+
+JavaCodeGenConfig{
+	description:This is Java Code Generator configuration.;
+	workflowFile:org/smartfrog/authoringtool/oawgenerator/workflows/javaworkflow.oaw;
+	successMessage:The Java Code Generator was run!;
+}
