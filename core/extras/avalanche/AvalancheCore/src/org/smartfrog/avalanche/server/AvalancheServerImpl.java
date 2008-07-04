@@ -357,9 +357,9 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
 		return bootStrap.getIgnitionPackage();
 	}
 
-	public void igniteHosts(String[] inHosts, String inPackage) throws RemoteException, SmartFrogException {
+	public void igniteHosts(String[] inHosts, String inPackage, String inTemplate) throws RemoteException, SmartFrogException {
 		try {
-            bootStrap.ignite(inHosts, inPackage);
+            bootStrap.ignite(inHosts, inPackage, inTemplate);
         } catch (HostIgnitionException e) {
             sfLog().error("Error while igniting hosts", e);
             throw SmartFrogException.forward(e);
@@ -368,5 +368,13 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
 
 	public void setIgnitionPackage(String inPackage) throws RemoteException, SmartFrogException {
 		bootStrap.setIgnitionPackage(inPackage);
+	}
+
+	public String getIgnitionTemplate() throws RemoteException, SmartFrogException {
+		return bootStrap.getIgnitionTemplate();
+	}
+
+	public void setIgnitionTemplate(String inTemplate) throws RemoteException, SmartFrogException {
+		bootStrap.setIgnitionTemplate(inTemplate);
 	}
 }

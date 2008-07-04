@@ -52,6 +52,7 @@ public class BootStrap {
 	 * Path to the package with should be used for the host ignition.
 	 */
 	private String IgnitionPackage = null;
+	private String IgnitionTemplate = null;
 
 	public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
     public static final String sfReleaseFileWindows = "smartfrog.zip";
@@ -92,20 +93,32 @@ public class BootStrap {
 		IgnitionPackage = ignitionPackage;
 	}
 
+	public String getIgnitionTemplate() {
+		return IgnitionTemplate;
+	}
+
+	public void setIgnitionTemplate(String ignitionTemplate) {
+		IgnitionTemplate = ignitionTemplate;
+	}
+
 	/**
      * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
      * picks up host properties and access details from Avalanche database and uses that information
      * to ignite the hosts.
      *
      * @param hosts is the list of hosts to be ignited
-	 * @param inPackage The package which should be used for the ignition. Will only used for this ignition. If you want to set a default package use <code>setIgnitionPackage()</code>.
+	 * @param inPackage The package which should be used for the ignition. Will only be used for this ignition. If you want to set a default package use <code>setIgnitionPackage()</code>.
+	 * @param inTemplate The template which should be used for the ignition. Will only be used for this ignition. If you want to set a default package use <code>setIgnitionTemplate()</code>.
      * @throws HostIgnitionException if ignition failed
      */
-	public void ignite(String[] hosts, String inPackage) throws HostIgnitionException {
-		String old = IgnitionPackage;
+	public void ignite(String[] hosts, String inPackage, String inTemplate) throws HostIgnitionException {
+		String oldPack = IgnitionPackage;
+		String oldTempl = IgnitionTemplate;
 		IgnitionPackage = inPackage;
+		IgnitionTemplate = inTemplate;
 		ignite(hosts);
-		IgnitionPackage = old;
+		IgnitionPackage = oldPack;
+		IgnitionTemplate = oldTempl;
 	}
 
 	/**
@@ -121,8 +134,14 @@ public class BootStrap {
             HostManager hostManager = factory.getHostManager();
             String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
             String securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
-            String templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
-            String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
+			
+			String templateFile;
+			if (IgnitionTemplate == null)
+				templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
+			else
+				templateFile = IgnitionTemplate;
+
+			String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
             String outputFile = outDir + File.separator + this.strOptSeparator + "hostIgnition" + getDateTime() + ".sf";
 
             ArrayList<Daemon> listDaemons = new ArrayList<Daemon>();
