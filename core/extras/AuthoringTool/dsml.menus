@@ -104,6 +104,6 @@ name:Test Item2;
  }
 oAWMenuItem {
  type:item;
- name:Run SF Code Generator;
+ name:Run Code Generator;
  event:runSFGenerator;
  }
