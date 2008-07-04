@@ -31,8 +31,8 @@ import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.vmware.VMWareConstants;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.vast.architecture.archive.ZipArchive;
-import org.smartfrog.vast.architecture.archive.TarArchive;
+import org.smartfrog.vast.archive.ZipArchive;
+import org.smartfrog.vast.archive.TarArchive;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
@@ -177,16 +177,16 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 					// create the archive
 					if (conf.getOS().equals("windows")) {
 						// zip
-						ZipArchive archive = new ZipArchive();
-						archive.create(strBasePath + conf.getSUTPackage() + ".zip");
+						ZipArchive archive = new ZipArchive(strBasePath + conf.getSUTPackage() + ".zip");
+						archive.create();
 						archive.add(strBasePath + "smartfrog/");
 						archive.close();
 
 						conf.setSUTPackage(conf.getSUTPackage() + ".zip");
 					} else {
 						// tar
-						TarArchive archive = new TarArchive();
-					    archive.create(strBasePath + conf.getSUTPackage() + ".tar");
+						TarArchive archive = new TarArchive(strBasePath + conf.getSUTPackage() + ".tar");
+					    archive.create();
 						archive.add(strBasePath + "smartfrog/");
 						archive.close();
 

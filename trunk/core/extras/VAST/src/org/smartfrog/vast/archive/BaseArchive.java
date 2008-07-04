@@ -1,9 +1,14 @@
-package org.smartfrog.vast.architecture.archive;
+package org.smartfrog.vast.archive;
 
 import java.io.IOException;
 import java.io.File;
 
 abstract class BaseArchive implements Archive {
+	/**
+	 * Path to this archive.
+	 */
+	protected String ArchivePath;
+
 	/**
 	 * Adds a file or a folder to the archive. If it's a folder it will be added recursively.
 	 * @param inPath The path to the file/folder.
