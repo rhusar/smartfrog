@@ -158,16 +158,21 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 * Prepares the SUT packages.
 	 */
 	private void prepareSUTPackages() throws SmartFrogException, RemoteException {
-		String strBasePath = String.format("%s/temp/", refAvlServer.getAvalancheHome());
+		String strBasePath = String.format("%s/temp/vast/", refAvlServer.getAvalancheHome());
 
 		for (VirtualMachineConfig conf : listVirtualMachines) {
 			if (!conf.isVastController()) {
 				// prepare SUT package
 				try {
 					// copy the appropriate sut package to the sf distribution package
-					File dest = new File(strBasePath + "smartfrog/dist/SUT/" + conf.getSUTPackage());
+					File destSUT = new File(strBasePath + "smartfrog/dist/SUT/" + conf.getSUTPackage());
 					FileSystem.fCopy(new File(strBasePath + "SUT/" + conf.getSUTPackage()),
-										dest);
+										destSUT);
+
+					// copy the appropriate vast library to the sf dist package
+					File destVAST = new File(strBasePath + "smartfrog/dist/lib/vast-runner.jar");
+					FileSystem.fCopy(new File(strBasePath + "lib/vast-runner.jar"),
+										destVAST);
 
 					// create the archive
 					if (conf.getOS().equals("windows")) {
@@ -200,7 +205,8 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 					// delete it so it wont be contained in the
 					// following packages
-					dest.delete();
+					destSUT.delete();
+					destVAST.delete();
 				} catch (Exception e) {
 					e.printStackTrace();
 					throw new SmartFrogException(e);
@@ -385,10 +391,20 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 */
 	private void updateMachine(PhysicalMachineConfig inMachineConfig) throws RemoteException, SmartFrogException {
 		// update the unique attributes
-		refAvlServer.updateHost(inMachineConfig.getHostAddress(),
-			inMachineConfig.getArchitecture(),
-			inMachineConfig.getPlatform(),
-			inMachineConfig.getOS());
+		if (inMachineConfig instanceof VirtualMachineConfig) {
+			refAvlServer.updateHost(inMachineConfig.getHostAddress(),
+				inMachineConfig.getArchitecture(),
+				inMachineConfig.getPlatform(),
+				inMachineConfig.getOS(),
+				((VirtualMachineConfig)inMachineConfig).getVastNetworkIP());
+		}
+		else
+			refAvlServer.updateHost(inMachineConfig.getHostAddress(),
+				inMachineConfig.getArchitecture(),
+				inMachineConfig.getPlatform(),
+				inMachineConfig.getOS(),
+				null);
+
 
 		// clear the lists
 		refAvlServer.clearAccessModes(inMachineConfig.getHostAddress());
@@ -691,6 +707,8 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 */
 	private void igniteVirtualMachine(VirtualMachineConfig inVM) throws SmartFrogException, RemoteException {
 		// ignite it with the according package
-		refAvlServer.igniteHosts(new String[] {inVM.getHostAddress()}, String.format("%s/temp/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()));
+		refAvlServer.igniteHosts(new String[] {inVM.getHostAddress()},
+			String.format("%s/temp/vast/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()),
+			String.format("%s/temp/vast/sfinstaller.vm", refAvlServer.getAvalancheHome()));
 	}
 }

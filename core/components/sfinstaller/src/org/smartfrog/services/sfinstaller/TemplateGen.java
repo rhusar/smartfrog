@@ -230,8 +230,9 @@ public class TemplateGen {
             String tempEmailTo = null;
             String tempEmailFrom = null;
             String tempEmailServer = null;
+			String tempBindIp = null;
 
-            while ((tempLogicalName = getWord(st)) != null) {
+			while ((tempLogicalName = getWord(st)) != null) {
                 tempOS = getWord(st);
                 tempHostName = getWord(st);
                 tempTransferType = getWord(st);
@@ -257,7 +258,8 @@ public class TemplateGen {
                 tempEmailTo = getWord(st);
                 tempEmailFrom = getWord(st);
                 tempEmailServer = getWord(st);
-                allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer));
+				tempBindIp = getWord(st);
+				allDaemons.add(new Daemon(tempLogicalName, tempOS, tempHostName, tempTransferType, tempLoginType, tempUserName, tempPasswordFile, tempLocalFile1, tempLocalFile2, tempLocalFile3, tempKeyFile, tempSecProperties, tempSmartFrogJar, tempServicesJar, tempExamplesJar, tempReleaseName, tempJavaHome, tempInstallDir, tempEmailTo, tempEmailFrom, tempEmailServer, tempBindIp));
             }
         } finally {
             r.close();

@@ -153,7 +153,10 @@ public class BootStrap {
                 String username = h.getUser();
                 String password = h.getPassword();
 
-                // Setting the AccessMode
+				// bind ip
+				String bindIP = h.getBindIP();
+
+				// Setting the AccessMode
                 HostType.AccessModes am = h.getAccessModes();
                 String accessType = "ssh";
                 if (am != null) {
@@ -247,7 +250,8 @@ public class BootStrap {
                             avalancheInstallationDirectory,          // installdir
                             DEFAULT_EMAILTO,        // emailto
                             DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER);
+                            DEFAULT_EMAILSERVER,
+							bindIP);
                     listDaemons.add(d);
 
                 } else {
@@ -271,7 +275,8 @@ public class BootStrap {
                             avalancheInstallationDirectory,          // installdir
                             DEFAULT_EMAILTO,        // emailto
                             DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER);
+                            DEFAULT_EMAILSERVER,
+							bindIP);
                     listDaemons.add(d);
                 }
 
