@@ -19,14 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -34,6 +31,8 @@ import java.rmi.RemoteException;
  */
 
 public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperation {
+
+    public static final String ATTR_BLOCKSIZE = "blocksize";
 
     public DfsCopyFileImpl() throws RemoteException {
     }
@@ -61,6 +60,7 @@ public class DfsCopyFileImpl extends DfsOperationImpl implements DfsCopyOperatio
         Path source = resolveDfsPath(ATTR_SOURCE);
         Path dest = resolveDfsPath(ATTR_DEST);
         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
+
         int blocksize = sfResolve(ATTR_BLOCKSIZE, 0, true);
         DfsUtils.assertNotDependent(fileSystem,source, fileSystem, dest);
         DfsUtils.mkParentDirs(fileSystem, dest);
