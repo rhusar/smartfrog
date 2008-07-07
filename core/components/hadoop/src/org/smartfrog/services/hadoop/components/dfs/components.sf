@@ -169,11 +169,14 @@ For more information: www.smartfrog.org
 
 
   /**
-   * copy an HDFS file into another HDFS file
+   * copy an HDFS file into another HDFS file.
+   * This will go via the local machine, even if both files are remote and on the same node.
+   * Deploy the operation close to the files.
    */
   DfsCopyFile extends DfsCopyOperation {
     blocksize 65536;
     sfClass "org.smartfrog.services.hadoop.components.dfs.DfsCopyFileImpl";
+    blocksize 65536;
   }
 
   /**
