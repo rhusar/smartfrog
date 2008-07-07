@@ -57,11 +57,18 @@ public class DfsCopyFileInImpl extends DfsOperationImpl implements DfsCopyOperat
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
-        Path dest = resolveDfsPath(ATTR_DEST);
-        File source = FileSystem.lookupAbsoluteFile(this, ATTR_SOURCE, null, null, true, null);
-         boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
-        DfsUtils.copyLocalFileIn(fileSystem, source, dest, overwrite);
+    protected void performDfsOperation(DistributedFileSystem fileSystem,
+                                       ManagedConfiguration conf)
+            throws Exception {
+      Path dest = resolveDfsPath(ATTR_DEST);
+      File source = FileSystem.lookupAbsoluteFile(this,
+              ATTR_SOURCE,
+              null,
+              null,
+              true,
+              null);
+      boolean overwrite = sfResolve(ATTR_OVERWRITE, false, true);
+      DfsUtils.copyLocalFileIn(fileSystem, source, dest, overwrite);
     }
 
 }
