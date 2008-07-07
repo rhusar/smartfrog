@@ -21,10 +21,4 @@ For more information: www.smartfrog.org
 JobTracker extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.JobTrackerImpl";
 
-/* hosts and exclude hosts files
-conf.get("mapred.hosts  ""),
-conf.get("mapred.hosts.exclude  ""))
-*/
-
-
 }
