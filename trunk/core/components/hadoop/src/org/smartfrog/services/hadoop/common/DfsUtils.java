@@ -19,12 +19,12 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.common;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -279,7 +279,7 @@ public class DfsUtils {
      * @param source     source file
      * @param dest       dest path
      * @param overwrite  should there be an overwrite?
-     * @throws SmartFrogRuntimeException
+     * @throws SmartFrogRuntimeException if the copy failed
      */
     public static void copyLocalFileIn(DistributedFileSystem fileSystem, File source, Path dest, boolean overwrite)
             throws SmartFrogRuntimeException {
@@ -296,7 +296,7 @@ public class DfsUtils {
     }
 
     /**
-     * Move files that match the file pattern <i>srcf</i>
+     * Move files that match the file pattern <i>srcPath</i>
      * to a destination file.
      * When moving mutiple files, the destination must be a directory.
      * Otherwise, IOException is thrown.
@@ -321,8 +321,10 @@ public class DfsUtils {
                 try {
                     srcFstatus = fileSystem.getFileStatus(src);
                 } catch (FileNotFoundException e) {
-                    throw new FileNotFoundException(src +
-                            ": No such file or directory");
+                  FileNotFoundException fnf = new FileNotFoundException(src +
+                          ": No such file or directory");
+                  fnf.initCause(e);
+                  throw fnf;
                 }
                 try {
                     dstFstatus = fileSystem.getFileStatus(dstPath);
@@ -335,7 +337,8 @@ public class DfsUtils {
                                 + dstPath + " with directory " + srcPath);
                     }
                 }
-                throw new IOException("Failed to rename '" + srcPath + "' to '" + dstPath + "'");
+                throw new IOException("Failed to rename '" + srcPath
+                        + "' to '" + dstPath + "'");
             }
         }
     }
