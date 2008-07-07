@@ -53,6 +53,14 @@ ClusterStatusCondition extends ClusterStatus {
   checkOnStartup false;
 }
 
+JobTrackerRunning extends ClusterStatus {
+  supportedFileSystem false;
+  minActiveMapTasks -1;
+  minActiveReduceTasks -1;
+}
+
+
+
 /**
  * This component only checks job tracking. It can be used to block
  * actions until the job tracker is live

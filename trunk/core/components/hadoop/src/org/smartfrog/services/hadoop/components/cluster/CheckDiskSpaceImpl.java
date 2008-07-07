@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -30,6 +31,8 @@ import static org.smartfrog.services.filesystem.FileSystem.*;
 import java.rmi.RemoteException;
 import java.io.File;
 import java.util.List;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Java6+ code to check for disk space
@@ -42,9 +45,11 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
     private boolean skipAbsentDirectories;
     private boolean checkOnLiveness;
     private boolean checkOnStartup;
-    private static long MB = 1024 * 1024;
+    private static long MB = 1024 << 10;
     public static final String ERROR_NO_DIRECTORY = "Directory does not exist:";
     public static final String ERROR_NOT_ENOUGH_SPACE = "Not enough space in ";
+    private Method getUsableSpace;
+    private static final String ERROR_INVOKE_GETUSABLESPACE = "Could not call File.getUsableDiskSpace: ";
 
     public CheckDiskSpaceImpl() throws RemoteException {
     }
@@ -64,7 +69,14 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
         checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         int minAvailableGB = sfResolve(ATTR_MIN_AVAILABLE_GB, 0, true);
         int minAvailableMB = sfResolve(ATTR_MIN_AVAILABLE_MB, 0, true);
-        requiredSpace = ((minAvailableGB * 1024L) + minAvailableMB) * MB;
+        requiredSpace = ((minAvailableGB << 10) + minAvailableMB) * MB;
+
+        try {
+            getUsableSpace = File.class.getMethod("getUsableSpace");
+        } catch (NoSuchMethodException e) {
+            throw new SmartFrogLifecycleException("This component on works on Java Version 6 or greater",this);
+        }
+
         if (checkOnStartup) {
             String error = checkDiskSpace();
             if (error != null) {
@@ -98,10 +110,21 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
                     return ERROR_NO_DIRECTORY + dir;
                 }
             } else {
-                long space = dir.getUsableSpace();
-                if (space < requiredSpace) {
-                    long spaceMB = space / MB;
-                    return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
+
+                try {
+                    Long l = (Long) getUsableSpace.invoke(dir);
+                    long space = l.longValue();
+                    if (space < requiredSpace) {
+                        long spaceMB = space / MB;
+                        return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
+                    }
+                } catch (IllegalAccessException e) {
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(),e);
+                    return e.getMessage();
+                } catch (InvocationTargetException e) {
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
+                    return e.getMessage();
+
                 }
             }
         }
