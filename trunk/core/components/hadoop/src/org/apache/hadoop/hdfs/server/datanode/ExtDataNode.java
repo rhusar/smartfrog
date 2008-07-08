@@ -19,11 +19,9 @@
  */
 
 
-package org.apache.hadoop.dfs;
+package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.util.HadoopComponentLifecycle;
-import org.apache.hadoop.util.HadoopIOException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
@@ -38,12 +36,11 @@ import java.util.AbstractList;
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
+public class ExtDataNode extends DataNode {
 
-    private boolean stopped;
+    private volatile boolean stopped;
     private DataNodeThread worker;
     private Prim owner;
-    private State state = State.CREATED;
 
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
@@ -53,44 +50,46 @@ public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
 
 
     /**
-     * Initialize; read in and validate values.
+     * Start our parent and the worker thread
      *
-     * @throws IOException for any initialisation failure
+     * @throws IOException if necessary
      */
-    public void init() throws IOException {
-
+    public void innerStart() throws IOException {
+        super.innerStart();
+        startWorkerThread();
     }
 
     /**
-     * Get the current state
-     *
-     * @return the lifecycle state
+     * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
-    public State getLifecycleState() {
-        return state;
-    }
-
-    /**
-     * Shut down
-     */
-    public void terminate() {
-        shutdown();
-    }
-
-
-    /**
-     * Thread safe shutdown
-     */
-    public synchronized void shutdown() {
+    @Override
+    public synchronized void innerTerminate() throws IOException {
+        super.innerTerminate();
         if (!isStopped()) {
             stopped();
-            super.shutdown();
             SmartFrogThread.requestThreadTermination(worker);
+            worker = null;
         }
     }
 
+  /**
+   * Method called whenever there is a state change. The base class logs the
+   * event at debug level
+   *
+   * @param oldState existing state
+   * @param newState new state.
+   */
+  @Override
+  protected void onStateChange(ServiceState oldState,
+                               ServiceState newState) {
+    super.onStateChange(oldState, newState);
+
+  }
+
+  /**
+     * Set our stopped flag
+     */
     private synchronized void stopped() {
-        state = State.TERMINATED;
         stopped = true;
     }
 
@@ -104,39 +103,37 @@ public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
     }
 
     /**
-     * No matter what kind of exception we get, keep retrying to offerService(). That's the loop that connects to the
-     * NameNode and provides basic DataNode functionality. <p/> Only stop when "shouldRun" is turned off (which can only
-     * happen at shutdown).
+     * Override the normal run and note that we got stopped
      */
+    @Override
     public void run() {
         try {
-            state = State.STARTED;
             super.run();
         } finally {
             stopped();
         }
     }
 
-
-    public void start() {
-        startWorkerThread();
-    }
-
-
     /**
      * Ping the node; report an error if we have stopped
      *
-     * @throws IOException for network problems
+     * @throws IOException for any liveness problem
      */
+    @Override
     public void ping()
             throws IOException {
-        if (isStopped()) {
-            throw new HadoopIOException("DataNode is stopped");
-        }
-        try {
-            SmartFrogThread.ping(worker);
-        } catch (SmartFrogLivenessException e) {
-            throw new HadoopIOException(e);
+        super.ping();
+        if(getServiceState() == ServiceState.RUNNING) {
+            if (isStopped()) {
+                throw new ServiceStateException("DataNode is stopped",
+                        getServiceState());
+            }
+            try {
+                SmartFrogThread.ping(worker);
+            } catch (SmartFrogLivenessException e) {
+                throw new ServiceStateException("", e,
+                        getServiceState());
+            }
         }
     }
 
@@ -170,6 +167,7 @@ public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             ExtDataNode.this.run();
         }
@@ -177,6 +175,7 @@ public class ExtDataNode extends DataNode implements HadoopComponentLifecycle {
         /**
          * Add an interrupt to the thread termination
          */
+        @Override
         public synchronized void requestTermination() {
             if (!isTerminationRequested()) {
                 super.requestTermination();

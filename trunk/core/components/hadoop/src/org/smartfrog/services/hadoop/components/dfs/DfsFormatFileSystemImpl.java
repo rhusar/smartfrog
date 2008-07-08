@@ -21,19 +21,18 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.dfs.DistributedFileSystem;
-import org.apache.hadoop.dfs.ExtDfsUtils;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
-import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Vector;
-import java.io.File;
 
 /**
  * Format a file system

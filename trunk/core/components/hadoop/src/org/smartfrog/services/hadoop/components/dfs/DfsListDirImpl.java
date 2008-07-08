@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;

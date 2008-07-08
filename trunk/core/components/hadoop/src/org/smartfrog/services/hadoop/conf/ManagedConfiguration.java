@@ -56,13 +56,15 @@ import java.util.TreeMap;
 /**
  * This is our extended configuration, which takes a Prim component as a source of information
  */
-public class ManagedConfiguration extends JobConf implements PrimSource, ConfigurationAttributes {
+public class ManagedConfiguration extends JobConf implements PrimSource,
+        ConfigurationAttributes {
 
     private Prim source;
     private ComponentHelper helper;
 
     /**
-     * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
+     * Some attributes that are not listed in the component
+     * (so they can be picked up from parents) but which should be
      * discovered.
      */
     private static final String[] REQUIRED_ATTRIBUTES = {

@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;

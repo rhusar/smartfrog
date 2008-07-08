@@ -21,23 +21,18 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.util.Vector;
 
 /**
  *
  */
-public class FileSystemNodeImpl extends HadoopComponentImpl implements FileSystemNode {
+public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemNode {
 
 
     public static final Reference DATA_DIRECTORIES = new Reference(

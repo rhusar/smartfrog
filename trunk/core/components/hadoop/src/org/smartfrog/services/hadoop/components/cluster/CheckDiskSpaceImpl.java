@@ -19,20 +19,21 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
+import static org.smartfrog.services.filesystem.FileSystem.convertToFiles;
+import static org.smartfrog.services.filesystem.FileSystem.resolveFileList;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import static org.smartfrog.services.filesystem.FileSystem.*;
 
-import java.rmi.RemoteException;
 import java.io.File;
-import java.util.List;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Java6+ code to check for disk space

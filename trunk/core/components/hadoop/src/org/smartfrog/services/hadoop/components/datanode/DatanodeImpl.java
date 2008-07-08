@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.datanode;
 
-import org.apache.hadoop.dfs.ExtDataNode;
+import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -39,7 +39,7 @@ import java.util.Vector;
  */
 
 public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
-    private ExtDataNode datanode;
+    private ExtDataNode service;
     public static final String ERROR_FAILED_TO_START_DATANODE = "Failed to start datanode: ";
 
     public DatanodeImpl() throws RemoteException {
@@ -57,52 +57,19 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
         Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
         ManagedConfiguration conf = createConfiguration();
         try {
-            datanode = new ExtDataNode(this,conf,dataDirFiles);
-            datanode.start();
+            service = new ExtDataNode(this,conf,dataDirFiles);
+            service.init();
+            service.start();
         } catch (IOException e) {
-            shutDownDataNode();
+            terminateService();
             throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + '\n' + conf.dumpQuietly(), e);
         } catch (IllegalArgumentException e) {
-            shutDownDataNode();
+            terminateService();
             throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
                     + e.getMessage() + "\n" + conf.dumpQuietly(), e);
         }
     }
 
-    /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        shutDownDataNode();
-    }
 
-    private synchronized void shutDownDataNode() {
-        if (datanode != null) {
-            datanode.shutdown();
-            datanode = null;
-        }
-    }
-
-    /**
-     * Liveness call in to check if this component is still alive.
-     * @param source source of call
-     *
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness}
-     * interface
-     */
-    public void sfPing(Object source)
-            throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
-        if (datanode != null) {
-            //there's no health check here, so no way to see what is going on.
-        } else {
-            throw new SmartFrogLivenessException("No running data node");
-        }
-    }
 }

@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.namenode;
 
-import org.apache.hadoop.dfs.ExtNameNode;
+import org.apache.hadoop.hdfs.server.namenode.ExtNameNode;
 import org.mortbay.util.MultiException;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
@@ -27,9 +27,6 @@ import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,9 +39,18 @@ import java.rmi.RemoteException;
 public class NamenodeImpl extends FileSystemNodeImpl implements
         FileSystemNode {
 
-    private ExtNameNode namenode;
 
     public NamenodeImpl() throws RemoteException {
+    }
+
+    /**
+     * Return the name of this service; please override for better messages
+     *
+     * @return a name of the service for error messages
+     */
+    @Override
+    protected String getName() {
+        return "namenode";
     }
 
     /**
@@ -53,6 +59,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -64,7 +71,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
         ManagedConfiguration conf = createConfiguration();
         try {
-            namenode = ExtNameNode.createNameNode(this, conf);
+            setService(ExtNameNode.createAndDeploy(this, conf));
         } catch (IOException e) {
             if (e.getCause() != null && e.getCause() instanceof MultiException) {
                 MultiException me = (MultiException) e.getCause();
@@ -79,40 +86,5 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         }
     }
 
-    /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        if (namenode != null) {
-            namenode.stop();
-            namenode = null;
-        }
-    }
-
-    /**
-     * Liveness call in to check if this component is still alive.
-     *
-     * @param source source of call
-     *
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException for consistency with the {@link Liveness}
-     * interface
-     */
-    public void sfPing(Object source)
-            throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
-        synchronized (this) {
-            if (namenode != null) {
-                try {
-                    namenode.ping();
-                } catch (IOException e) {
-                    throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
-                }
-            }
-        }
-    }
+ 
 }

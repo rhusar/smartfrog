@@ -22,7 +22,6 @@ package org.apache.hadoop.mapred;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.util.HadoopComponentLifecycle;
 
 import java.io.IOException;
 
@@ -32,68 +31,13 @@ import java.io.IOException;
  *
  */
 
-public class ExtJobTracker extends JobTracker implements HadoopComponentLifecycle {
+public class ExtJobTracker extends JobTracker {
 
-    private static final Log log= LogFactory.getLog(ExtJobTracker.class);
-
-    private HadoopComponentLifecycle.State lifecycleState = HadoopComponentLifecycle.State.CREATED;
+    private static final Log LOG= LogFactory.getLog(ExtJobTracker.class);
 
     public ExtJobTracker(ManagedConfiguration conf) throws IOException, InterruptedException {
         super(conf);
 
-        lifecycleState = HadoopComponentLifecycle.State.STARTED;
     }
 
-    /**
-     * Initialize; read in and validate values.
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void init() throws IOException {
-
-    }
-
-    /**
-     * Start any work (in separate threads)
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void start() throws IOException {
-
-    }
-
-    /**
-     * Ping: only valid when started.
-     *
-     * @throws IOException for any ping failure
-     */
-    public void ping() throws IOException {
-
-    }
-
-    /**
-     * Shut down. This must be idempotent and turn errors into log/warn events -do your best to clean up even in the
-     * face of adversity.
-     */
-    public void terminate() {
-        try {
-            stopTracker();
-        } catch (IOException e) {
-            log.info("when terminating the tracker",e);
-        }
-    }
-
-    public synchronized void stopTracker() throws IOException {
-        super.stopTracker();
-        JobEndNotifier.stopNotifier();
-    }
-
-    /**
-     * Get the current state
-     *
-     * @return the lifecycle state
-     */
-    public HadoopComponentLifecycle.State getLifecycleState() {
-        return lifecycleState;
-    }
 }
