@@ -19,12 +19,10 @@
  */
 
 
-package org.apache.hadoop.dfs;
+package org.apache.hadoop.hdfs.server.namenode;
 
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.util.HadoopComponentLifecycle;
-import org.apache.hadoop.util.HadoopIOException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -34,7 +32,7 @@ import java.io.IOException;
 /**
  *
  */
-public class ExtNameNode extends NameNode implements HadoopComponentLifecycle {
+public class ExtNameNode extends NameNode {
 
     //this defaults to false
     private boolean stopped;
@@ -45,21 +43,36 @@ public class ExtNameNode extends NameNode implements HadoopComponentLifecycle {
     public static final String NO_FILESYSTEM = "Filesystem is not running";
     private boolean expectNodeTermination;
     private boolean terminationInitiated;
-    private State state = State.CREATED;
 
-    public static ExtNameNode createNameNode(Prim owner, ManagedConfiguration conf)
+    /**
+     * Create a new name node and deploy it.
+     * @param owner owner
+     * @param conf configuration
+     * @return the new name node
+     * @throws IOException if the node would not deploy
+     */
+    public static ExtNameNode createAndDeploy(Prim owner, ManagedConfiguration conf)
             throws IOException {
-        try {
-            ExtNameNode enn = new ExtNameNode(owner,conf);
-            return enn;
-        } catch (IOException ioe) {
-            //any cleanup here
-            throw ioe;
-        }
-
+        ExtNameNode enn = new ExtNameNode(owner, conf);
+        deploy(enn);
+        return enn;
     }
 
     /**
+     * create a new name node, but do not start it
+     * @param owner owner
+     * @param conf configuration
+     * @return the new name node
+     * @throws IOException if the node would not deploy
+     */
+    public static ExtNameNode create(Prim owner,
+                                     ManagedConfiguration conf)
+            throws IOException {
+        ExtNameNode enn = new ExtNameNode(owner, conf);
+        return enn;
+    }
+
+  /**
      * Start NameNode. This starts all the worker threads
      * @param owner owner
      * @param conf configuration
@@ -70,55 +83,26 @@ public class ExtNameNode extends NameNode implements HadoopComponentLifecycle {
         super(conf);
         this.conf = conf;
         this.owner = owner;
-        state = State.STARTED;
         //any other config here.
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
         expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
     }
 
 
-    /**
-     * Initialize; read in and validate values.
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void init() throws IOException {
-
-    }
-
-    /**
-     * Start any work (in separate threads)
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void start() throws IOException {
-
-    }
-
-    /**
-     * Get the current state
-     *
-     * @return the lifecycle state
-     */
-    public State getLifecycleState() {
-        return state;
-    }
-
-    /**
-     * Shut down
-     */
-    public void terminate() {
-        stop();
-    }
-
-
-    public synchronized void stop() {
+  /**
+   * This method is designed for overriding, with subclasses implementing
+   * termination logic inside it.
+   *
+   * It is only called when the component is entering the terminated state; and
+   * will be called once only.
+   *
+   * @throws IOException exceptions which will be logged
+   */
+  @Override
+    public synchronized void innerTerminate() throws IOException {
+        super.innerTerminate();
         stopped = true;
-        state=State.TERMINATED;
-        super.stop();
     }
-
-
 
     /**
      * Get the stopped exception
@@ -126,39 +110,34 @@ public class ExtNameNode extends NameNode implements HadoopComponentLifecycle {
      * @return true if we have stopped
      */
     public synchronized boolean isStopped() {
-        return stopped;
+        return getServiceState()== ServiceState.TERMINATED;
     }
 
     /**
      * Ping the node
      *
-     * @throws HadoopIOException if the node is unhappy
+     * @throws IOException if the node is unhappy
      */
     public synchronized void ping()
             throws IOException {
+        if (checkRunning) {
+            super.ping();
+        }
         if (isStopped()) {
             if (expectNodeTermination) {
-                if(!terminationInitiated) {
-                    terminationInitiated=true;
+                //if we expect the node to terminate, now is a good time to say 'we'd like to terminate ourselves'
+                if (!terminationInitiated) {
+                    //that is, if it hasn't already been initiated
+                    terminationInitiated = true;
                     new ComponentHelper(owner).targetForWorkflowTermination(
-                        TerminationRecord.normal("Name node has halted",owner.sfCompleteName()));
+                            TerminationRecord.normal("Name node has halted",
+                                    owner.sfCompleteName()));
                 }
             } else {
                 //the node is stopped and we were not expecting it. throw a liveness failure
-                throw new HadoopIOException(NAME_NODE_IS_STOPPED);
-            }
-        }
-        if (!isFileSystemLive()) {
-            if (checkRunning) {
-                throw new HadoopIOException(NO_FILESYSTEM);
-            } else {
-                //look for sfShouldTerminate options
+                throw new IOException(NAME_NODE_IS_STOPPED);
             }
         }
     }
 
-
-    private boolean isFileSystemLive() {
-        return super.namesystem.fsRunning;
-    }
 }

@@ -21,16 +21,16 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Created 28-May-2008 15:30:01

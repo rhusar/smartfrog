@@ -19,8 +19,8 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.dfs.DistributedFileSystem;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.FileExists;
 import org.smartfrog.services.hadoop.components.cluster.CheckableCondition;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -35,7 +35,8 @@ import java.rmi.RemoteException;
  * Created 27-May-2008 15:42:48
  */
 
-public class DfsPathExistsImpl extends DfsPathOperationImpl implements CheckableCondition, DfsPathOperation {
+public class DfsPathExistsImpl extends DfsPathOperationImpl
+        implements CheckableCondition, DfsPathOperation {
 
     private boolean canBeFile = false;
     private boolean canBeDir = false;
@@ -90,9 +91,8 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl implements Checkable
             if (dfs != null) {
                 dfs.close();
             }
-
         } catch (IOException e) {
-            sfLog().info("When closing the file system " + e);
+            sfLog().info("When closing the file system " + e, e);
         } finally {
             dfs = null;
         }

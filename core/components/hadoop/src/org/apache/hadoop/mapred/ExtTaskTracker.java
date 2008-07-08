@@ -22,7 +22,6 @@ package org.apache.hadoop.mapred;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.apache.hadoop.util.HadoopComponentLifecycle;
 
 import java.io.IOException;
 
@@ -30,65 +29,12 @@ import java.io.IOException;
  * Task tracker with some lifecycle support
  */
 
-public class ExtTaskTracker extends TaskTracker implements HadoopComponentLifecycle {
+public class ExtTaskTracker extends TaskTracker {
 
-    private static final Log log = LogFactory.getLog(ExtTaskTracker.class);
+    private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
 
     public ExtTaskTracker(ManagedConfiguration conf) throws IOException {
         super(conf);
     }
-
-    /**
-     * Initialize; read in and validate values.
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void init() throws IOException {
-        //no-op
-    }
-
-    /**
-     * Start any work (in separate threads)
-     *
-     * @throws IOException for any initialisation failure
-     */
-    public void start() throws IOException {
-        //no-op
-    }
-
-    /**
-     * Ping: only valid when started.
-     *
-     * @throws IOException for any ping failure
-     */
-    public void ping() throws IOException {
-        //no-op
-    }
-
-    /**
-     * Shut down. This must be idempotent and turn errors into log/warn events -do your best to clean up even in the
-     * face of adversity.
-     */
-    public void terminate() {
-        try {
-            shutdown();
-        } catch (IOException e) {
-            log.warn("When terminating " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Get the current state
-     *
-     * @return the lifecycle state
-     */
-    public HadoopComponentLifecycle.State getLifecycleState() {
-        if (shuttingDown) {
-            return HadoopComponentLifecycle.State.TERMINATED;
-        } else {
-            return HadoopComponentLifecycle.State.STARTED;
-        }
-    }
-
 
 }

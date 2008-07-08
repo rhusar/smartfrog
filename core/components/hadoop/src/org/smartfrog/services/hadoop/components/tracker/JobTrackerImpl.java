@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -38,7 +39,7 @@ import java.rmi.RemoteException;
  * Created 19-May-2008 13:55:33
  */
 
-public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster {
+public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
 
     private TrackerThread worker;
 
@@ -52,6 +53,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         try {
@@ -63,6 +65,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
                 System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
             }
             ExtJobTracker tracker = new ExtJobTracker(createConfiguration());
+            setService(tracker);
             worker = new TrackerThread(tracker);
             worker.start();
         } catch (IOException e) {
@@ -92,15 +95,11 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (worker == null || worker.isFinished()) {
             throw new SmartFrogLivenessException("Worker is not running");
-        }
-        try {
-            worker.getTracker().ping();
-        } catch (IOException e) {
-            throw (SmartFrogLivenessException) SmartFrogLivenessException.forward("Job Tracker is failing", e);
         }
     }
 
@@ -112,6 +111,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
 
         /**
          * Creates a new thread
+         * @param tracker the tracker
          */
         private TrackerThread(ExtJobTracker tracker) {
             super(JobTrackerImpl.this, true);
@@ -125,6 +125,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             tracker.offerService();
         }
@@ -136,6 +137,7 @@ public class JobTrackerImpl extends HadoopComponentImpl implements HadoopCluster
         /**
          * Add an interrupt to the thread termination
          */
+        @Override
         public synchronized void requestTermination() {
             if (!isTerminationRequested()) {
                 super.requestTermination();

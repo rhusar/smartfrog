@@ -19,17 +19,17 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.filesystem.FileSystem;
 
-import java.util.Vector;
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
  * A base class for hadoop components. It does not export any remote interface and is not very interesting

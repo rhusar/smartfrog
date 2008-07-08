@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.namenode;
 
-import org.apache.hadoop.dfs.ExtDfsUtils;
+import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -44,6 +44,26 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
     public FormatImpl() throws RemoteException {
     }
 
+    /**
+     * Override point; tell teh base class whether or not {@link #service} must be non-null in the {@link #sfPing()}
+     * operation
+     *
+     * @return true for non-null, false to allow null values.
+     */
+    @Override
+    protected boolean requireNonNullServiceInPing() {
+        return false;
+    }
+
+    /**
+     * Return the name of this service; please override for better messages
+     *
+     * @return a name of the service for error messages
+     */
+    @Override
+    protected String getName() {
+        return "formatter";
+    }
 
     /**
      * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
@@ -52,6 +72,7 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         nameDirs = FileSystem.convertToFiles(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
@@ -65,6 +86,7 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         WorkflowThread.requestThreadTermination(worker);
@@ -91,6 +113,7 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
          *
          * @throws Throwable if anything went wrong
          */
+        @Override
         public void execute() throws Throwable {
             ExtDfsUtils.formatNameNode(nameDirs,createConfiguration());
         }
