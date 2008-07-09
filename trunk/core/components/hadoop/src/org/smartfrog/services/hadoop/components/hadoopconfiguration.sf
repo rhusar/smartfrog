@@ -322,11 +322,11 @@ HadoopConfiguration extends Prim {
   fs.file.impl  "org.apache.hadoop.fs.LocalFileSystem";
 
   /**The FileSystem for hdfs: uris.*/
-  fs.hdfs.impl  "org.apache.hadoop.dfs.DistributedFileSystem";
+  fs.hdfs.impl  "org.apache.hadoop.hdfs.DistributedFileSystem";
 
-  fs.hftp.impl  "org.apache.hadoop.dfs.HftpFileSystem";
+  fs.hftp.impl  "org.apache.hadoop.hdfs.HftpFileSystem";
 
-  fs.hsftp.impl "org.apache.hadoop.dfs.HsftpFileSystem";
+  fs.hsftp.impl "org.apache.hadoop.hdfs.HsftpFileSystem";
 
     /**The FileSystem for kfs: uris.*/
   fs.kfs.impl  "org.apache.hadoop.fs.kfs.KosmosFileSystem";

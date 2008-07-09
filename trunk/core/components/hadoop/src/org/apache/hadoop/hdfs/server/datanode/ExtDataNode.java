@@ -54,6 +54,7 @@ public class ExtDataNode extends DataNode {
      *
      * @throws IOException if necessary
      */
+    @Override
     public void innerStart() throws IOException {
         super.innerStart();
         startWorkerThread();
@@ -83,7 +84,6 @@ public class ExtDataNode extends DataNode {
   protected void onStateChange(ServiceState oldState,
                                ServiceState newState) {
     super.onStateChange(oldState, newState);
-
   }
 
   /**
