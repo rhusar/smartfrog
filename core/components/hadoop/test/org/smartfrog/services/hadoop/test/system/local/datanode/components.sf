@@ -33,7 +33,12 @@ testLocalDataNode extends ExpectDeploy {
   }
 
   tests extends Sequence {
-    //TODO: some tests
+    namenodeLive extends CheckNameNodePort {
+      cluster LAZY action:cluster;
+    }
+    datanodeLive extends CheckDataNodePort {
+      cluster LAZY action:cluster;
+    }
   }
 
 }

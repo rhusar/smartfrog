@@ -57,7 +57,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
         Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
         ManagedConfiguration conf = createConfiguration();
         try {
-            service = new ExtDataNode(this,conf,dataDirFiles);
+            service = new ExtDataNode(this, conf, dataDirFiles);
             service.init();
             service.start();
         } catch (IOException e) {
