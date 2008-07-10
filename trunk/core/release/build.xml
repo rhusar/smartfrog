@@ -661,7 +661,8 @@
   <!--this is not currently how we release artifacts, but it is a way we allow
   third parties to issue their own JAR files, containing their own signed JARs-->
   <target name="private-rpm-ant" depends="ready-to-run-private-rpm"
-    description="run a private RPM build for third party signing">
+    description="run a private RPM build for third party signing"
+      if="has.rpm.tools">
     <property name="private-target" value="default" />
     <ant antfile="${build.rpm.dir}/build.xml"
       target="${private-target}"
@@ -671,7 +672,8 @@
 
   <!--This prepares a custom build.xml file ready for signing and RPM
  creation -->
-  <target name="prepare-private-rpm" depends="ready-to-prepare-binary-rpm">
+  <target name="prepare-private-rpm" depends="ready-to-prepare-binary-rpm"
+      if="has.rpm.tools">
     <copy todir="${build.rpm.dir}" file="src/ant/build.xml" />
     <!--propagate state down through a series of files-->
     <copy file="${rpm.metadata.dir}/rpm.properties" todir="${build.rpm.dir}"/>
@@ -682,7 +684,8 @@
     </propertyfile>
   </target>
 
-  <target name="package-private-rpm" depends="ready-to-run-private-rpm" >
+  <target name="package-private-rpm" depends="ready-to-run-private-rpm"
+      if="has.rpm.tools">
     <exec executable="tar" failonerror="true"
       dir="${build.rpm.dir}/">
       <arg value="cvvf"/>
