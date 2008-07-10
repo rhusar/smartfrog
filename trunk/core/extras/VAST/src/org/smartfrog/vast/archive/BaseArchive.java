@@ -3,7 +3,7 @@ package org.smartfrog.vast.archive;
 import java.io.IOException;
 import java.io.File;
 
-abstract class BaseArchive implements Archive {
+public abstract class BaseArchive implements Archive {
 	/**
 	 * Path to this archive.
 	 */
