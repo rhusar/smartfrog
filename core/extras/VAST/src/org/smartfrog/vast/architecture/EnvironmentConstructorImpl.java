@@ -52,6 +52,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	AvalancheServer refAvlServer = null;
 
 	/**
+	 * Quick access reference.
+	 */
+	VirtualMachineConfig VastController = null;
+
+	/**
 	 * The list containing the configuration details for the physical machine.
 	 */
 	private ArrayList<PhysicalMachineConfig> listPhysicalMachines = new ArrayList<PhysicalMachineConfig>();
@@ -139,6 +144,9 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 								conf.setVastController((Boolean) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_CONTROLLER, true));
 								conf.setSUTPackage(virtObj.sfResolve(VirtualMachineConfig.ATTR_SUT_PACKAGE, "", false));
 
+								if (conf.isVastController())
+									VastController = conf;
+
 							} catch (SmartFrogResolutionException ex) {
 								sfLog().error("error while resolving a virtual machine description", ex);
 								throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(ex);
@@ -161,59 +169,63 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		String strBasePath = String.format("%s/temp/vast/", refAvlServer.getAvalancheHome());
 
 		for (VirtualMachineConfig conf : listVirtualMachines) {
-			if (!conf.isVastController()) {
-				// prepare SUT package
-				try {
+			try {
+				File destSUT = null;
+				File destVAST;
+				File destStartSF = new File(strBasePath + "smartfrog/dist/vast/start.sf");
+				if (!conf.isVastController()) {
+					// prepare SUT package
 					// copy the appropriate sut package to the sf distribution package
-					File destSUT = new File(strBasePath + "smartfrog/dist/SUT/" + conf.getSUTPackage());
-					FileSystem.fCopy(new File(strBasePath + "SUT/" + conf.getSUTPackage()),
-										destSUT);
+					destSUT = new File(strBasePath + "smartfrog/dist/vast/" + conf.getSUTPackage());
+					FileSystem.fCopy(new File(strBasePath + "SUT/" + conf.getSUTPackage()), destSUT);
 
-					// copy the appropriate vast library to the sf dist package
-					File destVAST = new File(strBasePath + "smartfrog/dist/lib/vast-runner.jar");
-					FileSystem.fCopy(new File(strBasePath + "lib/vast-runner.jar"),
-										destVAST);
-
-					// create the archive
-					if (conf.getOS().equals("windows")) {
-						// zip
-						ZipArchive archive = new ZipArchive(strBasePath + conf.getSUTPackage() + ".zip");
-						archive.create();
-						archive.add(strBasePath + "smartfrog/");
-						archive.close();
-
-						conf.setSUTPackage(conf.getSUTPackage() + ".zip");
-					} else {
-						// tar
-						TarArchive archive = new TarArchive(strBasePath + conf.getSUTPackage() + ".tar");
-					    archive.create();
-						archive.add(strBasePath + "smartfrog/");
-						archive.close();
-
-						// gzip
-						GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(strBasePath + conf.getSUTPackage() + ".tar.gz"));
-						FileInputStream in = new FileInputStream(strBasePath + conf.getSUTPackage() + ".tar");
-						byte [] buffer = new byte[2048];
-						int bytes;
-						while ((bytes = in.read(buffer, 0, buffer.length)) > 0)
-							gzip.write(buffer, 0, bytes);
-						in.close();
-						gzip.close();
-
-						conf.setSUTPackage(conf.getSUTPackage() + ".tar.gz");
-					}
-
-					// delete it so it wont be contained in the
-					// following packages
-					destSUT.delete();
-					destVAST.delete();
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw new SmartFrogException(e);
+					// copy the vast test runner library to the sf dist package
+					destVAST = new File(strBasePath + "smartfrog/dist/lib/vast-runner.jar");
+					FileSystem.fCopy(new File(strBasePath + "lib/vast-runner.jar"), destVAST);
+				} else {
+					// copy the vast test controller library to the sf dist package
+					destVAST = new File(strBasePath + "smartfrog/dist/lib/vast-controller.jar");
+					FileSystem.fCopy(new File(strBasePath + "lib/vast-controller.jar"), destVAST);
 				}
-			} else {
-				// TODO: prepare vast controller
 
+				// create the archive
+				if (conf.getOS().equals("windows")) {
+					// zip
+					ZipArchive archive = new ZipArchive(strBasePath + conf.getSUTPackage() + ".zip");
+					archive.create();
+					archive.add(strBasePath + "smartfrog/");
+					archive.close();
+
+					conf.setSUTPackage(conf.getSUTPackage() + ".zip");
+				} else {
+					// tar
+					TarArchive archive = new TarArchive(strBasePath + conf.getSUTPackage() + ".tar");
+					archive.create();
+					archive.add(strBasePath + "smartfrog/");
+					archive.close();
+
+					// gzip
+					GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(strBasePath + conf.getSUTPackage() + ".tar.gz"));
+					FileInputStream in = new FileInputStream(strBasePath + conf.getSUTPackage() + ".tar");
+					byte[] buffer = new byte[2048];
+					int bytes;
+					while ((bytes = in.read(buffer, 0, buffer.length)) > 0)
+						gzip.write(buffer, 0, bytes);
+					in.close();
+					gzip.close();
+
+					conf.setSUTPackage(conf.getSUTPackage() + ".tar.gz");
+				}
+
+				// delete it so it wont be contained in the
+				// following packages
+				if (destSUT != null)
+					destSUT.delete();
+				destVAST.delete();
+				destStartSF.delete();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new SmartFrogException(e);
 			}
 		}
 	}
@@ -396,15 +408,13 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 				inMachineConfig.getArchitecture(),
 				inMachineConfig.getPlatform(),
 				inMachineConfig.getOS(),
-				((VirtualMachineConfig)inMachineConfig).getVastNetworkIP());
-		}
-		else
+				((VirtualMachineConfig) inMachineConfig).getVastNetworkIP());
+		} else
 			refAvlServer.updateHost(inMachineConfig.getHostAddress(),
 				inMachineConfig.getArchitecture(),
 				inMachineConfig.getPlatform(),
 				inMachineConfig.getOS(),
 				null);
-
 
 		// clear the lists
 		refAvlServer.clearAccessModes(inMachineConfig.getHostAddress());
@@ -588,8 +598,7 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 						// send the start command
 						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-					}
-					else {
+					} else {
 						// send delete command
 						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_DELETE);
 
@@ -601,47 +610,37 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 						map.put(VMWareConstants.VM_CREATE_PASS, vmTarget.getGuestPass());
 						refAvlServer.sendVMCommand(vmTarget.getAffinity(), null, VMWareConstants.VM_CMD_CREATE, map);
 					}
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
 					// a response to a create command
 					if (strResponse.equals("success")) {
 						takeSnapshot(inPacket, strVMName);
-					}
-					else sfLog().error("Failed to create vm: " + inPacketExtension);
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
+					} else sfLog().error("Failed to create vm: " + inPacketExtension);
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
 					if (!strResponse.equals("success"))
 						sfLog().warn("Failed to take snapshot of vm: " + inPacketExtension);
 
 					// start the vm, regardless of the success or failure of taking a snapshot
 					refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
 					if (strResponse.equals("success")) {
 						sfLog().info("vm created: " + strVMName);
 						waitForTools(inPacket, strVMName, vmTarget);
-					}
-					else sfLog().error("Failed to start vm: " + inPacketExtension);
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
+					} else sfLog().error("Failed to start vm: " + inPacketExtension);
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
 					if (strResponse.equals("success")) {
 						sfLog().info("tools running");
 						// home dir created, copy the helper into the vm
 						copyHelper(inPacket, strVMName, phyHost, vmTarget);
-					}
-					else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
+					} else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
 					if (strResponse.equals("success")) {
-						if (inPacketExtension.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST).endsWith("helper.jar"))						{
+						if (inPacketExtension.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST).endsWith("helper.jar")) {
 							sfLog().info("vast helper copied");
 							// helper copied, start it
 							executeHelper(inPacket, strVMName, vmTarget);
 						}
-					}
-					else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
-				}
-				else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
+					} else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
+				} else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
 					if (strResponse.equals("success")) {
 						// vast helper executed, now ignite the virtual machines
 						// with the appropriate package (sf + test runner + SUT)
@@ -660,11 +659,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 		String gwAddr = inVMTarget.getHostAddress().substring(0, inVMTarget.getHostAddress().lastIndexOf(".")) + ".1";
 		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s",
-																			inVMTarget.getHostAddress(),
-																			inVMTarget.getHostMask(),
-																			gwAddr,
-																			inVMTarget.getVastNetworkIP(),
-																			inVMTarget.getVastNetworkMask()));
+			inVMTarget.getHostAddress(),
+			inVMTarget.getHostMask(),
+			gwAddr,
+			inVMTarget.getVastNetworkIP(),
+			inVMTarget.getVastNetworkMask()));
 
 		for (Argument arg : inVMTarget.getListArguments())
 			if (arg.getName().equals("JAVA_HOME"))
@@ -703,11 +702,12 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 	/**
 	 * Ignites a virtual machine.
+	 *
 	 * @param inVM
 	 */
 	private void igniteVirtualMachine(VirtualMachineConfig inVM) throws SmartFrogException, RemoteException {
 		// ignite it with the according package
-		refAvlServer.igniteHosts(new String[] {inVM.getHostAddress()},
+		refAvlServer.igniteHosts(new String[]{inVM.getHostAddress()},
 			String.format("%s/temp/vast/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()),
 			String.format("%s/temp/vast/sfinstaller.vm", refAvlServer.getAvalancheHome()));
 	}
