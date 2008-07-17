@@ -344,12 +344,10 @@
   </target>
 
   <!-- =================================================================== -->
-  <!--     Javacc the parser files - both sf and csf                                                                  -->
+  <!--     Javacc the parser files                                                                 -->
   <!-- =================================================================== -->
   <target name="createParser" depends="init"> 
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
-        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj"
         javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
@@ -777,15 +775,6 @@
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/ParseException.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/Token.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/TokenMgrError.java" failonerror="false"/>
-	 <!-- csf parser source files -->
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserConstants.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserTokenManager.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/JavaCharStream.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/ParseException.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/Token.java" failonerror="false"/>
-	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/TokenMgrError.java" failonerror="false"/>
-	
   </target>
 
   <!-- =================================================================== -->
