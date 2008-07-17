@@ -33,7 +33,8 @@ move %SFHOME_BASE%\dist\lib\avalanche\quartz*.jar %SFHOME_BASE%\dist\lib\avalanc
 move %SFHOME_BASE%\dist\lib\avalanche\je*.jar %SFHOME_BASE%\dist\lib\avalanche\je.jar
 move %SFHOME_BASE%\dist\lib\avalanche\smackx-*.jar %SFHOME_BASE%\dist\lib\avalanche\smackx.jar
 move %SFHOME_BASE%\dist\lib\avalanche\smack-*.jar %SFHOME_BASE%\dist\lib\avalanche\smack.jar
-
+move %SFHOME_BASE%\dist\lib\avalanche\sf-emailer*.jar %SFHOME_BASE%\dist\lib\avalanche\sf-emailer.jar
+move %SFHOME_BASE%\dist\lib\avalanche\mail*.jar %SFHOME_BASE%\dist\lib\avalanche\mail.jar
 ant -f security.xml signExtraJars
 
 endlocal
