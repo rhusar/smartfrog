@@ -1,0 +1,9 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Constraint {
+     y VAR range;
+     range "[one, two, three]";
+     [sfConstraint] -- "y = one";
+  }
+}
