@@ -107,7 +107,23 @@ public class SFAdapter {
      */
     public Map submit(String moduleId, String version, String instanceName,
                       String title, Map<String, String> attrMap, String[] hosts) throws SFSubmitException {
-
+	
+		SmartFrogAdapterImpl adapter = null;
+		 String homeDir = this.avalancheFactory.getAvalancheHome();
+		String sfDistDir = homeDir + File.separator + "smartfrog" + File.separator + "dist";
+		try{
+			if (securityOn.equals("true")) {
+				adapter = new SmartFrogAdapterImpl(sfDistDir, true);
+			} else {
+				 adapter = new SmartFrogAdapterImpl(sfDistDir, false);
+			} 
+		} catch (Exception e) {
+            throw new SFSubmitException(e);
+        }
+		HashMap<String, String> emailMap = new HashMap<String, String>();
+		String s = new String();
+		s ="Status of \n Module : " +  moduleId + "\n Version: " + version ;
+		String updTime = getDateTime();
         ActiveProfileManager apm = null;
         try {
             apm = avalancheFactory.getActiveProfileManager();
@@ -128,6 +144,7 @@ public class SFAdapter {
             }
 
             String actionId = sfDesc.getAction();
+			s = s+ " \n Action : " + actionId +" \n\n Hosts and their Status as follows :\n" ;
             for (String host : hosts) {
                 ActiveProfileType profile = apm.getProfile(host);
                 if (null == profile) {
@@ -136,7 +153,7 @@ public class SFAdapter {
 
                 ModuleStateType[] states = profile.getModuleStateArray();
                 ModuleStateType currentState = null;
-                for (ModuleStateType state : states) {
+               /* for (ModuleStateType state : states) {
                     String mId = state.getId();
                     String ver = state.getVersion();
                     String ins = state.getInstanceName();
@@ -144,7 +161,7 @@ public class SFAdapter {
                         currentState = state;
                         break;
                     }
-                }
+                }*/
 
                 if (null == currentState) {
                     currentState = profile.addNewModuleState();
@@ -155,7 +172,7 @@ public class SFAdapter {
                 currentState.setState("Initializing");
                 currentState.setLastAction(actionId);
                 currentState.setMsg("Submitting deployment command to remote node");
-                String updTime = getDateTime();
+                updTime = getDateTime();
                 currentState.setLastUpdated(updTime);
 
                 apm.setProfile(profile);
@@ -175,6 +192,7 @@ public class SFAdapter {
             Iterator itor = runningHosts.iterator();
             while (itor.hasNext()) {
                 String h = (String) itor.next();
+				s= s+ " " + h +" : ";
                 ActiveProfileType ap = apm.getProfile(h);
                 if (ap != null) {
 
@@ -185,7 +203,8 @@ public class SFAdapter {
                         String mId = state.getId();
                         String ver = state.getVersion();
                         String ins = state.getInstanceName();
-                        if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins)) {
+						String t = state.getLastUpdated();
+                        if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins) && updTime.equals(t)) {
                             currentState = state;
                             break;
                         }
@@ -197,6 +216,7 @@ public class SFAdapter {
 
                         Map m = (Map) retCodes.get(h);
                         String status = (String) m.get("STATUS");
+						s = s+ status + "\n";
                         String appName = (String) m.get("APP_NAME");
                         ComponentDescription cd = (ComponentDescription) m.get("CD");
 			String reportPath = null;
@@ -211,12 +231,15 @@ public class SFAdapter {
                     apm.setProfile(ap);
                 }
             }
+			emailMap.put("sfConfig:Comp:mail:message",s);
+			adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
             return retCodes;
         } catch (Exception e) {
             // set profile for this module to failed
             try {
                 if (null != apm) {
                     for (String host : hosts) {
+						s= s+ "" + host +" :  ";
                         ActiveProfileType ap = apm.getProfile(host);
                         if (ap != null) {
                             // first get hold of the module configuration on this host.
@@ -225,7 +248,8 @@ public class SFAdapter {
                             for (ModuleStateType state : states) {
                                 String mId = state.getId();
                                 String ver = state.getVersion();
-                                if (moduleId.equals(mId) && version.equals(ver)) {
+								String t = state.getLastUpdated();
+                                if (moduleId.equals(mId) && version.equals(ver)&& updTime.equals(t)) {
                                     currentState = state;
                                     break;
                                 }
@@ -236,11 +260,14 @@ public class SFAdapter {
 
                                 currentState.setLastUpdated(getDateTime());
                                 currentState.setMsg("Failed on Server : " + e.getMessage());
+								s= s + "Failed on Server : " + e.getMessage()+"\n";
                             }
                             apm.setProfile(ap);
                         }
                     }
                 }
+				emailMap.put("sfConfig:Comp:mail:message",s);
+				adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -314,7 +341,7 @@ public class SFAdapter {
 
             SfDescriptionType.Argument[] args = sfDesc.getArgumentArray();
             HashMap<String, String> finalMap = new HashMap<String, String>();
-
+			
             for (SfDescriptionType.Argument arg : args) {
                 String name = arg.getName();
                 String value = arg.getValue();
@@ -389,7 +416,7 @@ public class SFAdapter {
 
             // pass finalMap which contains attrMap now. validate if it exists.
             ret = adapter.submit(configURL, finalMap, hosts);
-
+			
         } catch (ModuleCreationException e) {
             throw new SFSubmitException(e);
         } catch (DatabaseAccessException e) {
@@ -595,6 +622,7 @@ public class SFAdapter {
             	// run the description on local host for remote deployments.
           
             	adapter.submit(scpFile, attrMap, new String[]{"localhost"});
+				
 	} catch (SFParseException e) {
             throw new SFSubmitException(e);
         } catch (SFMultiHostSubmitException e) {
