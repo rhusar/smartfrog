@@ -224,6 +224,7 @@
         <include name="ant-junit*.jar" />
         <include name="ant-trax*.jar" />
         <include name="sf-vmware*.jar" />
+		<include name="sf-emailer*.jar" />
 	<include name="sf-xmpp*.jar" />
 	<include name="jna*.jar"/>
       </fileset>
@@ -271,6 +272,7 @@
       <fileset dir="${dist.dependencies.dir}" >
         <exclude name="sf-quartz*.jar" />
         <exclude name="sf-vmware*.jar" />
+		<exclude name="sf-emailer*.jar" />
         <exclude name="sf-xmpp*.jar" />
         <exclude name="sf-ant*.jar" />
         <exclude name="sf-anubis*.jar" />
@@ -285,6 +287,7 @@
 	<exclude name="smack*.jar" />
         <exclude name="je*.jar" />
         <exclude name="quartz*.jar" />
+		<exclude name="mail*.jar" />
         <exclude name="sf-rest*.jar" />
       </fileset>
     </copy>
@@ -293,6 +296,7 @@
       <fileset dir="${dist.dependencies.dir}" >
         <include name="sf-quartz*.jar" />
         <include name="sf-vmware*.jar" />
+		<include name="sf-emailer*.jar" />
         <include name="sf-xmpp*.jar" />
         <include name="sf-ant*.jar" />
         <include name="sf-anubis*.jar" />
@@ -305,6 +309,7 @@
         <include name="je*.jar" />
         <include name="quartz*.jar" />
         <include name="sf-rest*.jar" />
+		<include name="mail*.jar" />
       </fileset>
 		</copy>
 		
@@ -332,6 +337,7 @@
 			<fileset dir="${smartfrog.home}/dist/signedLib" >
         		 	<include name="sf-quartz*.jar" />
         			<include name="sf-vmware*.jar" />
+					<include name="sf-emailer*.jar" />
 				<include name="sf-xmpp*.jar" />
 				<include name="shared.jar"/>
 				<include name="smartfrog.jar"/>
