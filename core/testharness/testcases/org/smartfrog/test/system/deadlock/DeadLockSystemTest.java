@@ -36,6 +36,11 @@ public class DeadLockSystemTest extends SmartFrogTestBase {
     }
 
 
+    public void testCaseDummy()  {
+	;
+    }
+
+
     /**
      * test case
      * @throws Throwable on failure
