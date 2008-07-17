@@ -26,8 +26,8 @@ For more information: www.smartfrog.org
        mailer extends Emailer {
                 // mail will be send when mailer executes as part of work-flow
                 runAsWorkFlowComponent true; 
-                to "smartfrog@ind.hp.com";
-		from "smartfrog@ind.hp.com";
+                to "smartfrog@india.hp.com";
+		from "smartfrog@india.hp.com";
                 message ;
                 subject "Component Deployed";
                 smtpHost "SMTP1.HP.COM";//"SMTP.GMAIL.COM";     // SMTP1.HP.COM
