@@ -34,9 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-
 
 /**
  * Implements the context interface. This implementation relies on the
@@ -67,7 +64,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 	public ContextImpl(int cap, float load) {
 		super(cap, load);
 	}
-	
+
 	/**
 	 * Returns the first key for which the value is the given one (==).
 	 * @param value value to look up
@@ -731,8 +728,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		Object r = super.remove(key);
 		attributeTags.remove(key);
 		attributeTagsWrappers.remove(key);
-		
-		CoreSolver.getInstance().addUndo(this, key, r);
 		return r;
 	}
 
@@ -795,7 +790,6 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 
 	public Object clone() {
 		Object ret = super.clone();
-		
 		Map m = new HashMap();
 		Map w = new HashMap();
 		for (Iterator i = attributeTags.keySet().iterator(); i.hasNext(); ) {
@@ -869,76 +863,4 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		return result;
 	}
 
-    /**
-     * Add an object to the hashtable.
-     *
-     * @param key key for association
-     * @param value value for hashtable
-     *
-     * @return previous value for key or null if none
-     */
-    public Object put(Object key, Object value) {
-    	Object oldValue = super.put(key, value);
-    	
-    	CoreSolver.getInstance().addUndo(this, key, oldValue);
-        return oldValue;
-    }
-
-    
-    /**
-     * Sets originating description for context.  Used in constraint solving.
-     * @param originatingDescr originating ComponentDescription for context 
-     */
-    public void setOriginatingDescr(ComponentDescription originatingDescr) {
-    	this.originatingDescr=originatingDescr;
-    	((ContextImpl)originatingDescr.sfContext()).originatingDescr=originatingDescr;
-    }    
-    
-    /**
-     * Gets the originating description for context.  Used in constraint solving.
-     * @return ComponentDescription originating description
-     */
-    public ComponentDescription getOriginatingDescr() { return originatingDescr; }
-
-    /** The originating component description of this context. */
-    private ComponentDescription originatingDescr;
-    
-    /**
-     * Verifies that comp is a sub-type of this context, based on context being a prefix of comp in terms of keys
-     * @return Whether sub-type
-     */
-    public boolean ofType(ComponentDescription comp){
-    	ContextImpl comp_cxt = (ContextImpl) comp.sfContext();
-    	
-    	Iterator comp_iter = comp_cxt.orderedAttributes();
-    	Iterator my_iter = orderedAttributes();
-    	
-    	while(my_iter.hasNext()){
-    		if (!comp_iter.hasNext()) return false;
-    		String akey = (String) my_iter.next();
-    		String ckey = (String) comp_iter.next();
-    		if (!akey.equals(ckey)) return false;
-    	}
-    	return true;
-    }
-    
-    /**
-     * Returns the key at index idx in context
-     * @return key for given index, or null if index not valid
-     */
-    public Object getKey(int idx){
-    	return orderedKeys.get(idx);
-    }  
-
-    /**
-     * Returns the value at index idx in context
-     * @return value for given key index, or null if index not valid
-     */
-    public Object getVal(int idx){
-    	Object key = getKey(idx);
-        if (key!=null) return get(key);
-        else return null;
-    }  
-
-	
 }
