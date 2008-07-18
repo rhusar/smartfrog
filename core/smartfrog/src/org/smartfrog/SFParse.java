@@ -59,6 +59,8 @@ public class SFParse implements MessageKeys {
 
     private static Vector errorReport = null;
     
+    private static ComponentDescription cd = null;
+    
     private SFParse(){
     }
 
@@ -86,16 +88,26 @@ public class SFParse implements MessageKeys {
 
     /**
      * Ascertains whether a file is parseable
-     *
      * @param fileUrl the fileurl to be parsed
      * @return success or not
      */
-
     public static boolean fileParses(String fileUrl) { 
     	if (opts==null) opts = new ParseOptionSet(new String[]{"sfParse"});
     	errorReport= new Vector();
     	parseFile(fileUrl);
-    	return (errorReport.size()>0);
+    	return (errorReport.size()==0);
+    }
+    
+    /**
+     * Attempts to parse given file, returning resultant component description
+     * @param fileUrl the fileurl to be parsed
+     * @return ComponentDescription resulting from parse, if file successfully parses, else null
+     */
+
+    public static ComponentDescription parseFileToDescription(String fileUrl) { 
+    	boolean parses = fileParses(fileUrl);
+    	if (parses) return cd;
+    	else return null;
     }
     
     /**
@@ -163,7 +175,7 @@ public class SFParse implements MessageKeys {
                 }
             }
 
-            ComponentDescription cd = top.sfAsComponentDescription();
+            cd = top.sfAsComponentDescription();
 
             if ((opts.description) || (opts.verbose && !opts.quiet)) {
                 printPhase("sfAsComponentDescription", cd.toString());
