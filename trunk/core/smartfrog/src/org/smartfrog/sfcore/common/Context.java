@@ -24,8 +24,6 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
 
 /**
  * Defines the context interface used by Components. Context implementations
@@ -63,7 +61,8 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * @see Enumeration
      */
     public Enumeration elements();
-    
+
+
     /**
      * Returns object stored under given key, null if not found.
      *
@@ -274,33 +273,5 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public Object sfResolveAttribute(Object name)
             throws SmartFrogContextException;
 
-    /**
-     * Sets originating description for context.  Used in constraint solving.
-     * @param originatingDescription 
-     */
-    public void setOriginatingDescr(ComponentDescription originatingDescription);
-    
-    /**
-     * Gets the originating description for context.  Used in constraint solving.
-     * @return ComponentDescription originating description
-     */
-    public ComponentDescription getOriginatingDescr();
-    
-    /**
-     * Verifies that comp is a sub-type of this context, based on context being a prefix of comp in terms of keys
-     * @return Whether sub-type
-     */
-    public boolean ofType(ComponentDescription comp);    
-    
-    /**
-     * Returns the key at index idx in context
-     * @return key for given index, or null if index not valid
-     */
-    public Object getKey(int idx);
 
-    /**
-     * Returns the value at index idx in context
-     * @return value for given key index, or null if index not valid
-     */
-    public Object getVal(int idx);
 }
