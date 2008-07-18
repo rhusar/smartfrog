@@ -159,3 +159,61 @@ ref extends Function{
 Ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
+
+Constraint extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
+}
+
+ArrayGenerator extends {
+   sfIsGenerator true;
+}
+
+Array extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
+     sfArrayPrefix "zoo";
+     sfArrayExtent 3;
+     sfArrayGenerator extends ArrayGenerator {}
+}
+
+Aggregator extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
+}
+
+forall extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
+     sfFunctionQual "forall";
+}
+
+exists extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
+     sfFunctionQual "exists";
+}
+
+nsum extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+     sfFunctionQual "sum";
+}
+
+nproduct extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.NSumProduct";
+     sfFunctionQual "product";
+}
+
+erent extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
+}
+
+ResourceAllocator extends Constraint {
+   [sfAggregatedConstraintSource] -- [providers_array, providers_attr, "providers"];
+   [sfAggregatedConstraintSource] -- [providers_array, provider_caps_attr, "provider_caps"];
+   [sfAggregatedConstraintSource] -- [consumers_array, consumers_attr, "consumers"];
+   [sfAggregatedConstraintSource] -- [consumers_array, consumer_reqs_attr, "consumer_reqs"];
+   [sfAggregatedConstraintSource] -- [consumers_array, allocation_attr, "allocation"];   
+   colocations [];
+   nocolocations [];
+   hosted [];
+   [sfConstraint] -- "allocate(providers, provider_caps, consumers, consumer_reqs, allocation, colocations, nocolocations, hosted)";
+
+}
+
+
