@@ -19,12 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.sfcore.languages.sf.sfcomponentdescription;
 
-import java.util.Vector;
-
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl.LRSRecord;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.util.Vector;
 
 /**
  *  Defines the context interface used by Components. Context implementations
@@ -70,30 +69,4 @@ public interface SFComponentDescription extends ComponentDescription,
     *
     */
     public void addType(SFComponentDescription type);
-    
-    /**
-     * Gets the index of attribute currently being processed in current description
-     * @return idx index of attribute 
-     */
-    public int getLRSIdx();
-    
-    /**
-     * Sets the index of attribute currently being processed in current description
-     * @param idx index of attribute
-     */
-    public void setLRSIdx(int idx);
-    
-    /**
-     * Sets the current LRSRecord (link resolution state record)
-     * @param lrsr LRSRecord (link resolution state record) to make current
-     */
-    public void setLRSRecord(LRSRecord lrsr);
- 	
-    /**
-     * Gets the current LRS record (corresponding to component description being currently link-resolved)  
-     * @return current LRSRecord (link resolution state record)
-     */
-    public LRSRecord getLRSRecord();
-
-
 }

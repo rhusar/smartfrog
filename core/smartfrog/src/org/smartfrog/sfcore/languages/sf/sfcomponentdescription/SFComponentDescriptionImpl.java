@@ -47,9 +47,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.HereReferencePart;
@@ -64,7 +61,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     implements Serializable, Cloneable, SFComponentDescription, MessageKeys {
 
    /**
-    *  cache the resolution phases for this component - obtained by calls to
+    *  cache the resoltion phases for this component - obtained by calls to
     *  sfGetPhases().
     */
    protected Vector phases = null;
@@ -83,10 +80,11 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     private static final String PHASE_LIST = "phaseList";
     public static final String POSSIBLE_CAUSE_CYCLIC_REFERENCE = "Possible cause: cyclic reference.";
 
+
     /**
-     * Constructor.
+     *  Constuctor.
      *
-     *@param  types   supertypes for component
+     *@param  types    supertypes for component
      *@param  parent  parent component
      *@param  cxt     context for description
      *@param  eager   eager flag
@@ -95,14 +93,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        super(parent, cxt, eager);
        if (types != null) this.types = types;
     }
-    
-    /**
-     * Constructor.
-     *
-     */
-    public SFComponentDescriptionImpl() {
-        super(null, new ContextImpl(), true);
-    }
+
 
    /**
     *  Get prototypes for this description. This is the component from which
@@ -115,6 +106,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    public Vector getTypes() {
       return types;
    }
+
 
    /**
     *  Set new types for this component.
@@ -197,15 +189,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     //
 
     /**
-     * Resolves a reference starting at given index. If the reference is
+     * Resolves a refererence starting at given index. If the reference is
      * lazy, it is returned since component descriptions are not supposed to
      * chain on lazy references.
-     * TODO why is this here? no longer seems necessary from the definition
+     * @TODO why is this here? no longer seems necessary from the definiton
      *
      * @param r reference to resolve
      * @param index index in reference to start to resolve
      *
-     * @return Object reference
+     * @return Object refernce
      *
      * @throws SmartFrogResolutionException failure while resolving reference
      */
@@ -404,18 +396,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       }
    }
 
-   /**
-    * Perform on-the-fly type resolution to create a new component description given its parent and a set of prototype types 
-    * @param parent parent component description
-    * @param types Vector of prototype type names
-    * @return new component description
-    * @throws SmartFrogResolutionException
-    */
-   static public SFComponentDescription composeTypes(ComponentDescription parent, Vector types) throws SmartFrogResolutionException {
-	   SFComponentDescriptionImpl sfcd = new SFComponentDescriptionImpl(types, (SFComponentDescription) parent, null, true);
-	   sfcd.typeResolve();
-	   return sfcd;
-   }
 
    /**
     *  Internal method to do recursion of type resolve.
@@ -500,7 +480,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    protected boolean resolveType(ResolutionState resState, Reference type) throws SmartFrogTypeResolutionException {
       try {
-    	 SFComponentDescription superType = (SFComponentDescription) sfResolve(type);
+         SFComponentDescription superType = (SFComponentDescription) sfResolve(type);
          superType.doTypeResolve(resState);
 
          if (!resState.moreToResolve()) {
@@ -598,27 +578,23 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       sfContext = sContext;
    }
 
-   
+
    /**
     *  'Link' resolve a description. This involves iterating over the
     *  description tree a number of times and looking at the attribute values.
     *  If the value is an eager reference, it is resolved. The resulting value
     *  replaces the reference as the attribute value
     *
-    * @throws  SmartFrogResolutionException failed to resolve
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
    public void linkResolve() throws SmartFrogResolutionException {
       ResolutionState resState = new ResolutionState();
 
-      //We now synchronise link resolution, at no great inconvenience I suspect, for the purpose of constraint solving
-      //Easiest solution to apply universally even in the absence of constraints in some descriptions.  ADHF
-      synchronized (CoreSolver.getInstance()){
-	      do {  
-	         resState.clear();
-	         doLinkResolve(resState);
-	      } while (resState.moreToResolve());   //this while loop is not actually necessary ADHF
-      }
-      
+      do {
+         resState.clear();
+         doLinkResolve(resState);
+      } while (resState.moreToResolve());
+
       if (resState.unresolved().size() > 0) {
          throw new SmartFrogLinkResolutionException (
                  MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE), null,
@@ -626,172 +602,84 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       }
    }
 
-   
-	/** Link Resolution State Record. A record of where link resolution is currently at. We maintain a chain of these*/
-	public class LRSRecord {
-		/** SFComponentDescription being processed */ SFComponentDescription sfcd;
-		/** My parent record */                       LRSRecord par;
-		/** My index into my parent */                int my_idx;	
-	}
-	
-	/** Indicates current component description being link-resolved, as a LRSRecord (link resolution state record) */
-	private LRSRecord currentLRSRecord=null; 
- 
-   /** Indicates index of attribute currently being processed in current description */
-   private int currentLRSIndex=0;
-   
-   /**
-    * Gets the index of attribute currently being processed in current description
-    * @return idx index of attribute 
-    */
-   public int getLRSIdx(){ return currentLRSIndex; }
-   
-   /**
-    * Sets the index of attribute currently being processed in current description
-    * @param idx index of attribute
-    */
-   public void setLRSIdx(int idx){ currentLRSIndex=idx; }
-   
-   /**
-    * Sets the current LRSRecord (link resolution state record)
-    * @param lrsr LRSRecord (link resolution state record) to make current
-    */
-   public void setLRSRecord(LRSRecord lrsr){ currentLRSRecord=lrsr; }
-	
-   /**
-    * Gets the current LRS record (corresponding to component description being currently link-resolved)  
-    * @return current LRSRecord (link resolution state record)
-    */
-   public LRSRecord getLRSRecord(){ return currentLRSRecord; }
 
-   
-	/**
-	 * Pop a record off the link history
-	 */
-	private void popLRSRecord(){
-	   currentLRSIndex = currentLRSRecord.my_idx;
-       currentLRSRecord = currentLRSRecord.par;
-       currentLRSIndex++;
-	}
-		
-	/**
-	 * Create and add an LRSRecord (link resolution state record) to the end of the chain of link records being kept  
-	 * @param me
-	 * @param par
-	 * @param idx
-	 */
-	private LRSRecord addLRSRecord(SFComponentDescription sfcd, int idx){
-		LRSRecord lrsr = new LRSRecord();
-		lrsr.sfcd = sfcd;
-		lrsr.par = currentLRSRecord;
-		lrsr.my_idx = idx;
-		
-		currentLRSIndex = 0;
-		currentLRSRecord = lrsr;
-		return currentLRSRecord;
-	}
-	
-	private void resetLRSState(){
-		currentLRSRecord = new LRSRecord();
-		currentLRSRecord.sfcd = this;
-		currentLRSRecord.my_idx = 0;
-		currentLRSRecord.par = null;
-		currentLRSIndex=0;
-	}
-	
-   /**  
-    * Internal method to iteratively perform link resolution
-    * @param resState resolutionState
-    * @throws  SmartFrogResolutionException failed to resolve
+   /**
+    *  Internal method to do recursion on link resolution.
+    *
+    * @param  resState  resolution state
+    *
+    * @throws  SmartFrogResolutionException failed to deploy resolve
     */
-   public void doLinkResolve(ResolutionState resState) throws SmartFrogResolutionException {
-	   
-       //reset link resolution state
-       resetLRSState();  
-       
-       //Set description in Constraint Solver logic
-       CoreSolver.getInstance().setDescriptionMarkers(this);
-       
-       while (true){
-    	   //Get current description being processed...
-    	   SFComponentDescription sfcd = currentLRSRecord.sfcd;
-    	   //If all attributes processed...
-    	   if (currentLRSIndex==sfcd.sfContext().size()) {
-    		   //Pop record from chain...
-    		   popLRSRecord();
-    		   //If no parent
-               if (currentLRSRecord==null) {
-            	   CoreSolver.getInstance().tidyConstraintBasedDescription(this);
-            	   return; //link resolution chain is empty...              
+   public void doLinkResolve(ResolutionState resState) throws
+       SmartFrogResolutionException {
+       Object key = null;
+       Object value = null;
+       Object result = null;
+
+       for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
+           // Get next attribute key and value
+           key = e.nextElement();
+           value = sfContext.get(key);
+
+           // If value is reference resolve and place result in its place
+           if (value instanceof ComponentResolver) {
+                   // value is deploy resolvable
+                try {
+                    ((ComponentResolver)value).doLinkResolve(resState);
+                } catch (SmartFrogResolutionException ex) {
+                    throw ex;
+                } catch (Throwable thr) {
+                   StringBuffer msg = new StringBuffer("Failed to resolve '");
+                   msg.append(key);
+                   msg.append(" ");
+                   try {
+                       msg.append(value);
+                   } catch (java.lang.StackOverflowError thrx) {
+                       msg.append("[unprintable cyclic value]");
+                   }
+                   msg.append("'");
+                   if (thr instanceof java.lang.StackOverflowError) {
+                       msg.append(". Possible cause: cyclic reference.");
+                   }
+                   throw new SmartFrogLinkResolutionException(msg.toString(),
+                       thr, sfCompleteName(), resState.unresolved());
                }
-               continue; //around while...
-    	   }
-    	    
-    	   //Get attribute key
-    	   Object key = sfcd.sfContext().getKey(currentLRSIndex);
-    	    	   
-    	   //Get value
-    	   Object value = sfcd.sfContext().getVal(currentLRSIndex);  	   
-    	    	   
-    	   //System.out.println("key:"+key+", value:"+value+", cd:"+this.hashCode());
-    	   
-    	   //Is value SFComponentDescription?
-           if (value instanceof SFComponentDescription) {
-        	   sfcd = (SFComponentDescription) value;
-        	   
-        	   if (!CoreSolver.getInstance().ignoreComponentDescription(sfcd)) {
-        		   //Yes, add a new record to link resolution state, which will determine that 
-            	   //value is next explored (Depth First exploration)
-            	   addLRSRecord(sfcd, currentLRSIndex);
-            	   continue; //round while...
-        	   } 
-         	   //Is value a Reference?
+
            } else if (value instanceof Reference) {
                Reference rv = (Reference)value;
                if (!rv.getData()) {
-                   
-            	   try {
-            		   //Resolve reference
-            		   //System.out.println("$$$Resolving Reference in..."+sfcd);
-            		   Object result = sfcd.sfResolve((Reference) value);
-            		   
-            		   //Setting key to have value should be undoable
-            		   CoreSolver.getInstance().setShouldUndo(true);
-            		   
-            		   //Set key to have value
-            		   sfcd.sfContext().put(key, result);
-            		   
-            		   //No more should we undo
-            		   CoreSolver.getInstance().setShouldUndo(false);
-            		   
+                   try {
+                       result = sfResolve((Reference) value);
+                       sfContext.put(key, result);
                        if (result instanceof SFComponentDescription) {
-                     	   SFComponentDescription res_sfcd = (SFComponentDescription) result;
                            // need to do this as it may link to the file root!
-                           if (res_sfcd.sfParent() == null) res_sfcd.setParent(sfcd);
-                           continue; //round while to resolve it...
-                       } 
-
-                   } catch (SmartFrogConstraintBacktrackError sfbe){ 
-                	   if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
-                	   else continue; //need to try the latest again...
+                          if (((SFComponentDescription) result).sfParent() == null) {
+                               ((SFComponentDescription) result).setParent(this);
+                          }
+                          ((SFComponentDescription) result).doLinkResolve(resState);
+                       }
                    } catch (SmartFrogLazyResolutionException slrex) {
                        rv.setEager(false);
                    } catch (Exception resex) {
-                       resState.addUnresolved(value, sfcd.sfCompleteName(), key.toString(), resex);
-                   } catch (Throwable thr){
-                      throw new SmartFrogLinkResolutionException(
-                    		   "Failed to resolve '"+key+" "+value+"'"+
-                   	   		       (thr instanceof StackOverflowError || thr instanceof java.lang.OutOfMemoryError?
-                   	   		    		   (". "+POSSIBLE_CAUSE_CYCLIC_REFERENCE):""),
-                               thr, sfCompleteName(), resState.unresolved()
-                               );                	   
-                  }
-               } 
-           }  
-           //Next up for attribute index...
-           currentLRSIndex++;  //increase attr index...  
-       } //while
-   }   
+                       resState.addUnresolved(value, sfCompleteName(), key.toString(), resex);
+                   } catch (Throwable thr) {
+                       StringBuffer msg = new StringBuffer("Failed to resolve '");
+                       msg.append(key);
+                       msg.append(" ");
+                       msg.append(value);
+                       msg.append("'");
+                       if (thr instanceof StackOverflowError) {
+                           msg.append(". "+ POSSIBLE_CAUSE_CYCLIC_REFERENCE);
+                       }
+                       throw new SmartFrogLinkResolutionException(msg.toString(),
+                               thr, sfCompleteName(), resState.unresolved());
+                   }
+               }
+           }
+       }
+
+   }
+
 
    /**
     *  Returns a string representation of the component. This will give a
@@ -924,7 +812,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof SFNull) return v;
         if (v instanceof SFTempValue) return v;
         if (v instanceof String) return v;
-        if (v instanceof FreeVar) return ((FreeVar)v).copy();
         if (v instanceof Reference) return v;
         if (v instanceof SFByteArray) return v;
         if (v instanceof Vector) {
