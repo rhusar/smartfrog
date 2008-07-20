@@ -2,6 +2,6 @@
 
 sfConfig extends {
    foo extends Constraint {
-	bar VAR "[1..3]" 3;
+	bar VAR {"[1..3]",3};
    }
 }
