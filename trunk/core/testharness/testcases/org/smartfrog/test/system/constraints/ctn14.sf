@@ -3,7 +3,7 @@
 sfConfig extends {
   foo1 extends Array {
      sfArrayGenerator extends ArrayGenerator, Constraint {
-        help VAR "[0,1]" 1;
+        help VAR {"[0,1]",1};
         [sfConstraint] -- "(sfArrayIndex==0 -> help=0; true)"; 
      }
   }  
