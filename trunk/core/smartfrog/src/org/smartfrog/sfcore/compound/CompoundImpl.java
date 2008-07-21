@@ -771,7 +771,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         // call sfDumpState in every child.
         // remote childrens are called in a separate thread
         for (Prim elem:sfChildList()) {
-            if (ComponentHelper.isRemote(elem)) {
+            if( elem.equals(this) ) {
+                continue;
+            } else if (ComponentHelper.isRemote(elem)) {
               new DumpCall(elem, target).start();
             } else {
                 String name="unnamed";
