@@ -67,7 +67,7 @@ public class Aggregator extends BaseFunction implements MessageKeys {
     		} catch (SmartFrogResolutionException e){ throw new SmartFrogFunctionResolutionException("Cannot construct reference for source array from AggregatorPath in Aggregator: "+comp);  }
     		path_s = arraypath_s.substring(src_idx);
     		
-    		System.out.println("Source:"+src_s+", Path:"+path_s);
+    		//System.out.println("Source:"+src_s+", Path:"+path_s);
     	} else {
     		//otherwise we look for split version...
         	//Source
