@@ -22,7 +22,6 @@ count_backtracks :-
         fail.
 
 allocate(Producers, Producer_Caps, Consumers, Consumer_Caps, Allocations, Colos, NoColos, Hosted):-
-            writeln("+++++++++++In allocate++++++++++++"),		    
             sos,
             preprocess_producers(Producers, Producer_Caps),
             preprocess_consumers(Consumers, Consumer_Caps),
