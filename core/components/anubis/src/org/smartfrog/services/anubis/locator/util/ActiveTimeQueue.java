@@ -30,8 +30,8 @@ public class ActiveTimeQueue extends Thread {
     private boolean running = false;
     private long    wakeup  = 0;
 
-    public ActiveTimeQueue() {
-        super("Anubis: Active Time Queue");
+    public ActiveTimeQueue(String threadName) {
+        super(threadName);
     }
 
     /**

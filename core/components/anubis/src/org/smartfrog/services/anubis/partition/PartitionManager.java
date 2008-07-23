@@ -66,8 +66,8 @@ public class PartitionManager
     public void sfDeploy() throws SmartFrogException, RemoteException  {
         try {
             super.sfDeploy();
-            timer             = new ActiveTimeQueue();
             me                = Config.getIdentity(this, "identity");
+            timer             = new ActiveTimeQueue("Anubis: Partition Manager timers (node " + me.id + ")");
             partitionProtocol = (PartitionProtocol)sfResolve("partitionProtocol");
         }
         catch (Exception ex) {

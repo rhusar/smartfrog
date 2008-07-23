@@ -77,7 +77,7 @@ public class Controller
         checkPeriod              = Config.getLong(this, "checkPeriod");
         MulticastAddress address = ((MulticastAddressData)sfResolve("heartbeatGroup")).getMulticastAddress();
         expirationTimer          = new ExpirationTimer(checkPeriod);
-        snoop                    = new Snoop("Anubis PMConsole: TestSnoopThread", address, id, this);
+        snoop                    = new Snoop("Anubis: Partition Manager Test Console heartbeat snoop", address, id, this);
         consoleFrame             = new MainConsoleFrame(this);
         consoleFrame.setTitle("Partition Manager Test Controller - " + Anubis.version);
         consoleFrame.initialiseTiming(

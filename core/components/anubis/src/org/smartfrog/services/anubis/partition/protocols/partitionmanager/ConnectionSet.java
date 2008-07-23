@@ -99,9 +99,9 @@ public class ConnectionSet extends CompoundImpl
     /**
      * Connection information
      */
-    private NodeIdSet                  msgLinks         = new NodeIdSet();
-    private Set                     msgConnections   = new HashSet();
-    private Map                     connections      = new HashMap();
+    private NodeIdSet                 msgLinks         = new NodeIdSet();
+    private Set<MessageConnection>    msgConnections   = new HashSet<MessageConnection>();
+    private Map<Identity, Connection> connections      = new HashMap<Identity, Connection>();
 
     /**
      * Timing information
@@ -130,13 +130,13 @@ public class ConnectionSet extends CompoundImpl
      * synchronization of sendHeartbeat() with removeConnection().
      */
     private boolean                  sendingHeartbeats   = false;
-    private Set                      msgConDelayedDelete = new HashSet();
+    private Set<Connection>          msgConDelayedDelete = new HashSet<Connection>();
 
 
     private LeaderProtocolFactory    leaderProtocolFactory = null;
     private HeartbeatProtocolFactory heartbeatProtocolFactory = null;
 
-    private boolean                  terminated = false;
+    private volatile boolean         terminated = false;
 
 
     public ConnectionSet() throws Exception {
@@ -163,7 +163,7 @@ public class ConnectionSet extends CompoundImpl
              */
             HeartbeatCommsFactory heartbeatCommsFactory = (HeartbeatCommsFactory)sfResolve("heartbeatCommsFactory");
             MulticastAddress heartbeatAddress = ((MulticastAddressData)sfResolve("heartbeatCommsAddress")).getMulticastAddress();
-            heartbeatComms = heartbeatCommsFactory.create(heartbeatAddress, connectionAddress, this, "Anubis: heartbeat comms", me);
+            heartbeatComms = heartbeatCommsFactory.create(heartbeatAddress, connectionAddress, this, "Anubis: Heartbeat Comms (node " + me.id + ")", me);
 
 
             SelfConnection self = new SelfConnection(me, connectionView, connectionServer.getAddress(), isPreferredLeaderNode);
@@ -197,6 +197,7 @@ public class ConnectionSet extends CompoundImpl
             heartbeat.setView(connectionView);
             heartbeat.setViewNumber(viewNumber);
             heartbeat.setIsPreferred(isPreferredLeaderNode);
+            heartbeat.setCandidate(leaderMgr.getLeader());
 
             /**
              * Start connected to self
@@ -226,10 +227,15 @@ public class ConnectionSet extends CompoundImpl
 
 
     public void sfTerminateWith(TerminationRecord status) {
-        intervalExec.terminate();
-        connectionServer.terminate();
-        heartbeatComms.terminate();
-        terminated = true;
+        synchronized(this) {
+            terminated = true;
+            intervalExec.terminate();
+            connectionServer.terminate();
+            heartbeatComms.terminate();
+            for(Connection con : connections.values() ) {
+                con.terminate();
+            }
+        }
         super.sfTerminateWith(status);
     }
 
@@ -257,13 +263,11 @@ public class ConnectionSet extends CompoundImpl
 
         heartbeatComms.setIgnoring(ignoring);
 
-        Iterator iter = msgConnections.iterator();
-        while( iter.hasNext() ) {
-            MessageConnection con = (MessageConnection)iter.next();
-            if( (ignoring!=null) && ignoring.contains(con.getSender()) )
-                con.setIgnoring(true);
+        for( MessageConnection mcon : msgConnections ) {
+            if( (ignoring!=null) && ignoring.contains(mcon.getSender()) )
+                mcon.setIgnoring(true);
             else
-                con.setIgnoring(false);
+                mcon.setIgnoring(false);
         }
     }
 
@@ -341,22 +345,20 @@ public class ConnectionSet extends CompoundImpl
         heartbeatComms.sendHeartbeat(heartbeat);
 
         /**
-         * send the heartbeat using message connections.
+         * send the heartbeat on message connections.
          */
-        Iterator iter = msgConnections.iterator();
-        while( iter.hasNext() ) {
-            ((MessageConnection)iter.next()).sendMsg(heartbeat);
+        for( MessageConnection mcon : msgConnections ) {
+            mcon.sendMsg(heartbeat);
         }
 
         /**
          * Do delayed removeConnection() calls
          */
         sendingHeartbeats = false;
-        Iterator delIter = msgConDelayedDelete.iterator();
-        while( delIter.hasNext() ) {
-            removeConnection( (Connection)delIter.next() );
-            delIter.remove();
+        for( Connection con : msgConDelayedDelete ) {
+            removeConnection(con);
         }
+        msgConDelayedDelete.clear();
     }
 
 
@@ -366,7 +368,7 @@ public class ConnectionSet extends CompoundImpl
      * @return connection
      */
     public synchronized Connection getConnection(Identity id) {
-        return (Connection)connections.get( id );
+        return connections.get( id );
     }
 
 
@@ -658,10 +660,10 @@ public class ConnectionSet extends CompoundImpl
      * @return
      */
     private boolean consistent(long timenow) {
-        Iterator iter = connections.values().iterator();
+        Iterator<Connection> iter = connections.values().iterator();
         connectionView.setTimeStamp( timenow + stability );
         while( iter.hasNext() ) {
-            Connection con = (Connection)iter.next();
+            Connection con = iter.next();
 
             /**
              * if an active connection and it is not self
@@ -751,7 +753,7 @@ public class ConnectionSet extends CompoundImpl
          * Find the connection that corresponds to the id we want.
          */
         Identity node = new Identity(me.magic, id, 0);
-        Connection con = (Connection)connections.get(node);
+        Connection con = connections.get(node);
 
         /**
          * If we already have a message connection then just return it
@@ -813,7 +815,7 @@ public class ConnectionSet extends CompoundImpl
          * Find the connection that corresponds to the id we want.
          */
         Identity node = new Identity(me.magic, id, 0);
-        Connection con = (Connection)connections.get(node);
+        Connection con = connections.get(node);
 
         return con.getSenderAddress().ipaddress;
     }
@@ -863,14 +865,13 @@ public class ConnectionSet extends CompoundImpl
 
 
     public synchronized String toString() {
-        String str = "\n" + me + " ConnectionSet view: " + super.toString() +
-                     "\n==================================================";
-        Iterator iter = connections.values().iterator();
-        while(iter.hasNext()) {
-            Connection con = (Connection)iter.next();
-            str += "\n " + con.getSender() + " : " + con;
+        StringBuffer str = new StringBuffer();
+        str.append("\n").append(me).append(" ConnectionSet view: ").append(super.toString());
+        str.append("\n==================================================");
+        for(Connection con : connections.values()) {
+            str.append("\n ").append(con.getSender()).append(" : ").append(con);
         }
-        return str;
+        return str.toString();
     }
 
 

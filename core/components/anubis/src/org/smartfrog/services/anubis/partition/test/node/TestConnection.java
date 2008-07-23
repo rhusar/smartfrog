@@ -43,8 +43,8 @@ public class TestConnection
     private TestMgr          testManager;
     private LogSF            log = LogFactory.getLog(this.getClass().toString());
 
-    public TestConnection(SocketChannel channel, TestMgr testManager) {
-        super("Anubis: PMConsole connection", channel);
+    public TestConnection(SocketChannel channel, TestMgr testManager, String threadName) {
+        super(threadName, channel);
         this.testManager      = testManager;
     }
 
