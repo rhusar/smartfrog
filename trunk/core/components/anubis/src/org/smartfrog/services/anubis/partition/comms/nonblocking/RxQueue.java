@@ -25,6 +25,7 @@ import java.util.Vector;
 public class RxQueue {
 
     private Vector thisQueue = null;
+    private boolean open;
 
     /**
      * Queue where received serialized objects are put on.
@@ -32,7 +33,26 @@ public class RxQueue {
      * to anubis
      */
     public RxQueue(){
-	thisQueue = new Vector(10);
+	    thisQueue = new Vector(10);
+        open = true;
+    }
+    
+    /**
+     * shutdown the queue
+     */
+    public synchronized void shutdown() {
+        open = false;
+        thisQueue.clear();
+        notifyAll();
+    }
+    
+    /**
+     * indicates if the queue is open
+     * 
+     * @return
+     */
+    public synchronized boolean isOpen() {
+        return open;
     }
 
     /**
@@ -42,25 +62,30 @@ public class RxQueue {
      *
      * @param objectToAdd rx object
      */
-    public void add(Object objectToAdd){
-	synchronized(this){
-	    thisQueue.add(objectToAdd);
-	    this.notifyAll();
-	}
+    public synchronized void add(Object objectToAdd){
+        if( open ) {
+            thisQueue.add(objectToAdd);
+            notifyAll();
+        }
     }
 
     /**
-     * method call to remove an object from the queue
-     *
-     * @return the first object waiting in the queue, null if queue is empty
+     * get teh next item in the queue; blocking if the queue is empty.
+     * @return the next item or null if the queue is closed.
      */
-    public Object next(){
-	Object objectToReturn = null;
-	synchronized(this){
-	    if (!thisQueue.isEmpty())
-		objectToReturn = thisQueue.remove(0);
-	}
-	return objectToReturn;
+    public synchronized Object next(){
+        while( open) {
+            if( thisQueue.isEmpty() ) {
+                try { 
+                    wait(); 
+                } catch (InterruptedException e) { 
+                    // do nothing
+                }
+            } else {
+                return thisQueue.remove(0);
+            }
+        }
+        return null;
     }
 
     /**
@@ -68,9 +93,8 @@ public class RxQueue {
      *
      * @return boolean value, true if queue is empty, false otherwise
      */
-    public boolean isEmpty(){
-	return thisQueue.isEmpty();
+    public synchronized boolean isEmpty(){
+        return thisQueue.isEmpty();
     }
-
 
 }

@@ -421,15 +421,14 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 		try{
 		    if( debug && log.isTraceEnabled() )
 			log.trace("MNH: SENDING_PENDING so go on wait for notification that writing is done");
-		    wait();
+		    wait(60*1000);
 		}
 		catch(InterruptedException ie){}
 	    }
 	    if (!sendingDoneOK){
 		if( debug && log.isTraceEnabled() )
-		    log.trace("MNH: Got woken up because sendingDone has been called but boolean snedingDoneOK is still false !!!");
-		// thow an excpetion in here maybe...
-		//		shutdown();
+		    log.trace("MNH: Got woken up but boolean sendingDoneOK is still false !!!");
+            shutdown();
 	    }
 	}
 	else
@@ -536,6 +535,10 @@ public class MessageNioHandler implements SendingListener, IOConnection, WireSiz
 	closing();
 	// close the socket channel
 	this.close();
+    // release any threads waiting for send completion
+    synchronized(this) {
+        notifyAll();
+    }
     }
 
 

@@ -34,7 +34,7 @@ abstract public class StabilityQueue {
 
     private class RequestServer extends Thread {
         private boolean           running = false;
-        public RequestServer() { super("Anubis: Locator StabilityQueue Server"); }
+        public RequestServer() { super("Anubis: Locator Stability Queue Server"); }
         public void run() {
             running = true;
             while( running ) {

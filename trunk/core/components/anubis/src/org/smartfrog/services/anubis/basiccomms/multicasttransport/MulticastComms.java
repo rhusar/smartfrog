@@ -62,7 +62,7 @@ public class MulticastComms extends Thread {
          private         byte[]              inBytes;
          private         DatagramPacket      inPacket;
                          Object              outObject;
-         private         boolean             terminating;
+volatile private         boolean             terminating;
          private         LogSF               syncLog       = LogFactory.getLog(this.getClass().toString());
          private         LogSF               asyncLog      = new LogImplAsyncWrapper( syncLog );
 

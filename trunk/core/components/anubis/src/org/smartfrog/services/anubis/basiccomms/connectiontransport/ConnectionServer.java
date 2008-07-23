@@ -38,10 +38,11 @@ import org.smartfrog.sfcore.logging.LogSF;
  * ConnectionFactory interface.
  */
 public class ConnectionServer extends Thread {
-    private ServerSocketChannel      listenSocket;
-    private ConnectionFactory connectionFactory;
-    private boolean           open;
-    private LogSF             log = LogFactory.getLog(this.getClass().toString());
+    
+            private     ServerSocketChannel     listenSocket;
+            private     ConnectionFactory       connectionFactory;
+volatile    private     boolean                 open;
+            private     LogSF                   log = LogFactory.getLog(this.getClass().toString());
 
     /**
      * Default constructor is initually unusable.

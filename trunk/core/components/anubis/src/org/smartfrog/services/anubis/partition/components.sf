@@ -35,6 +35,7 @@ TestMgr extends Compound {
     sfClass            "org.smartfrog.services.anubis.partition.test.node.TestMgr";
     contactAddress     ATTRIB anubisParameters:contactAddress;
     partitionManager   TBD;
+    identity           ATTRIB anubisParameters:identity;
 }
 
 AnubisPartitionTestConsole extends {

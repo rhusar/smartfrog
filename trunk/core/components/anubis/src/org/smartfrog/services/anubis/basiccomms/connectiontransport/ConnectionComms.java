@@ -44,10 +44,10 @@ import org.smartfrog.services.anubis.partition.wire.WireSizes;
 public abstract class ConnectionComms extends Thread implements WireSizes {
 
 
-    private SocketChannel      connection;
-    private boolean            open;
-    private byte[]             headerBytesIn = new byte[HEADER_SIZE];
-    private byte[]             headerBytesOut = new byte[HEADER_SIZE];
+            private SocketChannel      connection;
+volatile    private boolean            open;
+            private byte[]             headerBytesIn = new byte[HEADER_SIZE];
+            private byte[]             headerBytesOut = new byte[HEADER_SIZE];
 
 
 
