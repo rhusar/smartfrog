@@ -63,7 +63,7 @@ public class FilesImpl extends PrimImpl implements Files {
         //CreateRuntime Attributes
         sfReplaceAttribute(ATTR_FILE_SET, fileset);
         sfReplaceAttribute(ATTR_FILE_SET_STRING, fileset.toString());
-        sfReplaceAttribute(ATTR_FILELIST, fileset.toString());
+        sfReplaceAttribute(ATTR_FILELIST, fileset.toVector());
     }
 
     /**

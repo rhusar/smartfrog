@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.Vector;
+import java.util.Arrays;
 
 /**
  * This is conceptually similar to an Ant FileSet, but architecturally very
@@ -251,5 +253,7 @@ public class Fileset implements Serializable {
     }
 
 
-
+    public Vector<File> toVector() {
+        return new Vector<File>(Arrays.asList(listFiles()));
+    }
 }
