@@ -47,7 +47,6 @@ import java.io.BufferedInputStream;
 import java.io.OutputStreamWriter;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ListIterator;
 import java.util.List;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -359,11 +358,11 @@ public final class FileSystem {
         Vector<?> paths = component.sfResolve(reference,
                 (Vector) null,
                 mandatory);
-        if(paths==null) {
+        if (paths == null) {
             return new Vector<String>(0);
         } else {
             return convertPathVector(paths, baseDir, platform, component,
-                            reference);
+                    reference);
         }
     }
 
@@ -384,9 +383,9 @@ public final class FileSystem {
                                            Object component,
                                            Reference attribute)
             throws RemoteException, SmartFrogResolutionException {
-        Vector<String> results=new Vector<String>(paths.size());
-        for(Object element:paths) {
-            results.add(convertToAbsolutePath(element,baseDir, platform, component, attribute));
+        Vector<String> results = new Vector<String>(paths.size());
+        for (Object element : paths) {
+            results.add(convertToAbsolutePath(element, baseDir, platform, component, attribute));
         }
         return results;
     }
