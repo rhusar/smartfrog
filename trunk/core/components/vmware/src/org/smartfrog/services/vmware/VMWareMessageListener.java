@@ -34,11 +34,7 @@ package org.smartfrog.services.vmware;
 
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
-import org.smartfrog.services.xmpp.LocalXmppPacketHandler;
-import org.smartfrog.services.xmpp.MonitoringConstants;
-import org.smartfrog.services.xmpp.XMPPEventExtension;
-import org.smartfrog.services.xmpp.XmppListener;
-import org.smartfrog.services.xmpp.XmppListenerImpl;
+import org.smartfrog.services.xmpp.*;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -145,7 +141,7 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
      * @return a filter that only accepts messages in the vmware namespace
      */
     public PacketFilter getFilter() {
-        return new VMWareMessageFilter();
+        return new XMPPEventFilter();
     }
 
     private boolean isManagerLive() {

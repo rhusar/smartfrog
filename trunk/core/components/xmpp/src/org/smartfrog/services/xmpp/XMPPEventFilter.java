@@ -29,13 +29,13 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
-package org.smartfrog.services.vmware;
+package org.smartfrog.services.xmpp;
 
 import org.jivesoftware.smack.packet.Packet;
 import org.smartfrog.services.xmpp.MessageFilter;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
 
-public class VMWareMessageFilter extends MessageFilter {
+public class XMPPEventFilter extends MessageFilter {
 
     public boolean accept(Packet packet) {
         return (packet.getExtension(XMPPEventExtension.rootElement,
