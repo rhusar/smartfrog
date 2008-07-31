@@ -56,4 +56,8 @@ public class FilesCompoundTest extends DeployingTestBase {
     public void testFilesDuplicatesDropped() throws Throwable {
         expectSuccessfulTestRun(FILES, "testFilesDuplicatesDropped");
     }
+
+    public void testRuntimeAddedAttributes() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testRuntimeAddedAttributes");
+    }
 }

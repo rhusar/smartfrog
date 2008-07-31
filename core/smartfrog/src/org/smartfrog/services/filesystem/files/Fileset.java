@@ -246,7 +246,7 @@ public class Fileset implements Serializable {
      * @return String list of files separated by the platform's path separator.
      */
     public String toString() {
-          String fileSetString = java.util.Arrays.toString(listFiles());
+          String fileSetString = Arrays.toString(listFiles());
           fileSetString = fileSetString.substring(1,fileSetString.length()-1);
           fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
           return (fileSetString);
