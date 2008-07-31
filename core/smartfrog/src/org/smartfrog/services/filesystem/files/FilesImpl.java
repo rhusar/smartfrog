@@ -122,22 +122,30 @@ public class FilesImpl extends PrimImpl implements Files {
     public static void checkAndUpdateFileCount(Prim component, Fileset fileset)
             throws SmartFrogRuntimeException, RemoteException {
         File[] files = fileset.listFiles();
-        int length = files.length;
+        int length = files == null ? 0 : files.length;
         //deal with the file count
         int filecount = component.sfResolve(ATTR_FILECOUNT, -1, false);
         int minFilecount = component.sfResolve(ATTR_MINFILECOUNT, -1, false);
         int maxFilecount = component.sfResolve(ATTR_MAXFILECOUNT, -1, false);
 
-        if ((filecount >= 0 && length != filecount)
-                || (minFilecount >= 0 && length < minFilecount)
-                || (maxFilecount >= 0 && length > maxFilecount)) {
-            throw new SmartFrogDeploymentException(
-                    ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files "
-                            + "in the list [" + fileset.toString()+ ']', component);
+        if (filecount >= 0 && length != filecount) {
+            throw exceptionBadFileCount(component, fileset, length, filecount, " exactly ");
+        }
+        if (minFilecount >= 0 && length < minFilecount) {
+            throw exceptionBadFileCount(component, fileset, length, filecount, " a minimum of ");
+        }
+        if (maxFilecount >= 0 && length > maxFilecount) {
+            throw exceptionBadFileCount(component, fileset, length, filecount, " a maximum of ");
         }
 
         if (filecount < 0) {
-            component.sfReplaceAttribute(ATTR_FILECOUNT, new Integer(length));
+            component.sfReplaceAttribute(ATTR_FILECOUNT, length);
         }
+    }
+
+    private static SmartFrogRuntimeException exceptionBadFileCount(Prim component, Object fileset, int length, int filecount, String prefix) {
+        return new SmartFrogDeploymentException(
+                ERROR_FILE_COUNT_MISMATCH + prefix + filecount + " but found " + length + " files "
+                        + "in the list [" + fileset + ']', component);
     }
 }
