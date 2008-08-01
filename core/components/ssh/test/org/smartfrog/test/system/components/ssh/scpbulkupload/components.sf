@@ -38,9 +38,9 @@ BulkUploadTestCompound extends SshTestProperties {
     suffix ".tmp";
   }
 
-    passwordProvider extends InlinePassword {
-        password SshTestProperties:password;
-    }
+  passwordProvider extends InlinePassword {
+      password SshTestProperties:password;
+  }
 
 }
 
