@@ -19,24 +19,22 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.core;
 
+import org.mortbay.util.MultiException;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.mortbay.util.MultiException;
 
 import java.io.PrintWriter;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.util.List;
 
 /**
- *
- * Created 01-May-2008 14:37:07
- *
+ * A SmartFrogException with special hadoop support, one that can strip out jetty content. Created 01-May-2008 14:37:07
  */
 
 public class SFHadoopException extends SmartFrogException {
     public static final String CONFIGURATION = "configuration";
+    public static final String SMARTFROG_DUMP_CONF = "smartfrog.dump.conf";
 
     /**
      * Constructs a SmartFrogException with no message.
@@ -108,28 +106,32 @@ public class SFHadoopException extends SmartFrogException {
 
     /**
      * Dump the configuration to the {@link #CONFIGURATION} attribute
-     * @param conf
+     *
+     * @param conf configuration
      */
     public void addConfiguration(ManagedConfiguration conf) {
-        add(CONFIGURATION,conf.dumpQuietly());
+        add(CONFIGURATION, conf.dumpQuietly());
     }
 
 
     /**
-     * Turn a MultiExcept into a nested exception with the stack traces in the body.
-     * That's pretty nasty, but it stops the information getting lost
-     * @param message header message
+     * Turn a MultiExcept into a nested exception with the stack traces in the body. That's pretty nasty, but it stops
+     * the information getting lost
+     *
+     * @param message     header message
      * @param multiExcept nested exceptions
-     * @param sfObject source
+     * @param sfObject    source
+     * @param conf optional configuration
      * @return a new exception
      */
-    public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject) {
+    public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject,
+                                            ManagedConfiguration conf) {
         List<Throwable> exceptions = multiExcept.getExceptions();
         int exCount = exceptions.size();
-        if(exCount == 1) {
+        if (exCount == 1) {
             //special case: one child.
             Throwable e = multiExcept.getException(0);
-            return new SFHadoopException(message+"\n"
+            return new SFHadoopException(message + "\n"
                     + e.getMessage(),
                     e,
                     sfObject);
@@ -146,10 +148,50 @@ public class SFHadoopException extends SmartFrogException {
             pw.close();
         }
         return new SFHadoopException(message
-                +"\nmultiple ("+ exCount + ") nested exceptions: \n"
+                + maybeDumpConf(conf)
+                + "\nmultiple (" + exCount + ") nested exceptions: \n"
                 + multiExcept.getMessage() + "\n"
                 + sw.toString(),
                 multiExcept,
                 sfObject);
+    }
+
+    /**
+     * Forward the exception. Jetty exceptions have special handling. If the configuration is enabled
+     * for dumping, the exception text includes a dump of the configuration
+     * @param message custom messsage
+     * @param throwable throwable
+     * @param sfObject prim source
+     * @param conf optional configuration
+     * @return a new exception to throw
+     */
+    public static SFHadoopException forward(String message, Throwable throwable, Prim sfObject,
+                                            ManagedConfiguration conf) {
+        if (throwable instanceof MultiException) {
+            return forward(message, (MultiException) throwable, sfObject, conf);
+        } else {
+            return new SFHadoopException(message + ": "
+                        + throwable.getMessage()
+                        + maybeDumpConf(conf),
+                        throwable,sfObject);
+        }
+
+    }
+
+    /**
+     * Dump the configuration into the string if {@link #SMARTFROG_DUMP_CONF} is true
+     * in the configuration.
+     * @param conf configuration to work with
+     * @return an empty string or a dump configuration
+     */
+    private static String maybeDumpConf(ManagedConfiguration conf) {
+        try {
+            if (conf != null && conf.getBoolean(SMARTFROG_DUMP_CONF, false)) {
+                return "\n" + conf.dumpQuietly();
+            }
+        } catch (SFHadoopRuntimeException ignored) {
+            //whatever got here, it won't let us dump things
+        }
+        return "";
     }
 }

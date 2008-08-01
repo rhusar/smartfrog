@@ -300,7 +300,7 @@ public class DfsUtils {
      * to a destination file.
      * When moving mutiple files, the destination must be a directory.
      * Otherwise, IOException is thrown.
-     * Based on {@link org.apache.hadoop.fs.shell.FsShell#rename(String,String)}
+     * Based on {@link org.apache.hadoop.fs.FsShell#rename(String,String)}
      * @param fileSystem filesystem to work with
      * @param srcPath a file pattern specifying source files
      * @param dstPath a destination file/directory

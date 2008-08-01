@@ -17,27 +17,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.apache.hadoop.mapred;
+package org.smartfrog.services.hadoop.test.system.internals;
 
+import junit.framework.TestCase;
+import org.apache.hadoop.mapred.ExtJobTracker;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.util.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-
-import java.io.IOException;
 
 /**
- *
- * Created 19-May-2008 12:01:47
- *
+ * Created 29-Jul-2008 17:34:47
  */
 
-public class ExtJobTracker extends JobTracker {
+public class ExtJobTrackerTest extends TestCase {
 
-    private static final Log LOG= LogFactory.getLog(ExtJobTracker.class);
+    private Log log = LogFactory.getLog(ExtJobTrackerTest.class);
 
-    public ExtJobTracker(JobConf conf) throws IOException, InterruptedException {
-        super(conf);
-
+    /**
+     * Constructs a test case with the given name.
+     */
+    public ExtJobTrackerTest(String name) {
+        super(name);
     }
 
+    public void testExtJobTrackerState() throws Throwable {
+        ExtJobTracker jt=new ExtJobTracker(new JobConf());
+        try {
+            jt.offerService();
+            fail("Should not reach here");
+        } catch (Service.ServiceStateException e) {
+            //this is expected.
+        }
+    }
 }

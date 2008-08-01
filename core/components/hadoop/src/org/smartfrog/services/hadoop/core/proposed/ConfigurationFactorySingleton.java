@@ -17,9 +17,7 @@
 package org.smartfrog.services.hadoop.core.proposed;
 
 /**
- *
  * Created 15-May-2008 14:08:25
- *
  */
 
 public class ConfigurationFactorySingleton {

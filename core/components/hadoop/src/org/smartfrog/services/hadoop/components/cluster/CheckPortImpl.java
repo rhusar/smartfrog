@@ -38,11 +38,17 @@ import java.rmi.RemoteException;
 
 public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfiguration, CheckableCondition {
 
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String ATTR_CLUSTER = "cluster";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String ATTR_ADDRESS_ATTRIBUTE = "attribute";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     public static final String ATTR_CONNECT_TIMEOUT = "connectTimeout";
     /**
      * {@value}
@@ -70,8 +76,8 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         String addressAttribute = sfResolve(ATTR_ADDRESS_ATTRIBUTE, "", true);
         connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, 0, true);
         int timeout = sfResolve(ATTR_LIVENESS_TIMEOUT, 0, true);
-        if(timeout>0) {
-            livenessTimeout=System.currentTimeMillis()+timeout;
+        if (timeout > 0) {
+            livenessTimeout = System.currentTimeMillis() + timeout;
         }
         address = configuration.bindToNetwork(addressAttribute,
                 "stubOldAddressNameShouldNotResolve",
@@ -136,7 +142,8 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
 
     /**
      * Here is where the port gets probed
-     * @throws IOException failure to connect, including timeout
+     *
+     * @throws IOException        failure to connect, including timeout
      * @throws SmartFrogException for security exceptions
      */
     private void checkThePort() throws IOException, SmartFrogException {

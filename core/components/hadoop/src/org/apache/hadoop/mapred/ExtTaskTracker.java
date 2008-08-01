@@ -21,7 +21,6 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 
 import java.io.IOException;
 
@@ -33,8 +32,8 @@ public class ExtTaskTracker extends TaskTracker {
 
     private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
 
-    public ExtTaskTracker(ManagedConfiguration conf) throws IOException {
-        super(conf);
+    public ExtTaskTracker(JobConf conf) throws IOException {
+        super(conf, false);
     }
 
 }

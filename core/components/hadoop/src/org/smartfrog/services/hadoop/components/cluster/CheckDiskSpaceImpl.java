@@ -75,7 +75,7 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
         try {
             getUsableSpace = File.class.getMethod("getUsableSpace");
         } catch (NoSuchMethodException e) {
-            throw new SmartFrogLifecycleException("This component on works on Java Version 6 or greater",this);
+            throw new SmartFrogLifecycleException("This component on works on Java Version 6 or greater", this);
         }
 
         if (checkOnStartup) {
@@ -120,7 +120,7 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
                         return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
                     }
                 } catch (IllegalAccessException e) {
-                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(),e);
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
                     return e.getMessage();
                 } catch (InvocationTargetException e) {
                     sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);

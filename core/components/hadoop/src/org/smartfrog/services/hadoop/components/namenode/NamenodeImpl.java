@@ -38,6 +38,8 @@ import java.rmi.RemoteException;
 
 public class NamenodeImpl extends FileSystemNodeImpl implements
         FileSystemNode {
+    private static final String NAME = "NameNode";
+    public static final String ERROR_NO_START = "Failed to start "+ NAME;
 
 
     public NamenodeImpl() throws RemoteException {
@@ -50,14 +52,14 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      */
     @Override
     protected String getName() {
-        return "namenode";
+        return NAME;
     }
 
     /**
      * Create the datanode
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     @Override
     public synchronized void sfStart()
@@ -70,21 +72,22 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         logDir.mkdirs();
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
         ManagedConfiguration conf = createConfiguration();
+        ExtNameNode node;
         try {
-            setService(ExtNameNode.createAndDeploy(this, conf));
+            node = ExtNameNode.create(this, conf);
         } catch (IOException e) {
-            if (e.getCause() != null && e.getCause() instanceof MultiException) {
-                MultiException me = (MultiException) e.getCause();
-                throw SFHadoopException.forward("Failed to start namenode", me, this);
-            } else {
-                throw new SFHadoopException("Failed to start namenode: "
-                        + e.getMessage() + "\n" + conf.dumpQuietly(), e, this);
-            }
+            throw SFHadoopException.forward(ERROR_NO_START,
+                    e,
+                    this,
+                    conf);
         } catch (IllegalArgumentException e) {
-            throw new SFHadoopException("Failed to start namenode: "
-                    + e.getMessage() + "\n" + conf.dumpQuietly(), e, this);
+            throw SFHadoopException.forward(ERROR_NO_START,
+                    e,
+                    this,
+                    conf);
         }
+        deployService(node, conf);
     }
 
- 
+
 }

@@ -30,7 +30,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 /**
- *
+ * This is a base class for any component that is bounded to the filesystem throu
  */
 public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemNode {
 
@@ -44,11 +44,10 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components.
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -56,12 +55,13 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
         //get the filesystem name, validate it
         String filesystemName = sfResolve(FS_DEFAULT_NAME, "", true);
         try {
-            URI uri=new URI(filesystemName);
-            if(uri.getPort()==-1) {
-                throw new SmartFrogLifecycleException("Undefined port on " + FS_DEFAULT_NAME + " value :" + filesystemName);
+            URI uri = new URI(filesystemName);
+            if (uri.getPort() == -1) {
+                throw new SmartFrogLifecycleException(
+                        "Undefined port on " + FS_DEFAULT_NAME + " value :" + filesystemName);
             }
         } catch (URISyntaxException e) {
-            throw new SmartFrogLifecycleException("Bad "+ FS_DEFAULT_NAME+ " value :"+filesystemName,e);
+            throw new SmartFrogLifecycleException("Bad " + FS_DEFAULT_NAME + " value :" + filesystemName, e);
         }
 
         dumpConfiguration();

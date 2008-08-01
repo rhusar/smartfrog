@@ -22,10 +22,32 @@
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 
 
+
+LightweightJobTracker extends JobTracker {
+  smartfrog.dump.conf true;
+//  jobtracker.http.threads 4;
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  smartfrog.dump.conf true;
+  tasktracker.http.threads 4;
+}
+
+LightweightNameNode extends NameNode {
+  smartfrog.dump.conf true;
+//  namenode.http.threads 4;
+}
+
+LightweightDataNode extends DataNode {
+  smartfrog.dump.conf true;
+//  datanode.http.threads 4;
+}
+
 LocalHadoopCompound extends Compound {
   fs.default.name "hdfs://localhost:8020/";
   nameNodeURL  "http://localhost:8021";
-  dataNodeURL  "http://localhost:8022";
+  dataNodeURL  "http://localhost:0";
 
   logDir extends TempDirWithCleanup {
 
@@ -46,7 +68,8 @@ LocalNameNodeCompound extends LocalHadoopCompound {
 
   cluster LAZY namenode;
 
-  namenode extends NameNode {
+  namenode extends LightweightNameNode {
+    smartfrog.dump.conf true;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
@@ -64,7 +87,8 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
   }
   
-  datanode extends DataNode {
+  datanode extends  LightweightDataNode {
+    smartfrog.dump.conf true;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
@@ -76,30 +100,27 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 LocalFormat extends LocalHadoopCompound {
   description "Component to format a filesystem";
   formatLocal extends FormatFileSystem {
+      smartfrog.dump.conf true;
       cluster LAZY PARENT:cluster;
       dataDirectories [LAZY dataDir];
   }
 }
 
 
-
 LocalJobTrackerCompound extends LocalHadoopCompound {
   description "A job tracker";
 
-  jobTracker extends JobTracker {
+  jobTracker extends LightweightJobTracker {
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
     logDir LAZY PARENT:logDir;
   }
 }
 
-LightweightTaskTracker extends TaskTracker {
-  description "A task tracker with less threads than normal";
-  tasktracker.http.threads 4;
-}
 
 
-LocalTaskTrackerCompound extends LocalHadoopCompound {
+
+LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A task tracker";
 
   taskTracker extends LightweightTaskTracker {
@@ -111,7 +132,7 @@ LocalClusterCompound extends LocalDataNodeCompound {
 
   description "a full cluster";
 
-  jobTracker extends JobTracker {
+  jobTracker extends LightweightJobTracker {
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
     logDir LAZY PARENT:logDir;

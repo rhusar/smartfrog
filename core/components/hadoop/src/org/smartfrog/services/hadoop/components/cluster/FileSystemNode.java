@@ -28,11 +28,13 @@ import org.smartfrog.services.hadoop.components.HadoopConfiguration;
  */
 public interface FileSystemNode extends HadoopConfiguration {
 
-    String ATTR_MIN_DISK_SPACE="minDiskSpaceMB";
+    String ATTR_MIN_DISK_SPACE = "minDiskSpaceMB";
     String ATTR_DATA_DIRECTORIES = "dataDirectories";
     String ATTR_NAME_DIRECTORIES = "nameDirectories";
-    /** {@value} */
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_RUNNING = "checkRunning";
-    String ATTR_EXPECT_NODE_TERMINATION="expectNodeTermination";
+    String ATTR_EXPECT_NODE_TERMINATION = "expectNodeTermination";
     String ATTR_LOG_DIR = "logDir";
 }

@@ -54,16 +54,16 @@ public class ExtDataNode extends DataNode {
      *
      * @throws IOException if necessary
      */
-    @Override
+/*    @Override
     public void innerStart() throws IOException {
         super.innerStart();
         startWorkerThread();
-    }
+    }*/
 
     /**
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
-    @Override
+/*    @Override
     public synchronized void innerTerminate() throws IOException {
         super.innerTerminate();
         if (!isStopped()) {
@@ -71,20 +71,8 @@ public class ExtDataNode extends DataNode {
             SmartFrogThread.requestThreadTermination(worker);
             worker = null;
         }
-    }
+    }*/
 
-  /**
-   * Method called whenever there is a state change. The base class logs the
-   * event at debug level
-   *
-   * @param oldState existing state
-   * @param newState new state.
-   */
-  @Override
-  protected void onStateChange(ServiceState oldState,
-                               ServiceState newState) {
-    super.onStateChange(oldState, newState);
-  }
 
   /**
      * Set our stopped flag
@@ -105,25 +93,25 @@ public class ExtDataNode extends DataNode {
     /**
      * Override the normal run and note that we got stopped
      */
-    @Override
+/*    @Override
     public void run() {
         try {
             super.run();
         } finally {
             stopped();
         }
-    }
+    }*/
 
     /**
      * Ping the node; report an error if we have stopped
      *
      * @throws IOException for any liveness problem
      */
-    @Override
+/*    @Override
     public void ping()
             throws IOException {
         super.ping();
-        if(getServiceState() == ServiceState.RUNNING) {
+        if(getServiceState() == ServiceState.READY) {
             if (isStopped()) {
                 throw new ServiceStateException("DataNode is stopped",
                         getServiceState());
@@ -135,7 +123,7 @@ public class ExtDataNode extends DataNode {
                         getServiceState());
             }
         }
-    }
+    }*/
 
     /**
      * Start the worker thread

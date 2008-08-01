@@ -27,15 +27,14 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class ClusterTest extends DeployingTestBase  {
+public class ForkedClusterTest extends DeployingTestBase  {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/cluster/";
 
-    public ClusterTest(String name) {
+    public ForkedClusterTest(String name) {
         super(name);
     }
 
-    public void testLocalCluster() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalCluster");
+    public void testLocalClusterForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalClusterForked");
     }
-
 }

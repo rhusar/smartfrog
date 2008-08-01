@@ -20,14 +20,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,10 +39,15 @@ import java.util.Vector;
  */
 
 public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
-    private ExtDataNode service;
-    public static final String ERROR_FAILED_TO_START_DATANODE = "Failed to start datanode: ";
+    private static final String NAME = "DataNode";
+    public static final String ERROR_FAILED_TO_START_DATANODE = "Failed to create "+NAME;
 
     public DatanodeImpl() throws RemoteException {
+    }
+
+    @Override
+    protected String getName() {
+        return NAME;
     }
 
     /**
@@ -53,22 +58,23 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        //get the list of data directories
         Vector<String> dataDirs = createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
+        //convert them to a list of files
         Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
+        //get the rest of the configuration
         ManagedConfiguration conf = createConfiguration();
+        //create a data node from the configuration
+        ExtDataNode dataNode;
         try {
-            service = new ExtDataNode(this, conf, dataDirFiles);
-            service.init();
-            service.start();
+            dataNode = new ExtDataNode(this, conf, dataDirFiles);
         } catch (IOException e) {
-            terminateService();
-            throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
-                    + e.getMessage() + '\n' + conf.dumpQuietly(), e);
-        } catch (IllegalArgumentException e) {
-            terminateService();
-            throw new SmartFrogException(ERROR_FAILED_TO_START_DATANODE
-                    + e.getMessage() + "\n" + conf.dumpQuietly(), e);
+            throw SFHadoopException.forward(ERROR_FAILED_TO_START_DATANODE,
+                    e,
+                    this,
+                    conf);
         }
+        deployService(dataNode,conf);
     }
 
 

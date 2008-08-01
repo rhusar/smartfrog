@@ -24,6 +24,9 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.mapred.ExtTaskTracker;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
+import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -35,12 +38,22 @@ import java.rmi.RemoteException;
  * Created 23-May-2008 14:20:41
  */
 
-public class TaskTrackerImpl extends HadoopComponentImpl implements HadoopCluster {
+public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
 
-
-    private ExtTaskTracker tracker;
+    private static final String NAME = "TaskTracker";
+    public static final String ERROR_NO_START = "Failed to start the " + NAME;
 
     public TaskTrackerImpl() throws RemoteException {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the name of the Hadoop service deployed
+     */
+    @Override
+    protected String getName() {
+        return NAME;
     }
 
     /**
@@ -52,24 +65,19 @@ public class TaskTrackerImpl extends HadoopComponentImpl implements HadoopCluste
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        ManagedConfiguration configuration;
+        configuration = createConfiguration();
         try {
-            tracker = new ExtTaskTracker(createConfiguration());
+            ExtTaskTracker tracker = new ExtTaskTracker(configuration);
+            deployService(tracker, configuration);
         } catch (IOException e) {
-            throw new SmartFrogLifecycleException("When creating the task tracker " + e.getMessage(), e, this);
+            throw SFHadoopException.forward(ERROR_NO_START,
+                    e,
+                    this,
+                    configuration);
         }
     }
 
-    /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
-     *
-     * @param status termination status
-     */
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        if (tracker != null) {
-            tracker.terminate();
-        }
-    }
+
 
 }
