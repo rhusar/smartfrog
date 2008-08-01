@@ -131,11 +131,11 @@ public class Fileset implements Serializable {
         }
 
         //no value? Maybe we should build it
-        if(filter!=null) {
+        if (filter != null) {
             recalculate();
             return files;
         } else {
-            //now way to bind a file list, so say there is nothing
+            //no way to bind a file list, so say there is nothing
             return EMPTY_FILES;
         }
     }

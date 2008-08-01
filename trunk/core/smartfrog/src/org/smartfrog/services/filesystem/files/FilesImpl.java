@@ -122,7 +122,7 @@ public class FilesImpl extends PrimImpl implements Files {
     public static void checkAndUpdateFileCount(Prim component, Fileset fileset)
             throws SmartFrogRuntimeException, RemoteException {
         File[] files = fileset.listFiles();
-        int length = files == null ? 0 : files.length;
+        int length = files.length;
         //deal with the file count
         int filecount = component.sfResolve(ATTR_FILECOUNT, -1, false);
         int minFilecount = component.sfResolve(ATTR_MINFILECOUNT, -1, false);
