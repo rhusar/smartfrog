@@ -146,6 +146,9 @@ public class FilesImpl extends PrimImpl implements Files {
     private static SmartFrogRuntimeException exceptionBadFileCount(Prim component, Object fileset, int length, int filecount, String prefix) {
         return new SmartFrogDeploymentException(
                 ERROR_FILE_COUNT_MISMATCH + prefix + filecount + " but found " + length + " files "
-                        + "in the list [" + fileset + ']', component);
+                        + "in the list ["
+                        + (fileset == null ? "(null)" : fileset) 
+                        + ']',
+                component);
     }
 }

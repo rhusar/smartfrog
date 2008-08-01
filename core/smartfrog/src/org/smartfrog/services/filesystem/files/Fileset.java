@@ -56,7 +56,10 @@ public class Fileset implements Serializable {
      * Filter -may be null.
      */
     private FilenamePatternFilter filter;
-    private static final File[] EMPTY_FILES = null;
+    /**
+     * An empty set of files
+     */
+    private static final File[] EMPTY_FILES = {};
 
     /**
      * Simple constructor
