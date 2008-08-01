@@ -66,7 +66,11 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
         for (File file : files) {
             if(file.isFile()) {
                 local.add(file);
-                remote.add(remoteDir + '/' + file.getName());
+                String remoteName = remoteDir + '/' + file.getName();
+                remote.add(remoteName);
+                if(log.isDebugEnabled()) {
+                    log.debug("Uploading " + file + " to " + remoteName);
+                }
             } else {
                 log.info("Skipping directory "+file);
             }
