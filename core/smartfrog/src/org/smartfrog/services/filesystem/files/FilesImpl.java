@@ -132,10 +132,10 @@ public class FilesImpl extends PrimImpl implements Files {
             throw exceptionBadFileCount(component, fileset, length, filecount, " exactly ");
         }
         if (minFilecount >= 0 && length < minFilecount) {
-            throw exceptionBadFileCount(component, fileset, length, filecount, " a minimum of ");
+            throw exceptionBadFileCount(component, fileset, length, minFilecount, " a minimum of ");
         }
         if (maxFilecount >= 0 && length > maxFilecount) {
-            throw exceptionBadFileCount(component, fileset, length, filecount, " a maximum of ");
+            throw exceptionBadFileCount(component, fileset, length, maxFilecount, " a maximum of ");
         }
 
         if (filecount < 0) {
