@@ -23,14 +23,13 @@ import org.smartfrog.services.assertions.AssertComponent;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 /**
- * An interface for conditions that may choose to check themselves on startup or liveness.
- * Created 28-May-2008 15:43:54
+ * An interface for conditions that may choose to check themselves on startup or liveness. Created 28-May-2008 15:43:54
  */
 
 
 public interface CheckableCondition extends Condition {
     /**
-     *  Check on startup {@value}
+     * Check on startup {@value}
      */
     String ATTR_CHECK_ON_STARTUP = AssertComponent.ATTR_CHECK_ON_STARTUP;
     /**

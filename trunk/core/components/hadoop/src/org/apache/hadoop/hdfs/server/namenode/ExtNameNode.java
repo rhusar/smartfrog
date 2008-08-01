@@ -26,6 +26,8 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.reference.Reference;
+import org.apache.hadoop.util.Service;
 
 import java.io.IOException;
 
@@ -34,8 +36,6 @@ import java.io.IOException;
  */
 public class ExtNameNode extends NameNode {
 
-    //this defaults to false
-    private boolean stopped;
     private boolean checkRunning;
     private Prim owner;
     private ManagedConfiguration conf;
@@ -43,25 +43,29 @@ public class ExtNameNode extends NameNode {
     public static final String NO_FILESYSTEM = "Filesystem is not running";
     private boolean expectNodeTermination;
     private boolean terminationInitiated;
+    private final Reference completeName;
+    private static final String NAME_NODE_HAS_HALTED = "Name node has halted";
 
     /**
      * Create a new name node and deploy it.
+     *
      * @param owner owner
-     * @param conf configuration
+     * @param conf  configuration
      * @return the new name node
      * @throws IOException if the node would not deploy
      */
     public static ExtNameNode createAndDeploy(Prim owner, ManagedConfiguration conf)
             throws IOException {
-        ExtNameNode enn = new ExtNameNode(owner, conf);
-        deploy(enn);
-        return enn;
+        ExtNameNode nameNode = new ExtNameNode(owner, conf);
+        deploy(nameNode);
+        return nameNode;
     }
 
     /**
      * create a new name node, but do not start it
+     *
      * @param owner owner
-     * @param conf configuration
+     * @param conf  configuration
      * @return the new name node
      * @throws IOException if the node would not deploy
      */
@@ -72,11 +76,11 @@ public class ExtNameNode extends NameNode {
         return enn;
     }
 
-  /**
+    /**
      * Start NameNode. This starts all the worker threads
-     * @param owner owner
-     * @param conf configuration
      *
+     * @param owner owner
+     * @param conf  configuration
      * @throws IOException io problems
      */
     private ExtNameNode(Prim owner, ManagedConfiguration conf) throws IOException {
@@ -86,22 +90,7 @@ public class ExtNameNode extends NameNode {
         //any other config here.
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
         expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
-    }
-
-
-  /**
-   * This method is designed for overriding, with subclasses implementing
-   * termination logic inside it.
-   *
-   * It is only called when the component is entering the terminated state; and
-   * will be called once only.
-   *
-   * @throws IOException exceptions which will be logged
-   */
-  @Override
-    public synchronized void innerTerminate() throws IOException {
-        super.innerTerminate();
-        stopped = true;
+        completeName = owner.sfCompleteName();
     }
 
     /**
@@ -110,33 +99,41 @@ public class ExtNameNode extends NameNode {
      * @return true if we have stopped
      */
     public synchronized boolean isStopped() {
-        return getServiceState()== ServiceState.TERMINATED;
+        return getServiceState() == ServiceState.TERMINATED;
     }
+
+    /**
+     * If the name node is terminated, we optionally terminate the owning component
+     * @param oldState old service state
+     * @param newState new service state
+     */
+/*
+    @Override
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        if (newState == ServiceState.TERMINATED) {
+            TerminationRecord tr;
+            if (expectNodeTermination) {
+                tr = TerminationRecord.normal(NAME_NODE_HAS_HALTED, completeName);
+            } else {
+                tr = TerminationRecord.abnormal(NAME_NODE_HAS_HALTED, completeName);
+            }
+            ComponentHelper helper = new ComponentHelper(owner);
+            helper.targetForWorkflowTermination(
+                    tr);
+        }
+    }*/
 
     /**
      * Ping the node
      *
      * @throws IOException if the node is unhappy
      */
-    public synchronized void ping()
+    @Override
+    public synchronized void innerPing()
             throws IOException {
         if (checkRunning) {
-            super.ping();
-        }
-        if (isStopped()) {
-            if (expectNodeTermination) {
-                //if we expect the node to terminate, now is a good time to say 'we'd like to terminate ourselves'
-                if (!terminationInitiated) {
-                    //that is, if it hasn't already been initiated
-                    terminationInitiated = true;
-                    new ComponentHelper(owner).targetForWorkflowTermination(
-                            TerminationRecord.normal("Name node has halted",
-                                    owner.sfCompleteName()));
-                }
-            } else {
-                //the node is stopped and we were not expecting it. throw a liveness failure
-                throw new IOException(NAME_NODE_IS_STOPPED);
-            }
+            super.innerPing();
         }
     }
 

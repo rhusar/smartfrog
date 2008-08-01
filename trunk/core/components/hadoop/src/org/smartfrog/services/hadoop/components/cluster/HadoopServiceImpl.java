@@ -20,18 +20,20 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.mortbay.util.MultiException;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
- * This is a component that deploys a hadoop service.
- * If the
+ * This is a component that deploys a hadoop service. If the
  */
 
 public abstract class HadoopServiceImpl extends HadoopComponentImpl {
@@ -42,37 +44,6 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
     }
 
     /**
-     * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
-     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
-     * Attributees that require injection are handled during sfDeploy().
-     *
-     * @throws SmartFrogException error while deploying
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-    }
-
-    /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        try {
-            if (service != null) {
-                service.start();
-            }
-        } catch (IOException e) {
-            throw new SmartFrogDeploymentException(
-                    "Failed to start: " + e.getMessage(), e, this, sfContext());
-        }
-    }
-
-    /**
      * On shutdown, terminates any non-null service.
      *
      * @param status termination status
@@ -80,29 +51,21 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        terminateService();
+        terminateHadoopService();
     }
 
     /**
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws SmartFrogLivenessException component is terminated
+     * @throws SmartFrogLivenessException on any liveness problem
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
     @Override
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if (service != null) {
-            try {
-                service.ping();
-            } catch (IOException e) {
-                throw new SmartFrogLivenessException(e, this);
-            }
-        } else if (requireNonNullServiceInPing()) {
-            throw new SmartFrogLivenessException("No running " + getName(), this);
-        }
+        pingHadoopService();
     }
 
     /**
@@ -115,8 +78,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
     }
 
     /**
-     * Override point; tell teh base class whether or not {@link #service} must be non-null in the
-     * {@link #sfPing(Object)} operation
+     * Override point; tell the base class whether or not {@link #service} must be non-null in the {@link
+     * #sfPing(Object)} operation
      *
      * @return true for non-null, false to allow null values.
      */
@@ -125,12 +88,32 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
     }
 
     /**
-     * Terminate a service and set the {@link #service} field to null. Does nothing if the service is already terminated
+     * Ping the hadoop service.
+     *
+     * @throws SmartFrogLivenessException on a ping failure, or a null service and non-null services are forbidden
      */
-    protected synchronized void terminateService() {
+    protected void pingHadoopService() throws SmartFrogLivenessException {
+        Service hadoopService = service;
+        if (hadoopService != null) {
+            try {
+                hadoopService.ping();
+            } catch (IOException e) {
+                throw new SmartFrogLivenessException(e, this);
+            }
+        } else if (requireNonNullServiceInPing()) {
+            throw new SmartFrogLivenessException("No running " + getName(), this);
+        }
+    }
+
+    /**
+     * Terminate a service and set the {@link #service} field to null. Does nothing if the service is already
+     * terminated
+     */
+    protected synchronized void terminateHadoopService() {
         Service.terminate(service);
         service = null;
     }
+
 
     /**
      * Get the current service value; may be null
@@ -150,5 +133,36 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
         this.service = service;
     }
 
-
+    /**
+     * Deploy a service. It must be in the CREATED state.
+     * The field {@link #service} is set to the service argument, which must be null.
+     * There is special handling for wrapped Jetty exceptions
+     * @param hadoopService service to bind to and deploy.
+     * @param conf configuration -used for diagnostics
+     * @throws SmartFrogException on any problem
+     * @throws SFHadoopException for Jetty exceptions and other causes of trouble
+     * @throws SmartFrogDeploymentException on some wrapped IOExceptions
+     */
+    protected void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
+        if (service != null) {
+            throw new SmartFrogDeploymentException("Cannot bind to a new service ("+hadoopService+")"
+                    + " when an existing service is in use: "
+                    + service);
+        }
+        setService(hadoopService);
+        try {
+            Service.deploy(hadoopService);
+        } catch (IOException e) {
+            throw SFHadoopException.forward("Failed to deploy " + hadoopService,
+                    e,
+                    this,
+                    conf);
+        } catch(IllegalArgumentException e) {
+            //convert illegal argument exceptions
+            throw SFHadoopException.forward("Failed to deploy " + hadoopService,
+                    e,
+                    this,
+                    conf);
+        }
+    }
 }

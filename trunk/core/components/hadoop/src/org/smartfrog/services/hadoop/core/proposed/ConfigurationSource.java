@@ -27,10 +27,11 @@ import java.util.Iterator;
  */
 
 
-public interface ConfigurationSource extends Iterable<String>{
+public interface ConfigurationSource extends Iterable<String> {
 
     /**
      * Get a key
+     *
      * @param key the key to look up
      * @return the value or null
      * @throws IOException for any failure to look up the key, other than it not being there.
@@ -39,13 +40,14 @@ public interface ConfigurationSource extends Iterable<String>{
 
     /**
      * Create a new configuration source from this one.
+     *
      * @return a new source
      */
     ConfigurationSource copy();
 
     /**
-     * Get an iterator over all the keys.
-     * This iterator should be robust against changes in the source.
+     * Get an iterator over all the keys. This iterator should be robust against changes in the source.
+     *
      * @return the iterator
      */
     Iterator<String> iterator();

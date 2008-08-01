@@ -19,15 +19,14 @@ package org.smartfrog.services.hadoop.core.proposed;
 import java.io.IOException;
 
 /**
- *
  * Created 15-May-2008 13:17:15
- *
  */
 
 public interface ConfigurationSourceFactory {
 
     /**
      * Create a new configuration source
+     *
      * @return the source
      * @throws IOException for any failure to create/bind
      */
@@ -35,9 +34,8 @@ public interface ConfigurationSourceFactory {
 
 
     /**
-     * Close the source. This is only guaranteed to be done when
-     * the factory singleton is replaced by a new one; when the JVM terminates there will
-     * be no notification.
+     * Close the source. This is only guaranteed to be done when the factory singleton is replaced by a new one; when
+     * the JVM terminates there will be no notification.
      */
     public void close();
 }

@@ -29,15 +29,21 @@ public interface CheckDiskSpace extends CheckableCondition {
     /**
      * Vector of directories: {@value}
      */
-    String ATTR_DIRECTORIES ="directories";
+    String ATTR_DIRECTORIES = "directories";
 
-    /** minimum MB:{@value} */
-    String ATTR_MIN_AVAILABLE_MB ="minAvailableMB";
+    /**
+     * minimum MB:{@value}
+     */
+    String ATTR_MIN_AVAILABLE_MB = "minAvailableMB";
 
-    /** minimum GB. A GB=1024*1MB, despite what disk vendors say: {@value}*/
-    String ATTR_MIN_AVAILABLE_GB ="minAvailableGB";
+    /**
+     * minimum GB. A GB=1024*1MB, despite what disk vendors say: {@value}
+     */
+    String ATTR_MIN_AVAILABLE_GB = "minAvailableGB";
 
-    /** flag to say: skip any dir that isnt there  {@value}*/
-    String ATTR_SKIP_ABSENT_DIRECTORIES ="skipAbsentDirectories";
+    /**
+     * flag to say: skip any dir that isnt there  {@value}
+     */
+    String ATTR_SKIP_ABSENT_DIRECTORIES = "skipAbsentDirectories";
 
 }

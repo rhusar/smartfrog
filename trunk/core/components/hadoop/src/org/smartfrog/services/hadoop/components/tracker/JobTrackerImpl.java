@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.mapred.ExtJobTracker;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -42,9 +44,21 @@ import java.rmi.RemoteException;
 public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
 
     private TrackerThread worker;
+    private static final String NAME = "JobTracker";
+    public static final String ERROR_NO_START = "Failed to start the " + NAME;
 
     public JobTrackerImpl() throws RemoteException {
     }
+
+    /**
+     * {@inheritDoc}
+     * @return the name of the Hadoop service deployed
+     */
+    @Override
+    protected String getName() {
+        return NAME;
+    }
+
 
     /**
      * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
@@ -64,14 +78,16 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
             if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
                 System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
             }
-            ExtJobTracker tracker = new ExtJobTracker(createConfiguration());
-            setService(tracker);
+            ManagedConfiguration configuration = createConfiguration();
+            ExtJobTracker tracker = new ExtJobTracker(configuration);
+            deployService(tracker,configuration);
+            //now start the worker thread that offers the service
             worker = new TrackerThread(tracker);
             worker.start();
         } catch (IOException e) {
-            throw new SmartFrogLifecycleException("When creating the job tracker " + e.getMessage(), e, this);
+            throw new SmartFrogLifecycleException(ERROR_NO_START + e.getMessage(), e, this);
         } catch (InterruptedException e) {
-            throw new SmartFrogLifecycleException("When creating the job tracker " + e.getMessage(), e, this);
+            throw new SmartFrogLifecycleException(ERROR_NO_START + e.getMessage(), e, this);
         }
     }
 

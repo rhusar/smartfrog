@@ -46,6 +46,8 @@ For more information: www.smartfrog.org
  */
 HadoopConfiguration extends Prim {
 
+  //Smartfrog custom properties
+  smartfrog.dump.conf false;
 
   /* =============================================================== */
   //HDFS properties

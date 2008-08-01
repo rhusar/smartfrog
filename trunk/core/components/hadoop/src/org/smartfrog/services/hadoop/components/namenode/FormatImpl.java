@@ -32,9 +32,8 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 /**
- * This component formats a filesystem in a worker thread then optionally terminates
- * Created 09-May-2008 13:21:07
- *
+ * This component formats a filesystem in a worker thread then optionally terminates.
+ * It does not have an associated service
  */
 
 public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
@@ -45,10 +44,9 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
     }
 
     /**
-     * Override point; tell teh base class whether or not {@link #service} must be non-null in the {@link #sfPing()}
-     * operation
+     * {@inheritDoc}.
      *
-     * @return true for non-null, false to allow null values.
+     * @return false, always
      */
     @Override
     protected boolean requireNonNullServiceInPing() {
@@ -76,7 +74,7 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         nameDirs = FileSystem.convertToFiles(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
-        worker=new Formatter();
+        worker = new Formatter();
         worker.start();
     }
 
@@ -99,7 +97,6 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
 
         /**
          * Create a basic thread. Notification is bound to a local notification object.
-         *
          */
         private Formatter() {
             super(FormatImpl.this, true);
@@ -108,14 +105,14 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
 
         /**
          * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses of
-         * <code>Thread</code> should override this method.
+         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
+         * of <code>Thread</code> should override this method.
          *
          * @throws Throwable if anything went wrong
          */
         @Override
         public void execute() throws Throwable {
-            ExtDfsUtils.formatNameNode(nameDirs,createConfiguration());
+            ExtDfsUtils.formatNameNode(nameDirs, createConfiguration());
         }
 
     }
