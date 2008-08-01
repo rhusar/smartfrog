@@ -489,7 +489,7 @@ For more information: www.smartfrog.org
           <!--not ready for ivy builds yet-->
           <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
           <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
-		  <exclude name="VAST/build.xml" unless="vast.enabled"/>
+          <exclude name="VAST/build.xml" unless="vast.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
@@ -506,7 +506,7 @@ For more information: www.smartfrog.org
           <exclude name="ec2/build.xml" unless="java1.6+"/>
 
           <!--Not yet functional -->
-          <exclude name="hadoop/build.xml"  unless="java1.6+"/>
+          <exclude name="hadoop/build.xml" />
 
           <!-- no docs unless forrest is installed-->
           <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
