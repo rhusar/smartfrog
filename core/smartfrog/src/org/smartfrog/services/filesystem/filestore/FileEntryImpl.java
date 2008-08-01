@@ -199,7 +199,7 @@ public class FileEntryImpl implements FileEntry {
      * Test for a file existing.
      *
      * @return boolean
-     * @throws java.rmi.RemoteException  In case of network/rmi error
+     * @throws RemoteException  In case of network/rmi error
      */
     public boolean exists() throws RemoteException {
         return file.exists();
