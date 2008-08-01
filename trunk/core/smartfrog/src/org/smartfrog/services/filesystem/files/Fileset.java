@@ -50,7 +50,7 @@ public class Fileset implements Serializable {
     /**
      * list of files
      */
-    private File[] files= EMPTY_FILES;
+    private File[] files = EMPTY_FILES;
 
     /**
      * Filter -may be null.
@@ -126,7 +126,7 @@ public class Fileset implements Serializable {
 
     public File[] listFiles() {
         //return any cached value
-        if (files != null) {
+        if (files != EMPTY_FILES) {
             return files;
         }
 
@@ -204,7 +204,8 @@ public class Fileset implements Serializable {
                                         Reference hiddenAttribute)
             throws SmartFrogException, RemoteException {
 
-        Files files = null;
+        Fileset result;
+        Files files;
         ComponentDescription cd=null;
         Prim prim=null;
         if (component instanceof Prim) {
@@ -220,7 +221,7 @@ public class Fileset implements Serializable {
 
 
         if (files != null) {
-            return new Fileset(files);
+            result = new Fileset(files);
         } else {
             File baseDir = FileSystem.lookupAbsoluteFile(component, dirAttribute, null, null, true, null);
             //no files, so resolve everything else
@@ -238,8 +239,9 @@ public class Fileset implements Serializable {
             }
 
             FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
-            return new Fileset(baseDir, filter);
-        }
+            result = new Fileset(baseDir, filter);
+        }        
+        return result;
     }
 
     
