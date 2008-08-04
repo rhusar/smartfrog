@@ -19,6 +19,8 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerUtils;
+import org.quartz.Trigger;
+import org.quartz.CronTrigger;
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
 import org.smartfrog.avalanche.core.host.ArgumentType.Argument;
@@ -51,21 +53,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
+import java.text.*; 
+import java.util.*; 
 /**
  * @author sanjay, Jul 29, 2005
  *         This class connects Avalanche Server to Smartfrog for deployments. It adds Avalanche
@@ -231,16 +221,24 @@ public class SFAdapter {
                     apm.setProfile(ap);
                 }
             }
+			System.out.println("sending mail exception---------------1");
 			emailMap.put("sfConfig:Comp:mail:message",s);
 			adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
             return retCodes;
         } catch (Exception e) {
             // set profile for this module to failed
-            try {
+
+			
+           
                 if (null != apm) {
                     for (String host : hosts) {
 						s= s+ "" + host +" :  ";
-                        ActiveProfileType ap = apm.getProfile(host);
+                        ActiveProfileType ap =null;
+						try{
+							ap = apm.getProfile(host);
+						}catch(DatabaseAccessException e2){
+							e2.printStackTrace();
+						}
                         if (ap != null) {
                             // first get hold of the module configuration on this host.
                             ModuleStateType[] states = ap.getModuleStateArray();
@@ -262,16 +260,24 @@ public class SFAdapter {
                                 currentState.setMsg("Failed on Server : " + e.getMessage());
 								s= s + "Failed on Server : " + e.getMessage()+"\n";
                             }
-                            apm.setProfile(ap);
+							try{
+								apm.setProfile(ap);
+							}catch(DatabaseAccessException e3){
+								e3.printStackTrace();
+							}
                         }
                     }
                 }
+				System.out.println("sending mail exception");
 				emailMap.put("sfConfig:Comp:mail:message",s);
+				try{
 				adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            throw new SFSubmitException(e);
+				}catch(Exception e1){
+					e1.printStackTrace();
+				}
+				//throw new SFSubmitException(e);
+           System.out.println("throwing exception");
+           throw new SFSubmitException(e);
         }
     }
 
@@ -472,13 +478,13 @@ public class SFAdapter {
     }
 
     public void submitTOScheduler(String moduleId, String version, String instanceName,
-                                  String title, Map attrMap, String[] hosts) throws Exception {
+                                  String title, Map attrMap, String[] hosts,String type, String date, String repeatcount,String jobName,String groupName) throws Exception {
 
         // computer a time that is on the next round minute
         Date runTime = TriggerUtils.getEvenMinuteDate(new Date());
 
         // define the job and tie it to our HelloJob class
-        JobDetail job = new JobDetail("job1", "group1", ScheduleJob.class);
+        JobDetail job = new JobDetail(jobName, groupName, ScheduleJob.class);
 
         job.getJobDataMap().put("adapter", this);
         job.getJobDataMap().put("moduleId", moduleId);
@@ -486,11 +492,21 @@ public class SFAdapter {
         job.getJobDataMap().put("instanceName", instanceName);
         job.getJobDataMap().put("title", title);
         job.getJobDataMap().put("attrMap", attrMap);
+		job.getJobDataMap().put("repeatcount", repeatcount);
 
         // find hostname from Collector
-
+		String hostString = "";
         System.out.println("Number of machines to collect data from are=======" + hosts.length);
-        for (String host : hosts) machines.add(host);
+        for (String host : hosts){
+			machines.add(host);
+			if(hostString.equals(""))
+			{
+				hostString+=host;
+			}else{
+				hostString+=","+host;
+			}
+			
+		}
         setTargetInstances(machines.size());
         //Sort the array based on the values in allValues and then schedule on the first element.
         allValues.put("test", new Integer(200));
@@ -508,19 +524,33 @@ public class SFAdapter {
             key = keys.nextElement();
             value = allValues.get(key);
             if (value == list.get(0)) {
+				
                 break;
             }
-        }
-
-        System.out.println("Final machine for scheduling is===========" + key.toString());
-
-        //  job.getJobDataMap().put("hostname", "localhost");
-
-        job.getJobDataMap().put("hostname", key.toString());
-
+		}
+			System.out.println("Element in sorted list===========" + key);
+		
+        job.getJobDataMap().put("hostname", hostString);
+		
+		Trigger t = null;
+		if(type.equalsIgnoreCase("Job")){
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"); 
+			Date convertedDate = null;
+			try {
+				convertedDate = dateFormat.parse(date);
+			} catch (ParseException e) {
+			// TODO Auto-generated catch block
+				throw new SmartFrogException(e);
+			} 
+				t = new SimpleTrigger(jobName+"Trigger", groupName,convertedDate);
+			}
+		else
+			t = new CronTrigger(jobName+"Trigger", groupName,date);
+		//else
         // Tell quartz to schedule the job using our trigger
-        sched.scheduleJob(job, new SimpleTrigger("trigger1", "group1"));
-        System.out.println(job.getFullName() + " will run now");
+        sched.scheduleJob(job,t );
+        System.out.println(job.getFullName() + " will run at + convertedDate");
+		
     }
 
     // these are internal methods that should not be used directly

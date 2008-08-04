@@ -19,8 +19,9 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.smartfrog.services.sfinterface.SFSubmitException;
 
-import java.util.Map;
+import java.util.*;
 import java.util.Vector;
 
 /**
@@ -48,37 +49,65 @@ public class ScheduleJob implements Job {
      */
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
-        try {
-            String instName = context.getJobDetail().getName();
-            String instGroup = context.getJobDetail().getGroup();
+		try {
+				String instName = context.getJobDetail().getName();
+				String instGroup = context.getJobDetail().getGroup();
 
-            JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+				JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-          //  String hostname = dataMap.getString("hostname");
-	        String moduleId = dataMap.getString("moduleId");
-	        String version = dataMap.getString("version");
-	        String instanceName = dataMap.getString("instanceName");
-	        String actionTitle = dataMap.getString("title");
-	        String [] keys = dataMap.getKeys();
-	        Map attrMap = null;
-	        SFAdapter adapter = null;
-		Vector hosts = null;
-		String [] array = null;
-            for (String key : keys) {
-                if (key.equals("attrMap")) {
-                    attrMap = (Map) dataMap.get("attrMap");
-                } else if (key.equals("adapter")) {
-                    adapter = (SFAdapter) dataMap.get("adapter");
-		} else if (key.equals("hostname")) {
-                    hosts = (Vector) dataMap.get("hostname");
-        	    array = (String [])hosts.toArray(new String[hosts.size()]);
-                }
-            }
-
-            // Call Submission API
-	        //Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, new String[]{hostname});
-	       Map cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, array);
-            log.info("Submission Done " + cd1.toString());
+			  //  String hostname = dataMap.getString("hostname");
+				String moduleId = dataMap.getString("moduleId");
+				String version = dataMap.getString("version");
+				String instanceName = dataMap.getString("instanceName");
+				String actionTitle = dataMap.getString("title");
+				 String repeatcount = dataMap.getString("repeatcount");
+				String [] keys = dataMap.getKeys();
+				Map attrMap = null;
+				SFAdapter adapter = null;
+				Vector hosts = null;
+				String [] array = null;
+				for (String key : keys) {
+					if (key.equals("attrMap")) {
+						attrMap = (Map) dataMap.get("attrMap");
+					} else if (key.equals("adapter")) {
+						adapter = (SFAdapter) dataMap.get("adapter");
+					} else if (key.equals("hostname")) {
+						String s = (String)dataMap.get("hostname");
+						array= s.split(",");					
+					}
+				}
+				
+				if(repeatcount== null || repeatcount.equals(""))
+					repeatcount="1";
+				int cnt = 0;
+				int reptcnt = new Integer(repeatcount);
+				boolean success = false;
+				while (cnt < reptcnt && success == false)
+				{			
+					List<String> list = new ArrayList<String>();;
+					int cntr = 0;
+					Map<String,HashMap> cd1 = adapter.submit(moduleId, version, instanceName, actionTitle, attrMap, array);
+					 log.info("Submission Done " + cd1.toString());
+						Set<String> st = cd1.keySet();
+						Iterator<String> itr = st.iterator();
+						while(itr.hasNext()){
+							String machine = itr.next();
+							HashMap<String,String>  hm = cd1.get(machine);
+							String sta = (String)hm.get("STATUS");								
+							if(!sta.trim().equalsIgnoreCase("Success")){
+									list.add(machine);
+							}
+						}					
+					if(list.size()>0){
+						success = false ;
+						cnt = cnt+1;
+						array = new String[list.size()];
+						list.toArray(array);						
+					}else{
+						success = true ;
+						cnt = reptcnt;
+					}
+				}
         } catch (Exception ex) {
             log.error(ex);
         }
