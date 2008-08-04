@@ -1,116 +1,54 @@
-
-/**
-#################################################
-               GEMS Stylesheet 
-               
-     This is the file you edit to change the look          
-     of the generated modeling tool. The look
-     is changed by setting style attributes for
-     the elements. Each style is defined as;
-     
-     Type {
-       AttributeName:Value;
-     }
-     
-     where "Type" is the type of a modeling
-     element defined in the metamodel via
-     an Entity or Connection. A style can
-     also be narrowly defined to an element
-     by specifying a tag that the element
-     must have to match the style:
-     
-     Type[TAG] {
-      ...
-     }
-     
-     this style is only matched if the element
-     is a "Type" and has the tag "TAG". 
-               
-     Element styles are defined at the
-     beginning of this file, followed
-     by connection styles.
-               
-     A list of all possible element attributes
-     for styles is at the end of this file. 
-#################################################
-**/
-
   /**
   ######################################
    This is the Style for Component 
   ###################################### 
   **/
   Component {
-     
-     /** This should not be touched
-         (normally). **/
-     active-style:true;
-     
-     /**
-        Priorities can be set and
-        used to allow one style to
-        take precedence over another
-        style. By default, a style
-        that specifies a tag takes
-        precedence over another
-        matching style that does not.
-        Higher priority styles take
-        precedence.
-        
-     priority:100;
-     **/
-     
-     /** The icon used for the element when
-         it is not expanded. **/
-     ExpansionPanel.ClosedImage:resources/icons/Component.gif;
-     
-     /** The icon used for the tree view. **/
-     TreeImage:resources/icons/Component_s.gif;
-     
-     /** The template for the label
-         used on an element's title.
-         Names enclosed in "%%" will
-         be substituted with the value
-         of that attribute on the
-         corresponding element instance.
-         All elements have built-in
-         Name, Type, and ID attributes
-         that can be used.
-     **/
-     TitleTemplate:%Name% [%Type%];
-     
-     /** The template for the label
-         used on the tree view. **/
-     TreeTitleTemplate:%Name% [%Type%];
-     
-     /** Other Attributes that can 
-         be useful to set. Uncomment
-         a section below to enable it.
-         Make sure and remove the
-         pithy instructions above
-         a directive when uncommenting it.
-         ############################
-     **/
-     
-     /** Automatically size the element
-         so that its children fit 
+       active-style:true;
+       ExpansionPanel.ClosedImage:resources/icons/Component.gif;
+       TreeImage:resources/icons/Component_s.gif;
+       TopPanel.Border: null; 
+      LeftPanel.Border: null;
+      RightPanel.Border: null;
+      /** CenterPanel.Border: null; **/
+      CenterPanel.ToolTip.Opaque: true;
+      CenterPanel.Border.Color:120,20,22;
+      TopPanel.Border: null;
+      BottomPanel.Border:null; 
+      NameLabel.ForegroundColor:220,10,120;
+       ExpansionPanel.Expandable: true;
+       TitleTemplate:%Name% ;
+       TreeTitleTemplate:%Name% ;
+       ShowAttributes: false;
+       ContentFigure.Enabled: true;
+	   ContentFigure.Visible: true;
+	   Autosize: true;
+	   ExpandOnChildAdded: true;
+	 
+	      }
+   
+   
+    Component[selected] {
+     		active-style:true;
+     		ExpansionPanel.ClosedImage:resources/icons/Component.gif;
+     		TreeImage:resources/icons/Component_s.gif;
+     		NameLabel.ForegroundColor:20,10,10;
+     	TitleTemplate:%Name% ;
+       TreeTitleTemplate:%Name% ;
+     	ExpansionPanel.Expandable: true;
+     	LeftPanel.Border.Color:220,220,220;
+     	RightPanel.Border.Color:220,220,220;
+     	CenterPanel.Border.Color:220,220,220;
+     	TopPanel.Border.Color:220,220,220;
+     	BottomPanel.Border.Color:20,220,220; 
+  		}
+    
          
-     Autosize: true;
-     **/   
      
-     /** Show the title label for the
-         element 
-     ShowName: true;
-     **/
+    
      
-     /** Show the attributes for an
-         element in the attribute
-         panel attached to each 
-         element (not the properties
-         pane)
-          
-     ShowAttributes: true;
-     **/
+        
+     
      
      /** Set the layout used by the
          element to arrange its children.
@@ -123,34 +61,13 @@
      **/
     
 
-     /** Turns on/off the ability to
-         expand/contract elements to
-         show their contents. If you 
-         turn off expansion, you may
-         want to make elements always
-         expanded. If so, the second
-         directive makes the element's
-         children show by default.
-        
-     ExpansionPanel.Expandable: true;
-     ExpansionPanel.Expanded: true;
-     **/
      
-     /** Various color properties specified
-         as RGB values. You can turn off 
-         a border by using the directive:
-         XXXPanel.Border:null; 
-     NameLabel.ForegroundColor:220,220,220;
-     ExpansionPanel.Expandable: true;
-     LeftPanel.Border.Color:220,220,220;
-     RightPanel.Border.Color:220,220,220;
-     CenterPanel.Border.Color:220,220,220;
-     TopPanel.Border.Color:220,220,220;
-     BottomPanel.Border.Color:220,220,220; 
-     **/ 
-  }
-  
-  XXXPanel.Border:null; 
+     
+     
+    
+     
+ 
+
 
   
   /** This is a useful style that can be
@@ -172,14 +89,11 @@
       uncommented and filled in with information
       for how to draw the element when it is
       a child of the currently selected element. 
-  **/
-  /** 
-  Component[sel-child] {
-     active-style:true;
-     
-  }
-  **/
+
+ 
+ 
   
+    **/
   /** This is a useful style that can be
       uncommented and filled in with information
       for how to draw the element when it is
@@ -203,19 +117,20 @@
      
      active-style:true;
      ExpansionPanel.ClosedImage:resources/icons/Composite.gif;
-     TreeImage:resources/icons/Composite_s.gif;
+     TreeImage:resources/icons/Composite_s.gif; 
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+     ShowAttributes: false;
+     TopPanel.Border: null;
+     BottomPanel.Border:null; 
+     NameLabel.ForegroundColor:10,120,20;
+     ExpansionPanel.Expandable: true;
+     Autosize:true;
+	 ExpandOnChildAdded:true;
+	   
   }
   
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      selected. A style with a "[TAG]" qualifier
-      is only applied when the element has the
-      corresponding tag set. The "selected" tag
-      is automatically applied by GEMS when an
-      element is selected. **/
+ 
   /** 
   Composite[selected] {
      active-style:true;
@@ -223,32 +138,22 @@
   }
   **/
   
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      a child of the currently selected element. 
-  **/
-  /** 
+  
   Composite[sel-child] {
      active-style:true;
-     
+      NameLabel.ForegroundColor:20,10,10;
   }
-  **/
   
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      the target of a connection originating
-      from the currently selected element. 
-  **/
+  
   /** 
   Composite[sel-target] {
      active-style:true;
      
   }
+    **/
+       
+
   
-   XXXPanel.Border:null;
-  **/
   /**
   ######################################
    This is the Style for DependencyModel 
@@ -261,6 +166,10 @@
      TreeImage:resources/icons/DependencyModel_s.gif;
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+     
+      Autosize: true;
+	   ExpandOnChildAdded: true;
+	   
   }
   
   /** This is a useful style that can be
@@ -312,49 +221,20 @@
      active-style:true;
      ExpansionPanel.ClosedImage:resources/icons/Attribute.gif;
      TreeImage:resources/icons/Attribute_s.gif;
-     TitleTemplate:%Name% [%Type%];
-     TreeTitleTemplate:%Name% [%Type%];
+     TitleTemplate:%Name% ;
+     TreeTitleTemplate:%Name% ;
+     ShowAttributes: false;
+      TopPanel.Border: null; 
+      LeftPanel.Border: null;
+      RightPanel.Border: null;
+      CenterPanel.Border: null;
+      TopPanel.Border: null;
+      BottomPanel.Border:null; 
+      NameLabel.ForegroundColor:120,10,120;
+      
   }
   
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      selected. A style with a "[TAG]" qualifier
-      is only applied when the element has the
-      corresponding tag set. The "selected" tag
-      is automatically applied by GEMS when an
-      element is selected. **/
-  /** 
-  Attribute[selected] {
-     active-style:true;
-     
-  }
-  **/
   
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      a child of the currently selected element. 
-  **/
-  /** 
-  Attribute[sel-child] {
-     active-style:true;
-     
-  }
-  **/
-  
-  /** This is a useful style that can be
-      uncommented and filled in with information
-      for how to draw the element when it is
-      the target of a connection originating
-      from the currently selected element. 
-  **/
-  /** 
-  Attribute[sel-target] {
-     active-style:true;
-     
-  }
-  **/
   /**
   ######################################
    This is the Style for And 
