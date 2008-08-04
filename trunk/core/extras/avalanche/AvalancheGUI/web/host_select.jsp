@@ -65,7 +65,7 @@ For more information: www.smartfrog.org
 		int q =0;
 		 type = updater.getActiveProfile(hostlist[p]);
 		 active = type.getHostState().equals("Available");
-		 if(active)
+		// if(active)
 			listHolder.add(hostlist[p]);
 	}
     hosts = (String[])listHolder.toArray(hosts);
@@ -116,6 +116,7 @@ For more information: www.smartfrog.org
 <script language="JavaScript" type="text/javascript">
 
 function submit(target){
+	
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
@@ -164,7 +165,7 @@ function copy(src, dest)
     }
     for (var i = 0; i < src.options.length; i++){
 	    var opt = document.createElement('option');
-	    opt.appendChild(document.createTextNode(src.options[i].text));
+		opt.appendChild(document.createTextNode(src.options[i].text));
 	    dest.appendChild(opt);
     }
     selectAll(dest);
@@ -497,8 +498,9 @@ setNextSubtitle("Select Host Page");
 </form >
 
 <form method="post"  id="hostTransferList"
-	action="module_distro_action_schedule.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
+	action="module_distro_action_schedule_U.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
 	onsubmit="javascript:copy(document.getElementById('selectedHosts'), document.getElementById('selectedHosts2'))">
+	
       <select style="display:none" size="0" id='selectedHosts2' 
 	name="selectedHosts2" 
 	multiple>
@@ -510,7 +512,7 @@ setNextSubtitle("Select Host Page");
     <input class="hpButton"type="submit" name="submit" 
 	value="Using Scheduler Execute this action on target nodes from the selected target nodes"></input>
   </div></div></div>
-    Number of target nodes: <input type="text" name="number" size="10" id="hostId" />
+    
 </div>
 </div>
 </form>
