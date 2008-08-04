@@ -87,7 +87,7 @@
         eType="#//SimpleDependencyConnection" />
       <eStructuralFeatures xsi:type="ecore:EReference" name="Component_Dependent_Source" lowerBound="0" upperBound="2147483647"
         eType="#//InputDependencyConnection" />
-      <eStructuralFeatures xsi:type="ecore:EReference" name="Simple_Depend_On" lowerBound="1" upperBound="1"
+      <eStructuralFeatures xsi:type="ecore:EReference" name="Simple_Depend_On" lowerBound="0" upperBound="2147483647"
         eType="#//SimpleDependencyConnection" />
       <eStructuralFeatures xsi:type="ecore:EReference" name="Connector_Depend_On_Component" lowerBound="0" upperBound="2147483647"
         eType="#//OutputDependencyConnection" />
@@ -133,10 +133,16 @@
         defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsLazyValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="SFTags" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="null"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Component_Attribute" upperBound="1"
         eType="#//Component" containment="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Composite_Arrtibute" upperBound="1"
         eType="#//Composite" containment="false"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="Assignee" lowerBound="0" upperBound="2147483647"
+        eType="#//Attribute" />
+      <eStructuralFeatures xsi:type="ecore:EReference" name="Assignor" lowerBound="0" upperBound="2147483647"
+        eType="#//Attribute" />
   </eClassifiers>
 
      
@@ -187,6 +193,12 @@
         defaultValueLiteral="0"/>
   </eClassifiers>
 
+     
+ <eClassifiers xsi:type="ecore:EClass" name="AttributeLinkConnection">
+ 	 <eStructuralFeatures xsi:type="ecore:EReference" name="Source" eType="#//Attribute"/>
+     <eStructuralFeatures xsi:type="ecore:EReference" name="Target" eType="#//Attribute"/>
+  </eClassifiers>
+
   <eClassifiers xsi:type="ecore:EClass" name="Root">
   	<eStructuralFeatures xsi:type="ecore:EReference" name="mementos" upperBound="2000"
         eType="#//Memento" containment="true"/>
@@ -219,6 +231,8 @@
         eType="#//InputDependencyConnection" containment="true"/>
      <eStructuralFeatures xsi:type="ecore:EReference" name="OutputDependencyConnection" upperBound="2000"
         eType="#//OutputDependencyConnection" containment="true"/>
+     <eStructuralFeatures xsi:type="ecore:EReference" name="AttributeLinkConnection" upperBound="2000"
+        eType="#//AttributeLinkConnection" containment="true"/>
       
   </eClassifiers>
 
