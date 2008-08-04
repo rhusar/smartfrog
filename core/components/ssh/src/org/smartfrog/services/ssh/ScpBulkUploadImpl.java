@@ -72,7 +72,7 @@ public class ScpBulkUploadImpl extends ScpComponentImpl implements
                     log.debug("Uploading " + file + " to " + remoteName);
                 }
             } else {
-                log.info("Skipping directory "+file);
+                log.info("Skipping directory " + file);
             }
         }
         setLocalFiles(local);
