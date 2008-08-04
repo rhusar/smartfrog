@@ -50,12 +50,19 @@ public class Fileset implements Serializable {
     /**
      * list of files
      */
-    private File[] files = EMPTY_FILES;
+    private File[] files;
 
     /**
      * Filter -may be null.
      */
     private FilenamePatternFilter filter;
+
+    /**
+     * string for information on the source of the files; used for
+     * diagnostics
+     */
+    private String source;
+
     /**
      * An empty set of files
      */
@@ -75,6 +82,7 @@ public class Fileset implements Serializable {
     public Fileset(File baseDir, FilenamePatternFilter filter) {
         this.baseDir = baseDir;
         this.filter = filter;
+        source = "Fileset from " + baseDir.getAbsolutePath() + " and a filter " + filter;
     }
 
     /**
@@ -85,6 +93,7 @@ public class Fileset implements Serializable {
     public Fileset(File baseDir, File[] files) {
         this.baseDir = baseDir;
         setFiles(files);
+        source = "Fileset from " + baseDir.getAbsolutePath() + " and a list of " + files.length + " files";
     }
 
     /**
@@ -94,13 +103,12 @@ public class Fileset implements Serializable {
      * @throws SmartFrogException if something else went wrong
      */
     public Fileset(Files files) throws SmartFrogException, RemoteException {
-        baseDir=files.getBaseDir();
-        setFiles(files.listFiles());
+        this(files.getBaseDir(), files.listFiles());
     }
 
     /**
      * Set the files attribute and declare us as built.
-     * @param files
+     * @param files files
      */
     private void setFiles(File[] files) {
         this.files = files;
@@ -112,6 +120,15 @@ public class Fileset implements Serializable {
 
     public FilenamePatternFilter getFilter() {
         return filter;
+    }
+
+
+    /**
+     * Get a diagnostics message
+     * @return the diagnostics string
+     */
+    public String getSource() {
+        return source;
     }
 
     /**
@@ -126,18 +143,16 @@ public class Fileset implements Serializable {
 
     public File[] listFiles() {
         //return any cached value
-        if (files != EMPTY_FILES) {
+        if (files != null) {
             return files;
         }
 
         //no value? Maybe we should build it
         if (filter != null) {
             recalculate();
-            return files;
-        } else {
-            //no way to bind a file list, so say there is nothing
-            return EMPTY_FILES;
         }
+
+        return files != null ? files : EMPTY_FILES;
     }
 
     /**
@@ -240,7 +255,7 @@ public class Fileset implements Serializable {
 
             FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
             result = new Fileset(baseDir, filter);
-        }        
+        }
         return result;
     }
 
