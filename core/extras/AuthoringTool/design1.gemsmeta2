@@ -26,10 +26,10 @@
     </Entity>
     <Entity Name="Attribute" Id="ffffffffc0a80121_1129" X="580" Y="227" Width="178" ExpandedWidth="394" ExpandedHeight="154" Expanded="true" ParentEntity="//@ContainmentConnectionConnection.3 //@ContainmentConnectionConnection.4" SourceConnectionDeclarations="//@ConnectionSourceConnection.3" ConnectionTargets="//@ConnectionTargetConnection.3">
       <Attribute Name="Value" Id="ffffffffc0a80121_1227" ExpandedWidth="0" ExpandedHeight="15" ModelLinkTarget="&#x200e;"/>
-      <Attribute Name="StateData" Id="ffffffffc0a80121_257" AttributeType="Toggle" DefaultValue="false"/>
-      <Attribute Name="StateListen" Id="ffffffffc0a80121_721" AttributeType="Toggle" DefaultValue="false"/>
-      <Attribute Name="StateNotify" Id="ffffffffc0a80121_722" AttributeType="Toggle" DefaultValue="false"/>
-      <Attribute Name="IsLazyValue" Id="ffffffffc0a80121_880" AttributeType="Toggle" DefaultValue="false"/>
+      <Attribute Name="StateData" Id="ffffffffc0a80121_257" AttributeType="Boolean" DefaultValue="false"/>
+      <Attribute Name="StateListen" Id="ffffffffc0a80121_721" AttributeType="Boolean" DefaultValue="false"/>
+      <Attribute Name="StateNotify" Id="ffffffffc0a80121_722" AttributeType="Boolean" DefaultValue="false"/>
+      <Attribute Name="IsLazyValue" Id="ffffffffc0a80121_880" AttributeType="Boolean" DefaultValue="false"/>
       <Attribute Name="SFTags" Id="ffffffffc0a80121_259" DefaultValue="null"/>
     </Entity>
     <Entity Name="And" Id="f9e39d5_499" X="930" Y="593" Width="133" Height="80" ExpandedWidth="0" ExpandedHeight="0" Expanded="true" DerivedFrom="//@RealRoot/@Inheritance.0"/>
