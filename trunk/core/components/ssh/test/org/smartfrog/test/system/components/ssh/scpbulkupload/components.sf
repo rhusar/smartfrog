@@ -82,7 +82,7 @@ testBulkUpload extends ExpectDeploy {
   }
 }
 
-testBulkUploadSkipsDirectories  extends ExpectDeploy {
+testBulkUploadSkipsDirectories  extends testBulkUpload {
   description "verifies that directories get skipped";
 
   action extends BulkUploadTestCompound {
@@ -93,5 +93,9 @@ testBulkUploadSkipsDirectories  extends ExpectDeploy {
     }
 
   }
+
+
+  //three files are found, but still the transfer count will == 2
+  tests:upload:fileCount 3;
 
 }
