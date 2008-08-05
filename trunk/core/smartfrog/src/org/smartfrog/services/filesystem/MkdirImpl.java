@@ -85,7 +85,11 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             RemoteException {
         super.sfStart();
         File directory=getFile();
+        boolean clean = sfResolve(ATTR_CLEAN_ON_START, false, false);
         if(directory.exists()) {
+            if (clean) {
+                FileSystem.recursiveDelete(directory);
+            }
             //it already exists. that may be harmless, but it warns the component to not
             //delete the directory during termination.
             delete=false;
