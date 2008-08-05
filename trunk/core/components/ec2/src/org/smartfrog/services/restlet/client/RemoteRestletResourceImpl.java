@@ -68,7 +68,7 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
     public static final String ATTR_DATASOURCE = "datasource";
     public static final String ERROR_DIFFERENT_JVM = "Cannot access data from a data source in a different JVM";
 
-    private Vector<Vector<Object>> startActions, terminateActions, livenessActions;
+    private Vector<Vector<?>> startActions, terminateActions, livenessActions;
     private LogSF log;
     private int readTimeout;
 
@@ -443,12 +443,12 @@ public class RemoteRestletResourceImpl extends AbstractLivenessPageComponent
      * @throws SmartFrogException for anything not working
      * @throws RestletOperationException for an exception happening in this library
      */
-    protected void execute(Vector<Vector<Object>> operations)
+    protected void execute(Vector<Vector<?>> operations)
             throws RemoteException, SmartFrogException {
         if (operations == null) {
             return;
         }
-        for (Vector<Object> operation : operations) {
+        for (Vector<?> operation : operations) {
             String verb = operation.get(0).toString();
             int minResponse = (Integer) operation.get(1);
             int maxResponse = (Integer) operation.get(2);

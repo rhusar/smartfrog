@@ -236,7 +236,7 @@ public final class ListUtils {
      * @throws RemoteException network problems
      */
     @SuppressWarnings("unchecked")
-    public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
+    public static Vector<Vector<?>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
         Vector tupleList = null;
         tupleList = component.sfResolve(ref, tupleList, required);
@@ -253,7 +253,7 @@ public final class ListUtils {
                         null,
                         component);
             }
-            Vector entry = (Vector) element;
+            Vector<?> entry = (Vector<?>) element;
             if (width>=0 && entry.size() != width) {
                 throw new SmartFrogResolutionException(
                         ref, null,
@@ -283,12 +283,12 @@ public final class ListUtils {
      */
     public static Vector<Vector<String>> resolveStringNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector<Vector<Object>> tupleList = resolveNTupleList(component, ref, width, required);
+        Vector<Vector<?>> tupleList = resolveNTupleList(component, ref, width, required);
         if (tupleList == null) {
             return null;
         }
         Vector<Vector<String>> result = new Vector<Vector<String>>(tupleList.size());
-        for (Vector<Object> tuple : tupleList) {
+        for (Vector<?> tuple : tupleList) {
             Vector<String> row=new Vector<String>(tuple.size());
             for(Object field:tuple) {
                 row.add(field.toString());
