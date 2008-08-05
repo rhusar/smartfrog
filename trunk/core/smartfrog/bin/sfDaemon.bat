@@ -27,8 +27,11 @@ SET CLASSARGS=%CLASSARGS% %1
 GOTO test
 
 :readJARG
+if (%2) == () goto usage2
 SHIFT
 SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
+goto test
+
 :check
 if (%2) == () goto usage
 SET CLASSARGS=%CLASSARGS% %1
@@ -37,10 +40,19 @@ SET CLASSARGS=%CLASSARGS% %1
 SHIFT
 IF NOT "%1"=="" GOTO start
 :end
+
 @echo off
 rem for JMX remote agent add: -Dcom.sun.management.jmxremote 
 %SFJVM% %SFCMDPARAMETERS% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem %CLASSARGS%
 goto finish
+
+:usage2
+echo sfDaemon shell script error: -J second arg missing
+echo JVMARGS are declared using -J token 
+echo e.g. -J "-Djava.library.path=/libs -Xmx400M"
+echo e.g. -J "-Djava.library.path=/libs" -J -Xmx400M
+goto finish
+
 :usage
 echo Usage: sfDaemon -?
 :finish
