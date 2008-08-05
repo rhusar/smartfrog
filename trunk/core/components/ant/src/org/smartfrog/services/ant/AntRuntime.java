@@ -21,8 +21,8 @@ package org.smartfrog.services.ant;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.rmi.RemoteException;

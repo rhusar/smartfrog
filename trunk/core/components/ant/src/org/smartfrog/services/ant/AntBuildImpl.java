@@ -19,32 +19,32 @@
  */
 package org.smartfrog.services.ant;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Executor;
+import org.apache.tools.ant.ExitStatusException;
+import org.apache.tools.ant.MagicNames;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ExitStatusException;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.MagicNames;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Executor;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
+import java.io.File;
 import java.rmi.RemoteException;
-import java.util.Vector;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
-import java.io.File;
+import java.util.Vector;
 
 /**
  * Created 31-Oct-2007 14:24:05
