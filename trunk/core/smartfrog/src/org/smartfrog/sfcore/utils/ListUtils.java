@@ -171,7 +171,7 @@ public final class ListUtils {
 
     /**
      * Convert a property list into a Java properties class
-     * @param tupleList a list of tuples (must not be null)
+     * @param tupleList a list of tuples (can be null)
      * @return a properties object containing name,value pairs.
      * @throws SmartFrogResolutionException if one of the list entries is not a tuple
      */
@@ -183,6 +183,28 @@ public final class ListUtils {
                     throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
                 }
                 Vector<?> entry = (Vector<?>) element;
+                if (entry.size() != 2) {
+                    throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
+                }
+                String name = entry.get(0).toString();
+                String value = entry.get(1).toString();
+                properties.setProperty(name, value);
+            }
+        }
+        return properties;
+    }
+
+    /**
+     * Convert a property list into a Java properties class
+     *
+     * @param tupleList a list of tuples (Can be null)
+     * @return a properties object containing name,value pairs.
+     * @throws SmartFrogResolutionException if one of the list entries is not a tuple
+     */
+    public static Properties convertToProperties(Vector<Vector<?>> tupleList) throws SmartFrogResolutionException {
+        Properties properties = new Properties();
+        if (tupleList != null) {
+            for (Vector<?> entry: tupleList) {
                 if (entry.size() != 2) {
                     throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
                 }
