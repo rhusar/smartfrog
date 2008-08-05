@@ -28,4 +28,6 @@ Retry extends ActionCompound {
     }
     retry 1;
     count 0;
+
+    sfShouldTerminate true;
 }
