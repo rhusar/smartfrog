@@ -47,15 +47,13 @@ import java.util.Stack;
 import java.io.File;
 
 /**
- *
  * Created 31-Oct-2007 14:24:05
- *
  */
 
 public class AntBuildImpl extends PrimImpl implements AntBuild {
 
     public static final String ERROR_NO_DIRS = "no build directories specified: one of '" + ATTR_BASEDIR + "' or '"
-            + ATTR_DIRECTORIES + "' must be set, or "+ATTR_ANTFILE+" must point to a file";
+            + ATTR_DIRECTORIES + "' must be set, or " + ATTR_ANTFILE + " must point to a file";
     public static final String ERROR_MISSING_BUILD_FILE = "Missing build file: ";
     public static final String BUILD_SUCCESSFUL = "Build successful";
     public static final String BUILD_FAILED = "Build failed ";
@@ -67,7 +65,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
     private String buildfile;
     private File antfile;
     private Vector<File> directories;
-    private Vector targets;
+    private Vector<String> targets;
     private AntThread workerAnt;
     private Vector propertyTuples;
     private int logLevel;
@@ -82,6 +80,8 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
     public static final String ERROR_NOT_A_DIRECTORY = "Not a directory: ";
     private Properties properties;
     public static final String ERROR_SHUTDOWN_TIMEOUT = "Ant thread did not shut down in the time allocated: ";
+    private static final Reference refTargets = new Reference(ATTR_TARGETS);
+    private static final Reference refProperties = new Reference(ATTR_PROPERTIES);
 
 
     public AntBuildImpl() throws RemoteException {
@@ -92,7 +92,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
      * read in state and start the component
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -110,12 +110,12 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
         }
         baseDir = FileSystem.lookupAbsoluteFile(this, ATTR_BASEDIR, null, null, false, null);
         directories = FileSystem.resolveFileList(this, new Reference(ATTR_DIRECTORIES), baseDir, false);
-        if (directories == null || directories.size()==0) {
+        if (directories == null || directories.size() == 0) {
 
             //when there is no basedir, we get it from the parent dir
-            if(baseDir==null && antfile !=null) {
+            if (baseDir == null && antfile != null) {
                 //infer it from the antfile
-                baseDir= antfile.getParentFile();
+                baseDir = antfile.getParentFile();
             }
             //if it is still null, trouble
             if (baseDir == null) {
@@ -127,10 +127,10 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             }
         }
 
-        targets = sfResolve(ATTR_TARGETS, targets, true);
+        targets = ListUtils.resolveStringList(this, refTargets, true);
 
         //set up properties
-        propertyTuples = sfResolve(ATTR_PROPERTIES, (Vector) null, false);
+        propertyTuples = ListUtils.resolveStringTupleList(this, refProperties, false);
         //convert the list
         properties = ListUtils.convertToProperties(propertyTuples);
         String level = sfResolve(Ant.ATTR_LOG_LEVEL, Ant.ATTR_LOG_LEVEL_INFO, false);
@@ -176,12 +176,13 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
     /**
      * Shut down the ant build
+     *
      * @param status termination status
      */
     protected synchronized void sfTerminateWith(TerminationRecord status) {
-        if(workerAnt!=null) {
-            if(!workerAnt.halt(shutdownTimeout)) {
-                sfLog().error(ERROR_SHUTDOWN_TIMEOUT +shutdownTimeout+"ms");
+        if (workerAnt != null) {
+            if (!workerAnt.halt(shutdownTimeout)) {
+                sfLog().error(ERROR_SHUTDOWN_TIMEOUT + shutdownTimeout + "ms");
                 workerAnt.interrupt();
                 workerAnt.stop();
             }
@@ -203,11 +204,13 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * Returns a string representation of the object.
+         *
          * @return a string representation of the object.
          */
-        public String toString() {
-            return "Building "+buildFile+" in "+basedir+"\n"
-                    + exception!=null?("Exited with "+exception):"";
+        public synchronized String toString() {
+            return "Building " + buildFile + " in " + basedir
+                    + (exception != null ? ("\nExited with " + exception.getMessage())
+                        : "");
 
         }
     }
@@ -231,6 +234,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * Halt for a given period of time.
+         *
          * @param timeout timeout in milliseconds
          * @return true if the build halted in that time
          */
@@ -240,7 +244,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 halted = true;
                 //stop the executor too
                 executor.halt();
-                if(interruptibleLogger!=null) {
+                if (interruptibleLogger != null) {
                     interruptibleLogger.halt();
                 }
             }
@@ -262,40 +266,45 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
          * do the work
          */
         public void execute() throws Throwable {
-            Throwable result=null;
-            int errors=0;
+            Throwable result = null;
+            int errors = 0;
             while (!buildqueue.empty() && !halted) {
                 BuildPlan plan = buildqueue.pop();
                 runOneBuildPlan(plan);
                 results.add(plan);
                 if (plan.exception != null) {
-                    result=plan.exception;
+                    result = plan.exception;
                     errors++;
-                    if(!keepGoingAcrossFiles) {
+                    if (!keepGoingAcrossFiles) {
                         //exit the loop here
                         break;
                     }
                 }
             }
             TerminationRecord tr;
-            if(result==null) {
-                tr=TerminationRecord.normal(BUILD_SUCCESSFUL, sfCompleteNameSafe());
+            if (errors==0) {
+                tr = TerminationRecord.normal(BUILD_SUCCESSFUL,
+                        sfCompleteNameSafe(),
+                        result);
             } else {
-                tr = TerminationRecord.abnormal(BUILD_FAILED +"error count="+errors, sfCompleteNameSafe(),result);
+                tr = TerminationRecord.abnormal(BUILD_FAILED + "error count=" + errors
+                        +"; "+result.getMessage(),
+                        sfCompleteNameSafe(),
+                        result);
             }
             helper.targetForWorkflowTermination(tr);
         }
 
 
         /**
-         * Run one build plan and put the results back in the plan.
-         * Any build that throws an error other than a successful exit is logged
-         * as an error.
+         * Run one build plan and put the results back in the plan. Any build that throws an error other than a
+         * successful exit is logged as an error.
+         *
          * @param plan plan to run
          * @return true if the build worked
          */
         boolean runOneBuildPlan(BuildPlan plan) {
-            plan.started=System.currentTimeMillis();
+            plan.started = System.currentTimeMillis();
             try {
                 innerBuild(plan);
             } catch (RemoteException e) {
@@ -311,25 +320,25 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     plan.exception = e;
                 }
             }
-            long finished=System.currentTimeMillis();
-            plan.duration=finished-plan.started;
-            sfLog().info("Build duration of "+plan.buildFile+" "+plan.duration/1000.0+"s");
-            return plan.exception==null;
+            long finished = System.currentTimeMillis();
+            plan.duration = finished - plan.started;
+            sfLog().info("Build duration of " + plan.buildFile + " " + plan.duration / 1000.0 + "s");
+            return plan.exception == null;
         }
 
         /**
          * run one build file
+         *
          * @param plan the plan
          * @throws SmartFrogAntBuildException if the build fails
-         * @throws RemoteException for network problems
+         * @throws RemoteException            for network problems
          */
         void innerBuild(BuildPlan plan) throws SmartFrogAntBuildException, RemoteException {
 
             try {
-                File buildFile=plan.buildFile;
-                File basedir=plan.basedir;
+                File buildFile = plan.buildFile;
+                File basedir = plan.basedir;
                 Project project = antHelper.createNewProject();
-
 
                 //Register build listener
                 setInterruptibleLogger(antHelper.listenToProject(project, logLevel, sfLog()));
@@ -353,7 +362,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 Throwable thrown = null;
                 try {
                     ProjectHelper.configureProject(project, buildFile);
-                    plan.name=project.getName();
+                    plan.name = project.getName();
                     String defaultTarget = project.getDefaultTarget();
                     if (targets.size() == 0) {
                         if (defaultTarget != null) {
@@ -385,16 +394,18 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     sfLog().debug("Build exited successfully");
                 }
             } catch (BuildException e) {
-                //any other event is wrapped without any parsing
+                //any other event is wrapped
                 throw new SmartFrogAntBuildException(e);
             }
         }
 
         /**
-         * Propagate the ant properties to whatever is in {@link #propertyTarget}
-         * Any failure to set these is not treated as an error, we log at warn level and continue.
-         * why? So that a failure here does not hide underlying build problems. 
+         * Propagate the ant properties to whatever is in {@link #propertyTarget} Any failure to set these is not
+         * treated as an error, we log at warn level and continue. why? So that a failure here does not hide underlying
+         * build problems.
+         *
          * @param project project to work with
+         * @throws RemoteException for network problems
          */
         private void propagateProperties(Project project) throws RemoteException {
             if (propertyTarget != null) {
@@ -402,7 +413,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     AntRuntime.propagateAntProperties(propertyTarget, project.getProperties());
                 } catch (SmartFrogRuntimeException e) {
                     //we don't throw anything else here, log it and continue
-                    sfLog().warn("Failed to set Ant properties on the propertyTarget",e);
+                    sfLog().warn("Failed to set Ant properties on the propertyTarget", e);
                 } catch (RemoteException e) {
                     //we don't throw anything else here, log it and continue
                     sfLog().warn("Failed to set Ant properties on the propertyTarget", e);
@@ -423,6 +434,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * Create an instance; pass in its policy w.r.t. missing targets
+         *
          * @param skipMissingTargets should we skip missing targets
          */
         InterruptibleExecutor(boolean skipMissingTargets) {
@@ -431,6 +443,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * is the build halted?
+         *
          * @return true if the build has been halted
          */
         public boolean isHalted() {
@@ -444,7 +457,9 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             halted = true;
         }
 
-        /** {@inheritDoc}. */
+        /**
+         * {@inheritDoc}.
+         */
         public void executeTargets(Project project, String[] targetNames) throws BuildException {
             BuildException thrown = null;
             for (String target : targetNames) {
@@ -452,15 +467,15 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     throw new BuildInterruptedException("Interrupted in " + project.getName() + "." + target);
                 }
                 try {
-                    if(skipMissingTargets
-                            && project.getTargets().get(target)==null) {
-                        project.log("Skipping missing target "+target,Project.MSG_WARN);
+                    if (skipMissingTargets
+                            && project.getTargets().get(target) == null) {
+                        project.log("Skipping missing target " + target, Project.MSG_WARN);
                     } else {
                         project.executeTarget(target);
-                }
+                    }
                 } catch (BuildException e) {
                     if (project.isKeepGoingMode()) {
-                        thrown = thrown == null ? e: thrown;
+                        thrown = thrown == null ? e : thrown;
                     } else {
                         throw e;
                     }
@@ -472,7 +487,9 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
             }
         }
 
-        /** {@inheritDoc}. */
+        /**
+         * {@inheritDoc}.
+         */
         public Executor getSubProjectExecutor() {
             return new InterruptableSubProjectExecutor(this);
         }
@@ -480,13 +497,10 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
 
     /**
-     * This is for sub projects; it reads the interrupted state from its parent
-     * Note that we currently don't do anything useful with that information,
-     * as project is in charge of ordering execution. Note also that the subant task
-     * does its own scheduling.
-     * <p/>
-     * All that means, it's not that easy to interrupt a running build cleanly. We'd need
-     * to extend Ant to do it.
+     * This is for sub projects; it reads the interrupted state from its parent Note that we currently don't do anything
+     * useful with that information, as project is in charge of ordering execution. Note also that the subant task does
+     * its own scheduling. <p/> All that means, it's not that easy to interrupt a running build cleanly. We'd need to
+     * extend Ant to do it.
      */
     private static class InterruptableSubProjectExecutor implements Executor {
         private InterruptibleExecutor parent;
@@ -497,20 +511,25 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         /**
          * is the build halted?
+         *
          * @return true if the build has been halted
          */
         public boolean isHalted() {
             return parent.isHalted();
         }
 
-        /** {@inheritDoc}. */
+        /**
+         * {@inheritDoc}.
+         */
         public void executeTargets(Project project, String[] targetNames)
                 throws BuildException {
             project.executeSortedTargets(
                     project.topoSort(targetNames, project.getTargets(), false));
         }
 
-        /** {@inheritDoc}. */
+        /**
+         * {@inheritDoc}.
+         */
         public Executor getSubProjectExecutor() {
             return this;
         }

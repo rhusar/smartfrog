@@ -24,32 +24,20 @@ import org.smartfrog.test.DeployingTestBase;
 /**
  * JUnit test class for test cases related to Ant
  */
-public class AntBuildTest
+public class AntBuildFailuresTest
         extends DeployingTestBase {
 
     private static final String FILES = "/org/smartfrog/services/ant/test/system/antbuild";
 
-    public AntBuildTest(String s) {
+    public AntBuildFailuresTest(String s) {
         super(s);
     }
 
-    public void testBuildFile() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testBuildFile");
-    }
-    
-    public void testEcho() throws Throwable {
-        expectSuccessfulTestRun(FILES,"testEcho");
+    public void testFail() throws Throwable {
+        expectSuccessfulTestRun(FILES,"testFail");
     }
 
-    public void testProperties() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testProperties");
-    }
-
-    public void testPropertyPassdown() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testPropertyPassdown");
-    }
-    
-    public void testSkipUnimplementedTargets() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testSkipUnimplementedTargets");
+    public void testBadTask() throws Throwable {
+        expectSuccessfulTestRun(FILES, "testBadTask");
     }
 }
