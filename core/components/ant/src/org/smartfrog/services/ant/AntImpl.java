@@ -213,24 +213,35 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     /**
      * Executes Ant Tasks and triggers the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
-     * and 'sfShouldTerminateQuietly'
+     * and 'sfShouldTerminateQuietly', or if the job failed.
      */
     private void exec() {
         try {
             executeNestedAntTasks();
         } catch (RemoteException e) {
-            caughtException=SmartFrogException.forward(e);
+            caughtException = SmartFrogException.forward(e);
         } catch (SmartFrogException e) {
-            caughtException=e;
+            caughtException = e;
         }
-        //cleanup time
         ComponentHelper helper = new ComponentHelper(this);
-        helper.sfSelfDetachAndOrTerminate(
-                null,
-                "end of ant tasks",
-                null,
-                caughtException
-        );
+        if (caughtException == null) {
+            //cleanup time
+            helper.sfSelfDetachAndOrTerminate(
+                    null,
+                    "end of ant tasks",
+                    null,
+                    null
+            );
+        } else {
+            //something went wrong, always fail here
+            TerminationRecord tr = new TerminationRecord(
+                    TerminationRecord.ABNORMAL,
+                    caughtException.toString(),
+                    sfCompleteName,
+                    caughtException);
+            //put up for termination
+            helper.targetForTermination(tr, false, false, false);
+        }
     }
 
     /**
