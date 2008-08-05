@@ -20,8 +20,8 @@
 
 package org.smartfrog.services.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -33,10 +33,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Hashtable;
 import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  */

@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.ant;
 
+import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.BuildEvent;
 
 import java.io.PrintStream;
 

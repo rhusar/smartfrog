@@ -19,12 +19,11 @@
  */
 package org.smartfrog.services.ant;
 
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Location;
 import org.apache.tools.ant.ExitStatusException;
+import org.apache.tools.ant.Location;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.lang.reflect.InvocationTargetException;
 
