@@ -81,7 +81,7 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      * @throws SmartFrogRuntimeException on failure to replace an attribute
      * @throws RemoteException network problems
      */
-    public static void propagateAntProperties(Prim component,Hashtable<String, String> properties)
+    public static void propagateAntProperties(Prim component, Hashtable<String, String> properties)
             throws SmartFrogRuntimeException, RemoteException {
         Hashtable<String, String> props=properties;
         for(String property: props.keySet()) {

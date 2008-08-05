@@ -80,7 +80,7 @@ public class InterruptibleLogger implements BuildLogger {
     private synchronized void checkForHalt() throws BuildInterruptedException {
         if (halt && !halted) {
             halted = true;
-            throw new BuildInterruptedException();
+            throw new BuildInterruptedException("Build Interrupted");
         }
     }
 
