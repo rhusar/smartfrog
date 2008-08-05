@@ -252,7 +252,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             }
         }
         if (terminate) {
-            sfTerminate(status);
+            new ComponentHelper(this).sfSelfDetachAndOrTerminate(status);
         }
     }
 
