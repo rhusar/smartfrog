@@ -47,4 +47,6 @@ Parallel extends ActionsCompound {
     terminateOnEmptyDeploy false;
     terminateOnAbnormalChildTermination true;
     terminateOnAbnormalChildDeploy true;
+
+    sfShouldTerminate true;
 }
