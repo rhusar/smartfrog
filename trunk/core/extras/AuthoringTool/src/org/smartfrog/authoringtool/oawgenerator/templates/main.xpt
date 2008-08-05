@@ -45,7 +45,14 @@
 
 «DEFINE ComponentDescription FOR Component»
 
+
+«IF Extends.matches("0")»
 «Name» extends State {
+«ELSE»
+«Name» extends «Extends» {
+
+«ENDIF»
+
 
 «EXPAND AddAttribute FOREACH Component_Attribute_Container» 
 	
@@ -55,7 +62,8 @@
 /** ATTRIBUTE **/
 
 «DEFINE AddAttribute FOR Attribute»
-«IF StateData&&StateListen&&StateNotify» [statedata,StateListen,StateNotify] «ELSEIF StateData&&StateListen&&!StateNotify» [statedata,StateListen] «ELSEIF StateData&&!StateListen&&StateNotify» [statedata,StateNotify] «ELSEIF !StateData&&!StateListen&&StateNotify» [StateListen,StateNotify] «ELSEIF !StateData&&!StateListen&&StateNotify» [StateNotify] «ELSEIF !StateData&&StateListen&&!StateNotify» [StateListen] «ELSEIF StateData&&!StateListen&&!StateNotify» [statedata]«ENDIF»   «Name» «IF IsLazyValue» LAZY «ENDIF»  «Value»;
+«IF ! SFTags.matches("null")» [ «SFTags» ] «ENDIF» «IF StateData&&StateListen&&StateNotify» [statedata,StateListen,StateNotify] «ELSEIF StateData&&StateListen&&!StateNotify» [statedata,StateListen] «ELSEIF StateData&&!StateListen&&StateNotify» [statedata,StateNotify] «ELSEIF !StateData&&!StateListen&&StateNotify» [StateListen,StateNotify] «ELSEIF !StateData&&!StateListen&&StateNotify» [StateNotify] «ELSEIF !StateData&&StateListen&&!StateNotify» [StateListen] «ELSEIF StateData&&!StateListen&&!StateNotify» [statedata]«ENDIF»   «Name» «IF IsLazyValue» LAZY «ENDIF»  «Value»;
+
 «ENDDEFINE»
 
 
