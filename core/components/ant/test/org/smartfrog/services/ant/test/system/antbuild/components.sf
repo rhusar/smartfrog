@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 
 
 DELIBERATE_FAILURE "deliberate failure";
+BAD_TASK "Problem: failed to create task or type netrexxc";
 
 TestBuildFile extends TempBuildFile {
 
@@ -45,9 +46,8 @@ TestBuildFile extends TempBuildFile {
 
     <target name="fail">
       <property name="failure.message" value="deliberate failure" />
-      <property name="failure.status" value="-1" />
       <echo> about to fail</echo>
-      <fail status="${failure.status}"
+      <fail status="-1"
         message="${failure.message}"/>
       <echo>We must never get here</echo>
     </target>
@@ -182,25 +182,36 @@ testSkipUnimplementedTargets extends BuildFileTest {
 
 BuildFileFailingTest extends BuildFileTest {
   expectTerminate true;
-  exitType EXIT_TYPE_ABNORMAL;
+  //exitType EXIT_TYPE_ABNORMAL;
   action:targets [];
 
   //inject a new compound
-  action:antbuild extends AntBuild {
+  action:antbuild extends Sequence {
+   Sleep extends Delay {
+    time 2000;
+  }
+
+   antbuild extends AntBuild {
     propertyTarget LAZY action:results;
     antfile LAZY action:build;
     targets action:targets;
+    logLevel LOG_DEBUG;
     //basedir ".";
+   }
   }
 
-  tests:antbuild "no-op";
+  tests extends Sequence {
+  
+}
 
 }
 
 testFail extends BuildFileFailingTest {
   description "test that the fail target fails";
   exitText DELIBERATE_FAILURE;
-  action:targets ["fail"];
+  action:targets
+  //tests:antbuild:targets
+    ["fail"];
 }
 
 
@@ -208,6 +219,7 @@ testFail extends BuildFileFailingTest {
 
 testBadTask extends BuildFileFailingTest {
   description "test that the bad task target fails";
-  exitText "Class Not Found";
-  action:targets ["testBadTask"];
+  exitText BAD_TASK;
+  action:targets
+    ["testBadTask"];
 }
