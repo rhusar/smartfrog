@@ -34,5 +34,4 @@ public interface ScpBulkUpload extends SSHComponent, Files {
      * remote directory for this operation {@value}
      */
     String ATTR_REMOTE_DIR = "remoteDir";
-    String ATTR_RECURSIVE = "recursive";
 }

@@ -34,15 +34,12 @@ public class ScpBulkUploadFunctionalTest extends DeployingTestBase {
         super(name);
     }
 
-//    public void testBulkUpload() throws Throwable {
-//        expectSuccessfulTestRunOrSkip(FILES, "testBulkUpload");
-//    }
-//
-//    public void testBulkUploadSkipsDirectories() throws Throwable {
-//        expectSuccessfulTestRunOrSkip(FILES, "testBulkUploadSkipsDirectories");
-//    }
-
-    public void testBulkUploadRecursive() throws Throwable {
-        expectSuccessfulTestRunOrSkip(FILES, "testBulkUploadRecursive");
+    public void testBulkUpload() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testBulkUpload");
     }
+
+    public void testBulkUploadSkipsDirectories() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testBulkUploadSkipsDirectories");
+    }
+
 }
