@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -67,7 +68,7 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
     private Vector<File> directories;
     private Vector<String> targets;
     private AntThread workerAnt;
-    private Vector propertyTuples;
+    private Vector<Vector<String>> propertyTuples;
     private int logLevel;
     private boolean keepGoingInSingleBuild;
     private boolean keepGoingAcrossFiles;
@@ -224,8 +225,10 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         public volatile boolean halted;
 
-        private InterruptibleExecutor executor = new InterruptibleExecutor(skipUnimplementedTargets);
+        private InterruptibleExecutor executor = new InterruptibleExecutor(skipUnimplementedTargets, sfLog());
         private InterruptibleLogger interruptibleLogger;
+        private static final String WARN_COULD_NOT_PROPAGATE_PROPERTIES
+                = "Failed to set Ant properties on the propertyTarget";
 
 
         private synchronized void setInterruptibleLogger(InterruptibleLogger interruptibleLogger) {
@@ -287,8 +290,9 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                         sfCompleteNameSafe(),
                         result);
             } else {
-                tr = TerminationRecord.abnormal(BUILD_FAILED + "error count=" + errors
-                        +"; "+result.getMessage(),
+                tr = TerminationRecord.abnormal(BUILD_FAILED +
+                        (errors>1? ("error count=" + errors + "; ") : " ")
+                        + result.getMessage(),
                         sfCompleteNameSafe(),
                         result);
             }
@@ -389,18 +393,20 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                 //raised in a <fail> operation.
                 int status = ese.getStatus();
                 if (status != 0) {
+                    sfLog().debug("Build failed with non-zero exit code :"+ese.getMessage());
                     throw new SmartFrogAntBuildException(ese);
                 } else {
                     sfLog().debug("Build exited successfully");
                 }
             } catch (BuildException e) {
+
                 //any other event is wrapped
                 throw new SmartFrogAntBuildException(e);
             }
         }
 
         /**
-         * Propagate the ant properties to whatever is in {@link #propertyTarget} Any failure to set these is not
+         * Propagate the ant properties to whatever is in propertyTarget. Any failure to set these is not
          * treated as an error, we log at warn level and continue. why? So that a failure here does not hide underlying
          * build problems.
          *
@@ -413,10 +419,10 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     AntRuntime.propagateAntProperties(propertyTarget, project.getProperties());
                 } catch (SmartFrogRuntimeException e) {
                     //we don't throw anything else here, log it and continue
-                    sfLog().warn("Failed to set Ant properties on the propertyTarget", e);
+                    sfLog().warn(WARN_COULD_NOT_PROPAGATE_PROPERTIES, e);
                 } catch (RemoteException e) {
                     //we don't throw anything else here, log it and continue
-                    sfLog().warn("Failed to set Ant properties on the propertyTarget", e);
+                    sfLog().warn(WARN_COULD_NOT_PROPAGATE_PROPERTIES, e);
                 }
             }
         }
@@ -430,15 +436,16 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
 
         private volatile boolean halted;
         private boolean skipMissingTargets;
-
+        private LogSF log;
 
         /**
          * Create an instance; pass in its policy w.r.t. missing targets
          *
          * @param skipMissingTargets should we skip missing targets
          */
-        InterruptibleExecutor(boolean skipMissingTargets) {
+        InterruptibleExecutor(boolean skipMissingTargets, LogSF log) {
             this.skipMissingTargets = skipMissingTargets;
+            this.log = log;
         }
 
         /**
@@ -473,11 +480,13 @@ public class AntBuildImpl extends PrimImpl implements AntBuild {
                     } else {
                         project.executeTarget(target);
                     }
-                } catch (BuildException e) {
+                } catch (BuildException buildError) {
                     if (project.isKeepGoingMode()) {
-                        thrown = thrown == null ? e : thrown;
+                        log.info("Exception thrown in target " + target + ": " + buildError.toString(), buildError);
+
+                        thrown = thrown == null ? buildError : thrown;
                     } else {
-                        throw e;
+                        throw buildError;
                     }
                 }
             }
