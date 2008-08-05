@@ -80,9 +80,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     private void executeNestedAntTasks() throws RemoteException, SmartFrogException {
         Object attribute = null;
         Object value = null;
-        Iterator a = sfAttributes();
+        Iterator<Object> a = sfAttributes();
         try {
-            for (Iterator i = sfValues(); i.hasNext() && !exitAntNow;) {
+            for (Iterator<Object> i = sfValues(); i.hasNext() && !exitAntNow;) {
                 attribute = a.next();
                 value = i.next();
                 String attributeName = attribute.toString();
