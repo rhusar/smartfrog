@@ -1,7 +1,0 @@
-DefaultParser.java
-DefaultParserTokenManager.java
-ParseException.java
-DefaultParserConstants.java
-Token.java
-JavaCharStream.java
-TokenMgrError.java

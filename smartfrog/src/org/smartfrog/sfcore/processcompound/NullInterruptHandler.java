@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,20 +17,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.sfcore.languages.csf.csfcomponentdescription;
+package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
- *  Specifies the resolution interface to be implemented by all attributes
- *  (including component attributes, that need resolution at compile time and
- *  pre-deployment time.
+ *
+ * Created 02-Apr-2008 14:29:48
+ *
  */
-public interface ComponentResolver extends org.smartfrog.sfcore.languages.sf.sfcomponentdescription.ComponentResolver {
+
+public class NullInterruptHandler implements InterruptHandler {
+
     /**
-     *  Internal method that constraint resolves a parsed component.
+     * Bind to a signal. This implementation does nothing
      *
-     * @throws  org.smartfrog.sfcore.common.SmartFrogResolutionException failed to type resolve
+     * @param name name of interrupt to bind to.
+     * @param log  log to use
      */
-    public void constraintResolve() throws SmartFrogResolutionException;
+    public void bind(String name, LogSF log) {
+        log.debug("The Null interrupt handler is being used: Interrupts will be ignored");
+    }
 }

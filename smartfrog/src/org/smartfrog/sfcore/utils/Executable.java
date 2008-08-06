@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,23 +17,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.sfcore.languages.csf;
-
-import org.smartfrog.sfcore.languages.csf.csfcomponentdescription.CSFComponentDescription;
-
-
+package org.smartfrog.sfcore.utils;
 
 /**
- *  This is the default factory for tree nodes for the SmartFrog parser.
+ * Created 11-Jun-2008 11:51:59
  */
-public interface Factory {
-   /**
-    *  Return a SF1ComponentDescriptionImpl for a root or default node - an
-    *  error otherwise.
-    *
-    *  @param type of node to return
-    *  @return node implementing ComponentDescription
-    *  @exception ParseException unknown node type
-    */
-   public CSFComponentDescription node(String type) throws ParseException;
+
+
+public interface Executable {
+    void execute() throws Throwable;
 }

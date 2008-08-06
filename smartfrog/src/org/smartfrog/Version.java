@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.common.SFNull;
+
 
 /**
  * Version class provides version and copyright strings for SmartFrog System.
@@ -53,6 +53,16 @@ public class Version {
      * Used to determine the maximum core version compatible with this instance*/
     final static String ATR_MAX_CORE_VERSION = "majorRelease";
 
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSVERSION = "buildOSVersion";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSNAME = "buildOSName";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_OSARCH = "buildOSArch";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_JAVAVENDOR = "buildJavaVendor";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_JAVAVERSION = "buildJavaVersion";
 
     // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     private static String name=        "SmartFrog";
@@ -67,9 +77,20 @@ public class Version {
 
     private static String buildDate= "buildDate";
 
-    // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
+    private static String buildOSName ="@buildOSName@";
+    private static String buildOSVersion = "@buildOSVersion@";
+    private static String buildOSArch = "@buildOSArch@";
+    private static String buildJavaVersion = "@buildJavaVersion@";
+    private static String buildJavaVendor = "@buildJavaVendor@";
+
+    private static String versionString = name+" "+majorRelease+"."+minorRelease+"."+build+ status+" ("+buildDate+")";
+
+    private static String versionStringForRelease = name+" "+majorRelease+"."+minorRelease+"."+build + status+" ("+buildDate+")";
+
+
+    // Don't change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
-    private static String copyright = "(C) Copyright 1998-2006 HP Development Company, LP";
+    private static String copyright = "(C) Copyright 1998-2008 HP Development Company, LP";
 
     private static boolean initialized=false;
 
@@ -81,8 +102,7 @@ public class Version {
         if (initialized) return;
         try {
             //Check Class and read configuration...NOT including system.properties
-            ComponentDescription classComponentDescription = ComponentDescriptionImpl.
-                getClassComponentDescription(this, false, null);
+            ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, false, null);
 
             name = classComponentDescription.sfResolve(ATR_NAME, name , false);
             majorRelease = classComponentDescription.sfResolve(ATR_MAJOR_RELEASE, majorRelease , false);
@@ -93,6 +113,20 @@ public class Version {
             minCoreVersion = classComponentDescription.sfResolve(ATR_MIN_CORE_VERSION, minCoreVersion , false);
             maxCoreVersion = classComponentDescription.sfResolve(ATR_MAX_CORE_VERSION, maxCoreVersion , false);
             buildDate = classComponentDescription.sfResolve(ATR_BUILD_DATE, buildDate , false);
+            buildOSName = classComponentDescription.sfResolve(ATR_BUILD_OSNAME, buildOSName , false);
+            buildOSVersion = classComponentDescription.sfResolve(ATR_BUILD_OSVERSION, buildOSVersion , false);
+            buildOSArch = classComponentDescription.sfResolve(ATR_BUILD_OSARCH, buildOSArch , false);
+            buildJavaVersion = classComponentDescription.sfResolve(ATR_BUILD_JAVAVERSION, buildOSArch , false);
+            buildJavaVendor = classComponentDescription.sfResolve(ATR_BUILD_JAVAVENDOR, buildJavaVendor , false);
+
+            //new created
+            String newStatus=null;
+            if (!status.trim().equals("")){
+                newStatus=""+status;
+            } else newStatus="";
+            versionString = name+" "+majorRelease+"."+minorRelease+"."+build+newStatus+" ("+buildDate+")";
+            versionStringForRelease =  majorRelease+"."+minorRelease+"."+build+newStatus;
+
             initialized=true;
 
         } catch (Exception ex) {
@@ -108,11 +142,8 @@ public class Version {
     public static String versionString(){
         //init();
         if (!initialized) new Version();
-        String newStatus=null;
-        if (!status.trim().equals("")){
-            newStatus=""+status;
-        } else newStatus="";
-        return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus+" ("+buildDate+")";
+
+        return versionString;
     }
 
     /**
@@ -122,11 +153,8 @@ public class Version {
     public static String versionStringforrelease(){
         //init();
         if (!initialized) new Version();
-        String newStatus=null;
-        if (!status.trim().equals("")){
-            newStatus=""+status;
-        } else newStatus="";
-        return majorRelease+"."+minorRelease+"."+build+newStatus;
+
+        return versionStringForRelease;
     }
 
     /**

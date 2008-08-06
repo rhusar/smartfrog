@@ -55,7 +55,14 @@ public class SFClassLoader {
     private static String targetClassBase = null;
 
     /** A debugging utility to print messages. */
-    private static final SFDebug debug = SFDebug.getInstance("SFClassLoader");
+    private static SFDebug debug;
+
+    /**
+     * Initializes the debugging.
+     */
+    static {
+        debug = SFDebug.getInstance("SFClassLoader");
+    }
 
     /**
      * Don't let anyone create one of these.
@@ -64,14 +71,22 @@ public class SFClassLoader {
     }
 
     /**
+     * Loads (or reloads) from a system property from where we are downloading
+     * components, represented by a space separated urls.
+     */
+    public synchronized static void loadTargetClassBase() {
+        targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
+    }
+
+    /**
      * Gets the codebase URL(s) path from a system property, formatted for the
      * RMIClassLoader syntax (space sparated URLs).
      *
      * @return a string containing the space separated URLs.
      */
-    private static synchronized String getTargetClassBase() {
+    public synchronized static String getTargetClassBase() {
         if (targetClassBase == null) {
-            targetClassBase = System.getProperty(SF_CODEBASE_PROPERTY);
+            loadTargetClassBase();
         }
 
         return targetClassBase;
@@ -89,7 +104,7 @@ public class SFClassLoader {
      *
      * @return A class loader for that codebase.
      */
-    private static ClassLoader getClassLoader(String codebase) {
+    static ClassLoader getClassLoader(String codebase) {
         if (codebase != null) {
             try {
                 return RMIClassLoader.getClassLoader(codebase);
@@ -172,13 +187,40 @@ public class SFClassLoader {
         }
 
         // The preceeding / does not work when looking inside jar files.
-        String resourceInJar = resource.startsWith("/") ? resource.substring(1) : resource;
+        String resourceInJar = (resource.startsWith("/")
+            ? resource.substring(1) : resource);
 
         // Try the class loaders
         Object result = classLoaderHelper(resourceInJar, codebase,
                 useDefaultCodebase, false);
 
-        return result instanceof InputStream ? (InputStream) result : null;
+        return ((result instanceof InputStream) ? (InputStream) result : null);
+    }
+
+    /**
+     * Takes a string and converts to a URL. If the string is not in URL format
+     * an attempt is made to create a file based URL relative to where this
+     * process started. If it is pointing to a jar file we use a jar-type URL.
+     *
+     * @param s string to convert
+     *
+     * @return URL form of the input string
+     *
+     * @throws Exception if failed to convert string to URL
+     */
+    static URL stringToURL(String s) throws Exception {
+        try {
+            return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
+            ? new URL("jar:" + s + "!/") : new URL(s));
+        } catch (Exception ex) {
+            // ignore, try another one
+        }
+
+        String fUrl = (new File(s)).getAbsolutePath();
+        fUrl = "file:" + (fUrl.startsWith("/") ? fUrl : ("/" + fUrl));
+
+        return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
+        ? new URL("jar:" + fUrl + "!/") : new URL(fUrl));
     }
 
     /**
@@ -191,9 +233,9 @@ public class SFClassLoader {
      *
      * @throws ClassNotFoundException The resource does not exist or it does not meet the
      *            security requirements.
-     * @throws java.io.IOException If accessing the resource fails (IO or network problem)
+     * @throws IOException on IO problems
      */
-    private static InputStream getURLAsStream(URL resourceURL)
+    protected static InputStream getURLAsStream(URL resourceURL)
             throws ClassNotFoundException, IOException {
         URLConnection con = resourceURL.openConnection();
         InputStream in = SFSecurity.getSecureInputStream(con);
@@ -218,21 +260,21 @@ public class SFClassLoader {
      * @throws ClassNotFoundException if unable to locate the resource
      * @throws java.io.IOException If accessing the resource fails (IO or network problem)
      */
-    private static InputStream getResourceHelper(String resourceInJar, String codebase)
+    static InputStream getResourceHelper(String resourceInJar, String codebase)
             throws ClassNotFoundException, IOException {
         ClassLoader cl = getClassLoader(codebase);
-        if (debug !=null) {
-            debug.println("ClassLoader for "+resourceInJar+" in jar "+codebase);
-            try {
-                debug.println("cl "+cl.getClass().getName());
-                debug.println("cl.getResource(resourceInJar): "+
-                          cl.getResource(resourceInJar).toString());
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
+        URL resourceURL = cl.getResource(resourceInJar);
+        if (debug != null) {
+            debug.println("ClassLoader for " + resourceInJar + " in jar " + codebase);
+            debug.println("cl " + cl.getClass().getName());
+            debug.println("cl.getResource(resourceInJar): " +
+                    (resourceURL != null ? resourceURL : "not found"));
         }
 
-        return getURLAsStream(cl.getResource(resourceInJar));
+        if (resourceURL == null) {
+            throw new ClassNotFoundException("Unable to locate the resource " + resourceInJar + " in " + codebase);
+        }
+        return getURLAsStream(resourceURL);
     }
 
     /**
@@ -245,7 +287,7 @@ public class SFClassLoader {
      *
      * @throws ClassNotFoundException if the class cannot be located
      */
-    private static Class forNameHelper(String className, String codebase)
+    static Class forNameHelper(String className, String codebase)
         throws ClassNotFoundException {
         Class cl = Class.forName(className, true, getClassLoader(codebase));
         /* The classes referenced by cl, and loaded by the same class loader
@@ -269,7 +311,7 @@ public class SFClassLoader {
      * @throws ClassNotFoundException The required class is not found.
      * @throws IOException If accessing the resource fails (IO or network problem). Does not happen for class loading.
      */
-    private static Object opHelper(String name, String codebase, boolean isForName)
+    static Object opHelper(String name, String codebase, boolean isForName)
             throws ClassNotFoundException, IOException {
         if (isForName) {
             return forNameHelper(name, codebase);
@@ -290,25 +332,22 @@ public class SFClassLoader {
      *
      * @return A class or an input stream to the resource
      */
-    private static Object classLoaderHelper(String name, String codebase,
+    static Object classLoaderHelper(String name, String codebase,
         boolean useDefaultCodebase, boolean isForName) {
-        if (debug != null) debug.println(
-                " * classLoaderHelper: name "+name+", codebase "+codebase
-                        +", usedefaultcodebase "+useDefaultCodebase
-                        +", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
-        String msg = isForName ? "forName" : "getResourceAsStream";
-
+        if (debug != null) debug.println(" * classLoaderHelper: name "+name+", codebase "+codebase+", usedefaultcodebase "+useDefaultCodebase+", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
+        String msg = (isForName ? "forName" : "getResourceAsStream");
+        Object result;
         // "default" equivalent to "not set".
         if ("default".equals(codebase)) {
             codebase = null;
         }
 
         //First, try the thread context class loader
-        Object result = opHelperWithReporting(name, null, isForName, msg);
-        if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");}
+        result = opHelperWithReporting(name, null, isForName, msg);
+         if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");};
 
         // Second try the default codebase (if enabled)
-        if (result == null && useDefaultCodebase && getTargetClassBase() != null) {
+        if (result==null && (useDefaultCodebase) && (getTargetClassBase() != null)) {
             result = opHelperWithReporting(name, getTargetClassBase(), isForName, msg);
              if (debug != null) debug.println("   - Using defaultCodeBase: "+getTargetClassBase());
         }
@@ -374,17 +413,15 @@ public class SFClassLoader {
         } catch (IOException ioe) {
             //ClassNotFound or IOException
             // Not valid, continuing ...
-            //Revisit: SteveL:  Bad things can get caught here, like StackOverthrowError. Things that should not be caught
             logOpHelperException(msg, name, codebase, ioe);
-
         }
         return result;
     }
 
     private static void logOpHelperException(String msg, String name, String codebase, Throwable t) {
         if (debug != null) {
-            debug.println(msg + " cannot find " + name + " in " + codebase +
-                ". Getting exception: " + t.getMessage());
+            debug.println(msg + " cannot find "+name+" in " + codebase +
+                " getting exception " + t.getMessage());
         }
     }
 

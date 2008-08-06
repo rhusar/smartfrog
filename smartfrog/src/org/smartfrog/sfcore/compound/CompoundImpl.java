@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,24 +20,43 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.compound;
 
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.Iterator;
-
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogUpdateException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.SFDeployer;
-import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.prim.Dump;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ReverseListIterator;
+import org.smartfrog.sfcore.utils.SerializableEnumeration;
+
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 
 /**
- * Implements the compound component behavior. A compound deploys component
+ * Implements the compound component behaviour. A compound deploys component
  * descriptions, and maintains them as its children. This includes liveness,
- * termination and location behavior
+ * termination and location behaviour
  *
  */
 public class CompoundImpl extends PrimImpl implements Compound {
@@ -47,23 +66,21 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Initial capacity for child vector. Looks up Compound.childCap (offset by
      * SmartFrogCoreProperty.propBaseCompound). Defaults to 5 if not there
      */
-    public static int childCap = Integer.getInteger(SmartFrogCoreProperty.compoundChildCap, 5)
-                                        .intValue();
+    public static int childCap = Integer.getInteger(SmartFrogCoreProperty.compoundChildCap, 5).intValue();
 
     /**
      * Capacity increment for child vector. Looks up Compound.childInc (offset
      * by SmartFrogCoreProperty.propBaseCompound). Defaults to 2 if not there
      */
-    public static int childInc = Integer.getInteger(SmartFrogCoreProperty.compoundChildInc, 2)
-                                        .intValue();
+    public static int childInc = Integer.getInteger(SmartFrogCoreProperty.compoundChildInc, 2).intValue();
 
     /** Maintains children on which life of compound depends (and vice versa). */
-    protected Vector sfChildren = new Vector(childCap, childInc);
+    protected Vector<Prim> sfChildren = new Vector<Prim>(childCap, childInc);
 
 
     /** Maintains a temporal list of the children that have to be driven
      * through their sfDeploy and sfStart lifecycle methods.*/
-    protected Vector lifecycleChildren = new Vector();
+    protected Vector<Prim> lifecycleChildren = new Vector<Prim>();
 
     /**
      * Whether termination should be synchronous. Determined by the
@@ -72,12 +89,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
     protected boolean sfSyncTerminate;
 
     /**
+     * Creates a compound implementation.
+     *
+     * @throws RemoteException In case of Remote/network error
+     */
+    public CompoundImpl() throws RemoteException {
+    }
+
+    /**
      * An internal SmartFrog method.
      * It deploys a compiled component and makes it an attribute of the
      * parent compound. Also start heartbeating the deployed component
      * if the component registers. Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
-     * This is primarily an internal method - the prefered method for end users is
+     * This is primarily an internal method - the preferred method for end users is
      * #sfCreateNewChild.
      *
      * Note that the remaining lifecycle methods must
@@ -94,20 +119,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @throws SmartFrogDeploymentException failed to deploy compiled component
      */
-    public Prim sfDeployComponentDescription(Object name, Prim parent,
-            ComponentDescription cmp, Context parms) throws SmartFrogDeploymentException {
+    public Prim sfDeployComponentDescription(Object name, Prim parent, ComponentDescription cmp, Context parms) throws SmartFrogDeploymentException {
         // check for attribute already named like given name
         try {
-            Object res = parent == null || name == null ? null : sfResolveHere(name, false);
+            Object res = ((parent == null) || (name == null)) ? null: sfResolveHere(name,false);
 
-            if (res != null && !(res instanceof ComponentDescription)) {
-                throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,
-                            name, cmp, parms,MessageUtil.
-                                formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
+            if ((res != null) && !(res instanceof ComponentDescription)) {
+                sfLog().error("There's already a "+res.getClass()+" at "+name);
+                throw new SmartFrogDeploymentException(null,ComponentHelper.completeNameSafe(parent), name, cmp, parms,MessageUtil.formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
 
             if (sfLog().isTraceEnabled()){
-              StringBuffer message = new StringBuffer();
+              StringBuilder message = new StringBuilder();
               try {
                 message.append(sfCompleteNameSafe());
                 message.append(" is deploying: ");
@@ -118,7 +141,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
                 if (parent != null) {
                   message.append(", Parent: ");
-                  message.append(parent.sfCompleteName());
+                  message.append(ComponentHelper.completeNameSafe(parent));
                 }
                 message.append(", Component description: ");
                 message.append(cmp.toString());
@@ -146,7 +169,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                   result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
-                    //This should throw an excetion when a
+                    //This should throw an exception when a
                     //component is registered without a name
                     //in a processcompound, but compound should not know anything
                     //about processcompound
@@ -163,11 +186,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 try {
                     newRef = parent.sfCompleteName();
                 } catch (Exception ex){
-                    // LOG ex
                     ignoreThrowable("could not get complete name", ex);
                 }
             }
-            if (dex.get(SmartFrogDeploymentException.OBJECT_NAME) != null) {
+            if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME))!=null) {
                 newRef.addElement (ReferencePart.here(name));
             } else {
                 dex.add(SmartFrogDeploymentException.OBJECT_NAME, name);
@@ -185,6 +207,70 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
     }
 
+
+    /**
+       * Adds an attribute to this component under given name. If the attribute
+       * value is a ComponentDescription  then this component is set as its
+       * parent
+       * This methods rejects a double registration of an existing child.
+       *
+       * @param name  name of attribute
+       * @param value value of attribute
+       *
+       * @return added attribute if non-existent or null otherwise
+       *
+       * @throws SmartFrogRuntimeException when name or value are null
+       * @throws RemoteException In case of Remote/nework error
+       */
+      public synchronized Object sfAddAttribute(Object name, Object value) throws SmartFrogRuntimeException, RemoteException {
+          if ((value instanceof Prim) && sfContext.contains (value) && (this.sfContainsChild((Prim)value))) {
+              String message = MessageUtil.formatMessage(MSG_CANNOT_ADD_VALUE_CHILD, name, ((Prim)value).sfCompleteName(), sfCompleteNameSafe());
+              if (sfLog().isDebugEnabled()) sfLog().error ("Debug msg: sfAddAttribute- "+ message);
+              sfLog().info(sfContext);
+              throw new  SmartFrogRuntimeException (message,this);
+          }
+          return super.sfAddAttribute (name, value);
+      }
+
+      /**
+       * Replace named attribute in component context. If attribute is not present
+       * it is added to the context. If the attribute value added is a component
+       * description, then its parent is set to this and/or if the one removed is
+       * a component description then its parent is reset. If the attribute is
+       * defined as requiring injection - the attribute will be injected after the
+       * value of the attribute has been set.
+       * This methods rejects a double registration of an existing child.
+       *
+       * @param name  of attribute to replace
+       * @param value value to add or replace
+       *
+       * @return the old value if present, null otherwise. It old value was a
+       *         component description, then its prim parent is reset.
+       *
+       * @throws SmartFrogRuntimeException when name or value are null, or
+       * injection failed
+       * @throws RemoteException In case of Remote/network error
+       */
+      public synchronized Object sfReplaceAttribute(Object name, Object value) throws SmartFrogRuntimeException, RemoteException {
+          if ((value instanceof Prim) && sfContext.contains (value) && (this.sfContainsChild((Prim)value))) {
+              Object nameInContext = sfContext.sfAttributeKeyFor(value);
+              //If we replace the same object then it is ok. We are not adding a duplicated child, just replacing it again.
+              if ((nameInContext!=null) && !(nameInContext.toString().equals(name.toString()))){
+                  String message = MessageUtil.formatMessage(MSG_CANNOT_ADD_VALUE_CHILD, name, ((Prim)value).sfCompleteName(), sfCompleteNameSafe());
+                  if (sfLog().isDebugEnabled()) sfLog().error ("Debug msg: sfReplaceAttribute- "+ message);
+                  sfLog().info(sfContext);
+                  throw new  SmartFrogRuntimeException (message,this);
+              } else {
+                  if (sfLog().isDebugEnabled()) {
+                      sfLog().warn("Replacing same object: '" + name +"' '"+((Prim)value).sfCompleteName() +"' in '"+ sfCompleteNameSafe() + "'");
+                  }
+              }
+          }          
+          return super.sfReplaceAttribute (name, value);
+      }
+
+
+
     /**
      * A high-level component deployment method - creates a child of this
      * Compound, running it through its entire lifecycle. This is the preferred way
@@ -195,11 +281,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
@@ -222,11 +308,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-        return this.sfCreateNewChild(name, null, cmp, parms);
+        return sfCreateNewChild(name, null, cmp, parms);
     }
 
     /**
@@ -247,7 +333,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
-     * @exception RemoteException In case of Remote/nework error
+     * @exception RemoteException In case of Remote/network error
      */
     public Prim sfCreateNewChild(Object name, Prim parent,
                                  ComponentDescription cmp, Context parms) throws
@@ -255,29 +341,26 @@ public class CompoundImpl extends PrimImpl implements Compound {
         Prim comp = null;
 
         //check for any attempt to create a child in a terminating component, and bail out
-        if(sfIsTerminated() || sfIsTerminating()) {
+        if (sfIsTerminated() || sfIsTerminating()) {
             throw new SmartFrogDeploymentException("Cannot create a child during termination", this);
         }
         //no context? set one up
-        if (parms==null) {
+        if (parms == null) {
             parms = new ContextImpl();
         }
         try {
             // This is needed so that the root component is properly named
             // when registering with the ProcessCompound
-            if ((parent==null)&&(name!=null))parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+            if ((parent == null) && (name != null)) {
+                parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+            }
 
             if (sfLog().isTraceEnabled()) {
                 try {
                     if (parent!=null) {
-                        sfLog().trace("Creating new child '"+name+"' for: "+
-                                      parent.sfCompleteName()+
-                                      ", with description: "+cmp.toString()+
-                                      ", and parameters: "+parms);
+                        sfLog().trace("Creating new child '"+name+"' for: "+ parent.sfCompleteName()+", with description: "+cmp.toString()+ ", and parameters: "+parms);
                     } else {
-                        sfLog().trace("Creating new application: "+name+
-                                      ", with description: "+cmp.toString()+
-                                      ", and parameters: "+parms);
+                        sfLog().trace("Creating new application: "+name+ ", with description: "+cmp.toString()+ ", and parameters: "+parms);
                     }
                 } catch (Exception ex1) {
                     sfLog().trace(ex1.toString());
@@ -289,34 +372,33 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // it is now a child, so need to guard against double calling of lifecycle...
             try {
                 comp.sfDeploy();
+            } catch (SmartFrogLifecycleException thr) {
+                throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
             } catch (Throwable thr) {
-                if (thr instanceof SmartFrogLifecycleException) {
-                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                }
-                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.", thr, this);
+                String message = "Failed to create the new child '" + name + "'.";
+                sfLog().error(message, thr);
+                throw SmartFrogLifecycleException.sfDeploy(message, thr, this);
             }
             try {
                 comp.sfStart(); // otherwise let the start of this component do it...
+            } catch (SmartFrogLifecycleException thr) {
+                throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
             } catch (Throwable thr) {
-                if (thr instanceof SmartFrogLifecycleException) {
-                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                }
-                throw SmartFrogLifecycleException.sfStart("Failed to create a new child.", thr, this);
+                String message = "Failed to start a new child '" + name + "'.";
+                sfLog().error(message,thr);
+                throw SmartFrogLifecycleException.sfStart(message, thr, this);
             }
         } catch (Exception e) {
-            if (comp!=null) {
+            if (comp != null) {
                 Reference compName = null;
                 try { compName = comp.sfCompleteName(); } catch (Throwable thr) { }
                 try {
                     if (parent!=null) {
-                        comp.sfDetachAndTerminate(TerminationRecord.abnormal(
-                            "Deployment Failure: "+e.getMessage(), compName, e));
+                        comp.sfDetachAndTerminate(TerminationRecord.abnormal( "Deployment Failure: "+e.getMessage(), compName, e));
                     } else {
-                        comp.sfTerminate(TerminationRecord.abnormal(
-                            "Deployment Failure: "+e.getMessage(), compName, e));
+                        comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: "+e.getMessage(), compName, e));
                     }
                 } catch (Exception ex) {
-                    //log
                     ignoreThrowable("Could not terminate", ex);
                 }
             }
@@ -326,9 +408,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
             try {
                 if (parent!=null) {
-                    sfLog().trace("New child created: "+comp.sfCompleteName()+ " ");
+                    sfLog().trace("New child created: "+comp.sfCompleteName()+ ' ');
                 } else {
-                    sfLog().trace("New application created: "+ comp.sfCompleteName()+" ");
+                    sfLog().trace("New application created: "+ comp.sfCompleteName()+ ' ');
                 }
             } catch (Exception ex1) {
                 sfLog().trace(ex1.toString());
@@ -342,15 +424,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
     //
 
     /**
-     * Liveness interface to compound. A liveness target must be an attribute
-     * off the compound.
-     *
+     * Add a child. Although the parameter is Liveness,
+     * the implementation casts to a Prim internally: only Prim
+     * children are supported.
      * @param target target to heartbeat
      */
     //public synchronized void sfAddChild(Liveness target) {
     // if synchronized -> locks processCompound when it registers back!
     public void sfAddChild(Liveness target) throws RemoteException {
-        sfChildren.addElement(target);
+        sfChildren.addElement((Prim)target);
         ((Prim)target).sfParentageChanged();
     }
 
@@ -365,7 +447,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
     public boolean sfRemoveChild(Liveness target) throws SmartFrogRuntimeException, RemoteException  {
         boolean res = sfChildren.removeElement(target);
         try {
-          sfRemoveAttribute(sfAttributeKeyFor(target));
+           //Remove all instances of the same target
+           while (sfContainsValue(target)) {
+              sfRemoveAttribute(sfAttributeKeyFor(target));
+            }
         } catch (SmartFrogRuntimeException ex) {
           //Ignore: it happens when attribute does not exist
         }
@@ -389,7 +474,32 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @return enumeration over children
      */
     public Enumeration sfChildren() {
-        return ((Vector) sfChildren.clone()).elements();
+        return new SerializableEnumeration<Prim>(sfChildren);
+    }
+
+    /**
+     * Return a list of all the children. 
+     * This vector is a shallow clone of the internal list; changes to the
+     * list do not affect the internal data structures, though
+     * actions on the children will do so.
+     * It relies on all children implementing Prim.
+     * @since SmartFrog 3.13.003
+     * @return a cloned list of all deployed children
+     */
+    public List<Prim> sfChildList() {
+    	return (List<Prim>)sfChildren.clone();
+    }
+
+    /**
+     * Clone the child list and return a reverse iterator to it.
+     * This iterator walks backwards through the list.
+     * It also implements Iterable, so can act as a factory
+     * for new iterators. This enables the method to be used directly
+     * in a foreach loop.
+     * @return a new Iterator/Iterable of Prim children
+     */
+    public ReverseListIterator<Prim> sfReverseChildren() {
+        return new ReverseListIterator<Prim>(sfChildList());
     }
 
     //
@@ -439,16 +549,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Method that selects the children that compound will drive through their lifecycle
      * The children are stored in 'lifecycleChildren'
-     * @throws SmartFrogDeploymentException
+     * If the deployment fails, a SmartFrogDeploymentException is thrown, and an asynchronous
+     * termination of this component is started.
+     * @throws SmartFrogDeploymentException for any failure to deploy
      */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
-        try { // if an exception is thrown in the super call - the termination is already handled
+      try { // if an exception is thrown in the super call - the termination is already handled
           for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
               Object key = e.nextElement();
               Object elem = sfContext.get(key);
 
-              if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
-                  lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
+              if ((elem instanceof ComponentDescription) && (((ComponentDescription) elem).getEager())) {
+                  lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription) elem, null));
               }
           }
       } catch (Exception sfex) {
@@ -463,7 +575,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @throws SmartFrogException failure deploying compound or
      *            sub-component
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
@@ -493,19 +605,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * raised by a child component.
      */
     protected void sfDeployChildren() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
-        for (Enumeration e = lifecycleChildren.elements(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-            if (elem instanceof Prim) {
-                try{
-                    ((Prim) elem).sfDeploy();
-                } catch (Throwable thr){
-                    String name = "";
-                    try {name =((Prim)elem).sfCompleteName().toString();} catch (RemoteException ex) {};
-                    SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
-                    String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
-                    sflex.add(SmartFrogLifecycleException.DATA,"Failed object class: "+ classFailed);
-                    throw sflex;
-                }
+        for(Prim child:lifecycleChildren) {
+            try {
+                child.sfDeploy();
+            } catch (Throwable thr) {
+                String name = getChildNameSafe(child);
+                SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name, thr, this);
+                String classFailed = child.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", false);
+                sflex.add(SmartFrogLifecycleException.DATA, "Failed object class: " + classFailed);
+                throw sflex;
             }
         }
     }
@@ -516,19 +624,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * to terminate
      *
      * @throws SmartFrogException failed to start compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
             sfStartChildren();
-         } catch (Throwable thr) {
-               // any exception causes termination
-               Reference name = sfCompleteNameSafe();
-               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name));
-               sfGetCoreLog().error("caught on start ("+name.toString()+")", thr);
-               throw SmartFrogLifecycleException.forward(thr);
-         }
+        } catch (Throwable thr) {
+            // any exception causes termination
+            Reference name = sfCompleteNameSafe();
+            sfGetCoreLog().error("caught on start (" + name.toString() + ')', thr);
+            sfTerminate(TerminationRecord.abnormal("sfStart failure: " + thr, name, thr));
+            throw SmartFrogLifecycleException.forward(thr);
+        }
     }
 
     /**
@@ -546,21 +654,31 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     protected void sfStartChildren() throws SmartFrogLifecycleException,
         RemoteException, SmartFrogResolutionException {
-        for (Enumeration e = lifecycleChildren.elements(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-            if (elem instanceof Prim) {
-                try {
-                    ((Prim) elem).sfStart();
-                } catch (Throwable thr){
-                    String name = "";
-                    try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                    SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,this);
-                    sflex.add(SmartFrogLifecycleException.DATA,
-                            "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
-                    throw sflex;
-                }
+        for (Prim child : lifecycleChildren) {
+            try {
+                child.sfStart();
+            } catch (Throwable thr) {
+                String name = getChildNameSafe(child);
+                sfLog().warn("Failed to start child "+name,thr);
+                SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name, thr, this);
+                sflex.add(SmartFrogLifecycleException.DATA,"Failed object class: " + child.sfResolve(SmartFrogCoreKeys.SF_CLASS, "", false));
+                throw sflex;
             }
         }
+    }
+
+    /**
+     * Get the name of a child, or "" for an eror
+     * @param child child to name
+     * @return a string describing the child
+     */
+    private String getChildNameSafe(Prim child) {
+        String name = "";
+        try {
+            name = child.sfCompleteName().toString();
+        } catch (Exception ignore) {
+        }
+        return name;
     }
 
     /**
@@ -574,7 +692,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         //Re-check of sfSynchTerminate to get runtime changes.
         try {
             sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, sfSyncTerminate, false);
-        } catch (Exception sfrex){
+        } catch (Exception ignore){
           //Ignore
         }
         if (sfSyncTerminate) {
@@ -597,9 +715,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
            sfLog().trace("SYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        for (Prim child : sfReverseChildren()) {
             try {
-                ((Prim)sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
+                child.sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
                 // Log
                 ignoreThrowable("ignoring during termination", ex);
@@ -609,7 +727,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * Terminate children asynchronously using a seperate thread for each call.
+     * Terminate children asynchronously using a separate thread for each call.
      * It iterates from the last one created to the first one.
      *
      * @param status status to terminate with
@@ -618,10 +736,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (sfLog().isTraceEnabled()) {
            sfLog().trace("ASYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
-        for (int i = sfChildren.size()-1; i>=0; i--) {
+        for(Prim child:sfReverseChildren()) {
             try {
-                //Deprecated: new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
-                (new TerminatorThread((Prim)(sfChildren.elementAt(i)),status).quietly()).start();
+                new TerminatorThread(child,status).quietly().start();
             } catch (Exception ex) {
                 // ignore
                 ignoreThrowable("ignoring during termination", ex);
@@ -653,9 +770,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfDumpState(target);
         // call sfDumpState in every child.
         // remote childrens are called in a separate thread
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Prim elem = (Prim)e.nextElement();
-            if (ComponentHelper.isRemote(elem)) {
+        for (Prim elem:sfChildList()) {
+            if( elem.equals(this) ) {
+                continue;
+            } else if (ComponentHelper.isRemote(elem)) {
               new DumpCall(elem, target).start();
             } else {
                 String name="unnamed";
@@ -674,7 +792,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Implements ping for a compound. A compound extends prim functionality by
      * pinging each of its children, any failure to do so will call
      * sfLivenessFailure with the compound as source and the errored child as
-     * target. The exception that ocurred is also passed in. This check is
+     * target. The exception that occurred is also passed in. This check is
      * only done if the source is non-null and if the source is the parent (if
      * parent exists). If there is no parent and the source is non-null the
      * check is still done.
@@ -683,8 +801,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogLivenessException liveness failed
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException,
-            RemoteException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         // check the timing of the parent pings
         super.sfPing(source);
 
@@ -721,8 +838,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Override this method to implement different child ping behaviour.
      */
     protected void sfPingChildren() {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Liveness child = (Liveness) e.nextElement();
+        for(Liveness child:sfChildren) {
             sfPingChildAndTerminateOnFailure(child);
         }
     }
@@ -750,19 +866,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param child child to send to
      *
      * @throws SmartFrogLivenessException failed to ping child
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     protected void sfPingChild(Liveness child) throws SmartFrogLivenessException, RemoteException {
         child.sfPing(this);
     }
 
     /**
-     * Parentage changed in component hierachy. A notification is sent to all
+     * Parentage changed in component hierarchy. A notification is sent to all
      * children.
      */
     public void sfParentageChanged() throws RemoteException {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-             Prim p = (Prim)(e.nextElement());
+    	for (Prim p:sfChildList()) {
              p.sfParentageChanged();
         }
         super.sfParentageChanged();
@@ -771,8 +886,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * handler for any throwable/exception whose throwing is being ignored
-     * @param message
-     * @param thrown
+     * @param message message
+     * @param thrown what is being ignored
      */
     private void ignoreThrowable(String message,Throwable thrown) {
         sfGetCoreLog().ignore(message, thrown);
@@ -829,35 +944,28 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Inform component (and children, typically) that an update is about to take place.
      * Normally a component would quiesce its activity
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - not OK to update
+     * @throws RemoteException
+     * @throws SmartFrogException - not OK to update
      */
     public synchronized void sfPrepareUpdate() throws RemoteException, SmartFrogException {
         super.sfPrepareUpdate();
         // iterate over all children, preparing them for update.
         // if an exception is returned, trigger an abandon downwards and return an exception
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
-            if (p instanceof Update) {
-                ((Update) p).sfPrepareUpdate();
-            } else {
-                sfAbandonUpdate();
-                throw new SmartFrogUpdateException("Component not fully updateable, comopnent " +
-                        sfCompleteNameSafe() + " attribute " + sfContext.sfAttributeKeyFor(p));
-            }
+        for (Prim p: sfChildList()) {
+            p.sfPrepareUpdate();
         }
     }
 
-    protected Vector childrenToTerminate;
-    protected Vector childrenToUpdate;
-    protected Vector childrenToCreate;
+    protected Vector<Prim> childrenToTerminate;
+    protected Vector<Prim> childrenToUpdate;
+    protected Vector<Object> childrenToCreate;
 
     /**
      * Validate whether the component (and its children) can be updated
      * @param newCxt - the data that will replace the original context
      * @return true - OK to update, false - OK to terminate and redeploy, exception - not OK to update
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, not OK to update
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException - failure, not OK to update
      */
     public synchronized boolean sfUpdateWith(Context newCxt) throws RemoteException, SmartFrogException {
         // validate the description, return false if it requires termination, exception to fail
@@ -866,9 +974,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
         //     identify those that should be terminated  (returned false)
         //     those to be updated (return true)
         // return true
-        childrenToTerminate = new Vector(); //Prims
-        childrenToUpdate = new Vector();    //Prims
-        childrenToCreate = new Vector();    // Names
+        childrenToTerminate = new Vector<Prim>(); //Prims
+        childrenToUpdate = new Vector<Prim>();    //Prims
+        childrenToCreate = new Vector<Object>();    // Names
 
         super.sfUpdateWith(newCxt);
 
@@ -882,23 +990,24 @@ public class CompoundImpl extends PrimImpl implements Compound {
             Object currentValue = sfContext().get(key);
             if (value instanceof ComponentDescription) {
                 if (((ComponentDescription)value).getEager()) {
-                   // if there is a componment of the same name - stash as a name to update
+                   // if there is a component of the same name - stash as a name to update
                    // if there is no component, then stash as a name to create
-                   if (currentValue == null)
+                   if (currentValue == null) {
                        childrenToCreate.add(key);
+                   }
                    else
-                       if (currentValue instanceof Prim) childrenToUpdate.add(currentValue);
+                       if (currentValue instanceof Prim) {
+                           childrenToUpdate.add((Prim) currentValue);
+                       }
                 }
             }
         }
 
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
+        for (Prim p:sfChildList()) {
             // get the name, if it is not in the to be updated vector, add it to the to be terminated vector
-            Prim p = (Prim) e.nextElement();
-            Object key = sfContext().keyFor(p);
+            Object key = sfContext().sfAttributeKeyFor(p);
             if (childrenToUpdate.contains(p)) {
-                if (p instanceof Update) {
-                    if (((Update) p).sfUpdateWith(((ComponentDescription)newContext.get(key)).sfContext())) {
+                    if (p.sfUpdateWith(((ComponentDescription)newContext.get(key)).sfContext())) {
                         // every thing OK
                     } else {
                         // refused to update as is- sf attribute change for example - redeploy...
@@ -906,11 +1015,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
                         childrenToTerminate.add(p);
                         childrenToCreate.add(key);
                     }
-                } else {
-                    sfAbandonUpdate();
-                    throw new SmartFrogUpdateException("Component not fully updateable, comopnent " +
-                            sfCompleteNameSafe() + " attribute " + key);
-                }
             } else {
                 childrenToTerminate.add(p);
             }
@@ -922,39 +1026,35 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Carry out the context update - no roll back from this point on.
      * Terminates children that need terminating, create and deployWith children that need to be
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException - failure, to be treated like a normal lifecycle error, by default with termination
      */
     public synchronized void sfUpdate() throws RemoteException, SmartFrogException {
-         Reference componentId = sfCompleteName();
-         if (sfIsTerminated) {
+        Reference componentId = sfCompleteName();
+        if (sfIsTerminated) {
             throw new SmartFrogUpdateException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()));
         }
         if (updateAbandoned) throw new SmartFrogUpdateException("update already abandoned " + componentId.toString());
 
         // detach and terminate all children  which must disappear
-        for (Enumeration e = childrenToTerminate.elements(); e.hasMoreElements(); ) {
-            Prim p = (Prim)e.nextElement();
+        for (Prim p: childrenToTerminate) {
             p.sfDetachAndTerminate(TerminationRecord.normal(sfCompleteNameSafe()));
         }
 
         // make sure that the children are in the new context, replacing the ComponentDescriptions
-        for (Enumeration e = childrenToUpdate.elements(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
+        for (Prim p:childrenToUpdate) {
             newContext.put(sfContext.sfAttributeKeyFor(p), p);
         }
 
         // update context
         sfContext = newContext;
 
-        for (Enumeration e = childrenToUpdate.elements(); e.hasMoreElements(); ) {
-            Update u = (Update) e.nextElement();
-            u.sfUpdate();
+        for (Prim p : childrenToUpdate) {
+            p.sfUpdate();
         }
 
         // create new children,
-        for (Enumeration e = childrenToCreate.elements(); e.hasMoreElements(); ) {
-            Object name = e.nextElement();
+        for (Object name:childrenToCreate) {
             ComponentDescription d = (ComponentDescription) newContext.get(name);
             sfDeployComponentDescription(name, this, d, null);
         }
@@ -968,20 +1068,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Next phase of start-up after update - includes calling sfDeply on new children
      * Errors are considered terminal unless behaviour overridden.
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
 
     public synchronized void sfUpdateDeploy() throws RemoteException, SmartFrogException {
         super.sfUpdateDeploy();
 
         // sfUpdateDeploy() all previously existing children, sfDeploy() new ones
-        for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
-            Update child = (Update) e.nextElement();
+        for (Prim child:sfChildList()) {
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateDeploy();
             }  else {
-                ((Prim)child).sfDeploy();
+                child.sfDeploy();
             }
         }
         //
@@ -991,19 +1090,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * Final phase of startup after update - includes calling sfStart on new children
      * Errors are considered terminal unless behaviour overridden.
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
     public synchronized void sfUpdateStart() throws RemoteException, SmartFrogException {
         super.sfUpdateStart();
 
         // sfUpdateStart() all previously existing children, sfStart() new ones
-        for (Enumeration e = sfChildren.elements(); e.hasMoreElements(); ) {
-            Update child = (Update) e.nextElement();
+        for (Prim child:sfChildList()) {
             if (childrenToUpdate.contains(child)) {
                 child.sfUpdateStart();
             }  else {
-                ((Prim)child).sfStart();
+                child.sfStart();
             }
         }
         //
@@ -1012,24 +1110,25 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * Can occur after prepare and check, but not afterwards to roll back from actual update process.
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException  In case of Remote/network error
      */
     public synchronized void sfAbandonUpdate() throws RemoteException {
         // notify all children of the abandon, ignoring all errors?
         // only occurs after failure of prepare or updatewith, future failure considered fatal
-        if (updateAbandoned) return;
+        if (updateAbandoned) {
+            return;
+        }
         updateAbandoned = true;
-        for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
-            Prim p = (Prim) e.nextElement();
-            if (p instanceof Update) ((Update) p).sfAbandonUpdate();
+        for (Prim p : sfChildList()) {
+            p.sfAbandonUpdate();
         }
     }
 
     /**
      * Control of complete update process for a component, running through all the above phases.
-     * @param desc
-     * @throws java.rmi.RemoteException
-     * @throws SmartFrogUpdateException
+     * @param desc new component description
+     * @throws RemoteException  In case of Remote/network error
+     * @throws SmartFrogException other problems
      */
     public void sfUpdateComponent(ComponentDescription desc) throws RemoteException, SmartFrogException {
         boolean ready;

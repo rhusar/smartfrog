@@ -21,18 +21,17 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
-import org.smartfrog.sfcore.deployer.CoreClassesClassLoadingEnvironment;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+
 
 
 /**
@@ -42,15 +41,17 @@ public class CheckSchemaElement extends BaseFunction {
 
     /**
      * Method to check if a class is compliant with predicate sfClass attribute.
-     * It thorws an exception if it failes to check the attributes.
+     * It throws an exception if it fails to check the attributes.
+     * @param attribute the attribute name
      * @param value the value of the attribute to check
      * @param optional boolean that indicates if the attributes is optional
      * @param binding type of binding for the class
+     * @param schemaClass class type that is specified in the schema
      * @param description description for the schema entry
      * @param errorString error string used to prefix error messages
      * @throws SmartFrogAssertionResolutionException failed to check the attributes
      */
-    private void checkSchemaClass(Object value, String name,
+    private void checkSchemaClass(Object value, String attribute,
                                   boolean optional, String binding,
                                   Object schemaClass, String description,
                                   String errorString) throws SmartFrogAssertionResolutionException {
@@ -59,7 +60,7 @@ public class CheckSchemaElement extends BaseFunction {
                return;
            } else {
                throw new SmartFrogAssertionResolutionException (
-                     errorString + "non-optional attribute "+ getNameAndDescription(name,description)+" is missing" , null, null, null
+                     errorString + "non-optional attribute "+ getNameAndDescription(attribute,description)+" is missing" , null, null, null
                     );
            }
         }
@@ -78,23 +79,28 @@ public class CheckSchemaElement extends BaseFunction {
 
                 if (!condition)
                     throw new SmartFrogAssertionResolutionException (
-                           "errorString + (lazy) reference value for non-reference eager attribute " + getNameAndDescription(name,description), null, null, null
+                           "errorString + (lazy) reference value for non-reference eager attribute " + getNameAndDescription(attribute,description), null, null, null
                         );
             } else {
                 if (binding.equals("lazy"))
                     throw new SmartFrogAssertionResolutionException (
-                           errorString + "non-reference value found for lazy attribute " + getNameAndDescription(name, description),
+                           errorString + "non-reference value found for lazy attribute " + getNameAndDescription(attribute,description)+"",
                            null, null, null
                         );
-                  else if (!isValidClass(schemaClass, value))
+                  //else if (!(valueClass.equals("anyClass")) && !(SFClassLoader.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+                  else if (!(isValidClass(schemaClass,value)))
                     throw new SmartFrogAssertionResolutionException (
-                           errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + schemaClass + ", found: " + testvalueClass,
+                           errorString + "wrong class found for attribute " + getNameAndDescription(attribute,description)+ ", expected: " + schemaClass + ", found: " + testvalueClass,
                            null, null, null
                         );
             }
         } catch (Throwable e) {
-            throw (SmartFrogAssertionResolutionException) SmartFrogAssertionResolutionException.forward
-                    ("error checking attribute " + getNameAndDescription(name, description), e);
+            if (!(e instanceof SmartFrogAssertionResolutionException))
+                throw new SmartFrogAssertionResolutionException (
+                     "error checking attribute " + getNameAndDescription(attribute,description), e, null, null
+                    );
+            else
+                throw (SmartFrogAssertionResolutionException)e;
         }
     }
 
@@ -109,17 +115,17 @@ public class CheckSchemaElement extends BaseFunction {
      * @return if the class found is complaint with schema or not.
      */
     private boolean isValidClass (Object schemaClass, Object foundClassToValidate)
-       throws ClassNotFoundException, SmartFrogAssertionResolutionException {
+       throws java.lang.ClassNotFoundException, SmartFrogAssertionResolutionException {
         if (schemaClass instanceof String ) {
            return isValidClass ((String) schemaClass, foundClassToValidate);
-        } else if (schemaClass instanceof Vector) {
+        } else if (schemaClass instanceof Vector ){
             Vector schemaClassV = (Vector) schemaClass;
             for (Enumeration keys = schemaClassV.elements(); keys.hasMoreElements(); ) {
                if (isValidClass(keys.nextElement().toString(),foundClassToValidate)){
                    return true;
                }
             }
-        } else {
+        } else{
             throw new SmartFrogAssertionResolutionException (
                       " wrong type in Class schema attribute. Only String or Vector [String,..] are allowed for attribute " +
                         name);
@@ -134,36 +140,37 @@ public class CheckSchemaElement extends BaseFunction {
      * @return true if object class is equal or descedant from schema class.
      * @throws java.lang.ClassNotFoundException
      */
-    private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws ClassNotFoundException {
-        ClassLoadingEnvironment env = (ClassLoadingEnvironment) context.get(SmartFrogCoreKeys.SF_CLASS_LOADING_ENVIRONMENT);
-        if (env == null) env = new CoreClassesClassLoadingEnvironment();
-        return schemaClass.equals("anyClass")
-                || env.loadClass(schemaClass).isAssignableFrom(foundClassToValidate.getClass());
+    private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
+        return ((schemaClass.equals("anyClass"))
+                ||
+                (SFClassLoader.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
     }
 
     /**
      * Composes a string using name and description strings
-     * @param name for an attribute
+     * @param attribute name of an attribute
      * @param description for the attribute
-     * @return string 'name' or 'name(description)'
+     * @return string the attribute name, with the description if present, both in single quotes. 
      */
-    private String getNameAndDescription (Object name, String description){
-          if (description.length() == 0)
-              return "'" + name + "'";
+    private String getNameAndDescription (Object attribute, String description){
+          if (description.equals(""))
+              return "'"+attribute+"'";
           else
-              return "'" + name + " (" + description + ')' + "'";
+              return "'"+attribute+" ("+description+")"+"'";
     }
     /**
      * Applies predicates.
      * @throws SmartFrogAssertionResolutionException if fail to apply predicates.
      */
     protected Object doFunction() throws SmartFrogAssertionResolutionException {
-        String name = (String) context.get("name");
+        String elementname = (String) context.get("name");
+
+        
 
         Object value = null;
         Reference attributeRef = new Reference();
         attributeRef.addElement(ReferencePart.parent());
-        attributeRef.addElement(ReferencePart.here(name));
+        attributeRef.addElement(ReferencePart.here(elementname));
         try {
             if (rr != null) {
                 value = rr.sfResolve(attributeRef);
@@ -183,17 +190,19 @@ public class CheckSchemaElement extends BaseFunction {
         if (description == null) description = "";
 
         String errorString = "error in schema: ";
+        //errorString = errorString +
+        //   (description.equals("") ? ": ": "(" + description + "): " ) ;
 
         String binding = (String)context.get("binding");
         if (!(binding.equals("anyBinding") || binding.equals("eager") || binding.equals("lazy") )) {
             throw new SmartFrogAssertionResolutionException (
-                     errorString + "binding not valid value for attribute '" + name + "'", null, null, null
+                     errorString + "binding not valid value for attribute '" + elementname + "'", null, null, null
             );
         }
         Object schemaClass = context.get("class");
         boolean optional = ((Boolean)context.get("optional")).booleanValue();
 
-        checkSchemaClass(value, name, optional, binding, schemaClass, description, errorString);
+        checkSchemaClass(value, elementname, optional, binding, schemaClass, description, errorString);
         return Boolean.TRUE;
     }
 

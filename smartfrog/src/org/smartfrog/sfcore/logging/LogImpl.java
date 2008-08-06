@@ -20,23 +20,31 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.Logger;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.io.Serializable;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
+import org.smartfrog.sfcore.common.*;
 import java.util.Vector;
 
 public class LogImpl implements LogSF, LogRegistration, Serializable {
@@ -253,10 +261,15 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             loadStartUpLoggers(name, configurationClass, configurationCodeBase, loggersConfiguration);
 
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
-            int i= getLevel(localLog);
+            int i = 3;
+            if (localLog instanceof LogLevel) {
+                i = ((LogLevel)localLog).getLevel();
+            } else {
+                i= getLevel(localLog);
+            }
             if (currentLogLevel>i){
               setLevel(i);
-            }
+            }            
 
         } catch (Exception ex ){
             String msg = "Error during initialization of localLog for LogImpl. Next trying to use Default (LogToFile)";
@@ -309,14 +322,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
             localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
-            if (localLog.isDebugEnabled()) localLog.debug("Logger registered: "+ localLog.getClass());
+            if (localLog.isTraceEnabled()) localLog.trace("Logger registered: "+ localLog.getClass().toString());
         } else if (configurationClass instanceof Vector) {
             String className = null;
-            ComponentDescription loggerConfiguration;
-            Log logger;
-            for (int i = 0; i<((Vector) configurationClass).size(); i++) {
+            ComponentDescription loggerConfiguration = null;
+            Log logger = null;
+            for (int i = 0; i<((Vector)configurationClass).size(); i++) {
                 try {
-                    className = (String)((List)configurationClass).get(i);
+                    className = (String)((Vector)configurationClass).get(i);
                     loggerConfiguration = (ComponentDescription)loggersConfiguration.get(i);
                     logger = loadLogger(name, loggerConfiguration,
                                         new Integer(currentLogLevel), className,
@@ -326,11 +339,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                     } else {
                         register("localLog"+i, logger);
                     }
-                    if (isDebugEnabled()) {
-                        debug("Logger registered: " + logger.getClass());
+                    if (isTraceEnabled()) {
+                        trace("Logger registered: "+logger.getClass().toString());
                     }
                 } catch (Exception ex) {
-                   if (i == 0) {
+                   if (i ==0) {
                        throw (SmartFrogLogException)SmartFrogLogException.forward("Fail to register mandatory logger",ex);
                    } else {
                        if ((localLog!=null)&&isErrorEnabled()){
@@ -340,7 +353,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 }
             }
         }
-        if (localLog == null) throw new SmartFrogLogException("The local log could not be initialized properly"); 
     }
 
     /**
@@ -354,7 +366,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         Object configurationClass, Vector defaultLoggersConfiguration) throws SmartFrogResolutionException {
         Vector loggersConfiguration = new Vector();
         ComponentDescription defaultConfig = null;
-        String className;
+        String className=null;
         if (configurationClass instanceof String){
              if ((defaultLoggersConfiguration!=null)&& (defaultLoggersConfiguration.size()>=1)){
                  defaultConfig = (ComponentDescription)defaultLoggersConfiguration.firstElement();
@@ -404,7 +416,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param configurationClass configurationClass Object
      * @param defaultConfig configuration Object returned if nothing is found
      * @return componentdescription configuration found or default value if nothing was found or null if
-     * a problem ocurred
+     * a problem occurred
      * @throws SmartFrogResolutionException if failed to resolve
      */
     private Object getConfigurationForClass(ComponentDescription componentDescription, String configurationClass, ComponentDescription defaultConfig) throws SmartFrogResolutionException {
@@ -412,7 +424,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             return defaultConfig;
         }
         String className = configurationClass.substring(configurationClass.lastIndexOf("."));
-        return componentDescription.sfResolve(className + "Config", defaultConfig, false);
+        return componentDescription.sfResolve(className+"Config", defaultConfig, false);
     }
 
     /**
@@ -445,7 +457,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /**
      *  Registered inputs, distribution list
      */
-    protected final Hashtable registeredLogs = new Hashtable();
+    protected Hashtable registeredLogs = new Hashtable();
 
     //LogImpl configuration
 
@@ -463,7 +475,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
    public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
           throws SmartFrogLogException{
           try {
-            Class deplClass = Class.forName(targetClassName);
+            Class deplClass = Class.forName(targetClassName, targetCodeBase, true);
 
             Class[] deplConstArgsTypes = { String.class, ComponentDescription.class , Integer.class };
 
@@ -684,24 +696,24 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *
      * Is current log level enabled?
      *
-     * @param log  logger
+     * @param logger  logger
      * @return boolean
      */
-     private boolean isCurrentLevelEnabled(Log log) {
+     private boolean isCurrentLevelEnabled(Log logger) {
          if (currentLogLevel >=LOG_LEVEL_OFF) {
              return false;
          } else if (currentLogLevel==LOG_LEVEL_FATAL) {
-             return log.isFatalEnabled();
+             return logger.isFatalEnabled();
          } else if (currentLogLevel==LOG_LEVEL_ERROR) {
-             return log.isErrorEnabled();
+             return logger.isErrorEnabled();
          } else if (currentLogLevel==LOG_LEVEL_WARN) {
-             return log.isWarnEnabled();
+             return logger.isWarnEnabled();
          } else if (currentLogLevel==LOG_LEVEL_INFO) {
-             return log.isInfoEnabled();
+             return logger.isInfoEnabled();
          } else if (currentLogLevel==LOG_LEVEL_DEBUG) {
-             return log.isDebugEnabled();
+             return logger.isDebugEnabled();
          } else if (currentLogLevel==LOG_LEVEL_TRACE) {
-             return log.isTraceEnabled();
+             return logger.isTraceEnabled();
          } else if (currentLogLevel<=LOG_LEVEL_ALL) {
              return true;
          }
@@ -983,8 +995,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void err(Object message){
-        Throwable thrNull = null;
-        err (message, (Throwable)thrNull);
+        err (message, null);
     }
 
     /**
@@ -1118,8 +1129,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param tr log the TerminationRecord
      */
     public void info(Object message, SmartFrogException cause, TerminationRecord tr){
-        info(LogUtils.format(message, tr), LogUtils.extractCause(cause, tr));
+        info(message + LogUtils.stringify(tr), LogUtils.extractCause(cause, tr));
     }
+
 
     /**
      * <p> Log an error with info log level. </p>
@@ -1127,8 +1139,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      * @param t log this cause
      */
-    public void info(Object message, SmartFrogException t) {
-        info(message, (Throwable)t);
+    public void info(Object message, SmartFrogException t){
+        info(message,(Throwable)t);
     }
 
 
@@ -1139,8 +1151,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      * @param tr log this TerminationRecord
      */
-    public void warn(Object message, SmartFrogException t, TerminationRecord tr) {
-        warn(LogUtils.format(message, tr), LogUtils.extractCause(t, tr));
+    public void warn(Object message, SmartFrogException t, TerminationRecord tr){
+        warn(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1162,8 +1174,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      * @param tr log this TerminationRecord
      */
-    public void error(Object message, SmartFrogException t, TerminationRecord tr) {
-        error(LogUtils.format(message, tr), LogUtils.extractCause(t, tr));
+    public void error(Object message, SmartFrogException t, TerminationRecord tr){
+        error(message + "\n " + LogUtils.stringify(tr), LogUtils.extractCause(t, tr));
     }
 
 
@@ -1173,7 +1185,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      * @param t log this cause
      */
-    public void error(Object message, SmartFrogException t) {
+    public void error(Object message, SmartFrogException t){
         error(message,(Throwable)t);
     }
 
@@ -1185,7 +1197,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      * @param tr log this TerminationRecord
      */
-    public void fatal(Object message, SmartFrogException t, TerminationRecord tr) {
+    public void fatal(Object message, SmartFrogException t, TerminationRecord tr){
         fatal(message,(Throwable)t);
     }
 
@@ -1196,7 +1208,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      * @param t log this cause
      */
-    public void fatal(Object message, SmartFrogException t) {
+    public void fatal(Object message, SmartFrogException t){
         fatal(message,(Throwable)t);
     }
 
@@ -1205,13 +1217,13 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * Log Registration interface
      *
      * @param name log name
-     * @param log logger to register
+     * @param logger logger to register
      * @throws SmartFrogLogException  if failed to register
      * @throws RemoteException in case of remote/network error
      */
-    public void register(String name,Log log) throws SmartFrogLogException, RemoteException {
+    public void register(String name,Log logger)  throws SmartFrogLogException , RemoteException{
         try {
-            registeredLogs.put(logName + "." + name, log);
+            registeredLogs.put(logName+"."+name, logger);
         } catch (Exception ex) {
             throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
         }
@@ -1220,14 +1232,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /**
      *  Log Registration interface
      * @param name log name
-     * @param log logger to register
+     * @param logger logger to register
      * @param logLevel  log level
      * @throws RemoteException in case of remote/network error
      * @throws SmartFrogLogException if failed to register
      */
-   public void register(String name,Log log, int logLevel) throws RemoteException, SmartFrogLogException {
-       register(name,log);
-       if (currentLogLevel >= logLevel) currentLogLevel = logLevel;       
+   public void register(String name,Log logger, int logLevel)  throws RemoteException, SmartFrogLogException{
+       register(name,logger);
+       if (currentLogLevel>=logLevel){
+         currentLogLevel=logLevel;
+       }
    }
 
     /**
@@ -1239,7 +1253,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public boolean deregister(String name)  throws SmartFrogLogException, RemoteException {
        try {
-           return registeredLogs.remove(logName + "." + name) != null;
+           if (registeredLogs.remove(logName+"."+name) == null) {
+              return false;
+           } else {
+              return true;
+           }
 
        } catch (Exception ex) {
             throw (SmartFrogLogException)SmartFrogLogException.forward(ex);

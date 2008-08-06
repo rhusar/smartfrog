@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.Vector;
 
 
@@ -90,12 +91,14 @@ public class SFSystem implements MessageKeys {
     private static boolean noExitCode = false;
 
     /** Core Log  */
-    private static LogSF sflog = null;
+    private static  LogSF sflog = null;
+
 
     /**
      * root process. Will be null after termination.
      */
-    private ProcessCompound rootProcess;
+    private ProcessCompound rootProcess = null;
+    
     public static final String HEADLESS_MODE_MESSAGE = "Running in headless mode";
 
     /**
@@ -109,11 +112,9 @@ public class SFSystem implements MessageKeys {
      */
     public static String getProperty(String key, String def) {
         String res = System.getProperty(key, def);
-
         if (res == null) {
             return def;
         }
-
         return res;
     }
 
@@ -202,15 +203,14 @@ public class SFSystem implements MessageKeys {
 
         Properties sysProps = System.getProperties();
 
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            Object key = e.nextElement();
+        for (Object key : props.keySet()) {
             sysProps.put(key, props.get(key));
         }
 
         System.setProperties(sysProps);
-        if (sflog!=null) { // This method cannot be called before LogSystem was initialized
+        if (sflog != null) { // This method cannot be called before LogSystem was initialized
             if (sfLog().isTraceEnabled()) {
-                sfLog().trace("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
+                sfLog().trace("New system properties: \n" + sysProps.toString().replace(',', '\n'));
             }
         }
     }
@@ -286,20 +286,57 @@ public class SFSystem implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo(){
-        sfLog().out(Version.versionString()+System.getProperty("line.separator")+Version.copyright());
+        String lineS = System.getProperty("line.separator");
+        sfLog().out(lineS+Version.versionString()+lineS+Version.copyright()+lineS);
     }
 
     /**
      * Runs a set (vector) of configuration descriptors
      * @param cfgDescs Vector of ConfigurationDescriptors
+     * @param terminateOnFailure should we termiante on failure
      * @see ConfigurationDescriptor
      */
 
-    public static void runConfigurationDescriptors (Vector cfgDescs) {
-        if (cfgDescs==null) return;
-        for (Enumeration items = cfgDescs.elements(); items.hasMoreElements();) {
-           runConfigurationDescriptor((ConfigurationDescriptor)items.nextElement());
+    public static void runConfigurationDescriptors(Vector<ConfigurationDescriptor> cfgDescs,
+                                                   boolean terminateOnFailure) {
+        if (cfgDescs == null) {
+            return;
         }
+
+        if (!terminateOnFailure) {
+            for (ConfigurationDescriptor cdesc : cfgDescs) {
+                runConfigurationDescriptor(cdesc);
+            }
+        } else {
+            //Store successful DEPLOY actions only
+            boolean terminateSuccessfulDeployments = false;
+            Stack<ConfigurationDescriptor> deployedStack = new Stack<ConfigurationDescriptor>();
+            ConfigurationDescriptor last = null;
+            for (ConfigurationDescriptor cdesc : cfgDescs) {
+                last = cdesc;
+                runConfigurationDescriptor(cdesc);
+                if (cdesc.getResultType() != ConfigurationDescriptor.Result.SUCCESSFUL) {
+                    terminateSuccessfulDeployments = true;
+                    break;
+                }
+                // if it was a successful DEPLOY action then store it just in case we need to terminate it.
+                if (cdesc.getActionType() == ConfigurationDescriptor.Action.DEPLOY) {
+                    deployedStack.push(cdesc);
+                }
+            }
+            if (terminateSuccessfulDeployments) {
+                //Terminate last one just in case
+                if (last != null) {
+                    last.terminateDeployedResult();
+                }
+                //Terminate the successful ones
+                while (!deployedStack.empty()) {
+                    deployedStack.pop().terminateDeployedResult();
+                }
+            }
+        }
+
+
     }
 
     /**
@@ -332,10 +369,11 @@ public class SFSystem implements MessageKeys {
 
         try {
             initSystem();
-            return configuration.execute(null);
+            Object targetC=configuration.execute(null);
+            return targetC;
 
         } catch (Throwable thrown) {
-            if (configuration.resultException == null) {
+            if (configuration.getResultException() == null) {
                 configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,thrown);
             } else {
                 if (!throwException){
@@ -358,13 +396,14 @@ public class SFSystem implements MessageKeys {
      * details
      */
     public static void main(String[] args) {
-        new SFSystem().execute(args);
+        SFSystem system=new SFSystem();
+        system.execute(args);
     }
 
 
     /**
      * This is the implementation of the main function.
-     * @param args
+     * @param args execution arguments
      */
     public void execute(String args[]) {
 
@@ -376,25 +415,28 @@ public class SFSystem implements MessageKeys {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(ex);
                 }
-            } catch (Exception ex1) {ex1.printStackTrace();}
+            } catch (Throwable ex1) {ex.printStackTrace();}
             exitWith("Failed to initialize SmartFrog", ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
-        setRootProcess(null);
-
+        //SmartFrog version info
         showVersionInfo();
+        logInitStatus();
 
+        //read command line options
         OptionSet opts = new OptionSet(args);
+
+        //engage headless mode
+        maybeGoHeadless(opts);
 
         maybeShowDiagnostics(opts);
 
         if (opts.errorString != null) {
             exitWith(opts.errorString, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
-        //engage headless mode
-        maybeGoHeadless(opts);
+
         try {
-            setRootProcess(runSmartFrog(opts.cfgDescriptors));
+            setRootProcess(runSmartFrog(opts.cfgDescriptors,opts.terminateOnDeploymentFailure));
         } catch (SmartFrogException sfex) {
             sfLog().out(sfex);
             exitWithException(sfex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
@@ -405,10 +447,12 @@ public class SFSystem implements MessageKeys {
             sfLog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
             exitWithException(cex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (RemoteException rmiEx) {
+            // log stack trace
             sfLog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
             exitWithException(rmiEx, ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (Exception ex) {
+            //log stack trace
             sfLog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             exitWithException(ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
@@ -416,7 +460,7 @@ public class SFSystem implements MessageKeys {
 
         //Report Actions successes or failures.
          boolean somethingFailed = false;
-         ConfigurationDescriptor cfgDesc;
+         ConfigurationDescriptor cfgDesc = null;
          for (Enumeration items = opts.cfgDescriptors.elements();
               items.hasMoreElements(); ) {
              cfgDesc = (ConfigurationDescriptor)items.nextElement();
@@ -424,9 +468,9 @@ public class SFSystem implements MessageKeys {
                  somethingFailed = true;
 		         opts.exitCode = ExitCodes.EXIT_ERROR_CODE_GENERAL;
              }
-             sfLog().out(" - " + cfgDesc.statusString() + System.getProperty("line.separator"));
-             if (cfgDesc.resultException!=null) {
-               sfLog().ignore(cfgDesc.resultException);
+             sfLog().out(" - "+(cfgDesc).statusString()+"\n");
+             if (sfLog().isIgnoreEnabled() && cfgDesc.getResultException()!=null){
+               sfLog().ignore(cfgDesc.getResultException());
             }
          }
         // Check for exit flag
@@ -447,8 +491,19 @@ public class SFSystem implements MessageKeys {
                 }
                 //ignore.
             }
-            sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":" + port + "]") + " " + new Date(System.currentTimeMillis()));
+            sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, '[' + name + ':' + port + ']') + ' ' + new Date(System.currentTimeMillis()));
         }
+    }
+
+    public void logInitStatus() {
+        //SmartFrog security warning messages
+        logSecurityStatus();
+        //Notify special properties status
+        Logger.logStatus();
+        //SmartFrog classpath
+        logClassPath();
+        //SmartFrog network status checks
+        logNetworkStatus();        
     }
 
     protected void exitWithException(Exception sfex, int errorcode) {
@@ -464,9 +519,8 @@ public class SFSystem implements MessageKeys {
      */
     private void maybeShowDiagnostics(OptionSet opts) {
       if (opts.diagnostics){
-        //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
-        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
+        Diagnostics.doReport(report);
         sfLog().out(report.toString());
       }
     }
@@ -482,20 +536,20 @@ public class SFSystem implements MessageKeys {
         }
     }
 
-    private void maybeGoNoExitCodeOptionSet(OptionSet opts)
 
-    {
-        if (opts.headless) {
-            sfLog().info(HEADLESS_MODE_MESSAGE);
-            System.setProperty("java.awt.headless", "true");
-        }
-    }
+//  Was this used? - Julio - if not, then remove.
+//    private void maybeGoNoExitCodeOptionSet(OptionSet opts) {
+//        if (opts.headless) {
+//            sfLog().info(HEADLESS_MODE_MESSAGE);
+//            System.setProperty("java.awt.headless", "true");
+//        }
+//    }
 
     /**
      * Prints StackTrace
      * @param thr Throwable
      */
-    private void printStackTrace(Throwable thr){
+    public void printStackTrace(Throwable thr){
       System.err.println(MessageUtil.formatMessage(MSG_STACKTRACE_FOLLOWS)+"' "+
                          ConfigurationDescriptor.parseExceptionStackTrace(thr,"\n"+"   ")+" '");
     }
@@ -514,16 +568,35 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
-        Exception {
-        ProcessCompound process;
-        process = runSmartFrog();
-        if (cfgDescriptors!=null){
-            runConfigurationDescriptors(cfgDescriptors);
-        }
-        return process;
+    public static ProcessCompound runSmartFrog(Vector<ConfigurationDescriptor> cfgDescriptors) throws Exception {
+        return runSmartFrog (cfgDescriptors, false);
     }
 
+   /**
+     * Run SmartFrog as configured. This call does not exit SmartFrog, even if the OptionSet requests it.
+     * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
+     * Important: things like the output streams can be redirected inside this call
+     * @param  cfgDescriptors Vector of Configuration  opts with list of ConfigurationDescriptors
+     *         @see ConfigurationDescriptor
+     * @param terminateOnFailure boolean. When true, if any of the deployments fails then any
+    *         deployment from cfgDescriptors that previouly succeeded will be terminated (in reverse order of deployment).
+     * @return the root process
+     * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws UnknownHostException if the target host is unknown
+     * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
+     * @throws RemoteException if something goes wrong during the communication
+     * @throws Exception if anything else went wrong
+     */
+
+   public static ProcessCompound runSmartFrog(Vector<ConfigurationDescriptor> cfgDescriptors,
+                                              boolean terminateOnFailure) throws Exception {
+       ProcessCompound process;
+       process = runSmartFrog();
+       if (cfgDescriptors != null) {
+           runConfigurationDescriptors(cfgDescriptors, terminateOnFailure);
+       }
+       return process;
+   }
 
     /**
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
@@ -531,14 +604,16 @@ public class SFSystem implements MessageKeys {
      * Important: things like the output streams can be redirected.
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws RemoteException if something goes wrong during the communication
      * @throws UnknownHostException if the target host is unknown
      * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
-     * @throws RemoteException if something goes wrong during the communication
      * @throws SFGeneralSecurityException for security trouble
      */
     public static ProcessCompound runSmartFrog()
-            throws SmartFrogException, UnknownHostException, ConnectException,
+            throws SmartFrogException, UnknownHostException,
             RemoteException, SFGeneralSecurityException {
+
+        ProcessCompound process = null;
 
         initSystem();
 
@@ -546,20 +621,22 @@ public class SFSystem implements MessageKeys {
         setOutputStreams();
 
         // Deploy process Compound
-        ProcessCompound process = createRootProcess();
+        process = createRootProcess();
+
         return process;
     }
 
     protected static ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
-        return SFProcess.deployProcessCompound(true);
+        return SFProcess.deployProcessCompound();
     }
 
     /**
      * initialise the system.  Turn security on, read properties from an ini file
      * and then look at stack tracing.
+     * To print init status messages call {@link org.smartfrog.SFSystem#logInitStatus()} after.
      * This method is idempotent and synchronised; you can only init the system once.
-     * @throws SmartFrogException
-     * @throws SFGeneralSecurityException
+     * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws SFGeneralSecurityException if security does not initialize
      */
     public static synchronized void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
@@ -573,41 +650,72 @@ public class SFSystem implements MessageKeys {
             // Read init properties
             readPropertiesFromIniFile();
             sfLog();
-            notifySecurityStatus();
 
-            // Init logging properties
+            // Init special static properties
             Logger.init();
-
-            //Test local networking: checks localhost NIC
-            if (Logger.testNetwork) {
-                StringBuffer result = new StringBuffer();
-                boolean failed = Diagnostics.doReportLocalNetwork(result);
-                if (failed) {
-                   if (sfLog().isWarnEnabled()) { sfLog().warn(result.toString()); }
-                } else {
-                    if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
-                }
-            }
+            //Notifies any possible problem with security init.
+            checkSecurityStatus();
             alreadySystemInit = true;
         }
     }
 
-    public static void notifySecurityStatus() throws SFGeneralSecurityException {
+    /**
+     * Test local networking: checks localhost NIC
+     */
+    private static void logNetworkStatus() {
+        if (Logger.testNetwork) {
+            StringBuffer result = new StringBuffer();
+            boolean failed = Diagnostics.doReportLocalNetwork(result);
+            if (failed) {
+               if (sfLog().isWarnEnabled()) { sfLog().warn(result.toString()); }
+            } else {
+                if (sfLog().isDebugEnabled()) { sfLog().debug(result.toString()); }
+            }
+        }
+    }
+
+    /**
+     * Print out the classpath at level info
+     */
+    private static void logClassPath() {
+        if (Logger.logClasspath && sfLog().isInfoEnabled()) {
+            StringBuffer result = new StringBuffer();
+            Diagnostics.doReportClassPath(result);
+            sfLog().info( "ClassPath:\n" + result.toString());
+        }
+    }
+
+    /**
+     * @throws SFGeneralSecurityException if security is required and not enabled.
+     */
+    public static void checkSecurityStatus() throws SFGeneralSecurityException {
         // Notify status of Security
         if (!SFSecurity.isSecurityOn()){
-            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired, "false");
+            String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
             Boolean secured=Boolean.valueOf(securityRequired);
             if(secured.booleanValue()) {
                 //we need security, but it is not enabled
                 throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
             }
+        }
+    }
+
+    /**
+     * Prints messages about security status
+     */
+    public static void logSecurityStatus() {
+        // Notify warning message about Security status
+        if (!SFSecurity.isSecurityOn()){
             if (sfLog().isWarnEnabled()) {
                 sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
             }
-
+        } else {
+            if (SFSecurity.isSecureResourcesOff()){
+                sfLog().warn(MessageUtil.formatMessage(WARN_SECURE_RESOURCES_OFF));
+            }
         }
-        // if this property is set the a sec manager is created
-        String secPro = System.getProperty(SmartFrogCoreProperty.codebase);
+        // if this property is set then a security manager is created, here we provide debug information about it.
+        String secPro = System.getProperty("java.security.policy");
         if  (secPro!=null ) {
             if (sfLog().isDebugEnabled()) sfLog().debug("Using java security policy: "+secPro);
         } else {
@@ -619,18 +727,18 @@ public class SFSystem implements MessageKeys {
      *
      * @return LogSF
      */
-    public static LogSF sfLog(){
-         if (sflog==null) {
-             sflog=LogFactory.sfGetProcessLog();
-         }
-         return sflog;
+    public static synchronized LogSF sfLog() {
+        if (sflog == null) {
+            sflog = LogFactory.sfGetProcessLog();
+        }
+        return sflog;
     }
 
     /**
      * test for the system being initialised already
      * @return true if we have already initialised the system
      */
-    public synchronized static boolean isSmartfrogInit() {
+    public static boolean isSmartfrogInit() {
         return alreadySystemInit;
     }
 
@@ -640,6 +748,7 @@ public class SFSystem implements MessageKeys {
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
+     * @see SFClassLoader
      */
     public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
         InputStream is;
@@ -649,6 +758,37 @@ public class SFSystem implements MessageKeys {
             throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL), e);
         }
         return is;
+    }
+
+    /**
+     * Gets ByteArray for the given resource. Throws exception if stream is
+     * null.
+     * @param resourceSFURL Name of the resource. SF url valid.
+     * @return ByteArray (byte []) with the resource data
+     * @throws SmartFrogException if input stream could not be created for the
+     * resource
+     * @see SFClassLoader
+     */
+    public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
+        ByteArrayOutputStream bStrm = null;
+        DataInputStream iStrm = null;
+        try {
+            iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
+            byte[] resourceData;
+            bStrm = new ByteArrayOutputStream();
+            int ch;
+            while ((ch = iStrm.read())!=-1) {
+                bStrm.write(ch);
+            }
+            resourceData = bStrm.toByteArray();
+            bStrm.close();
+            return resourceData;
+        } catch (IOException ex) {
+          throw SmartFrogException.forward(ex);
+        } finally {
+          if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
+          if (iStrm!=null) { try { iStrm.close();} catch (IOException swallowed) { } }
+        }
     }
 
     /**
@@ -678,7 +818,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * set the root process; this is called after it is started.
-     * @param rootProcess process compoond; may be
+     * @param rootProcess process compound; may be
      */
     public void setRootProcess(ProcessCompound rootProcess) {
         this.rootProcess = rootProcess;
@@ -696,12 +836,12 @@ public class SFSystem implements MessageKeys {
                 //we don't want a system exit any more
                 rootProcess.systemExitOnTermination(false);
                 //terminate
-                rootProcess.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+                rootProcess.sfTerminate(TerminationRecord.normal(
                         message,
                         (rootProcess).sfCompleteName()));
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         } finally {
             setRootProcess(null);
         }

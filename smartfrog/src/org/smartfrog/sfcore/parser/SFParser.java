@@ -30,7 +30,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 
@@ -56,7 +55,7 @@ import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
  * package to generate the actual package name.
  *
  */
-public class SFParser implements Parser, MessageKeys {
+public class SFParser implements StringParser, StreamParser, ReaderParser, ResourceParser, WriterUnparser, MessageKeys {
 
 
     /**
@@ -83,7 +82,9 @@ public class SFParser implements Parser, MessageKeys {
     //
 
     /* cache the real parser for the language */
-    private StreamLanguageParser parser;
+    private ReaderLanguageParser parser = null;
+    /* cache the real unparser for the language */
+    private WriterLanguageUnparser unparser = null;
 
     /**
      * Constructor for an instance of the parser for the default language.
@@ -91,52 +92,75 @@ public class SFParser implements Parser, MessageKeys {
      * @throws SmartFrogException error creating insatnce of parser
      */
     public SFParser() throws SmartFrogException {
-        parser = getParser();
     }
 
     /**
      * Constructor for an instance of the parser for the given language.
      *
      * @param languageOrUrl the name of the language to use or the url
-     *        with suffixed by language extension.  if null the uses sf language by default
+     *        with suffixed by language extension.  If null the uses default language
      *
      * @throws SmartFrogException error crearing instance of parser
      */
     public SFParser(String languageOrUrl) throws SmartFrogException {
         if (languageOrUrl!=null) {
-         theLanguage = getLanguageFromUrl(languageOrUrl);
-        } else {
-            theLanguage = getLanguageFromUrl("sf");
+            theLanguage = getLanguageFromUrl(languageOrUrl);
         }
-
-        parser = getParser();
     }
 
     /* Constructs a parser for the given language */
-    private StreamLanguageParser getParser() throws SmartFrogException {
+    private ReaderLanguageParser getParser() throws SmartFrogParseException {
         try {
-            Class parserClass = Class.forName(languagesPrefix + "." +
+            if (parser == null) {
+                Class parserClass = Class.forName(languagesPrefix + "." +
                     theLanguage + ".SFParser");
-
-            return (StreamLanguageParser) parserClass.newInstance();
+                parser = (ReaderLanguageParser) parserClass.newInstance();
+            }
+            return parser;
         } catch (ClassNotFoundException cnfexcp) {
-            throw new SmartFrogRuntimeException(MessageUtil.formatMessage(
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
                     MSG_CLASS_NOT_FOUND,
                     languagesPrefix + "." + theLanguage + ".SFParser"),
                 cnfexcp);
         } catch (InstantiationException instexcp) {
-            throw new SmartFrogRuntimeException(MessageUtil.formatMessage(
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
                     MSG_INSTANTIATION_ERROR,
                     languagesPrefix + "." + theLanguage + ".SFParser"),
                 instexcp);
         } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogRuntimeException(MessageUtil.formatMessage(
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS,
                     languagesPrefix + "." + theLanguage + ".SFParser",
                     "newInstance()"), illaexcp);
         }
     }
 
+       /* Constructs a unparser for the given language */
+    private WriterLanguageUnparser getUnparser() throws SmartFrogParseException {
+        try {
+            if (unparser == null) {
+                Class parserClass = Class.forName(languagesPrefix + "." +
+                    theLanguage + ".SFUnparser");
+                unparser = (WriterLanguageUnparser) parserClass.newInstance();
+            }
+            return unparser;
+        } catch (ClassNotFoundException cnfexcp) {
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
+                    MSG_CLASS_NOT_FOUND,
+                    languagesPrefix + "." + theLanguage + ".SFUnparser"),
+                cnfexcp);
+        } catch (InstantiationException instexcp) {
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
+                    MSG_INSTANTIATION_ERROR,
+                    languagesPrefix + "." + theLanguage + ".SFUnparser"),
+                instexcp);
+        } catch (IllegalAccessException illaexcp) {
+            throw new SmartFrogParseException(MessageUtil.formatMessage(
+                    MSG_ILLEGAL_ACCESS,
+                    languagesPrefix + "." + theLanguage + ".SFUnparser",
+                    "newInstance()"), illaexcp);
+        }
+    }
 
    /**
     * Gets language from the URL
@@ -203,7 +227,12 @@ public class SFParser implements Parser, MessageKeys {
      public Phases sfParseResource(String url, String codebase) throws SmartFrogParseException {
          InputStream is=null;
          try {
-             is = SFLoader.getInputStreamSFException(url);
+             //is = SFCLoader.getResourceAsStream(url,codebase, true);
+			 is = SFLoader.getInputStreamSFException(url,codebase,true);
+             if (is==null) {
+                 throw new SmartFrogParseException(
+                 MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
+             }
              return sfParse(is);
          } catch (SmartFrogParseException spex){
              throw spex;
@@ -221,9 +250,9 @@ public class SFParser implements Parser, MessageKeys {
          }
      }
 
-    /*
-    * ************************** Core parsing **********************************
-    */
+   /*
+   * ************************** Core parsing **********************************
+   */
 
    /**
     * Parses component(s) from a reader. Returns a root component which
@@ -238,7 +267,7 @@ public class SFParser implements Parser, MessageKeys {
     * @exception SmartFrogParseException error parsing stream
     */
    public Phases sfParse(Reader reader) throws SmartFrogParseException {
-         return parser.sfParse(reader ,null);
+         return getParser().sfParse(reader ,null);
    }
 
    /**
@@ -255,7 +284,7 @@ public class SFParser implements Parser, MessageKeys {
     * @exception SmartFrogParseException error parsing stream
     */
    public Phases sfParse(Reader reader, String codebase) throws SmartFrogParseException {
-         return parser.sfParse(reader, codebase);
+         return getParser().sfParse(reader, codebase);
    }
 
 
@@ -346,7 +375,7 @@ public class SFParser implements Parser, MessageKeys {
     * @exception SmartFrogCompilationException failed to parse reference
     */
    public Reference sfParseReference(Reader reader) throws SmartFrogCompilationException {
-      ReferencePhases rp = parser.sfParseReference(reader);
+      ReferencePhases rp = getParser().sfParseReference(reader);
       return rp.sfAsReference();
    }
 
@@ -399,7 +428,7 @@ public class SFParser implements Parser, MessageKeys {
      * @exception SmartFrogParseException failed to parse any value
      */
     public Object sfParseAnyValue(Reader reader) throws SmartFrogCompilationException {
-      Object o = parser.sfParseAnyValue(reader);
+      Object o = getParser().sfParseAnyValue(reader);
       if (o instanceof ReferencePhases) {
           o = ((ReferencePhases)o).sfAsReference();
        } else if (o instanceof SFComponentDescription) {
@@ -456,7 +485,7 @@ public class SFParser implements Parser, MessageKeys {
      * @exception SmartFrogParseException failed to parse primtiive value
      */
     public Object sfParsePrimitiveValue(Reader reader) throws SmartFrogCompilationException {
-       Object o = parser.sfParsePrimitiveValue(reader);
+       Object o = getParser().sfParsePrimitiveValue(reader);
        if (o instanceof ReferencePhases) {
                o = ((ReferencePhases)o).sfAsReference();
            }
@@ -510,7 +539,7 @@ public class SFParser implements Parser, MessageKeys {
      * @exception org.smartfrog.sfcore.common.SmartFrogParseException failed to parse tags
      */
     public Object sfParseTags(Reader reader) throws SmartFrogCompilationException {
-       return parser.sfParseTags(reader);
+       return getParser().sfParseTags(reader);
     }
 
    /**
@@ -557,7 +586,7 @@ public class SFParser implements Parser, MessageKeys {
     * @exception SmartFrogParseException failed to parse primtiive value
     */
    public ComponentDescription sfParseComponentDescription(Reader reader) throws SmartFrogCompilationException {
-      Phases p = parser.sfParse(reader);
+      Phases p = getParser().sfParse(reader);
       try {
            p = p.sfResolvePhases();
        } catch (SmartFrogException e) {
@@ -598,10 +627,48 @@ public class SFParser implements Parser, MessageKeys {
      */
      public ComponentDescription sfParseComponentDescription(String txt) throws SmartFrogCompilationException {
           return sfParseComponentDescription(new StringReader(txt));
+     }
+
+
+   /**
+    * Unparses component(s) to a writer.
+    *
+    * @param w    writer to output the description
+    * @param data the description to write
+    * @throws org.smartfrog.sfcore.common.SmartFrogParseException
+    *          error unparsing stream
+    */
+    public void sfUnparse(Writer w, ComponentDescription data) throws SmartFrogParseException {
+      getUnparser().sfUnparse(w, data);
     }
 
+   /**
+    * Unparses a reference to a writer.
+    *
+    * @param w   writer to output the description
+    * @param ref the reference to write
+    * @throws org.smartfrog.sfcore.common.SmartFrogCompilationException
+    *          failed to parse reference
+    */
+   public void sfUnparseReference(Writer w, Reference ref) throws SmartFrogCompilationException {
+      getUnparser().sfUnparseReference(w, ref);
+   }
 
-    /**
+   /**
+    * Unparses any value to a writer
+    *
+    * @param w     writer to output the description
+    * @param value the value to write
+    * @throws org.smartfrog.sfcore.common.SmartFrogParseException
+    *          failed to parse any value
+    */
+   public void sfUnparseValue(Writer w, Object value) throws SmartFrogCompilationException {
+      getUnparser().sfUnparseValue(w, value);      
+   }
+
+
+
+   /**
      * Locate the include and returns an input stream on it. This uses
      * SFSystem.stringToURL to check whether include is a URL or a file. On
      * failure it tries to use standard getResourceAsStream to get the inlude
@@ -625,4 +692,5 @@ public class SFParser implements Parser, MessageKeys {
         }
         return new InputStreamReader(is, "utf-8");
     }
+
 }

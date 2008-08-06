@@ -283,21 +283,21 @@ public class Reference implements Copying, Cloneable, Serializable {
      * Reference equality does NOT mean that the two references point to the
      * same object
      *
-     * @param ref to be compared
+     * @param reference to be compared
      *
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        if (!(ref instanceof Reference)) {
+    public boolean equals(Object reference) {
+        if (!(reference instanceof Reference)) {
             return false;
         }
 
-        if (((Reference) ref).size() != size()) {
+        if (((Reference) reference).size() != size()) {
             return false;
         }
 
         Enumeration e1 = elements();
-        Enumeration e2 = ((Reference) ref).elements();
+        Enumeration e2 = ((Reference) reference).elements();
 
         for (; e1.hasMoreElements();)
             if (!e1.nextElement().equals(e2.nextElement())) {
@@ -364,7 +364,7 @@ public class Reference implements Copying, Cloneable, Serializable {
 
         return ret;
     }
-
+    
     /**
      * Returns last element in reference.
      *
@@ -400,19 +400,19 @@ public class Reference implements Copying, Cloneable, Serializable {
      * Adds a reference to the end of the reference. ReferenceParts in the
      * given reference are NOT copied.
      *
-     * @param ref of elements to be added
+     * @param reference of elements to be added
      *
      * @return Reference reference that was added to this one
      */
-    public Reference addElements(Reference ref) {
-        for (int i = 0; i < ref.size(); i++)
-            addElement(ref.elementAt(i));
+    public Reference addElements(Reference reference) {
+        for (int i = 0; i < reference.size(); i++)
+            addElement(reference.elementAt(i));
 
-        return ref;
+        return reference;
     }
 
     /**
-     * Remove element from reference.
+     * Remove the first element that matches from reference. 
      *
      * @param o to remove from reference
      *
@@ -422,6 +422,30 @@ public class Reference implements Copying, Cloneable, Serializable {
         return ref.removeElement(o);
     }
 
+    /**
+     * Removes the reference part at the given index. All
+     * parts with an index greater then index are shifted one to
+     * the left (n-1). Returns the reference part removed.
+     * 
+     * @param index
+     * @return the reference part removed.
+     */
+    public ReferencePart removeElement(int index) {
+        return (ReferencePart)ref.remove(index);
+    }
+
+    /**
+     * Removes the last reference part.
+     * Returns the reference part removed.
+     *
+     * @return the reference part removed.
+     */
+
+    public ReferencePart removeLastElement() {        
+        return (ReferencePart)ref.remove(ref.size()-1);
+    }
+
+    
     /**
      * Resolves this reference using the given reference resolver, and starting
      * at index of this reference. If the reference size is 0 the given
@@ -486,7 +510,7 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @return String representing the reference
      */
     public String toString() {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         res.append (eager ? "" : "LAZY ");
         if (optional) {
             res.append("OPTIONAL ");

@@ -55,16 +55,11 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      */
     public void handle(Signal signal) {
         if (!SFProcess.markProcessCompoundTerminated()) {
-            if (SFProcess.getProcessCompound() != null) {
+            if (SFProcess.processCompound != null) {
                 try {
-                    log.out("Terminating sfDaemon gracefully.");
-                    SFProcess.getProcessCompound().sfTerminate(
-                            new TerminationRecord(
-                                    TerminationRecord.NORMAL,
-                                    "sfDaemon forced to terminate ",
-                                    SFProcess.getProcessCompound().sfCompleteName()
-                            )
-                    );
+                    log.out("Terminating sfDaemon gracefully!!");
+                    SFProcess.processCompound.sfTerminate(TerminationRecord.normal("sfDaemon forced to terminate ",
+                            SFProcess.processCompound.sfCompleteName()));
                 } catch (RemoteException re) {
                     //log and ignore
                     if (log.isIgnoreEnabled()) {
@@ -91,15 +86,15 @@ public class InterruptHandlerImpl implements SignalHandler,InterruptHandler {
      * This handler catches the exception and logs it, so that smartfrog
      * keeps running even if graceful shutdown is broken.
      * @param name name of interrupt to bind to.
-     * @param log log to log messages to
+     * @param logger log to log messages to
      */
-    public void bind(String name, LogSF log) {
-        this.log=log;
+    public void bind(String name, LogSF logger) {
+        log=logger;
         try {
             oldHandler=Signal.handle(new Signal(name), this);
         } catch (IllegalArgumentException e) {
             //this happens when binding fails. In this situation, warn, but keep going
-            this.log.err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
+            log.err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
         }
     }
 }

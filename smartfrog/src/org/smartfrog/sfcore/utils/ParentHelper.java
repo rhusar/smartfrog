@@ -39,6 +39,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * Contains all the child-minding logic for anything that wants to host children
@@ -50,14 +51,7 @@ public class ParentHelper implements ChildMinder {
     /**
      * Maintains children on which life of parent depends (and vice versa).
      */
-    protected Vector sfChildren = new Vector(5, 2);
-
-
-    /**
-     * Maintains a temporal list of the children that have to be driven through
-     * their sfDeploy and sfStart lifecycle methods.
-     */
-    protected Vector lifecycleChildren = new Vector();
+    private Vector<Liveness> sfChildren = new Vector<Liveness>(5, 2);
 
     /**
      * construct a parent helper and bind to a prim class
@@ -72,13 +66,14 @@ public class ParentHelper implements ChildMinder {
      * Add a child.
      * if synchronized it locks processCompound when it registers back!
      *
-     * @param child child to add
+     * @param child child to add, which must be a Prim
      *
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public void sfAddChild(Liveness child) throws RemoteException {
-            sfChildren.addElement(child);
-            ((Prim) child).sfParentageChanged();
+        Prim prim = ((Prim) child);
+        sfChildren.addElement(prim);
+        prim.sfParentageChanged();
     }
 
     /**
@@ -88,7 +83,7 @@ public class ParentHelper implements ChildMinder {
      *
      * @return Status of child removal
      * @throws SmartFrogRuntimeException if failed ro remove 
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfRemoveChild(Liveness child)
             throws SmartFrogRuntimeException, RemoteException {
@@ -108,7 +103,7 @@ public class ParentHelper implements ChildMinder {
      *
      * @return true is child is present else false
      *
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfContainsChild(Liveness child) throws RemoteException {
         return sfChildren.contains(child);
@@ -117,12 +112,24 @@ public class ParentHelper implements ChildMinder {
     /**
      * Gets an enumeration over the children of the implementor.
      *
-     * @return enumeration over children
+     * @return a remotable enumeration over children
      *
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
-    public Enumeration sfChildren() throws RemoteException {
-       return((Vector) sfChildren.clone()).elements();
+    public Enumeration<Liveness> sfChildren() throws RemoteException {
+        return new SerializableEnumeration<Liveness>(sfChildren);
+    }
+
+    /**
+     * Return a list of all the children. This vector is a shallow clone of the internal list; changes to the list do
+     * not affect the internal data structures, though actions on the children will do so. It relies on all children
+     * implementing Prim.
+     *
+     * @return a cloned list of all deployed children
+     * @since SmartFrog 3.13.003
+     */
+    public List<Prim> sfChildList() {
+        return (List<Prim>) sfChildren.clone();
     }
 
 
@@ -164,7 +171,7 @@ public class ParentHelper implements ChildMinder {
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
                 throw new SmartFrogDeploymentException(null,
-                        parent.sfCompleteName(),
+                		ComponentHelper.completeNameSafe(parent),
                         name,
                         cmp,
                         parms,
@@ -176,7 +183,7 @@ public class ParentHelper implements ChildMinder {
             }
 
             if (log.isTraceEnabled()) {
-                StringBuffer message = new StringBuffer();
+                StringBuilder message = new StringBuilder();
                 try {
                     message.append(helper.completeNameSafe());
                     message.append(" is deploying: ");
@@ -215,7 +222,7 @@ public class ParentHelper implements ChildMinder {
                     result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
-                    //This should throw an excetion when a
+                    //This should throw an exception when a
                     //component is registered without a name
                     //in a processcompound, but compound should not know anything
                     //about processcompound
@@ -231,12 +238,14 @@ public class ParentHelper implements ChildMinder {
                         .containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
                     name = cmp.sfContext()
                             .get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
-                try {
-                    newRef = parent.sfCompleteName();
-                } catch (Exception ex) {
-                    // LOG ex
-                    LogFactory.sfGetProcessLog()
-                            .ignore("could not get complete name", ex);
+                if(parent!=null) {
+	                try {
+	                    newRef = parent.sfCompleteName();
+	                } catch (Exception ex) {
+	                    // LOG ex
+	                    LogFactory.sfGetProcessLog()
+	                            .ignore("could not get complete name", ex);
+	                }
                 }
             }
             if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME)) != null) {

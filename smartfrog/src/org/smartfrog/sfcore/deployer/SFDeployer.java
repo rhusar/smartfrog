@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,21 +20,22 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.deployer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
-import java.rmi.RemoteException;
 
 
 /**
@@ -43,8 +44,11 @@ import java.rmi.RemoteException;
  * as part of the component description that is to be deployed.
  */
 public class SFDeployer implements MessageKeys {
-
+	/**
+     * Name of default deployer.
+     */
     private static final ComponentDeployer DEFAULT_DEPLOYER = new PrimProcessDeployerImpl();
+
     private static final PrimFactory DEFAULT_PRIM_FACTORY = new DefaultPrimFactory();
     private static final Reference PARENT_APP_ENV_REF;
     private static final CoreClassesClassLoadingEnvironment DEFAULT_CL_ENVIRONMENT = new CoreClassesClassLoadingEnvironment();
@@ -77,15 +81,14 @@ public class SFDeployer implements MessageKeys {
             if (name != null) {
                 Object tmp = component.sfResolve(name);
 
-                if (!(tmp instanceof ComponentDescription))
+                if (!(tmp instanceof ComponentDescription)) {
                     SmartFrogResolutionException.notComponent(name, component.sfCompleteName());
+                }
 
                 return deploy((ComponentDescription) tmp, null, parent, params);
             }
-
             return getDeployer(component).deploy(name, parent, params);
-
-        } catch (SmartFrogRuntimeException sfex){
+        } catch (SmartFrogException sfex){
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfex);
         }
     }
@@ -181,7 +184,11 @@ public class SFDeployer implements MessageKeys {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
                     null, component.sfContext());
-        }
+        } catch (InvocationTargetException intarexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_INVOCATION_TARGET, className), intarexcp,
+                null, component.sfContext());
+    	}
     }
 
     private static void prepareDeployer(ComponentDeployer deployer, ComponentDescription component) throws SmartFrogRuntimeException {
@@ -230,17 +237,14 @@ public class SFDeployer implements MessageKeys {
                 throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e);
             }
         }
-        return env;
+		return env;
     }
-    
-        private static SmartFrogResolutionException wrongType
-            (String msg, ClassCastException e, ComponentDescription component)
+
+	private static SmartFrogResolutionException wrongType (String msg, ClassCastException e, ComponentDescription component)
     {
         return new SmartFrogResolutionException(
                 msg + " Faulty description: "
                         + System.getProperty("line.separator")
-                        + component,
-                e);
+                        + component, e);
     }
-
 }

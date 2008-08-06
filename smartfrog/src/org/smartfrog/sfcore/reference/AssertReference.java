@@ -1,13 +1,15 @@
 package org.smartfrog.sfcore.reference;
 
-import org.smartfrog.sfcore.common.Copying;
-import org.smartfrog.sfcore.common.SmartFrogAssertionResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.*;
+
+import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -21,24 +23,68 @@ import java.io.Serializable;
  * The function application reference resolves by evaluating hte refeences it contains, then evaluating the funciton.
  * If
  */
-public class AssertReference extends ApplyReference implements Copying, Cloneable, Serializable {
-    
+public class AssertReference extends Reference implements Copying, Cloneable, Serializable {
+    protected ComponentDescription comp;
+
     public AssertReference(ComponentDescription comp) {
-        super(comp);
+        super();
+        this.comp = comp;
+    }
+
+
+    /**
+     * Returns a copy of the reference, by cloning itself and the function part
+     *
+     * @return copy of reference
+     * @see org.smartfrog.sfcore.common.Copying
+     */
+    public Object copy() {
+        AssertReference ret = (AssertReference) clone();
+
+        ret.comp = (ComponentDescription) comp.copy();
+
+        return ret;
+    }
+
+    /**
+     * Makes a clone of the reference. The inside ref holder is cloned, but the
+     * contained component is NOT.
+     *
+     * @return clone of reference
+     */
+    public Object clone() {
+        AssertReference res = (AssertReference) super.clone();
+        res.comp = comp;
+        return res;
     }
 
     /**
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param o to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object o) {
-        if (!(o instanceof AssertReference))
+    public boolean equals(Object reference) {
+        if (!(reference instanceof AssertReference)) {
             return false;
-        
-        return super.equals(o);
+        }
+
+        if (((AssertReference) reference).comp != comp) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the hashcode for this reference. Hash code for reference is made
+     * out of the sum of the parts hashcodes
+     *
+     * @return integer hashcode
+     */
+    public int hashCode() {
+        return comp.hashCode();
     }
 
     /**
@@ -50,10 +96,69 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if reference failed to resolve
      */
     public Object resolve(ReferenceResolver rr, int index)
-            throws SmartFrogResolutionException
-    {
-        Object result = super.resolve(rr, index);
-        checkAssert(this, result, rr, false);
+            throws SmartFrogResolutionException {
+        //take a new context...
+        //     iterate over the attributes of comp- ignoring any beginning with sf;
+        //     cache sfFunctionClass attribute;
+        //     resolve all non-sf attributes, if they are links
+        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     and invoke function with copy of CD, return result
+
+        Context forFunction = new ContextImpl();
+        String functionClass = null;
+        Object result;
+
+        if (getData()) return this;
+
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
+
+        try {
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("function class is not a string", e);
+        }
+
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            Object name = v.next();
+            String nameS = name.toString();
+            if (!nameS.equals("sfFunctionClass")) {
+                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                try {
+                    forFunction.sfAddAttribute(name, value);
+                } catch (SmartFrogContextException e) {
+                    //shouldn't happen
+                }
+            }
+        }
+        if (functionClass == null) {
+            throw new SmartFrogResolutionException("unknown function class ");
+        }
+        try {
+            Function function = (Function) (SFClassLoader.forName((String) functionClass)
+                    .newInstance());
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create function class " + functionClass, e);
+        }
+        if (result instanceof Boolean) {
+            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for " +
+                    this +
+                    ((rr instanceof ComponentDescriptionImpl) ?
+                        " in component "
+                        + ((ComponentDescriptionImpl)rr).sfCompleteNameSafe()
+                            : ""));
+        } else {
+            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for "
+                    + this +
+                    ((rr instanceof ComponentDescriptionImpl) ?
+                        " in component "
+                        + ((ComponentDescriptionImpl)rr).sfCompleteNameSafe()
+                            : ""));
+        }
         return result;
     }
 
@@ -66,34 +171,70 @@ public class AssertReference extends ApplyReference implements Copying, Cloneabl
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if reference failed to resolve
      */
     public Object resolve(RemoteReferenceResolver rr, int index)
-            throws SmartFrogResolutionException
-    {
-        Object result = super.resolve(rr, index);
-        checkAssert(this, result, rr, true);
+            throws SmartFrogResolutionException {
+        //take a new context...
+        //     iterate over the attributes of comp- ignoring any beginning with sf;
+        //     cache sfFunctionClass attribute;
+        //     resolve all non-sf attributes, if they are links
+        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     and invoke function with copy of CD, return result
+        Context forFunction = new ContextImpl();
+        String functionClass = null;
+        Object result;
+
+        if (getData()) return this;
+
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
+
+        try {
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogAssertionResolutionException("function class is not a string", e);
+        }
+
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            Object name = v.next();
+            String nameS = name.toString();
+            if (!nameS.equals("sfFunctionClass")) {
+                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                try {
+                    forFunction.sfAddAttribute(name, value);
+                } catch (SmartFrogContextException e) {
+                    //shouldn't happen
+                }
+            }
+        }
+        if (functionClass == null) {
+            throw new SmartFrogAssertionResolutionException("unknown function class ");
+        }
+        try {
+            Function function = (Function) (SFClassLoader.forName((String) functionClass)
+                    .newInstance());
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            throw new SmartFrogAssertionResolutionException("failed to create or evaluate function class \"" + functionClass + "\" with data " + forFunction, e);
+        }
+        if (result instanceof Boolean) {
+            if (!((Boolean) result).booleanValue()) throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
+                    + this +
+                    ((rr instanceof PrimImpl) ?
+                        " in component "
+                        + ((PrimImpl)rr).sfCompleteNameSafe()
+                            : ""));
+        } else {
+            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for " +
+                    this +
+                    ((rr instanceof PrimImpl) ?
+                        " in component "
+                        + ((PrimImpl)rr).sfCompleteNameSafe()
+                            : ""));
+        }
         return result;
     }
 
-    public static void checkAssert(Object _this, Object result, Object rr, boolean remote) throws SmartFrogAssertionResolutionException {
-        if (result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue())
-                throw new SmartFrogAssertionResolutionException("Assertion failure (false) for "
-                        + _this + sfCompleteNameSafe(rr, remote));
-        } else {
-            throw new SmartFrogAssertionResolutionException("Assertion failure (non boolean result) for "
-                    + _this + sfCompleteNameSafe(rr, remote));
-        }
-    }
-
-    private static String sfCompleteNameSafe(Object rr, boolean remote) {
-        if (remote) {
-            if (rr instanceof PrimImpl) return " in component " + ((PrimImpl) rr).sfCompleteNameSafe();
-            else return " <complete name unknown>";
-        } else {
-            if (rr instanceof ComponentDescriptionImpl)
-                return " in component " + ((ComponentDescriptionImpl) rr).sfCompleteNameSafe();
-            else return " <complete name unknown>";
-        }
-    }
     /**
      * Returns string representation of the reference.
      * Overrides Object.toString.

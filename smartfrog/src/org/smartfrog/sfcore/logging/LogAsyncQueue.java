@@ -73,7 +73,7 @@ public class LogAsyncQueue {
          * @return String
          */
         public String toString() {
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
             str.append("LOG=" + logImpl.toString() + " METHOD=" + method.toString() + " PARAMS=[");
             str.append(params[0].toString());
             for(int i=1; i<params.length; i++) {

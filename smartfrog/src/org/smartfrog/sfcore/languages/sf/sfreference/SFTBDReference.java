@@ -1,11 +1,12 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.ReferencePhases;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
+import org.smartfrog.sfcore.common.*;
+
+
+import java.util.Iterator;
 
 /**
  * Representation of ApplyReference for the SF Language
@@ -50,11 +51,11 @@ public class SFTBDReference extends SFReference implements ReferencePhases {
      * Checks if this and given reference are equal. Two references are
      * considered to be equal if the component they wrap are ==
      *
-     * @param ref to be compared
+     * @param reference to be compared
      * @return true if equal, false if not
      */
-    public boolean equals(Object ref) {
-        return this == ref;
+    public boolean equals(Object reference) {
+        return this == reference;
     }
 
     /**

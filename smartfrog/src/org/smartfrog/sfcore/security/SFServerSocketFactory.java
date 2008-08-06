@@ -27,11 +27,13 @@ import java.rmi.server.RMIServerSocketFactory;
 
 
 /**
- * A server socket factory that adapts a  server socket factory so that we can bind to a particular ip address and
+ * A server socket factory that adapts a SSL server socket factory so that it
  * can be used to generate RMI server sockets.
  *
  */
 public class SFServerSocketFactory implements RMIServerSocketFactory {
+    /** A security environment that handles the configuration of sockets. */
+    private SFSecurityEnvironment secEnv;
 
     private final InetAddress bindAddr;
 
@@ -41,16 +43,17 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
 
     // bindAddr can be null
     public boolean equals(Object obj) {
-        if (obj == this)
+        if (obj == this) {
             return true;
-        else if (obj == null || getClass() != obj.getClass())
+        } else if (obj == null || getClass() != obj.getClass()) {
             return false;
-
+        }
         SFServerSocketFactory other = (SFServerSocketFactory) obj;
         return bindAddr == null
                 ? (other.bindAddr == null)  //checks if obj is null as well.
                 : bindAddr.equals(other.bindAddr);
     }
+
 
     /**
      * Constructs SFServerSocketFactory with security environment.
@@ -59,9 +62,13 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * an ephemeral port and a valid local address to bind the socket.
      * <P>
      * @param bindAddr bind address for the server socket
+     *
+     * @param secEnv A security environment that handles the configuration of
+     *        sockets.
      */
-    public SFServerSocketFactory(InetAddress bindAddr) {
+    public SFServerSocketFactory(InetAddress bindAddr, SFSecurityEnvironment secEnv) {
         this.bindAddr = bindAddr;
+        this.secEnv = secEnv;
     }
 
     /**
@@ -69,7 +76,9 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
      * anonymous port).
      *
      * @param port The port number
+     *
      * @return The server socket in the specified port
+     *
      * @throws IOException Cannot create server socket.
      */
     public ServerSocket createServerSocket(int port) throws IOException {
@@ -77,6 +86,6 @@ public class SFServerSocketFactory implements RMIServerSocketFactory {
          * for this reason we don't need a SSLServerSocketFactory.
          * However, we have to wrap it to pass the security
          * context. */
-        return new ServerSocket(port, 0, bindAddr);
+        return new SFServerSocket(port, bindAddr, secEnv);
     }
 }

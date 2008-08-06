@@ -48,7 +48,7 @@ import java.util.Enumeration;
  * implements the ComponentDeployer interface.
  *
  */
-public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, MessageKeys {
+public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
     /** The target description to work off. */
     protected ComponentDescription target;
@@ -89,8 +89,7 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
             // lose the parent baggage
             cxt = target.sfContext();
 
-            Enumeration e = cxt.keys();
-            while (e.hasMoreElements()) {
+            for (Enumeration e = cxt.keys(); e.hasMoreElements();) {
                 Object value = cxt.get(e.nextElement());
 
                 if (value instanceof ComponentDescription) {
@@ -101,11 +100,106 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
             dComponent.sfDeployWith(parent, cxt);
 
             return dComponent;
+        } catch (InstantiationException instexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_INSTANTIATION_ERROR, "Prim"), instexcp, null, cxt);
+        } catch (IllegalAccessException illaexcp) {
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+                    MSG_ILLEGAL_ACCESS, "Prim", "newInstance()"), illaexcp, null, cxt);
         } catch (SmartFrogException sfdex){
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfdex);
         } catch (Throwable t) {
-            throw new SmartFrogDeploymentException("Error when trying to deploy component", t, null, cxt);
+            throw new SmartFrogDeploymentException(null, t, null, cxt);
+       }
+    }
+
+    /**
+     *  Create a instance of Prim from primClass
+     * @param primClass
+     * @return Prim instance
+     * @throws Exception
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    protected Prim createPrimInstance(Class primClass) throws Exception {
+        Prim dComponent = (Prim) primClass.newInstance();
+        return dComponent;
+    }
+
+    /**
+     * Gets the class code base by resolving the sfCodeBase attribute in the
+     * given description.
+     *
+     * @param desc Description in which we resolve the code base.
+     *
+     * @return class code base for that description.
+     */
+    protected String getSfCodeBase(ComponentDescription desc) {
+        try {
+            return (String) desc.sfResolve(refCodeBase);
+        } catch (Exception e) {
+            // Not found, return null...
         }
+
+        return null;
+    }
+
+    /**
+     * Get the class for the primitive to be deployed. This is where the
+     * sfClass attribute is looked up, using the classloader returned by
+     * getPrimClassLoader
+     *
+     * @return class for target
+     *
+     * @exception Exception failed to load class
+     */
+    protected Class getPrimClass() throws Exception {
+        String targetCodeBase=null;
+        String targetClassName=null;
+        Object obj=null;
+        try {
+            // extract code base
+            targetCodeBase = getSfCodeBase(target);
+
+            // extract class name
+            obj =  target.sfResolve(refClass);
+            targetClassName = (String) obj;
+
+            // We look in the default code base if everything else fails.
+            return SFClassLoader.forName(targetClassName,targetCodeBase, true);
+        } catch (SmartFrogResolutionException resex) {
+            resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
+            resex.fillInStackTrace();
+
+            throw resex;
+        } catch (java.lang.ClassCastException ccex){
+            Object name = null;
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
+            }
+            throw new SmartFrogDeploymentException (refClass,null,name,target,
+              null,
+              "Wrong class when resolving '"+refClass+ "': '"
+              +(obj!=null?(obj+"' ("+obj.getClass().getName()+")"):"'")
+              , ccex, targetCodeBase);
+        } catch (java.lang.ClassNotFoundException cnfex){
+            Object name = null;
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
+            }
+            ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
+            try {
+              if (targetCodeBase != null) cdInfo.sfAddAttribute("sfCodeBase",
+                  targetCodeBase);
+              cdInfo.sfAddAttribute("java.class.path",System.getProperty("java.class.path"));
+              cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
+                  System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+            } catch (SmartFrogException sfex){
+              if (sflog.isDebugEnabled()) sflog.debug("",sfex);
+            }
+            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
+        }
+
     }
 
     //
@@ -144,7 +238,8 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
         return deploy(parent);
     }
 
-    // BEGIN LEGACY CODE //////////////
+    //@todo Remove this legacy code needed for  DNSComponentDeployerImpl
+	//BEGIN LEGACY CODE //////////////
     // This is now in OldAlgorithmClassLoadingEnvironment, but DNSComponentDeployerImpl needs it here.
     // Should be removed very soon.
 
@@ -155,52 +250,64 @@ public class PrimDeployerImpl extends PrimImpl implements ComponentDeployer, Mes
     /**
      * Efficiency holder of sfClass reference.
      */
-    private static final Reference refClass = new Reference(
-            SmartFrogCoreKeys.SF_CLASS);
+    private static final Reference refClass = new Reference( SmartFrogCoreKeys.SF_CLASS);
 
-    /**
+   /**
      * Get the class for the primitive to be deployed. This is where the
      * sfClass attribute is looked up, using the classloader returned by
      * getPrimClassLoader
      *
      * @return class for target
-     * @throws Exception failed to load class
-     * @deprecated This is now in OldAlgorithmClassLoadingEnvironment
+     *
+     * @exception Exception failed to load class
      */
-    protected Class getPrimClass() throws SmartFrogResolutionException, SmartFrogDeploymentException {
-        String targetClassName;
-        Object obj = null;
+    protected Class getPrimClass() throws Exception {
+        String targetCodeBase=null;
+        String targetClassName=null;
+        Object obj=null;
         try {
+            // extract code base
+            targetCodeBase = getSfCodeBase(target);
 
-            targetClassName = (String) target.sfResolve(refClass);
+            // extract class name
+            obj =  target.sfResolve(refClass);
+            targetClassName = (String) obj;
 
-            // 3rd parameter = true: We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName, null, true);
-
+            // We look in the default code base if everything else fails.
+            return SFClassLoader.forName(targetClassName,targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
             resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
             resex.fillInStackTrace();
 
             throw resex;
-        } catch (ClassCastException ccex) {
-            throw new SmartFrogDeploymentException(refClass, null, getProcessComponentName(), target,
-                    null, "Wrong class when resolving '" + refClass + "': '"
-                    + obj + "' (" + obj.getClass().getName() + ")", ccex, null);
-        } catch (ClassNotFoundException cnfex) {
-            ComponentDescription cdInfo = new ComponentDescriptionImpl(null, new ContextImpl(), false);
-            try {
-                cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
-                cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
-                        System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
-            } catch (SmartFrogException sfex) {
-                if (sfLog.isDebugEnabled()) sfLog.debug("", sfex);
+        } catch (java.lang.ClassCastException ccex){
+            Object name = null;
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
-            throw new SmartFrogDeploymentException(refClass, null, getProcessComponentName(), target, null, "Class not found", cnfex, cdInfo);
+            throw new SmartFrogDeploymentException (refClass,null,name,target,
+              null,
+              "Wrong class when resolving '"+refClass+ "': '"
+              +(obj!=null?(obj+"' ("+obj.getClass().getName()+")"):"'")
+              , ccex, targetCodeBase);
+        } catch (java.lang.ClassNotFoundException cnfex){
+            Object name = null;
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
+            }
+            ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
+            try {
+              if (targetCodeBase != null) cdInfo.sfAddAttribute("sfCodeBase",
+                  targetCodeBase);
+              cdInfo.sfAddAttribute("java.class.path",System.getProperty("java.class.path"));
+              cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
+                  System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+            } catch (SmartFrogException sfex){
+              if (sflog.isDebugEnabled()) sflog.debug("",sfex);
+            }
+            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
         }
-    }
 
-    protected final Object getProcessComponentName() throws SmartFrogResolutionException {
-        return target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
     }
 
     // END LEGACY CODE ////////////////

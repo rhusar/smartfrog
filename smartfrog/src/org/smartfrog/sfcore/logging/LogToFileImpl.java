@@ -45,7 +45,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     /** Log file. */
     File logFile;
 
-    StringBuffer fullLogFileName = new StringBuffer();
+    StringBuilder fullLogFileName = new StringBuilder();
 
     /** String name for path. */
     String path=".";//+File.separator+"log";
@@ -87,7 +87,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param initialLogLevel level to log at
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
-        this (name,null,initialLogLevel);
+        this (name,null,initialLogLevel);                                                     
     }
 
     /**
@@ -97,33 +97,42 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
      * @param componentComponentDescription A component description to overwrite class configuration
      * @param initialLogLevel level to log at
      */
-    public LogToFileImpl(String name,
-                         ComponentDescription componentComponentDescription,
-                         Integer initialLogLevel) {
+    public LogToFileImpl(String name, ComponentDescription componentComponentDescription, Integer initialLogLevel) {
         super(name, initialLogLevel);
         try {
             readSFFileAttributes(classComponentDescription);
             readSFFileAttributes(componentComponentDescription);
             PrintStream out = null;
             logFile = createFile(logFileExtension);
-            FileOutputStream fos;
+            FileOutputStream fos=null;
             try {
                fos = new FileOutputStream(logFile, append);
 
             } catch (FileNotFoundException ex) {
                if (isErrorEnabled()) {
-                   System.err.println("[ERROR] Failed to create log file '"+logFile+"', Reason: "+ex.getMessage()+", creating ramdom log file: ");
+                   error("Failed to create log file '"+logFile+"', Reason: "+ex.getMessage()+", creating ramdom log file: ",ex);
                }
                 // Create TempFile already checks for certail error and returns null if it failed to create temp file
                 logFile = createTempFile ();
-                fos = new FileOutputStream(logFile, append);
-                String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
-                System.err.println("[WARN] "+msg);
+                if  (logFile!=null) {
+                    try {
+                        fos = new FileOutputStream(logFile, append);
+                        String msg = "A tempfile file has been created for logging: "+ logFile.getAbsolutePath() +" to replace the user log file that could not be created";
+                        if (isWarnEnabled()) {
+                            warn(msg);
+                            //Direct output in console so that the new log file can be found.
+                            System.err.println("[WARN] " + msg);
+                        }
+                    } catch (Throwable e) {
+                        faultInInitialization("Could not create logging file: "+ex.getMessage()+", or temp "+e.getMessage(),e);
+                    }
+                } else {
+                    faultInInitialization("Could not create logging file.",ex);
+
+                }
             }
             out = new PrintStream(fos);
-            if (isDebugEnabled() && this.getClass()
-                    .toString()
-                    .endsWith(getShortClassName())) {
+            if (isDebugEnabled() && this.getClass().toString().endsWith(getShortClassName())) {
                 //This will go to the std output.
                 debug( getShortClassName() +" using file name: " + logFile.getAbsolutePath());
             }
@@ -131,9 +140,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if (redirectSystemOutputs) {
                 redirectOutputs();
             }
-            if (isTraceEnabled() && this.getClass()
-                    .toString()
-                    .endsWith(getShortClassName())) {
+            if (isTraceEnabled() && this.getClass().toString().endsWith(getShortClassName())) {
                 String msg2 = "Log '" + name + "' " +
                         "\nusing Class ComponentDescription:\n{" + classComponentDescription +
                         "}\n, and using Component ComponentDescription:\n{" + componentComponentDescription + "}";
@@ -143,7 +150,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         } catch (FileNotFoundException ex) {
             faultInInitialization("Could not create logging file.",ex);
         }
-
+        //For info
+        if (logFile!=null) {
+            setLogFileProperty (logFile.getAbsolutePath());
+        }    
     }
 
     private String getShortClassName() {
@@ -253,7 +263,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");
             }
-           newfileName.append(logName);
+           newfileName.append(instanceName);
         }
 
         if (datedName){
@@ -304,8 +314,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             System.err.println("[ERROR] File  "+ tempFile + " could not be created");
             if(tempFile!=null && tempFile.exists()) {
               tempFile.delete();
-          }
-          return null;
+            }
+            testDir(tempDirectory.toString());
+            return null;
         }
         //Return file
         return tempFile;
@@ -382,5 +393,86 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     }
 
 
+    /**
+     * Tries and creates a temp file in our  dir; this
+     * checks that it has space and access.
+     * It also does some clock reporting using std.error for messages
+     *
+     * Derived from Ant Diagnostics class
+     * @param dir directory path
+     */
+    private void testDir(String dir) {
+        try {
+            if (( dir == null )||(dir.trim().equals(""))) {
+                error ("'dir' is undefined");
+                return;
+            }
+            //System.err.println("[ERROR] Temp dir is "+ dir);
+            File tempDirectory=new File(dir);
+            if(!tempDirectory.exists()) {
+                error(""+dir+" directory does not exist: "+dir);
+                return;
+            }
+            //create a temp file for testing
+            long now=System.currentTimeMillis();
+            File tempFile=null;
+            FileOutputStream fileout = null;
+            try {
+                tempFile = File.createTempFile("sfDiagLog","txt",tempDirectory);
+                //do some writing to it
+                fileout = new FileOutputStream(tempFile);
+                byte buffer[]=new byte[1024];
+                for(int i=0;i<32;i++) {
+                    fileout.write(buffer);
+                }
+                fileout.close();
+                fileout=null;
+                long filetime=tempFile.lastModified();
+                tempFile.delete();
+                //System.err.println("Temp dir is writeable");
+                long drift=filetime-now;
+                //System.err.println("temp dir alignment with system clock is "+drift+" ms");
+                if(Math.abs(drift)>10000) {
+                    warn("big clock drift -maybe a network filesystem");
+                }
+            } catch (IOException e) {
+                error("[ERROR] File  "+ tempFile + " could not be created/written to" + dir,e);
+            } finally {
+              if (fileout != null) {
+                try {
+                  fileout.close();
+                } catch (IOException ioex) {
+                  //ignore
+                }
+              }
+              if(tempFile!=null && tempFile.exists()) {
+                  tempFile.delete();
+              }
+            }
+        } catch (Throwable thr) {
+            thr.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    void setLogFileProperty (String fullFileName ){
+         // This is just for info, it security does not allow it, nothing will break.
+         try {
+            String className = this.getClass().toString();
+            if (className.startsWith("class ")) {
+              className = className.substring(6);
+            }
+            String propContent = System.getProperty(className);
+            if  (propContent!=null){
+               if (!(propContent.contains(fullFileName))){
+                  System.setProperty(className+".info.fileName", propContent+", "+fullFileName);
+               }
+            } else {
+               System.setProperty(className+".info.fileName", fullFileName);
+            }
+
+         } catch (Throwable thr){
+             //ignore
+         }
+    }
 
 }

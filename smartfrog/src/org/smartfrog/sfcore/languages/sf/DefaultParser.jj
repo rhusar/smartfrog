@@ -14,7 +14,7 @@ import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
-
+import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -43,7 +43,7 @@ import java.util.HashSet;
 
 public class DefaultParser {
   protected IncludeHandler includeHandler;
-  static int nextId = 0;
+  public static int nextId = 0;
 
   static final String appendOp = "org.smartfrog.sfcore.languages.sf.functions.Append";
   static final String concatOp = "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
@@ -52,6 +52,8 @@ public class DefaultParser {
 
   static final String andOp = "org.smartfrog.sfcore.languages.sf.functions.And";
   static final String orOp = "org.smartfrog.sfcore.languages.sf.functions.Or";
+  static final String xorOp = "org.smartfrog.sfcore.languages.sf.functions.Xor";
+  static final String impliesOp = "org.smartfrog.sfcore.languages.sf.functions.Implies";
 
   static final String eqOp = "org.smartfrog.sfcore.languages.sf.functions.EQ";
   static final String neOp = "org.smartfrog.sfcore.languages.sf.functions.NE";
@@ -62,9 +64,12 @@ public class DefaultParser {
 
   static final String minusOp = "org.smartfrog.sfcore.languages.sf.functions.Minus";
   static final String divOp = "org.smartfrog.sfcore.languages.sf.functions.Divide";
+  static final String modOp = "org.smartfrog.sfcore.languages.sf.functions.Mod";
 
   static final String notOp = "org.smartfrog.sfcore.languages.sf.functions.Not";
   static final String ifThenElseOp = "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+  static final String switchOp = "org.smartfrog.sfcore.languages.sf.functions.Switch";
+
   static final String functionPhaseClass = "org.smartfrog.sfcore.languages.sf.ConstructFunction";
 
   static final String tbdOp = "org.smartfrog.sfcore.languages.sf.predicates.TBD";
@@ -134,16 +139,21 @@ public class DefaultParser {
   }
 
 
-  protected Vector parseInclude(String fName, SFReference codebase) throws ParseException {
+  protected Vector parseInclude(String fName, String codebase) throws ParseException {
     try {
       return includeHandler.parseInclude(fName, codebase);
     } catch (TokenMgrError tex) {
-      throw new TokenMgrError("In include file " + fName + " : " +
+      throw new TokenMgrError("In include file " + fName
+                              +(codebase != null? ("in code base "+ codebase):"")
+                              + " : " +
                               tex.getMessage(),
                               tex.errorCode);
     } catch (Exception ex) {
-      throw new ParseException("Parsing include file " + fName + " : " +
-                               ex.getMessage());
+      ParseException pe=new ParseException("Parsing include file " + fName
+                +(codebase != null? ("in code base "+ codebase):"")
+                + " : " + ex.getMessage());
+      pe.initCause(ex);
+      throw pe;
     }
   }
 
@@ -204,7 +214,7 @@ TOKEN : /* reserved words */
    <APPLY: "APPLY">
  | <ASSERT: "ASSERT">
  | <ATTRIB: "ATTRIB">
- | <CODEBASE: "#from">
+ | <CODEBASE: "#codebase">
  | <COMMA: ",">
  | <DATA: "DATA">
  | <EXTENDS: "extends">
@@ -216,6 +226,7 @@ TOKEN : /* reserved words */
  | <IPROPERTY: "IPROPERTY">
  | <ENVPROPERTY: "ENVPROPERTY">
  | <IENVPROPERTY: "IENVPROPERTY">
+ | <CONST: "CONSTANT">
  | <LAZY: "LAZY">
  | <LBRACE: "{">
  | <LBRACKET: "[">
@@ -242,6 +253,7 @@ TOKEN : /* reserved words */
  | <MINUS: "-">
  | <TIMES: "*">
  | <DIV: "/">
+ | <MOD: "%">
  | <CONCAT: "++">
  | <APPEND: "<>">
 
@@ -254,13 +266,17 @@ TOKEN : /* reserved words */
 
  | <AND: "&&">
  | <OR: "||">
+ | <XOR: "x|">
  | <NOT: "!">
+ | <IMPLIES: "->">
 
  | <IF: "IF">
  | <THEN: "THEN">
  | <ELSE: "ELSE">
  | <FI: "FI">
-
+ | <SWITCH: "SWITCH">
+ | <ENDSWITCH: "ENDSWITCH">
+ | <VAR: "VAR">
 }
 
 TOKEN :
@@ -468,11 +484,11 @@ Vector AttributeListNoEOF() :
 
 void Includes(Vector res) :
 {
-     SFReference codebase = null;
+     String codebase = null;
      String fName;
 }
 {
-( [<CODEBASE> codebase = LinkReference() ] <INCLUDE> fName = String()
+( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
          { Vector tmp = parseInclude(fName, codebase);
            for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
              res.addElement(e.nextElement());
@@ -541,14 +557,29 @@ Object Value() :
 {
     (
     res=Component()
-    | res=SimpleValue() <SEMICOLON>
+    | res=SimpleValue() //<SEMICOLON>
     | <SEMICOLON>
     ) { return res; }
 }
 
 
-
-
+Object Var() :
+{
+   Object ran = null;
+   Object val = null;
+}
+{ 
+    <VAR> 
+    (
+      (
+        (ran = ReferenceNoEOF() | ran = String())
+        |
+        (<LBRACE> (ran = ReferenceNoEOF() | ran = String()) <COMMA> (val = String() | val = Number()) <RBRACE>)
+      ) {return new FreeVar(ran, val);}
+	|
+	  {return new FreeVar();}
+	)
+}
 
 Object SimpleValue() :
 {
@@ -558,8 +589,9 @@ Object SimpleValue() :
     (
     res=ReferenceNoEOF()
     | res=Basic()
-    | res = Operator()
+    | (<OPSTART> (res = Component() | res = Operator()) <OPEND>)
     | res = IfThenElse()
+    | res = Switch()
     ) { return res; }
 }
 
@@ -575,7 +607,6 @@ Object Operator() :
     String operator = "";
 }
 {
-    <OPSTART>
     ((<NOT> {operator = notOp; arity = 1;} a = SimpleValue() )
      |
      (a = SimpleValue() {v.add(a);}) [
@@ -586,19 +617,22 @@ Object Operator() :
          |((<TIMES> {operator = timesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<TIMES> (b = SimpleValue() {v.add(b);}))*)
          |((<AND> {operator = andOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<AND> (b = SimpleValue() {v.add(b);}))*)
          |((<OR> {operator = orOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<OR> (b = SimpleValue() {v.add(b);}))*)
-
+         |((<XOR> {operator = xorOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<XOR> (b = SimpleValue() {v.add(b);}))*)
+         |((<IMPLIES> {operator = impliesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<IMPLIES> (b = SimpleValue() {v.add(b);}))*)
+         
      |((<EQ> {operator = eqOp; arity=2;}) (b = SimpleValue()))
      |((<NE> {operator = neOp; arity=2;}) (b = SimpleValue()))
      |((<GE> {operator = geOp; arity=2;}) (b = SimpleValue()))
      |((<LE> {operator = leOp; arity=2;}) (b = SimpleValue()))
      |((<GT> {operator = gtOp; arity=2;}) (b = SimpleValue()))
      |((<LT> {operator = ltOp; arity=2;}) (b = SimpleValue()))
-         |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
-         |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
+     |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
+     |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
+     |((<MOD> {operator = modOp; arity=2;}) (b = SimpleValue()))
+     
      )
       ]
     )
-    <OPEND>
     {
     if (operator.equals("")) {
         res = a;
@@ -658,6 +692,39 @@ Object IfThenElse() :
     }
 }
 
+Object Switch() :
+{
+    SFComponentDescription bindings = SFParser.componentFactory("default");
+}
+{   {
+        bindings.sfContext().put("phase.function", functionPhaseClass);
+        bindings.sfContext().put("sfFunctionClass", switchOp);
+    }
+    <SWITCH> [<LBRACE> AttributesNoEOF(bindings) <RBRACE>]
+              CaseList(bindings)
+    <ENDSWITCH>
+    {
+        return bindings;
+    }
+}
+
+void CaseList(SFComponentDescription cases) :
+{
+    Object i,t;
+}
+{
+   <IF> i = SimpleValue() <THEN> t = SimpleValue() {
+      cases.sfContext().put("IF" + nextId, i);
+      if (i instanceof SFComponentDescription) {
+            ((SFComponentDescription)i).setParent((SFComponentDescription)cases);
+      }
+      cases.sfContext().put("THEN" + nextId++, t);
+      if (t instanceof SFComponentDescription) {
+            ((SFComponentDescription)t).setParent((SFComponentDescription)cases);
+      }
+   } [CaseList(cases)]
+}
+
 //
 // Note that the Component() term may include a different node type builder.
 // This is used as follows:
@@ -710,11 +777,11 @@ void DataComponent(SFComponentDescription comp) :
 void BaseComponent(SFComponentDescription comp) :
 {
 }
-{ (
-  <SEMICOLON>
-  | (<NULL> (BaseComponentRest(comp) | <SEMICOLON>))
-  | (BaseComponentLinkType(comp) (BaseComponentRest(comp)  | <SEMICOLON>))
-  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)]) // for backward compat...
+{ 
+  (
+    (<NULL> [BaseComponentRest(comp)])
+  | (BaseComponentLinkType(comp) [BaseComponentRest(comp)])
+  | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)])
   )
   {    // fix the case when the extends is only of a single {...} as assumptions have been made that
        // type resolution is not required in this case - true before multiple extends!
@@ -725,7 +792,6 @@ void BaseComponent(SFComponentDescription comp) :
                SFComponentDescription cdType = (SFComponentDescription) type;
                Context cxt = cdType.sfContext();
                comp.setContext(cxt);
-
                // re-parent any descriptions in super sfContext
                for (Enumeration e = cxt.keys(); e.hasMoreElements(); ) {
                    Object key = e.nextElement();
@@ -745,8 +811,8 @@ void BaseComponent(SFComponentDescription comp) :
 {
 }
 {
-  (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) (BaseComponentRest(comp)  | <SEMICOLON>))
-  | (BaseComponentAttributesType(comp)) // for backward compat...
+    (<COMMA>  (BaseComponentLinkType(comp)|BaseComponentAttributesType(comp)|<NULL>) [BaseComponentRest(comp)])
+    | (BaseComponentAttributesType(comp)) // for backward compat...
 }
 
 void BaseComponentLinkType(SFComponentDescription comp) :
@@ -760,7 +826,7 @@ void BaseComponentLinkType(SFComponentDescription comp) :
 
 void BaseComponentAttributesType (SFComponentDescription comp) :
 {
-   SFComponentDescriptionImpl compType = new SFComponentDescriptionImpl(new Vector(), null, null, true);
+   SFComponentDescription compType = SFParser.componentFactory("default");
 }
 {
    <LBRACE> AttributesNoEOF(compType) <RBRACE>
@@ -824,6 +890,7 @@ void ReferencePart(SFReference ref) :
   | (<IPROPERTY> id=Name() { ref.addElement(ReferencePart.iproperty(id.image));})
   | (<ENVPROPERTY> id=Name() { ref.addElement(ReferencePart.envproperty(id.image));})
   | (<IENVPROPERTY> id=Name() { ref.addElement(ReferencePart.ienvproperty(id.image));})
+  | (<CONST> id=Name() {ref.addElement(ReferencePart.constant(id.image));})
   | (<HOST> (id=Name() { ref.addElement(ReferencePart.host(id.image));}))
   | (<PROCESS> { ref.addElement(ReferencePart.process());})
   | (id=<WORD> { if (ref.size() == 0) // id in first position - treat as an attrib, not a here
@@ -880,6 +947,7 @@ Object Primitive() :
       <VECTOREND>)
    | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
    | <TBD> {res = new SFTBDReference();}
+   | res=Var()
   ) { return res; }
 }
 
@@ -965,4 +1033,3 @@ Token Name() : {
   | res = <WORD> )
   {return res;}
 }
-

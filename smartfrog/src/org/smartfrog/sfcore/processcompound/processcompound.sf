@@ -18,11 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/version.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/version.sf"
 
 ProcessCompoundSchema extends CompoundSchema {
-  sfProcessJava extends OptionalString {description "name for java runtime";}
+  sfProcessJava extends OptionalString {description "name for Java runtime";}
   sfProcessClass extends OptionalString {description "entry class to SmartFrog";}
   sfProcessAllow extends OptionalBoolean {description "decides if subprocesses are allowed in root process";}
   sfProcessTimeout extends OptionalInteger {description "timeout for subprocess deployment in seconds";}
@@ -35,11 +35,14 @@ ProcessCompound extends Compound {
   sfPrimSchema extends ProcessCompoundSchema;
   sfClass "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
   sfDeployerClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
-  //sfLivenessDelay 15;
+  sfLivenessDelay 15;
   sfLivenessFactor 2;
   sfSyncTerminate true;
 
+  sfSubprocessGCTimeout 30; // Number of pings a subprocess will check for components before terminating itself. O = no SubProcGC
+
   sfProcessClass "org.smartfrog.SFSystem";
+  sfProcessJavaPath (LAZY PROPERTY "java.home" ++ "/bin/");
   sfProcessJava "java";
   //sfProcessClassPath "smartfrog.jar";
   //sfProcessReplaceClassPath false;

@@ -20,9 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 
 /**

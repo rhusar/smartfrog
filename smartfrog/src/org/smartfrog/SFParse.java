@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.services.management.SFDeployDisplay;
 
 /**
  * SFParse provides the utility methods to parse file descriptions and generate
@@ -52,25 +53,28 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 public class SFParse implements MessageKeys {
 
 //    static String usageString = "Usage: sfParse [-v][-d] filename";
-    static ParseOptionSet opts = null;
+    private static ParseOptionSet opts = null;
 
-    static Vector phases;
+    private static Vector phases;
 
-    static Vector errorReport = new Vector();
-
+    private static Vector errorReport = null;
+    
+    private static ComponentDescription cd = null;
+    
     private SFParse(){
     }
 
     /**
-     * Gets language grom the URL
+     * Gets language from the URL
      *
      * @param url URL passed to application
      *
      * @return Language string
      *
-     * @throws Exception In case any error while getting the language string
+     * @throws SmartFrogException In case any error while getting the language string
      */
-    private static String getLanguageFromUrl(String url) throws Exception {
+    private static String getLanguageFromUrl(String url) throws
+            SmartFrogException {
         int i = url.lastIndexOf('.');
 
         if (i <= 0) {
@@ -82,6 +86,30 @@ public class SFParse implements MessageKeys {
         }
     }
 
+    /**
+     * Ascertains whether a file is parseable
+     * @param fileUrl the fileurl to be parsed
+     * @return success or not
+     */
+    public static boolean fileParses(String fileUrl) { 
+    	if (opts==null) opts = new ParseOptionSet(new String[]{"sfParse"});
+    	errorReport= new Vector();
+    	parseFile(fileUrl);
+    	return (errorReport.size()==0);
+    }
+    
+    /**
+     * Attempts to parse given file, returning resultant component description
+     * @param fileUrl the fileurl to be parsed
+     * @return ComponentDescription resulting from parse, if file successfully parses, else null
+     */
+
+    public static ComponentDescription parseFileToDescription(String fileUrl) { 
+    	boolean parses = fileParses(fileUrl);
+    	if (parses) return cd;
+    	else return null;
+    }
+    
     /**
      * Parses a file.
      *
@@ -104,14 +132,17 @@ public class SFParse implements MessageKeys {
             Phases top;
             InputStream is=null;
             try {
-                is = SFLoader.getInputStreamSFException(fileUrl);
-
+                is = SFClassLoader.getResourceAsStream(fileUrl);
+                if (is == null) {
+                    String msg = MessageUtil.
+                            formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                    throw new SmartFrogParseException(msg);
+                }
                 top = (new SFParser(language)).sfParse(is);
                 if (opts.verbose && !opts.quiet) {
                     printPhase("raw", top.toString());
                 }
                 report.add("   "+"raw phase: OK");
-
             } catch (Exception ex) {
                 //report.add("   "+"raw phase: "+ex.getMessage());
                 report.add("   "+ "raw" +" phase: FAILED!");
@@ -144,7 +175,7 @@ public class SFParse implements MessageKeys {
                 }
             }
 
-            ComponentDescription cd = top.sfAsComponentDescription();
+            cd = top.sfAsComponentDescription();
 
             if ((opts.description) || (opts.verbose && !opts.quiet)) {
                 printPhase("sfAsComponentDescription", cd.toString());
@@ -154,10 +185,13 @@ public class SFParse implements MessageKeys {
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
             report.add(", parsed in "+ (parseTime) + " millisecs.");
 
+            showConsole(cd);
+
+
         } catch (Exception e) {
             //report.add("Error: "+ e.getMessage());
             //report.add("   "+ phase +" phase: FAILED!");
-            SFSystem.sfLog().out("ERROR '"+fileUrl+"': \n"+ e+"\n");
+            SFSystem.sfLog().err("'"+fileUrl+"': \n"+ e+"\n",e);
             Vector itemError = new Vector();
             itemError.add(fileUrl);
             if (e instanceof SmartFrogException) {
@@ -171,21 +205,25 @@ public class SFParse implements MessageKeys {
         return report;
     }
 
+    private static void showConsole(ComponentDescription cd) throws Exception {
+        if (opts.showConsole) {
+            SFDeployDisplay.starParserConsole("ParseConsole",440,600,"N",cd,true);
+            Thread.sleep(3600*100);
+        }
+    }
+
     /**
      * Parses a list of files.
      *
      * @param list the list of files to be parsed
      */
-    private static void parseFiles (Vector list){
+    private static void parseFiles (Vector<String> list){
           StringBuffer strb;
-          String file = "";
           Vector report= new Vector();
           //Loop through the vector
-         for (int i = 0; i < list.size(); i++) {
+          for(String file:list) {
              try {
                  strb = new StringBuffer();
-                 //Get the current line of text
-                 file = list.elementAt(i).toString();
                  //If it's not an empty line
                  if (file.trim().length() > 0) {
                      strb.append("-----------------------------------------------\n")
@@ -212,35 +250,32 @@ public class SFParse implements MessageKeys {
          if (opts.statusReport){
            printTotalReport(report);
          }
-        if (opts.statusReportHTML) {
-            printItemReportHTML(report);
-            FileWriter newFile = null;
-            try {
-                newFile = new FileWriter(opts.fileName + "_report.html");
-                newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
-                newFile.write("<body>" + "\n");
-                newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>" + "\n");
-                newFile.write("<table border=\"1\">" + "\n");
-                newFile.write(printTotalReportHTML(report));
-                newFile.write("<table/>");
-                newFile.write("<font color=\"BLUE\" size=\"5\">Error report<font/>" + "\n");
-                newFile.write("<table border=\"1\">" + "\n");
-                newFile.write(printTotalReportHTML(errorReport));
-                newFile.write("<table/>");
-                newFile.write("<body/>" + "\n");
-                newFile.write("<html/>" + "\n");
-                newFile.flush();
-                SFSystem.sfLog().out("Report created: " + opts.fileName + "_report.html");
+         if (opts.statusReportHTML){
+           printItemReportHTML(report);
+           try {
+              FileWriter newFile = new FileWriter(opts.fileName+"_report.html");
+              newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
+              newFile.write("<body>"+"\n");
+              newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>"+"\n");
+              newFile.write("<table border=\"1\">"+"\n");
+              newFile.write(printTotalReportHTML(report));
+              newFile.write("<table/>");
+              newFile.write("<font color=\"BLUE\" size=\"5\">Error report<font/>"+"\n");
+              newFile.write("<table border=\"1\">"+"\n");
+              newFile.write(printTotalReportHTML(errorReport));
+              newFile.write("<table/>");
+              newFile.write("<body/>"+"\n");
+              newFile.write("<html/>"+"\n");
+              newFile.flush();
+              newFile.close();
+              SFSystem.sfLog().out("Report created: "+opts.fileName+"_report.html");
             } catch (IOException e) {
+              if (SFSystem.sfLog().isErrorEnabled()){
                 SFSystem.sfLog().error(e);
-            } finally {
-                if (newFile != null) try {
-                    newFile.close();
-                } catch (IOException e) {
-                    SFSystem.sfLog().error(e);
-                }
+              }
+              //Logger.log(e);
             }
-        }
+         }
     }
 
     /**
@@ -268,6 +303,7 @@ public class SFParse implements MessageKeys {
 
             showVersionInfo();
             opts = new ParseOptionSet(args);
+            errorReport = new Vector();
             //SFSystem.SFSystem.sfLog().out(opts.toString());
 
             showDiagnostics(opts);
@@ -404,15 +440,19 @@ public class SFParse implements MessageKeys {
     }
     /**
      * Shows diagnostics report
-     * @param opts OptionSet
+     * @param options OptionSet
      */
-    private static void showDiagnostics(ParseOptionSet opts) {
-      if (opts.diagnostics){
+    private static void showDiagnostics(ParseOptionSet options) {
+      if (options.diagnostics){
         //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
         StringBuffer report = new StringBuffer();
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         SFSystem.sfLog().out(report.toString());
       }
+    }
+    
+    public static boolean isVerboseOptSet(){
+    	return opts.verbose;
     }
 
 }

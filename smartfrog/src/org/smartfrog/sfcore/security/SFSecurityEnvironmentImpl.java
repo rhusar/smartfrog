@@ -27,6 +27,9 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.net.InetAddress;
 
@@ -61,6 +64,9 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     /** The name of the key store resource. */
     private String keyStoreName = "sfkeys.st";
 
+   /** the type of the keystore */
+    private static final String keyStoreType = "JCEKS";
+
     /** The password needed to unlock the key store. */
     private String keyStorePasswd = "pleasechange";
 
@@ -94,7 +100,8 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
     private SFDebug debug;
 
 
-    /**
+
+   /**
      * Constructs SFSecurityEnvironmentImpl. Initializes key store, key
      * managers,trust managers, contexts, SSL socket factories and RMI socket
      * factories
@@ -147,7 +154,7 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
                     keyStoreName);
 
             // Open and check integrity of the key store.
-            ks = KeyStore.getInstance("JKS");
+            ks = KeyStore.getInstance(keyStoreType);
             ks.load(getClass().getResourceAsStream(keyStoreName),
                 keyStorePasswd.toCharArray());
         } catch (Exception e) {
@@ -227,8 +234,15 @@ public class SFSecurityEnvironmentImpl implements SFSecurityEnvironment {
      */
     private void initRMISocketFactories() throws SFGeneralSecurityException {
         rmicsf = new SFClientSocketFactory(this);
-        rmissf = new SFSSLServerSocketFactory(rmissfBindAddr,this);
+        rmissf = new SFServerSocketFactory(rmissfBindAddr,this);
         rmisf = new SFRMISocketFactory(rmicsf, rmissf);
+    }
+
+   /**
+    * Get the keystore Entry associated with a specific alias
+    */
+    KeyStore.Entry getEntry (String alias) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
+      return ks.getEntry(alias, new KeyStore.PasswordProtection(keyStorePasswd.toCharArray()));
     }
 
     /**

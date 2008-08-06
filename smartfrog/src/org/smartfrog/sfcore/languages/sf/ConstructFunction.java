@@ -1,17 +1,19 @@
 package org.smartfrog.sfcore.languages.sf;
 
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
+
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.reference.Reference;
-
-import java.util.Stack;
-import java.util.Iterator;
 
 /**
  * Construct the function apply reference object, and replace self with this
@@ -40,9 +42,13 @@ public class ConstructFunction implements PhaseAction {
         for (Iterator i = cd.sfAttributes(); i.hasNext();) {
             Object key = i.next();
             Object value = null;
+            Set tags = null;
             try {
                 value = cd.sfResolveHere(key);
+                tags = cd.sfGetTags(key);
             } catch (SmartFrogResolutionException e) {
+                //shouldn't happen
+            } catch (SmartFrogContextException e) {
                 //shouldn't happen
             }
             if ((key.toString()).equals(functionPhase)) {
@@ -50,6 +56,7 @@ public class ConstructFunction implements PhaseAction {
             } else {
                 try {
                     comp.sfAddAttribute(key, value);
+                    if (tags!=null) comp.sfSetTags(key, tags);
                 } catch (SmartFrogRuntimeException e) {
                     //shouldn't happen
                 }
@@ -57,6 +64,7 @@ public class ConstructFunction implements PhaseAction {
         }
 
         ComponentDescription parent = cd.sfParent();
+        
         if (parent != null) {
             Object name = parent.sfContext().keyFor(cd);
             Reference newRef = new SFApplyReference(comp);
@@ -67,13 +75,15 @@ public class ConstructFunction implements PhaseAction {
                 throw new SmartFrogFunctionResolutionException("Problem reading ("+functionLazy+"): " + phaseName + " for component: " + cd.sfCompleteName(), e);
             }
             parent.sfContext().put(name, newRef );
+            
+            comp.sfContext().remove(functionPhase);
         }
     }
 
     // the component description which is to be transformed
-    public void forComponent(SFComponentDescription cd, String phaseName, Stack path) {
-        this.phaseName = phaseName;
-        this.cd = cd;
-        this.path = path;
+    public void forComponent(SFComponentDescription componentDescription, String phase, Stack pathStack) {
+        this.phaseName = phase;
+        this.cd = componentDescription;
+        this.path = pathStack;        
     }
 }

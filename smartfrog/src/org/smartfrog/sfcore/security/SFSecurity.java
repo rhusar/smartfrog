@@ -21,21 +21,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.JarURLConnection;
-import java.security.cert.Certificate;
-import java.security.CodeSource;
-import java.security.Policy;
-import java.security.PermissionCollection;
-import java.security.ProtectionDomain;
+import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
+
 
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
@@ -56,7 +48,11 @@ public class SFSecurity {
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
 
-    private static Registry realRMIRegistry;
+    /** A RMIServerSocketFactory used when security is off */
+    private static SFServerSocketFactory nonSecServerSocketFactory;
+
+     private static Registry realRMIRegistry;
+ 
     /**
      * Initializes the security using system properties to decide on the level
      * of security required.
@@ -76,11 +72,6 @@ public class SFSecurity {
                     // Activate the real security manager.
                     System.setSecurityManager(new SecurityManager());
 
-                    // Add JSSE sun provider. Need to make this more sun independent..
-                    /* Already included in JDK1.4
-                       Security.addProvider(
-                                       new com.sun.net.ssl.internal.ssl.Provider());
-                     */
                     securityEnv = new SFSecurityEnvironmentImpl(null);
 
                     /*Make sure that we restrict downloading of stubs/RMIClientFactory
@@ -118,16 +109,24 @@ public class SFSecurity {
                           we have to be *very* careful on what RMIClientSocketFactory
                           classes are available in our codebase...*/
                     RMISocketFactory.setSocketFactory(securityEnv.getRMISocketFactory());
+                    SFRMIClassLoaderSpi.setSecureResourcesOff(Boolean.getBoolean(SFSecurityProperties.propSecureResourcesOff));
                     SFRMIClassLoaderSpi.setSecurityOn(true);
                 } else {
-                    
+                    //System.setSecurityManager(new DummySecurityManager());
+                    // if a java.security.policy is set then we initialize standard java security
+                    // This is necessary for dynamic classloading to work.
+                    String secPro = System.getProperty("java.security.policy");
+                    if  (secPro != null) {
+                        System.setSecurityManager(new SecurityManager());
+                    }
+
                     SFRMIClassLoaderSpi.setSecurityOn(false);
                     //Notification moved to SFSyten after the ini file is read.
                 }
             }
         } catch (IOException e) {
             // Problems setting up RMI.
-            throw new SFGeneralSecurityException(e.getMessage());
+            throw (SFGeneralSecurityException)new SFGeneralSecurityException(e.getMessage()).initCause(e);
         }
     }
 
@@ -136,7 +135,7 @@ public class SFSecurity {
      *
      * @return The security environment shared by all the local SF components.
      */
-    static synchronized SFSecurityEnvironment getSecurityEnvironment() {
+    synchronized static SFSecurityEnvironment getSecurityEnvironment() {
         checkSFCommunity();
         return securityEnv;
     }
@@ -203,8 +202,8 @@ public class SFSecurity {
     public static void checkSecurity(Class clazz) {
         SFRMIClassLoaderSpi.quickReject(clazz.getProtectionDomain());
     }
-    
-    /**
+
+	/**
      * Returns whether the SF security checks are active or not. This can only
      * be changed once at initialization time for security reasons.
      *
@@ -214,12 +213,23 @@ public class SFSecurity {
         return SFRMIClassLoaderSpi.isSecurityOn();
     }
 
+
+    /**
+     * Returns whether the SF security checks for resources are active or not. This can only
+     * be changed once at initialization time for security reasons and does not apply to classes.
+     *
+     * @return whether the SF security is active.
+     */
+    public static boolean isSecureResourcesOff (){
+        return    SFRMIClassLoaderSpi.isSecureResourcesOff();
+    }
+
     /**
      * Creates and exports a <code>Registry</code> on the local host that
      * accepts requests on the specified <code>port</code>.
      *
      * @param port the port on which the registry accepts requests
-     *
+     * @param bindAddr The address to bind on
      * @return the registry
      *
      * @throws RemoteException if the registry could not be exported
@@ -229,11 +239,11 @@ public class SFSecurity {
     public static Registry createRegistry(int port, InetAddress bindAddr) throws RemoteException {
         if (isSecurityOn()) {
             realRMIRegistry = LocateRegistry.createRegistry(port,
-                securityEnv.getEmptyRMIClientSocketFactory(),
-                securityEnv.getRMIServerSocketFactory());
+            securityEnv.getEmptyRMIClientSocketFactory(),
+            securityEnv.getRMIServerSocketFactory());
         } else {
-            SFServerSocketFactory nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
-            realRMIRegistry =  LocateRegistry.createRegistry(port,null, nonSecServerSocketFactory);
+            nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
+            realRMIRegistry LocateRegistry.createRegistry(port, null, nonSecServerSocketFactory);
         }
         return realRMIRegistry;
     }

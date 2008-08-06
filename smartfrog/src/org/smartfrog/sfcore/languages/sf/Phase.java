@@ -20,26 +20,26 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
+import java.util.Enumeration;
+import java.util.Stack;
+
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.reference.ApplyReference;
-
-import java.util.Enumeration;
-import java.util.Stack;
 
 
 /**
- * Phase is a class that implements a phase on a ComponentDescription. It is
+ * Phase is a class that implements a phase on a ComponentDescritpion. It is
  * iterated over the tree by the visitor pattern implemented on
  * ComponentDescription.
  */
 public class Phase implements CDVisitor {
     /** The name of the phase. */
-    private String phaseName;
+    protected String phaseName;
+    protected Stack path;
 
     /**
      * Construct a phase object for a specific named phase.
@@ -53,27 +53,31 @@ public class Phase implements CDVisitor {
     /**
      * Create a PhaseAction for a specific node for which the phase is relevant.
      *
+     * @param action the object describing the phase - should be a string
+     *        representing a class implementing the PhaseAction interface
      * @param cd the component description on which it is to act
      *
      * @return PhaseAction for a specific node
      *
      * @throws SmartFrogResolutionException failed to create PhaseAction
      */
-    protected PhaseAction phaseAction(String action,
+    protected PhaseAction phaseAction(Object action,
                                       SFComponentDescription cd,
-                                      Stack path)
-            throws SmartFrogResolutionException
-    {
+                                      Stack pathStack)
+            throws SmartFrogResolutionException {
         try {
             ClassLoadingEnvironment env = ApplyReference.resolveEnvironmentHere(cd);
             PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
-
-        } catch (Exception ex) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(
-                    "Could not create phase: " + phaseName + " (" + action + ')', ex
-            );
+        } catch (Exception ex){ 
+            String actionClass;
+            if (action!=null) {
+              actionClass = action.toString();
+            } else {
+              actionClass = "null";
+            }
+            throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(phaseName+" ("+ actionClass +", internal cause: "+ex.getMessage()+ ")", ex);
         }
     }
 
@@ -85,7 +89,7 @@ public class Phase implements CDVisitor {
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException failed to create PhaseAction
      */
-    public void actOn(ComponentDescription cd, Stack path) throws SmartFrogResolutionException {
+    public void actOn(ComponentDescription cd, Stack pathStack) throws SmartFrogResolutionException {
         Context c = cd.sfContext();
         for (Enumeration e = ((Context) c.clone()).keys(); e.hasMoreElements();) {
             Object name = e.nextElement();
@@ -94,10 +98,10 @@ public class Phase implements CDVisitor {
                 String sname = (String) name;
 
                 if (sname.startsWith(phaseName)) {
-                    String value = (String) c.get(sname);
+                    Object value = c.get(sname);
                     //this classcast shouldn't cause problems - but if it does, its an error anyway
                     // maybe should be prepared to provide better error message!
-                    phaseAction(value, (SFComponentDescription)cd, path).doit();
+                    phaseAction(value, (SFComponentDescription)cd, pathStack).doit();
                 }
             }
         }
