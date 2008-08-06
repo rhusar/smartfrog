@@ -410,13 +410,10 @@ public class SFProcess implements MessageKeys {
         }
         if (processCompound == null) {
            throw new SmartFrogRuntimeException ("Process Compound cannot be reset: is null");
-        }else {
-            throw new SmartFrogRuntimeException(
-                    "Process Compound cannot be reset: is null");
         } else {
             throw new SmartFrogRuntimeException(
-                    "Process Compound cannot be reset");
-        }
+                    "Process Compound cannot be reset: is null");
+		}			
     }
 
 
