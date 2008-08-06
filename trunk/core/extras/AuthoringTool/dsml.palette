@@ -76,9 +76,6 @@ Components {
   And:And;
   And-desc:Adds a And to the model;
   And-image:resources/icons/And_s.gif;
-  Connectors:Connectors;
-  Connectors-desc:Adds a Connectors to the model;
-  Connectors-image:resources/icons/Connectors_s.gif;
   Or:Or;
   Or-desc:Adds a Or to the model;
   Or-image:resources/icons/Or_s.gif;
