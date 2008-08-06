@@ -243,7 +243,7 @@ public class SFSecurity {
             securityEnv.getRMIServerSocketFactory());
         } else {
             nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
-            realRMIRegistry LocateRegistry.createRegistry(port, null, nonSecServerSocketFactory);
+            realRMIRegistry = LocateRegistry.createRegistry(port, null, nonSecServerSocketFactory);
         }
         return realRMIRegistry;
     }

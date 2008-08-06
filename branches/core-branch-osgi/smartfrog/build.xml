@@ -160,7 +160,7 @@
   <property name="javac.debug.mode" value="on"/>
   <!-- turn on compile -g -->
   <property name="javac.debug.level" value="lines,vars,source"/>
-  <property name="javac.java.version" value="1.4"/>
+  <property name="javac.java.version" value="1.6"/>
   <property name="build.compiler" value="modern"/>
   <property name="javac.compiler" value="${build.compiler}"/>
   <property name="javac.max.memory" value="192m" />
@@ -293,7 +293,6 @@
   <target name="createParser" depends="init">
     <!-- Javacc the parser files - both sf and csf -->
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}"/>
   </target>
 
   <!-- =================================================================== -->
