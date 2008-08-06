@@ -43,12 +43,10 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * read in the directory settings and bind the file attributes.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -77,14 +75,14 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
     }
 
     /**
-     * we only create the directory at startup time, even though we bond at deploy time
+     * we only create the directory at startup time, even though we bond at deploy time.
      * @throws SmartFrogException  failure in starting
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        File directory=getFile();
+        File directory = getFile();
         boolean clean = sfResolve(ATTR_CLEAN_ON_START, false, false);
         if(directory.exists()) {
             if (clean) {
@@ -97,12 +95,15 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
         directory.mkdirs();
         if (!directory.exists() || !directory.isDirectory()) {
             //whatever it is, don't try and delete it.
-            delete=false;
+            delete = false;
             //raise an error.
             throw new SmartFrogDeploymentException("Failed to create directory " +
                     directory.getAbsolutePath());
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"Mkdir "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "Mkdir "+getFile().getAbsolutePath(),
+                sfCompleteNameSafe(),
+                null);
     }
 
 
