@@ -129,7 +129,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator sfAttributes() throws RemoteException;
+    public  Iterator<Object> sfAttributes() throws RemoteException;
 
     /**
      * Returns an ordered iterator over the values in the context.
@@ -140,7 +140,7 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public  Iterator sfValues() throws RemoteException;
+    public  Iterator<Object> sfValues() throws RemoteException;
 
 
     /**
@@ -296,28 +296,35 @@ public interface Prim extends Update, Liveness, RemoteReferenceResolver, RemoteR
      */
     public void sfParentageChanged() throws RemoteException;
 
-    /** Returns value of flag indicating if this component has been terminated.
-     *  @throws RemoteException In case of Remote/nework error
+    /**
+     * Returns value of flag indicating if this component has been terminated.
+     * @return true if the component is terminating
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsTerminated() throws RemoteException;
 
     /** Returns value of flag indicating if this component is terminating.
-     * @throws RemoteException In case of Remote/nework error
+     * @return true if the component is terminating
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsTerminating() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been deployed.
-     * @throws RemoteException In case of Remote/nework error
+     * @return true if the component is deployed
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsDeployed() throws RemoteException;
 
     /** Returns value of flag indicating if this component has been started.
-     * @throws RemoteException In case of Remote/nework error
+     * @return true if the component is started
+     * @throws RemoteException In case of Remote/network error
      */
     public boolean sfIsStarted() throws RemoteException;
 
     /**
      * Validate all ASSERTs in the context of the Prim, returning true if OK, false if not.
+     * @return true if the assertions are valid
+     * @throws RemoteException In case of Remote/network error
      */
      public boolean sfValid() throws RemoteException;
 }

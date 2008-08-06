@@ -32,24 +32,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public interface LogSF extends Log, LogMessage, LogLevel {
 
     /** SFAttributes*/
-    /** String name for optional attribute "debug". */
-    final static String ATR_LOG_LEVEL = "logLevel";
-    /** String name for optional attribute "debug". */
-    final static String ATR_LOGGER_CLASS = "loggerClass";
-
-    /**
-     * <p> Set logging level. </p>
-     *
-     * @param currentLogLevel new logging level
-     */
-    public void setLevel(int currentLogLevel);
-
-    /**
-     * Get logging level.
-     @return the logging level
-     */
-    public int getLevel();
-
+    /** String name for optional attribute "debug".  {@value} */
+    String ATR_LOG_LEVEL = "logLevel";
+    /** String name for optional attribute "debug". {@value} */
+    String ATR_LOGGER_CLASS = "loggerClass";
 
     /**
      * Get log name.

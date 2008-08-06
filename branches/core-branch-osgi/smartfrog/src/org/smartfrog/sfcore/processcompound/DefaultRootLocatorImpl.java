@@ -75,7 +75,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
       * @param pc ProcessCompound
       * @param bind boolean
       */
-     private AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
+     AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
          this.pc = pc;
          this.bind = bind;
      }
@@ -104,16 +104,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
 
     /** Name under which the root process compound will name itself. */
-    protected static final String defaultName = "RootProcessCompound";
+    protected static String defaultName = "RootProcessCompound";
 
     /** Port for registry. */
-    private int registryPort = -1;
+    protected static int registryPort = -1;
 
     /** Port for registry. */
-    private InetAddress registryBindAddr = null;
+    protected static InetAddress registryBindAddr = null;
 
      /** RMI Registry. */
-    private Registry registry = null;
+    protected static Registry registry = null;
 
     /**
      * Constructs the DefaultRootLocatorImpl object.
@@ -138,12 +138,10 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 registry.unbind(defaultName);
              }
          } catch (Exception e) {
-             //braindead
              // to be thrown in getProcessCompound
-//             String msg = "unbinding";
-//             if (bind) {msg = "binding";}
-//             ex = SmartFrogRuntimeException.forward("Exception while "+msg  + "root ProcessCompound", e);
-             e.printStackTrace();
+             String msg = "unbinding";
+             if (bind) {msg = "binding";}
+             ex = SmartFrogRuntimeException.forward("Exception while "+msg  + "root ProcessCompound", e);
          }
      }
     /**
@@ -158,7 +156,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException fails to get the registry port
      * @throws RemoteException In case of network/rmi error
      */
-    protected int getRegistryPort(ProcessCompound c)
+    protected static int getRegistryPort(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         Object portObj=null;
         try {
@@ -178,7 +176,8 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         } catch (ClassCastException ccex){
             throw new SmartFrogResolutionException(
                 "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-                +": "+portObj+", "+portObj.getClass().getName()+"", ccex, c);
+                +": "+portObj+", "+portObj!=null?portObj.getClass().getName():"", 
+                ccex, c);
         }
         return registryPort;
     }
@@ -196,10 +195,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException fails to get the registry bind address
      * @throws RemoteException In case of network/rmi error
      */
-    private InetAddress getRegistryBindAddress(ProcessCompound c)
+    protected static InetAddress getRegistryBindAddress(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         Object bindAddr=null;
-        try {
             if (registryBindAddr == null) {
                 if (c!=null) {
                   bindAddr = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_BIND_ADDRESS, false));
@@ -212,15 +210,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 } else if (bindAddr instanceof java.net.InetAddress) {
                    return ((java.net.InetAddress) bindAddr);
                 } else {
-                  registryBindAddr = InetAddress.getByName(bindAddr.toString());
+                    try {
+                    	registryBindAddr = InetAddress.getByName(bindAddr.toString());
+                    } catch (UnknownHostException uhex){
+                    	throw new SmartFrogResolutionException(
+                    			"Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+                    			+": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
+
+                    }
                 }
             }
-        } catch (UnknownHostException uhex){
-           throw new SmartFrogResolutionException(
-             "Wrong binding address for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
-             +": "+bindAddr+", "+bindAddr.getClass().getName()+"", uhex, c);
-
-        }
         return registryBindAddr;
     }
 
@@ -248,7 +247,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 registry = SFSecurity.createRegistry(registryPort,registryBindAddr);
             }
             //registry.bind(defaultName, c);
-            /**
+            /*
              * Uses a new thread to bind/unbind the register. Otherwise, since
              * the stack typically involves an RMI call, the register
              *  will not let us do the unbind/bind (no remote modifications allowed)
@@ -260,11 +259,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
              depThr.join();
              // it re-throws exceptions in the thread here...
              depThr.getProcessCompound();
+        } catch (java.rmi.server.ExportException t) {
+            throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
         } catch (Throwable t) {
-            if (t instanceof java.rmi.server.ExportException){
-                throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
-
-            }
             throw SmartFrogRuntimeException.forward(t);
         }
     }
@@ -334,7 +331,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * avoid all calls going through RMI
      *
      * @param hostAddress host to look up root process compound
-     * @param portNum port to locate registry for root process conmpound if not
+     * @param portNum port to locate registry for root process compound if not
      *        default
      *
      * @return the root process compound on given host

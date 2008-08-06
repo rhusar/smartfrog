@@ -66,6 +66,10 @@ OptionalLong extends Optional {
     class ["java.lang.Long","java.lang.Integer"];
 }
 
+OptionalNull extends Optional {
+    class "org.smartfrog.sfcore.common.SFNull";
+}
+
 Long extends Compulsory {
         class ["java.lang.Long","java.lang.Integer"];
 }
@@ -117,4 +121,8 @@ OptionalReference extends Optional {
 
 Reference extends Compulsory {
     class ["org.smartfrog.sfcore.languages.sf.sfreference.SFReference", "org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference"];
+}
+
+Null extends Compulsory {
+    class "org.smartfrog.sfcore.common.SFNull";
 }

@@ -36,9 +36,13 @@ import java.lang.reflect.Proxy;
 public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     /** A debugging utility to print messages. */
     private static SFDebug debug = SFDebug.getInstance("SFRMIClassLoaderSpi");
-
+	
     /** A flag that states whether SF security checks are active. */
-    private static boolean securityOn = false;
+    private static volatile boolean securityOn = false;
+
+    /** A flag that states whether SF security checks for resources are active. */
+    private static volatile boolean secureResourcesOff = false;
+	
 
     /**
      * Provides the implementation for {@link
@@ -269,6 +273,14 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
     public static void setSecurityOn(boolean securityOn) {
         SFRMIClassLoaderSpi.securityOn = securityOn;
     }
+	
+    public static boolean isSecureResourcesOff() {
+        return secureResourcesOff;
+    }
+
+    public static void setSecurityResourcesOff(boolean secureResourcesOff) {
+        SFRMIClassLoaderSpi.secureResourcesOff = secureResourcesOff;
+    }	
 
     public static void checkSFCommunity() {
         SecurityManager securitymanager = System.getSecurityManager();

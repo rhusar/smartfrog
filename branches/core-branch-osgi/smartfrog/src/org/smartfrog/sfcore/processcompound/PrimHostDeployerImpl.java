@@ -48,6 +48,9 @@ import java.rmi.RemoteException;
  */
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
+    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
+    private LogSF  sflog = LogFactory.sfGetProcessLog();
+
     /** Efficiency holder of sfProcessHost attribute. */
     protected static final Reference refProcessHost =
         new Reference(SmartFrogCoreKeys.SF_PROCESS_HOST);
@@ -56,6 +59,14 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     protected static final Reference refRootLocatorPort =
         new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT);
 
+    /**
+     * Constructs the PrimHostDeployerImpl with ComponentDescription.
+     *
+     * @param descr target to operate on
+     */
+    public PrimHostDeployerImpl(ComponentDescription descr) {
+        super(descr);
+    }
 
     /**
      * Returns the process compound on a particular host and with a particular
@@ -68,7 +79,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      * @throws Exception if failed to find process compound
      */
     protected ProcessCompound getProcessCompound() throws Exception {
-        InetAddress hostAddress;
+        InetAddress hostAddress = null;
         Object hostname = null;
         try {
             hostname = target.sfResolve(refProcessHost);
@@ -106,13 +117,18 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
     protected Prim deploy(Prim parent) throws SmartFrogDeploymentException {
 
         try {
-            ProcessCompound pc = getProcessCompound();
+            ProcessCompound pc = null;
+
+            try {
+                pc = getProcessCompound();
+            } catch (Exception e) {
+                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(e);
+            }
 
             ProcessCompound local = SFProcess.getProcessCompound();
 
             if (pc.equals(local)) {
                 if (parent == null) {
-                    // Is this combination possible ?
                     return local.sfDeployComponentDescription(null, parent, target,
                             null);
                 } else {

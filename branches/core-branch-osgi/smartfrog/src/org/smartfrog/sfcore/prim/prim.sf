@@ -64,7 +64,7 @@ Prim extends NULL {
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
 //  sfExportPort 0; //Use anonymous port for export.
-  sfLivenessDelay 0;
+//  sfLivenessDelay 0;
 //  sfLivenessFactor 2;
 //  sfLog "name"; //optional attribute to define a log name for a component.
 }

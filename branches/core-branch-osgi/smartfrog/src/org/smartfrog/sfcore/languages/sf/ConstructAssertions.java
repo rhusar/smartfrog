@@ -62,9 +62,9 @@ public class ConstructAssertions implements PhaseAction {
     }
 
     // the component description which is to be transformed
-    public void forComponent(SFComponentDescription cd, String phaseName, Stack path) {
-        this.phaseName = phaseName;
-        this.cd = cd;
-        this.path = path;
+    public void forComponent(SFComponentDescription componentDescription, String phase, Stack pathStack) {
+        this.phaseName = phase;
+        this.cd = componentDescription;
+        this.path = pathStack;
     }
 }

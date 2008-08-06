@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.prim;
 
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogExtractedException;
@@ -60,7 +62,7 @@ public final class TerminationRecord implements Serializable {
     /**
      * Constructs a new termination record.
      *
-     * @param errType error type, system recognized types are "normal",
+     * @param errType error type, system recognised types are "normal",
      *        "abnormal" and "externalReferenceDead".
      * @param descr description of termination
      * @param id id of failing component
@@ -77,7 +79,7 @@ public final class TerminationRecord implements Serializable {
      * The cause will be converted into a serializable form if the exception is not
      * believed to be portable
      * @see SmartFrogExtractedException
-     * @param errType error type, system recognized types are "normal",
+     * @param errType error type, system recognised types are "normal",
      *        "abnormal" and "externalReferenceDead".
      * @param descr description of termination
      * @param id id of failing component
@@ -137,7 +139,7 @@ public final class TerminationRecord implements Serializable {
      *
      * @param description description of the termination
      * @param id          id of component
-     * @param cause an exception to include in the recird
+     * @param cause an exception to include in the record
      * @return a SFTerminationRecord
      */
     public static TerminationRecord normal(String description, Reference id, Throwable cause) {
@@ -187,12 +189,56 @@ public final class TerminationRecord implements Serializable {
      * @return string representation of termination record
      */
     public String toString() {
-        //return id + "(" + errorType + ":" + description + ")";
-        return "Termination Record: " +
-        (((id == null) || (id.size() == 0)) ? "" : ("" + id.toString())) +
-        ((errorType == null) ? "" : (",  type: " + errorType)) +
-        ((description == null) ? "" : (",  description: " + description)) +
-        ((cause == null) ? "" : (",  cause: " + cause)) ;
+        StringBuilder builder=new StringBuilder();
+        builder.append("Termination Record: ");
+        if(id != null && id.size() > 0) {
+            builder.append(id.toString());
+        }
+        if(errorType!=null) {
+            builder.append(",  type: ").append(errorType);
+        }
+        if(description!=null) {
+            builder.append(",  description: ").append(description);
+        }
+        if (cause != null) {
+            builder.append(buildStackTrace());
+        }
+        //recursively attach exceptions
+/*
+        Throwable thrown = cause;
+        Throwable parent = null;
+        while (thrown != null && thrown != parent) {
+            builder.append(",  ");
+            if(parent!=null) {
+                builder.append(" nested ");
+            }
+            builder.append("cause: ");
+            builder.append(thrown.toString());
+            parent = thrown;
+            thrown = thrown.getCause();
+        }
+*/
+        return builder.toString();
+    }
+
+    public String buildStackTrace() {
+        if (cause == null) {
+            return "";
+        } else {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(sw);
+                pw.println();
+                cause.printStackTrace(pw);
+                pw.println();
+            } finally {
+                if (pw != null) {
+                    pw.close();
+                }
+            }
+            return sw.toString();
+        }
     }
 
     /**

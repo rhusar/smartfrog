@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /** created 05-Mar-2007 12:15:51 */
 
-public class LogUtils {
+public final class LogUtils {
     /**
      * Get an exception from either the cause parameter, or, if that is null, from anything in
      * the termination record
@@ -49,7 +49,31 @@ public class LogUtils {
         return "\n" + tr != null ? tr.toString() : "";
     }
 
-    static String format(Object message, TerminationRecord tr) {
-        return message + System.getProperty("line.separator") + stringify(tr);
+    /**
+     * Helper method to log at a specific level, being driven by a numeric value
+     * @param log log to log to
+     * @param level level to log at
+     * @param message message to log
+     */
+    public static void log(LogSF log,int level, String message) {
+        switch(level) {
+            case LogLevel.LOG_LEVEL_DEBUG:
+                log.debug(message);
+                break;
+            case LogLevel.LOG_LEVEL_WARN:
+                log.warn(message);
+                break;
+            case LogLevel.LOG_LEVEL_ERROR:
+                log.error(message);
+                break;
+            case LogLevel.LOG_LEVEL_FATAL:
+                log.fatal(message);
+                break;
+            case LogLevel.LOG_LEVEL_INFO:
+                log.info(message);
+                break;
+            default:
+                break;
+        }
     }
 }

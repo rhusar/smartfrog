@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.processcompound;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 
 
@@ -34,8 +35,17 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
     /** Efficiency holder for sfProcessName reference. */
-    private static final Reference refProcessName = new Reference(
+    protected static final Reference refProcessName = new Reference(
                 SmartFrogCoreKeys.SF_PROCESS_NAME);
+
+    /**
+     * Constructs PrimHostDeployerImpl object with component description.
+     *
+     * @param descr description of the component that is to be deployed
+     */
+    public PrimProcessDeployerImpl(ComponentDescription descr) {
+        super(descr);
+    }
 
     /**
      * Returns the process compound with a particular process name.
@@ -50,7 +60,7 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
 
         // try to look up process name; if it exists, look up in the
         // root process compound (parent of the current?)
-        String processName;
+        String processName = null;
 
         try {
             processName = (String) target.sfResolve(refProcessName);

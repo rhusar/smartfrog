@@ -116,12 +116,13 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
 
     /**
      * The name of this simple log instance
+     * There is a logName in the superclass
      */
-    protected String logName = null;
+    protected String instanceName = null;
     /**
      * The current log level
      */
-    protected int currentLogLevel = 0;
+    protected int currentLogLevel = 1;
     /**
      * The short name of this simple log instance
      */
@@ -213,7 +214,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
             this.error("", ex1);
         }
         assert name != null;
-        logName = name;
+        instanceName = name;
         // Set initial log level
         setLevel(initialLogLevel.intValue());
 
@@ -364,13 +365,13 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         if (showShortName) {
             if (shortLogName == null) {
                 // Cut all but the last component of the name for both styles
-                shortLogName = logName.substring(logName.lastIndexOf(".") + 1);
+                shortLogName = instanceName.substring(instanceName.lastIndexOf(".") + 1);
                 shortLogName =
                         shortLogName.substring(shortLogName.lastIndexOf("/") + 1);
             }
             buf.append(String.valueOf(shortLogName)).append(" - ");
         } else if (showLogName) {
-            buf.append(String.valueOf(logName)).append(" - ");
+            buf.append(String.valueOf(instanceName)).append(" - ");
         }
 
         // Append the message

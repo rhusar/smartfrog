@@ -40,7 +40,7 @@ public interface Log {
      * <p> Call this method to prevent having to perform expensive operations
      * (for example, <code>String</code> concatenation)
      * when the log level is more than fatal. </p>
-     * @return boolean true if fatal logging currently enabled
+     * @return boolean true if fatal logging is currently enabled
      */
     public boolean isFatalEnabled();
 

@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 
 /**
- * Defines the interface an object needs to implement if it wants to manager
+ * Defines the interface an object needs to implement if it wants to manage
  * children. Primitives expect their parent to implement this interface so
  * they can register for liveness and termination messages
  *
@@ -71,5 +71,5 @@ public interface ChildMinder extends Remote {
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Enumeration sfChildren() throws RemoteException;
+    public Enumeration<Liveness> sfChildren() throws RemoteException;
 }

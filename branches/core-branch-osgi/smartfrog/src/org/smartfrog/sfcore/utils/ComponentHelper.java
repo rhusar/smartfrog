@@ -96,7 +96,7 @@ public class ComponentHelper {
     public Reference completeNameOrNull() {
         try {
             return owner.sfCompleteName();
-        } catch (Throwable ignored) {
+        } catch (RemoteException e) {
             return null;
         }
     }
@@ -109,8 +109,8 @@ public class ComponentHelper {
      * @return reference of attribute names to this component or an empty reference
      */
     public Reference completeNameSafe() {
-        Reference ref=completeNameOrNull();
-        if(ref==null) {
+        Reference ref = completeNameOrNull();
+        if (ref == null) {
             return new Reference();
         } else {
             return ref;
@@ -131,13 +131,16 @@ public class ComponentHelper {
      * Returns the complete name for any component from the root of the
      * application and does not throw any exception. If an exception is
      * thrown it will return a new empty reference.
-     * @param owner component whose completename is to be returned
+     * @param owner component whose completename is to be returned. Can be null
      * @return reference of attribute names to this component or an empty reference
      */
     public static Reference completeNameSafe(Prim owner) {
+        if (owner == null) {
+            return new Reference();
+        }
         try {
             return owner.sfCompleteName();
-        } catch (Throwable thr) {
+        } catch (RemoteException thr) {
             // TODO: log a message to indicate that sfCompleteName failed!
             return new Reference();
         }
@@ -422,17 +425,15 @@ public class ComponentHelper {
 
     /**
      * get the codebase of a component
-     *
      * @return String codebase of a component
      * @throws SmartFrogResolutionException if failed to resolve
-     * @throws RemoteException              in case of Remote/network error
-     * @deprecated Use {@link this.getClassLoadingEnvironment()} instead.
+     * @throws RemoteException in case of Remote/network error
      */
     public String getCodebase() throws SmartFrogResolutionException,
-            RemoteException
-    {
+            RemoteException {
         return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
     }
+
     /**
      * Load a class in the owner's class loading space. Equivalent to calling
      * Class.forName() in the owner. 
@@ -497,8 +498,8 @@ public class ComponentHelper {
             return false;
         }
         Class[] interfaces = clazz.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            if (interfaces[i].getName().equals(interfaceName)) {
+        for (Class anInterface : interfaces) {
+            if (anInterface.getName().equals(interfaceName)) {
                 return true;
             }
         }

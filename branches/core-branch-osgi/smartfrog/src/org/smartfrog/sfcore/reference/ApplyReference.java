@@ -221,7 +221,6 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
             comp.setPrimParent((Prim) rr);
     }
 
-
     /**
      * Returns string representation of the reference.
      * Overrides Object.toString.

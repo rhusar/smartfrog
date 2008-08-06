@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,24 @@ For more information: www.smartfrog.org
 */
 
 Version extends DATA {
-  version ( name ++ "." ++ majorRelease ++ "." ++ minorRelease ++ "." ++ build ++ status ++ " (" ++ buildDate ++ ")" );
+  jarVersion "@majorRelease@.@minorRelease@.@build@@status@";
+  version ( name ++ "." ++ jarVersion ++ " (" ++ buildDate ++ ")" );
   name "SmartFrog";
   majorRelease "@majorRelease@";
   minorRelease "@minorRelease@";
   build "@build@"; // odd numbers are development versions
   status "@status@"; //alpha, beta, (stable), rc (release candidate)
-  copyright "(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP";
+  copyright "@copyright@";
+  
   buildDate "@buildDate@";
+  buildOSName "@buildOSName@";
+  buildOSVersion "@buildOSVersion@";
+  buildOSArchitecture "@buildOSArch@";
+  buildJavaVersion "@buildJavaVersion@";
+  buildJavaVendor "@buildJavaVendor@";
+  
+  svnComment "SVN data is only valid for an official release because it tracks the revision for 'sf-build-version.properties'";
+  svnLastChangedDate "@svnLastChangedDate@";
+  svnRevision "@svnRevision@"; 
 }
 

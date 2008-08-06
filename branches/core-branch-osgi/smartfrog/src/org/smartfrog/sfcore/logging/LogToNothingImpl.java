@@ -53,7 +53,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     protected PrintStream errstream;
 
-    /** Send error output to normal ouput - used to simplify collecting all output */
+    /** Send error output to normal output - used to simplify collecting all output */
     protected boolean errToOut = false;
 
     /**
@@ -136,7 +136,7 @@ public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel
 
     /**
      * Reads optional and mandatory attributes.
-     * @param cd cd ComponentDescription A component description to read attributes from
+     * @param cd ComponentDescription A component description to read attributes from
      * @throws  SmartFrogException error while reading attributes
      */
     protected void readSFNothingAttributes(ComponentDescription cd) throws SmartFrogException {
