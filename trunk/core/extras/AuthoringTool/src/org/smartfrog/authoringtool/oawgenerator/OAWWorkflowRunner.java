@@ -5,7 +5,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -22,6 +26,7 @@ import org.gems.designer.oawgenerator.runwizard.OAWGenerationWizard;
 import org.openarchitectureware.workflow.WorkflowRunner;
 import org.openarchitectureware.workflow.monitor.NullProgressMonitor;
 import org.osgi.framework.Bundle;
+import org.smartfrog.authoringtool.SmartfrogPlugin;
 
 /**
  * This class lets the user choose a oAW generator workflow to run.
@@ -61,15 +66,21 @@ public class OAWWorkflowRunner {
 			WizardDialog wDialog = new WizardDialog(workbenchWindow.getShell(),
 					wizard);
 			int ret = wDialog.open();
-
 			if (ret == Window.OK) {
 				OAWGeneratorConfiguration config = wizard.getGeneratorConfig();
 				String workflowURLString = config.getWorkflowFile();
-				String outputPath = config.getOutputFolder();
+			//	String outputPath = config.getOutputFolder();
+				
+				
+				
+				// Fix the output path here : Vel
+				IProject ip= originalInputModelFile.getProject(); 
+				System.out.println("IProject :" + ip.getName() );
+				IPath path =ip.getFolder("src").getRawLocation();
+				String outputPath = path.toOSString();
 
 				if (workflowURLString == null) {
-					MessageDialog.openError(workbenchWindow.getShell(),
-							"Error", "Workflow URL was not set!");
+					MessageDialog.openError(workbenchWindow.getShell(),	"Error", "Workflow URL was not set!");
 					throw new Exception("Workflow URL was not set!");
 				}
 
