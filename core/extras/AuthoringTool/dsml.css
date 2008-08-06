@@ -7,14 +7,14 @@
        active-style:true;
        ExpansionPanel.ClosedImage:resources/icons/Component.gif;
        TreeImage:resources/icons/Component_s.gif;
-       TopPanel.Border: null; 
-      LeftPanel.Border: null;
-      RightPanel.Border: null;
+      
       /** CenterPanel.Border: null; **/
       CenterPanel.ToolTip.Opaque: true;
       CenterPanel.Border.Color:120,20,22;
-      TopPanel.Border: null;
-      BottomPanel.Border:null; 
+       TopPanel.Border: null; 
+       LeftPanel.Border: null;
+       RightPanel.Border: null;
+       BottomPanel.Border:null; 
       NameLabel.ForegroundColor:220,10,120;
        ExpansionPanel.Expandable: true;
        TitleTemplate:%Name% ;
@@ -247,6 +247,13 @@
      TreeImage:resources/icons/And_s.gif;
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+      TopPanel.Border: null; 
+       LeftPanel.Border: null;
+       RightPanel.Border: null;
+       BottomPanel.Border:null; 
+       CenterPanel.Border: null;
+       ExpansionPanel.Expandable: false;
+       ShowAttributes: false;
   }
   
   /** This is a useful style that can be
@@ -353,6 +360,13 @@
      TreeImage:resources/icons/Or_s.gif;
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+       TopPanel.Border: null; 
+       LeftPanel.Border: null;
+       RightPanel.Border: null;
+       BottomPanel.Border:null; 
+       CenterPanel.Border: null;
+       ExpansionPanel.Expandable: false;
+       ShowAttributes: false;
   }
   
   /** This is a useful style that can be
@@ -406,6 +420,13 @@
      TreeImage:resources/icons/Nor_s.gif;
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+       TopPanel.Border: null; 
+       LeftPanel.Border: null;
+       RightPanel.Border: null;
+       BottomPanel.Border:null; 
+        CenterPanel.Border: null;
+       ExpansionPanel.Expandable: false;
+       ShowAttributes: false;
   }
   
   /** This is a useful style that can be
@@ -459,6 +480,13 @@
      TreeImage:resources/icons/Nand_s.gif;
      TitleTemplate:%Name% [%Type%];
      TreeTitleTemplate:%Name% [%Type%];
+       TopPanel.Border: null; 
+       LeftPanel.Border: null;
+       RightPanel.Border: null;
+       BottomPanel.Border:null;
+        CenterPanel.Border: null;
+       ExpansionPanel.Expandable: false;
+       ShowAttributes: false; 
   }
   
   /** This is a useful style that can be
