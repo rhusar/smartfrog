@@ -252,7 +252,7 @@ public class SFSystem implements MessageKeys {
      */
     public void exitWith(String str, int exitCode) {
         if (str != null) {
-            System.err.println(str);
+            System.err.println("\n "+ str);
         }
         exitWithStatus(true,exitCode);
     }

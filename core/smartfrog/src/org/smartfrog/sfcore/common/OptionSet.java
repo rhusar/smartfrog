@@ -184,8 +184,16 @@ public class OptionSet {
                         }
                     }
                 } else if ("-p".equals(currentArg)|| "-port".equals(currentArg)) {
-
-                        System.setProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorPort",readLocationPort(args[++i]));                    
+                        String port = args[++i];
+                        try {
+                            System.setProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorPort", readLocationPort(port));
+                        } catch  (NumberFormatException nex) {
+                            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+                            errorString = ("Wrong port number (-p option): "+port);
+                            if ((Logger.logStackTrace) && SFSystem.sfLog().isErrorEnabled()) {
+                               SFSystem.sfLog().error(errorString, nex);
+                            }
+                        }
                 } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
                     //diagnostics
                     diagnostics = true;
@@ -282,9 +290,9 @@ public class OptionSet {
         return cfgDescriptors;
     }
 
-    String readLocationPort(String sfRootLocatorPort) {
+    String readLocationPort(String sfRootLocatorPort) throws NumberFormatException {
         //Check that the value is correct
-        Integer.getInteger(sfRootLocatorPort);        
+        Integer.parseInt(sfRootLocatorPort);
         return sfRootLocatorPort;
     }
 
