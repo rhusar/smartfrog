@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,12 @@ import java.rmi.RemoteException;
  * synchronization between components The EventSink interface defines the
  * method used for passing an event.
  *
- * @see org.smartfrog.sfcore.workflow.eventbus.EventSink
  */
 public interface EventSink extends Remote {
     /**
      * Causes the EventSink to handle and forwards the event.
      *
-     * @param theEvent java.lang.String The event to forward
+     * @param theEvent  The event to forward
      *
      * @throws RemoteException In case of network/rmi error
      */
