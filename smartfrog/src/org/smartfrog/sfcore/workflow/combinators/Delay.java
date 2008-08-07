@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 /**
  * Delay is a modified compound which differs in that the single sub-component
@@ -61,7 +62,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
     /**
      * Timer thread.
      */
-    private volatile Thread timer;
+    private volatile SmartFrogThread timer;
 
     /**
      * Indication that the component has been terminated before the time fires
@@ -102,7 +103,7 @@ public class Delay extends EventCompoundImpl implements Compound, Runnable {
     public synchronized void sfStart() throws SmartFrogException,
         RemoteException {
         super.sfStart();
-        timer = new Thread(this);
+        timer = new SmartFrogThread(this);
         timer.start();
     }
 

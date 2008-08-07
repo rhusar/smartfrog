@@ -134,7 +134,7 @@ public class Try extends EventCompoundImpl implements Compound {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(message, e);
                 }
-                sfTerminate(TerminationRecord.abnormal(message, name));
+                sfTerminate(TerminationRecord.abnormal(message, name, e));
                 return false;
             }
         } else {

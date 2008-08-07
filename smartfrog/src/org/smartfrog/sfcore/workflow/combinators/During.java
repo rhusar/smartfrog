@@ -97,7 +97,7 @@ public class During extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        terminator=new DelayedTerminator(this,time,sfLog(), name + "_DuringTerminator",true);
+        terminator=new DelayedTerminator(this,time,sfLog(),null,true);
         terminator.start();
         sfCreateNewChild(name+"_duringActionRunning", action, null);
     }

@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.workflow.combinators;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -39,9 +40,8 @@ public class Retract extends EventCompoundImpl implements Compound {
      *
      * @throws RemoteException In case of RMI or network error.
      */
-    public Retract() throws RemoteException , SmartFrogException {
+    public Retract() throws RemoteException {
         super();
-
     }
 
     /**
@@ -52,9 +52,9 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        for (int i = sfChildren.size() - 1; i >= 0; i--) {
+        for (Prim child : sfReverseChildren()) {
             try {
-                ((Prim) sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
+                child.sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
               if (sfLog().isErrorEnabled()) {
                   String errStr="Exception while terminating one of the children";
@@ -63,7 +63,7 @@ public class Retract extends EventCompoundImpl implements Compound {
             }
         }
 
-        // we've overriden the compound's sfTerminateWith; therefore we need
+        // we've overridden the compound's sfTerminateWith; therefore we need
         // to call the hooks ourselves.
         try {
             sfTerminateWithHooks.applyHooks(this, status);

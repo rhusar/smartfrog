@@ -35,7 +35,6 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 
@@ -70,8 +69,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
     private boolean terminateIfEmpty=false;
     private boolean terminateOnAbnormalChildTermination=true;
     private boolean terminateOnAbnormalChildDeploy = true;
-    private Vector asynchChildren;
-    private Vector results;
+    private Vector<ParallelWorker> asynchChildren;
+    private Vector<Object> results;
     /**
      * A counter to catch (and ignore) terminations during
      * asynchronous startups, except for the last one.
@@ -102,9 +101,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
         super();
     }
 
-    /*
-     * These methods are here
-     *
+    /**
+     * get the count of pending deployments
+     * @return number of remaining components to deploy
      */
     private synchronized int getPendingDeployments() {
         return pendingDeployments;
@@ -118,10 +117,18 @@ public class Parallel extends EventCompoundImpl implements Compound {
         return getPendingDeployments()>0;
     }
 
+    /**
+     * Set the pending deployment count
+     * @param pendingDeployments number of remaining components to deploy
+     */
     private synchronized void setPendingDeployments(int pendingDeployments) {
         this.pendingDeployments = pendingDeployments;
     }
 
+    /**
+     * synchronized operation to decrement the deployment count
+     * @return the new value
+     */
     private synchronized int decrementPendingDeployments() {
         pendingDeployments--;
         return pendingDeployments;
@@ -136,7 +143,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        asynchChildren = new Vector(0);
+        asynchChildren = new Vector<ParallelWorker>(0);
         asynchCreateChild = sfResolve(asynchCreateChildRef,asynchCreateChild,false);
         terminateIfEmpty = sfResolve(terminateIfEmptyRef, terminateIfEmpty, false);
         terminateOnAbnormalChildTermination = sfResolve(ATTR_TERMINATE_IF_CHILD_TERMINATES_ABNORMAL,
@@ -152,7 +159,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * Deploys and manages the parallel subcomponents.
      *
      * @throws RemoteException The required remote exception.
-     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException SmartFrog problems
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -177,8 +184,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
         } else {
             //no actions. Maybe terminate 
             if (terminateIfEmpty) {
-                terminationRecord = new TerminationRecord(TerminationRecord.NORMAL,
-                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY, getName());
+                terminationRecord = TerminationRecord.normal(
+                        TERMINATE_PARALLEL_COMPONENT_IS_EMPTY,
+                        getName());
             }
         }
         if (terminationRecord != null) {
@@ -194,7 +202,6 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * Log the event or queue for termination, depending upon the fail parameter
      * @param terminationRecord non null termination record
      * @param fail set to true to terminate; false to log
-     * @return true if we started a terminator thread
      */
     private void maybeTerminate(TerminationRecord terminationRecord, boolean fail) {
         logChildDeployFailure(terminationRecord);
@@ -203,6 +210,10 @@ public class Parallel extends EventCompoundImpl implements Compound {
         }
     }
 
+    /**
+     * Log the failure of the child to deploy
+     * @param terminationRecord the child's termination record
+     */
     private void logChildDeployFailure(TerminationRecord terminationRecord) {
         sfLog().err("Failed to start child", null, terminationRecord);
     }
@@ -210,13 +221,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
     /**
      * Create the children of parallel, each in their own thread.
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException The required remote exception.
+     * @throws SmartFrogException SmartFrog problems
      */
     protected void asynchCreateChildren() throws RemoteException, SmartFrogException {
         int size=actions.size();
-        asynchChildren = new Vector(size);
-        results = new Vector(size);
+        asynchChildren = new Vector<ParallelWorker>(size);
+        results = new Vector<Object>(size);
         actionKeys = actions.keys();
         setPendingDeployments(size);
         try {
@@ -309,8 +320,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
         // unregister from all remote registrations
         if (asynchChildren != null) {
-            for (Enumeration e = asynchChildren.elements(); e.hasMoreElements();) {
-                ParallelWorker worker = (ParallelWorker) e.nextElement();
+            for(ParallelWorker worker:asynchChildren) {
                 try {
                     worker.cancel(sfSyncTerminate, true);
                 } catch (Exception ignored) {
@@ -336,7 +346,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
     /**
      * Called in the worker thread, this method logs that the worker has finished by
      * removing it from our child list, which is then optionally used to trigger a failure.
-     * @param worker
+     * @param worker worker thread
      */
     protected synchronized void workerFinished(ParallelWorker worker) {
         //and remove from our child list
@@ -389,7 +399,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     private synchronized boolean hasActiveChildren() {
         //If hasPendingDeployments() is appended here, then we check for startup problems;
-        return sfChildren().hasMoreElements() || !asynchChildren.isEmpty() || hasPendingDeployments();
+        return sfChildList().size()>0 || !asynchChildren.isEmpty() || hasPendingDeployments();
 
     }
 
