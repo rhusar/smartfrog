@@ -259,7 +259,9 @@ public class EclipseSolver extends CoreSolver
     // Get Eclipse Installation Directory...
     String eclipseDirectory = System.getenv("ECLIPSEDIRECTORY");
 
-    if (eclipseDirectory == null) throw new Exception(); //handle properly...
+    if (eclipseDirectory == null) {
+      throw new Exception(); //handle properly...
+    }
 
     //Set up eclipse...
     eclipseEngineOptions = new EclipseEngineOptions(new File(eclipseDirectory));
@@ -713,7 +715,7 @@ public class EclipseSolver extends CoreSolver
         java_to_eclipse.setListener(EclipseSolver.this);
       } catch (Exception e) {
         throw new SmartFrogEclipseRuntimeException(
-                "Unable to set JtoE listener");
+                "Unable to set JtoE listener",e);
       }
       return;
     }
@@ -723,7 +725,7 @@ public class EclipseSolver extends CoreSolver
 
     } catch (Exception e) {
       throw new SmartFrogEclipseRuntimeException(
-              "Can not instantiate CD Browser");
+              "Can not instantiate CD Browser",e);
 
     }
 
@@ -750,7 +752,7 @@ public class EclipseSolver extends CoreSolver
     try {
       java_to_eclipse.setListener(EclipseSolver.this);
     } catch (Exception e) {
-      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");
+      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener",e);
     }
 
   }
@@ -791,7 +793,7 @@ public class EclipseSolver extends CoreSolver
     try {
       java_to_eclipse.setListener(EclipseSolver.this);
     } catch (Exception e) {
-      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener");
+      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener",e);
     }
   }
 
