@@ -27,9 +27,7 @@ import org.smartfrog.sfcore.compound.Compound;
  */
 
 
-public interface EventCompound extends Compound {
-    String ATTR_REGISTER_WITH = "registerWith";
-    String ATTR_SEND_TO = "sendTo";
+public interface EventCompound extends Compound, EventAware {
     String ATTR_ACTIONS = "actions";
     String ATTR_ACTION = "action";
 }

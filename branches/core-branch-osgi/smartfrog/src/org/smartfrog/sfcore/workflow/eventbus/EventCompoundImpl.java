@@ -20,24 +20,25 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.workflow.eventbus;
 
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.NoSuchElementException;
-
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.TerminatorThread;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -48,12 +49,10 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  */
 public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, EventCompound {
-    private static Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
-    private static Reference sendRef = new Reference(ATTR_SEND_TO);
-    private Vector receiveFrom = new Vector();
+    private static final Reference receiveRef = new Reference(ATTR_REGISTER_WITH);
+    private static final Reference sendRef = new Reference(ATTR_SEND_TO);
+    private EventRegistrar registrar = new EventRegistrar(this);
 
-
-    private Vector sendTo = new Vector();
     protected ComponentDescription action=null;
     protected Context actions=null;
     protected Enumeration actionKeys=null;
@@ -67,10 +66,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     /**
      * Constructs EventCompoundImpl.
      *
-     * @throws java.rmi.RemoteException In case of RMI or network failure.
+     * @throws RemoteException In case of RMI or network failure.
      */
     public EventCompoundImpl() throws RemoteException {
-        super();
     }
 
     /**
@@ -89,6 +87,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * If action or actions atributes are present then it behaves like compound and loads all eager components.
      * @throws SmartFrogDeploymentException for deployment problems
     */
+    @Override
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
       if (isOldNotationSupported() && sfContext().containsKey(ATTR_ACTIONS)){
           oldNotation=true;
@@ -101,14 +100,14 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
           // New WF notation
           // Delays any child component deployment
           try { // if an exception is thrown in the super call - the termination is already handled
-              Context childCtx= new ContextImpl();
-              for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+              Context childCtx = new ContextImpl();
+              for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
                   Object key = e.nextElement();
                   Object elem = sfContext.get(key);
-                  if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
+                  if ((elem instanceof ComponentDescription) && (((ComponentDescription) elem).getEager())) {
                       childCtx.sfAddAttribute(key, elem);
                       if (action == null) {
-                          action = (ComponentDescription)elem;
+                          action = (ComponentDescription) elem;
                       }
                   }
               }
@@ -130,13 +129,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     public synchronized void register(EventSink sink) {
-        if (sfLog().isDebugEnabled()) {
-           sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
-        }
-
-        if (!sendTo.contains(sink)) {
-            sendTo.addElement(sink);
-        }
+        registrar.register(sink);
     }
 
     /**
@@ -146,14 +139,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        if (sfLog().isDebugEnabled()) {
-           sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
-        }
-
-        if (sendTo.contains(sink)) {
-            sendTo.removeElement(sink);
-        }
-    }
+        registrar.deregister(sink);    }
 
     /**
      * Handles the event locally then forward to all registered EventSinks.
@@ -170,7 +156,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Default implmentation of the event Handler hook to be overridden in
      * sub-classes. The default implementation does nothing.
      *
-     * @param event java.lang.Object The event
+     * @param event The event
      */
     protected void handleEvent(Object event) {
         if (sfLog().isDebugEnabled()){
@@ -185,22 +171,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event the event to send
      */
     public synchronized void sendEvent(Object event) {
-        for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
-            EventSink s = (EventSink) e.nextElement();
-            try {
-                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
-                if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);  }
-                s.event(event);
-            } catch (Exception ex) {
-                String evStr="null event";
-                if (event!=null ) {
-                    evStr=event.toString()+"["+event.getClass().toString()+"]";
-                }
-                if (sfLog().isErrorEnabled()) {
-                   sfLog().error("Failed to send event: "+evStr+", cause: "+ex.getMessage(),ex);
-               }
-            }
-        }
+        registrar.sendEvent(event);
     }
 
     /**
@@ -218,12 +189,11 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         ComponentDescription sends = (ComponentDescription) sfResolve(sendRef,false);
         if (sends != null) {
             Context scxt = sends.sfContext();
-
             for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
                 Object k = e.nextElement();
                 Reference l = (Reference) scxt.get(k);
                 EventSink s = (EventSink) sfResolve(l);
-                sendTo.addElement(s);
+                registrar.register(s);
             }
         }
 
@@ -236,7 +206,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                 Object key = keys.nextElement();
                 Reference component = (Reference) rcxt.get(key);
                 EventRegistration event = (EventRegistration) sfResolve(component);
-                receiveFrom.addElement(event);
+                registrar.registerToReceiveFrom(event);
                 event.register(this);
             }
         }
@@ -350,16 +320,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
-        for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
-            EventRegistration sink = (EventRegistration) e.nextElement();
-
-            try {
-                sink.deregister(this);
-            } catch (RemoteException ex) {
-                sfLog().ignore("when deregestering "+sink,ex);
-            }
-        }
-
+        registrar.deregisterFromReceivingAll();
         super.sfTerminateWith(status);
     }
 
@@ -375,11 +336,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
     /**
-     * A synchronized check for termination
+     * A synchronized check for termination; the termLock is used for the lock.
      * @return true iff the workflow component is terminating or is already terminated
      */
-    protected synchronized boolean isWorkflowTerminating() {
-        return sfIsTerminated() || sfIsTerminating();
+    protected boolean isWorkflowTerminating() {
+        synchronized (termLock) {
+            if (sfIsTerminating || sfIsTerminated) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -419,28 +385,19 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
 
         //Actions are now children of this component, they are deployed and
         //started
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfDeploy();
-            }
+        for (Prim child:sfChildList()) {
+            child.sfDeploy();
         }
-
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            Object elem = e.nextElement();
-
-            if (elem instanceof Prim) {
-                ((Prim) elem).sfStart();
-            }
+        for (Prim child:sfChildList()) {
+            child.sfStart();
         }
     }
 
     /**
-     * Helper method to deploy and start any component of a given name. It's template is replaced in the graph
+     * Helper method to deploy and start any component of a given name. Its template is replaced in the graph
      * by the running component
      *
-     * @param childname     attribute to look up
+     * @param childname  attribute to look up
      * @param required flag to indicate the component is required
      * @return the component or null if there was no attribute and required was false.
      * @throws SmartFrogResolutionException unable to resolve the child and required==true
@@ -450,7 +407,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     protected Prim deployChildCD(String childname, boolean required)
             throws SmartFrogResolutionException, RemoteException, SmartFrogDeploymentException {
         ComponentDescription cd = null;
-        cd = sfResolve(childname, cd, false);
+        cd = sfResolve(childname, cd, required);
         if (cd != null) {
             return sfCreateNewChild(childname, cd, null);
         } else {
@@ -477,7 +434,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         } catch (Throwable thrown) {
             //forget about the finally component as we did not deploy properly.
             ComponentHelper helper = new ComponentHelper(child);
-            child = null;
             helper.sfSelfDetachAndOrTerminate(TerminationRecord.ABNORMAL,
                     "failed to create "+ childname, null, thrown);
             throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thrown);
