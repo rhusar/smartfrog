@@ -20,10 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -38,10 +40,12 @@ import java.util.Vector;
  */
 class ServerSelector {
     private static int roundRobinServerIndex = 0; // Index to use for selecting server
-    private Hashtable serversMap = new Hashtable(); // Mapping from server hostname to corresponding Server instance
-    private Vector servers = new Vector(); // Set of servers to choose from
+    private Hashtable<String,Server> serversMap = new Hashtable<String, Server>(); // Mapping from server hostname to corresponding Server instance
+    private Vector<Server> servers = new Vector<Server>(); // Set of servers to choose from
+    private static String name="ServerSelector";
 
-    ServerSelector() {
+    ServerSelector(String name) {
+        this.name = name+"_"+this.name;
     }
 
     private synchronized Server selectServer() {
@@ -74,10 +78,10 @@ class ServerSelector {
             // Could not find a server, so disconnect the client.
             // We assume that the client will try again at a future time
             try {
-                //Logger.err("Could not find a server, closing client connection ");
+                if (sfLog().isWarnEnabled()) sfLog().warn("Could not find a server, closing client connection ");
                 clientChannel.close();
             } catch (IOException ioe) {
-                //Logger.err("Could not close client connection ");
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not close client connection ",ioe);
             }
         } else {
             try {
@@ -92,14 +96,14 @@ class ServerSelector {
                 // Add this new socket pair to the selected server
                 server.addNewConnection(clientChannel, serverChannel);
             } catch (IOException ioe) {
-                //Logger.err("Could not connect to the server " + server.getHostname() + ", closing client " + ioe.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Could not connect to the server " + server.getHostname() + ", closing client " + ioe.getMessage(),ioe);
                 // Could not connect to server, so disconnect the client.
                 // We assume that the client will try again at a future time
                 try {
-                    //Logger.err("Could not find a server, closing client connection ");
+                    if (sfLog().isWarnEnabled()) sfLog().warn("Could not find a server, closing client connection ");
                     clientChannel.close();
                 } catch (IOException ioe2) {
-                    //Logger.err("Could not close client connection " + ioe2.getMessage());
+                    if (sfLog().isErrorEnabled()) sfLog().error("Could not close client connection " + ioe2.getMessage(),ioe2);
                 }
             }
         }
@@ -115,10 +119,8 @@ class ServerSelector {
      * Close all of the servers and all associated threads.
      */
     synchronized void close() {
-        Vector tempServers = (Vector) servers.clone();
-
-        for (Enumeration serverEnum = tempServers.elements(); serverEnum.hasMoreElements();) {
-            Server server = (Server) serverEnum.nextElement();
+        Vector<Server> tempServers = (Vector <Server>)servers.clone();
+        for(Server server:tempServers) {
             removeServer(server.getHostname());
         }
     }
@@ -142,7 +144,7 @@ class ServerSelector {
      * @param port port number to open socket to new server
      */
     synchronized void addServer(String hostname, int port) {
-        Server server = new Server(hostname, port);
+        Server server = new Server(name, hostname, port);
         serversMap.put(hostname, server);
         servers.add(server);
     }
@@ -153,7 +155,7 @@ class ServerSelector {
      * @param hostname name of the new server
      */
     synchronized void removeServer(String hostname) {
-        Server server = (Server) serversMap.remove(hostname);
+        Server server = serversMap.remove(hostname);
 
         if (server != null) {
             // If this is a server we know about, remove it from the system
@@ -180,19 +182,31 @@ class ServerSelector {
          */
         public void run() {
             try {
-                //Logger.log("Setting client socket to non-blocking");
+                if (sfLog().isDebugEnabled()) sfLog().debug("Setting client socket to non-blocking");
                 client.configureBlocking(false);
 
-                //Logger.log("Select a server and create connection to it");
+                if (sfLog().isDebugEnabled()) sfLog().debug("Select a server and create connection to it");
                 createConnection(client);
             } catch (IOException e) {
-                //Logger.err("Closing client socket because Error setting client socket to non-blocking mode: " + e.getMessage());
+                if (sfLog().isErrorEnabled()) sfLog().error("Closing client socket because Error setting client socket to non-blocking mode: " + e.getMessage(),e);
                 try {
                     client.close();
                 } catch (IOException ioe) {
-                    //Logger.err("Error closing client channel: " + ioe.getMessage());
+                    if (sfLog().isErrorEnabled()) sfLog().error("Error closing client channel: " + ioe.getMessage(),ioe);
                 }
             }
         }
+    }
+
+    private static  LogSF sflog = null;
+    /**
+     *
+     * @return LogSF
+     */
+    public static LogSF sfLog(){
+         if (sflog==null) {
+             sflog= LogFactory.getLog(name);
+         }
+         return sflog;
     }
 }

@@ -97,7 +97,7 @@ public class StressManagerFrame extends JFrame {
                     e.hasMoreElements();) {
                 try {
                     StressTester element = ((StressTester) e.nextElement());
-                    ((StressTester) (element)).setFrequency(freq);
+                    element.setFrequency(freq);
                 } catch (Exception ex) {
                     // ignore
                 }
@@ -133,7 +133,7 @@ public class StressManagerFrame extends JFrame {
                         e.hasMoreElements();) {
                     try {
                         StressTester element = ((StressTester) e.nextElement());
-                        ((StressTester) (element)).setFrequency(freq);
+                        element.setFrequency(freq);
                     } catch (Exception ex) {
                         // ignore this time - next time may work
                     }

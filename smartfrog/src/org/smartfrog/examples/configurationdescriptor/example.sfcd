@@ -4,6 +4,10 @@
 // -------------------------------------------------------------------------------
 
 :DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
+:DEPLOY:org/smartfrog/examples/counter/example.sf::[localhost,127.0.0.1]:
+:DEPLOY:org/smartfrog/examples/counter/example.sf::["127.0.0.5",localhost]:
+:DEPLOY:org/smartfrog/examples/counter/example.sf::[testHost1,"testhost2"]:
+
 Julio:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
 "HOST localhost:sfDefault:Julio1":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
 "HOST "127.0.0.1":sfDefault:Julio1B":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:

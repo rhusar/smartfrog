@@ -26,8 +26,6 @@ import java.util.Vector;
 
 import org.smartfrog.examples.dynamicwebserver.balancer.Balancer;
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -59,7 +57,6 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
     Balancer balancer = null;
     String dataSourceName = null;
     DataSource dataSource = null;
-    LogWrapper logger;
     int currentInstances = 0;
     int targetInstances = 0;
     protected int maxNumber;
@@ -68,7 +65,6 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
     String componentNamePrefix = "comp";
     int stabilizationCounter = 0;
     Vector measures = new Vector();
-    String name = "";
 
     // these are the basic control methods
     Object lock = new Object();
@@ -104,42 +100,38 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
         dataSourceName = sfResolve(DATASOURCENAME, "dataSource", false);
         dataSource = (DataSource) sfResolve(DATASOURCE, true);
         isAuto = sfResolve(ISAUTO, true, false);
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
-
-        name = sfCompleteName().toString();
-        logger.log(name, "thresholder deployed");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("thresholder deployed");
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        logger.log(name, "thresholder starting");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("thresholder starting");
         setTargetInstances(minInstances);
-        logger.log(name, "thresholder instances running");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("thresholder instances running");
 
         if (dataSource == null) {
             Reference source = new Reference();
             source.addElement(ReferencePart.here(componentNamePrefix + 0));
             source.addElement(ReferencePart.here(dataSourceName));
 
-            logger.logOptional(name,
-                "looking for data source reference " + source);
-            logger.logOptional(name, "found " + sfResolve(source));
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "looking for data source reference " + source);
+            if (sfLog().isDebugEnabled()) sfLog().debug ("found " + sfResolve(source));
 
             dataSource = (DataSource) sfResolve(source);
-            logger.logOptional(name, "data source found");
+            if (sfLog().isDebugEnabled()) sfLog().debug ("data source found");
         } else {
-            logger.logOptional(name, "have the data source statically defined");
+            if (sfLog().isDebugEnabled()) sfLog().debug ("have the data source statically defined");
         }
 
         startThresholdPolling();
 
-        logger.log(name, "thresholder started");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("thresholder started");
     }
 
     public synchronized void sfTerminateWith(TerminationRecord t) {
         stopThresholdPolling();
         super.sfTerminateWith(t);
-        logger.log(name, "thresholder terminated");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("thresholder terminated");
     }
 
     public void setUpperThreshold(int t) {
@@ -147,7 +139,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
             upperThreshold = t;
         }
 
-        logger.logOptional(name, "upper limit set to " + t);
+        if (sfLog().isInfoEnabled()) sfLog().info ("upper limit set to " + t);
     }
 
     public void setLowerThreshold(int t) {
@@ -155,7 +147,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
             lowerThreshold = t;
         }
 
-        logger.logOptional(name, "lower limit set to " + t);
+        if (sfLog().isInfoEnabled()) sfLog().info ("lower limit set to " + t);
     }
 
     public int upperThreshold() throws RemoteException {
@@ -172,7 +164,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
 
     public synchronized void setAuto(boolean b) {
         isAuto = b;
-        logger.logOptional(name, "set auto to " + b);
+        if (sfLog().isDebugEnabled()) sfLog().debug ("set auto to " + b);
     }
 
     protected boolean minInstancesChanged() {
@@ -204,13 +196,12 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                 sfReplaceAttribute(MININSTANCES, new Integer(minInstances));
               }
 
-              logger.logOptional(name, "set minimum instances to " +
-                                 minInstances);
+              if (sfLog().isDebugEnabled()) sfLog().debug ("set minimum instances to " + minInstances);
 
               setTargetInstances(targetInstances);
             }
             catch (Exception ex) {
-              logger.log(name,"Trying set minimum instances to "+minInstances + ". "+ex.toString());
+              if (sfLog().isErrorEnabled()) sfLog().error ("Trying set minimum instances to "+minInstances + ". "+ex.toString());
             }
         }
     }
@@ -218,7 +209,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
     // these are internal methods that should not be used directly
     protected void setTargetInstances(int target) {
         synchronized (setInstancesLock) {
-            logger.logOptional(name, "min instances " + minInstances);
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "min instances " + minInstances);
 
             if (target < minInstances) {
                 targetInstances = minInstances;
@@ -230,9 +221,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                 targetInstances = maxNumber;
             }
 
-            logger.logOptional(name,
-                "setting target instances to: " + targetInstances +
-                ", current instances: " + currentInstances);
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "setting target instances to: " + targetInstances + ", current instances: " + currentInstances);
 
             try {
                 while (currentInstances != targetInstances) {
@@ -243,7 +232,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                     }
                 }
             } catch (Exception e) {
-                if (sfLog().isWarnEnabled()) sfLog().warn (name+"- exception caught in ajusting number of instances", e);
+                if (sfLog().isWarnEnabled()) sfLog().warn (" exception caught in ajusting number of instances", e);
             }
         }
     }
@@ -251,8 +240,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
     protected void startInstance() throws Exception {
         synchronized (instanceLock) {
             Prim deployed = null;
-
-            logger.logOptional(name, "starting instance");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "starting instance");
             stabilizationCounter = stabilizationMeasures;
 
             // read the template file
@@ -262,24 +250,25 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                 Context instanceContext = new ContextImpl();
                 instanceContext.put(SF_PROCESS_HOST, server);
 
-                logger.logOptional(name, "instance being created");
-                deployed = sfDeployComponentDescription(componentNamePrefix +
-                        currentInstances, this, template, instanceContext);
-                logger.logOptional(name, "instance created");
+                if (sfLog().isDebugEnabled()) sfLog().debug ( "instance being created");
+                deployed = sfDeployComponentDescription(componentNamePrefix + currentInstances, this, template, instanceContext);
+                if (sfLog().isDebugEnabled()) sfLog().debug ( "instance created");
 
                 deployed.sfDeploy();
-                logger.logOptional(name, "deployed");
+                if (sfLog().isDebugEnabled()) sfLog().debug ( "deployed");
                 deployed.sfStart();
-                logger.logOptional(name, "started");
+                if (sfLog().isDebugEnabled()) sfLog().debug ( "started");
 
                 if (balancer != null) {
                     balancer.addServer(server);
                 }
             } catch (Exception e) {
-                if (sfLog().isWarnEnabled()) sfLog().warn (name+ "help... exception in starting instance", e);
+                if (sfLog().isWarnEnabled()) sfLog().warn ("help... exception in starting instance", e);
 
                 try {
-                    deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
+                    if(deployed!=null) {
+                    	deployed.sfDetachAndTerminate(TerminationRecord.normal(null));
+                    }
                 } catch (Exception ex) {
                     if (sfLog().isIgnoreEnabled()) sfLog().ignore (ex);
                 }
@@ -289,14 +278,14 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
 
             // add the instanceData
             // resolve and deploy, named the same as the instance data
-            logger.logOptional(name, "started instance");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "started instance");
             currentInstances += 1;
         }
     }
 
     protected void stopInstance() throws Exception {
         synchronized (instanceLock) {
-            logger.logOptional(name, "stoping instance");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "stoping instance");
             currentInstances -= 1;
 
             String server = (String) servers.elementAt(currentInstances);
@@ -309,7 +298,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
 
             instance.sfDetachAndTerminate(TerminationRecord.normal(null));
 
-            logger.logOptional(name, "stopped instance");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "stopped instance");
 
             if (balancer != null) {
                 balancer.removeServer(server);
@@ -318,25 +307,24 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
     }
 
     protected synchronized void startThresholdPolling() {
-        logger.logOptional(name, "starting threshold poller...");
+        if (sfLog().isDebugEnabled()) sfLog().debug ( "starting threshold poller...");
         poller = new Poller();
         poller.start();
     }
 
     protected synchronized void stopThresholdPolling() {
-        logger.logOptional(name, "stopping threshold poller...");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("stopping threshold poller...");
         pollingFinished = true;
     }
 
     protected class Poller extends Thread {
         public void run() {
-            logger.logOptional(name, "poller running");
+            if (sfLog().isDebugEnabled()) sfLog().debug ( "poller running");
 
             while (!pollingFinished) {
                 try {
                     int value = dataSource.getData();
-                    logger.logOptional(name, "poller measure obtained " +
-                        value);
+                    if (sfLog().isDebugEnabled()) sfLog().debug ( "poller measure obtained " +  value);
 
                     if (minInstancesChanged()) {
                         setTargetInstances(targetInstances);
@@ -345,18 +333,17 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                     measures.add(new Integer(value));
 
                     if (measures.size() > repeatMeasures) {
-                        logger.logOptional(name,
-                            "poller has sufficient measures to proceed");
+                        if (sfLog().isDebugEnabled()) sfLog().debug ( "poller has sufficient measures to proceed");
 
                         measures.remove(0);
 
                         // we now have enough measures to start testing...
                         if (stabilizationCounter > 0) {
                             // don't do anything if not stabilized...
-                            logger.logOptional(name, "poller not stabilized yet");
+                            if (sfLog().isDebugEnabled()) sfLog().debug ( "poller not stabilized yet");
                             stabilizationCounter--;
                         } else {
-                            logger.logOptional(name, "poller stabilized");
+                            if (sfLog().isDebugEnabled()) sfLog().debug ("poller stabilized");
 
                             // have enough measures and are stabilised...
                             // note it would be more efficient to keep a running total (adding and subtracting
@@ -372,20 +359,16 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                             }
 
                             avg = avg / repeatMeasures;
-                            logger.logOptional(name,
-                                "poller average of repeat measures is " + avg);
+                            if (sfLog().isDebugEnabled()) sfLog().debug ( "poller average of repeat measures is " + avg);
 
                             if (avg > upperThreshold) {
-                                logger.logOptional(name,
-                                    "poller upper threshold met...");
+                                if (sfLog().isInfoEnabled()) sfLog().info ( "poller upper threshold met...avg is "+avg);
 
                                 if (isAuto) {
                                     setTargetInstances(currentInstances + 1);
                                 }
                             } else if (avg < lowerThreshold) {
-                                logger.logOptional(name,
-                                    "poller lower threshold met...");
-
+                                if (sfLog().isInfoEnabled()) sfLog().info ("poller lower threshold met...avg is "+avg);
                                 if (isAuto) {
                                     setTargetInstances(currentInstances - 1);
                                 }
@@ -393,15 +376,15 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder, Compou
                         }
                     }
 
-                    logger.logOptional(name, "poller sleeping");
+                    if (sfLog().isDebugEnabled()) sfLog().debug ("poller sleeping");
                     sleep(pollFrequency);
-                    logger.logOptional(name, "poller awake");
+                    if (sfLog().isDebugEnabled()) sfLog().debug ("poller awake");
                 } catch (Exception e) {
-                    if (sfLog().isWarnEnabled()) sfLog().warn (name+"- exception caught in the poller",e);
+                    if (sfLog().isWarnEnabled()) sfLog().warn ("exception caught in the poller. "+e.getMessage(),e);
                 }
             }
 
-            logger.logOptional(name, "poller stopped");
+            if (sfLog().isDebugEnabled()) sfLog().debug ("poller stopped");
         }
     }
 }

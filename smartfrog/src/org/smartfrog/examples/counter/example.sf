@@ -46,7 +46,5 @@ sfConfig extends Counter {
           * Mandatory attribute "limit" is defined.
           */
          limit 20;
-
-         sfProcessName "fooProcess";
 };
 
