@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
@@ -150,7 +151,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
 
             if (supportedFileSystem) {
                 try {
-                    cluster.getFs();
+                    FileSystem fs = cluster.getFs();
                 } catch (IOException e) {
                     throw new SFHadoopException("File system will not load "
                             + e.getMessage(),

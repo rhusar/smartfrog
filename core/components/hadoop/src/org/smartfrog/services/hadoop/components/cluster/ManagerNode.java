@@ -17,41 +17,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.components.cluster;
 
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 /**
- * This schema declares the job tracker as optional. In reality it is normally looked for
- * but by leaving it off, we can deploy many components by having a parent provide the reference
+ * Manager nodes have children
  */
 
-JobTrackingSchema extends Schema {
-  //mapred.job.tracker Optional;
-}
 
-JobTrackingComponent extends Prim {
+public interface ManagerNode extends HadoopConfiguration {
 
-  /**
-   All of these have a job tracker component
-   */
-
-   schema JobTrackingSchema ;
-
-}
-
-
-JobTrackingWorkflowComponent extends WorkflowPrim {
-  schema JobTrackingSchema;
-}
-
-
-
-Job extends JobConfiguration {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.JobImpl";
-  //do we need a filename attribute?
-  fileRequired true;
-
-}
-
-JobWithoutJARFile extends Job {
-  fileRequired false;
+    String ATTR_MIN_WORKER_COUNT = "minWorkerCount";
 }

@@ -26,6 +26,8 @@ For more information: www.smartfrog.org
 ClusterStatus extends JobTrackingWorkflowComponent {
   sfClass "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl";
 
+  // mapred.job.tracker is required to point to a job tracker (i.e. a URL)
+
   checkOnStartup true;
   checkOnLiveness false;
 
