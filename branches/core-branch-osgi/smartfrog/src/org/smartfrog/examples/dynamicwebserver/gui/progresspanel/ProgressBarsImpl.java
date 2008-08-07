@@ -29,8 +29,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -54,7 +52,6 @@ import org.smartfrog.sfcore.workflow.eventbus.EventSink;
  */
 public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     EventRegistration, EventSink, EventBus {
-    String name;
     int time;
     String terminationType;
     String message;
@@ -62,7 +59,6 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     private JPanel masterPanel = null;
     private JScrollPane scrollPane = new JScrollPane();
     Hashtable hash = new Hashtable();
-    LogWrapper logger;
 
     //EventPrimImpl
     Vector receiveFrom = new Vector();
@@ -91,11 +87,11 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             event = eventObj.toString();
         }
         if (printEvents) {
-            System.out.println(name + " received event " + event);
+            if (sfLog().isDebugEnabled()) sfLog().debug(" received event " + event);
         }
 
         if (display != null) {
-            display.append(name + " received event " + event + "\n");
+            display.append(sfCompleteNameSafe() + " received event " + event + "\n");
         } else {
             return;
         }
@@ -251,8 +247,6 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        name = sfCompleteName().toString();
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
 
         // For Event Bus
 
@@ -280,7 +274,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             Reference l = (Reference) rcxt.get(k);
             EventRegistration s = (EventRegistration) sfResolve(l);
             receiveFrom.addElement(s);
-            s.register((EventSink) this);
+            s.register(this);
         }
 
         // -----------
@@ -293,10 +287,10 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
         if (message.equals("")) {
             message = null;
         } else {
-            message = name + message;
+            message = sfCompleteNameSafe() + message;
         }
 
-        //creating panelf
+        //creating panel
         if (display == null) {
             return;
         }
@@ -310,8 +304,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             display.tabPane.add(scrollPane, "Progress ...",0);
             display.tabPane.setSelectedIndex(0);
         } catch (Exception ex) {
-            throw new SmartFrogException("Failure sfDeploy SFDeployDisplay!",
-                ex, this);
+            throw new SmartFrogException("Failure sfDeploy SFDeployDisplay!", ex, this);
         }
     }
 
@@ -338,8 +331,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
                     } catch (Exception ex) {
                     }
 
-                    sfTerminate(new TerminationRecord(terminationType, name,
-                            null));
+                    sfTerminate(new TerminationRecord(terminationType, sfCompleteNameSafe().toString(), null));
                 }
             };
 

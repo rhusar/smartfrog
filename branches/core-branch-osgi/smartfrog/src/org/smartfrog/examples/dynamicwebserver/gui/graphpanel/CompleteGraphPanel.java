@@ -128,12 +128,12 @@ public class CompleteGraphPanel extends JPanel { // implements KeyListener{
     /**
      * Add a GraphPanel to this panel
      *
-     * @param gp DOCUMENT ME!
+     * @param panel DOCUMENT ME!
      */
-    public void addGraphPanel(GraphPanel gp) {
-        this.gp = gp;
-        graphCenterPanel.add(gp, BorderLayout.CENTER);
-        gp.setCompleteGraphPanel(this);
+    public void addGraphPanel(GraphPanel panel) {
+        this.gp = panel;
+        graphCenterPanel.add(panel, BorderLayout.CENTER);
+        panel.setCompleteGraphPanel(this);
     }
 
     public void setLabels(String yMin, String yMax) {

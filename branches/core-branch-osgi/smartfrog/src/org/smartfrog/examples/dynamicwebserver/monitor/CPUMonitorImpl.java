@@ -27,8 +27,6 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -55,7 +53,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
     BufferedReader pErr = null;
     boolean terminated = false;
     int delay = 5; // number of seconds between samples
-    LogWrapper logger;
+
     int perMinute = 60 / delay;
 
     String vmstatCmd = cmd + delay + ((char) 10);
@@ -69,22 +67,19 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
     private int intLast60 = 0;
     private int intLastMinute = 0;
     private int current = 0;
-    String name = "";
 
     //Standard remotable constructor
     public CPUMonitorImpl() throws RemoteException {
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
+
         delay = sfResolve(DELAY, 5, false);
 
         vmstatCmd = cmd + delay + ((char) 10);
         perMinute = 60 / delay;
 
-        name = sfCompleteName().toString();
-
-        logger.log(name, "cpu monitor deployed");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("cpu monitor deployed");
     }
 
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -93,7 +88,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
         Thread myThread = new Thread(this);
         myThread.start();
 
-        logger.log(name, "cpu monitor started");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("cpu monitor started");
     }
 
     public synchronized void sfTerminateWith(TerminationRecord tr) {
@@ -102,7 +97,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
         }
 
         super.sfTerminateWith(tr);
-        logger.log(name, "cpu monitor terminated");
+        if (sfLog().isDebugEnabled()) sfLog().debug ("cpu monitor terminated");
     }
 
     public int getData() throws RemoteException {
@@ -144,7 +139,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
             }
 
             intLast10 = (int) total / 10;
-            logger.logOptional(name, "|------- averageLast10 = " + intLast10);
+            if (sfLog().isDebugEnabled()) sfLog().debug ( " |------- averageLast10 = " + intLast10);
         } else {
             last10.addElement(new Integer(newMin));
         }
@@ -163,7 +158,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
             }
 
             intLast30 = (int) total / 30;
-            logger.logOptional(name, "|------- averageLast30 = " + intLast30);
+            if (sfLog().isDebugEnabled()) sfLog().debug (" |------- averageLast30 = " + intLast30);
         } else {
             last30.addElement(new Integer(newMin));
         }
@@ -182,7 +177,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
             }
 
             intLast60 = (int) total / 60;
-            logger.logOptional(name, "|------- averageLast60 = " + intLast60);
+            if (sfLog().isDebugEnabled()) sfLog().debug (" |------- averageLast60 = " + intLast60);
         } else {
             last60.addElement(new Integer(newMin));
         }
@@ -191,10 +186,10 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
     }
 
     private synchronized void startProcess() throws IOException {
-        logger.log(name, "starting process");
+        if (sfLog().isDebugEnabled()) sfLog().debug ( "starting process");
 
         if (!terminated) {
-            logger.logOptional(name, " running command:" + vmstatCmd);
+            if (sfLog().isDebugEnabled()) sfLog().debug ( " running command:" + vmstatCmd);
             p = Runtime.getRuntime().exec(vmstatCmd);
             pOut = new BufferedReader(new InputStreamReader(p.getInputStream()));
             pErr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -226,22 +221,18 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
                                 (Integer.parseInt(s.trim()));
 
                             totalCPU = totalCPU + current;
-                            logger.logOptional(name,
-                                "monitored value..." + current +
-                                "  total so far " + totalCPU);
+                            if (sfLog().isDebugEnabled()) sfLog().debug ( "monitored value..." + current + "  total so far " + totalCPU);
                             count++;
 
                             if (count == perMinute) {
-                                logger.logOptional(name,
-                                    "updating with average for last minute " +
-                                    (totalCPU / perMinute));
+                                if (sfLog().isDebugEnabled()) sfLog().debug ( "updating with average for last minute " + (totalCPU / perMinute));
                                 updateFigures(totalCPU / perMinute);
                                 count = 0;
                                 totalCPU = 0;
                             }
                         }
                     } catch (IOException e) {
-                        logger.err(name, "ignoring IOException ioe = " + e);
+                        if (sfLog().isErrorEnabled()) sfLog().error ("ignoring IOException ioe = " + e,e);
                     }
 
                     try {
@@ -251,7 +242,7 @@ public class CPUMonitorImpl extends PrimImpl implements Prim, Runnable,
                         // do nothing, not terminated
                     }
                 } catch (Exception e) {
-                    logger.err(name, "Exception in Process (1) = " + e);
+                    if (sfLog().isErrorEnabled()) sfLog().error ("Exception in Process (1) = " + e,e);
                 }
             }
         } catch (Exception e) {

@@ -20,21 +20,20 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.examples.dynamicwebserver.balancer;
 
+import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Vector;
-
-import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
@@ -70,11 +69,9 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     private ServerSelector serverSelector; // Object that does the load balancing to select a server from a list
     private volatile BalancerThread balancerThread = null; // The main Balancer thread
     private volatile boolean stopping = false; // Used to signal the Balancer server thread to terminate
-    private LogWrapper logger; // used to log through the logging component if one exists
-    private String name;
     private int port; // port number to register balancer server socket
     private int hostsPort; // port number for connections to remote hosts
-    private Vector hosts; // initial set of hosts to include in the balancer set
+    private Vector<String> hosts; // initial set of hosts to include in the balancer set
     private int connectionCount = 0;  // number of connections made since last time this was accessed through getdata()
 
     /**
@@ -89,12 +86,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
      * Implementation of the Balancer interface
      *
      * @param hostname The host name of the new server
-     * @param port The port number on the new server used open the connection
+     * @param serverport The port number on the new server used open the connection
      *        from the balancer
      */
-    public void addServer(String hostname, int port) {
+    public void addServer(String hostname, int serverport) {
         if (!stopping) {
-            serverSelector.addServer(hostname, port);
+            serverSelector.addServer(hostname, serverport);
         }
     }
 
@@ -139,7 +136,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         stopping = false;
 
         // Start the Server Selector
-        serverSelector = new ServerSelector();
+        serverSelector = new ServerSelector(sfCompleteNameSafe().toString());
         serverSelector.start();
 
         //
@@ -152,8 +149,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //
         // If any remote hosts were defined in hosts, add them to the list
         if (hosts != null) {
-            for (Enumeration hostlist = hosts.elements(); hostlist.hasMoreElements();) {
-                String hostname = (String) hostlist.nextElement();
+            for(String hostname:hosts) {
                 addServer(hostname, hostsPort);
             }
         }
@@ -210,7 +206,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
     public String toString() {
         StringBuffer str = new StringBuffer();
 
-        str.append("name: " + name);
+        str.append("LoadBalancer - name: " + sfCompleteNameSafe());
         str.append(", port: " + port);
         str.append(", hostsPort: " + hostsPort);
         str.append(", hosts: " + hosts);
@@ -228,14 +224,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //
         // Optional attributes.
         //
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
-        name = sfCompleteName().toString();
 
-        hosts = sfResolve(HOSTS, hosts, false);
+        hosts = ListUtils.resolveStringList(this,new Reference(HOSTS), false);
         port = sfResolve(PORT, port, false);
         hostsPort = sfResolve(HOSTSPORT, hostsPort, false);
 
-        logger.log(name, this.toString());
+        if (sfLog().isInfoEnabled()) sfLog().info(this.toString());
     }
 
     /**
@@ -257,16 +251,6 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         start();
 
         // Any error - propagate and hance fail to deploy
-    }
-
-    /**
-     * Standard sfStart().
-     *
-     * @exception SmartFrogException error while starting
-     * @throws RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
     }
 
     /**
@@ -299,7 +283,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         void start() {
             if (thread == null) {
                 // Create writer thread.
-                thread = new Thread(this, "BalancerThread");
+                thread = new Thread(this, "SFBalancerThread");
                 thread.start();
             }
         }
@@ -315,6 +299,7 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
                 try {
                     thread.join();
                 } catch (InterruptedException ie) {
+                    if (sfLog().isIgnoreEnabled()) sfLog().ignore(ie);
                 }
 
                 thread = null;
@@ -326,49 +311,52 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
          * them to one of the servers.
          */
         public void run() {
-            ServerSocketChannel server = null; // Server socket to accept connections from clients
+        	ServerSocketChannel server = null; // Server socket to accept connections from clients
+        	try {
 
-            try {
-                server = ServerSocketChannel.open();
+        		try {
+        			server = ServerSocketChannel.open();
 
-                InetSocketAddress address = new InetSocketAddress(port);
-                server.socket().bind(address);
-            } catch (IOException e) {
-                logger.err(name, "Error with server socket: " + e.getMessage());
+        			InetSocketAddress address = new InetSocketAddress(port);
+        			server.socket().bind(address);
+        		} catch (IOException e) {
+        			if (sfLog().isErrorEnabled()) sfLog().error("Error creating server socket: " + e.getMessage(),e);
 
-                // Exit thread because encountered a severe problem
-                stopRequested = true;
-            }
+        			// Exit thread because encountered a severe problem
+        			return;
+        		}
 
-            //
-            // Now loop to wait for connections from clients.
-            while (!stopRequested) {
-                try {
-                    SocketChannel client = server.accept();
-                    connectionCount += 1;
-                    logger.log(name, "Accepted connection from " + client);
+        		//
+        		// Now loop to wait for connections from clients.
 
-                    // Select a server to handle the new client socket, and hand off processing to it.
-                    serverSelector.addClient(client);
-                } catch (IOException ioe) {
-                    logger.err(name,
-                        "Error accepting connection from client" +
-                        ioe.getMessage());
-                }
-            }
+        		while (!stopRequested) {
+        			try {
+        				SocketChannel client = server.accept();
+        				connectionCount += 1;
+        				if (sfLog().isInfoEnabled()) sfLog().info("   - Accepted connection from " + client);
 
-            //
-            // Clean up the socket when we stop.
-            if (server != null) {
-                try {
-                    server.close();
-                } catch (IOException ioe) {
-                    logger.err(name,
-                        "Error closing server socket " + ioe.getMessage());
-                }
-            }
+        				// Select a server to handle the new client socket, and hand off processing to it.
+        				serverSelector.addClient(client);
+        			} catch (IOException ioe) {
+        				if (sfLog().isErrorEnabled()) sfLog().error("Error accepting connection from client" +ioe.getMessage(),ioe);
+        			}
+        		}
 
-            balancerThread = null;
+        		//
+
+        	} finally {
+        		// Clean up the socket when we stop.
+        		try {
+        			if( server != null) {
+        				server.close();
+        			}
+        		} catch (IOException ioe) {
+        			if (sfLog().isErrorEnabled()) sfLog().error("Error closing server socket " + ioe.getMessage(),ioe);
+        		} 	
+        		//and remove our self-reference
+        		balancerThread = null;
+        	}
+            if (sfLog().isDebugEnabled()) sfLog().debug("BalancerThread terminated.");
         }
     }
 }

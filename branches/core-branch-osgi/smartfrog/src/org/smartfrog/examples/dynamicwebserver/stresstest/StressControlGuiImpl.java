@@ -22,8 +22,6 @@ package org.smartfrog.examples.dynamicwebserver.stresstest;
 
 import java.rmi.RemoteException;
 
-import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
-import org.smartfrog.examples.dynamicwebserver.logging.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -39,11 +37,9 @@ public class StressControlGuiImpl extends PrimImpl implements Prim,
      *  The reference to the object controlling the stress test clients
      */
     StressManagerFrame gui;
-    String name;
     String title;
     int sets;
     String positionDisplay = "SW";
-    LogWrapper logger;
 
     /**
      * Constructor for the StressTesterImpl object
@@ -62,8 +58,7 @@ public class StressControlGuiImpl extends PrimImpl implements Prim,
 
             return true;
         } catch (Exception e) {
-            logger.err(name,
-                "registration failed: " + nameComp + ", " + e.getMessage());
+             if (sfLog().isErrorEnabled()) sfLog().error ("registration failed: " + nameComp + ", " + e.getMessage(),e);
         }
 
         return false;
@@ -78,8 +73,7 @@ public class StressControlGuiImpl extends PrimImpl implements Prim,
 
             return true;
         } catch (Throwable e) {
-            logger.err(name,
-                "deregistration failed: " + nameComp + ", " + e.getMessage());
+             if (sfLog().isErrorEnabled()) sfLog().error ("deregistration failed: " + nameComp + ", " + e.getMessage(),e);
         }
 
         return false;
@@ -97,14 +91,12 @@ public class StressControlGuiImpl extends PrimImpl implements Prim,
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        name = sfCompleteName().toString();
 
         /*
          *  any component specific init code
          */
         title = sfResolve(TITLE, "", true);
         sets = sfResolve(INITIALVALUE, sets, false);
-        logger = new LogWrapper((Logger) sfResolve(LOGTO, false));
 
         positionDisplay = sfResolve(POSITION_DISPLAY, positionDisplay, false);
 

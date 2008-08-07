@@ -45,5 +45,20 @@ HOST localhost:rootProcess:ProcessName:tres
       }
   }
 
+  myFoo extends Compound {
+     myFoo extends Compound {
+        sfProcessName "first";
+        myFoo extends Compound {
+           sfProcessName "test";
+           myFoo extends Compound {
+              sfProcessName "test2";
+              myFoo extends Compound {
+              }
+           }
+        }
+     }
+  }
+
+
 }
 
