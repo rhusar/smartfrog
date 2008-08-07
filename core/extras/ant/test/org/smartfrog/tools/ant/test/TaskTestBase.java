@@ -188,16 +188,15 @@ public abstract class TaskTestBase extends BuildFileTest {
      */
     protected void assertPropertyContains(String property, String contains) {
         String result = project.getProperty(property);
-
         assertTrue("expected " + contains + " in " + result,
-                result != null && result.indexOf(contains) >= 0);
+                result != null && result.contains(contains));
     }
 
     /**
      * get a property from the project
      *
-     * @param property
-     * @return
+     * @param property ant property
+     * @return the property value (may be null)
      */
     protected String getProperty(String property) {
         return project.getProperty(property);
