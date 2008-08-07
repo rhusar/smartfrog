@@ -130,7 +130,6 @@ function formDateString(dateString,schValue){
 			//0 15 10 15 * ?"
 			expression = ss+" "+mm+" "+hh+" "+day+" * ?";
 		}
-		alert(expression);
 		return expression;
 	}
 	
