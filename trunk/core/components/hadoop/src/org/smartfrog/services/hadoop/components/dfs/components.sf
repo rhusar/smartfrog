@@ -108,11 +108,11 @@ For more information: www.smartfrog.org
     //flag to say the path can resolve to a file
     canBeFile true;
     //flag to say the path can resolve to a directory
-    canBeDir true;
+    canBeDirectory true;
     //minimum size of the file (only checked if the path resolves to a file)
-    minFileSize 0;
+    minSize 0;
     //maximum size of the file (only checked if the path resolves to a file); -1 means 'dont care'
-    maxFileSize -1;
+    maxSize -1;
   }
 
 

@@ -77,6 +77,7 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     dfs.namenode.startup ACTION_FORMAT;
     dfs.http.address nameNodeURL;
     dfs.permissions false;
+    minWorkerCount 1;
   }
 }
 

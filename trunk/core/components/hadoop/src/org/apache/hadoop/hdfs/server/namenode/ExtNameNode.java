@@ -22,12 +22,10 @@
 package org.apache.hadoop.hdfs.server.namenode;
 
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
+import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
-import org.apache.hadoop.util.Service;
 
 import java.io.IOException;
 
@@ -45,6 +43,7 @@ public class ExtNameNode extends NameNode {
     private boolean terminationInitiated;
     private final Reference completeName;
     private static final String NAME_NODE_HAS_HALTED = "Name node has halted";
+    private int minWorkerCount;
 
     /**
      * Create a new name node and deploy it.
@@ -91,6 +90,7 @@ public class ExtNameNode extends NameNode {
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
         expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
         completeName = owner.sfCompleteName();
+        minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT,0);
     }
 
     /**
@@ -134,7 +134,20 @@ public class ExtNameNode extends NameNode {
             throws IOException {
         if (checkRunning) {
             super.innerPing();
+            int workers = getLiveWorkerCount();
+            if(workers < minWorkerCount ){
+                throw new LivenessException("The number of worker nodes is only " + workers
+                +" - less than the minimum of " + minWorkerCount);
+            };
         }
+    }
+
+    /**
+     * Get the current number of datanodes
+     * @return the datanode count
+     */
+    public int getLiveWorkerCount() {
+        return namesystem.heartbeats.size();
     }
 
 }
