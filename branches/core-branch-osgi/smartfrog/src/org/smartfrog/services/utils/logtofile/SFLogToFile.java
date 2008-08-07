@@ -166,7 +166,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt, PrintErr
     RemoteException {
         super.sfStart();
         if (detachAndTerminate) {
-            termR = new TerminationRecord("normal", "Not deployed in rootProcess", this.sfCompleteName());
+            termR = TerminationRecord.normal("Not deployed in rootProcess", this.sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this,termR).detach();
             terminator.start();
         }

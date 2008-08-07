@@ -113,7 +113,7 @@ public interface ScriptExecution {
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-     * not currently holding the l0ck
+     * not currently holding the lock
      */
     public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException;
 

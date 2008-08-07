@@ -58,9 +58,9 @@ public interface Entry {
     public boolean isLeaf();
 
     /**
-     * Retur the textual reprentation.
+     * Return the textual representation.
      *
-     * @return textual reprentation
+     * @return textual representation
      */
     public String toString();
 

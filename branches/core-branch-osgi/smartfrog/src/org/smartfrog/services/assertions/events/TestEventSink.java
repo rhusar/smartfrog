@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,29 @@
  */
 package org.smartfrog.services.assertions.events;
 
-import org.smartfrog.sfcore.workflow.eventbus.EventSink;
+import org.smartfrog.services.assertions.TestFailureException;
+import org.smartfrog.services.assertions.TestTimeoutException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
+import org.smartfrog.sfcore.workflow.eventbus.EventSink;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
-import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.services.assertions.TestTimeoutException;
-import org.smartfrog.services.assertions.TestFailureException;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.rmi.server.RemoteStub;
-import java.util.List;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handler for test lifecycle events.
@@ -51,29 +56,47 @@ import java.util.Iterator;
  * Currently this tool uses simple RMI to register itself. At some point it will need to switch to smartfrog
  * registration when running under a daemon, so that all the security kicks in.
  *
- * Important: be very careful with synchronisation here, because RMI calls come in on different threads.
- * It is easy to deadlock, especially during teardown operations.
+ * Important: be very careful with synchronisation here, because RMI calls come in on different threads. It is easy to
+ * deadlock, especially during teardown operations.
  */
 
 public class TestEventSink implements EventSink {
 
 
     /**
-     * for java1.5+; a queue would be much nicer
+     * Queue of incoming events
      */
-    private List/*<LifecycleEvent>*/ incoming =new ArrayList();
+    private Queue<LifecycleEvent> incoming = new ConcurrentLinkedQueue<LifecycleEvent>();
 
-    private List/*<LifecycleEvent>*/ history=new ArrayList();
+    /**
+     * History of events
+     */
+    private List<LifecycleEvent> history = new ArrayList<LifecycleEvent>();
 
     /**
      * The source of events
      */
     private volatile EventRegistration source;
+
+    /**
+     * This is a remote stub to ourselves, which is set after exporting the instance using RMI
+     */
     private volatile RemoteStub remoteStub;
 
+    /**
+     * error message : {@value}
+     */
     public static final String ERROR_STARTUP_TIMEOUT = "Timeout waiting for the application to start";
+    /**
+     * error message : {@value}
+     */
     public static final String ERROR_TEST_RUN_TIMEOUT = "Timeout waiting for a test run to complete";
+    /**
+     * error message : {@value}
+     */
     private static final String ERROR_PREMATURE_TERMINATION = "Test component terminated before starting up";
+    public static final String ERROR_WRONG_TYPE
+            = "Cannot cast a component to an EventRegistration instance, as it is of the wrong type: ";
 
 
     /**
@@ -84,6 +107,7 @@ public class TestEventSink implements EventSink {
 
     /**
      * Create and subscribe
+     *
      * @param source source of events
      * @throws RemoteException for network problems
      */
@@ -93,41 +117,43 @@ public class TestEventSink implements EventSink {
 
 
     /**
-     * Cast an application to an EventRegistration interface and subscribe
-     * to its events
+     * Cast an application to an EventRegistration interface and subscribe to its events
+     *
      * @param application the application (which must implement{@link EventRegistration})
      * @throws RemoteException if something goes wrong with the subscription
+     * @throws SmartFrogRuntimeException if the class is the wrong time
      */
-    public TestEventSink(Prim application) throws RemoteException {
-        this((EventRegistration) application);
+    public TestEventSink(Prim application) throws RemoteException, SmartFrogRuntimeException {
+        if (!(application instanceof EventRegistration)) {
+            throw new SmartFrogRuntimeException(ERROR_WRONG_TYPE
+                    + application.getClass(), application);
+        }
+        subscribe((EventRegistration) application);
     }
 
     /**
      * Unsubscribe from the current event source
+     *
+     * @return true if we unsubscribe This is not synchronised, to avoid cross-machine deadlocks.
      * @throws RemoteException for network problems
-     * @return true if we unsubscribe
-     * This is not synchronised, to avoid cross-machine deadlocks.
      */
     public boolean unsubscribe() throws RemoteException {
-        boolean shouldUnexport=false;
-        if(source!=null) {
+        boolean shouldUnexport = false;
+        if (source != null) {
             EventRegistration registration;
             registration = source;
             source = null;
             remoteStub = null;
             registration.deregister(this);
-            shouldUnexport=true;
+            shouldUnexport = true;
         }
-        if(shouldUnexport) {
-            return UnicastRemoteObject.unexportObject(this,true);
-        } else {
-            return true;
-        }
+        return !shouldUnexport || UnicastRemoteObject.unexportObject(this, true);
     }
 
 
     /**
      * Unsubscribe from the current event source
+     *
      * @return true if we unsubscribe
      */
     public boolean unsubscribeQuietly() {
@@ -140,10 +166,11 @@ public class TestEventSink implements EventSink {
 
     /**
      * unsubscribe in a different thread
+     *
      * @return the thread or null if we were already unsubscribed
      */
     public SmartFrogThread asyncUnsubscribe() {
-        if(!isListening()) {
+        if (!isListening()) {
             return null;
         }
         SmartFrogThread thread = new SmartFrogThread(new AsyncUnsubscribe(this));
@@ -153,16 +180,17 @@ public class TestEventSink implements EventSink {
 
     /**
      * Subscribe to an event source
+     *
      * @param target what to subscribe to
      * @throws RemoteException for network problems
      */
     private synchronized void subscribe(EventRegistration target) throws RemoteException {
-        if(source!=null) {
+        if (source != null) {
             throw new IllegalStateException("Cannot subscribe more than once");
         }
         remoteStub = UnicastRemoteObject.exportObject(this);
         setSource(target);
-        if(target!=null) {
+        if (target != null) {
             target.register(this);
         }
     }
@@ -172,36 +200,54 @@ public class TestEventSink implements EventSink {
     }
 
 
-    public boolean isListening() {
-        return source!=null;
-    }
     /**
-     * Get the application/event source we are bonded to.
-     * @return
+     * Is this sink listening
+     *
+     * @return true iff the source is not null
      */
-    public Prim getApplication() {
-        return (Prim)source;
+    public boolean isListening() {
+        return source != null;
     }
 
+    /**
+     * Get the application/event source we are bonded to.
+     *
+     * @return the application
+     */
+    public Prim getApplication() {
+        return (Prim) source;
+    }
+
+    /**
+     * Set the source
+     *
+     * @param source source
+     */
     private void setSource(EventRegistration source) {
         this.source = source;
     }
 
 
+    /**
+     * Get the remote stub of this object
+     *
+     * @return the remote stub (which is null when we are not exported)
+     */
     public RemoteStub getRemoteStub() {
         return remoteStub;
     }
 
     /**
-     * return the object at the head of the event queue, or null.
-     * The event is removed from the queue.
+     * return the object at the head of the event queue, or null. The event is removed from the queue and added to the
+     * history
+     *
      * @return the polled object.
      */
     public synchronized LifecycleEvent poll() {
-        if(incoming.size()==0) {
+        if (incoming.size() == 0) {
             return null;
         } else {
-            LifecycleEvent event= (LifecycleEvent) incoming.remove(0);
+            LifecycleEvent event = incoming.remove();
             history.add(event);
             return event;
         }
@@ -210,14 +256,16 @@ public class TestEventSink implements EventSink {
 
     /**
      * Get at the history of past events
-     * @return
+     *
+     * @return the history
      */
-    public List getHistory() {
+    public List<LifecycleEvent> getHistory() {
         return history;
     }
 
     /**
      * block for any event
+     *
      * @param timeout timeout delay; can be 0
      * @return the polled object or null for a timeout
      * @throws InterruptedException if the thread waiting was interrupted
@@ -226,7 +274,7 @@ public class TestEventSink implements EventSink {
     public synchronized LifecycleEvent waitForEvent(long timeout) throws InterruptedException {
         LifecycleEvent event;
         event = poll();
-        if(event==null) {
+        if (event == null) {
             wait(timeout);
             event = poll();
             if (event == null) {
@@ -238,106 +286,182 @@ public class TestEventSink implements EventSink {
 
     /**
      * Wait for an event of a specific type
-     * @param clazz classname
+     *
+     * @param clazz   classname
      * @param timeout time to wait between incoming events
-     * @return the event or null for a timeout
-     * @throws InterruptedException if the thread waiting was interrupted
+     * @return the event or null for a timeout 
+     * @throws InterruptedException if the thread waiting was interrupted, or a TestInterruptedEvent was encountered
      */
-    public synchronized LifecycleEvent waitForEvent(Class clazz,long timeout) throws InterruptedException {
+    public synchronized LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
         LifecycleEvent event;
+        boolean isNotInstance;
+        TimeoutTracker timedout = new TimeoutTracker(timeout);
         do {
-            event=waitForEvent(timeout);
-            if(event==null) {
+            event = waitForEvent(timeout);
+            if (event == null) {
                 return null;
             }
-        } while (!clazz.isInstance(event));
+            if(event instanceof TestInterruptedEvent) {
+                throw new InterruptedException();
+            }
+            isNotInstance = !clazz.isInstance(event);
+
+        } while (isNotInstance && !timedout.isTimedOut());
         return event;
     }
 
 
     /**
      * Handle an event by adding it to the log, then raising a notification
+     *
      * @param event the received event
      * @throws RemoteException if the event is not a LifecyleEvent
      */
     public void event(Object event) throws RemoteException {
-        if(!(event instanceof LifecycleEvent)) {
-            throw new RemoteException("Only instances of  LifecycleEvent are supported");
+        if (!(event instanceof LifecycleEvent)) {
+            throw new RemoteException("Only instances of LifecycleEvent are supported");
         }
-        synchronized(this) {
-            incoming.add(event);
+        synchronized (this) {
+            incoming.add((LifecycleEvent) event);
             notifyAll();
         }
     }
 
+    /**
+     * Push an interruption onto the event queue.
+     * @throws RemoteException on network problems
+     */
+    public void interrupt() throws RemoteException {
+        event(new TestInterruptedEvent());
+    }
+
+    /**
+     * Deploy by asking the applicaton to deploy
+     *
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException    In case of Remote/nework error
+     */
     public void invokeDeploy() throws SmartFrogException, RemoteException {
         getApplication().sfDeploy();
     }
 
+    /**
+     * Deploy by asking the applicaton to deploy
+     *
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException    In case of Remote/nework error
+     */
     public void invokeStart() throws SmartFrogException, RemoteException {
         getApplication().sfStart();
     }
 
     /**
-     * Start the application and block until the component reports itself as started.
-     * If the component terminates during this time,
+     * Start the application and block until the component reports itself as started. If the component terminates during
+     * this time. If the application is not yet deployed, that is done too.
+     *
      * @param timeout time in ms to wait
      * @return the startup event or null if it didn't start
-     * @throws SmartFrogException for deployment problems
+     * @throws SmartFrogException   for deployment problems
      * @throws TestTimeoutException if a timeout occurred
      * @throws TestFailureException if the component terminated before starting up
-     * @throws RemoteException  for network problems
+     * @throws RemoteException      for network problems
      * @throws InterruptedException if the thread waiting was interrupted
      */
-    public StartedEvent startApplication(long timeout) throws SmartFrogException, RemoteException, InterruptedException {
-        invokeDeploy();
-        invokeStart();
+    public StartedEvent startApplication(long timeout)
+            throws SmartFrogException, RemoteException, InterruptedException {
+        Prim app = getApplication();
+        Reference appNameRef = app.sfCompleteName();
+        if (!app.sfIsDeployed()) {
+            invokeDeploy();
+        }
+        try {
+            invokeStart();
+        } catch (SmartFrogLifecycleException e) {
+            Object termRec;
+            TerminationRecord status=null;
+            try {
+                termRec = app.sfResolveHere("sfTerminateWith", false);
+                if (termRec != null && termRec instanceof TerminationRecord) {
+                    status = (TerminationRecord) termRec;
+                } else {
+                    status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
+                }
+            } catch (Exception e1) {
+                status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
+            }
+            TerminatedEvent te=new TerminatedEvent(app,status);
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,te);
+        } catch (RemoteException e) {
+            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
+                    new TerminatedEvent(app,
+                        TerminationRecord.abnormal("termination during startup", appNameRef, e)));
+        }
+        TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
         do {
-            event = (LifecycleEvent) waitForEvent(LifecycleEvent.class, timeout);
-            if(event instanceof TerminatedEvent) {
-                throw new TestFailureException(ERROR_PREMATURE_TERMINATION,event);
+            event = waitForEvent(LifecycleEvent.class, timeout);
+            if (event == null) {
+                throw new TestTimeoutException(ERROR_STARTUP_TIMEOUT, timeout);
             }
-        } while(event!=null && !(event instanceof StartedEvent));
-        if(event==null) {
-            throw new TestTimeoutException(ERROR_STARTUP_TIMEOUT, timeout);
-        }
+            if (event instanceof TerminatedEvent) {
+                throw new TestFailureException(ERROR_PREMATURE_TERMINATION, event);
+            }
+        } while (!(event instanceof StartedEvent) && !timedout.isTimedOut());
         return (StartedEvent) event;
     }
 
     /**
      * Run the tests to completion, return the lifecycle event
+     *
      * @param startupTimeout time to wait in millis for startup
      * @param executeTimeout time to wait in millis for execution
      * @return the {@link TestCompletedEvent} or {@link TerminatedEvent} at the end of the run
-     * @throws SmartFrogException deployment problems including timeout
+     * @throws SmartFrogException   deployment problems including timeout
      * @throws TestTimeoutException if a timeout occurred
-     * @throws RemoteException  for network problems
+     * @throws RemoteException      for network problems
      * @throws InterruptedException if the thread waiting was interrupted
      */
-    public LifecycleEvent runTestsToCompletion(long startupTimeout,long executeTimeout)
+    public LifecycleEvent runTestsToCompletion(long startupTimeout, long executeTimeout)
             throws SmartFrogException, InterruptedException, RemoteException {
-        startApplication(startupTimeout);
+        if(getApplication().sfIsTerminated()) {
+            //we are (somehow) already terminated, so report this as a problem
+            LifecycleEvent termEvent=new TerminatedEvent(getApplication(),
+                    TerminationRecord.abnormal("Test component has already terminated",getApplication().sfCompleteName()));
+            return termEvent;
+        }
+        try {
+            StartedEvent started = startApplication(startupTimeout);
+        } catch (SmartFrogLifecycleException e) {
+            //this is caused by a failure to start the application, which invariably triggers
+            //termination of one kind or another
+            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
+                    TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
+            return termEvent;
+        } catch (TestFailureException tfe) {
+            //startup faied and was intercepted during startup
+            return tfe.getEvent();
+        }
         LifecycleEvent event;
+        TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
         do {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT+"\n"+dumpHistory(), executeTimeout);
+                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
             }
-        } while(!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent));
+        } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
+                && !timedout.isTimedOut());
         return event;
     }
 
 
     /**
      * Dump the history to a string, one event per line. Used in timeout reports
+     *
      * @return the history of recevied events.
      */
     public String dumpHistory() {
-        StringBuffer buffer=new StringBuffer("Event history has "+history.size()+" events\n");
-        Iterator it=history.iterator();
-        while (it.hasNext()) {
-            LifecycleEvent event = (LifecycleEvent) it.next();
+        StringBuilder buffer = new StringBuilder("Event history has " + history.size() + " events\n");
+        for (LifecycleEvent event : history) {
             buffer.append(event.toString());
             buffer.append('\n');
         }
@@ -346,15 +470,14 @@ public class TestEventSink implements EventSink {
 
 
     /**
-     * A little source of asynchronous unsubscriptions...this is done to remove re-entrancy on
-     * unsub operations.
+     * A little source of asynchronous unsubscriptions...this is done to remove re-entrancy on unsub operations.
      */
     private static class AsyncUnsubscribe implements Runnable {
 
         private TestEventSink owner;
-        RemoteException result;
+        private RemoteException result;
 
-        public AsyncUnsubscribe(TestEventSink owner) {
+        private AsyncUnsubscribe(TestEventSink owner) {
             this.owner = owner;
         }
 
@@ -362,8 +485,13 @@ public class TestEventSink implements EventSink {
             try {
                 owner.unsubscribe();
             } catch (RemoteException e) {
-                result=e;
+                result = e;
             }
+        }
+
+
+        public RemoteException getResult() {
+            return result;
         }
     }
 }

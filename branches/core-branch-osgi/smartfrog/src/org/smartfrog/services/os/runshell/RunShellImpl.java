@@ -22,20 +22,20 @@ package org.smartfrog.services.os.runshell;
 
 import org.smartfrog.services.display.PrintErrMsgInt;
 import org.smartfrog.services.display.PrintMsgInt;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.utils.generic.OutputStreamIntf;
 import org.smartfrog.services.utils.generic.StreamGobbler;
 import org.smartfrog.services.utils.generic.StreamIntf;
-import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 
@@ -64,7 +63,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** String name for shell command. */
     private String shellCommand = null;
     /** Set of shell command attributes. */
-    private Vector shellCommandAtt = new Vector();
+    private Vector<String> shellCommandAtt = new Vector();
     /** strign name for exit command. */
     private String exitCmd = "exit 0";
     /** Flag indicating exit command. */
@@ -91,7 +90,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     //optional
     /** Set of commands. */
-    private Vector cmds = null;
+    private Vector<String> cmds = null;
 
     // Process Data
     /** Runtime. */
@@ -194,22 +193,23 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     private void execute() throws IOException, SmartFrogRuntimeException {
         //Create subProcess
         File workDirFile = new File(workDir);
-        String[] commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
+        Vector<String> commands = createCmd(shellPrefix, shellCommand, shellCommandAtt);
         if (log.isDebugEnabled()) {
-            fullShellCommand = arrayToString(commands, "  '", "'\n");
-            StringBuffer buffer=new StringBuffer();
+            fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
+            StringBuilder buffer=new StringBuilder();
             buffer.append("Running in dir ");
             buffer.append(workDirFile);
             buffer.append('\n');
             buffer.append(fullShellCommand);
             log.debug(buffer);
         }
-        if(commands.length==0) {
+        if(commands.isEmpty()) {
             throw new SmartFrogRuntimeException(ERROR_NO_COMMAND,this);
         }
-        fullShellCommand = arrayToString(commands, " '", "' ");
+        fullShellCommand = ListUtils.stringify(commands, "  '", "'\n", "'\n");
+        String[] cmdArray=commands.toArray(new String[commands.size()]);
         subProcess = runtime.exec(
-                commands,
+                cmdArray,
                 envProp,
                 workDirFile);
         dos = new DataOutputStream(subProcess.getOutputStream());
@@ -255,6 +255,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public void run() {
         int exitVal = 0;
         boolean failed=false;
+        Throwable thrown=null;
         try {
             // wait until process finishes
             exitVal = subProcess.waitFor();
@@ -268,6 +269,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             //Thread.sleep(3*1000);
         } catch (Exception ex) {
             failed=true;
+            thrown=ex;
             terminationType= TerminationRecord.ABNORMAL;
             if (sfLog().isErrorEnabled()) {
                 sfLog().error(ex.getMessage(), ex);
@@ -290,13 +292,15 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         details.append(shellCommand);
         details.append(" finished: ");
         details.append(getNotifierId());
-        details.append(" exit value="+exitVal);
+        details.append(" exit value=").append(exitVal);
         if(failed && printCommandOnFailure) {
             details.append("\ncommand=");
             details.append(fullShellCommand);
         }
         terminationRecord = (new TerminationRecord(terminationType,
-                details.toString(), null));
+                details.toString(),
+                null,
+                thrown));
 
         TerminatorThread terminator = new TerminatorThread(this, terminationRecord);
         if (shouldDetach)   {
@@ -343,8 +347,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Reads SF description = initial configuration.
      * Override this to read/set properties before we read ours, but remember to call
      * the superclass afterwards
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException resolution problems
+     * @throws RemoteException network problems
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
 
@@ -434,7 +438,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @param  cmd  command to be exceuted
      */
     public void execCmd(String cmd) {
-        if (cmd==null) return;
+        if (cmd == null) {
+            return;
+        }
         cmd = cmd + lineReturn;
 
         if (delayBetweenCmds > 0) {
@@ -469,13 +475,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      */
     public  void execBatch(Vector commands) {
 
-        if ((commands==null)||(commands.isEmpty())) return;
+        if ((commands == null) || (commands.isEmpty())) {
+            return;
+        }
 
         if (sfLog().isDebugEnabled()) sfLog().debug("Executing Batch: " + commands);
-        Object element;
-
-        for (Enumeration e = commands.elements(); e.hasMoreElements();) {
-            element = e.nextElement();
+        for (Object element:commands) {
             if (element instanceof String) {
                 execCmd((String) element);
             } else {
@@ -500,14 +505,14 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *@param  typeAttrib  all var attributes
      *@return a vector containing all Replace Var Attributes or null.
      */
-    private Vector readVarData(String typeAttrib) {
+    private Vector<String> readVarData(String typeAttrib) {
         if (typeAttrib==null) return null;
 
         if (sfLog().isTraceEnabled()) sfLog().trace(" runShell.readVarData()");
 
         Object key;
         Object value;
-        Vector data = new Vector();
+        Vector<String> data = new Vector<String>();
 
         for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
             key = e.nextElement();
@@ -518,20 +523,15 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                         value = (sfResolve((String) key));
 
                         if (value instanceof Vector) {
-                            Object element;
-
-                            for (Enumeration enu = ((Vector) value).elements();
-                                    enu.hasMoreElements();) {
-                                element = enu.nextElement();
-
+                            for(Object element: ((Vector) value)) {
                                 if (element instanceof String) {
-                                    data.add(element);
+                                    data.add((String) element);
                                     if (sfLog().isTraceEnabled())
                                         sfLog().trace("runShell.readVarData().Adding(Vect): " + element);
                                 }
                             }
                         } else if (value instanceof String) {
-                            data.add(value);
+                            data.add((String) value);
                             if (sfLog().isTraceEnabled())
                                 sfLog().trace("runShell.readVarData().Adding(Str):  " +value);
                         }
@@ -560,13 +560,13 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @throws SmartFrogResolutionException if an attribute is missing
      * @throws RemoteException on network problems
      */
-    private Vector readShellAttributes() throws SmartFrogResolutionException, RemoteException {
-        Vector shellCommandAttrs = new Vector();
+    private Vector<String> readShellAttributes() throws SmartFrogResolutionException, RemoteException {
+        Vector<String> shellCommandAttrs = new Vector<String>();
         Object key;
         String auxString;
 
         //read in an argument list
-        Vector arguments=sfResolve(varShellArguments,(Vector)null,true);
+        Vector arguments=sfResolve(varShellArguments, shellCommandAttrs,true);
         if(arguments!=null) {
             shellCommandAttrs.addAll(arguments);
         }
@@ -576,20 +576,20 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
             if (key instanceof String) {
                 try {
-                    if (((String) key).startsWith(varShellCommand + "Att")) {
-                        if (((String) key).endsWith("b")) {
+                    String keyName = (String) key;
+                    if (keyName.startsWith(varShellCommand + "Att")) {
+                        if (keyName.endsWith("b")) {
                             // To concatenate two parameters
                             // for parameters like ATTa=ATTb
                             //shellCommandAtt = shellCommandAtt + "" +
                 //sfResolve((String)key);
                 //former code when shellCommandAtt was a String
                             auxString = shellCommandAttrs.lastElement() +
-                                (sfResolve((String) key)).toString();
+                                (sfResolve(keyName)).toString();
                             shellCommandAttrs.remove(shellCommandAttrs.size() - 1);
                             shellCommandAttrs.add(auxString);
                         } else {
-                            shellCommandAttrs.add((sfResolve((String) key)).
-                        toString());
+                            shellCommandAttrs.add((sfResolve(keyName)).toString());
                         }
                     }
                 } catch (Exception ex) {
@@ -617,76 +617,41 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *@param  attributes  attributes
      *@return             textual representation of command
      */
-    private String[] createCmd(String[] cmdGeneral, String cmdStr,
-        Vector attributes) {
-        String[] cmd = null;
+    private Vector<String> createCmd(String[] cmdGeneral, String cmdStr,
+        Vector<String> attributes) {
+        Vector<String> cmd = null;
 
-            if (attributes == null) {
-                attributes = new Vector();
-                attributes.add("");
-            }
-
-            int additionalParam = 3;
-
-            int i = 0;
-            cmd = new String[attributes.size() + additionalParam];
-
-            //Cleaning empty args in the array
-            for (int a = 0; a < cmdGeneral.length; a++) {
-                if (!isEmptyArg(cmdGeneral[a])) {
-                    cmd[i++] = cmdGeneral[a];
-                }
-            }
-
-            if (!isEmptyArg(cmdStr)) {
-                cmd[i++] = cmdStr;
-            }
-
-            if (!attributes.isEmpty()) {
-                attributes.trimToSize();
-
-                Iterator iter = attributes.iterator();
-
-                while (iter.hasNext()) {
-                    String temp = (String) iter.next();
-
-                    if (!isEmptyArg(temp)) {
-                        cmd[i++] = temp;
-                    }
-                }
-
-                //end envProp
-            }
-
-            //Cleaning end empty args
-            String[] result = new String[i];
-
-            System.arraycopy(cmd, 0, result, 0, i);
-
-            cmd = result;
-
-        return cmd;
-    }
-
-    /**
-     *  Converts array to string
-     *
-     * @param  array  array
-     * @param prefix prefix before every element
-     * @param suffix suffix after every element
-     * @return        array converted to string
-     */
-    private String arrayToString(String[] array, String prefix, String suffix) {
-        int i = 0;
-        StringBuffer stringB = new StringBuffer();
-
-        while (i < array.length) {
-            stringB.append(prefix);
-            stringB.append(array[i++]);
-            stringB.append(suffix);
+        if (attributes == null) {
+            attributes = new Vector<String>();
+            attributes.add("");
         }
 
-        return stringB.toString();
+        int additionalParam = 3;
+
+        cmd = new Vector<String>(attributes.size() + cmdGeneral.length + additionalParam);
+
+        //Cleaning empty args in the array
+        for (String aCmdGeneral : cmdGeneral) {
+            if (!isEmptyArg(aCmdGeneral)) {
+                cmd.add(aCmdGeneral);
+            }
+        }
+
+        if (!isEmptyArg(cmdStr)) {
+            cmd.add(cmdStr);
+        }
+
+        if (!attributes.isEmpty()) {
+            attributes.trimToSize();
+            for (String attr : attributes) {
+                if (!isEmptyArg(attr)) {
+                    cmd.add(attr);
+                }
+            }
+
+            //end envProp
+        }
+        return cmd;
     }
 
     /**

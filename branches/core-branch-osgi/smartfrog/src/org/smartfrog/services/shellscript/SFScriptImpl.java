@@ -119,13 +119,13 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      super.sfStart();
      if (startScript !=null) {
          ComponentDescription cd = run(startScript);
-         if (sfLog().isDebugEnabled()){
-             sfLog().debug(("run"+lineSeparator+"["+ startScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
+         if (sfLog().isTraceEnabled()){
+             sfLog().trace(("run:"+lineSeparator+"["+ startScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
          }
          checkResult(startScript, cd);
      }
      if (this.autoTerminate){
-       TerminationRecord termR = new TerminationRecord(TerminationRecord.NORMAL, "Script '"+this.sfCompleteNameSafe() + "' done." , null);
+       TerminationRecord termR = TerminationRecord.normal("Script '"+this.sfCompleteNameSafe() + "' done." , null);
        TerminatorThread terminator = new TerminatorThread(this,termR);
        terminator.start();
      }
@@ -221,10 +221,14 @@ private void checkResult(Object script, ComponentDescription cd) throws  SmartFr
       }
       cd =run(item);
       count++;
-      if (cd !=null) cdAll.sfAddAttribute(new Integer(count).toString(),cd);
+      if (cd !=null)  {
+    	  cdAll.sfAddAttribute(new Integer(count).toString(),cd);
+      }
    }
    Integer lastExitCode=new Integer (-9999);
-   lastExitCode = (Integer) cd.sfResolve("code",lastExitCode,false);
+   if( cd != null ) {
+	   lastExitCode = (Integer) cd.sfResolve("code",lastExitCode,false);
+   }
    cdAll.sfAddAttribute("code",lastExitCode);
    return cdAll;
  }

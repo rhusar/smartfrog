@@ -16,6 +16,10 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
     public static final String ERROR_NO_DIRECTORY = "No directory ";
     public static final String ERROR_NOT_A_DIRECTORY = "Not a directory ";
 
+    /**
+     * construct
+     * @throws RemoteException if the parent does
+     */
     public DirectoryClasspathImpl() throws RemoteException {
     }
 
@@ -29,9 +33,9 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
@@ -45,9 +49,9 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
      * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
      * but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException
      *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -59,12 +63,23 @@ public class DirectoryClasspathImpl extends AbstractClasspathImpl implements Dir
     }
 
 
+    /**
+     * Is the compoenent set for early binding
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
     private boolean isEarly() throws SmartFrogResolutionException,
             RemoteException {
         return sfResolve(ATTR_EARLY, false, true);
     }
 
 
+    /**
+     * bind to the base directory
+     * @throws SmartFrogException if the bise directory is missing or not a directory
+     * @throws RemoteException on network trouble
+     */
     private void bind() throws SmartFrogException, RemoteException {
         String dir= FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,true,null);
         File baseDir=new File(dir);

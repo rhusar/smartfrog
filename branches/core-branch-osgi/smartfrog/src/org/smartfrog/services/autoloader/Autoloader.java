@@ -1,23 +1,22 @@
 package org.smartfrog.services.autoloader;
 
-import org.smartfrog.SFLoader;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.compound.CompoundImpl;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.SFLoader;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.parser.Phases;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.io.InputStream;
 
 /**
  * Component that will autoload a .sf file to create a child component which is being de-referemced
@@ -59,12 +58,12 @@ public class Autoloader extends CompoundImpl implements Compound {
     }
 
     /**
-     * Override the superclasses actions with automatic loading of components on demand
-     * @param name
-     * @param index
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * Override the superclasses actions with automatic loading of components on demand.
+     *
+     * {@inheritDoc}
+     * @return the resolved object
+     * @throws SmartFrogResolutionException other problems
+     * @throws RemoteException network problems
      */
     public synchronized Object sfResolve(Reference name, int index) throws SmartFrogResolutionException, RemoteException {
         String namePart;

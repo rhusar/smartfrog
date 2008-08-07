@@ -60,7 +60,6 @@ TempFileWithCleanup extends TempFile {
 }
 
 
-
 /**
  * a temporary directory. On exit it will delete its contents
  */

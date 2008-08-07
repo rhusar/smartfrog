@@ -81,15 +81,15 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
             if (sfLog().isInfoEnabled()){
                 sfLog().info(" Downloading '"+url+"' to '"+localFile+"'. Blocksize: "+blocksize);
             }
-            File file = new File(localFile);
-            bind(file);
-            download(url, file, blocksize, maxCacheAge);
+            File target = new File(localFile);
+            bind(target);
+            download(url, target, blocksize, maxCacheAge);
             if (sfLog().isInfoEnabled()){
-                sfLog().info(" Download complete. File in: "+ file);
+                sfLog().info(" Download complete. File in: "+ target);
             }
 
             new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                    "Download completed. File in: "+ file,
+                    "Download completed. File in: "+ target,
                     null,
                     null);
 

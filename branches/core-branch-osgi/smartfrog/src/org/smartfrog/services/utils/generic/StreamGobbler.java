@@ -153,7 +153,7 @@ public class StreamGobbler extends Thread {
                 }
 
                 // To External OutputStream
-                if (this.printToOutputStream) {
+                if (this.printToOutputStream && pw!=null) {
                     pw.println(line);
                     pw.flush();
                 }
@@ -173,7 +173,7 @@ public class StreamGobbler extends Thread {
 
             // while
             // Flush Stream before finishing!
-            if (this.printToOutputStream) {
+            if (this.printToOutputStream  && pw!=null)  {
                 pw.flush();
             }
         } catch (IOException ioe) {

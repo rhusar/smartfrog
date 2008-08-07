@@ -150,7 +150,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
     }
 
     String getSfProcessName() {
-        String value = (String) System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName");
+        String value = System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName");
 
         if (value == null) {
             return SmartFrogCoreKeys.SF_ROOT;

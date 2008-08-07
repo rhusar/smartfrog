@@ -121,9 +121,9 @@ public class ParserVar extends Thread {
     *  Terminate
     */
    public void terminate() {
-      if ((this.sfObj != null) && (this.sfObj instanceof PrimImpl)) {
+      if ((sfObj != null) && (sfObj instanceof PrimImpl)) {
          try {
-           termR = (new TerminationRecord("normal", "ParserFile terminated ("+this.dataParser.getFileName()+").", null));
+           termR = TerminationRecord.normal("ParserFile terminated ("+dataParser.getFileName()+").", null);
            // Proper termination of a component!
            Runnable terminator = new Runnable() {
 	      public void run() {
@@ -146,7 +146,7 @@ public class ParserVar extends Thread {
     *  Detach
     */
    public void detach() {
-      if ((this.sfObj != null) && (this.sfObj instanceof Prim)) {
+      if (this.sfObj != null) {
          try {
             this.sfObj.sfDetach();
          } catch (Exception ex) {

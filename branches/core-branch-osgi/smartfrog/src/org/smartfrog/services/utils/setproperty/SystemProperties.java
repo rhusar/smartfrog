@@ -22,7 +22,7 @@ public interface SystemProperties extends Remote {
      * @param name  name of the property
      * @param value value of the property
      * @throws SmartFrogException -may wrap a security exception
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     void setProperty(String name, String value) throws SmartFrogException,
             RemoteException;
@@ -30,9 +30,9 @@ public interface SystemProperties extends Remote {
     /**
      * Unset a property in this JVM
      *
-     * @param name
+     * @param name name of the property
      * @throws SmartFrogException -may wrap a security exception
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     void unsetProperty(String name) throws SmartFrogException,
             RemoteException;

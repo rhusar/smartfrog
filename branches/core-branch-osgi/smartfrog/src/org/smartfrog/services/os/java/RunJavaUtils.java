@@ -19,9 +19,10 @@
  */
 package org.smartfrog.services.os.java;
 
+import org.smartfrog.sfcore.utils.ListUtils;
+
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -29,7 +30,7 @@ import java.util.Vector;
  * created Sep 30, 2004 3:25:12 PM
  */
 
-public class RunJavaUtils {
+public final class RunJavaUtils {
     private RunJavaUtils() {
     }
 
@@ -45,12 +46,10 @@ public class RunJavaUtils {
             return null;
         }
         Vector flat=new Vector(in.size());
-        Iterator flattener=in.iterator();
-        while (flattener.hasNext()) {
-            Object o = (Object) flattener.next();
-            if(o instanceof Collection) {
-                Collection c=(Collection)o;
-                Vector v=recursivelyFlatten(c);
+        for (Object o : in) {
+            if (o instanceof Collection) {
+                Collection c = (Collection) o;
+                Vector v = recursivelyFlatten(c);
                 flat.addAll(v);
             } else {
                 flat.add(o);
@@ -60,58 +59,17 @@ public class RunJavaUtils {
     }
 
     /**
-     * split a list of string values into separate elements of a vector.
-     * dumb simple parsing
-     * @param uriList
-     * @return the string cracked; may be empty for no interesting content
-     */
-    public static Vector crack(final String uriList) {
-        Vector list=new Vector();
-        if(uriList==null) {
-            return list;
-        }
-        StringBuffer buffer;
-        buffer=new StringBuffer(uriList.length());
-        for(int index=0;index<uriList.length();index++) {
-            char c=uriList.charAt(index);
-            if(!Character.isWhitespace(c)) {
-                //common case, just another character
-                buffer.append(c);
-            } else {
-                //end of line, extra spaces at beginning or end, etc.
-                if(buffer.length()==0) {
-                    //nothing in the buffer yet, this is leading
-                    //whitespace, so ignore it
-                    continue;
-                }
-                //make a uri from the buffer
-                String uri=buffer.toString();
-                //append to the list
-                list.add(uri);
-                buffer = new StringBuffer(uriList.length());
-            }
-        }
-        //and the end of the run, if we have a non zero list, add that
-        if(buffer.length()!=0) {
-            list.add(buffer.toString());
-        }
-        return list;
-    }
-
-    /**
      * eliminate all duplicate entries from a vector.
      * uses a hash table, O(n*(O(hashtable add)+O(hashtable lookup))
-     * @param source
+     * @param source source collection
      * @return Vector
      */
     public static Vector mergeDuplicates(Collection source) {
         HashMap map=new HashMap(source.size());
         Vector dest=new Vector(source.size());
-        Iterator it=source.iterator();
-        while (it.hasNext()) {
-            Object o = (Object) it.next();
-            if(map.get(o)==null) {
-                map.put(o,o);
+        for (Object o : source) {
+            if (map.get(o) == null) {
+                map.put(o, o);
                 dest.add(o);
             } else {
                 //duplicate item; remove it
@@ -123,27 +81,18 @@ public class RunJavaUtils {
 
     /**
      * turn a vector of strings into a space separated list
-     * @param source
-     * @return String
+     * @param source source vector
+     * @return String string list.
      */
     public static String makeSpaceSeparatedString(Vector source) {
         //the classpath; space separated values
-        StringBuffer buffer = new StringBuffer();
-        Iterator uris = source.iterator();
-        while (uris.hasNext()) {
-            String uri = (String) uris.next();
-            buffer.append(uri);
-            if(uris.hasNext()) {
-                buffer.append(' ');
-            }
-        }
-        return buffer.toString();
+        return ListUtils.stringify(source, "", " ", " ");
     }
 
     /**
      * convert a classname to a resource
-     * @param classname
-     * @return resource
+     * @param classname class name to turn into a resource
+     * @return resource the classname as a resource
      */
     public static String makeResource(String classname) {
         assert (classname!=null && classname.length()>0);

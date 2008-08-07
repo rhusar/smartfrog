@@ -78,28 +78,28 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         }
         String filename = FileSystem.lookupAbsolutePath(this,
                 ATTR_FILENAME,
-                (String) null,
+                null,
                 parentDir,
                 true,
                 null);
 
-        File file = new File(filename);
+        File bindFile = new File(filename);
         if (debugEnabled) {
-            sfLog().debug("absolute file=" + file.toString());
+            sfLog().debug("absolute file=" + bindFile.toString());
         }
-        bind(file);
+        bind(bindFile);
 
         //now test our state
 
         mustExist = getBool(ATTR_MUST_EXIST, false, false);
-        mustRead = getBool(ATTR_MUST_WRITE, false, false);
-        mustWrite = getBool(ATTR_MUST_READ, false, false);
+        mustRead = getBool(ATTR_MUST_READ, false, false);
+        mustWrite = getBool(ATTR_MUST_WRITE, false, false);
         mustBeDir = getBool(ATTR_MUST_BE_DIR, false, false);
         mustBeFile = getBool(ATTR_MUST_BE_FILE, false, false);
         testOnStartup = getBool(ATTR_TEST_ON_STARTUP, false, false);
         testOnLiveness = getBool(ATTR_TEST_ON_LIVENESS, false, false);
 
-        exists = file.exists();
+        exists = bindFile.exists();
         boolean isDirectory;
         boolean isFile;
         boolean isEmpty;
@@ -107,17 +107,17 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         long timestamp;
         long length;
         if (exists) {
-            isDirectory = file.isDirectory();
+            isDirectory = bindFile.isDirectory();
             if (isDirectory && debugEnabled) {
                 sfLog().debug("file is a directory");
             }
-            isFile = file.isFile();
+            isFile = bindFile.isFile();
             if (isFile && debugEnabled) {
                 sfLog().debug("file is a normal file");
             }
-            timestamp = file.lastModified();
-            length = file.length();
-            isHidden = file.isHidden();
+            timestamp = bindFile.lastModified();
+            length = bindFile.length();
+            isHidden = bindFile.isHidden();
         } else {
             if (debugEnabled) {
                 sfLog().debug("file does not exist");
@@ -211,9 +211,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -230,19 +229,31 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
+        super.sfStart();
         if (testOnStartup) {
             testFileState();
         }
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"File "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
+        onComponentStarted();
+        triggerTerminationInStartup();
+    }
+
+    /**
+     * Override point: trigger termination in startup.
+     * If subclassed, the polling for sfShouldTerminate can be delayed
+     */
+    protected void triggerTerminationInStartup() {
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "File "+getFile()
+                        .getAbsolutePath(),sfCompleteNameSafe(),null);
     }
 
     /**
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     * @throws SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link
+     * @throws RemoteException for consistency with the {@link
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
      */
@@ -256,10 +267,22 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     }
 
     /**
-     * do our file state test
-     *
-     * @throws SmartFrogLivenessException if a test failed
+     * Override point: base implementation is empty.
+     * This method is called in sfStart() after the file state tests are successful, and before
+     * we look for propertys that request termination of the the component
+     * @throws SmartFrogException SF problems
+     * @throws RemoteException network problems.
      */
+    protected void onComponentStarted() throws SmartFrogException,
+            RemoteException {
+
+    }
+
+    /**
+    * do our file state test
+    *
+    * @throws SmartFrogLivenessException if a test failed
+    */
     protected void testFileState() throws SmartFrogLivenessException {
         if (sfLog().isDebugEnabled()) {
             sfLog().debug("liveness check will look for " + getFile().toString());

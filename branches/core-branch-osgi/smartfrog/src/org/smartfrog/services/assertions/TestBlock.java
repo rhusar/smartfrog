@@ -22,6 +22,7 @@ package org.smartfrog.services.assertions;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestBlock extends Remote {
+public interface TestBlock extends EventRegistration {
 
 
     /**
@@ -129,6 +130,8 @@ public interface TestBlock extends Remote {
      * turn true if a test is skipped; if some condition caused
      * it not to run
      * @return whether or not the test block skipped deployment of children.
+     * @throws RemoteException on network trouble
+     * @throws SmartFrogException on other problems
      */
     boolean isSkipped() throws RemoteException, SmartFrogException;
 }

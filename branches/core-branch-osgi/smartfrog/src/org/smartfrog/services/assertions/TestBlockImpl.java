@@ -64,7 +64,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * Return true iff the component is finished.
      * Spin on this, with a (delay) between calls
      *
-     * @return
+     * @return true if we are finished
      */
     public boolean isFinished() {
         return finished;
@@ -111,13 +111,12 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     }
 
     /**
-     * Registers components referenced in the SendTo sub-component registers
-     * itself with components referenced in the RegisterWith sub-component.
+     * Registers components referenced in the SendTo sub-component registers itself with components referenced in the
+     * RegisterWith sub-component.
      *
-     * @throws java.rmi.RemoteException In case of network/rmi error
-     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
-     *                                  In case of any error while
-     *                                  deploying the component
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException In case of any error while deploying the
+     * component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
@@ -132,12 +131,27 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * components in the compound context. Any failure will cause the compound
      * to terminate
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failed to start compound
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * A TestStartedEvent will always be sent.
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
+        try {
+            super.sfStart();
+            startChildAction();
+        } finally {
+            sendEvent(new TestStartedEvent(this));
+        }
+    }
+
+    /**
+     * Called in sfStart to start the child action.
+     * Can be overridden to disable that action, in which case some derived form of the
+     * logic must be repeated to start the action and (always) send a TestStartedEvent.
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/nework error
+     */
+    protected void startChildAction() throws RemoteException, SmartFrogException {
         long timeout = sfResolve(ATTR_TIMEOUT,0L,true);
         boolean expectTimeout=sfResolve(ATTR_EXPECTTIMEOUT,false,true);
         sendEvent(new StartedEvent(this));
@@ -151,8 +165,6 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
             startupException(e);
         } catch (SmartFrogDeploymentException e) {
             startupException(e);
-        } finally {
-            sendEvent(new TestStartedEvent(this));
         }
     }
 
@@ -227,6 +239,8 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
      * @param record exit record of the component
      * @param comp   child component that is terminating
      * @return true if the termination event is to be forwarded up the chain.
+     * @throws SmartFrogRuntimeException for runtime exceptions
+     * @throws RemoteException for network problems
      */
     protected boolean onChildTerminated(TerminationRecord record, Prim comp)
             throws SmartFrogRuntimeException, RemoteException {

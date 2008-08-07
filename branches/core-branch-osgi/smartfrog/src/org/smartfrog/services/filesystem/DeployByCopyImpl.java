@@ -26,7 +26,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
-/** a component that deletes a file after copying it */
+/**
+ * a component that deletes a file when terminated
+ * */
 public class DeployByCopyImpl extends CopyFileImpl implements CopyFile {
 
     private boolean shouldDelete;

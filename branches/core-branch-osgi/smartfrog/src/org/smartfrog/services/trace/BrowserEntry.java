@@ -162,7 +162,7 @@ public final class BrowserEntry implements Entry {
                             this.children = new HashMap();
                         }
 
-                        if (children.containsKey((Object) nameChild)) {
+                        if (children.containsKey(nameChild)) {
                             BrowserEntry newChild = (BrowserEntry) children.
                     get(nameChild);
 
@@ -306,21 +306,20 @@ public final class BrowserEntry implements Entry {
     /**
      *  Gets the msgChild4Parent attribute of the BrowserEntry object
      *
-     *@param  parentDN  parentdN attribute
+     *@param  parent  parentdN attribute
      *@param  fullDN    fulldN attribute
      *@return           The msgChild4Parent value
      */
-    private String getMsgChild4Parent(String parentDN, String fullDN) {
-        if (fullDN.equals(parentDN)) {
+    private String getMsgChild4Parent(String parent, String fullDN) {
+        if (fullDN.equals(parent)) {
             return "";
         }
 
-        if (fullDN.startsWith(parentDN)) {
-            int index = fullDN.lastIndexOf(parentDN + ":") + parentDN.length() +
+        if (fullDN.startsWith(parent)) {
+            int index = fullDN.lastIndexOf(parent + ":") + parent.length() +
                 1;
             int indexEnd = fullDN.indexOf(":", index);
 
-            //System.out.println("    ****index 1 and 2:"+index+"/"+indexEnd);
             if (indexEnd > index) {
                 return (fullDN.substring(index, indexEnd));
             } else {
@@ -521,7 +520,7 @@ public final class BrowserEntry implements Entry {
             return name;
         } else {
             try {
-                return parentDN.substring(0, ((String) parentDN).indexOf(':'));
+                return parentDN.substring(0, parentDN.indexOf(':'));
             } catch (Exception ex) {
                 return parentDN;
             }

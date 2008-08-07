@@ -49,14 +49,14 @@ Exec extends DATA {
 //----------- SHELL EXEC -----------------------------------
 ShellExecSchema extends ExecSchema {
     lineSeparator extends OptionalString;
-
-    echoCmd extends OptionalString;
+    echoCmd extends Optional { class ["java.lang.String","org.smartfrog.sfcore.common.SFNull"]; }
     echoErrorCmd extends OptionalString;
 }
 
 ShellExec extends Exec {
   execSchema extends ShellExecSchema;
   echoCmd "echo";
+  passPositives false;
 }
 
 BashExec extends ShellExec{
@@ -93,7 +93,6 @@ Process extends Prim {
    autoStart true;
 
    sfLog LAZY THIS;
-   //sfExport false;
 }
 
 BashProcess extends Process {
@@ -120,7 +119,6 @@ Shell extends Prim {
    exec extends DATA Exec;
 
    sfLog LAZY THIS;
-   //sfExport false;
 }
 
 BashShell extends Shell {
