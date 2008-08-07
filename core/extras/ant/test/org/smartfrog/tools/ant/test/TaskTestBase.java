@@ -75,9 +75,25 @@ public abstract class TaskTestBase extends BuildFileTest {
         configureProject(basedir + "/" + filename);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
+
+    /**
+     * assert that a property is null.
+     *
+     * @param property property name
+     */
+    @Override
+    public void assertPropertyUnset(String property) {
+        String result = project.getProperty(property);
+        if (result != null) {
+            fail("Expected property " + property
+                    + " to be unset, but it is set to the value: " + result);
+        }
+    }
+
 
     /**
      * assert that some text is not in the log
