@@ -16,9 +16,9 @@ import org.smartfrog.sfcore.prim.Prim;
 public class  «Name» extends ThreadedState implements Prim {		
 	public «Name»() throws RemoteException {super();}  
 
-	public boolean requireThread(){ return true; }  
+	public boolean requireThread(HashMap data){ return true; }  
 	
-	public boolean threadBody(){
+	public HashMap threadBody(HashMap data){
 		selectSingleAndGo();  //ignore return value...
 		return true;
 	}
