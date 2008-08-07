@@ -9,6 +9,7 @@
 «ENDDEFINE»
 /** SUPER COMPOSITE **/
 «DEFINE SuperCompositeDescription FOR Composite»
+
 	«Name» extends Model { 
 	«EXPAND ChildCompositeDescription FOREACH  SuperComposite»
 	«EXPAND ComponentDescription FOREACH  Composite_Component_Container»
@@ -18,6 +19,8 @@
 	«EXPAND InputDepDescription FOREACH Composite_Component_Container.Component_Dependent_Source»
 	«EXPAND OutputDepDescription FOREACH Composite_Component_Container.Connector_Depend_On_Component»
 	 }
+
+sfConfig extends «Name»;
 «ENDDEFINE»
 
 
