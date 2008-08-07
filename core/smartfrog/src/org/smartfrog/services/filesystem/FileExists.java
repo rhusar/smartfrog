@@ -12,7 +12,7 @@ public interface FileExists extends Condition, FileIntf {
      */
     String ATTR_MIN_SIZE="minSize";
 
-    /** the maximum size */
+    /** the maximum size  : {@value}*/
     String ATTR_MAX_SIZE ="maxSize";
 
     /**
@@ -25,7 +25,7 @@ public interface FileExists extends Condition, FileIntf {
      */
     String ATTR_CAN_BE_FILE = "canBeFile";
 
-    /** Check on startup*/
+    /** Check on startup : {@value}*/
     String ATTR_CHECKONSTARTUP ="checkOnStartup";
 
 
