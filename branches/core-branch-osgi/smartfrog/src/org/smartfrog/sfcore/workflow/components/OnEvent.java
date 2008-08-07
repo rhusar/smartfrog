@@ -68,12 +68,12 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         ComponentDescription act;
 
         try {
-            String name = ATTR_OTHERWISE;
+            String eventname = ATTR_OTHERWISE;
             try {
                 act = (ComponentDescription)sfResolve(event.toString());
-                name = event.toString();
+                eventname = event.toString();
             } catch (SmartFrogResolutionException e) {
-                act = (ComponentDescription)sfResolve(name);
+                act = (ComponentDescription)sfResolve(eventname);
             }
 
             synchronized (this) {
@@ -85,7 +85,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 }
             }
 
-            sfCreateNewChild(name+index++, act, null);
+            sfCreateNewChild(eventname+index++, act, null);
 
         } catch (SmartFrogResolutionException e) {
             // no handler - log and ignore
@@ -97,7 +97,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
             if (sfLog().isErrorEnabled()) {
                 sfLog().error(sfCompleteNameSafe()+ " - error in event handler for event "+event, e);
             }
-            sfTerminate(TerminationRecord.abnormal("error in event handler for event "+event, null));
+            sfTerminate(TerminationRecord.abnormal("error in event handler for event "+event, null, e));
         }
     }
 
@@ -139,7 +139,9 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 if (sfLog().isErrorEnabled()) {
                     sfLog().error(sfCompleteNameSafe()+ " - error handling child event handler termination ", e);
                 }
-                sfTerminate(TerminationRecord.abnormal( "error handling child event handler termination "+e, sfCompleteNameSafe()));
+                sfTerminate(TerminationRecord.abnormal( "error handling child event handler termination "+e,
+                        sfCompleteNameSafe(),
+                        e));
             }
         }
     }
