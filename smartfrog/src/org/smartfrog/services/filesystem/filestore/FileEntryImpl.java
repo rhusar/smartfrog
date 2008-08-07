@@ -39,7 +39,7 @@ public class FileEntryImpl implements FileEntry {
     private Object metadata;
 
     //extra data
-    private Hashtable data;
+    private Hashtable<String,Object> data;
 
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public class FileEntryImpl implements FileEntry {
      */
     public FileEntryImpl(File file) {
         this.file = file;
-        this.uri = file.toURI();
+        uri = file.toURI();
     }
 
     /**
@@ -71,9 +71,9 @@ public class FileEntryImpl implements FileEntry {
      * Returns extra data
      * @return  Hashtable
      */
-    private Hashtable data() {
+    private Hashtable<String, Object> data() {
         if (data == null) {
-            data = new Hashtable();
+            data = new Hashtable<String, Object>();
         }
         return data;
     }
@@ -92,10 +92,10 @@ public class FileEntryImpl implements FileEntry {
      * Add metadata to the system
      *
      * @param key String name
-     * @param metadata value
+     * @param metadataValue value
      */
-    public void addMetadata(String key, Object metadata) {
-        data().put(key, metadata);
+    public void addMetadata(String key, Object metadataValue) {
+        data().put(key, metadataValue);
     }
 
     /**

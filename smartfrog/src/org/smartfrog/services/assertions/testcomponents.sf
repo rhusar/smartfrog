@@ -66,6 +66,9 @@ TestCompound extends ActionCompound {
     description extends String {
       description "description of the test";
     }
+    links extends OptionalVector {
+      description "list of URLs for the test reports";
+    }
     undeployAfter extends Integer {
       description "time in milliseconds to undeploy the action and assertions; use -1 for no limit";
     }
@@ -105,7 +108,14 @@ TestCompound extends ActionCompound {
 //        NOT IMPLEMENTED
       description "time in milliseconds between forced pings";
     }
-
+/*
+  vector of tuples containing classname and error text substrings to match on,
+        all down the nested exception chain. e.g.
+        [["SmartFrogResolutionException","unresolved reference"]];
+        or
+        [["",""],["NullPointerException",""];
+*/
+     exceptions extends Vector;
    }
   sfClass "org.smartfrog.services.assertions.TestCompoundImpl";
    //by default, this is a workflow component
@@ -116,8 +126,8 @@ TestCompound extends ActionCompound {
 
   //default to one minute
   undeployAfter 60000;
-  //no delay by default
-  testTimeout -1;
+  //default test delay
+  testTimeout 60000;
   //default to one minute
   startupTimeout 60000;
   //default to one minute
@@ -126,10 +136,13 @@ TestCompound extends ActionCompound {
   //dont expect termination
   expectTerminate false;
 
-  exitType "normal";
+  exitType EXIT_TYPE_NORMAL;
   exitText "";
-
+  exceptions [];
   forcePing false;
+
+  EXIT_TYPE_NORMAL "normal";
+  EXIT_TYPE_ABNORMAL "abnormal";
 }
 
 /**
@@ -164,7 +177,7 @@ DeploySequence extends TestCompound {
           timeout waitForTimeout;
         }
 
-        testrun PARENT:PARENT:sequence;
+        testrun PARENT:PARENT:testrun;
 
     }
 }
@@ -175,31 +188,17 @@ DeploySequence extends TestCompound {
 ExpectTerminate extends TestCompound {
   description "Expect the deployed action to terminate itself normally, as a successful workflow";
   expectTerminate true;
-  exitType "normal";
+  exitType EXIT_TYPE_NORMAL;
 }
 
 /**
  * an abstract component to represent failures
  */
-FailingTestCompound extends TestCompound {
+FailingTestCompound extends ExpectTerminate {
 
   description "The deployment is expected to fail";
-
-  FailureCompoundSchema extends Schema {
-
-    exceptions extends OptionalVector {
-
-      description ##vector of tuples containing classname and error text substrings to match on,
-        all down the nested exception chain. e.g.
-        [["SmartFrogResolutionException","unresolved reference"]];
-        or
-        [["",""],["NullPointerException",""];
-      #;
-    }
-  }
-
   expectTerminate true;
-  exitType "abnormal";
+  exitType EXIT_TYPE_ABNORMAL;
 }
 
 
@@ -207,7 +206,6 @@ FailingTestCompound extends TestCompound {
  * This component expects failure on deployment
  */
 ExpectDeployFailure extends FailingTestCompound {
-
 }
 
 

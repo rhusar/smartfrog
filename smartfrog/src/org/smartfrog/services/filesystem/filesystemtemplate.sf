@@ -29,6 +29,8 @@ DeletableFileSchema extends Schema {
  */
 OptionalFilenameType extends Optional;
 FilenameType extends Compulsory;
+FilenameList extends Vector;
+OptionalFilenameList extends OptionalVector;
 
 
 /**

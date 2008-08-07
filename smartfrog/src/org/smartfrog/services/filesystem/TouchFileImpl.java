@@ -20,6 +20,7 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +60,10 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
             RemoteException {
         super.sfStart();
         touch();
-        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,"TouchFile "+getFile().getAbsolutePath()+", "+age,this.sfCompleteNameSafe(),null);
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
+                "TouchFile "+getFile().getAbsolutePath()+", "+age,
+                sfCompleteNameSafe(),
+                null);
     }
 
     /**
@@ -70,9 +74,9 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      */
     public void touch() throws RemoteException, SmartFrogException {
         //get the file
-        String file = getFile().getAbsolutePath();
+        String touchFile = getFile().getAbsolutePath();
         try {
-            touch(file, age);
+            touch(touchFile, age);
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
         }
@@ -82,19 +86,34 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      * touch a file
      *
      * @param filename file to create
-     * @param age      timestamp (optional, use -1 for current time)
+     * @param newAge      timestamp (optional, use -1 for current time)
      * @throws IOException for IO error
      * @throws RemoteException In case of network/rmi error
      */
-    public void touch(String filename, long age) throws IOException, RemoteException {
-        File file = new File(filename);
-        File parentFile = file.getParentFile();
-        if(parentFile!=null) {
-            parentFile.mkdirs();
+    public synchronized void touch(String filename, long newAge) throws IOException, SmartFrogException {
+        File target = new File(filename);
+        File parentFile = target.getParentFile();
+        if(sfLog().isDebugEnabled()) {
+            sfLog().debug("About to touch file "+filename);
         }
-        file.createNewFile();
-        if (age >= 0) {
-            file.setLastModified(age);
+        if(parentFile!=null) {
+            try {
+                parentFile.mkdirs();
+            } catch (SecurityException e) {
+                //failure to mkdir is turned into a security problem; we catch it and make it meaningful
+                throw new SmartFrogDeploymentException("Security blocked the creation of the parent directories "+parentFile,
+                        e,
+                        this);
+            }
+        }
+        try {
+            target.createNewFile();
+            if (newAge >= 0) {
+                target.setLastModified(newAge);
+            }
+        } catch (SecurityException e) {
+            throw new SmartFrogDeploymentException("Security blocked the touching of file " + target, e, this);
+
         }
     }
 }

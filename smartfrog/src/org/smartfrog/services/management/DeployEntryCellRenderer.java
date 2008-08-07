@@ -60,12 +60,12 @@ public class DeployEntryCellRenderer extends DefaultTreeCellRenderer {
 
   public Component getTreeCellRendererComponent(JTree tree,
                                                 Object value,
-                                                boolean selected,
+                                                boolean isSelected,
                                                 boolean expanded,
                                                 boolean leaf,
                                                 int row,
-                                                boolean hasFocus) {
-    super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+                                                boolean componentHasFocus) {
+    super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, componentHasFocus);
 
     if (value instanceof DeployEntry) value = ((DeployEntry)value).getEntry();
 

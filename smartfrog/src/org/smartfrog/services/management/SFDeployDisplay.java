@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,19 @@ package org.smartfrog.services.management;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -35,19 +41,17 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.services.display.Display;
 import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.services.display.WindowUtilities;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ExitCodes;
-import org.smartfrog.sfcore.common.OrderedHashtable;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.reference.Reference;
 
 
 /**
@@ -55,12 +59,13 @@ import org.smartfrog.sfcore.reference.Reference;
  *  component or it can be started as a separate console.
  */
 public class SFDeployDisplay extends SFDisplay implements ActionListener {
-   protected JButton refreshNode = new JButton();
-   protected JButton refreshPanes = new JButton();
+
+   protected JButton refreshNode = null;
+   protected JButton refreshPanes = null;
    private JPanel panelTree = null;
 
-   final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
-   final JMenuItem jMenuScriptingPanel = new JMenuItem();
+   JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = null;
+   JMenuItem jMenuScriptingPanel = null;
 
    static final String scriptingPanelName = "Scripting:";
    /**
@@ -103,8 +108,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       String positionDisplay = opts.windowPosition;
 
       try {
-         if(startConsole(nameDisplay, height, width, positionDisplay,
-               showRootProcess,showCDasChild, showScripting, hostname, port, true)!=null) {
+         if(startConsole(nameDisplay, height, width, positionDisplay, showRootProcess,showCDasChild, showScripting, hostname, port, true)!=null) {
              sflog.out("Running.");
          } else {
              sflog.out("Failed to start console");
@@ -141,20 +145,19 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
    public static Display startConsole(String nameDisplay, int height,
          int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild, final boolean showScripting,
-         final String hostname, final int port, boolean shouldSystemExit)
-          throws Exception {
+         final String hostname, final int port, boolean shouldSystemExit) throws Exception {
+
       final JButton refreshButtonPanes = new JButton();
       final JButton refreshButtonNode = new JButton();
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
       final JMenuItem jMenuScriptingPanel = new JMenuItem();
-      String infoConnection = ("sfManagementConsole connecting to " +
-            hostname + ":" + port);
+
+      String infoConnection = ("sfManagementConsole connecting to " + hostname + ":" + port);
       //Logger.log(infoConnection);
       sfLogStatic().out(infoConnection);
-      nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " +
-            hostname + ":" + port + "]";
+      nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " + hostname + ":" + port + "]";
 
       if (showRootProcess) {
          sfLogStatic().warn(" showing rootProcess");
@@ -219,7 +222,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         treePanel.refresh();
                      } catch (Throwable thr1) {
                         if (LogFactory.getLog("SFManagementConsole").isErrorEnabled()){
-                          LogFactory.getLog("SFManagementConsole").error(thr1);
+                         LogFactory.getLog("SFManagementConsole").error(thr1);
                         }
                      }
                   }
@@ -277,6 +280,79 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       return null;
    }
 
+   /**
+    * Starts the console
+    *
+    *@param  nameDisplay       name of the display
+    *@param  height            height of the window
+    *@param  width             width of the window
+    *@param  positionDisplay   position  of display
+    *@param  cd                description shown 
+    *@param  shouldSystemExit  boolean to indicate exit at close of window
+    *@return                   Display object
+    *@throws  Exception     In case of any error
+    *
+    */
+
+
+   public static Display starParserConsole(String nameDisplay, int height, int width, String positionDisplay, ComponentDescription cd, boolean shouldSystemExit) throws Exception {
+       final JButton refreshButtonPanes;
+       final JButton refreshButtonNode;
+       JMenu jMenuMng;
+       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel;
+       final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild;
+       final JMenuItem jMenuScriptingPanel;
+       final Display newDisplay;
+
+      if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
+         refreshButtonPanes = new JButton();
+         refreshButtonNode = new JButton();
+
+         jMenuMng = new JMenu();
+
+         jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
+
+         jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
+
+         jMenuScriptingPanel = new JMenuItem();
+
+         String infoConnection = ("sfParseConsole starting ... ");
+         //Logger.log(infoConnection);
+         sfLogStatic().out(infoConnection);
+         nameDisplay = nameDisplay + " [" + "sfParseConsole " +"";
+
+         newDisplay = new Display(nameDisplay, null);
+
+         addFrogIcon(newDisplay);
+
+         newDisplay.setShouldSystemExit(shouldSystemExit);
+         newDisplay.setVisible(false);
+         newDisplay.setSize(width, height);
+         newDisplay.setAskSaveChanges(false);
+         org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null, newDisplay, positionDisplay);
+
+         //Show toolbar
+         newDisplay.showToolbar(false);
+
+         // Add deployTreePanel menu items
+         jMenuMng.setText("Parse Console");
+         newDisplay.jMenuBarDisplay.add(jMenuMng);
+
+         newDisplay.setVisible(true);
+
+         addCDPanel(newDisplay, cd);
+
+         return newDisplay;
+      }
+
+      return null;
+   }
+
+
+
+
+
+
     /**
      * Add Frog Icon
      * @param newDisplay Display Object -can be null
@@ -288,7 +364,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         }
         String imagesPath = SFDeployDisplay.class.getPackage().getName() + ".";
         imagesPath = imagesPath.replace('.', '/');
-        imagesPath = imagesPath + "frogb.gif";
+        // imagesPath = imagesPath + "frogb.gif";
+        imagesPath = imagesPath + "SplodgeLightBlue32.gif";
         Image image = Display.createImage(imagesPath);
         if(image!=null) {
             newDisplay.setIconImage(image);
@@ -316,7 +393,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
    // Used in Main
    /**
-    *  Adds a feature to the ProcessesPanels attribute of the SFDeployDisplay
+    *  Adds a feature to he ProcessesPanels attribute of the SFDeployDisplay
     *  class
     *
     *@param  display              The feature to be added to the ProcessesPanels
@@ -379,6 +456,27 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       display.tabPane.setSelectedIndex(0);
    }
 
+    /**
+     *   Adds panel for ComponentDescription
+      *@param display
+     * @param cd
+     * @throws Exception
+     */
+   public static void addCDPanel(Display display, ComponentDescription cd) throws Exception {
+     int indexPanel = 0;
+     // Adding pannels
+     JPanel CDPanel = null;
+
+    //if (((ComponentDescription) value).sfParent() == null) {
+     CDPanel = new DeployTreePanel(cd,false, false, true);
+     CDPanel.setEnabled(true);
+     display.setTextScreen(cd.toString());
+     display.tabPane.add(CDPanel, "Description parsed ..." , indexPanel++);
+
+
+
+   }
+
     private static LogSF sfLogStatic() {
         return LogFactory.getLog("sfManagementConsole");
     }
@@ -403,17 +501,17 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       StringBuffer msg = new StringBuffer();
       msg.append(
               "Useful commands: \n" +
-              "   print() pretty much same thing as System.out.println(); ex. 'print(help);'\n" +
-              "   show()  toggles on and off automatic display of the result of every line you type\n" +
-              "   source(), run() ? Read a bsh script into this interpreter, or run it in a new interpreter\n" +
-              "   frame() ? Display a GUI component in a Frame or JFrame.\n" +
-              "   load(), save() ? Load or save serializable objects to a file.\n" +
-              "   cd(), cat(), dir(), pwd(), etc. ? Unix?like shell commands\n" +
-              "   exec() ? Run a native application\n" +
-              "   javap() ? Print the methods and fields of an object, similar to the Java javap command.\n" +
-              "   setAccessibility() ? Turn on unrestricted access to private and protected components.\n" +
-              "   classBrowser() Open the class browser. \n" +
-              "   setNameCompletion() Turn on or off name completion in the console. \n");
+              "   print()              - Equivalent to System.out.println(); ex. 'print(help);'\n" +
+              "   show()              - Toggles on and off automatic display of the result of every line you type\n" +
+              "   source(), run()     - Read a bsh script into this interpreter, or run it in a new interpreter\n" +
+              "   frame()             - Display a GUI component in a Frame or JFrame.\n" +
+              "   load(), save()      - Load or save serializable objects to a file.\n" +
+              "   cd(), cat(), dir(), pwd(), etc. - Unix-like shell commands\n" +
+              "   exec()              - Run a native application\n" +
+              "   javap()             - Print the methods and fields of an object, similar to the Java javap command.\n" +
+              "   setAccessibility()  - Turn on unrestricted access to private and protected components.\n" +
+              "   classBrowser()      - Open the class browser. \n" +
+              "   setNameCompletion() - Turn on or off name completion in the console. \n");
 
       try {
         Class jConsoleClass = Class.forName("bsh.util.JConsole");
@@ -539,6 +637,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     }
 
     protected void createManagementPane() throws SmartFrogResolutionException, RemoteException {
+
+      if (refreshNode==null) refreshNode = new JButton();
+      if (refreshPanes==null) refreshPanes = new JButton();
+      if (jCheckBoxMenuItemShowCDasChild==null) jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();        
+      if (jMenuScriptingPanel==null) jMenuScriptingPanel = new JMenuItem();
+
         boolean isObjCopy = false;
          Object root = null;
          boolean isPC = false;
@@ -585,8 +689,10 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
         refreshNode.setText("Refresh node");
         refreshNode.setActionCommand("refreshButtonNode");
         refreshNode.addActionListener(this);
-        display.mainToolBar.add(this.refreshNode);
-        display.mainToolBar.add(this.refreshPanes);
+
+        display.mainToolBar.add(refreshNode);
+        display.mainToolBar.add(refreshPanes);
+
         JMenu jMenuMng = new JMenu();
 
         jMenuMng.setText("Mng. Console");

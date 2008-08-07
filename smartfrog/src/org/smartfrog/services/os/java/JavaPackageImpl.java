@@ -23,11 +23,11 @@ import org.smartfrog.SFLoader;
 import org.smartfrog.services.filesystem.UriIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,15 +43,19 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     private Vector requiredClasses;
     private Vector requiredResources;
     private Vector uriClasspathList;
+    private Vector classpathList;
     private Vector sources;
     private boolean useCodebase;
     private ComponentHelper helper;
     private String uriClasspath;
+    private String classpath;
 
     /**
      * our log
      */
-    private Log log;    
+    private Log log;
+    public JavaPackageImpl() throws RemoteException {
+    }
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -97,7 +101,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    private void readValuesAndSetUpClasspath() throws SmartFrogException, RemoteException {
+    public void readValuesAndSetUpClasspath() throws SmartFrogException, RemoteException {
         boolean debugEnabled = log.isDebugEnabled();
         sources = sfResolve(ATTR_SOURCE,
                         (Vector) null,
@@ -110,7 +114,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
                 (Vector) null,
                 false);
         //set an empty class list to null
-        if(requiredClasses!=null && requiredClasses.isEmpty()) {
+        if(requiredClasses!=null && requiredClasses.size()==0) {
             requiredClasses=null;
         }
         //now (recursively) flatten the file list.
@@ -127,7 +131,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         useCodebase = sfResolve(ATTR_USECODEBASE, false, false);
         if(useCodebase) {
             String codebase= helper.getCodebase();
-            Vector elements=RunJavaUtils.crack(codebase);
+            Vector elements= ListUtils.crack(codebase);
             uriClasspathList.addAll(elements);
         }
 
@@ -181,23 +185,53 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         if(requiredClasses==null && requiredResources==null) {
             return;
         }
-
+        ClassLoader loader=null;
         if (requiredClasses != null) {
             Iterator classes=requiredClasses.iterator() ;
             while (classes.hasNext()) {
                 String classname = (String) classes.next();
-                checkForClass(classname);
+                checkForClass(loader,classname);
             }
         }
         if (requiredResources != null) {
             Iterator resources = requiredResources.iterator();
             while (resources.hasNext()) {
                 String resource = (String) resources.next();
-                checkForResource(resource);
+                checkForResource(loader, resource);
             }
         }
 
 
+    }
+
+    /**
+     * test for a resource being present
+     * We also search the parent tree, which is potentially wrong
+     * @todo: only look in the specified files
+     * @param loader
+     * @param resource
+     */
+    private void  checkForResource(ClassLoader loader,String resource)
+            throws SmartFrogLivenessException {
+        InputStream in=null;
+        try {
+            in = SFClassLoader.getResourceAsStream(resource,uriClasspath,false);
+            /*
+            URL url=loader.getResource(resource);
+            */
+            if(in==null) {
+                throw new SmartFrogLivenessException("could not find "+resource
+                    +" in "+uriClasspath,this);
+            }
+        } finally {
+            if(in!=null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+
+                }
+            }
+        }
     }
 
     /**
@@ -225,17 +259,19 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         }
     }
 
+
     /**
      * test for a class being present.
      * We also search the parent tree, which is potentially wrong
      * @todo: map to a resource and load without side effects
+     * @param loader
      * @param classname
      * @throws SmartFrogLivenessException
      */
-
-    private void checkForClass(String classname)
+    private void checkForClass(ClassLoader loader, String classname)
             throws SmartFrogLivenessException  {
-        checkForResource(RunJavaUtils.makeResource(classname));
+        String resource=RunJavaUtils.makeResource(classname);
+        checkForResource(loader,resource);
     }
 
 /*

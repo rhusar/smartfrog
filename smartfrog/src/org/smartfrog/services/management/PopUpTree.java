@@ -177,13 +177,13 @@ public class PopUpTree extends JComponent implements ActionListener {
      *@param  comp    Component to be displayed
      *@param  x       x coordinate
      *@param  y       y coordinate
-     *@param  parent  parent of this component
+     *@param  parentPanel  parent of this component
      */
-    public void show(Component comp, int x, int y, DeployTreePanel parent) {
+    public void show(Component comp, int x, int y, DeployTreePanel parentPanel) {
         tempComp = comp;
         tempX = x;
         tempY = y;
-        this.parent = parent;
+        this.parent = parentPanel;
         if ( getNode() instanceof Prim){
           menuItemRemoveAttribute.setVisible(false);
             menuItemDetach.setVisible(true);
@@ -288,7 +288,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);
-                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = objPrim.sfCompleteName().toString();
                 name = name.substring(name.lastIndexOf("."));
                 hostname = objPrim.sfResolve("sfHost",hostname,false);
                 ProcessCompound pc = SFProcess.getProcessCompound();
@@ -301,7 +301,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         } else {
             try {
                 ComponentDescription objCD = ((ComponentDescription)node);
-                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                name = objCD.sfCompleteName().toString();
                 name = name.substring(name.lastIndexOf("."));
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
@@ -324,14 +324,14 @@ public class PopUpTree extends JComponent implements ActionListener {
         if (node instanceof Prim) {
             try {
                 Prim objPrim = ((Prim)node);
-                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = objPrim.sfCompleteName().toString();
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
         } else {
             try {
                 ComponentDescription objCD = ((ComponentDescription)node);
-                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                name = objCD.sfCompleteName().toString();
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
@@ -347,7 +347,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
                 Prim objPrim = ((Prim)node);
                 message.append(objPrim.sfDiagnosticsReport());
-                name = ((Prim)objPrim).sfCompleteName().toString();
+                name = objPrim.sfCompleteName().toString();
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
@@ -355,7 +355,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
                 ComponentDescription objCD = ((ComponentDescription)node);
                 message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
-                name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                name = objCD.sfCompleteName().toString();
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
@@ -499,9 +499,9 @@ public class PopUpTree extends JComponent implements ActionListener {
         int thisCharacter;
 
         for (int i = 0; i < string.length(); i++) {
-            thisCharacter = (char) string.charAt(i);
-            if ((char) string.charAt(i) != ' ') {
-                s.append((char) thisCharacter);
+            thisCharacter = string.charAt(i);
+            if (string.charAt(i) != ' ') {
+                s.append(thisCharacter);
             }
         }
 

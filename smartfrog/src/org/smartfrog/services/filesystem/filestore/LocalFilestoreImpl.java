@@ -40,13 +40,13 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
     private AddedFilestore filestore;
 
     /**
-     * Error string if our repository is not a directory.
-     * {@value}
+     * Error string if our repository is not a directory. {@value}
      */
     public static final String ERROR_NOT_A_DIRECTORY = "Not a directory :";
 
     /**
      * Constructor.
+     *
      * @throws RemoteException In case of network/rmi error
      */
     public LocalFilestoreImpl() throws RemoteException {
@@ -54,8 +54,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  failure while starting
@@ -72,8 +72,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
     }
 
     /**
-     * Provides hook for subclasses to implement useful termination behavior.
-     * Deregisters component from local process compound (if ever registered)
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -98,7 +98,7 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @param suffix suffix
      * @return a file entry describing both the file and the URL
      * @throws SmartFrogException error while creating file
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public FileEntry createNewFile(String prefix, String suffix)
             throws SmartFrogException, RemoteException {
@@ -118,8 +118,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @param content  the actual content of the file content
      * @param metadata any metadata
      * @return a file entry describing both the file and the URL
-     * @throws org.smartfrog.sfcore.common.SmartFrogException error while creating file
-     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while creating file
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
 
@@ -143,8 +143,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      *
      * @param uri uri of entry
      * @return true if deletion worked
-     * @throws SmartFrogException  error while deleting
-     * @throws RemoteException  In case of network/rmi error
+     * @throws SmartFrogException error while deleting
+     * @throws RemoteException    In case of network/rmi error
      */
     public boolean delete(URI uri)
             throws SmartFrogException, RemoteException {
@@ -154,10 +154,10 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
     /**
      * look up a file from a URI
      *
-     * @param uri
-     * @return FileEntry
+     * @param uri URI to look up
+     * @return FileEntry entry in the filestore, or null for no match
      * @throws SmartFrogException error while lookup
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException    In case of network/rmi error
      */
     public FileEntry lookup(URI uri)
             throws SmartFrogException, RemoteException {

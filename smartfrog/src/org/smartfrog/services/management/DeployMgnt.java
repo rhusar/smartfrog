@@ -83,12 +83,12 @@ public class DeployMgnt {
         if (obj instanceof Prim) {
             ((Prim)obj).sfReplaceAttribute(attribName, attribValue);
             if (attribTags != null){
-               ((Prim)obj).sfAddTags(attribName,(Set)attribTags);
+               ((Prim)obj).sfSetTags(attribName,(Set)attribTags);
             }
         } else if (obj instanceof ComponentDescription){
             ((ComponentDescription)obj).sfReplaceAttribute(attribName, attribValue);
             if (attribTags != null){
-               ((ComponentDescription)obj).sfAddTags(attribName,(Set)attribTags);
+               ((ComponentDescription)obj).sfSetTags(attribName,(Set)attribTags);
             }
         }
     }
@@ -99,8 +99,9 @@ public class DeployMgnt {
      * @param  obj  Reference to SF Component
      * @param type error type
      * @param reason cause
+     * @throws Exception if termination fails
      */
-    public static void terminate(Prim obj, String type, String reason) throws Exception{
+    public static void terminate(Prim obj, String type, String reason) throws Exception {
             TerminationRecord tr = new TerminationRecord(type, reason, null);
             obj.sfTerminate(tr);
     }
@@ -111,6 +112,7 @@ public class DeployMgnt {
      * @param  obj  Reference to SF Component
      * @param type error type
      * @param reason cause
+     * @throws Exception if termination fails
      */
     public static void dTerminate(Prim obj, String type, String reason) throws Exception {
         TerminationRecord tr = new TerminationRecord(type, reason, null);

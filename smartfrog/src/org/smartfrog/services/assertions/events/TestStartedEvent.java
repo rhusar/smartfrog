@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.assertions.events;
 
-import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 
 /**
- *
- * Created 16-Jul-2007 13:21:23
- *
+ * the test has started Created 16-Jul-2007 13:21:23
  */
 
 public class TestStartedEvent extends LifecycleEvent {
-
 
 
     public TestStartedEvent() {
@@ -39,7 +36,9 @@ public class TestStartedEvent extends LifecycleEvent {
         super(component);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public String getEventName() {
         return "TestStartedEvent";
     }

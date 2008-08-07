@@ -18,8 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/utils/setproperty/components.sf"
+#include "/org/smartfrog/services/utils/setproperty/components.sf"
 
 TestSetProperty extends SetProperty {
    //java.class.path: D:\cvs\SmartFrogSF\cvs_sf\core\smartfrog\dist\lib\smartfrog.jar";

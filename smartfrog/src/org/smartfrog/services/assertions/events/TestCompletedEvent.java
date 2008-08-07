@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,10 @@ import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
-/** created 10-Jul-2007 17:12:59 */
+/**
+ *  A test has completed
+ *  There's no reference here,
+ */
 
 public class TestCompletedEvent extends LifecycleEvent {
 
@@ -37,11 +40,20 @@ public class TestCompletedEvent extends LifecycleEvent {
     }
 
 
-    public TestCompletedEvent(Prim component, boolean succeeded, boolean forcedTimeout, boolean skipped, TerminationRecord status, String description) {
+    public TestCompletedEvent(Prim component,
+                              boolean succeeded,
+                              boolean forcedTimeout,
+                              boolean skipped,
+                              TerminationRecord status,
+                              String description) {
         super(component,status);
+        //forget about the component value so there are no
+        //serialization problems
+        resetComponent();
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
         this.skipped = skipped;
+        this.description=description;
     }
 
 
@@ -68,18 +80,24 @@ public class TestCompletedEvent extends LifecycleEvent {
         return "TestCompletedEvent";
     }
 
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * {@inheritDoc}
      */
     public String toString() {
-        StringBuffer buffer=new StringBuffer(super.toString());
-        if(description!=null && description.length()>0) {
-            buffer.append("\n").append(description);
+        StringBuilder buffer = new StringBuilder(super.toString());
+        if (description != null && description.length() > 0) {
+            buffer.append('\n');
+            buffer.append(description);
+            buffer.append('\n');
         }
-        buffer.append("\nsucceeded:"+succeeded);
-        buffer.append("\nforcedTimeout:" + forcedTimeout);
-        buffer.append("\nskipped:" + skipped);
+        buffer.append("\nsucceeded:").append(succeeded);
+        buffer.append("\nforcedTimeout:").append(forcedTimeout);
+        buffer.append("\nskipped:").append(skipped);
+        buffer.append('\n');
         return buffer.toString();
     }
 }

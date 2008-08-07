@@ -35,16 +35,16 @@ public class FilterImpl extends Thread {
 
     //--- BufferFiller
     private class BufferFiller extends Thread {
-    private boolean stopRequested = false;
-    private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
+    private boolean stopWorkerRequested = false;
+    private LogSF log = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
     public BufferFiller() {
       super("BufferFiller-Filter " +"(" + type + ")");
-      sfLog = LogFactory.getLog(ID);
+      log = LogFactory.getLog(ID);
     }
 
     public void stopRequest() {
-      stopRequested = true;
+      stopWorkerRequested = true;
     }
 
     public void run() {
@@ -71,7 +71,7 @@ public class FilterImpl extends Thread {
             if (reader.ready()) {
               if ( (line = reader.readLine()) == null) {
                 //log.info("run" + ID + " -- no more output to process");
-                stopRequested = true;
+                stopWorkerRequested = true;
                 continue;
               }
 
@@ -80,7 +80,7 @@ public class FilterImpl extends Thread {
                 buffer.notify();
               }
             } else {
-              if (stopRequested) {
+              if (stopWorkerRequested) {
                 break;
               }
 
@@ -91,32 +91,32 @@ public class FilterImpl extends Thread {
               }
             }
           } catch (IOException e) {
-              if (sfLog.isErrorEnabled()) {
-                  sfLog.error("problem reading output", e);
+              if (log.isErrorEnabled()) {
+                  log.error("problem reading output", e);
               }
-              stopRequested = true;
+              stopWorkerRequested = true;
           }
         }
 
         try {
-          if (sfLog.isTraceEnabled()){
-             sfLog.trace("closing input stream");
+          if (log.isTraceEnabled()){
+             log.trace("closing input stream");
           }
           reader.close();
           iStream.close();
           in.close();
         } catch (IOException e) {
-            if (sfLog.isErrorEnabled()){
-              sfLog.error("failed to close input stream", e);
+            if (log.isErrorEnabled()){
+              log.error("failed to close input stream", e);
             }
         }
       } catch (Throwable t) {
-          if (sfLog.isErrorEnabled()){
-            sfLog.error("unexpected exception",t);
+          if (log.isErrorEnabled()){
+            log.error("unexpected exception",t);
           }
       }
-      if (sfLog.isTraceEnabled()){
-        sfLog.trace("stopped");
+      if (log.isTraceEnabled()){
+        log.trace("stopped");
       }
 
     }
@@ -128,6 +128,9 @@ public class FilterImpl extends Thread {
   private InputStream in = null;
   private BufferFiller bufferFiller = null;
   private boolean stopRequested = false;
+  // decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+  private boolean passPositives = false;
+
 //  private RunProcess process = null;
   private String type = null;
   private String ID = "";
@@ -139,8 +142,22 @@ public class FilterImpl extends Thread {
   private String filters[] = null;
 
 
-  public FilterImpl( String ID, InputStream in, String type, String filters[], FilterListener listener) {
+    /**
+     *
+     * @param ID filter ID
+     * @param in stream input
+     * @param type type of filter, use for logging mainly.
+     * @param filters  data to be search in inputstream. Positives are sent to the listener.found() interface
+     * @param listener  listener to process read lines and found positives
+     * @param passPositives decides if to pass postives to the listener.line() interface in addition to the listener.found() call
+     */
+
+  public FilterImpl( String ID, InputStream in, String type, String filters[], FilterListener listener, boolean passPositives) {
+
     super ("Filter(" + type + ")");
+
+    this.passPositives = passPositives;
+
     this.type = type;
     //this.type = "Filter "+ ID+ "(" + type + ")" ;
 //    this.setName(this.type);
@@ -191,9 +208,9 @@ public class FilterImpl extends Thread {
             line = (String) buffer.firstElement();
             buffer.removeElementAt(0);
           }
-          // This trace is very useful for debugging but application output
-          if (sfLog.isDebugEnabled()){
-            sfLog.debug(line );
+          // This trace is very useful for debugging  application output
+          if (sfLog.isTraceEnabled()){
+            sfLog.trace(line );
           }
 
           // Now actually do the filtering.
@@ -204,9 +221,7 @@ public class FilterImpl extends Thread {
             try {
               buffer.wait();
             } catch (InterruptedException e) {
-              if (sfLog.isErrorEnabled()){
-                sfLog.error("interrupted while waiting for more output", e);
-              }
+              if (sfLog.isErrorEnabled()){ sfLog.error("interrupted while waiting for more output", e);  }
             }
 //            finally {
 //              continue;
@@ -215,9 +230,7 @@ public class FilterImpl extends Thread {
         }
       }
     } catch (Throwable t) {
-      if (sfLog.isErrorEnabled()){
-        sfLog.error("failed to read input buffer", t);
-      }
+      if (sfLog.isErrorEnabled()){ sfLog.error("failed to read input buffer", t); }
     }
 
     stopBufferFiller();
@@ -229,39 +242,41 @@ public class FilterImpl extends Thread {
           //log.info("run"+ID + " -- stopping buffer filler");
           bufferFiller.stopRequest();
           bufferFiller.join();
-          if (sfLog.isDebugEnabled()) {
-              sfLog.debug("buffer filler stopped");
-          }
+          if (sfLog.isDebugEnabled()) { sfLog.debug("buffer filler stopped"); }
       } catch (Exception e) {
-          if (sfLog.isErrorEnabled()) {
-              sfLog.error("problems stoped buffer filler", e);
-          }
+          if (sfLog.isErrorEnabled()) { sfLog.error("problems stoped buffer filler", e); }
       }
   }
 
   // Compares line with filters[] set
-  protected void filter(String line, String filters[]) {
-      if (listener !=null) {
-          listener.line(line, getName());
-      }
-
-      if (filters==null) return;
-
-      for (int i = 0; i<filters.length; ++i) {
-          //sfLog.trace("Comparing: "+ line +", "+filters[i]);
-          if (line.indexOf(filters[i])==-1) {
-              //No match
-              continue;
+  protected synchronized void filter(String line, String lineFilters[]) {
+      if (listener == null) return;
+      boolean found =false;
+      if (lineFilters!=null) {
+          for (int i = 0; i<lineFilters.length; ++i) {
+              if (sfLog.isTraceEnabled()) { sfLog.trace(" searching:'"+ line +"' for '"+ lineFilters[i]+"'"); }
+              if (line.indexOf(lineFilters[i])==-1) {
+                  //No match
+                  continue;
+              }
+              if (sfLog.isTraceEnabled()) { sfLog.trace(" found while searching:'"+ line +"' for '"+ lineFilters[i]+"'"); }
+              positiveFilter(line, i, getName());
+              found =true;
           }
-          // it tells you the write filter!
-          positiveFilter(line, i, getName());
       }
+      if (!found) if (sfLog.isTraceEnabled()) { sfLog.trace(" Non Positive: send copy to listener.line "+ line +", "+getName()); }
+      if (!found) listener.line(line, getName());
   }
 
-  protected void positiveFilter(String line, int filterIndex, String filterName) {
-      if (listener !=null){
-          listener.found(line, filterIndex, getName());
+  protected synchronized void positiveFilter(String line, int filterIndex, String filterName) {
+      if (sfLog.isTraceEnabled()) { sfLog.trace ("Positive: "+ line +", "+filterIndex+", "+filterName); }
+      if (listener == null) return;
+      if ((passPositives)) {
+         if (sfLog.isDebugEnabled()) { sfLog.debug ("Positive: send copy to listener.line "+ line +", "+filterIndex+", "+filterName); }
+         listener.line(line, getName());
       }
+      if (sfLog.isDebugEnabled()) { sfLog.debug("Positive: send copy to listener.found "+ line +", "+filterIndex+", "+filterName); }
+      listener.found(line, filterIndex, getName());
   }
 }
 //------------------- end FILTER -------------------------------

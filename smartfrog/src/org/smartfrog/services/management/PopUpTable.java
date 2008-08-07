@@ -104,14 +104,14 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  compTable  JTable object
     *@param  x          X Coordinate
     *@param  y          Y Coordinate
-    *@param  parent     Reference to parent component
+    *@param  parentPanel     Reference to parent component
     */
-   public void show(JTree compTree, JTable compTable, int x, int y, DeployTreePanel parent) {
+   public void show(JTree compTree, JTable compTable, int x, int y, DeployTreePanel parentPanel) {
       tempTree = compTree;
       tempTable = compTable;
       tempX = x;
       tempY = y;
-      this.parent = parent;
+      this.parent = parentPanel;
       popupTable.show((Component) compTable, x, y);
    }
 
@@ -307,10 +307,10 @@ public class PopUpTable extends JComponent implements ActionListener {
       int thisCharacter;
 
       for (int i = 0; i < string.length(); i++) {
-         thisCharacter = (char) string.charAt(i);
+         thisCharacter = string.charAt(i);
 
-         if ((char) string.charAt(i) != ' ') {
-            s.append((char) thisCharacter);
+         if (string.charAt(i) != ' ') {
+            s.append(thisCharacter);
          }
       }
 
@@ -326,7 +326,7 @@ public class PopUpTable extends JComponent implements ActionListener {
    void remove(Object obj, String attribName) {
       if ((obj instanceof Prim)||(obj instanceof ComponentDescription)) {
          try {
-            org.smartfrog.services.management.DeployMgnt.removeAttribute(obj,(String) attribName);
+            org.smartfrog.services.management.DeployMgnt.removeAttribute(obj,attribName);
             parent.refreshTable();
          } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) sfLog().error ("Failed to remove '"+attribName,ex);

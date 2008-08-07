@@ -79,44 +79,41 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * @throws SmartFrogRuntimeException runtime error
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
-        String absolutePath=FileSystem.lookupAbsolutePath(this,ATTR_FILENAME, defval,null, mandatory,null);
-        if(absolutePath!=null) {
+        String absolutePath = FileSystem.lookupAbsolutePath(this, ATTR_FILENAME, defval, null, mandatory, null);
+        if (absolutePath != null) {
             setAbsolutePath(absolutePath);
         }
     }
 
     /**
      * creates the file object instance, to the absolute path,
-     * then sets the attribute {@value FileIntf#ATTR_ABSOLUTE_PATH}
-     * to the absolute path, and {@value FileUsingComponent#ATTR_URI}
+     * then sets the attribute {@link FileIntf#ATTR_ABSOLUTE_PATH}
+     * to the absolute path, and {@link FileUsingComponent#ATTR_URI}
      * to the URI. From here on, {@link #getFile()} is valid.
-     * @param absolutePath
+     * @param absolutePath the absolute path to set
      * @throws SmartFrogRuntimeException  runtime error
      * @throws RemoteException In case of network/rmi error
      */
     protected void setAbsolutePath(String absolutePath)
             throws SmartFrogRuntimeException, RemoteException {
-        File newfile=new File(absolutePath);
+        File newfile = new File(absolutePath);
         bind(newfile);
 
     }
 
     /**
-     * Bind to a new file. sets the {@link #ATTR_ABSOLUTE_PATH} and {@link #ATTR_URI}
-     * attributes. It also saves the file to the {@link #file} attribute.
+     * Bind to a new file. sets the {@link #ATTR_ABSOLUTE_PATH} and {@link #ATTR_URI} attributes. It also saves the file
+     * to the {@link #file} attribute.
      *
      * @param newfile file to bind to to
      * @throws SmartFrogRuntimeException runtime error
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException  In case of network/rmi error
      */
     public void bind(File newfile) throws SmartFrogRuntimeException,
             RemoteException {
-        file=newfile;
-        FileUsingComponentImpl.bind(this,newfile);
+        file = newfile;
+        FileUsingComponentImpl.bind(this, newfile);
     }
-
-
-
 
 
 }

@@ -349,19 +349,19 @@ public class ReplaceVar {
 
     /**
      * Append data
-     * @param data
+     * @param appendData
      */
-  public void append(Vector data) {
-    if (data==null) return;
+  public void append(Vector appendData) {
+    if (appendData==null) return;
     //If the file is cached in memory
     if (this.cached) {
-      appendCached(data);
+      appendCached(appendData);
 
     //The file is not cached in memory
     } else {
       this.cached = true;
       this.loadCache();
-      this.appendCached(data);
+      this.appendCached(appendData);
       //this.flush();
       //this.setCachedState(false);
     }
@@ -369,21 +369,20 @@ public class ReplaceVar {
 
     /**
      * Append data when cached
-     * @param data
+     * @param appendData
      */
-  public void appendCached(Vector data) {
-     if (data==null) return;
+  public void appendCached(Vector appendData) {
+     if (appendData==null) return;
      String key = null;
      Object dataElement=null;
-     if (data==null) return;
-     data.trimToSize();
-     int size=data.size();
+     if (appendData==null) return;
+     appendData.trimToSize();
+     int size=appendData.size();
      if (size==0) {
         return;
      }
      for (int i = 0; i < size; i++) {
-        dataElement =(Object)data.elementAt(i);
-        //System.out.println(" Element is "+ dataElement.toString());
+        dataElement =appendData.elementAt(i);
         if (dataElement!=null)
            this.cache.add(dataElement);
      }

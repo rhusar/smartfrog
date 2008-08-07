@@ -1,4 +1,4 @@
-/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,9 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.rmi.RemoteException;
 
+/**
+ * This class implements the Ivy local cache policy
+ */
 public class IvyLocalCachePolicy extends AbstractPolicy implements LocalCachePolicy {
 
     /**
@@ -32,35 +35,35 @@ public class IvyLocalCachePolicy extends AbstractPolicy implements LocalCachePol
     }
 
     /**
-     * {@inheritDoc}
+     * Create the local path of the artifact. 
+     * the path here is something like 
+     *  /home/slo/ivy2/cache/org.smartfrog/sf-www/jars/sf-www-3.13.017.jar
+     * -a different extension (e.g. war) leads to it being placed in the directory
+     *  org.smarfrog/sf-www/wars/sf-www-testwar-3.13.017.war
+     * -(the latter has  testwar as the classifier)
+     * @throws  RemoteException for network problems
+     * @throws SmartFrogRuntimeException for SmartFrog problems
      */
     public String createLocalPath(SerializedArtifact artifact)
             throws RemoteException, SmartFrogRuntimeException {
         SerializedArtifact.assertValid(artifact, true);
-        String project = convertProjectToIvyFormat(artifact);
+        String project = LibraryHelper.convertProjectToIvyFormat(artifact);
+        
         String urlPath = new StringBuffer().append(project)
                 .append('/')
                 .append(artifact.artifact)
                 .append('/')
-                .append(artifact.version)
-                .append('/')
-                .append(LibraryHelper.createIvyArtifactFilename(artifact))
+                .append(artifact.extension)
+                .append("s/")
+                .append(LibraryHelper.createIvyArtifactCacheFilename(artifact))
                 .toString();
         return urlPath;
     }
 
     /**
-     * {@inheritDoc}
-     * In Ivy, this is currently a noop
-     *
-     * @param artifact the artifact to convert
-     * @return the project of an artifact
+     * @see LibraryCachePolicy#getDescription() 
+     * @throws  RemoteException for network problems
      */
-    private String convertProjectToIvyFormat(SerializedArtifact artifact) {
-        return artifact.project;
-    }
-
-    /** @see LibraryCachePolicy#getDescription() */
     public String getDescription() throws RemoteException {
         return "Ivy local cache policy";
     }

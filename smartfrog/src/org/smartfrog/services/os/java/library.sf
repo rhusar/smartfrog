@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
 
 /**
@@ -65,8 +63,28 @@ Maven2Policy extends Prim {
     sfClass "org.smartfrog.services.os.java.Maven2Policy";
 }
 
+/*
+ * this is the policy for locally cached, remotely downloaded
+ * artifacts
+ */
 IvyLocalPolicy extends Prim {
     sfClass "org.smartfrog.services.os.java.IvyLocalCachePolicy";
+}
+
+/*
+ * this is the policy for locally published artifacts. 
+ * These are generated locally, and the cache is ignored 
+ * (as it can only be out of date) 
+ */
+IvyLocalPublishedPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.IvyLocalPublishedPolicy";
+}
+
+/**
+ * This policy declares that remote artifacts are not supported
+ */
+NoRemoteArtifactPolicy extends Prim {
+    sfClass "org.smartfrog.services.os.java.NoRemoteArtifactPolicy";
 }
 
 /**
@@ -204,21 +222,11 @@ Maven2Library extends Library {
 
 /**
  * For Ivy artifacts we use the central M2 repository for remote artifacts,
- * but the local cache. This currently causes us to miss out on things published
+ * but the local ivy2 cache under for local content. 
+ * This currently causes us to miss out on things published
  * locally but which are not in cache
  */
-IvyLibrary extends Library {
-
-    /**
-     * local policy is maven2
-     */
-    localCachePolicy extends IvyLocalPolicy;
-
-    /**
-     * Remote policy is maven2
-     */
-    remoteCachePolicy extends Maven2Policy;
-
+AbstractIvy2Library extends Library {
 
 
     /**
@@ -228,17 +236,76 @@ IvyLibrary extends Library {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
-        filename ".ivy/cache";
+        filename ".ivy2/cache";
     }
+
+    /**
+     * Well known published directory
+     */
+    localPublishedDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".ivy2/local";
+    }
+
+
+}
+
+
+
+/**
+ * For Ivy artifacts we use the central M2 repository for remote artifacts,
+ * but the local ivy2 cache under for local content. 
+ * This currently causes us to miss out on things published
+ * locally but which are not in cache
+ */
+IvyLibrary extends AbstractIvy2Library {
+
+    /**
+     * local policy is Ivy cache
+     */
+    localCachePolicy extends IvyLocalPolicy;
+
+    /**
+     * Remote policy is maven2
+     */
+    remoteCachePolicy extends Maven2Policy;
 
     /**
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
      * the mirror list for easy selection.
      */
     repositories [ LibraryRepositories:Maven2_at_Ibiblio ];
-
-    //cache into the well known maven location
+    
+    //fetch from cache
     cacheDir LAZY localCacheDirectory:absolutePath;
+    
+}
+
+
+
+/**
+ * This is for artifacts that are published locally
+ * And not available remotely
+ */
+IvyLocallyPublishedLibrary extends AbstractIvy2Library {
+
+    /**
+     * local policy is Ivy published
+     */
+    localCachePolicy extends IvyLocalPublishedPolicy;
+
+    /**
+     * Remote policy is 'none'. 
+     */
+    remoteCachePolicy extends NoRemoteArtifactPolicy;
+
+    //fetch from cache
+    cacheDir LAZY localPublishedDirectory:absolutePath;
+
+    //the repository list is moot.
+    repositories [ ];
 }
 
 
@@ -309,6 +376,32 @@ LibraryArtifact extends FileUsingWorkflowComponent {
     //require the file to exist or be downloaded
     failIfNotPresent true;
 
+}
+
+//some errors for test cases
+LibraryArtifactErrors extends LibraryArtifact {
+    
+    //"The network policy prevents the download of ";
+    ERROR_NO_DOWNLOAD CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_DOWNLOAD" ;
+
+    //"Checksum mismatch on file " 
+    ERROR_CHECKSUM_FAILURE CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE" ;
+    
+    /**
+     * Error text when there is no repository entry anywhere
+     */
+    ERROR_NO_OWNER CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_OWNER" ;
+   
+    /**
+     * Error text when repostiories == [] and a download was needed.
+     */
+    ERROR_NO_REPOSITORIES CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_NO_REPOSITORIES" ;
+
+    /**
+     * Error when a file was not found in any repository
+     */
+    ERROR_ARTIFACT_NOT_FOUND CONSTANT "org.smartfrog.services.os.java.LibraryArtifactImpl.ERROR_ARTIFACT_NOT_FOUND" ;
+    
 }
 
 /**

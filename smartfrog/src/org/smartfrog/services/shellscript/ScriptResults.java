@@ -48,11 +48,10 @@ public interface ScriptResults {
 
   /**
    * wait for the results to be ready for the timeout, and return them when they are
-   *@deprecated
    * @param timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
    *
    * @return a component description containing aspects of the result:
-   * The resut contains three attributes as follows:
+   * The result contains three attributes as follows:
    *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
    *   "stdOut" a list of lines on stdout - empty if not supported in shell,
    *   "stdRrr" a list of lines on stderr - empty if not supported in shell.
@@ -96,6 +95,11 @@ public interface ScriptResults {
    */
   public Integer getExitCode() throws SmartFrogException;
 
+    /**
+     * Get any exception from the invocation
+     * @return the exception; may be null
+     * @throws SmartFrogException
+     */
   public InvocationTargetException getException() throws SmartFrogException;
 
   /**

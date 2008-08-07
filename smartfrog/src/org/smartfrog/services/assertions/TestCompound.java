@@ -105,6 +105,9 @@ public interface TestCompound extends TestBlock, Conditional {
     String ATTR_EXIT_TEXT = "exitText";
 
 
+    /** {@value} */
+    String ATTR_EXCEPTIONS ="exceptions";
+
     /**
      * Get the termination record for this child; may be null
      * @return a termination record or null

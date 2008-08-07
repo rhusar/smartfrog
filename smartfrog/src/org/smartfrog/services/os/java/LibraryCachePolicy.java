@@ -1,4 +1,4 @@
-/**
+/*
  * (C) Copyright 2005 Hewlett-Packard Development Company, LP This library is
  * free software; you can redistribute it and/or modify it under the terms of
  * the GNU Lesser General Public License as published by the Free Software
@@ -26,7 +26,7 @@ public interface LibraryCachePolicy extends Remote {
     /**
      * Get a description of the policy. For use in diagnostics
      * @return description text
-     * @throws RemoteException
+         * @throws RemoteException network problems
      */
     public String getDescription() throws RemoteException;
     

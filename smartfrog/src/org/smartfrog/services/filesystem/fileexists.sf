@@ -25,16 +25,56 @@
  * This is a condition that tests for a file existing.
  * You can set a minimum size, which, if >=0, is triggers
  * a check of the file size -the condition will fail if the
- * file size is less than this value
+ * file size is less than this value.
+ *
+ * The canBeDir declares that the file can be a directory; it fails if it is a directory and this
+ * attribute is false.
+ *
+ * The canBeFile declares that the file can be a simple file; it fails if it is a file and this
+ * attribute is false.
+ *
+ * When checkOnStartup is true, this component also checks its workflow attributes (sfShouldTerminate etc) and acts on them.
  */
 
 FileExists extends Conditional {
   sfClass "org.smartfrog.services.filesystem.FileExistsImpl";
   FileExistsSchema extends FileUsingComponentSchema {
-      //the minimum size
+      /** the minimum size */
       minSize extends Integer;
+
+      /** the maximum size */
+      maxSize extends Integer;
+
+      /**
+       *  Boolean to indicate the file can be a directory:
+       */
+      canBeDirectory extends Boolean;
+
+      /**
+       * Boolean to indicate the file can be a file
+       */
+      canBeFile  extends Boolean;
+
+      /** Check on startup*/
+      checkOnStartup extends Boolean;
   }
+
+
 
   //no minimum size check.
   minSize -1;
+  /** the maximum size */
+  maxSize -1;
+  canBeDirectory true;
+  canBeFile true;
+  /** Check on startup*/
+  checkOnStartup false;
+}
+
+
+/**
+ * A condition that asks for a directory
+ */
+DirectoryExists extends FileExists {
+  canBeFile false;
 }

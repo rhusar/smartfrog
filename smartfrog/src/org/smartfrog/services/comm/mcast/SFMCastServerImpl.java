@@ -91,17 +91,16 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
     RemoteException {
         super.sfDeploy();
         TerminationRecord termR;
-                String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
-                if ((onlyInRoot)&& (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
-                    termR = new TerminationRecord(TerminationRecord.NORMAL,
-                                                  "Not deployed in rootProcess",
-                                                  this.sfCompleteName());
+        String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
+        if ((onlyInRoot) && (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
+            termR = TerminationRecord.normal("Not deployed in rootProcess",
+                    sfCompleteName());
 
-                    TerminatorThread terminator = new TerminatorThread(this,
+            TerminatorThread terminator = new TerminatorThread(this,
                     termR);
-                    terminator.start();
-                    return;
-                }
+            terminator.start();
+            return;
+        }
 
         myName = this.sfCompleteNameSafe().toString();
         readSFAttributes();
@@ -221,9 +220,9 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
     /**
      * Logs error mesasge at the standard err stream.
      * @param method Name of the method
-     * @param message Error Message
+     * @param errorMessage Error Message
      */
-    private void error(String method, String message) {
+    private void error(String method, String errorMessage) {
         if (debug) {
             StringBuffer msg = new StringBuffer();
             msg.append (myName);
@@ -233,16 +232,16 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
             msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
                     format(new Date())));
             msg.append ("]> ");
-            msg.append (message);
+            msg.append (errorMessage);
             System.err.println(msg.toString());
         }
     }
     /**
-     * Logs mesasge at the standard out stream.
+     * Logs messsge at the standard out stream.
      * @param method Name of the method
-     * @param message Log message
+     * @param errorMessage Log message
      */
-    private void log(String method, String message) {
+    private void log(String method, String errorMessage) {
         if (debug) {
             StringBuffer msg = new StringBuffer();
             msg.append (myName);
@@ -252,7 +251,7 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
             msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
                     format(new Date())));
             msg.append ("]> ");
-            msg.append (message);
+            msg.append (errorMessage);
             System.out.println(msg.toString());
         }
     }

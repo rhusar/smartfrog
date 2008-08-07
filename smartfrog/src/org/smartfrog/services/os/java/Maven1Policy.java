@@ -1,5 +1,5 @@
-/**
- * (C) Copyright 2005 Hewlett-Packard Development Company, LP This library is
+/*
+ * (C) Copyright 2005-2008 Hewlett-Packard Development Company, LP This library is
  * free software; you can redistribute it and/or modify it under the terms of
  * the GNU Lesser General Public License as published by the Free Software
  * Foundation; either version 2.1 of the License, or (at your option) any later
@@ -41,6 +41,7 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
 
     /**
      * @see RemoteCachePolicy#createRemotePath(SerializedArtifact)
+     * @throws SmartFrogRuntimeException on a validtity error
      */
     public String createRemotePath(SerializedArtifact artifact)
             throws SmartFrogRuntimeException {
@@ -50,6 +51,7 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
 
     /**
      * @see LocalCachePolicy#createLocalPath(SerializedArtifact)
+     * @throws SmartFrogRuntimeException on a validtity error
      */
     public String createLocalPath(SerializedArtifact artifact)
             throws SmartFrogRuntimeException {
@@ -64,11 +66,12 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
      * @param library
      *
      * @return url  /project/jars/+artifact name
+     * @throws SmartFrogRuntimeException on a validtity error
      */
     public String createMavenURL(SerializedArtifact library)
             throws SmartFrogRuntimeException {
         SerializedArtifact.assertValid(library, false);
-        String artifactName = createMavenArtifactName(library);
+        String artifactName = LibraryHelper.createMavenArtifactName(library);
         String urlPath = library.project + MAVEN1_JAR_SUBDIR + artifactName;
         return urlPath;
     }

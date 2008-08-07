@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 
 package org.smartfrog.services.shellscript;
-
 public interface FilterListener
 {
     public void line (String line, String filterName );

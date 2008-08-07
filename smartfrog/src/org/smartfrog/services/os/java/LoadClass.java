@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -39,4 +39,9 @@ public interface LoadClass extends Remote {
      * @value
      */
     String ATTR_RETAIN = "retain";
+
+    /**
+     * @value
+     */
+    String ATTR_MESSAGE = "message";
 }
