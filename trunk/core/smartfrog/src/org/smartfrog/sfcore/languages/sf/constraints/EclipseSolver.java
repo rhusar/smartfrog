@@ -117,8 +117,8 @@ public class EclipseSolver extends CoreSolver
    */
   private Condition solverFinished = solverLock.newCondition();
   /**
-   * Indicates whether the eclipse secondary thread (for main eclipse goal)
-   * has sought and lock yet
+   * Indicates whether the eclipse secondary thread (for main eclipse goal) has
+   * sought and lock yet
    */
   private boolean ecr_sought_lock = false;
   /**
@@ -473,8 +473,8 @@ public class EclipseSolver extends CoreSolver
    * Maps Eclipse object to Java object after transfer from Eclipse
    *
    * @param v          object to be transformed
-   * @param ref_create indicates whether references should be created for
-   *                   atoms -- used for subtyping directives
+   * @param ref_create indicates whether references should be created for atoms
+   *                   -- used for subtyping directives
    * @return transformed object
    */
   private Object mapValueEJ(Object v, boolean ref_create) {
@@ -916,22 +916,22 @@ public class EclipseSolver extends CoreSolver
    * Called when Eclipse demands data
    */
   public void dataRequest(Object source) {
-    ToEclipseQueue m_oqueue = null;
-    EXDROutputStream m_oqueue_formatted = null;
+    ToEclipseQueue oqueue = null;
+    EXDROutputStream oqueue_formatted = null;
 
     if (!ecr_sought_lock) {
       ecr_sought_lock = true;
       solverLock.lock();
     }
 
-    if (m_oqueue == null) {
-      m_oqueue = (ToEclipseQueue) source;
-      m_oqueue_formatted = new EXDROutputStream(m_oqueue);
+    if (oqueue == null) {
+      oqueue = (ToEclipseQueue) source;
+      oqueue_formatted = new EXDROutputStream(oqueue);
     }
 
     try {
       if (get_val != null) {
-        m_oqueue_formatted.write(get_val);
+        oqueue_formatted.write(get_val);
         java_to_eclipse.setListener(null);
         get_val = null;
       } else {
@@ -942,6 +942,6 @@ public class EclipseSolver extends CoreSolver
       throw new SmartFrogEclipseRuntimeException(
               "dataRequest: Unable to *write* on output stream. ", ioe);
     }
-	    }	    
+  }
 }
 
