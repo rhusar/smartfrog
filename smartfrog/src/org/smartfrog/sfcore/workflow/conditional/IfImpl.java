@@ -38,22 +38,23 @@ public class IfImpl extends ConditionCompound implements If {
     /**
      * Starts the component by deploying the condition
      *
-     * @throwsSmartFrogException in case of problems creating the child
+     * @throws SmartFrogException in case of problems creating the child
      * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        String branch;
-        if(evaluate()) {
-            branch=ATTR_THEN;
-        } else {
-            branch=ATTR_ELSE;
-        }
-        Prim prim = deployChildCD(branch, false);
-        if(prim==null) {
-            //no branch; our work is done
-            finish();
-        }
+    public synchronized void sfStart()
+            throws SmartFrogException, RemoteException {
+      super.sfStart();
+      String branch;
+      if (evaluate()) {
+        branch = ATTR_THEN;
+      } else {
+        branch = ATTR_ELSE;
+      }
+      Prim prim = deployChildCD(branch, false);
+      if (prim == null) {
+        //no branch; our work is done
+        finish();
+      }
     }
 
 }
