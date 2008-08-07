@@ -24,11 +24,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
-/**
- * created 30-Nov-2006 13:35:19
- */
+/** created 30-Nov-2006 13:35:19 */
 
 public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable {
 
@@ -45,14 +44,15 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     /**
      * Starts the component by deploying the condition
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  in case of problems creating the child
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException in case of problems creating the child
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        interval=sfResolve(ATTR_INTERVAL,interval,true);
+        interval = sfResolve(ATTR_INTERVAL, interval, true);
         timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
+        if(sfLog().isDebugEnabled())
+            sfLog().debug("Waiting for "+timeout+" milliseconds, with a check every "+interval+" milliseconds");
         thread = new SmartFrogThread(this);
         thread.start();
     }
@@ -67,21 +67,17 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         super.sfTerminatedWith(status, comp);
         //stop the waiting
-        synchronized(this) {
-            if(thread!=null) {
+        synchronized (this) {
+            if (thread != null) {
                 thread.interrupt();
             }
         }
     }
 
     /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p/>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
+     * When an object implementing interface <code>Runnable</code> is used to create a thread, starting the thread
+     * causes the object's <code>run</code> method to be called in that separately executing thread. <p/> The general
+     * contract of the method <code>run</code> is that it may take any action whatsoever.
      *
      * @see Thread#run()
      */
@@ -89,42 +85,48 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
 
         try {
             //pick on the current start time.
-            end = System.currentTimeMillis() + timeout;
+            long start = System.currentTimeMillis();
+            end = start + timeout;
 
-            Throwable fault=null;
+            Throwable fault = null;
             try {
-                boolean timedout = false;
                 boolean test;
+                long now=start;
                 test = evaluate();
-                while(!test && !timedout) {
+                while (!test && now < end) {
                     Thread.sleep(interval);
                     test = evaluate();
-                    long now = System.currentTimeMillis();
-                    timedout = now > end;
+                    now = System.currentTimeMillis();
                 }
+                if (sfLog().isDebugEnabled()) {
+                    sfLog().debug("WaitFor "
+                            + (test?"succeeded":"timed out")
+                            +" after "+(now-start)+" milliseconds");
+                }
+
                 //we have either timed out or the test has passed.
                 //chose the branch to test
-                String branch=test?ATTR_THEN:ATTR_ELSE;
+                String branch = test ? ATTR_THEN : ATTR_ELSE;
                 Prim prim = deployChildCD(branch, false);
                 //then finish if we did not deploy anything
-                if(prim==null) {
+                if (prim == null) {
                     finish();
                 }
             } catch (RemoteException e) {
-                fault=e;
+                fault = e;
             } catch (SmartFrogException e) {
                 fault = e;
             } catch (InterruptedException e) {
                 //we have been interrupted, which implies terminated.
                 //Do nothing
             }
-            if(fault!=null) {
+            if (fault != null) {
                 //trouble -fail
-                sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor",name,fault));
+                sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor", name, fault));
             }
         } finally {
             synchronized (this) {
-                thread=null;
+                thread = null;
             }
         }
 
