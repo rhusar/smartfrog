@@ -36,7 +36,7 @@ import java.rmi.RemoteException;
  */
 public class DelayedTerminator implements Runnable {
     private long time;
-    private WeakReference/*<Prim>*/ primref;
+    private WeakReference<Prim> primref;
     private Throwable terminationFault;
     private volatile Thread self;
     private volatile boolean shutdown;
@@ -46,7 +46,7 @@ public class DelayedTerminator implements Runnable {
     private volatile boolean normalTermination;
     private volatile boolean forcedShutdown;
     private String name;
-    public static final String TERMINATION_BY_DELAYED_TERMINATOR = "termination by delayed terminator";
+    public static final String TERMINATION_BY_DELAYED_TERMINATOR = "Termination by delayed terminator of ";
 
 
     /**
@@ -66,10 +66,10 @@ public class DelayedTerminator implements Runnable {
             time=Long.MAX_VALUE;
         }
         this.time = time;
-        primref = new WeakReference/*<Prim>*/(prim);
+        primref = new WeakReference<Prim>(prim);
         this.log = log;
         if (description == null) {
-            this.description = "Terminate "
+            this.description = TERMINATION_BY_DELAYED_TERMINATOR
                     + new ComponentHelper(prim).completeNameSafe().toString()
                     + " after " + time + " milliseconds";
         } else {
@@ -173,7 +173,9 @@ public class DelayedTerminator implements Runnable {
             }
             //now do a shutdown, outside the sychronized area. This means we have updated our expectations before
             //we actually force the termination
-            if(record!=null) {
+            //the target!=null test is gratuitous, as record is only set if it is not null, but
+            //this stops the IDEs from warning
+            if(record!=null && target!=null) {
                 try {
                     target.sfTerminate(record);
                 } catch (RemoteException e) {
@@ -188,13 +190,13 @@ public class DelayedTerminator implements Runnable {
         Reference ref = new ComponentHelper(target).completeNameSafe();
         TerminationRecord record = new TerminationRecord(
                 normalTermination ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                TERMINATION_BY_DELAYED_TERMINATOR,
+                description,
                 ref);
         return record;
     }
 
     private Prim getTarget() {
-        return (Prim) primref.get();
+        return primref.get();
     }
 
     /**

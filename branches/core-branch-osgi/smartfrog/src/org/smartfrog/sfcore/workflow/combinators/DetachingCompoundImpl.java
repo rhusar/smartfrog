@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.workflow.combinators;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -29,21 +28,20 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 
 /**
- * Implements the detaching compound component behavior. A detaching compound
+ * Implements the detaching compound component behaviour. A detaching compound
  * deploys component descriptions, and may detach them from its liveness after
- * succesfull deployment, or detach itself from its parent. After this, the
+ * succesful deployment, or detach itself from its parent. After this, the
  * component can be set to terminate itself.
  *
  */
 public class DetachingCompoundImpl extends CompoundImpl implements DetachingCompound {
 
-    /**
-     * Name of the component.
-     */
-    private Reference name = null;
+
     /**
      * Set to true if you want the compound to detach its children on start
      */
@@ -56,6 +54,12 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
      * Set to true if you want the compound to terminate at the end of the run
      */
     private boolean autoDestruct;
+
+    /**
+     * Detacher thread
+     */
+    private WorkflowThread detacher;
+
     /**
      * Constructs DetachingCompoundImpl.
      * @throws RemoteException if there is any network or RMI error
@@ -64,7 +68,7 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
     }
 
     /**
-     * Collects the values of the behavior booleans on the deploy phase and
+     * Collects the values of the behaviour booleans on the deploy phase and
      * deploys the component.
      *
      * @throws SmartFrogException In case of error while deployment
@@ -85,34 +89,70 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
      * Starts the detaching compound. This sends sfStart to all managed
      * components in the compound context, then detaches them from itself if
      * detachDownwards has been set to true in the compound description. The
-     * compound detaches itslef from its parent if detachUpwards has been set
+     * compound detaches itself from its parent if detachUpwards has been set
      * to true.Failures while detaching cause autodestruct to be set to true,
-     * and a flag indicates abormal termination. Components that did not
+     * and a flag indicates abnormal termination. Components that did not
      * detach will terminate, since there liveness times out. On completion
-     * (successfull or not) the compound terminates itself if autoDestruct has
+     * (successful or not) the compound terminates itself if autoDestruct has
      * been set to true.
      *
      * @throws SmartFrogException if failed to start detaching compound
-     * @throws RemoteException In case of Remote/nework error
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         try {
             super.sfStart();
-            Thread detacher = new Thread(new Detacher());
 
             if (detachDownwards || detachUpwards || autoDestruct) {
+                detacher = new Detacher(this);
                 detacher.start();
             }
         } catch (Throwable t) { // catch throwable as user code is involved
-             throw SmartFrogLifecycleException.sfDeploy("",t , this);
+             throw SmartFrogLifecycleException.forward("When detaching", t , this);
         }
+    }
+
+    /**
+     * Performs the compound termination behaviour. Based on sfSyncTerminate flag this gets forwarded to sfSyncTerminate or sfASyncTerminateWith method.
+     * Terminates children before self.
+     *
+     * @param status termination status
+     */
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        SmartFrogThread.requestThreadTermination(detacher);
     }
 
     /**
      * Non-static inner class to handle detachment
      */
-    private class Detacher implements Runnable {
-        public void run() {
+    private class Detacher extends WorkflowThread {
+
+        /**
+         * Create a basic thread. Notification is bound to a local notification object.
+         *
+         * @param owner               owner thread
+         * @param workflowTermination is workflow termination expected
+         */
+        private Detacher(Prim owner) {
+            super(owner, false);
+        }
+
+        /**
+         * execute operation detached children and then parents.
+         * Triggers a termination on any failure
+         * @throws Throwable if needed
+         */
+        public void execute() throws Throwable {
+
+            Reference name;
+            try {
+                name = sfCompleteName();
+            } catch (Exception ignore) {
+                name = null;
+            }
+
+
             // detach this compound
             if (detachUpwards) {
                 try {
@@ -120,13 +160,15 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
                 } catch (SmartFrogException dex) {
                     sfTerminate(TerminationRecord.abnormal(
                             "DetachingCompound failed to detach ",
-                            null));
+                            name,
+                            dex));
 
                     return;
                 } catch (RemoteException rex) {
                     sfTerminate(TerminationRecord.abnormal(
                             "DetachingCompound failed to detach due to remote exception",
-                            null));
+                            name,
+                            rex));
 
                     return;
                 }
@@ -134,31 +176,27 @@ public class DetachingCompoundImpl extends CompoundImpl implements DetachingComp
 
             if (detachDownwards) {
                 // detach all children
-                for (Enumeration e = sfChildren();
-                        e.hasMoreElements();) {
+            	for (Prim child:sfChildList()) {
                     try {
-                        ((Prim) e.nextElement()).sfDetach();
+                        child.sfDetach();
                     } catch (SmartFrogException remex) {
                         sfTerminate(TerminationRecord.abnormal(
                                 "DetachingCompound failed to detach children",
-                                null));
+                                name,
+                                remex));
 
                         return;
                     } catch (RemoteException rex) {
                         sfTerminate(TerminationRecord.abnormal(
                                 "DetachingCompound failed to detach children due to remote exception",
-                                null));
+                                name,
+                                rex));
 
                         return;
                     }
                 }
 
                 if (autoDestruct) {
-                    try {
-                        name = sfCompleteName();
-                    } catch (Exception e) {
-                    }
-
                     sfTerminate(TerminationRecord.normal(name));
                 }
             }

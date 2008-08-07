@@ -106,7 +106,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                        "error in restarting next component", name));
+                        "error in restarting next component", name, e));
                 forward = false;
             }
             return forward;

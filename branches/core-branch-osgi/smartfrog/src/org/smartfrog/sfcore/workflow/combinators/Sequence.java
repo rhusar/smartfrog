@@ -20,16 +20,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.workflow.combinators;
 
-import java.rmi.RemoteException;
-
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+
+import java.rmi.RemoteException;
 
 /**
  * Sequence is a modified compound which differs in that the sub-components
@@ -48,6 +49,9 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
  * </p>
  */
 public class Sequence extends EventCompoundImpl implements Compound {
+
+    /** Error message {@value} */
+    public static final String ERROR_STARTING_NEXT_CHILD = "Sequence could not start the next component: ";
 
     /**
      * Constructs Sequence.
@@ -89,14 +93,12 @@ public class Sequence extends EventCompoundImpl implements Compound {
             try {
               act = (ComponentDescription) actions.get(componentName);
               sfCreateNewChild(componentName, act, null);
-            } catch (Exception ex) {
-              if (ex instanceof java.lang.ClassCastException){
+            } catch (ClassCastException ex) {
                 throw new SmartFrogDeploymentException("Error when deploying " + componentName
-                    + " Class" +(actions.get(componentName)).getClass().getName(), ex, this, null);
-              } else{
+                        + " Class" +(actions.get(componentName)).getClass().getName(), ex, this, null);
+            } catch (Exception ex) {
                 throw SmartFrogDeploymentException.forward("Error when deploying "
                         + componentName +" in " +sfCompleteNameSafe() ,ex);
-              }
             }
         } else {
             //nothing in the sequence, so just terminate ourselves
@@ -122,13 +124,14 @@ public class Sequence extends EventCompoundImpl implements Compound {
      * @return true whenever a child component is not started
      */
     protected boolean onChildTerminated(TerminationRecord status, Prim comp) {
-        boolean terminate;
+        boolean terminate = true;
         if (status.isNormal()) {
 
+            String componentName=null;
             if (actionKeys.hasMoreElements()) {
                 try {
                     sfRemoveChild(comp);
-                    String componentName = (String) actionKeys.nextElement();
+                    componentName = (String) actionKeys.nextElement();
                     if (sfLog().isDebugEnabled()) {
                         sfLog().debug(
                                 "starting next component '" + componentName + "' in sequence " + name.toString());
@@ -139,11 +142,15 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     terminate = false;
                 } catch (Exception e) {
                     //oops, something went wrong
+                    if(componentName==null) {
+                        componentName="(unknown)";
+                    }
+                    String text= ERROR_STARTING_NEXT_CHILD + componentName;
                     if (sfLog().isErrorEnabled()) {
-                        sfLog().error(name + " - error in starting next component ", e);
+                        sfLog().error(name + " - "+ text, e);
                     }
                     TerminationRecord tr = TerminationRecord
-                            .abnormal("error in starting next component: exception " + e, name, e);
+                            .abnormal(text +": exception " + e.getMessage(), name, e);
                     sfTerminate(tr);
                     //we've triggered an abnormal shutdown, so no forwarding of the earlier event
                     //as that would use the (normal) terminator used.
@@ -161,7 +168,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
         } else {
             //abnormal terminations
             if (sfLog().isErrorEnabled()) {
-                StringBuffer text=new StringBuffer();
+                StringBuilder text=new StringBuilder();
                 text.append(name);
                 text.append("- error in child component\n");
                 text.append(status.toString());
