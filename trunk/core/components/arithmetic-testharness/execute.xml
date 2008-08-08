@@ -156,9 +156,7 @@
   <!-- Start the Driver Daemon-->
   <target name="startDriverDaemon" depends="buildATH" description="Starts the Driver node Daemon">
     <!--antcall target="start-daemon-if-needed"/-->
-    <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true"
-                    port="3805"/>
-
+    <sf-startdaemon classpathref="smartfrog.classpath" logStackTraces="true" spawn="true" port="3805"/>
   </target>
   <presetdef name="sf-waitfordaemon1">
         <waitfor maxwait="10" maxwaitunit="second">
@@ -175,11 +173,10 @@
       without this the first tests will fail as there is no
       sf daemon around
     -->
-    <sf-waitfordaemon1 maxwait="20" timeoutproperty="daemon.missing"/>
+    <sf-waitfordaemon1 maxwait="200" timeoutproperty="daemon.missing"/>
     <fail if="daemon.missing">No daemon, or daemon not responding at port 3805</fail>
 
-    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
-               port="3805">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true" port="3805">
       <application name="startDaemon" descriptor="startRemoteDaemons.sf"/>
     </sf-deploy>
   </target>
@@ -190,11 +187,10 @@
     <!--waitfor maxwaitunit="second">
             <socket server="lx97120" port="${smartfrog.daemon.port}"/>
     </waitfor-->
-    <sleep minutes="15"/>
+    <sleep minutes="5"/>
 
 
-    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true"
-               port="3805">
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true" port="3805">
       <application name="startApp" descriptor="org/smartfrog/regtest/arithmetic/templategen/exampleTH.sf"/>
     </sf-deploy>
   </target>
@@ -216,13 +212,31 @@
     <exec dir="${sharedFolder}/daemons" executable="cat">
       <arg line="report"/>
     </exec>
-    <antcall target="stopDaemons"/>
+    <!--antcall target="sendEmail"/>
+    <antcall target="stopDaemons"/-->
   </target>
 
-  <target name="test" depends="showReport"/>
+  <!--target name="test" depends="showReport"/-->
+  <target name="test" depends="stopDaemons1"/>
+  
+ <target name="sendEmail" depends="showReport">
+	<sleep minutes="2"/>
+    <sf-deploy classpathref="smartfrog.classpath" logStackTraces="true" port="3805">
+      <application name="sendmail" descriptor="org/smartfrog/regtest/arithmetic/templategen/exampleUsageAsWFComp.sf"/>
+    </sf-deploy>
+	<sleep minutes="3"/>
+  </target>
+  <target name="stopDaemons1" depends="sendEmail">
+    <exec dir="${sharedFolder}" executable="bash">
+      <arg line="${arithmetic.dir}/bin/stopDaemons ${smartfrog.home} ${hostList}"/>
+    </exec>
+  </target>
 
-  <target name="stopDaemons">
-    <exec dir="${sharedFolder}" executable="sh">
+
+
+
+ <target name="stopDaemons">
+    <exec dir="${sharedFolder}" executable="bash">
       <arg line="${arithmetic.dir}/bin/stopDaemons ${smartfrog.home} ${hostList}"/>
     </exec>
   </target>
