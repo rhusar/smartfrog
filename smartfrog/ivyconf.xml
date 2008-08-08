@@ -11,7 +11,7 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   <property name="ibiblio-maven2-root"
-      value="http://mirrors.sunsite.dk/maven2/" override="false"/>
+      value="http://repo1.maven.org/maven2/" override="false"/>
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]"/>
   <property name="maven2.pattern.ext"
@@ -20,15 +20,12 @@
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
   <conf defaultResolver="default"/>
   <resolvers>
-    <filesystem name="team"
+    <filesystem name="team">
+      ivys="true" artifacts="true"
       m2compatible="true" >
       <artifact pattern="${ivy.conf.dir}/repository/${maven2.pattern.ext}"/>
       <ivy pattern="${ivy.conf.dir}/repository/${maven2.pattern}.xml"/>
     </filesystem>
-      <filesystem name="team2">
-          <artifact pattern="${antbuild.dir}/repository/${maven2.pattern.ext}"/>
-          <ivy pattern="${antbuild.dir}/repository/${maven2.pattern}.pom"/>
-      </filesystem>
     <ibiblio name="maven2"
         root="${ibiblio-maven2-root}"
         pattern="${maven2.pattern.ext}"
@@ -36,12 +33,12 @@
         />
     <chain name="default" dual="true">
       <resolver ref="local"/>
-      <resolver ref="team2"/>
+      <resolver ref="team"/>
       <resolver ref="maven2"/>
     </chain>
     <chain name="internal">
       <resolver ref="local"/>
-      <resolver ref="team2"/>
+      <resolver ref="team"/>
     </chain>
   </resolvers>
   <modules>

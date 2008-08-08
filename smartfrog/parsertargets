@@ -6,6 +6,8 @@ org/smartfrog/services/management/example.sf
 org/smartfrog/services/trace/example.sf
 org/smartfrog/services/utils/concat/example.sf
 org/smartfrog/services/filesystem/example.sf
+org/smartfrog/services/shellscript/example.sf
+org/smartfrog/services/shellscript/example2.sf
 
 org/smartfrog/examples/dynamicwebserver/sf/system.sf
 
@@ -46,3 +48,4 @@ org/smartfrog/examples/arithnet/example4.sf
 
 org/smartfrog/examples/spawn/example.sf
 org/smartfrog/services/assertions/example.sf
+
