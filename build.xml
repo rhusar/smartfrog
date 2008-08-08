@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="root" default="help" basedir=".">
+<project name="root" default="help" basedir="." >
 <!--
 /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
@@ -48,26 +48,46 @@ For more information: www.smartfrog.org
     <property name="ant.project" location="${extras.dir}/ant" />
     <property file="${components.project}/libraries.properties" />
     <property name="maven.enabled" value="false" />
+
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="ALL"/>
+    <echo message="  "/>
+    <echo message=" ======================================================="/>
+    <echo message=" Build info - Project: ${Name.System} ${version}"/>
+    <echo message="  ${Name.Company}"/>
+    <echo message="   Java: ${java.version} ${java.vendor} "/>
+    <echo message="         ${java.home} "/>
+    <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
+	<echo message="   Build dir: ${basedir}"/>
+	<echo message="   Ant: ${ant.version}"/>		
+    <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
+    <echo message=" ======================================================="/>
+    <echo message="  "/>
+
     <!-- work out our java version by introspection -->
-    <condition property="java1.5+" >
+    <condition property="java1.5+">
       <available classname="java.lang.Readable"/>
     </condition>
-    <condition property="java1.6+" >
+    <condition property="java1.6+">
       <available classname="javax.lang.model"/>
     </condition>
     <macrodef name="forward2">
-     <attribute name="dir" />
-     <attribute name="target" />
-     <attribute name="inheritAll" default="false" />
-     <attribute name="antfile" default="build.xml" />
-     <sequential>
-      <subant 
-        antfile="@{antfile}"
-        target="@{target}" inheritAll="@{inheritAll}"
-        inheritrefs="false">
-        <buildpathelement location="@{dir}"/> 
-      </subant>
-     </sequential>
+      <attribute name="dir"/>
+      <attribute name="target"/>
+      <attribute name="inheritAll" default="false"/>
+      <attribute name="antfile" default="build.xml"/>
+      <sequential>
+        <subant
+            antfile="@{antfile}"
+            target="@{target}" inheritAll="@{inheritAll}"
+            inheritrefs="false">
+          <buildpathelement location="@{dir}"/>
+        </subant>
+      </sequential>
     </macrodef>
     <macrodef name="forward">
       <attribute name="dir"/>
@@ -78,6 +98,9 @@ For more information: www.smartfrog.org
       </sequential>
     </macrodef>
   </target>
+  
+
+
   
   <!-- =================================================================== -->
   <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
@@ -266,6 +289,13 @@ For more information: www.smartfrog.org
     <target name="cc"
         depends="cc-core,mavenReportNoSVNUpdate"
         description="cruise control full build, with NO checkout"/>
+		
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- =================================================================== -->
+    <target name="ccClover"
+        depends="with.clover,cc,clover.report,clover.summary"
+        description="cruise control full build with clover, with NO checkout"/>		
 
   <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
@@ -334,7 +364,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
 
 
-  <target name="release" depends="clean,ivy-purge,dist"
+  <target name="release" depends="clean,ivy-purge-published,dist"
       description="create a clean release -purges all artifacts from the ivy repository too"
      >
   </target>
@@ -406,17 +436,16 @@ For more information: www.smartfrog.org
     <mkdir dir="${ivy2.cache.dir}" />
     <mkdir dir="${ivy2.local.dir}" />
   </target>
-  <!-- =================================================================== -->
-  <!-- Create an ordered list of all ivy-enabled projects-->
-  <!-- Non-ivy projects are ignored-->
-  <!-- we also ignore the deployapi components, as their build is more complex-->
-  <!-- =================================================================== -->
-
-  <target name="ivy-init" depends="init,ivy-dirs"
-          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
 
+  <target name="ivy-probe-antlib" depends="init,ivy-dirs">
+    <condition property="ivy.found">
+      <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+    </condition>
+  </target>
 
+  <target name="ivy-init-antlib" depends="ivy-probe-antlib" unless="ivy.found"
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <!--load up ivy-->
     <fail>
       <condition>
@@ -428,23 +457,33 @@ For more information: www.smartfrog.org
       Either part of the directory tree is missing, or the ivy version,
       currently set to "${ivy.version}" is wrong.
     </fail>
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-        resource="fr/jayasoft/ivy/ant/antlib.xml">
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        resource="fr/jayasoft/ivy/ant/antlib.xml"
+        loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
     <!--create the external dir if it is missing-->
     <mkdir dir="external" />
-    <ivy:configure file="antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="antbuild/ivy/ivyconf.xml" override="true"/>
+  </target>
 
+  <!-- =================================================================== -->
+  <!-- Create an ordered list of all ivy-enabled projects-->
+  <!-- Non-ivy projects are ignored-->
+  <!-- we also ignore the deployapi components, as their build is more complex-->
+  <!-- =================================================================== -->
+
+  <target name="ivy-init" depends="ivy-init-antlib"
+          xmlns:ivy="antlib:org.apache.ivy.ant">
     <presetdef name="ivy-projects">
       <ivy:buildlist skipbuildwithoutivy="true">
         <fileset file="smartfrog/build.xml" />
         <fileset file="testharness/build.xml" />
         <fileset file="antbuild/build.xml" />
         <fileset dir="release">
-          <include name="build.xml" if="java1.5+" unless="do.not.release"/>
+          <include name="build.xml" unless="do.not.release"/>
         </fileset>
         <fileset dir="extras" includes="**/build.xml">
           <!--no CDL -->
@@ -452,6 +491,7 @@ For more information: www.smartfrog.org
           <!--not ready for ivy builds yet-->
           <exclude name="sfgui/build.xml" unless="sfgui.enabled"/>
           <exclude name="avalanche/**/build.xml" unless="avalanche.enabled"/>
+          <exclude name="VAST/build.xml" unless="vast.enabled"/>
         </fileset>
         <fileset dir="components" includes="**/build.xml" >
           <!--no cddlm here-->
@@ -462,14 +502,17 @@ For more information: www.smartfrog.org
           <exclude name="cargo/build.xml" unless="cargo.enabled"/>
           <!--lacks the artifacts to compile-->
           <exclude name="constraints/build.xml" unless="constraints.enabled"/>
-          <!--These need java 1.5 or later-->
-          <exclude name="database/build.xml" unless="java1.5+"/>
-          <exclude name="junit/build.xml" unless="java1.5+"/>
-          <exclude name="xunit/build.xml" unless="java1.5+"/>
-          <exclude name="xml/build.xml" unless="java1.5+"/>
-          <exclude name="xmpp/build.xml" unless="java1.5+"/>
+
+          <!--Java 1.6+ code-->
+          <exclude name="vmware/build.xml" unless="java1.6+"/>
+          <exclude name="ec2/build.xml" unless="java1.6+"/>
+
+          <!--Not yet functional -->
+          <exclude name="hadoop/build.xml" />
+
           <!-- no docs unless forrest is installed-->
-          <exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>
+          <!--<exclude name="documentation/build.xml" unless="env.FORREST_HOME"/>-->
+          <exclude name="documentation/build.xml" unless="forrest.enabled"/>
         </fileset>
         <!--place for symlinks to external projects you want included-->
         <fileset dir="external" includes="**/build.xml"/>
@@ -529,7 +572,7 @@ ${child.projects.list}
 
 
   <target name="ivy-report" depends="ivy-init"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:repreport organisation="org.smartfrog" todir="${ivy.report.dir}"
         graph="true" dot="true"/>
   </target>
@@ -630,5 +673,52 @@ ${child.projects.list}
       description="build file diagnostics">
     <diagnostics/>
   </target>
-  
+
+
+  <!-- CLOVER -->
+  <target name="init.clover" depends="init">
+    <property name="clover.dir" location="clover" />
+    <property name="build.clover.dir" location="build/clover" />
+    <property name="build.clover.history.dir" location="${build.clover.dir}/history" />
+    <property name="build.clover.html.dir" location="${build.clover.dir}/html" />
+    <property name="build.clover.pdf" location="${build.clover.dir}/coverage.pdf" />
+    <mkdir dir="${build.clover.history.dir}" />
+    <mkdir dir="${build.clover.html.dir}" />
+    <available property="clover.jar.present" file="${clover.dir}/clover.jar" />
+  </target>
+
+  <target name="declare-clover" depends="init.clover" if="clover.jar.present">
+    <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar" uri="http://cenqua.com/clover"/>
+    <available property="clover.installed" classname="com.cenqua.clover.CloverInstr"/>
+  </target>
+
+
+  <target name="check.clover" depends="declare-clover">
+  </target>
+
+  <target name="require.clover" depends="check.clover" unless="clover.installed">
+    <fail message="The target you are attempting to run requires Clover, which doesn't appear to be installed"/>
+  </target>
+
+  <target name="with.clover" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+    <clover:clover-setup/>
+  </target>
+
+  <target name="clover.report" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+
+    <!-- generate a historypoint for the current coverage -->
+    <clover:clover-historypoint historyDir="${build.clover.history.dir}"/>
+
+    <!-- generate a report with both current and historical data -->
+    <clover:clover-html-report outdir="${build.clover.html.dir}" historyDir="${build.clover.history.dir}"/>
+  </target>
+
+  <target name="clover.summary" depends="require.clover"
+      xmlns:clover="http://cenqua.com/clover">
+    <clover:clover-pdf-report outfile="${build.clover.pdf}"/>
+  </target>
+
+  <!-- CLOVER  End-->
 </project>
