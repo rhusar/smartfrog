@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="common" basedir="."
-     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+     xmlns:ivy="antlib:org.apache.ivy.ant"
     >
   <!--
   /** (C) Copyright Hewlett-Packard Development Company, LP
@@ -46,6 +46,8 @@
     Please upgrade to Ant1.7 or later and build this project again
   </fail>
 
+  
+  
   <!-- ========================================================== -->
   <!-- this is the simple definitions part of the common init -->
   <!-- IT must contain -->
@@ -65,6 +67,8 @@
     <!-- it is how we infer the base directory of the system -->
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
+    <!--if unset, we work it out here too-->
+    <property name="root.dir" location="${core.dir}"/>
     
     <!-- This is to decide the directory structure for the components, and default is false -->
     <property name="is.component" value="true"  />
@@ -88,9 +92,12 @@
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
     <property name="javac.debug.level" value="lines,vars,source" />
-    <property name="javac.java.version" value="1.4" />
+    <property name="javac.java.version" value="1.5" />
     <property name="javac.include.ant" value="false" />
     <property name="javac.max.memory" value="192m" />
+
+    <!--emma coverage directory-->
+    <property name="emma.coverage.dir" location="${core.dir}/build/coverage/emma" />
 
     <property name="smartfrog.daemon.port" value="3800" />
     <!--use the forking compiler with tuned memory use and profiling diagnostics-->
@@ -190,6 +197,14 @@
 
   </target>
 
+  <target name="print-proxy-settings" depends="init">
+    <echo>Proxy:
+      http:  ${http.proxyHost}:${http.proxyPort}
+      https: ${https.proxyHost}:${https.proxyPort}
+    </echo>
+  </target>
+
+
 <!--
   This is a bit of a legacy; in a pure ivy build we should not need it.
   Instead we'd work out our version from whichever copy of smartfrog we found
@@ -236,7 +251,8 @@
     <!-- check for its presence; break the build if missing -->
     <fail unless="sf.build.version">
 
-SmartFrog distribution not found. Please create the SmartFrog distribution first.
+SmartFrog distribution not found for ${ant.project.name}.
+Please create the SmartFrog distribution first.
 Alternatively, make sure that this project is configured to locate the distribution
 correctly.
 
@@ -252,13 +268,9 @@ java.class.path=
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
 
-</target>
+  </target>
 
-<target name="init-common" depends="bind-to-smartfrog">
-
-
-
-
+  <target name="init-common" depends="bind-to-smartfrog">
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.extension" value="jar"/>
@@ -368,17 +380,19 @@ java.class.path=
     the ant runtime by default, and fails on any error -->
     <presetdef name="sf-java">
       <java
-        includeantruntime="false"
-        fork="true"
-        failonerror="true"
-        >
-       </java>
+          includeantruntime="false"
+          fork="true"
+          failonerror="true"
+          >
+        <jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma"/>
+        <jvmarg value="-Demma.coverage.out.merge=true"/>
+      </java>
     </presetdef>
 
-   <!--
-    JAR files are uncompressed, with duplicate classes preserved, meaning
-    whatever was there first wins.
-    -->
+  <!--
+  JAR files are uncompressed, with duplicate classes preserved, meaning
+  whatever was there first wins.
+  -->
     <presetdef name="sf-jar">
       <jar
         compress="true"
@@ -407,22 +421,31 @@ java.class.path=
         -set up the classpath. Dont forget to
         include a reference to smartfrog.classpath to get the core stuff
       -->
+    <!-- set to withOutAndErr for more details-->
+    <property name="junit.printsummary" value="off" />
+    <property name="junit.showoutput" value="true" />
+    <!-- set to brief for brief, plain for more -->
+    <property name="junit.printformatter" value="plain" />
     <presetdef name="sf-junit">
-      <junit printsummary="no"
-           fork="true"
+      <junit printsummary="${junit.printsummary}"
+          fork="true"
+           forkmode="once"
            includeantruntime="true"
            showoutput="true"
            timeout="6000000"
            >
         <jvmarg value="-ea"/>
         <jvmarg value="-esa"/>
+	    	<jvmarg value="-Demma.coverage.out.file=${emma.coverage.dir}/coverage.emma" />
+        <jvmarg value="-Demma.coverage.out.merge=true" />
+
         <!--copy all proxy settings from the running JVM-->
         <syspropertyset refid="proxy.settings"/>
 
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
-        <formatter type="brief" usefile="false"/>
+        <formatter type="${junit.printformatter}" usefile="false"/>
       </junit>
     </presetdef>
 
@@ -464,7 +487,7 @@ java.class.path=
       <sequential>
         <sf-junitreport data="@{data}" reports="@{reports}" />
         <fail if="@{failed}">Tests failed see:
-          @{reports}</fail>
+		@{reports}</fail>
       </sequential>
     </macrodef>
 
@@ -474,12 +497,14 @@ java.class.path=
     **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties;
     override the pattern property to set more
      -->
+   <property name="copy.useful.files.pattern"
+       value="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl,**/*.png,**/*.jpg,**/*.gif,**/*.policy,**/*.vm"/>
    <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
      <attribute name="failonerror" default="false"/>
      <attribute name="pattern"
-         default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.sfcd,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl"/>
+         default="${copy.useful.files.pattern}"/>
      <sequential>
        <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
        <copy todir="@{dest}" failonerror="@{failonerror}">
@@ -508,11 +533,15 @@ java.class.path=
     <property name="javadoc.version" value="true"/>
     <property name="javadoc.use" value="true"/>
     <property name="javadoc.windowtitle" value="${Name.System}"/>
-    <property name="javadoc.packagenames" value="org.smartfrog.*"/>
+    <property name="javadoc.packages" value="org.smartfrog.*, com.hp.*"/>
+    <property name="javadoc.package.name" value="SmartFrog Packages"/>
+    <property name="javadoc.package.title" value="SmartFrog Packages"/>
+    <property name="javadoc.package.title" value="SmartFrog Packages"/>
     <property name="javadoc.header" value="${Name.System} ${smartfrog.version}"/>
     <property name="javadoc.footer" value="${Name.System} ${smartfrog.version}"/>
+    <!--packagenames="${javadoc.packagenames}"-->
     <presetdef name="sf-javadoc" >
-      <javadoc packagenames="${javadoc.packagenames}"
+      <javadoc
           author="${javadoc.author}"
           version="${javadoc.version}"
           use="${javadoc.use}"
@@ -527,6 +556,12 @@ java.class.path=
       </javadoc>
     </presetdef>
 
+    <!-- turn off javadocs-->
+    <condition property="javadoc.disabled">
+      <resourcecount when="equal" count="0" >
+        <fileset dir="${src.dir}" includes="**/*.java" />
+      </resourcecount>
+    </condition>
   </target>
 
   <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
@@ -547,20 +582,24 @@ java.class.path=
     <echo>
     Creating Java Docs for ${javadoc.header} into
     [${dist.jdocs.dir}]
-    (language level=${javac.java.version})
+    To skip this stage, set javadoc.disabled=true
+    </echo>
+    <echo level="verbose">
+      language level=${javac.java.version}
+      javadoc.packages=${javadoc.packages}
+      javadoc.package.title=${javadoc.package.title}
     </echo>
     <fail unless="dist.jdocs.dir">
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
-    <property name="javadoc.packages" value="org.smartfrog.*"/>
-    <property name="javadoc.package.name" value="SmartFrog Packages"/>
     <sf-javadoc
+        packagenames="${javadoc.packages}"
         sourcepath="${src.dir}"
         destdir="${dist.jdocs.dir}"
         classpathref="compile.classpath"
         >
-      <group title="${javadoc.package.name}" packages="${javadoc.packages}"/>
+      <!--<group title="${javadoc.package.title}" packages="${javadoc.packages}"/>-->
     </sf-javadoc>
   </target>
 
@@ -570,9 +609,11 @@ java.class.path=
 
   <target name="package-javadocs" depends="ready-to-package-javadocs"
       description="package up all the javadocs">
-    <zip destfile="${javadocs.zip}">
+    <property name="javadocs.zipentry.prefix" value="" />
+    <echo >building javadocs into  package "${javadocs.zipentry.prefix}"</echo>
+    <zip destfile="${javadocs.zip}" whenempty="create">
       <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
-          prefix="javadoc"/>
+          prefix="${javadocs.zipentry.prefix}"/>
     </zip>
   </target>
 
@@ -637,6 +678,7 @@ java.class.path=
       We are not properly initialized, as dist.jdocs.dir is undefined.
     </fail>
     <mkdir dir="${dist.jdocs.dir}"/>
+    <mkdir dir="${emma.coverage.dir}" />
   </target>
 
 
@@ -660,20 +702,30 @@ java.class.path=
         smartfrog and our lib dir -->
   <!-- ========================================================== -->
 
+  <!--set up the original redist classpath-->
+  <target name="declare-redist.classpath" depends="init" unless="ivy.enabled">
+    <path id="redist.classpath">
+      <fileset dir=".">
+        <include name="lib/**/*.jar"/>
+      </fileset>
+    </path>
+    <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
+  </target>
+
+
   <target name="declare-base.compile.classpath" depends="init"  unless="ivy.enabled">
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
     </path>
   </target>
 
- <target name="declare-compile.classpath"
-    depends="declare-base.compile.classpath" unless="ivy.enabled">
-   <path id="compile.classpath">
-     <path refid="base.compile.classpath"/>
-     <fileset dir=".">
-       <include name="lib/**/*.jar"/>
-     </fileset>
-   </path>
+  <target name="declare-compile.classpath"
+      depends="declare-base.compile.classpath,declare-redist.classpath"
+      unless="ivy.enabled">
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <path refid="redist.classpath"/>
+    </path>
     <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
   </target>
 
@@ -717,6 +769,7 @@ java.class.path=
       <path refid="exec.classpath"/>
     </path>
   </target>
+
 
   <!-- This target explicitly lists all dependencies so that if anyone starts overriding
     declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
@@ -768,10 +821,13 @@ java.class.path=
     <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
   </target>
 
+  <target name="ivy.redist.classpath" depends="maybe-ivy-resolve" if="ivy.enabled">
+    <ivy:cachepath pathid="redist.classpath" conf="redist"/>
+    <echo level="verbose">redist.classpath=${toString:redist.classpath}</echo>
+  </target>
+
   <target name="ivy-classpaths"
-    depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath" />
-
-
+      depends="ivy.compile.classpath,ivy.exec.classpath,ivy.run.classpath,ivy.tests.run.classpath,ivy.redist.classpath"/>
 
 
   <!-- ========================================================== -->
@@ -783,7 +839,6 @@ java.class.path=
       depends="init-common-simpledefinitions">
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}"  />
-    <delete dir="releases"  />
     <delete file="version.properties"/>
   </target>
 
@@ -876,7 +931,7 @@ java.class.path=
     for our needs -->
   <!-- ========================================================== -->
   <target name="declare-extended-smartfrog-tasks"
-      depends="init,use-smartfrog-tasks">
+      depends="init,use-smartfrog-tasks,declare-classpaths">
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
@@ -892,7 +947,7 @@ java.class.path=
     </presetdef>
 
     <presetdef name="sf-gui-debug">
-      <sf-gui classpathref="run.classpath"
+      <sf-gui classpathref="tests.run.classpath"
         logStackTraces="true" spawn="true">
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -904,7 +959,7 @@ java.class.path=
     </presetdef>
 
     <presetdef name="sf-console-debug">
-      <sf-management-console classpathref="run.classpath"
+      <sf-management-console classpathref="tests.run.classpath"
         logStackTraces="true" >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -1020,6 +1075,16 @@ java.class.path=
     description="start a local daemon">
   </target>
 
+  
+  <!-- ========================================================== -->
+  <!-- public startup operation; uses the name that netbeans expects -->
+  <!-- ========================================================== -->
+  <target name="run"
+    depends="start-daemon-if-needed"
+    description="start a local daemon">
+  </target>
+
+  
   <!-- ========================================================== -->
   <!-- always shutdown a local daemon. keep going if one is not running -->
   <!-- ========================================================== -->
@@ -1105,15 +1170,24 @@ java.class.path=
   <!-- target to get its dependencies right -->
   <!-- ========================================================== -->
   <target name="pre-compile"
-      depends="init,init-common,declare-classpaths,assert-smartfrog,assert-prerequisites">
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
   </target>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
-  <target name="compile"
-      depends="pre-compile">
+  <target name="compile" depends="pre-compile">
+	    <!-- to get the classpath in a printable form -->
+	  <pathconvert pathsep="${line.separator}|   |-- "  
+	               property="echo.compile.classpath" 
+	               refid="compile.classpath">
+	  </pathconvert>
+      <echo message=" --------------------------------------------------------"/>
+	    <echo message=" Project: ${ant.project.name}"/>
+	    <echo message=" Ant file: ${ant.file}"/>
+      <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
           cache="${build.dir}/depends"
@@ -1126,25 +1200,26 @@ java.class.path=
       <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
 
+  <target name="ready-to-rmi" depends="compile" />
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- RMI compile by looking for all remote classes in the
        compiled project-->
   <!-- ========================================================== -->
-  <target name="rmi" depends="compile"
+  <target name="rmi" depends="ready-to-rmi"
       description="create the RMI classes">
       <sf-rmic
           base="${build.classes.dir}"
           verify="true"
           compiler="${rmic.compiler}"
           includes="**/*.class">
-          <classpath refid="compile.classpath"/>
+        <classpath refid="compile.classpath"/>
       </sf-rmic>
   </target>
 
   <!-- another name for rmi -->
   <target name="compile-RMI" depends="rmi" />
-
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -1182,31 +1257,17 @@ java.class.path=
   </target>
 
 
+  <target name="ready-to-jar" depends="rmi"/>
+
   <!--
   component only logic to create a versioned jar name.
   this is simpler now we read it from the source file
   -->
   <target name="generateversion" depends="generate-versioned-jar"/>
 
-  <target name="generate-versioned-jar" if="is.component.enabled" depends="rmi">
-    <presetdef name="get-version">
-      <java classname="org.smartfrog.Version" failonerror="true" fork="true">
-        <classpath>
-          <pathelement location="${build.classes.dir}"/>
-          <fileset refid="smartfrog.lib.fileset"/>
-        </classpath>
-      </java>
-    </presetdef>
-<!--    <get-version outputproperty="CVersion">
-      <arg value="-b"/>
-    </get-version>
-    <get-version outputproperty="minVersion">
-      <arg value="-min"/>
-    </get-version>
-    <get-version outputproperty="maxVersion">
-      <arg value="-max"/>
-    </get-version>-->
-    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
+  <target name="generate-versioned-jar" if="is.component.enabled" depends="ready-to-jar">
+    <property name="jar.name"
+              value="${artifact.name}${jarfile.suffix}-${smartfrog.version}.${jarfile.extension}"/>
     <property name="target.jar"
         location="${dist.lib.dir}/${jar.name}"/>
     <sf-jar destfile="${target.jar}"
@@ -1292,16 +1353,18 @@ java.class.path=
   <target name="fromclean" depends="clean,dist"
       description="create a clean distribution"/>
 
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- copy all dependencies -->
   <!-- ========================================================== -->
-  <target name="install-dependencies" depends="package"
-      if="smartfrog.dist.lib.dir">
-    <copy-useful-files src="${lib.dir}"
-        pattern="**/*.jar"
-        dest="${smartfrog.dist.lib.dir}"
-        failonerror="false"/>
+  <target name="install-dependencies" depends="package,declare-classpaths">
+    <mkdir dir="${smartfrog.dist.lib.dir}"/>
+    <!--pull in all runtime dependencies-->
+    <copypath destdir="${smartfrog.dist.lib.dir}"
+      pathref="redist.classpath">
+      <flattenmapper/>
+    </copypath>
   </target>
 
   <!-- ========================================================== -->
@@ -1362,6 +1425,54 @@ java.class.path=
   </target>
 
 
+  <!-- ========================================================== -->
+  <!-- get the build into the state where the application is ready-->
+  <!-- ========================================================== -->
+
+  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test">
+
+  </target>
+
+  <target name="ready-to-undeploy" depends="init-deploy-properties,init-codebase">
+
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="ready-to-deploy"
+      description="deploy">
+
+    <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+      <syspropertyset>
+        <propertyref prefix="test."/>
+      </syspropertyset>
+      <application name="${application.name}">
+        sfCodeBase PROPERTY org.smartfrog.codebase;
+        #include "/${deploy.sf}"
+      </application>
+    </sf-deploy>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- undeploy the application-->
+  <!-- ========================================================== -->
+  <target name="undeploy" depends="ready-to-undeploy"
+      description="undeploy the application">
+    <sf-undeploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        failonerror="false"
+        timeout="30000"
+        application="${application.name}"/>
+  </target>
+
+
   <!--
   This target defines the task
   <sf-system-test> which is a functional tests runner ready to
@@ -1372,9 +1483,20 @@ java.class.path=
     <presetdef name="sf-system-test">
       <sf-functionaltest testTimeout="600" shutdownTime="10">
         <application>
+          <condition property="daemon.already.live">
+            <socket server="localhost" port="${smartfrog.daemon.port}" />
+          </condition>
+          <sf-conditional unless="daemon.already.live">
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
-              classpathref="tests.run.classpath"/>
+              classpathref="tests.run.classpath">
+            <!--all properties beginning with test. or run.-->
+            <syspropertyset>
+              <propertyref prefix="test."/>
+              <propertyref prefix="run."/>
+            </syspropertyset>
+          </sf-startdaemon-debug>
+          </sf-conditional>
         </application>
         <probe>
           <socket port="${smartfrog.daemon.port}" server="localhost"/>
@@ -1382,9 +1504,11 @@ java.class.path=
         <teardown>
           <parallel>
             <sf-stopdaemon failonerror="false"/>
-            <sf-junitreport data="${test.data.dir}"
-                reports="${test.reports.dir}"
-                />
+            <sf-conditional unless="tests.skip.reports">
+              <sf-junitreport data="${test.data.dir}"
+                  reports="${test.reports.dir}"
+                  />
+            </sf-conditional>
           </parallel>
         </teardown>
       </sf-functionaltest>
@@ -1411,8 +1535,9 @@ java.class.path=
 
     <!-- define the system test post processor-->
     <presetdef name="sf-system-test-validate">
-      <fail if="system.test.failed">System Tests failed - see
-        ${test.reports.dir}
+      <fail if="system.test.failed" unless="tests.skip.failing">
+System Tests for ${ant.project.name} failed - see
+${test.reports.dir}/index.html
       </fail>
     </presetdef>
 
@@ -1424,6 +1549,7 @@ java.class.path=
       <sf-system-test>
         <test>
           <sf-system-test-junit>
+            <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
             <batchtest todir="${test.data.dir}" unless="testcase">
               <fileset dir="${test.classes.dir}">
                 <include name="${sf-system-test-class-pattern}"/>
@@ -1580,18 +1706,83 @@ java.class.path=
   <!-- Security corner -->
   <!-- ========================================================== -->
 
-  <target name="init-security" depends="init" >
-    <!-- TODO -->
+  <target name="assert-secure"
+    description="halt the build if security is not turned on" unless="security.enabled">
+    <fail>
+      This is not a secure build. To make a secure build
+      1. set security.enabled=true
+      2. Create a CA and point the property security.ca.dir at the location.
+         Currently this property is ${security.ca.dir}
+    </fail>
+  </target>
+
+  <target name="init-security" depends="init,declare-extended-smartfrog-tasks"
+      xmlns:sec="http://security.smartfrog.org/">
+    <!--this is a flag that turns security on or off. by default it is off-->
+    <!--this should be overridden with the real value-->
+    <property name="security.ca.password" value="pleasechange2" />
+    <property name="security.self.key" value="self" />
+
+    <!--this needs to be set up with the CA that I want-->
+    <property name="security.ca.dir" location="${smartfrog.home}/private/ca" />
+    <property name="security.code.keystore" location="${security.ca.dir}/codesigner.st"/>
+
+    <property name="security.keystore.type" value="JCEKS"/>
+
+    <fail>
+      <condition>
+        <and>
+          <isset property="${security.enabled}"/>
+          <not>
+            <available file="${security.code.keystore}" />
+          </not>
+        </and>
+      </condition>
+The file in the property security.code.keystore:
+  ${security.code.keystore}
+Does not exist.
+
+Check that it and the directory in security.ca.dir:
+  ${security.ca.dir}
+Exist.
+    </fail>
+
+    <property name="security.uri" value="http://security.smartfrog.org/" />
+
+    <!--the settins for our jar signings-->
+    <presetdef name="signjar2" uri="${security.uri}">
+        <signjar
+            preservelastmodified="true"
+            alias="${security.self.key}"
+            keystore="${security.code.keystore}"
+            storetype="${security.keystore.type}"
+            storepass="${security.ca.password}"
+            lazy="true"/>
+    </presetdef>
+    <!-- sign a jar when security.enabled is set and true -->
+    <macrodef name="maybe-sign-jar" uri="${security.uri}">
+      <attribute name="jar"/>
+      <sequential>
+        <sf-conditional if="security.enabled">
+          <sec:signjar2 jar="@{jar}"/>
+        </sf-conditional>
+      </sequential>
+    </macrodef>
   </target>
 
   <target name="sign-dependent-jars" depends="init-security"
-    description="sign all jars that we depend upon">
+    description="sign all jars that we depend upon"
+      xmlns:sec="http://security.smartfrog.org/">
     <!-- TODO -->
   </target>
 
+  
   <target name="sign-target-jar"
-    description="sign our target jar" depends="package,init-security">
-    <!-- TODO -->
+    description="sign our target jar if security.sign.target.jar is true and security.sign.target.jar" 
+      depends="package,init-security"
+      if="security.sign.target.jar"
+      xmlns:sec="http://security.smartfrog.org/">
+      <sec:signjar2 jar="${target.jar}" />
   </target>
 
   <target name="checksum-target-jar"
@@ -1660,14 +1851,20 @@ java.class.path=
 
     <!--a string that is copied into the pom comments-->
     <property name="pom.comments"
-      value="Created ${build.date} by ${user.name}" />
+      value="
+      Created ${build.date} by ${user.name}.
+      This metadata file is published under an Apache license. 
+      " />
   </target>
 
 
    <!-- look for local then remote definitions of library versions -->
   <target name="load-versions" depends="common.init">
     <property file="libraries.properties"/>
-    <property file="${smartfrog.components.dir}/libraries.properties"/>
+    <property
+        name="libraries.properties"
+        location="${smartfrog.components.dir}/libraries.properties"/>
+    <property file="${libraries.properties}"/>
   </target>
 
   <!-- ========================================================== -->
@@ -1690,7 +1887,7 @@ java.class.path=
     <echo file="${target.pom}"><![CDATA[<project
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-0_0.xsd
     >
     <!--
      ${pom.comments}
@@ -1712,9 +1909,10 @@ java.class.path=
   <!-- ========================================================== -->
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the local maven2 repository -->
+  <!-- This is used when we release artifacts-->
   <!-- ========================================================== -->
   <target name="m2-install" depends="checksum-target-jar,m2-pom"
-      description="copy the JAR file local maven repository">
+      description="copy the JAR file to the local maven repository">
 
     <mkdir dir="${m2.subdir}"/>
     <copy file="${target.jar}" todir="${m2.subdir}"/>
@@ -1728,7 +1926,7 @@ java.class.path=
 
 
   <target name="ivy-properties" depends="init-common-simpledefinitions,load-versions" >
-    <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.version" value="2.0.0-beta1" />
     <property name="ivy.dir" location="${build.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
     <property name="ivy.user.dir" location="${user.home}/.ivy" />
@@ -1766,9 +1964,21 @@ java.class.path=
     <mkdir dir="${ivy.reports.dir}" />
     <mkdir dir="${ivy.lib.dir}" />
 
+
+    <property name="ivy.cache.smartfrog.dir"
+        location="${ivy2.cache.dir}/${ivy.package.name}" />
+    <property name="ivy.project.name" value="sf-${ant.project.name}" />
+    <property name="ivy.cache.project.dir"
+        location="${ivy.cache.smartfrog.dir}/${ivy.project.name}" />
+
+    <mkdir dir="${ivy.cache.smartfrog.dir}" />
+    <mkdir dir="${ivy.cache.project.dir}" />
+
+
+
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
-      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
     </condition>
 
   </target>
@@ -1776,8 +1986,8 @@ java.class.path=
   <target name="maybe-declare-ivy" if="ivy.enabled"
       unless="ivy.tasks.loaded"
       depends="ivy-properties">
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             >
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
@@ -1790,24 +2000,34 @@ java.class.path=
   -->
   <target name="probe-for-ivy-tasks" depends="maybe-declare-ivy">
     <condition property="ivy.tasks.loaded2" >
-      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
+      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
     </condition>
   </target>
 
   <target name="declare-ivy" unless="ivy.tasks.loaded2"
           depends="probe-for-ivy-tasks"
           >
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail">
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail" loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
     </typedef>
+    <!-- sometimes that doesn't seem to fail when ivy is missing, 
+     so let's explicitly test that Ivy is there, just in case -->
+    <fail>
+    <condition>
+      <not>
+       <typefound name="settings" uri="antlib:org.apache.ivy.ant"/>
+      </not>
+    </condition>
+    No Ivy found in ${ivy.jar}
+    </fail>
   </target>
 
   <target name="maybe-ivy-init"
           depends="declare-ivy"
           if="ivy.enabled" >
-    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
@@ -1841,14 +2061,20 @@ java.class.path=
 
   <target name="ivy-purge-cache" depends="ivy-properties"
       description="purge all smartfrog artifacts from the cache">
-    <delete dir="${ivy.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
-    <delete includeEmptyDirs="true">
-      <fileset dir="${ivy.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
-    </delete>
-    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true"/>
+    <delete dir="${ivy2.cache.dir}/${ivy.package.name}" defaultexcludes="false" includeEmptyDirs="true" includes="**/*"/>
     <delete includeEmptyDirs="true">
       <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-*" defaultexcludes="false" />
     </delete>
+  </target>
+
+  <!--remove all project-seecific libraries from the cache-->
+  <target name="ivy-purge-project" depends="ivy-properties"
+      description="purge all smartfrog artifacts from the ~/.ivy2 directories">
+    <delete includeEmptyDirs="true">
+      <fileset dir="${ivy.cache.project.dir}" defaultexcludes="false"  includes="**/*"/>
+      <fileset dir="${ivy2.cache.dir}" includes="resolved-${ivy.package.name}-${ivy.project.name}" />
+    </delete>
+    <delete dir="${ivy2.local.dir}/${ivy.package.name}/${ivy.project.name}" />
   </target>
 
   <!--This is a trick. by running the same stuff
@@ -1858,7 +2084,7 @@ java.class.path=
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"
@@ -1866,10 +2092,10 @@ java.class.path=
     <ivy:resolve />
   </target>
 
-  <target name="ivy-retrieve" depends="ivy-resolve" >
+  <target name="ivy-retrieve" depends="ivy-resolve" 
+    description="retrieve all dependent artifacts through Ivy">
     <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]" />
-    <echo level="verbose">ivy.retrieve.pattern=${ivy.retrieve.pattern}</echo>  
     <property name="ivy.retrieve.path"
         value="${ivy.lib.dir}/${ivy.artifact.retrieve.pattern}" />
     <ivy:retrieve pattern="${ivy.retrieve.path}" sync="true" />
@@ -1884,7 +2110,7 @@ ${ivy.reports.dir}
 
   <!--publish master artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
-      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+      xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
           conf="master"
@@ -1900,7 +2126,7 @@ ${ivy.reports.dir}
 
   <!--publish everything, rather than just artifacts in the master config-->
   <target name="ivy-publish-all" depends="ready-to-publish-all"
-          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+          xmlns:ivy="antlib:org.apache.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
        overwrite="true"
        haltonmissing="false"
@@ -1955,8 +2181,76 @@ ${ivy.reports.dir}
       description="Generate PDFs from all .SXW files in the documentation folder">
     <bulkpdf dir="${doc.dir}" />
   </target>
-  
 
+
+  <!-- CLOVER -->
+  <target name="init-clover" depends="init">
+    <property name="clover.dir" location="${core.dir}/clover"/>
+    <property name="clover.jar" location="${clover.dir}/clover.jar"/>
+    <path id="clover.classpath">
+      <fileset file="${clover.jar}"/>
+    </path>
+    <available property="clover.present"
+        file="${clover.jar}"/>
+    <!--check to see if clover is already installed in this process-->
+    <condition property="clover.installed">
+      <typefound name="clover-setup"/>
+    </condition>
+  </target>
+
+  <!--If we have clover, and it is not already installed, then install it-->
+  <target name="define-clover" depends="init-clover"
+      if="clover.present" unless="clover.installed">
+    <taskdef resource="cloverlib.xml" classpathref="clover.classpath"/>
+    <condition property="clover.installed">
+      <typefound name="clover-setup"/>
+    </condition>
+  </target>
+
+  <target name="with.clover" depends="define-clover">
+    <clover-setup/>
+  </target>
+
+  <target name="-check.clover" depends="define-clover">
+  </target>
+
+  <target name="guard.noclover" depends="-check.clover" unless="clover.installed">
+    <fail message="The target you are attempting to run requires Clover, which doesn't appear to be installed"/>
+  </target>
+
+  <target name="clover.report" depends="with.clover">
+
+    <!-- generate a historypoint for the current coverage -->
+    <clover-historypoint historyDir="clover_hist"/>
+
+    <!-- generate a report with both current and historical data -->
+
+    <clover-html-report outdir="clover_html" historyDir="clover_hist"/>
+  </target>
+
+  <target name="clover.summary" depends="with.clover">
+    <clover-pdf-report outfile="coverage.pdf"/>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <target name="test.with.clover"
+      depends="with.clover,run-tests,clover.report,clover.summary,reports"
+      description="compile and run all the tests with clover reports included"
+      />
+
+
+  <!-- CLOVER  End-->
+
+  <!-- Ivy quick and dirty test -->
+
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">
+    <ivy:retrieve />
+  </target>
+  <!-- Ivy quick and dirty test End-->
+  
 </project>
 
 
