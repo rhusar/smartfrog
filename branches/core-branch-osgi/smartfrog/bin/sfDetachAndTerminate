@@ -8,15 +8,15 @@ if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
 fi
 if [ -z $1 ] ; then
   echo "Insufficient arguments to use sfDetachAndTerminate"
-  echo "Usage: sfDetachAndTerminate HostName ComponentName"
+  echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
   exit 69
 fi 
-if [ $# -eq 1 ] && [ $1 == "-?" ];then
-   echo "Usage: sfDetachAndTerminate HostName ComponentName"
+if [ $# -eq 1 ] && [ $1 = "-?" ];then
+   echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
    exit 0
-elif [ $# -ne 2 ];then
+elif [ $# -lt 2 ];then
    echo "Insufficient arguments to use sfDetachAndTerminate"
-   echo "Usage: sfDetachAndTerminate HostName ComponentName"
+   echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
    exit 69
 fi 
 
@@ -26,18 +26,34 @@ fi
 . $SFHOME/bin/setSFProperties
 
 if test "$USERNAMEPREFIX_ON"; then
-	APPNAME="`whoami`_$2";
+    APPNAME="`whoami`_$2";
 else
-	APPNAME="$2";
+    APPNAME="$2";
 fi
+
+if [ "$1" = "-p" ] || [ "$2" = "-p" ] ;then
+  	echo "Insufficient arguments to use sfDetachAndTerminate"
+  	echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
+	exit 69
+fi
+
+if [ "$3" = "-p" ];then
+	if [ -z $4 ] ; then
+  		echo "Insufficient arguments to use sfDetachAndTerminate"
+  		echo "Usage: sfDetachAndTerminate HostName ComponentName [-p port]"
+		exit 69
+	fi
+	export OPTION="$3 $4";
+fi
+
 #java $SFCMDPARAMETERS org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: $OPTION -e
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: $OPTION -e
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: $OPTION -e
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DETaTERM:::$1: $OPTION -e
 fi

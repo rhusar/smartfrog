@@ -9,6 +9,6 @@ if defined SFHOME goto continue1
 
 call "%SFHOME%\bin\setSFProperties"
 
-%SFJVM% %SFCMDPARAMETERS%  org.smartfrog.SFParse %1 %2 %3 %4 %5 %6 %7 %8 %9
+%SFJVM% %SFCMDPARAMETERS% %SFLIBRARYPATH% org.smartfrog.SFParse %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 endlocal

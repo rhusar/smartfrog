@@ -21,8 +21,10 @@ rem -- server hostname for multihomed machines
 rem set SFSERVERHOSTNAME=localhost
 
 rem -- default.ini and default.sf without security --
+if not defined SFLIBRARYPATH set SFLIBRARYPATH=-Djava.library.path="%SFHOME%\lib\NuSMV"
 if not defined SFDEFAULTINI set SFDEFAULTINI=-Dorg.smartfrog.iniFile="%SFHOME%\bin\default.ini"
 if not defined SFDEFAULTSF set SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="%SFHOME%\bin\default.sf"
+if not defined SFDEFAULTSECURITY set SFDEFAULTSECURITY=-Djava.security.policy=="%SFHOME%\private\sf.no.security.policy" -Djava.security.manager
 
 if defined SFSERVERHOSTNAME set SFRMIHOSTNAME=-Djava.rmi.server.hostname="%SFSERVERHOSTNAME%"
 

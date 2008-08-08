@@ -8,11 +8,11 @@ if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
 fi
 if [ -z $1 ] ; then
 echo "Insufficent arguments to use sfRun"
-echo "Usage: sfRun URL [-e]"
+echo "Usage: sfRun URL [-p port] [-e]"
 exit 69
 fi 
-if [ $1 == "-?" ];then
-echo "Usage: sfRun URL [-e]"
+if [ "$1" = "-?" ];then
+echo "Usage: sfRun URL [-p port] [-e]"
 exit 0
 fi 
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
@@ -21,19 +21,38 @@ fi
 . "$SFHOME/bin/setSFProperties"
 
 #if test "$SFDEFAULTSF"; then
-#	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+#   export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
 #fi
 
 #java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
 
+if [ "$1" = "-p" ];then
+	echo "Insufficent arguments to use sfRun"
+	echo "Usage: sfRun URL [-p port] [-e]"
+	exit 69
+fi
 
+if [ "$2" = "-p" ];then
+	if [ -z $3 ] ; then
+		echo "Insufficent arguments to use sfRun"
+		echo "Usage: sfRun URL [-p port] [-e]"
+		exit 69
+	fi
+	export OPTION="$2 $3";
+	if [ ! -z $4 ];then
+		export OPTION="$OPTION $4";
+	fi
+else
+	export OPTION="$2";
+fi
+		
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
 else 
-        java "$SFDEFAULTINI" "$SFDEFAULTSF" org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $2
+        java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a :DEPLOY:\"$1\"::: $OPTION
 fi
 
