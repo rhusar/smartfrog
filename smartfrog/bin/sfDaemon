@@ -40,12 +40,18 @@ while [ $# -ge 1 ]; do
     -J | -j) shift
         JVMARGS="$JVMARGS $1"
         ;;
+    -p) if [ -z $2 ]; then
+		echo Usage: sfDaemon -?
+		exit 69
+	else 
+   		CLASSARGS="$CLASSARGS $1"
+	fi	
+	;;	
     *) CLASSARGS="$CLASSARGS $1"
         ;;
     esac
     shift
 done
-
 #if test "$SFCODEBASE"; then
 #    JVMARGS="$JVMARGS $SFCODEBASE" 
 #fi
@@ -64,6 +70,6 @@ elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
         CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME $SFCODEBASE $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 else
-    CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
+    CMDLINE="java $JVMARGS $SFDEFAULTINI $SFDEFAULTSF $SFDEFAULTSECURITY $SFRMIHOSTNAME -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS"
 fi
 $CMDLINE

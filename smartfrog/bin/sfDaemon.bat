@@ -22,20 +22,26 @@ rem (JVMARGS are appended to SFCMDPARAMETERS)
 SET CLASSARGS=
 :start
 IF /I "%1"=="-J" GOTO readJARG 
+IF (%1) == (-p) goto check
 SET CLASSARGS=%CLASSARGS% %1
 GOTO test
 
 :readJARG
 SHIFT
 SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
+:check
+if (%2) == () goto usage
+SET CLASSARGS=%CLASSARGS% %1
 
 :test
 SHIFT
 IF NOT "%1"=="" GOTO start
-
 :end
 @echo off
 rem for JMX remote agent add: -Dcom.sun.management.jmxremote 
-%SFJVM% %SFCMDPARAMETERS% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
-
+%SFJVM% %SFCMDPARAMETERS% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem %CLASSARGS%
+goto finish
+:usage
+echo Usage: sfDaemon -?
+:finish
 endlocal

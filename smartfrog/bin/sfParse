@@ -10,13 +10,12 @@ fi
 . "$SFHOME/bin/setSFProperties"
 
 
-
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFLIBRARYPATH $SFCODEBASE org.smartfrog.SFParse "$@"
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFLIBRARYPATH $SFSECURITY org.smartfrog.SFParse "$@"
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFLIBRARYPATH $SFCODEBASE $SFSECURITY org.smartfrog.SFParse "$@"
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" $SFLIBRARYPATH $SFDEFAULTSECURITY org.smartfrog.SFParse "$@"
 fi

@@ -11,11 +11,11 @@ fi
 echo "SmartFrog Version:"
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.Version
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.Version
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
         java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.Version
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.Version
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.Version
 else
-        java "$SFDEFAULTINI" org.smartfrog.Version
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.Version
 fi
