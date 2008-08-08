@@ -124,7 +124,7 @@ public interface ComponentDescription extends Tags, TagsComponent, PrettyPrintin
     /**
      * Returns an ordered iterator over the values in the context.
      * The remove operation of this Iterator won't affect
-     * the contents of ConponentDescription
+     * the contents of ComponentDescription
      *
      * @return iterator
      */
