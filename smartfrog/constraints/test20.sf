@@ -1,0 +1,77 @@
+#include "/org/smartfrog/functions.sf"
+
+Compute extends DATA {
+  cpus extends Array {
+    sfArrayExtent numCPU:val;
+    sfArrayPrefix "cpu";
+  }
+ 
+  numCPU extends numCPUConstraint;
+}
+
+numCPUConstraint extends Constraint {
+     [sfConstraintAutoVar] val VAR "[1..3]";
+}
+
+vPartition extends Compute;
+
+nPartition extends Compute {
+   numCPU extends numCPUConstraint {
+      [sfConstraintAutoVar] val VAR "[6,100]";
+   }
+   numvPars extends Constraint {
+       [sfConstraintAutoVar] val VAR "[2..3]";
+   }
+   vpars extends Array {
+      sfArrayExtent numvPars:val;
+      sfArrayPrefix "vpar";
+      sfArrayGenerator extends vPartition;
+   }
+   totCPUs extends Aggregator {
+	sfAggregatorPath "vpars:numCPU:val";
+        total extends nsum;
+        diff extends alldiff;
+   }
+   totCPUsConstraint extends Constraint {
+      vParsTotal totCPUs:total;
+      nPartTotal numCPU:val;
+      diff totCPUs:diff;
+      [sfConstraint] -- "vParsTotal==nPartTotal, diff==true";
+   }
+}
+
+Server extends Compute {
+   
+   numParts extends Constraint {
+       [sfConstraintAutoVar] val VAR "[2..3]";
+   }
+
+   partType extends Constraint {
+       [sfConstraintAutoVar] type VAR "[nPartition, vPartition]";
+   }
+
+   parts extends Array {
+      sfArrayExtent numParts:val;
+      sfArrayPrefix "part";
+      sfArrayGenerator extends ifThenElse {
+	if (partType:type == "nPartition");
+        then nPartition;
+        else vPartition;
+      } 
+   }
+
+}
+
+HPServer extends Server {
+    types "[rp7410, rp8400]";
+    model extends Constraint {
+       numPartsA numParts:val;
+       [sfConstraintAutoVar] val VAR types;
+       [sfConstraint] -- "val &= rp8400 => numPartsA #= 3";
+       [sfConstraint] -- "val &= rp7410 => numPartsA #= 2"; 
+    }
+}
+
+sfConfig extends HPServer;
+
+

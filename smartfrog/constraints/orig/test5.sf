@@ -1,0 +1,28 @@
+#include "/org/smartfrog/functions.sf"
+
+ListElement extends Constraint {
+   list theList;
+   [sfConstraint] -- "member(el, list)"; 
+}
+
+sfConfig extends {
+   theList genList:theList; 
+
+   x extends ListElement { el elements:x; } 
+   y extends ListElement { el elements:y; } 
+   z extends ListElement { el elements:z; }
+
+   elements extends Constraint {
+      x VAR theList; 
+      y VAR theList; 
+      z VAR theList;
+      [sfConstraint] -- "alldifferent([x,y,z])";
+   }   
+
+   genList extends Constraint {
+      theList ["one", VAR, "three", VAR];
+      aList [VAR, "two", VAR, "four"];       
+
+      [sfConstraint] -- "theList = aList"; 
+   }
+}
