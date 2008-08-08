@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.util.Vector;
+import java.util.Arrays;
 
 import org.smartfrog.Version;
 import java.io.LineNumberReader;
@@ -35,6 +36,10 @@ import org.smartfrog.SFSystem;
  *
  */
 public class OptionSet {
+    // cache to be able to access the initial args for Diagnostics
+    private static String[] argsCache;
+
+    static {argsCache = null;}
 
     /** Character indicating the start of each option. */
     private static final char optionFlagIndicator = '-';
@@ -48,7 +53,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     private static final String USAGE = "\n" +
-        " Usage: SFSystem [-a SFACT] [-f SFREF] [-t] [-e] [-d] [-headless]\n" +
+        " Usage: SFSystem [-a SFACT] [-f SFREF] [-p port] [-t] [-e] [-d] [-headless]\n" +
         "    or: SFSystem -?\n";
 
     /** Help string for SFSystem. */
@@ -62,26 +67,27 @@ public class OptionSet {
         "           -a rootProcess:TERMINATE:::localhost:" + "\n" +
         "\n" +
         "       Format for SFACT: " +"NAME:ACTION:SFREF:SUBREF:HOST:PROCESS\n" +
-        "           - NAME: name used by the ACTION to be taken\n" +
+        "           - NAME: name used by ACTION\n" +
         "              ex. foo\n" +
         "              ex. \"HOST localhost:foo\"\n" +
          "             ex. 'HOST localhost:foo'\n" +
-        "          - ACTION: defines the action to be taken on the named component\n"+
-        "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS\n" +
-        "          - SFREF: SmartFrog description (if needed) to be used by ACTION\n" +
+        "          - ACTION: defines the applied action on the named component\n"+
+        "                    possible actions: DEPLOY, UPDATE, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS, DUMP\n" +
+        "          - SFREF: SmartFrog description (if needed) used by ACTION\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex. /home/sf/foo.sf\n" +
         "              ex. \"c:\\sf\\foo.sf\"\n" +
         "              ex. 'c:\\sf\\foo.sf'\n" +
-        "          - SUBREF: component description name to use by ACTION. It can be empty\n" +
+        "          - SUBREF: component description name used by ACTION. It can be empty\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex: foo\n" +
         "              ex: \"fist:foo\"\n" +
         "              ex: 'fist:foo'\n" +
-        "              note: sfConfig cannot be use with DEPLOY!\n" +
+        "              note: sfConfig cannot be used with DEPLOY!\n" +
         "          - HOST: host name or IP from where to resolve NAME. It can be empty.\n" +
         "              ex: localhost\n" +
         "              ex: 127.0.0.1\n" +
+        "              ex (multiple hosts): [127.0.0.1,\"localhost\"]\n" +
         "          - PROCESS: process name from where to resolve NAME. When empty it assumes rootProcess.\n" +
         "          \n" +
         "          SFACT Examples:\n" +
@@ -93,14 +99,17 @@ public class OptionSet {
         "                   counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:\n" +
         "              ex4: Get diagnostics report for \"sfDefault\" component running in remote daemon\n" +
         "                   'rootProcess:sfDefault':DIAGNOSTICS:::remoteHostName:\n" +
+        "              ex5. Dump description for local sfDaemon\n" +
+        "                   rootProcess:DUMP:::localhost:\n" +
         "\n" +
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +"\n" +
+        "    -p or -port: port where to locate/start the daemon (default 3800)." + "\n" +
         "    -t (terminate): Terminate successfull deployments if one of the listed (with -a or -f) deployments failed." + "\n" +
         "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d or -diagnostics: print information that might be helpful to diagnose or report problems." + "\n" +
-        "   " + OPTION_HEADLESS + ": the process will run in headless mode\n" +
-        "   " + OPTION_QUIETEXIT + ":  do not set any exit code when the program exits with an error\n"+
-        "   -? or -help:  print this help information\n";
+        "   " + OPTION_HEADLESS + ": the process will run in headless mode.\n" +
+        "   " + OPTION_QUIETEXIT + ":  do not set any exit code when the program exits with an error.\n"+
+        "   -? or -help:  print this information.\n";
 
     /** Error string for SFSystem. */
     public String errorString = null;
@@ -117,7 +126,7 @@ public class OptionSet {
 
 
     /** Vector for configurationDescriptors to be deployed. */
-    public Vector cfgDescriptors = new Vector();
+    public Vector<ConfigurationDescriptor> cfgDescriptors = new Vector<ConfigurationDescriptor>();
 
    /** Terminate sucessful deployments in case of a deployment failure. */
     public boolean terminateOnDeploymentFailure = false;
@@ -144,15 +153,19 @@ public class OptionSet {
      * @param args arguments to create from
      */
     public OptionSet(String[] args) {
-        int i = 0;
 
+        argsCache = args.clone();
+        int i = 0;        
+        if (SFSystem.sfLog().isDebugEnabled()) {
+           SFSystem.sfLog().debug("Command Line args: "+ Arrays.toString(argsCache));
+        }
         while ((i < args.length) && (errorString == null)) {
             try {
                 String currentArg = args[i];
                 if("-a".equals(currentArg)) {
                     //deploy an application
                     try {
-                        this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
+                        cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
                     } catch (SmartFrogInitException ex) {
                         exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                         //Logger.log(ex);
@@ -170,6 +183,17 @@ public class OptionSet {
                             SFSystem.sfLog().error(ex.getMessage(), ex);
                         }
                     }
+                } else if ("-p".equals(currentArg)|| "-port".equals(currentArg)) {
+                        String port = args[++i];
+                        try {
+                            System.setProperty("org.smartfrog.sfcore.processcompound.sfRootLocatorPort", readLocationPort(port));
+                        } catch  (NumberFormatException nex) {
+                            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+                            errorString = ("Wrong port number (-p option): "+port);
+                            if ((Logger.logStackTrace) && SFSystem.sfLog().isErrorEnabled()) {
+                               SFSystem.sfLog().error(errorString, nex);
+                            }
+                        }
                 } else if ("-d".equals(currentArg) || "-diagnostics".equals(currentArg)) {
                     //diagnostics
                     diagnostics = true;
@@ -256,11 +280,28 @@ public class OptionSet {
             throw SmartFrogException.forward(e);
         } finally {
             try {
-                file.close();
+                if(file!=null) {
+                	file.close();
+                }
             } catch (Exception ex) {
                 SFSystem.sfLog().ignore(ex);
             }
         }
         return cfgDescriptors;
+    }
+
+    String readLocationPort(String sfRootLocatorPort) throws NumberFormatException {
+        //Check that the value is correct
+        Integer.parseInt(sfRootLocatorPort);
+        return sfRootLocatorPort;
+    }
+
+    /**
+     * Returns initial cmd line args if it has been initialized, otherwise it returns null
+     *
+     * @return cmd line args if it has been initialized, otherwise it returns null
+     */
+    public static String [] getArgs(){
+        return argsCache;
     }
 }

@@ -1,7 +1,26 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
 package org.smartfrog.sfcore.common;
 
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Interface that defines the access to, and manipulation of, tags in
@@ -17,7 +36,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @param tags a set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public void sfSetTags(Object name, Set tags) throws SmartFrogContextException;
 
@@ -28,7 +47,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @return the set of tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Set sfGetTags(Object name) throws SmartFrogContextException;
 
@@ -48,7 +67,7 @@ public interface Tags {
     * @param name attribute key for tags
     * @param tag a tag to remove from the set
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     *
     */
    public void sfRemoveTag(Object name, String tag) throws SmartFrogContextException;
@@ -58,9 +77,8 @@ public interface Tags {
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to add to the set
-    * @throws SmartFrogRuntimeException failed to perform the operation - implementations
-    * may throw subtypes of SmartFrogRuntimeException to indicate specific problems
-    *
+    * @throws SmartFrogContextException
+    *          the attribute does not exist;
     */
    public void sfAddTags(Object name, Set tags) throws SmartFrogContextException;
 
@@ -69,7 +87,7 @@ public interface Tags {
     *
     * @param name attribute key for tags
     * @param tags  a set of tags to remove from the set
-    * @throws SmartFrogException
+    * @throws SmartFrogContextException
     *          the attribute does not exist;
     */
    public void sfRemoveTags(Object name, Set tags)  throws SmartFrogContextException;
@@ -80,7 +98,7 @@ public interface Tags {
     * @param name the name of the attribute
     * @return an iterator over the tags
     *
-    * @throws SmartFrogException the attribute does not exist;
+    * @throws SmartFrogContextException the attribute does not exist;
     */
    public Iterator sfTags(Object name) throws SmartFrogContextException;
 
@@ -91,7 +109,7 @@ public interface Tags {
     * @param tag the tag to chack
     *
     * @return whether or not the attribute has that tag
-    * @throws SmartFrogException the attribute does not exist
+    * @throws SmartFrogContextException the attribute does not exist
     */
    public boolean sfContainsTag(Object name, String tag) throws SmartFrogContextException;
 }

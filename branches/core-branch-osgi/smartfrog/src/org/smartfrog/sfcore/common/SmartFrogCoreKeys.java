@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,14 +32,14 @@ public interface SmartFrogCoreKeys {
      * Value {@value}
      * @see org.smartfrog.sfcore.processcompound.PrimHostDeployerImpl
      */
-    public final static String SF_PROCESS_HOST = "sfProcessHost";
+    String SF_PROCESS_HOST = "sfProcessHost";
 
     /**
      * Attribute used to determine the process/subprocess name where a component runs.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS = "sfProcess";
+    String SF_PROCESS = "sfProcess";
 
 
 
@@ -48,48 +48,48 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_NAME = "sfProcessName";
+    String SF_PROCESS_NAME = "sfProcessName";
 
     /**
      * Attribute used to name a component.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_COMPONENT_NAME = "sfProcessComponentName";
+    String SF_PROCESS_COMPONENT_NAME = "sfProcessComponentName";
 
     /**
      * Registry port used by the rootProcess daemon.
      *
      * Value {@value}
      */
-    public final static String SF_ROOT_LOCATOR_PORT = "sfRootLocatorPort";
+    String SF_ROOT_LOCATOR_PORT = "sfRootLocatorPort";
    /**
      * Registry bind adderess used by the rootProcess daemon.
      *
      * Value {@value}
      */
-    public final static String SF_ROOT_LOCATOR_BIND_ADDRESS = "sfRootLocatorBindAddress";    
+    String SF_ROOT_LOCATOR_BIND_ADDRESS = "sfRootLocatorBindAddress";
 
     /**
      * Attribute with garbage collection time out for SubProcesses.
      *
      * Value {@value}
      */
-    public final static String SF_SUBPROCESS_GC_TIMEOUT = "sfSubprocessGCTimeout";
+    String SF_SUBPROCESS_GC_TIMEOUT = "sfSubprocessGCTimeout";
 
     /**
      * Attribute used to determine the host address where a component runs.
      *
      * Value {@value}
      */
-    public final static String SF_HOST = "sfHost";
+    String SF_HOST = "sfHost";
 
     /**
      * Attribute used to define if subProcesses can be used.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_ALLOW ="sfProcessAllow";
+    String SF_PROCESS_ALLOW ="sfProcessAllow";
 
     /**
      * Attribute used to define what  subProcesses attributes to overwrite when
@@ -97,7 +97,7 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_CONFIG ="sfProcessConfig";
+    String SF_PROCESS_CONFIG ="sfProcessConfig";
 
     /**
      * Attribute used to define what variables should be added to a subProcesses
@@ -105,66 +105,67 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_ENV_VARS ="sfProcessEnvVars";
+    String SF_PROCESS_ENV_VARS ="sfProcessEnvVars";
 
     /**
      * Attribute with subprocess deployment timeout.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_TIMEOUT ="sfProcessTimeout";
+    String SF_PROCESS_TIMEOUT ="sfProcessTimeout";
 
     /**
      *  Attribute that holds the process java start command.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_JAVA ="sfProcessJava";
+    String SF_PROCESS_JAVA_PATH ="sfProcessJavaPath";
+
+    /**
+     *  Attribute that holds the process java start command.
+     *
+     * Value {@value}
+     */
+    String SF_PROCESS_JAVA ="sfProcessJava";
 
     /**
      * Attribute that holds the class name for subprocesses.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_CLASS ="sfProcessClass";
+    String SF_PROCESS_CLASS ="sfProcessClass";
     /**
      * Attribute that holds the class name for subprocesses.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_CLASSPATH ="sfProcessClassPath";
+    String SF_PROCESS_CLASSPATH ="sfProcessClassPath";
     /**
      * Attribute that holds the class name for subprocesses.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_REPLACE_CLASSPATH ="sfProcessReplaceClassPath";
+    String SF_PROCESS_REPLACE_CLASSPATH ="sfProcessReplaceClassPath";
 
     /**
      * Attribute that holds the class name for subprocesses.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_SF_CODEBASE ="sfProcessCodeBase";
+    String SF_PROCESS_SF_CODEBASE ="sfProcessCodeBase";
     /**
      * Attribute that holds the class name for subprocesses.
      *
      * Value {@value}
      */
-    public final static String SF_PROCESS_REPLACE_SF_CODEBASE ="sfProcessReplaceCodeBase";
+    String SF_PROCESS_REPLACE_SF_CODEBASE ="sfProcessReplaceCodeBase";
 
     /**
      * Attribute that holds the class name for deployer.
      *
      * Value {@value}
-     * @deprecated Deployers are now Prims and should be referred to by using {@link this.SF_DEPLOYER}.
      */
-    public final static String SF_DEPLOYER_CLASS ="sfDeployerClass";
-
-    /**
-     * Attribute that holds a LAZY reference to the deployer to be used.
-     */
-    public final static String SF_DEPLOYER = "sfDeployer";
+    String SF_DEPLOYER_CLASS ="sfDeployerClass";
 
     /**
      * Attribute that determines asynchronous or synchronous termination
@@ -173,21 +174,21 @@ public interface SmartFrogCoreKeys {
      * Value {@value}
      * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
-    public final static String SF_SYNC_TERMINATE = "sfSyncTerminate";
+    String SF_SYNC_TERMINATE = "sfSyncTerminate";
 
     /**
      * Attribute that holds the class that implements a component.
      *
      * Value {@value}
      */
-    public final static String SF_CLASS="sfClass";
+    String SF_CLASS="sfClass";
 
     /**
      * Attribute that determines the resolution root of a SmartFrog description.
      *
      * Value {@value}
      */
-    public final static String SF_CONFIG="sfConfig";
+    String SF_CONFIG="sfConfig";
 
 
     /**
@@ -195,23 +196,22 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_SCHEMA_DESCRIPTION = "sfSchemaDescription";
+    String SF_SCHEMA_DESCRIPTION="sfSchemaDescription";
 
     /**
      * Attribute that defines the codebase for a component.
-     * @deprecated The use of codebase URLs is deprecated.
-     * Use the {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} interface instead,
-     * along with the attribute {@link this.SF_CLASS_LOADING_ENVIRONMENT}.
+     *
      * Value {@value}
      */
-    public final static String SF_CODE_BASE = "sfCodeBase";
+    String SF_CODE_BASE = "sfCodeBase";
+
 
     /**
      * Attribute that defines how often to send liveness in seconds.
      *
      * Value {@value}
      */
-    public final static String SF_LIVENESS_DELAY= "sfLivenessDelay";
+    String SF_LIVENESS_DELAY= "sfLivenessDelay";
 
     /**
      * Attribute that defines how many multiples of liveness delay to wait
@@ -219,14 +219,14 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_LIVENESS_FACTOR="sfLivenessFactor";
+    String SF_LIVENESS_FACTOR="sfLivenessFactor";
 
     /**
      * Attribute that defines if a component has to accept remote method calls.
      *
      * Value {@value}
      */
-    public final static String SF_EXPORT="sfExport";
+    String SF_EXPORT="sfExport";
 
     /**
      * Attribute that defines the port that a component will use to accept
@@ -234,7 +234,7 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_EXPORT_PORT="sfExportPort";
+    String SF_EXPORT_PORT="sfExportPort";
 
 
     /**
@@ -242,21 +242,21 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_ROOT_LOCATOR_CLASS = "sfRootLocatorClass";
+    String SF_ROOT_LOCATOR_CLASS = "sfRootLocatorClass";
 
     /**
      * Attribute that hold the boot time of the root process daemon.
      *
      * Value {@value}
      */
-    public final static String SF_BOOT_DATE = "sfBootDate";
+    String SF_BOOT_DATE = "sfBootDate";
 
     /**
      * Attribute that holds version of the root process daemon
      *
      * Value {@value}
      */
-    public final static String SF_VERSION = "sfVersion";
+    String SF_VERSION = "sfVersion";
 
 
     // Strings used to name certain things in the framework
@@ -266,7 +266,7 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_ROOT_PROCESS = "rootProcess";
+    String SF_ROOT_PROCESS = "rootProcess";
 
     /**
      * Name used to refer to the root reference in a particular hierachy of
@@ -274,131 +274,108 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_ROOT = "ROOT";
+    String SF_ROOT = "ROOT";
 
     /**
      * Name used to name a root process deployed without registry.
      *
      * Value {@value}
      */
-    public final static String SF_RUN_PROCESS = "sfRunProcess";
+    String SF_RUN_PROCESS = "sfRunProcess";
 
     /**
      * Name used to prefix the name of unnamed deployments.
      *
      * Value {@value}
      */
-    public final static String SF_UNNAMED = "unnamed_";
+    String SF_UNNAMED = "unnamed_";
 
     /**
      * Name to name a deploy phase failure.
      *
      * Value {@value}
      */
-    public final static String SF_DEPLOY_FAILURE = "sfDeployFailure";
+    String SF_DEPLOY_FAILURE = "sfDeployFailure";
 
     /**
      * Name to name a start phase failure.
      *
      * Value {@value}
      */
-    public final static String SF_START_FAILURE = "sfStartFailure";
+    String SF_START_FAILURE = "sfStartFailure";
 
     /**
      * Name to name a start phase failure.
      *
      * Value {@value}
      */
-    public final static String SF_CORE_LOG = "SFCORE_LOG";
+    String SF_CORE_LOG = "SFCORE_LOG";
 
     /**
      * Attribute name to get the name of the application logger.
      *
      * Value {@value}
      */
-    public final static String SF_APP_LOG_NAME = "sfLog";
+    String SF_APP_LOG_NAME = "sfLog";
 
     /**
      * Attribute name to get the name of the diagnostics report in ProcessCompound.
      *
      * Value {@value}
      */
-    public final static String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
-
-    /**
-     * Bundle context used to access the OSGi framework services.
-     */
-    public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
-
-    /**
-     * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the PrimFactory
-     * component used to create a component instance.
-     */
-    public static final String SF_FACTORY = "sfFactory";
-
-    /**
-     * Attribute (defined as sfMeta extends DATA { ... }) used to
-     * gather all metadata about a component.
-     */
-    public static final String SF_METADATA = "sfMeta";
-
-    public static final String SF_FUNCTION_CLASS = "sfFunctionClass";
+    String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
 
     /**
      * Tag to mark an attribute as final, after which placement fails
      * Value {@value}
      */
-    public static final String SF_FINAL = "sfFinal";
+    public static final String SF_FINAL= "sfFinal";
+
 
     /**
      * Time attribute set in ActionDeploy deployment
      *
      * Value {@value}
      */
-    public static final String SF_TIME_PARSE = "sfParseTime";
+    String SF_TIME_PARSE = "sfParseTime";
     /**
      * Time attribute set in ActionDeploy deployment
      *
      * Value {@value}
      */
-    public static final String SF_TIME_DEPLOY = "sfDeployTime";
+    String SF_TIME_DEPLOY = "sfDeployTime";
 
     /**
      * Time attribute set in ActionDeploy deployment
      *
      * Value {@value}
      */
-    public static final String SF_TIME_START = "sfStartTime";
+    String SF_TIME_START = "sfStartTime";
 
     /**
      * Time this component was started
      *
      * Value {@value}
      */
-    public static final String SF_TIME_STARTED_AT = "sfStartedAtTime";
+    String SF_TIME_STARTED_AT = "sfStartedAtTime";
 
     /**
      * The language attribute, which can be set/found from the context.
      * {@value}
      */
-    public static final String KEY_LANGUAGE = "#language";
+    String KEY_LANGUAGE = "#language";
 
     /**
      * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the
      * {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} a component will be loaded from.
      * If missing, will be added before the component is deployed, and point to the default environment.
      */
-    public static final String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
+    String SF_CLASS_LOADING_ENVIRONMENT = "sfClassLoadingEnvironment";
 
-    /**
-     * Tag used to exclude an attribute in a Context from being serialized. This implies code running in other processes
-     * won't see it.
-     */
-    public static final String SF_TRANSIENT = "sfTransient";
 
     /**
      * Reference to the application environment for a component. Will be the same for all components in an application.
      * Nevertheless copied in each component context to simplify resolution in the case of parentage change.
      */
-    public static final String SF_APPLICATION_ENVIRONMENT = "sfApplicationEnvironment";
+    String SF_APPLICATION_ENVIRONMENT = "sfApplicationEnvironment";
 }

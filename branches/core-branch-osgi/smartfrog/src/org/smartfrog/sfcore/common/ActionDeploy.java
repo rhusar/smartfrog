@@ -19,16 +19,16 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.compound.Compound;
-
 
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -85,7 +85,7 @@ public class ActionDeploy extends ConfigurationAction {
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+            SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
@@ -185,7 +185,7 @@ public class ActionDeploy extends ConfigurationAction {
                  catch (Exception ignored) {
                  }
                  try {
-                     comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName));
+                     comp.sfTerminate(TerminationRecord.abnormal("Deployment Failure: " + e, compName,e));
                  } catch (Exception ignored) {
                  }
              }
@@ -241,9 +241,9 @@ public class ActionDeploy extends ConfigurationAction {
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
        Prim parent = null;
-       String name;
-       Reference ref;
-       Prim prim;
+       String name = null;
+       Reference ref = null;
+       Prim prim=null;
        try {
            name = configuration.getName();
            //Placement
@@ -287,7 +287,7 @@ public class ActionDeploy extends ConfigurationAction {
      * @param configuration configuration to deploy
      * @param name name of the component
      * @param parent parent flag
-     * @param targetP target
+     * @param targetP target process (can be null)
      * @return the deployed prim
      * @throws SmartFrogException for deployment problems
      * @throws RemoteException for network problems

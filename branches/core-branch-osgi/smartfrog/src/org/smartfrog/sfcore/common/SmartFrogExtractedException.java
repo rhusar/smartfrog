@@ -46,6 +46,11 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     /** {@value} */
     public static final String EXCEPTION_CLASSNAME = "ExceptionClassname";
 
+    /**
+     * {@value}
+     */
+    public static final String EXCEPTION_CANONICALNAME = "ExceptionCanonicalName";
+
     /** {@value} */
     public static final String EXCEPTION_LOCALIZED_MESSAGE = "ExceptionLocalizedMessage";
 
@@ -106,6 +111,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      */
     private void fillInFromThrowable(Throwable thrown) {
         add(EXCEPTION_CLASSNAME, thrown.getClass().getName());
+        add(EXCEPTION_CANONICALNAME, thrown.getClass().getCanonicalName());
         add(EXCEPTION_MESSAGE, thrown.getMessage());
         add(EXCEPTION_LOCALIZED_MESSAGE, thrown.getLocalizedMessage());
         add(EXCEPTION_STACK, thrown.getStackTrace());
@@ -162,6 +168,33 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
     }
 
     /**
+     * Get the classname of the underlying exception. If none was defined, return this class's own classname
+     * @return the classname
+     */
+    public String getExceptionClassname() {
+        Object classname = get(EXCEPTION_CLASSNAME);
+        if(classname!=null) {
+            return classname.toString();
+        } else {
+            return  getClass().getName();
+        }
+    }
+
+    /**
+     * Get the classname of the underlying exception. If none was defined, return this class's own classname
+     *
+     * @return the canonical classname
+     */
+    public String getExceptionCanonicalName() {
+        Object classname = get(EXCEPTION_CANONICALNAME);
+        if (classname != null) {
+            return classname.toString();
+        } else {
+            return getClass().getCanonicalName();
+        }
+    }
+
+    /**
      * Recursive conversion of an exception into a new exception hierarchy, for which
      * all entries are of type SmartFrogException.
      *
@@ -180,7 +213,7 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
      * form that the far end can hande.
      */
     public static Throwable convert(Throwable thrown) {
-        if(thrown==null) {
+        if (thrown == null) {
             return null;
         }
         boolean convert;
@@ -195,10 +228,10 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
 
         Throwable cause = thrown.getCause();
         Throwable exception;
-        boolean hasCause=cause!=null && cause!=thrown;
-        if(hasCause) {
+        boolean hasCause = cause != null && cause != thrown;
+        if (hasCause) {
             //if we have a cause, recursively convert us
-            Throwable newCause=convert(cause);
+            Throwable newCause = convert(cause);
             if (!convert && newCause == cause) {
                 //no change in the child, and we are of an allowed type
                 exception = thrown;
@@ -208,12 +241,12 @@ public class SmartFrogExtractedException extends SmartFrogException implements S
             }
         } else {
             //no children. This is the base of the cause tree.
-            if(!convert) {
+            if (!convert) {
                 //and return unchanged.
                 exception = thrown;
             } else {
                 //we need to remarshall us
-                exception = createFromThrowable(thrown,null);
+                exception = createFromThrowable(thrown, null);
             }
         }
         return exception;

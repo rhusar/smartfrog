@@ -173,6 +173,10 @@ public class ActionParse extends ConfigurationAction implements Serializable {
             InputStream is = null;
             try {
                 is = SFLoader.getInputStreamSFException(fileUrl);
+                if (is==null) {
+                    String msg = MessageUtil.formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                    throw new SmartFrogParseException(msg);
+                }
                 top = (new SFParser(language)).sfParse(is);
                 report.sfAddAttribute("raw", top.toString());
                 report.sfAddAttribute("raw result", "OK");

@@ -84,9 +84,9 @@ public class ErrorMessageBundle extends ListResourceBundle
                              "Warning: stack trace logging disabled"},
         { MSG_UNKNOWN_HOST, "Unable to locate IP address of the host: {0}"},
         { MSG_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}." + LINE_END + "Reason: sfDaemon may not be running on {0}"},
+        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be running on {0}"},
         { MSG_REMOTE_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}." + LINE_END + "Reason: sfDaemon may not be authenticated properly"},
+        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be authenticated properly"},
         { MSG_PARENT_LOCATION_FAILED,
          "Failed to locate parent"},
         // Resolution Exception messages start
@@ -108,6 +108,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_UPDATE_SUCCESS , "Successfully updated: {0}"},            
         { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
         { MSG_PING_SUCCESS , "\"{0}\" was successfully contacted in \"{1}\". {2}"},
+        { MSG_DUMP_SUCCESS , "\"{0}\" was successfully contacted and configuratin read in \"{1}\". {2}"},
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
@@ -126,13 +127,14 @@ public class ErrorMessageBundle extends ListResourceBundle
         { LIVENESS_SEND_FAILURE , "Liveness Send Failure when calling {1}"},
         { COMPONENT_TERMINATED, "Component Terminated"},
         { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
+        { WARN_SECURE_RESOURCES_OFF, "SmartFrog security is active BUT resources can be loaded without restrictions. This should be a secure node"},    
         { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
-        { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, fouund a {0}"},
+        { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, found a {0}"},
         { CANNOT_LINK_TO_PREDICATE, "Attribute {1} is a link to a predicate. Predicates should be extended and not linked to: in component {0}"},
         { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"},
-        { EXISTING_APP_ENV_IS_DIFFERENT, "The process: {0} already has an application environment of name: {1}, but it is different than the designed environment for the application."
-                + LINE_END
-                + "Check whether the application environment has been changed, but not undeployed on this process."}
+        { MSG_CANNOT_ADD_VALUE_CHILD, "\"{0}\" cannot be added because its value \"{1}\" is already a child of \"{2}\""}
+		{ EXISTING_APP_ENV_IS_DIFFERENT, "The process: {0} already has an application environment of name: {1}, but it is different than the designed environment for the application."
+                + LINE_END + "Check whether the application environment has been changed, but not undeployed on this process."}
     };
 
     /**

@@ -20,9 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.rmi.MarshalledObject;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.rmi.MarshalledObject;
 
 /**
  * A wrapper class to avoid stub classes in intermediate nodes.
@@ -57,6 +58,11 @@ final public class SFMarshalledObject implements Serializable{
      *
      * @return An unwrapped version of the original object, or exactly
      * the original object if we have not been serialized.
+     * @exception IOException if an <code>IOException</code> occurs while
+     * deserializing the object from its internal representation.
+     * @exception ClassNotFoundException if a
+     * <code>ClassNotFoundException</code> occurs while deserializing the
+     * object from its interna
      */
     public synchronized Object get() throws IOException, ClassNotFoundException {
         if ((!alreadySet) || (value == null)) {
@@ -76,7 +82,7 @@ final public class SFMarshalledObject implements Serializable{
      * @param out a <code>java.io.ObjectOutputStream</code> value
      * @exception IOException if an error occurs
      */
-    private void writeObject(java.io.ObjectOutputStream out)
+    private void writeObject(ObjectOutputStream out)
         throws IOException {
         pack();
         out.defaultWriteObject();
@@ -86,7 +92,7 @@ final public class SFMarshalledObject implements Serializable{
      * Packs the inner object in a MarshalledObject to avoid
      * stub classes being needed in intermediate nodes. We avoid
      * "packing" multiple times in case we serialize multiple times.
-     *
+     * @exception IOException if an error occurs
      */
     private synchronized void pack() throws IOException {
         if (alreadySet) {

@@ -21,10 +21,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.util.Enumeration;
-import java.io.Serializable;
-
+import org.smartfrog.Version;
 import org.smartfrog.sfcore.prim.Prim;
+
+import java.io.Serializable;
+import java.util.Enumeration;
 
 /**
  * Root of all SmartFrog-generated exceptions. All the exceptions in SmartFrog
@@ -51,10 +52,14 @@ public class SmartFrogException extends Exception implements Serializable {
     /** Attribute name for primSFCompleteName in exceptioncontext. */
     public static final String PRIM_COMPLETE_NAME = "primSFCompleteName";
 
+    /** SmarFrog version that created the exception */
+    public static final String SFVERSION = Version.versionString();
+
     /**
      * Constructs a SmartFrogException with no message.
      */
     public SmartFrogException() {
+        super();
     }
 
     /**
@@ -264,8 +269,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return boolean true if the attribute exists
      */
     public boolean contains (Object value) {
-        if (cxt == null) return false;
-        return cxt.contains(value);
+        return cxt != null && cxt.contains(value);
     }
     /**
      * Checks if some attribute exists in exception context.
@@ -274,8 +278,7 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return boolean true if the attribute exists
      */
     public boolean containsKey (Object value) {
-        if (cxt == null) return false;
-        return cxt.containsKey(value);
+        return cxt != null && cxt.containsKey(value);
     }
 
     /**
@@ -316,8 +319,8 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return String this object to String.
      */
     public String toString (String nm) {
-        StringBuffer strb = new StringBuffer();
-        strb.append (shortClassName() +":: ");
+        StringBuilder strb = new StringBuilder();
+        strb.append(shortClassName()).append(":: ");
         if (getMessage()!=null){
             if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {
                strb.append (getCauseMessage(nm));
@@ -329,12 +332,16 @@ public class SmartFrogException extends Exception implements Serializable {
         } else {
             strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
+
+        strb.append ((nm+ SFVERSION ));
+
         strb.append ((((containsKey(DATA))) ? (nm+DATA+  ": "
                                                     + get(DATA)) : "" ));
         strb.append ((((containsKey(PRIM_COMPLETE_NAME))) ? (nm+PRIM_COMPLETE_NAME+
                                                   ": " + get(PRIM_COMPLETE_NAME)) : "" ));
         strb.append ((((containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT+
                                                   ": " + "included") : "" ));
+
         return strb.toString();
     }
 
@@ -376,21 +383,19 @@ public class SmartFrogException extends Exception implements Serializable {
      * @return string representation of the exception
      */
     public String toStringAll(String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append("ALL: ").append(shortClassName()).append(": ");
 
-        if (getMessage() != null && getCause() != null && !getCause().toString().equals(getMessage())) {
+        if ((getMessage()!=null) && (getCause()!=null) && (!((getCause().toString().equals(getMessage()))))) {
             //Only print message when message != cause
             strb.append (getMessage());
-            strb.append (getCause() == null ? "" : nm + "cause: " + getCauseMessage(nm));
+            strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " + getCauseMessage(nm))));
         } else {
-            strb.append (getCause() == null ? "" : getCauseMessage(nm));
+            strb.append ((((getCause() == null) ) ? "" : (getCauseMessage(nm))));
         }
-
-        if (cxt != null && cxt.size() != 0) {
-            strb.append("  context: " + nm + cxt.toString() + nm);
-        }
-
+        
+        strb.append ((((cxt == null) ||
+            (cxt.size() == 0)) ? "" : (nm+"  context: " + nm +cxt.toString()+nm)));
         return strb.toString();
     }
 

@@ -1,41 +1,44 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-For more information: www.smartfrog.org
+ For more information: www.smartfrog.org
 
-*/
+ */
 
 package org.smartfrog.sfcore.common;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.io.Serializable;
+
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
  * Defines the context interface used by Components. Context implementations
- * need to respect the ordering and copying requirements imposed by
- * Components.
+ * need to respect the ordering and copying requirements imposed by Components.
  *
  * @see Copying
  */
 public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
+
     /**
-     * Returns true if the context contains value.
-     * Deprecated: replaced by sfContainsValue()
+     * Returns true if the context contains value. Deprecated: replaced by
+     * sfContainsValue()
+     *
      * @param value object to check
      *
      * @return true if context contains value, false otherwise
@@ -43,8 +46,9 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public boolean contains(Object value);
 
     /**
-     * Returns true if the context contains the key.
-     * Deprecated: replaced by sfContainsAttribute()
+     * Returns true if the context contains the key. Deprecated: replaced by
+     * sfContainsAttribute()
+     *
      * @param key to check
      *
      * @return true if context contains key, false otherwise
@@ -52,15 +56,14 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public boolean containsKey(Object key);
 
     /**
-     * Returns the values of the context.
-     * Deprecated: replaced by sfValues();
+     * Returns the values of the context. Deprecated: replaced by sfValues();
+     *
      * @return enumeration over the values of the context
      *
-     * @see java.util.Enumeration
+     * @see Enumeration
      */
     public Enumeration elements();
-
-
+    
     /**
      * Returns object stored under given key, null if not found.
      *
@@ -79,7 +82,8 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
     /**
      * Returns an enumeration over the keys of the context.
-     * Deprecated: replaced by sfAttributes();
+     * Deprecated replaced by sfAttributes();
+     * @see #sfAttributes()
      * @return enumeration
      */
     public Enumeration keys();
@@ -88,7 +92,7 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     /**
      * Adds an object value under given key to context.
      *
-     * @param key key of addition
+     * @param key   key of addition
      * @param value value of addition
      *
      * @return the previous value under key, or null if none
@@ -124,9 +128,11 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
     /**
      * Returns the first key which has a particular value in the table.
+     *
      * @param value value to find in table
      *
      * @return key for value or null if none
+     *
      * @deprecated sfAttributeKeyFor should be used instead.
      */
     public Object keyFor(Object value);
@@ -147,7 +153,8 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
 
     /**
-     * Returns the first attribute which has a particular value "equal" in the table.
+     * Returns the first attribute which has a particular value "equal" in the
+     * table.
      *
      * @param value value to find in table
      *
@@ -156,30 +163,28 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
     public Object sfAttributeKeyForEqual(Object value);
 
     /**
-     * Returns true if the context contains value reference (==).
-     * Replaces contains()
+     * Returns true if the context contains value reference (==). Replaces
+     * contains()
+     *
      * @param value object to check
      *
      * @return true if context contains value, false otherwise
-    *  @throws NullPointerException  if the value is <code>null</code>.
+     *
+     * @throws NullPointerException if the value is <code>null</code>.
      */
     public boolean sfContainsRefValue(Object value);
 
     /**
-
      * Returns the attribute key for a given value.
      *
      * @param value value to look up the key for
      *
      * @return key for given value or null if not found
-     *
      */
     public Object sfAttributeKeyFor(Object value);
 
     /**
-
-     * Returns true if the context contains value.
-     * Replaces contains()
+     * Returns true if the context contains value. Replaces contains()
      *
      * @param value object to check for equality
      *
@@ -189,8 +194,7 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
 
     /**
-     * Returns true if the context contains attribute.
-     * Replaces containsKey()
+     * Returns true if the context contains attribute. Replaces containsKey()
      *
      * @param attribute to check
      *
@@ -200,36 +204,35 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
 
 
     /**
-     * Returns an iterator over the attribute names of the context.
-     * The remove operation of this Iterator won't affect
-     * the contents of Context
-
+     * Returns an iterator over the attribute names of the context. The remove
+     * operation of this Iterator won't affect the contents of Context
+     *
      * @return iterator
      */
-    public  Iterator sfAttributes();
+    public Iterator sfAttributes();
 
     /**
-     * Returns an iterator over the values of the context.
-     * The remove operation of this Iterator won't affect
-     * the contents of Context
+     * Returns an iterator over the values of the context. The remove operation
+     * of this Iterator won't affect the contents of Context
+     *
      * @return iterator
      */
-    public  Iterator sfValues();
+    public Iterator sfValues();
 
-   /**
-     * Add an attribute to context. Values should be
-     * marshallable types if they are to be referenced remotely at run-time.
-     * If an attribute with this name already exists it is <em>not</em>
-     * replaced.
+    /**
+     * Add an attribute to context. Values should be marshallable types if they
+     * are to be referenced remotely at run-time. If an attribute with this name
+     * already exists it is <em>not</em> replaced.
      *
-     * @param name name of attribute
+     * @param name  name of attribute
      * @param value object to be added in context
      *
      * @return value if successfull, null otherwise
      *
      * @throws SmartFrogContextException when name or value are null
      */
-    public Object sfAddAttribute(Object name, Object value)throws SmartFrogContextException;
+    public Object sfAddAttribute(Object name, Object value)
+            throws SmartFrogContextException;
 
     /**
      * Remove named attribute from component context. Non present attribute
@@ -241,14 +244,15 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      *
      * @throws SmartFrogContextException when name is null
      */
-    public Object sfRemoveAttribute(Object name) throws SmartFrogContextException;
+    public Object sfRemoveAttribute(Object name)
+            throws SmartFrogContextException;
 
 
     /**
-     * Replace named attribute in context. If attribute is not
-     * present it is added to the context.
+     * Replace named attribute in context. If attribute is not present it is
+     * added to the context.
      *
-     * @param name of attribute to replace
+     * @param name  of attribute to replace
      * @param value attribute value to replace or add
      *
      * @return the old value if present, null otherwise
@@ -256,7 +260,7 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      * @throws SmartFrogContextException when name or value are null
      */
     public Object sfReplaceAttribute(Object name, Object value)
-        throws SmartFrogContextException;
+            throws SmartFrogContextException;
 
     /**
      * Find an attribute in this context.
@@ -267,7 +271,36 @@ public interface Context extends Tags, PrettyPrinting, Copying, Serializable {
      *
      * @throws SmartFrogContextException failed to find attribute
      */
-    public Object sfResolveAttribute (Object name) throws SmartFrogContextException;
+    public Object sfResolveAttribute(Object name)
+            throws SmartFrogContextException;
 
+    /**
+     * Sets originating description for context.  Used in constraint solving.
+     * @param originatingDescription 
+     */
+    public void setOriginatingDescr(ComponentDescription originatingDescription);
+    
+    /**
+     * Gets the originating description for context.  Used in constraint solving.
+     * @return ComponentDescription originating description
+     */
+    public ComponentDescription getOriginatingDescr();
+    
+    /**
+     * Verifies that comp is a sub-type of this context, based on context being a prefix of comp in terms of keys
+     * @return Whether sub-type
+     */
+    public boolean ofType(ComponentDescription comp);    
+    
+    /**
+     * Returns the key at index idx in context
+     * @return key for given index, or null if index not valid
+     */
+    public Object getKey(int idx);
 
+    /**
+     * Returns the value at index idx in context
+     * @return value for given key index, or null if index not valid
+     */
+    public Object getVal(int idx);
 }

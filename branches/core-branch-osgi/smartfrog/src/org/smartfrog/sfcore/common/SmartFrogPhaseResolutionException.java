@@ -97,7 +97,7 @@ import org.smartfrog.sfcore.reference.Reference;
     }
 
     public String toString(String nm){
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
 //        strb.append ((((this.containsKey(SOURCE)
 //                               && (this.get(SOURCE)!=null)

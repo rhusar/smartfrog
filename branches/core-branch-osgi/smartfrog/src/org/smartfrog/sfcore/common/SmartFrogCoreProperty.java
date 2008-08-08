@@ -20,12 +20,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import org.smartfrog.sfcore.security.SmartFrogCorePropertySecurity;
-
 /**
  * All the properties used in SmartFrog core system should be defined here.
  */
 public class SmartFrogCoreProperty {
+
 
     /**
      * Class Constructor. Nobody should call this.
@@ -36,19 +35,29 @@ public class SmartFrogCoreProperty {
     //System
 
     /**
+     * Base for all smartfrog properties. All properties looked up by classes
+     * in SmartFrog use this as a base, add the package name and then the
+     * property id to look up.
+     *
+     * Value {@value}
+     * @see org.smartfrog.SFSystem
+     */
+    public static final String propBase = "org.smartfrog.";
+
+    /**
      * Property to read the codebase for smartfrog dynamic classloading
      *
      * Value {@value}
      * @see org.smartfrog.SFSystem
      */
-    public static final String codebase = SmartFrogCorePropertySecurity.propBase + "codebase";
+    public static final String codebase = SmartFrogCoreProperty.propBase+"codebase";
 
     /** Property name for class name for standard output stream.
      *
      * Value {@value}
      * @see org.smartfrog.SFSystem
      */
-    public static final String propOutStreamClass = SmartFrogCorePropertySecurity.propBase +
+    public static final String propOutStreamClass = propBase +
         "outStreamClass";
 
     /**
@@ -57,7 +66,7 @@ public class SmartFrogCoreProperty {
      * Value {@value}
      *  @see org.smartfrog.SFSystem
      */
-    public static final String propErrStreamClass = SmartFrogCorePropertySecurity.propBase +
+    public static final String propErrStreamClass = propBase +
         "errStreamClass";
 
     /**
@@ -66,7 +75,7 @@ public class SmartFrogCoreProperty {
      * Value {@value}
      *  @see org.smartfrog.SFSystem
      */
-    public static final String iniFile = SmartFrogCorePropertySecurity.propBase + "iniFile";
+    public static final String iniFile = propBase + "iniFile";
 
     // Reference
 
@@ -76,7 +85,7 @@ public class SmartFrogCoreProperty {
      *  Value {@value}
      * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static final String propBaseReference = SmartFrogCorePropertySecurity.propBase +"Reference.";
+    public static final String propBaseReference = propBase+"Reference.";
 
     /**
      * Initial capacity for references. Looks up Reference.initCap (offset by
@@ -105,11 +114,8 @@ public class SmartFrogCoreProperty {
      *  Value {@value}
      * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static final String propBaseSFProcess = SmartFrogCorePropertySecurity.propBase +"sfcore.processcompound.";
+    public static final String propBaseSFProcess = propBase +"sfcore.processcompound.";
 
-
-    public static final String defaultDescrName = "sfDefault";
-    
     /**
      * Base for process compound default property names to load default
      * descriptions.
@@ -117,7 +123,22 @@ public class SmartFrogCoreProperty {
      *  Value {@value}
      * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static final String defaultDescPropBase = propBaseSFProcess + defaultDescrName + ".";
+    public static final String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
+
+    /**
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.processcompound.SFProcess#deployProcessCompound()
+     */
+    public static final String addShutdownHook = propBaseSFProcess + "shutdownhook";
+
+    /**
+     * Value {@value}
+     *
+     * @see org.smartfrog.sfcore.processcompound.SFProcess#deployProcessCompound()
+     */
+    public static final String shutdownHookClassname = propBaseSFProcess + "shutdownhook.classname";
+
 
     //Compound
 
@@ -129,7 +150,7 @@ public class SmartFrogCoreProperty {
      *
      * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
-    public static final String propBaseCompound = SmartFrogCorePropertySecurity.propBase +
+    public static final String propBaseCompound = propBase+
         "sfcore.compound.";
 
     /**
@@ -158,7 +179,7 @@ public class SmartFrogCoreProperty {
     *  Value {@value}
     * @see OrderedHashtable
     */
-   public static final String propBaseOrderedHashTable = SmartFrogCorePropertySecurity.propBase +
+   public static final String propBaseOrderedHashTable = propBase +
       "sfcore.common.OrderedHashtable.";
 
   /**
@@ -198,7 +219,7 @@ public class SmartFrogCoreProperty {
      * Value {@value}
      * @see org.smartfrog.sfcore.parser.SFParser
      */
-    public static final String propBaseSFParser = SmartFrogCorePropertySecurity.propBase +"sfcore.parser.";
+    public static final String propBaseSFParser = propBase+"sfcore.parser.";
 
 
     /**
@@ -227,7 +248,7 @@ public class SmartFrogCoreProperty {
      * Value {@value}
      * @see  org.smartfrog.sfcore.parser.SFParser
      */
-    public static final String parserCorePackages = SmartFrogCorePropertySecurity.propBase + "sfcore.languages";
+    public static final String parserCorePackages = propBase+ "sfcore.languages";
 
 
     //SF Parser
@@ -261,5 +282,5 @@ public class SmartFrogCoreProperty {
                               propBaseSFParserSF + "includeHandlerClass";
 
 
-   public static final String sfProcessName = "org.smartfrog.sfcore.processcompound.sfProcessName"; 
+   public static final String sfProcessName = "org.smartfrog.sfcore.processcompound.sfProcessName";  
 }

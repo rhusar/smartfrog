@@ -20,10 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.io.Serializable;
 
 /**
  * SmartFrogResolutionException is thrown system fails to resolve some
@@ -33,22 +33,22 @@ import org.smartfrog.sfcore.reference.Reference;
 public class SmartFrogResolutionException extends SmartFrogRuntimeException
                                                      implements MessageKeys, Serializable {
     /** Attribute name for path in exceptioncontext. */
-    public final static String PATH="path";
+    public static final String PATH="path";
 
     /** Attribute name for depth in exceptioncontext. */
-    public final static String DEPTH="depth";
+    public static final String DEPTH="depth";
 
     /** Attribute name for default value classtype in exceptioncontext. */
-    public final static String DEFAULT_OBJECT_CLASS_TYPE="defaultValueClassType";
+    public static final String DEFAULT_OBJECT_CLASS_TYPE="defaultValueClassType";
 
     /** Attribute name for reference value classtype in exceptioncontext. */
-    public final static String REFERENCE_OBJECT_CLASS_TYPE="referenceValueClassType";
+    public static final String REFERENCE_OBJECT_CLASS_TYPE="referenceValueClassType";
 
     /** Attribute name for reference value classtype in exceptioncontext. */
-    public final static String REFERENCE_OBJECT_RESOLVED="referenceValueResolved";
+    public static final String REFERENCE_OBJECT_RESOLVED="referenceValueResolved";
 
     /** Attribute name for reference container. */
-    public final static String CONTAINER_ERROR_MSG="container_error_message";
+    public static final String CONTAINER_ERROR_MSG="container_error_message";
 
     /**
      * Constructs a SmartFrogResolutionException with message.
@@ -208,8 +208,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException notFound(Reference ref,
                                                         Reference source) {
-        return new SmartFrogResolutionException
-                (ref, source, MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE));
+        return (new SmartFrogResolutionException(ref ,source,
+                 MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE)));
     }
 
 
@@ -224,8 +224,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      */
     public static SmartFrogResolutionException notFound(Reference ref,
                                                         Reference source, Throwable cause) {
-        return new SmartFrogResolutionException
-                (ref, source, MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE), null, cause, null);
+        return (new SmartFrogResolutionException(ref ,source,
+                 MessageUtil.formatMessage(MSG_NOT_FOUND_REFERENCE),null,cause,null));
     }
 
 
@@ -416,9 +416,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return string representation of the resolution exception
      */
     public String toString(String nm) {
-      StringBuffer strb = null;
+      StringBuilder strb = null;
+      strb = new StringBuilder();
       try {
-        strb = new StringBuffer();
         strb.append (shortClassName() +":: ");
 
         strb.append(((this.containsKey(REFERENCE)&&(this.get(REFERENCE)!=null)

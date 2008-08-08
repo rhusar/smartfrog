@@ -19,10 +19,11 @@
  */
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -52,7 +53,7 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+            SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
@@ -67,9 +68,7 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
                 isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
             }
             try {
-                targetC.sfDetachAndTerminate(new TerminationRecord(
-                    TerminationRecord.NORMAL,
-                    "External Management Action",
+                targetC.sfDetachAndTerminate(TerminationRecord.normal("External Management Action",
                     targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);

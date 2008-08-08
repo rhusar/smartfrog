@@ -21,11 +21,11 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.io.Serializable;
 
 /**
  * A SmartFrogDeploymentException is thrown if the attempt at creating the
@@ -83,6 +83,17 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      */
     public SmartFrogDeploymentException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Constructs a SmartFrogDeploymentException with specified message and cause.
+     * Also initializes  the exception context with component details.
+     * @param message exception message
+     * @param cause   exception causing this exception
+     * @param sfObject The Component that has encountered the exception
+     */
+    public SmartFrogDeploymentException(String message, Throwable cause, Prim sfObject) {
+        super(message, cause,sfObject);
     }
 
     /**
@@ -204,14 +215,14 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @return the message value
      */
     public String getMessage(){
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append ((((this.containsKey(SOURCE)&&
                                 (this.get(SOURCE)!=null)&&
                                 (((Reference)this.get(SOURCE)).size()!=0)))
                                 ? (get(SOURCE)+ " failed to deploy ") : "" ));
         strb.append ((((this.containsKey(OBJECT_NAME)))? ("'"+get(OBJECT_NAME)
                                  +"' component") : "unnamed component" ));
-        strb.append ((super.getMessage() == null)  ? "" : ". "+super.getMessage().toString());
+        strb.append ((super.getMessage() == null)  ? "" : ". "+super.getMessage());
        return strb.toString();
     }
 
@@ -224,8 +235,8 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
      * @return reason source and ref of exception
      */
     public String toString(String nm) {
-        StringBuffer strb = new StringBuffer();
-        strb.append (""+ shortClassName() +": ");
+        StringBuilder strb = new StringBuilder();
+        strb.append("").append(shortClassName()).append(": ");
 
         if (getMessage()!=null){
             if ((getCause()!=null) && (getCause().toString().equals(getMessage()))) {
