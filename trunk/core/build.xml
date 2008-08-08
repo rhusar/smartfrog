@@ -62,6 +62,8 @@ For more information: www.smartfrog.org
     <echo message="   Java: ${java.version} ${java.vendor} "/>
     <echo message="         ${java.home} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
+	<echo message="   Build dir: ${basedir}"/>
+	<echo message="   Ant: ${ant.version}"/>		
     <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
     <echo message=" ======================================================="/>
     <echo message="  "/>
