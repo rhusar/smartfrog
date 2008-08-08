@@ -189,6 +189,7 @@
   <!--Shell scripts from the bin/ directories-->
   <patternset id="unix.bin">
     <include name="smartfrog"/>
+    <include name="set*Properties"/>
     <include name="sf*"/>
     <include name="*.pl"/>
     <include name="*.py"/>
@@ -212,6 +213,7 @@
     <include name="sfGui.bat"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
+    <exclude name="set*Properties"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <exclude name="*.bat"/>
@@ -237,6 +239,8 @@
   <!--directories that security needs -->
   <patternset id="security.pattern">
     <include name="private/**"/>
+    <!--this strips out any internal CA that may have been created-->
+    <exclude name="private/*-internal-ca" />
     <include name="testCA/**"/>
     <patternset refid="excluded.cruft"/>
   </patternset>
@@ -252,9 +256,10 @@
     <include name="parsertargets"/>
     <include name="COPYRIGHT.txt"/>
     <include name="LICENSE.txt"/>
-    <include name="changes.txt"/>
     <include name="readme.txt"/>
     <include name="sf-build-version.properties"/>
+    <!--notice how this pulls in the directory, but not its contents-->
+    <include name="lib" />
     <patternset refid="excluded.cruft"/>
   </patternset>
 
@@ -614,80 +619,6 @@
   <target name="expand" depends="unzip,untar"
     description="make the distributables, then expand them" />
 
- <!-- <target name="oldrelease" depends="dist-zip" >
-
-     <tar tarfile="${release.dir}/${prefix}.${DSTAMP}_DIST.tar" >
-       <tarfileset dir="." prefix="${prefix}">
-         <include name="${dist}/bin/**/*.sf"/>
-         <include name="${dist}/bin/**/*.bat"/>
-         <include name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-       <tarfileset dir="." prefix="${prefix}" >
-         <exclude name="${dist}/bin/**"/>
-	       <include name="${dist}/**"/>
-         <exclude name="${dist}/classes/**"/>
-         <exclude name="${dist}/docs/**"/>
-         <patternset refid="excluded.cruft"/>
-        </tarfileset>
-       <tarfileset dir="${dist}/docs/" prefix="${prefix}/dist/docs">
-         <patternset refid="docs.pattern" />
-       </tarfileset>
-       <tarfileset dir="." mode="755" prefix="${prefix}">
-         <include name="${dist}/bin/**"/>
-         <exclude name="${dist}/bin/**/*.sf"/>
-         <exclude name="${dist}/bin/**/*.bat"/>
-         <exclude name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-     </tar>
-    <gzip src="${release.dir}/${prefix}.${DSTAMP}_DIST.tar"
-        zipfile="${release.dir}/${prefix}.${DSTAMP}_DIST.tar.gz"/>
-    <delete file="${release.dir}/${prefix}.${DSTAMP}_DIST.tar"/>
-
-    <tar tarfile="${release.dir}/${prefix}.${DSTAMP}_ALL.tar" >
-      <tarfileset dir="." prefix="${prefix}">
-        <include name="bin/**/*.sf"/>
-        <include name="bin/**/*.bat"/>
-        <include name="bin/**/*.ini"/>
-      	<include name="lib/**"/>
-	      --><!--include name="lib/*-${version}.jar"/>
-	      <include name="lib/readme.txt"/--><!--
-        <patternset refid="source.pattern"/>
-       </tarfileset>
-       <tarfileset dir="bin" prefix="${prefix}/bin" mode="755">
-         <patternset refid="unix.bin" />
-        <include name="bin/**"/>
-        <exclude name="bin/**/*.sf"/>
-        <exclude name="bin/**/*.bat"/>
-        <exclude name="bin/**/*.ini"/>
-       </tarfileset>
-      <tarfileset dir="docs/" prefix="${prefix}/docs">
-        <patternset refid="docs.pattern" />
-      </tarfileset>
-      <tarfileset dir="${dist}/docs/" prefix="${prefix}/dist/docs">
-        <patternset refid="docs.pattern" />
-      </tarfileset>
-       <tarfileset dir="." prefix="${prefix}">
-         <include name="${dist}/bin/**/*.sf"/>
-         <include name="${dist}/bin/**/*.bat"/>
-         <include name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-       <tarfileset dir="." prefix="${prefix}">
-         <exclude name="${dist}/bin/**"/>
-	       <include name="${dist}/**"/>
-         <exclude name="${dist}/classes/**"/>
-         <exclude name="${dist}/classes/**"/>
-         <exclude name="${dist}/docs/**"/>
-        </tarfileset>
-       <tarfileset dir="." mode="755" prefix="${prefix}">
-         <include name="${dist}/bin/**"/>
-         <exclude name="${dist}/bin/**/*.sf"/>
-         <exclude name="${dist}/bin/**/*.bat"/>
-         <exclude name="${dist}/bin/**/*.ini"/>
-        </tarfileset>
-    </tar>
-    <gzip src="${release.dir}/${prefix}.${DSTAMP}_ALL.tar" zipfile="${release.dir}/${prefix}.${DSTAMP}_ALL.tar.gz"/>
-    <delete file="${release.dir}/${prefix}.${DSTAMP}_ALL.tar"/>
-  </target>-->
 </project>
 
 <!-- End of file -->

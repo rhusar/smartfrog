@@ -15,15 +15,15 @@
   For more information: www.smartfrog.org
   */
 -->
-<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
   <description>
     Introduction
     ============
     The build script for the kernel SmartFrog framework.
     It requires
-      -Java1.4 or later. Java 1.5 is recommended
+      -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 1.4.1 (from jayasoft.fr, or soon, apache.org)
+      -Ivy 2.0 beta 2 or later from ant.apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -42,19 +42,33 @@
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
-    <property name="core.dir" location=".." />
+    <property name="core.dir" location=".."/>
     <tstamp/>
     <tstamp>
       <format property="year" pattern="yyyy"/>
     </tstamp>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company"
-        value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
+    <echo message="  "/>
+    <echo message="  "/>
+    <echo message=" ======================================================="/>
+    <echo message=" Build info - Project: ${Name.System} ${version}"/>
+    <echo message="   ${Name.Company}"/>
+    <echo message="      Java: ${java.version} ${java.vendor} "/>
+    <echo message="            ${java.home} "/>
+    <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
+    <echo message=" --------------------------------------------------------"/>
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
+    <echo message=" ======================================================="/>
+    <echo message="  "/>
     <echo level="verbose">
       ===================================================================
       = ${Name.System} ${version}
       = ${Name.Company}
+      = Java: ${java.version} ${java.vendor}
+      = ${java.home}
+      = OS: ${os.name} ${os.version}
       ===================================================================
     </echo>
     <fail>
@@ -103,9 +117,16 @@
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
-    <pathelement path="./lib/ProActive.jar"/>
+	<pathelement path="./lib/eclipse.jar"/>
+    <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
-
+  <!-- to get the classpath in a printable form -->
+  <pathconvert pathsep="${line.separator}|   |-- "  
+               property="echo.smartfrog.class.path" 
+               refid="smartfrog.class.path">
+  </pathconvert>
+   
+  
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
@@ -144,12 +165,14 @@
   <property name="jdocs" value="${doc.dir}/jdocs"/>
   <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
+  <property name="dist.metadata.dir" location="${dist.lib.dir}/metadata"/>
   <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
   <property name="dist.src.dir" location="${dist.dir}/${src}"/>
   <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
   <property name="dist.private.dir" location="${dist.dir}/${private}"/>
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
+  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
   <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
   <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
   <!--property name="redist" value="redist"/ -->
@@ -160,18 +183,18 @@
   <property name="javac.debug.mode" value="on"/>
   <!-- turn on compile -g -->
   <property name="javac.debug.level" value="lines,vars,source"/>
-  <property name="javac.java.version" value="1.6"/>
+  <property name="javac.java.version" value="1.5"/>
   <property name="build.compiler" value="modern"/>
   <property name="javac.compiler" value="${build.compiler}"/>
   <property name="javac.max.memory" value="192m" />
-
+    
   <!--use the forking compiler with tuned memory use and profiling diagnostics-->
   <property name="rmic.compiler" value="forking"/>
   <property name="rmic.max.memory" value="192m" />
   <property name="rmic.forking.commandline.extras" value="" />
-  <property name="rmic.forking.commandline"
+  <property name="rmic.forking.commandline" 
     value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
-
+ 
   <!-- override point for javacc -->
   <property name="javacc.dir" location="javacc"/>
   <!-- Security related files -->
@@ -187,6 +210,8 @@
   <target name="ready-to-create-CA" depends="copyPrivate,security.ready-to-create-CA">
 
   </target>
+
+
 
   <!-- ================================================================== -->
   <!-- running Version.java to generate version information               -->
@@ -214,14 +239,23 @@
     <propertyfile
         file="${sf.version.file}"
         comment="This is machine generated. Do Not Edit!">
-      <entry  key="sf.build.date" type="date"  pattern="yyyy-MM-dd HH:mm:ss"  value="now"/>
+      <entry  key="sf.build.date" type="date"  pattern="yyyy-MM-dd HH:mm:ss z"  value="now"/>
       <entry  key="sf.build.version" value = "${Version}"/>
       <entry key="sf.majorRelease" value="${sf.majorRelease}"/>
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
+      <entry key="sf.build.java.version" value="${java.version}"/>
+      <entry key="sf.build.java.vendor" value="${java.vendor}"/>
+      <entry key="sf.build.os.name" value="${os.name}"/>
+      <entry key="sf.build.os.version" value="${os.version}"/>
+      <entry key="sf.build.os.architecture" value="${os.arch}"/>
+      <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
+      <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
     </propertyfile>
+
     <property file="${sf.version.file}"/>
+
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
 
     <copy file="${sf.version.file}" todir="${dist.dir}" />
@@ -230,27 +264,45 @@
     <copy file="${src}/org/smartfrog/version.sf.build"
           tofile="${src}/org/smartfrog/version.sf" overwrite="true" />
     <replace file="${src}/org/smartfrog/version.sf">
-        <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
-        <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
-        <replacefilter token="@build@" value="${sf.build}"/>
-        <replacefilter token="@status@" value="${sf.status}"/>
-        <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+      <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
+      <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
+      <replacefilter token="@build@" value="${sf.build}"/>
+      <replacefilter token="@status@" value="${sf.status}"/>
+      <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+      <replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
+      <replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
+      <replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
+      <replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
+      <replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
+      <replacefilter token="@copyright@" value="${Name.Company}"/>
+      <replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
+      <replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
   </target>
 
   <!-- =================================================================== -->
-  <!--  Generte Forrest Docs -->
+  <!--  Generate Forrest Docs -->
   <!-- =================================================================== -->
 
-  <target name="generatedoc" depends="init, dist, jdocs"
-      description="Document Generation"
-      if="env.FORREST_HOME">
-	  <ant antfile="documentation.xml" inheritall="false"/>
-    <!-- Forrest build dir -->
+
+  <target name="ready-to-forrest" depends="init, dist, jdocs">
+    <condition property="execute.forrest">
+      <and>
+        <isset property="env.FORREST_HOME" />
+        <istrue value="${forrest.enabled}" />
+      </and>
+    </condition>
   </target>
 
+  <target name="generatedoc" depends="ready-to-forrest"
+      description="Document Generation"
+      if="execute.forrest">
+	  <ant antfile="documentation.xml" inheritall="false"/> 
+    <!-- Forrest build dir -->
+  </target>
+  
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
@@ -261,10 +313,13 @@
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="initbuild" depends="init">
+    <!--for redistributions, the lib dir is empty-->
+    <mkdir dir="lib"/>
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.classes.dir}"/>
     <mkdir dir="${build.extra.dir}"/>
   </target>
+  
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -279,6 +334,7 @@
     <mkdir dir="${dist.signedLib.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
   </target>
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -287,35 +343,36 @@
     <tstamp/>
     <mkdir dir="${releases.dir}"/>
   </target>
+
   <!-- =================================================================== -->
-  <!--                                                                     -->
+  <!--     Javacc the parser files                                                                 -->
   <!-- =================================================================== -->
-  <target name="createParser" depends="init">
-    <!-- Javacc the parser files - both sf and csf -->
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
+  <target name="createParser" depends="init"> 
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
+        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile-source" depends="initbuild,createParser,declare-classpaths" description="Compiles the source code">
+  <target name="compile-source" depends="initbuild,createParser" description="Compiles the source code">
     <!-- Compile the java code -->
     <echo level="verbose">${javac.java.version}
       build.compiler=${build.compiler}
       javac.compiler=${javac.compiler}</echo>
-    <javac compiler="${javac.compiler}"
+    <javac compiler="${javac.compiler}" 
       srcdir="${src.dir}"
-      includes="**/*.java"
+      includes="**/*.java" 
       destdir="${build.classes.dir}"
       debug="${javac.debug.mode}"
       debuglevel="${javac.debug.level}"
       fork="true"
-      includeAntRuntime="false"
-      source="${javac.java.version}"
+      includeAntRuntime="false" 
+      source="${javac.java.version}" 
       target="${javac.java.version}"
       memoryMaximumSize="${javac.max.memory}"
       >
-      <classpath refid="compile.classpath"/>
+      <classpath refid="smartfrog.class.path"/>
     </javac>
   </target>
 
@@ -330,7 +387,7 @@
         verify="true"
         compiler="${rmic.compiler}"
         includes="**/*.class">
-        <classpath refid="compile.classpath"/>
+        <classpath refid="smartfrog.class.path"/>
         <compilerarg line="${rmic.forking.commandline}" compiler="forking" />
       </rmic>
   </target>
@@ -425,23 +482,10 @@
       </fileset>
     </copy>
   </target>
-
-    <!-- =================================================================== -->
-    <!--                                                                     -->
-    <!-- =================================================================== -->
-    <target name="copyIvyDependencies" depends="initbuild">
-        <ivy:cachepath conf="redist" pathid="redist.jars"/>
-        <!-- Using <copy> with a nested referenced path does not seem to work.
-        Using the undocumented <copypath> instead. -->
-        <copypath destdir="${dist.lib.dir}" pathref="redist.jars">
-            <flattenmapper/>
-        </copypath>
-    </target>
-
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copylibs" depends="initbuild,copyIvyDependencies">
+  <target name="copylibs" depends="initbuild">
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
@@ -478,6 +522,7 @@
   <target name="init.scripts.pattern" depends="init">
     <patternset id="shellscripts">
       <include name="smartfrog"/>
+      <include name="set*Properties"/>
       <include name="sf*"/>
       <include name="*.pl"/>
       <include name="*.py"/>
@@ -524,11 +569,6 @@
         <include name="**/*"/>
       </fileset>
     </copy>
-    <copy todir="${dist.docs.dir}" failonerror="false">
-      <fileset dir="../extras/sfgui/${docs}">
-        <include name="**/*.pdf"/>
-      </fileset>
-    </copy>
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
@@ -542,22 +582,25 @@
     </copy>
   </target>
   <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
+  <!--   JavaDocs                                                          -->
   <!-- =================================================================== -->
 
 
   <target name="ready-to-javadoc"
-          depends="initdist,generateversion,jjdocs"
-      />
+      depends="initdist,generateversion,jars">
 
-  <target name="jdocs" depends="ready-to-javadoc"
-          unless="javadoc.disabled"
-      description="Generates the API documentation"
-          >
-    <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
+  </target>
+
+  <target name="jdocs"
+  depends="ready-to-javadoc,jjdocs"
+  unless="javadoc.disabled"
+  description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo>
+    ------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------
+    To skip this stage, set javadoc.disabled=true
+    </echo>
     <javadoc
       packagenames="org.smartfrog.*"
       sourcepath="${src.dir}"
@@ -576,9 +619,10 @@
     </javadoc>
   </target>
 
-  <target name="jjdocs" depends="initdist" unless="javadoc.disabled">
+  <target name="jjdocs" depends="ready-to-javadoc" unless="javadoc.disabled">
     <!--  Java doc for the grammars -->
-    <java classname="jjdoc" failonerror="true">
+    <property name="jjdoc.failonerror" value="false" />
+    <java classname="jjdoc" failonerror="${jjdoc.failonerror}">
       <arg value="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
       <arg value="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
       <classpath>
@@ -587,7 +631,19 @@
     </java>
   </target>
 
-  <target name="documentation" depends="copydocs,target-names">
+  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
+
+ <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
+      description="package up all the javadocs">
+    <property name="javadocs.zipfile.package" value="" />
+    <zip destfile="${javadocs.zip}" whenempty="create">
+      <zipfileset dir="${dist.jdocs.dir}" includes="**/*.*"
+          prefix="${javadocs.zipfile.package}"/>
+    </zip>
+  </target>
+
+  <target name="documentation" depends="copydocs,target-names,package-javadocs">
 
   </target>
 
@@ -622,6 +678,7 @@
 
     <property name="sf-examples.title"
         value="sfExamples" />
+
     <property name="sf-examples.stub"
       value="${sf-examples.title}-${Version}" />
     <property name="sf-examples.jar"
@@ -689,7 +746,6 @@
     <copy tofile="${dist.dir}/parsertargets" file="parsertargets"/>
     <copy tofile="${dist.dir}/COPYRIGHT.txt" file="COPYRIGHT.txt"/>
     <copy tofile="${dist.dir}/LICENSE.txt" file="LICENSE.txt"/>
-    <copy tofile="${dist.dir}/changes.txt" file="changes.txt"/>
     <copy tofile="${dist.dir}/readme.txt" file="readme.txt"/>
   </target>
 
@@ -704,7 +760,12 @@
 
   <target name="published-distribution" depends="dist"
       description="create a distribution and publish all artifacts with Ivy"/>
-
+  <target name="dis"
+      depends="build,jars,copybins,copyPrivate,copydocs,
+      copylibs,copyexamples,copyTestCA,buildSetup"
+      description="Fast dist. No ivy publish">
+  </target>
+	  
   <target name="dist"
       depends="ready-to-dist,published"
       description="Prepares distribution package,and publishes it the local repository">
@@ -739,11 +800,19 @@
   <!-- =================================================================== -->
   <target name="clean" depends="init" description="Restores the distribution to its clean state">
     <!-- Delete the ${build} ${dist.dir} ${jdocs} directory trees -->
-    <!-- remove parser source files -->
     <delete dir="${build.dir}" failonerror="false"/>
     <delete dir="${build.extra.dir}" failonerror="false"/>
     <delete dir="${dist.dir}" failonerror="false"/>
     <delete dir="${src.dir}/documentation" failonerror="false"/>
+	<!-- remove parser source files -->
+	 <!-- sf parser source files -->
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserConstants.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParserTokenManager.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/JavaCharStream.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/ParseException.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/Token.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/TokenMgrError.java" failonerror="false"/>
   </target>
 
   <!-- =================================================================== -->
@@ -768,6 +837,7 @@
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
       <arg value="-f"/>
+	  <arg value="-D"/>
       <arg file="parsertargets"/>
     </java>
   </target>
@@ -794,9 +864,10 @@
 
     <macrodef name="sha1">
       <attribute name="file"/>
+	    <attribute name="todir"/>
       <sequential>
-        <checksum file="@{file}" algorithm="md5"/>
-        <checksum file="@{file}" algorithm="sha1"/>
+        <checksum file="@{file}" algorithm="md5"  todir="@{todir}"/>
+        <checksum file="@{file}" algorithm="sha1" todir="@{todir}"/>
       </sequential>
     </macrodef>
 
@@ -808,11 +879,11 @@
   <target name="checksum-target-jar"
     description="checksum our target jars" depends="jars,sha1macro">
 
-    <sha1 file="${smartfrog.jar}" />
-    <sha1 file="${sf-examples.jar}" />
-    <sha1 file="${sf-services.jar}" />
-    <sha1 file="${sf-rmi-spi.jar}" />
-    <sha1 file="${sf-osgi.jar}" />
+    <sha1 file="${smartfrog.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-examples.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-services.jar}" todir="${dist.metadata.dir}"/>
+	<sha1 file="${sf-rmi-spi.jar}" todir="${dist.metadata.dir}"/>
+    <sha1 file="${sf-osgi.jar}" todir="${dist.metadata.dir}"/>
   </target>
 
   <!-- ========================================================== -->
@@ -855,15 +926,16 @@
       groupIDpath="${m2.groupID.path}"
       artifactID="sfExamples"
       version="${Version}" />
+	  
     <property name="smartfrog.pom"
-      location="${dist.lib.dir}/${smartfrog.stub}.pom" />
+      location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
     <property name="target.pom"
       value="${smartfrog.pom}" />
     <property name="sf-services.pom"
-      location="${dist.lib.dir}/${sf-services.stub}.pom" />
-
+      location="${dist.metadata.dir}/${sf-services.stub}.pom" />
     <property name="sf-examples.pom"
-      location="${dist.lib.dir}/${sf-examples.stub}.pom" />
+      location="${dist.metadata.dir}/${sf-examples.stub}.pom" />
+	  
      <property name="metadata.dir" location="bin/metadata" />
      <presetdef name="expandingcopy">
        <copy >
@@ -877,15 +949,17 @@
 
    <!-- create POMs from templates held in the metadata dir -->
    <target name="m2-pom" depends="m2-init,sha1macro" >
+   
      <expandingcopy file="${metadata.dir}/smartfrog.pom"
        tofile="${smartfrog.pom}"/>
      <expandingcopy file="${metadata.dir}/sfServices.pom"
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
-     <sha1 file="${smartfrog.pom}" />
-     <sha1 file="${sf-services.pom}" />
-     <sha1 file="${sf-examples.pom}" />
+		 
+     <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
+     <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
    </target>
 
 
@@ -899,31 +973,34 @@
     <macrodef name="m2-install">
       <attribute name="destdir"/>
       <attribute name="target"/>
+	  <attribute name="target.md5"/>
       <attribute name="pom" />
-      <attribute name="md5" default="@{target}.md5"/>
       <attribute name="pom.md5" default="@{pom}.md5"/>
       <sequential>
         <mkdir dir="@{destdir}"/>
         <copy file="@{target}" todir="@{destdir}"/>
         <!-- copy a pom -->
         <copy file="@{pom}" todir="@{destdir}" failonerror="false"/>
-        <copy file="@{md5}" todir="@{destdir}" failonerror="false"/>
+        <copy file="@{target.md5}" todir="@{destdir}" failonerror="false"/>
       </sequential>
     </macrodef>
 
     <m2-install
       destdir="${m2.subdir}"
       target="${smartfrog.jar}"
+	  target.md5="${dist.metadata.dir}/${smartfrog.stub}.jar.md5"
       pom="${smartfrog.pom}"
       />
     <m2-install
       destdir="${m2.sf-services}"
       target="${sf-services.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-services.stub}.jar.md5"
       pom="${sf-services.pom}"
       />
     <m2-install
       destdir="${m2.sf-examples}"
       target="${sf-examples.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
   </target>
@@ -932,7 +1009,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="1.4.1" />
+    <property name="ivy.version" value="2.0.0-beta1" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
@@ -957,7 +1034,7 @@
   </target>
 
   <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
              resource="${ivy.resource}">
       <classpath>
         <pathelement location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
@@ -972,26 +1049,18 @@
 
   <target name="ivy-retrieve" depends="ivy-resolve" if="ivy.found">
     <ivy:retrieve pattern="${ivy.lib.dir}/[conf]/[artifact]-[revision].[ext]" sync="true" />
-      <echo>artifacts retrieved to ${ivy.lib.dir}</echo>
+  </target>
+  
+  <target name="ivy-test" depends="ivy-resolve" if="ivy.found" description="Try to retrieve dependencies from ivy.xml placed in local dir">   	
+    <ivy:retrieve />  
   </target>
 
   <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
     <ivy:report todir="${ivy.reports.dir}"/>
-    <echo> published Ivy report to
+    <echo> published Ivy report to 
 ${ivy.reports.dir}
     </echo>
   </target>
-
-    <target name="declare-classpaths"
-      depends=
-       "ivy.compile.classpath"/>
-
-
-    <target name="ivy.compile.classpath" depends="ivy-resolve">
-      <ivy:cachepath pathid="compile.classpath" conf="compile" />
-      <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
-    </target>
-
 
   <!--copy these in to the same dir that the other artifacts go,
   so that they can be published together-->
@@ -999,11 +1068,9 @@ ${ivy.reports.dir}
     <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
-    <copy file="${sf-rmi-spi.jar}" todir="${artifacts.dir}" />
-    <copy file="${sf-osgi.jar}" todir="${artifacts.dir}" />
   </target>
 
-  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact"/>
+  <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
 
   <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
     <ivy:publish resolver="local" pubrevision="${Version}"
@@ -1011,7 +1078,7 @@ ${ivy.reports.dir}
         artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-
+  
   <target name="published" depends="ivy-publish,m2-install"
       description="Publish artifacts to the local repositories"
       />
@@ -1025,8 +1092,9 @@ ${ivy.reports.dir}
         location="${artifacts.dir}/sf-core-source-${Version}.zip" />
     <property name="sf-core-documentation.zip"
         location="${artifacts.dir}/sf-core-documentation-${Version}.zip" />
-    <property name="sf-core-documentation.zip"
+    <property name="sf-core-javadocs.zip"
         location="${artifacts.dir}/sf-core-javadocs-${Version}.zip" />
+    <property name="javadocs.zip" location="${sf-core-javadocs.zip}" />
   </target>
 
   <target name="package-source-artifact" depends="artifact-names">
@@ -1036,13 +1104,18 @@ ${ivy.reports.dir}
   </target>
 
   <!--
-  the install artifact is the core com
+  the install artifact is the core component that is published to Ivy
   -->
   <target name="package-install-artifact" depends="artifact-names,ready-to-dist">
     <zip destfile="${sf-core-install.zip}">
       <zipfileset dir="${dist.dir}" >
         <include name="**/*" />
+        <!--this can be turned on/off-->
+        <exclude name="docs/jdocs" unless="install.includes.javadocs"/>
         <exclude name="lib/*" />
+        <!--this strips out any internal CA-->
+        <exclude name="private/*-internal-ca/" />
+        <exclude name="private/*-internal-ca/**" />
         <exclude name="bin/sfGui*" />
       </zipfileset>
       <zipfileset dir="${dist.dir}/lib" prefix="lib">
@@ -1108,6 +1181,7 @@ ${ivy.reports.dir}
   <patternset id="unix.bin">
     <include name="smartfrog"/>
     <include name="sf*"/>
+    <include name="set*Properties"/>
     <include name="*.pl"/>
     <include name="*.py"/>
     <exclude name="*.bat"/>
@@ -1121,6 +1195,7 @@ ${ivy.reports.dir}
     <include name="metadata/*"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
+    <exclude name="set*Properties"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <patternset refid="excluded.cruft"/>
@@ -1159,7 +1234,6 @@ ${ivy.reports.dir}
     <include name="parsertargets"/>
     <include name="COPYRIGHT.txt"/>
     <include name="LICENSE.txt"/>
-    <include name="changes.txt"/>
     <include name="readme.txt"/>
     <include name="sf-build-version.properties"/>
     <patternset refid="excluded.cruft"/>
@@ -1208,6 +1282,52 @@ ${ivy.reports.dir}
     <bulkpdf dir="${doc.dir}" />
     <bulkpdf dir="${doc.dir}/components" />
   </target>
+  
+  <!-- CLOVER -->
+  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
+	
+  <target name="with.clover">
+   <clover-setup/>
+  </target>
+  
+  <target name="dist.with.clover"
+      depends="clean, with.clover, ready-to-dist,published"
+      description="Prepares distribution package,and publishes it the local repository ready for clover code coverage">
+  </target>
+  <!-- CLOVER  end-->
+
+  <!--some extra targets to test the distribution works-->
+
+  <target name="ready-to-run-dist" depends="dist">
+    <presetdef name="dist">
+      <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" />
+    </presetdef>
+  </target>
+
+  <target name="dist.test" depends="dist.build,dist.initCA,dist.newDaemon,dist.sfParseTest,dist.jdocs">
+  </target>
+
+  <target name="dist.build" depends="ready-to-run-dist">
+    <dist target="build" />
+  </target>
+
+  <target name="dist.initCA" depends="dist">
+    <dist target="initCA" />
+    <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" target="initCA" />
+  </target>
+
+  <target name="dist.newDaemon" depends="dist">
+    <dist target="newDaemon" />
+  </target>
+
+  <target name="dist.sfParseTest" depends="dist">
+    <dist target="sfParseTest" />
+  </target>
+
+  <target name="dist.jdocs" depends="dist">
+    <dist target="jdocs" />
+  </target>
+
 </project>
 
 <!-- End of file -->

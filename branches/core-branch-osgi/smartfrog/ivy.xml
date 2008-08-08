@@ -42,6 +42,7 @@
     <conf name="javacc" visibility="private"/>
   </configurations>
   <publications>
+    <!--get the artifact from our module name-->
     <artifact name="${smartfrog.title}" conf="core"/>
     <artifact name="${sf-rmi-spi.title}" conf="core"/>
     <artifact name="${sf-osgi.title}" conf="core"/>
@@ -49,21 +50,20 @@
     <artifact name="${sf-examples.title}" conf="examples-master"/>
     <artifact name="sf-core-install" conf="installation" type="zip"/>
     <!--<artifact name="sf-core-documentation" conf="documentation" ext="zip"/>-->
+    <artifact name="sf-core-javadocs" conf="documentation" ext="zip"/>
+
   </publications>
   <dependencies>
 
       <!--javacc is used for the javacc task-->
-
       <dependency org="net.java.dev.javacc"
                   name="javacc"
                   rev="3.2"
                   conf="javacc->default"/>
-
       <dependency org="org.osgi"
                   name="osgi_R4_core"
                   rev="1.0"
                   conf="compile->default"/>
-
       <dependency org="org.osgi"
                   name="osgi_R4_compendium"
                   rev="1.0"
