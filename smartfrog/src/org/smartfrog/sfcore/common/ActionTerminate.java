@@ -19,10 +19,11 @@
  */
 package org.smartfrog.sfcore.common;
 
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 
@@ -47,7 +48,7 @@ public class ActionTerminate extends ConfigurationAction{
         //First thing first: system gets initialized
         //Protect system if people use this as entry point
         try {
-            org.smartfrog.SFSystem.initSystem();
+            SFSystem.initSystem();
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
@@ -65,9 +66,7 @@ public class ActionTerminate extends ConfigurationAction{
                 isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
             }
             try {
-                targetC.sfTerminate(new TerminationRecord(TerminationRecord.
-                    NORMAL,
-                    "External Management Action",
+                targetC.sfTerminate(TerminationRecord.normal("External Management Action",
                     targetP.sfCompleteName()));
             } catch (RemoteException ex) {
                 HandleTerminationException(ex, isRootProcess);
@@ -87,13 +86,11 @@ public class ActionTerminate extends ConfigurationAction{
      * @throws SmartFrogException  failure in some part of the process
      * @throws RemoteException    In case of network/rmi error
      */
-    public Object execute(ProcessCompound targetP,
-                          ConfigurationDescriptor configuration) throws SmartFrogException,
-            RemoteException {
+    public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration) throws SmartFrogException, RemoteException {
         Prim targetC=null;
         try {
             if (targetP==null)
-                targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
+            targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             targetC = sfTerminate(configuration.getName(), targetP);
         } catch (SmartFrogException sex) {
             configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);

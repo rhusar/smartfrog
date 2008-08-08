@@ -20,14 +20,15 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.reference.Reference;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.io.Serializable;
 
 
 /**
@@ -38,10 +39,9 @@ public class DumpVisitorImpl implements Dump, Serializable {
     static final long serialVersionUID = -812223322957783371L;
 
     //Reference to the class collecting results from visits
-    private Dumper dumper = null;
+    private transient Dumper dumper = null;
 
     public DumpVisitorImpl (Dumper dumper){
-        super();
         this.dumper = dumper;
     }
     /**
@@ -51,14 +51,14 @@ public class DumpVisitorImpl implements Dump, Serializable {
       * @param state state of component (application specific)
       * @param from source of this call
       *
-      * @throws java.rmi.RemoteException In case of Remote/nework error
+      * @throws RemoteException In case of Remote/nework error
       */
      public void dumpState(Object state, Prim from) throws RemoteException {
         //System.out.println(" - DumpState from1: "+from.sfCompleteName());
         Integer numberOfChildren = new Integer(0);
         if (from instanceof Compound) {
            int numberC = 0;
-           for (Enumeration e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
+           for (Enumeration<Liveness> e = ((Compound)from).sfChildren(); e.hasMoreElements();) {
              e.nextElement();
              numberC++;
            }

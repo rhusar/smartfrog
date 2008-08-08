@@ -19,9 +19,11 @@
  */
 package org.smartfrog.sfcore.common;
 
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+
 import java.rmi.RemoteException;
 
 /**
@@ -43,7 +45,7 @@ public class ActionDetach extends ConfigurationAction{
             //First thing first: system gets initialized
             //Protect system if people use this as entry point
             try {
-                org.smartfrog.SFSystem.initSystem();
+                SFSystem.initSystem();
             } catch (Exception ex) {
                 throw SmartFrogException.forward(ex);
             }
@@ -75,9 +77,8 @@ public class ActionDetach extends ConfigurationAction{
             Prim result=null;
             try {
                 if (targetP==null)
-                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),
-                        configuration.getSubProcess());
-                result = Detach(configuration.getName(), targetP);
+                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),configuration.getSubProcess());
+                    result = Detach(configuration.getName(), targetP);
             } catch (SmartFrogException sex){
                  configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
                  throw sex;

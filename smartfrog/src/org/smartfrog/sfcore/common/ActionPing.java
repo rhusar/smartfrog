@@ -77,7 +77,7 @@ public class ActionPing extends ConfigurationAction implements Serializable {
     /**
      * Ping a component
      * @param name name of component; if null, we assume the processcompound
-     *  iself is the target
+     *  itself is the target
      * @param targetP process to resolve against
      * @return long time (in milliseconds) the ping took.
      * @throws SmartFrogException  failure in some part of the process

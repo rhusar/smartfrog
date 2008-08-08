@@ -21,11 +21,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 
+import org.smartfrog.SFSystem;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Vector;
-import org.smartfrog.SFSystem;
 
 
 /**
@@ -43,7 +44,7 @@ public class ParseOptionSet {
 
     /** Usage string for SFParse. */
     public String usage = "\n" +
-        "* Usage: java org.smartfrog.SFParse [-v] [-q] [-d] [-r] [-R] [-f] filename [-D] \n"+
+        "* Usage: java org.smartfrog.SFParse [-v] [-q] [-d] [-r] [-R] [-c] [-f] filename [-D] \n"+
         "   or: java org.smartfrog.SFParse -?";
 
     /** Help string for SFSystem. */
@@ -57,6 +58,7 @@ public class ParseOptionSet {
         "    -f filename:    file with a list of SmartFrog descriptions to parse\n" +
         "                    if -f is not present then filename is directly parsed\n"+
         "    -D:             show diagnostics report \n"+
+        "    -c:             show console\n"+
         "    -?:             this help text.\n"+
         " \n"+
         "   Examples: SFParse -r org/smartfrog/examples/counter/example.sf \n";
@@ -86,7 +88,7 @@ public class ParseOptionSet {
     public String fileName =null;
 
     /** List of files to be parsed. */
-    public Vector filesList=null;
+    public Vector<String> filesList=null;
 
     /** Flag indicating to show status parsing report or not. */
     public boolean statusReport=false;
@@ -96,6 +98,8 @@ public class ParseOptionSet {
 
     /** Flag indicating if diagnostics was requested. */
     public boolean diagnostics = false;
+    /** Show console. */
+    public boolean showConsole = false;
 
     /**
      * Creates an OptionSet from an array of arguments.
@@ -139,6 +143,9 @@ public class ParseOptionSet {
 
                     case 'f':
                         loadDescriptionsFromFile = true;
+                        break;
+                    case 'c':
+                        showConsole = true;
                         break;
 
                     default:
@@ -186,9 +193,9 @@ public class ParseOptionSet {
      * @param url String url
      * @return Vector of parsed lines
      */
-    private synchronized Vector loadListOfFiles(String url) {
+    private synchronized Vector<String> loadListOfFiles(String url) {
       String thisLine;
-      Vector list=new Vector();
+      Vector<String> list=new Vector<String>();
         LineNumberReader file=null;
         try {
           //Do not allow other threads to read from the input
@@ -228,16 +235,19 @@ public class ParseOptionSet {
      * @return string representation
      */
     public String toString (){
-       StringBuffer strb = new StringBuffer();
+       StringBuilder strb = new StringBuilder();
        strb.append("SFParse options:");
-       strb.append("\n - Verbose:       "+ verbose);
-       strb.append("\n - Quiet:         "+  quiet);
-       strb.append("\n - Description:   "+ description);
-       strb.append("\n - File:          "+ fileName);
-       strb.append("\n   * load from file:"+ loadDescriptionsFromFile);
-       strb.append("\n   * filesList:   "+ filesList);
-       strb.append("\n - Help:          "+ help);
-       strb.append("\n - Status report: "+ statusReport);
+       strb.append("\n - Verbose:       ").append(verbose);
+       strb.append("\n - Quiet:         ").append(quiet);
+       strb.append("\n - Description:   ").append(description);
+       strb.append("\n - File:          ").append(fileName);
+       strb.append("\n   * load from file:").append(loadDescriptionsFromFile);
+       strb.append("\n   * filesList:   ");
+       for (String file : filesList) {
+           strb.append("\n     ").append(file);
+       }
+       strb.append("\n - Help:          ").append(help);
+       strb.append("\n - Status report: ").append(statusReport);
        return strb.toString();
     }
 }

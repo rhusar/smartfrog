@@ -20,10 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.rmi.RemoteException;
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
+
+import java.io.Serializable;
+import java.rmi.RemoteException;
 
 /**
  * A SmartFrogLogException is thrown when an error occurs in SmartFrog Logging.
@@ -104,8 +104,7 @@ public class SmartFrogLogException extends SmartFrogException implements Seriali
         init(sfObject);
     }
 
-    private void init(){
-    }
+
     /**
      * Initializes the exception context with the SmartFrog component.
      *
@@ -164,7 +163,7 @@ public class SmartFrogLogException extends SmartFrogException implements Seriali
      * @return reason source and ref of exception
      */
     public String toString(String nm) {
-        StringBuffer strb = new StringBuffer();
+        StringBuilder strb = new StringBuilder();
         strb.append(super.toString(nm));
         strb.append ((((this.containsKey(REFERENCE))) ? (nm+REFERENCE+  ": "
                                                     + get(REFERENCE)) : "" ));

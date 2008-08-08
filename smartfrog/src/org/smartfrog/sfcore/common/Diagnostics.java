@@ -40,33 +40,26 @@
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.Version;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.rmi.RemoteException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.Vector;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.security.SFClassLoader;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.InetAddress;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 
 /**
@@ -84,12 +77,11 @@ public final class Diagnostics {
 
     /**
      * return the list of jar files existing in "dir".
+     * @param dir directory
      * @return the list of jar files existing in "dir" or
      * <tt>null</tt> if an error occurs.
      *
      * Derived from Ant Diagnostics class
-     * @param dir directory
-     * @return array of files (or null for no such directory)
      */
     public static File[] listLibraries(String dir) {
         if (dir == null) {
@@ -151,55 +143,109 @@ public final class Diagnostics {
       outPS.print(out);
     }
 
-    /**
-         * Print a report to the given StringBuffer.
-         * @param out the StringBuffer to print the report to.
-         * @param cd the SmartFrog component description where to extract info from.
-         * Derived from Ant Diagnostics class
-         */
-        public static void doReport(StringBuffer out, ComponentDescription cd) {
 
-            out.append("\n------- SF CD diagnostics report -------");
-            header(out, "Implementation Version");
-            out.append(org.smartfrog.Version.versionString());
-            out.append("\n");
-            out.append(org.smartfrog.Version.copyright());
-            out.append("\n");
-            out.append("Build date: ");
-            out.append(org.smartfrog.Version.buildDate());
-            out.append("\n");
+    private static void doReportCommon(StringBuffer out) {
+        header(out, "Implementation Version");
+        out.append(Version.versionString());
+        out.append("\n");
+        out.append(Version.copyright());
+        out.append("\n");
+        out.append("Build date: ");
+        out.append(Version.buildDate());
+        out.append("\n");
 
-            header(out, "System properties summary");
-            doReportSummary(out);
+        header(out, "System properties summary");
+        doReportSummary(out);
 
-            header(out, "Temp dir");
-            doReportTempDir(out);
+        header(out, "Temp dir");
+        doReportTempDir(out);
 
-            header(out, "Network");
+        header(out, "Network");
+        if (Logger.testNetwork) {
             doReportLocalNetwork(out);
             out.append("\n");
-            doReportRemoteNetwork(out,Logger.testURI);
-            out.append("\n");
-
-
-            header(out, "ClassPath");
-            doReportClassPath(out);
-
-            header(out, "CodeBase");
-            doReportClassPath(out);
-
-            header(out, "Locale information");
-            doReportLocale(out);
-
-            doReportCD(out, cd);
-
-            header(out, "System properties");
-            doReportSystemProperties(out);
-
-            header(out, org.smartfrog.Version.versionString());
-            out.append("\n");
-
+            doReportRemoteNetwork(out, Logger.testURI);
+        } else {
+            out.append("Network report disabled.");
         }
+        out.append("\n");
+
+
+        header(out, "ClassPath");
+        doReportClassPath(out);
+
+        //header(out, "ClassPath repeats");
+        doReportClassPathRepeats(out);
+
+
+        header(out, "CodeBase");
+        doReportCodeBase(out);
+        
+        //header(out, "CodeBase repeats");
+        doReportCodeBaseRepeats(out);
+
+        header(out, "Locale information");
+        doReportLocale(out);
+    }
+
+
+
+    /**
+     * Print a report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     * @param object prim/componentdescription the SmartFrog component where to extract info from.
+     * Derived from Ant Diagnostics class
+     */
+    public static void doReport(StringBuffer out, Object object) {
+
+        if (object instanceof Prim) {
+            out.append("\n------- SF diagnostics report -------");
+        } else if (object instanceof ComponentDescription) {
+            out.append("\n------- SF CD diagnostics report -------");
+        } else {
+           out.append("\n------- SF (unknown) diagnostics report -------");
+        }
+
+        doReportCommon(out);
+
+        if (object instanceof Prim) {
+            doReportPrim(out, (Prim) object);
+        } else if (object instanceof ComponentDescription) {
+            doReportCD(out, (ComponentDescription) object);
+        } else {
+            header (out, " WARNING: no SF object to report");
+        }
+
+        header(out, "Cmd args");
+        doReportCmdArgs(out);
+        
+        header(out, "System Thread Dump");
+        doReportThreadDump(out);
+
+        header(out, "System properties");
+        doReportSystemProperties(out);
+
+        header(out, "System environment properties");
+        doReportSystemEnvProperties(out);
+
+        header(out, Version.versionString() );
+        out.append("\n");
+
+    }
+
+
+   /**
+     * Print a short report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     * @param object prim/componentdescription the SmartFrog component where to extract info from.
+     * Derived from Ant Diagnostics class
+     */
+    public static void doShortReport(StringBuffer out, Object object) {
+        doReportCommon(out);
+        header(out, Version.versionString() );
+        out.append("\n");
+    }
+
 
         /**
           * Report specific Prim information.
@@ -207,7 +253,7 @@ public final class Diagnostics {
          * @param cd  Component Description
          *
          */
-        private static void doReportCD(StringBuffer out, ComponentDescription cd) {
+        public static void doReportCD(StringBuffer out, ComponentDescription cd) {
             if (cd!=null) {
               try {
                 Diagnostics.header(out, "sfCompleteName");
@@ -260,56 +306,6 @@ public final class Diagnostics {
           }
         }
 
-    /**
-     * Print a report to the given StringBuffer.
-     * @param out the StringBuffer to print the report to.
-     * @param prim the SmartFrog component where to extract info from.
-     * Derived from Ant Diagnostics class
-     */
-    public static void doReport(StringBuffer out, Prim prim) {
-
-        out.append("\n------- SF diagnostics report -------");
-
-        header(out, "Implementation Version");
-        out.append(org.smartfrog.Version.versionString());
-        out.append("\n");
-        out.append(org.smartfrog.Version.copyright());
-        out.append("\n");
-        out.append("Build date: ");
-        out.append(org.smartfrog.Version.buildDate());
-        out.append("\n");
-
-        header(out, "System properties summary");
-        doReportSummary(out);
-
-        header(out, "Temp dir");
-        doReportTempDir(out);
-
-        header(out, "Network");
-        doReportLocalNetwork(out);
-        out.append("\n");
-        doReportRemoteNetwork(out,Logger.testURI);
-        out.append("\n");
-
-        header(out, "ClassPath");
-        doReportClassPath(out);
-
-        header(out, "CodeBase");
-        doReportCodeBase(out);
-        out.append("\n");
-
-        header(out, "Locale information");
-        doReportLocale(out);
-
-        doReportPrim(out, prim);
-
-        header(out, "System properties");
-        doReportSystemProperties(out);
-
-        header(out, org.smartfrog.Version.versionString() );
-        out.append("\n");
-
-    }
 
 
     /**
@@ -317,7 +313,7 @@ public final class Diagnostics {
      * @param out StringBuffer
      * @param prim Compound
      */
-    private static void doReportPrim(StringBuffer out, Prim prim) {
+    public static void doReportPrim(StringBuffer out, Prim prim) {
         if (prim!=null) {
           try {
             Diagnostics.header(out, "sfCompleteName");
@@ -346,8 +342,9 @@ public final class Diagnostics {
             Diagnostics.header(out, "sfContext");
             out.append(prim.sfContext().toString()); //out.append("\n");
           } catch (RemoteException ex2) {
-            out.append(" Error:" + ex2.getMessage());
-            out.append("\n");
+            out.append(" Error:");
+            out.append(ex2.getMessage());
+            out.append('\n');
           }
 
           if (prim instanceof Compound) {
@@ -364,13 +361,13 @@ public final class Diagnostics {
       * Report specific information to local process compound.
      * @param out StringBuffer
      */
-    private static void doReportProcessCompound(StringBuffer out) {
+    public static void doReportProcessCompound(StringBuffer out) {
       try {
         ProcessCompound pc = SFProcess.getProcessCompound();
         StringBuffer reportPC = new StringBuffer();
         Diagnostics.header(out, "sfContext host ProcessCompound");
         out.append("+++++++++++++++++++++++++++++++++++++++++++");
-        doReportPrim (reportPC,(Prim)pc);
+        doReportPrim (reportPC,pc);
         out.append(reportPC.toString().replaceAll("\n","\n    "));
         out.append("\n+++++++++++++++++++++++++++++++++++++++++++\n");
       } catch (Exception ex2) {
@@ -381,15 +378,15 @@ public final class Diagnostics {
     /**
       * Report specific Compound information.
      * @param out StringBuffer
-     * @param prim Compound
+     * @param compound Compound
      */
-    private static void doReportCompound(StringBuffer out, Compound prim) {
+    public static void doReportCompound(StringBuffer out, Compound compound) {
       Enumeration enu = null;
-      StringBuffer childrenInfo = new StringBuffer();
+      StringBuilder childrenInfo = new StringBuilder();
       Prim child = null;
       try {
         Diagnostics.header(out, "sfChildren");
-        for (enu = ( (Compound) prim).sfChildren(); enu.hasMoreElements(); ) {
+        for (enu =  compound.sfChildren(); enu.hasMoreElements(); ) {
           try {
             child = (Prim) enu.nextElement();
             childrenInfo.append("- ");
@@ -419,7 +416,15 @@ public final class Diagnostics {
      * @param out the StringBuffer to print the report to.
      */
     public static void doReport(StringBuffer out) {
-       doReport ( out, (Prim)null);
+       doReport ( out, null);
+    }
+
+    /**
+     * Print a short report to the given StringBuffer.
+     * @param out the StringBuffer to print the report to.
+     */
+    public static void doShortReport(StringBuffer out) {
+       doShortReport (out, null);
     }
 
     //  Derived from Ant Diagnostics class
@@ -435,32 +440,90 @@ public final class Diagnostics {
      * Report a listing of system properties existing in the current vm.
      * @param out the stream to print the properties to.
      */
-    private static void doReportSystemProperties(StringBuffer out) {
+    public static void doReportSystemProperties(StringBuffer out) {
         Properties sysprops = null;
         try {
-            sysprops = System.getProperties();
+        	sysprops = System.getProperties();
+
+        	Vector<String> keysVector = new Vector<String>();
+        	for (Enumeration keys = sysprops.propertyNames(); keys.hasMoreElements();) {
+        		keysVector.add((String) keys.nextElement());
+        	}
+        	// Order keys
+        	keysVector= JarUtil.sort(keysVector);
+
+
+        	for(String key:keysVector) {
+        		String value = "";
+        		try {
+        			if (!(key.trim().equals(""))) value = System.getProperty(key);
+        		} catch (SecurityException e) {
+        			value = "Access to this property blocked by a security manager";
+        		}
+        		out.append(key).append(" : ").append(value);
+        		out.append('\n');
+        	}
         } catch (SecurityException  e) {
-            out.append("Access to System.getProperties() blocked " +
-                    "by a security manager");out.append("\n");
+        	out.append("Access to System.getProperties() blocked by a security manager\n");
         }
+    }
 
-        Vector keysVector = new Vector();
-        for (Enumeration keys = sysprops.propertyNames(); keys.hasMoreElements();) {
-          keysVector.add((String) keys.nextElement());
-        }
-        // Order keys
-        keysVector= JarUtil.sort(keysVector);
-
-        for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
-            String key = (String) keys.nextElement();
-            String value = "";
-            try {
-                if (!(key.trim().equals(""))) value = System.getProperty(key);
-            } catch (SecurityException e) {
-                value = "Access to this property blocked by a security manager";
+    /**
+     * Report a listing of system environment properties existing in the current vm.
+     * @param out the stream to print the properties to.
+     */
+    public static void doReportSystemEnvProperties(StringBuffer out) {
+        Map sysenvprops = null;
+        try {
+           sysenvprops = System.getenv();
+           Vector<String> keysVector = new Vector<String>();
+           for (Iterator iterator = sysenvprops.entrySet().iterator(); iterator.hasNext(); ) {
+              Map.Entry entry = (Map.Entry)iterator.next();
+              keysVector.add((String)entry.getKey());
             }
-            out.append(key + " : " + value);out.append("\n");
+        	// Order keys
+        	keysVector= JarUtil.sort(keysVector);
+        	for(String key:keysVector) {
+        		String value = "";
+        		try {
+        			if (!(key.trim().equals(""))) value = System.getenv((String)key);
+        		} catch (SecurityException e) {
+        			value = "Access to this environment property blocked by a security manager";
+        		}
+        		out.append(key).append(" : ").append(value);
+        		out.append('\n');
+        	}
+        } catch (SecurityException  e) {
+        	out.append("Access to System.getenv() blocked by a security manager\n");
         }
+    }
+
+    /**
+      * Report specific information to local process compound.
+     * @param out StringBuffer
+     */
+    public static void doReportThreadDump(StringBuffer out) {
+      try {
+        ThreadDump td = new ThreadDump();
+        StringBuffer reportTD = new StringBuffer();
+        out.append("+++ Threads - [nane (id), state, priority, isDaemon, thread group]\n");
+        for (Thread thread : td.getThreads()){
+           out.append( thread.getName()+" ("+thread.getId()+")"+
+                      ", "+thread.getState()+", "+thread.getPriority()+", "+thread.isDaemon()+
+                      ", "+thread.getThreadGroup()+"\n");
+        }
+
+        out.append("\n+++ Traces - [name (id), stack trace \n");
+        Map<Thread, StackTraceElement[]> traces = td.getTraces();   
+        for (Thread thread : traces.keySet()){
+            out.append(thread.getName()+" ("+thread.getId()+")"+"\n");
+            for (StackTraceElement threadTraceLine :traces.get(thread)){
+               out.append("    "+ threadTraceLine+"\n");
+            }
+        }        
+      } catch (Exception ex2) {
+        out.append(" Error:" + ex2.getMessage() + "\n");
+      }
     }
 
 
@@ -468,7 +531,7 @@ public final class Diagnostics {
      * Report a summary of system properties.
      * @param out the stream to print the properties to.
      */
-    private static void doReportSummary(StringBuffer out) {
+    public static void doReportSummary(StringBuffer out) {
 
       out.append("* Java Version:    ");out.append( System.getProperty("java.version"));out.append("\n");
       out.append("* Java Home:       ");out.append(System.getProperty("java.home"));out.append("\n");
@@ -478,6 +541,7 @@ public final class Diagnostics {
       //);
       out.append("* OS Name:         ");out.append(System.getProperty("os.name"));out.append("\n");
       out.append("* OS Version:      ");out.append(System.getProperty("os.version"));out.append("\n");
+      out.append("* OS Architecture: ");out.append(System.getProperty("os.arch"));out.append("\n");
       out.append("* User Name:       ");out.append(System.getProperty("user.name"));out.append("\n");
       out.append("* User Home:       ");out.append(System.getProperty("user.home"));out.append("\n");
       out.append("* User Work Dir:   ");out.append(System.getProperty("user.dir"));out.append("\n");
@@ -505,16 +569,31 @@ public final class Diagnostics {
       if ( nameP!=null){
         out.append("* SF process name: ");out.append(nameP);out.append("\n");
       }
-      nameP =System.getProperty("java.security.policy");
-      if ( nameP!=null){
-        out.append("* Java security policy:     ");out.append(nameP);out.append("\n");
-      }
 
       nameP =System.getProperty(SmartFrogCoreProperty.codebase);
       if ((nameP!=null)&& !nameP.equals("")){
         out.append("* SF codebase:     ");out.append(nameP);out.append("\n");
       }
 
+      nameP =System.getProperty("java.awt.headless");
+      if ((nameP!=null)&& !nameP.equals("")){
+        out.append("* Headless:        true");out.append("\n");
+      } else {
+        out.append("* Headless:        false");out.append("\n");  
+      }
+
+      if ( SFSecurity.isSecurityOn()){
+        out.append("* SmartFrog Security: ON\n");
+      } else {
+         out.append("* SmartFrog Security: OFF\n");
+      }
+      if ( SFSecurity.isSecureResourcesOff()){
+        out.append("* Secure Resources:  OFF\n");
+      }
+      nameP =System.getProperty("java.security.policy");
+      if ( nameP!=null){
+        out.append("* Java security policy:     ");out.append(nameP);out.append("\n");
+      }
 
     }
 
@@ -537,12 +616,13 @@ public final class Diagnostics {
          out.append("ip '"+localhost.getHostAddress()+"', ");
          time=System.currentTimeMillis();
          InetAddress newLocalhost = InetAddress.getByName(localhostName);
+         InetAddress newLocalhost2 = InetAddress.getByAddress(newLocalhost.getAddress());
          time2=System.currentTimeMillis()-time;
-         if (localhost.equals(newLocalhost)){
-             out.append(" [Successful], "+time2+"ms");
+         if ((localhost.equals(newLocalhost))&& (localhost.equals(newLocalhost2))){
+             out.append(" [Successful], ").append(time2).append("ms");
              failed = false;
          } else {
-             out.append(" [Failed], "+time2+"ms");
+             out.append(" [Failed], ").append(time2).append("ms");
          }
        } catch (Exception ex1) {
            time2=System.currentTimeMillis()-time;
@@ -551,21 +631,22 @@ public final class Diagnostics {
        return failed;
      }
 
-     /** * Report simple remote network diagnostics for list of URIs
-         * @param out the stream to print the report to.
-         * @parm url URI for a host to reach
-         * @return failed. It reports if the test failed or not.
+    /**
+     * Report simple remote network diagnostics for list of URIs
+     *
+     * @param out the stream to print the report to.
+     * @param listURI list of URIs for a host to reach
      */
-     private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
-         for (int i=listURI.length; i>0;i--) {
-            doReportRemoteNetwork(out,listURI[i-1]);
-         }
+    public static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
+        for (int i = listURI.length; i > 0; i--) {
+            doReportRemoteNetwork(out, listURI[i - 1]);
+        }
     }
 
     /**
-     * Report simple remote network diagnostics by default bound to {@link #SMARTFROG_URL}
+     * Report simple remote network diagnostics of the system given by the URIhed
      * @param out the stream to print the report to.
-     * @param url URI for a host to reach
+     * @param uriString URI for a host to reach
      * @return failed. It reports if the test failed or not.
      */
     public static boolean doReportRemoteNetwork(StringBuffer out, String uriString) {
@@ -586,8 +667,9 @@ public final class Diagnostics {
               out.append("ip '"+remotehost.getHostAddress()+"', "+time2+"ms, ");
               time=System.currentTimeMillis();
               InetAddress newRemotehost = InetAddress.getByName(remotehostName);
+              InetAddress newRemotehost2 = InetAddress.getByAddress(newRemotehost.getAddress());
               time2=System.currentTimeMillis()-time;
-              if (remotehost.equals(newRemotehost)){
+              if ((remotehost.equals(newRemotehost)) && (remotehost.equals(newRemotehost2))) {
                  out.append(" [Successful], "+time2+"ms");
                  failed = false;
               } else {
@@ -609,7 +691,18 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-    private static void doReportClassPath(StringBuffer out) {
+    public static void doReportCmdArgs(StringBuffer out) {
+      Object args = OptionSet.getArgs();
+      if (args!=null) {
+        out.append("Cmd Args: "+ Arrays.toString(OptionSet.getArgs()));
+      }
+    }
+
+    /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+    public static void doReportClassPath(StringBuffer out) {
       out.append((System.getProperty("java.class.path")).replace(
                       System.getProperty("path.separator").charAt(0), '\n'));
     }
@@ -618,13 +711,13 @@ public final class Diagnostics {
      * Report a listing of codebase used in the current vm.
      * @param out the stream to print the properties to.
      */
-    private static void doReportCodeBase(StringBuffer out) {
+    public static void doReportCodeBase(StringBuffer out) {
 
       String codebaseString = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
       if (codebaseString!=null) {
           out.append(""+codebaseString.replace(System.getProperty("path.separator").charAt(0), '\n'));
       } else {
-         out.append(""+"Not defined, using default");
+         out.append("Not defined, using default\n");
       }
     }
 
@@ -633,7 +726,7 @@ public final class Diagnostics {
      * @param multiPath String
      * @param out StringBuffer
      */
-    private static void multiPathReport(String multiPath,StringBuffer out) {
+    public static void multiPathReport(String multiPath,StringBuffer out) {
       String[] array = System.getProperty(multiPath).split(System.getProperty("path.separator"));
       Arrays.sort(array, new StringComparator());
       for (int i = array.length-1 ; i >= 0; i--) {
@@ -651,13 +744,14 @@ public final class Diagnostics {
      * @param libs array of libraries (can be null)
      * @param out String Buffer
      */
-    private static void printLibraries(File[] libs, StringBuffer out) {
+    public static void printLibraries(File[] libs, StringBuffer out) {
         if (libs == null) {
-            out.append("No such directory.");out.append("\n");
+            out.append("No such directory.\n");
             return;
         }
-        for (int i = 0; i < libs.length; i++) {
-            out.append(libs[i].getName()+ " (" + libs[i].length() + " bytes)");out.append("\n");
+        for (File lib : libs) {
+            out.append(lib.getName() + " (" + lib.length() + " bytes)");
+            out.append("\n");
         }
     }
 
@@ -670,7 +764,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    private static void doReportTempDir(StringBuffer out) {
+    public static void doReportTempDir(StringBuffer out) {
         String tempdir=System.getProperty("java.io.tmpdir");
         if( tempdir == null ) {
             out.append("Warning: java.io.tmpdir is undefined");out.append("\n");
@@ -691,7 +785,7 @@ public final class Diagnostics {
             tempFile = File.createTempFile("sfDiag","txt",tempDirectory);
             //do some writing to it
             fileout = new FileOutputStream(tempFile);
-            byte buffer[]=new byte[1024];
+            byte[] buffer=new byte[1024];
             for(int i=0;i<32;i++) {
                 fileout.write(buffer);
             }
@@ -728,7 +822,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    private static void doReportLocale(StringBuffer out) {
+    public static void doReportLocale(StringBuffer out) {
         //calendar stuff.
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
@@ -743,4 +837,34 @@ public final class Diagnostics {
                          + cal.get(Calendar.SECOND)) * 1000
                          + cal.get(Calendar.MILLISECOND)));out.append("\n");
     }
+
+   /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+   public static void doReportClassPathRepeats(StringBuffer out) {
+      String[] words = Logger.testJarRepeat;
+      String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
+      StringBuffer message = Logger.getRepeatsMessage(words, classpath);
+      if (message !=null) out.append(message.toString());
+      out.append("\n");
+   }
+
+   /**
+     * Report a listing of classpath used in the current vm.
+     * @param out the stream to print the properties report to.
+     */
+   public static void doReportCodeBaseRepeats(StringBuffer out) {
+      String[] words = Logger.testJarRepeat;
+      StringBuffer message = null;
+      String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
+      if (codebaseproperty != null) {
+          String codebase[] = codebaseproperty.split(System.getProperty("path.separator"));
+          message =  Logger.getRepeatsMessage(words, codebase);
+          if (message !=null) out.append(message.toString());
+      }      
+      out.append("\n");
+   }
+
+
 }

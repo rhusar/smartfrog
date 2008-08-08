@@ -33,16 +33,6 @@ import org.smartfrog.sfcore.prim.Prim;
  */
 public class SmartFrogLivenessException extends SmartFrogRuntimeException implements Serializable {
 
-    /** Attribute name for reference in exceptioncontext. */
-    public static final String REFERENCE = "reference";
-
-    /** Attribute name for source in exceptioncontext. */
-    public static final String SOURCE = "source";
-
-    /** Attribute name for data in exceptioncontext. */
-    public static final String DATA = "data";
-
-
     /**
      * Constructs a SmartFrogLivenessException with message.
      *

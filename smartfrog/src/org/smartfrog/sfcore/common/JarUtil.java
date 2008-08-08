@@ -195,7 +195,7 @@ public class JarUtil {
     *@return    The listSF value
     */
    Vector getListSFSorted() {
-      return (this.sort(this.getListSF()));
+      return (sort(this.getListSF()));
    }
 
 
@@ -225,9 +225,9 @@ public class JarUtil {
     *  initializes internal hash tables with Jar file resources.
     *
     *@param  jarFileName  The feature to be added to the JarFiles attribute
-    *@param  filters       The feature to be added to the JarFiles attribute
+    *@param  fileFilters       The feature to be added to the JarFiles attribute
     */
-   private void addJarFiles(String jarFileName, String[] filters) {
+   private void addJarFiles(String jarFileName, String[] fileFilters) {
       try {
 
          // extracts just sizes only.
@@ -250,8 +250,8 @@ public class JarUtil {
             if (ze.isDirectory()) {
                continue;
             }
-            for (int i=0;i<filters.length;i++){
-              if ((ze.getName()).endsWith(filters[i])) {
+            for (int i=0;i<fileFilters.length;i++){
+              if ((ze.getName()).endsWith(fileFilters[i])) {
 //                 if (debugOn) {
 //                    //System.out.println( "ze.getName()="+ze.getName()+","+"getSize()="+ze.getSize());
 //                 }
@@ -260,11 +260,11 @@ public class JarUtil {
                  if (size == -1) {
                     size = ((Integer)htSizes.get(ze.getName())).intValue();
                  }
-                 byte[] b = new byte[(int)size];
+                 byte[] b = new byte[size];
                  int rb = 0;
                  int chunk = 0;
                  while (((int)size - rb) > 0) {
-                    chunk = zis.read(b, rb, (int)size - rb);
+                    chunk = zis.read(b, rb, size - rb);
                     if (chunk == -1) {
                        break;
                     }
@@ -300,35 +300,5 @@ public class JarUtil {
    }
 }
 
-/**
- *  Description of the Class
- *
- *@author     julgui
- *created    04 October 2001
- */
-class StringComparator  implements Comparator, Serializable {
-
-   /**
-    *  Description of the Method
-    *
-    *@param  o1  Description of Parameter
-    *@param  o2  Description of Parameter
-    *@return     Description of the Returned Value
-    */
-   public int compare(
-         Object o1, Object o2) {
-      if (!(o1 instanceof String)) {
-         throw new ClassCastException();
-      }
-      if (!(o2 instanceof String)) {
-         throw new ClassCastException();
-      }
-
-      int result = ((String)o1).
-            compareTo(((String)o2));
-      return result * (-1);
-   }
-   //end compare()
-}
 //end class TheComparator
 
