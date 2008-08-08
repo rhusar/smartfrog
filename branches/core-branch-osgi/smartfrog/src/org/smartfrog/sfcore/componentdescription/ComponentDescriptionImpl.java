@@ -20,33 +20,45 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.componentdescription;
 
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
+import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.PrettyPrinting;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.PrettyPrinting;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-
-//For utility methods
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
-
-import org.smartfrog.sfcore.common.*;
-import java.rmi.*;
-
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.HereReferencePart;
-import org.smartfrog.sfcore.languages.sf.PhaseNames;
-
-import java.io.*;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
 
 /**
@@ -73,7 +85,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
-    private static LogSF sfLog = null;
+    private static  LogSF sfLog= null;
 
 
 
@@ -537,7 +549,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
           }
        } catch (SmartFrogException e) {
           if (mandatory) {
-             throw new SmartFrogResolutionException("Error accessing attribute tags " + name, e);
+             throw (SmartFrogResolutionException) SmartFrogResolutionException
+                     .forward("Error accessing attribute tags " + name, e);
           }
           return null;
        }
@@ -582,9 +595,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogResolutionException occurred while resolving
      */
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
-        Reference rn = (Reference) r.copy();
-        rn.setData(false);
-        Object obj = sfResolve(r, 0);
+
+        Reference rn = r;
+        if (r.getData()!=false) {
+           //clone should be enough at this point.
+           rn = (Reference) r.clone();
+           rn.setData(false);
+        }
+
+        Object obj = sfResolve(rn, 0);
         if (obj instanceof SFMarshalledObject){
             //  Unmarshall!Obj.
             try {
@@ -726,7 +745,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             tabPad(ps, indent);
             ps.write('}');
         } else {
-            ps.write(';');
+            ps.write(" {}");
         }
     }
 
@@ -901,24 +920,23 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref, String codebase)
-        throws SmartFrogException
-    {
-        Phases descr;
+        throws SmartFrogException {
+        Phases descr = null;
         try {
             descr = (new SFParser(language)).sfParseResource(url,codebase);
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException("Error creating parser for '"+url+"'. "
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
                 +" ["+ thr.toString()+"]", thr);
         }
         try {
-            if (phases == null) {
+            if (phases==null) {
                descr = descr.sfResolvePhases();
             } else {
                descr = descr.sfResolvePhases(phases);
             }
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException ("Error during parsing of '"+url+"'. "
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error during parsing of '"+url+"'. "
                 +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
                 +" ["+ thr.toString()+"]", thr);
         }
@@ -930,7 +948,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
         if (!(obj instanceof ComponentDescription)){
            throw new SmartFrogResolutionException(null,null,"Error resolving '"
-                 + ref + "' in " + url
+                 +ref+"' in "+ url
                  + ". The result is not a ComponentDescription, resolved to: "
                  + obj.toString()
                  +" ("+obj.getClass().getName()+")" );
@@ -1158,10 +1176,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                             sfLog.trace("Adding to CompDesc system property '"+ cxtKey +"' with value = "+value+", "+ value.getClass().getName());
                         }
                     } catch (SmartFrogRuntimeException ex1) {
-                        sfLog.ignore(ex1);
+                        //System.err.println(ex1);
                     }
                 }
             }
+//        } catch (SmartFrogException ex2) {
         } catch (Exception ex2) {
           if (sfLog != null) {
             if (sfLog.isErrorEnabled()) {
@@ -1275,7 +1294,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public ComponentDescription sfDiagnosticsReport() {
       ComponentDescription cd = null;
       try {
-        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        cd = new ComponentDescriptionImpl(null,new ContextImpl(), false);
         cd.setParent(this);
         StringBuffer report = new StringBuffer();
         Diagnostics.doReport(report,this);
@@ -1422,8 +1441,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * associated with each attribute.
      * 
      * @return the set of tags
-     * @throws SmartFrogException
-     *             the attribute does not exist;
+     * @throws SmartFrogContextException the attribute does not exist;
      */
     public Set sfGetTags() throws SmartFrogContextException {
         try {
@@ -1452,7 +1470,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * add a tag to the tag set of this component
      *
      * @param tag  a tag to add to the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *          the attribute does not exist;
      */
     public void sfAddTag(String tag) throws SmartFrogContextException {
@@ -1477,7 +1495,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tag
      *            a tag to remove from the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
     public void sfRemoveTag(String tag) throws SmartFrogContextException {
@@ -1502,7 +1520,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tags
      *            a set of tags to add to the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
      public void sfAddTags(Set tags) throws SmartFrogContextException {
@@ -1527,7 +1545,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * 
      * @param tags
      *            a set of tags to remove from the set
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist;
      */
     public void sfRemoveTags(Set tags) throws SmartFrogContextException {
@@ -1553,7 +1571,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param tag
      *            the tag to chack
      * @return whether or not the attribute has that tag
-     * @throws SmartFrogException
+     * @throws SmartFrogContextException
      *             the attribute does not exist
      */
     public boolean sfContainsTag(String tag) throws SmartFrogContextException {
@@ -1593,14 +1611,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
              return false;
          }
 
-        return sfContext.equals(((ComponentDescription) o).sfContext());
+         if (!((sfContext).equals((((ComponentDescription)o).sfContext())))){
+             return false;
+         }
 
-    }
+         return true;
+     }
 
      /**
       * Checks component description for same parentage
       * @param o parent to compare with
-      * @return
+      * @return true if they share a parent
       */
      public boolean hasSameParent(ComponentDescription o) {
          if (primParent==null) {
