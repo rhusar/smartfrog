@@ -165,10 +165,11 @@ public abstract class DfsOperationImpl extends PrimImpl implements DfsOperation 
         DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
         try {
             performDfsOperation(fileSystem, conf);
-            DfsUtils.closeDfs(fileSystem);
-        } finally {
+        } catch (Exception e) {
             DfsUtils.closeQuietly(fileSystem);
+            throw e;
         }
+        DfsUtils.closeDfs(fileSystem);
     }
 
     /**

@@ -19,20 +19,39 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import java.rmi.Remote;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.RemoteException;
 
 /**
- * Created 08-Jul-2008 13:28:24
+ * Created 11-Aug-2008 16:30:48
  */
 
+public class IsWorkerCountGood extends IsHadoopServiceLive {
 
-public interface HadoopService extends Remote {
+    private ClusterManager manager;
+    private int minCount;
+
+    public IsWorkerCountGood() throws RemoteException {
+    }
+
+
+    @Override
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        minCount = sfResolve("minCount", 0, true);
+        manager = (ClusterManager) getService();
+    }
 
     /**
-     * Test for the service being live
-     * @return true if the service is live
-     * @throws RemoteException for RMI problems
+     * Evaluate the condition.
+     *
+     * @return true if it is successful, false if not
+     * @throws RemoteException    for network problems
+     * @throws SmartFrogException for any other problem
      */
-    boolean isServiceLive() throws RemoteException;
+    @Override
+    public boolean evaluate() throws RemoteException, SmartFrogException {
+        return super.evaluate() && manager.getLiveWorkerCount() >= minCount;
+    }
 }

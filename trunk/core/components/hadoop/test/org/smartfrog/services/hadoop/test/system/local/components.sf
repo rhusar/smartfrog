@@ -42,6 +42,15 @@ LightweightNameNode extends NameNode {
 LightweightDataNode extends DataNode {
   smartfrog.dump.conf true;
 //  datanode.http.threads 4;
+  localhost_any  "127.0.0.1:0";
+  dfs.datanode.http.address localhost_any;
+  dfs.datanode.https.address "127.0.0.1:0";
+
+  /**
+   The datanode ipc server address and port.
+   If the port is 0 then the server will start on a free port.
+  */
+  dfs.datanode.ipc.address localhost_any;
 }
 
 LocalHadoopCompound extends Compound {
@@ -69,7 +78,6 @@ LocalNameNodeCompound extends LocalHadoopCompound {
   cluster LAZY namenode;
 
   namenode extends LightweightNameNode {
-    smartfrog.dump.conf true;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY dataDir];
     nameDirectories [LAZY nameDir];
@@ -87,24 +95,31 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
   localDataDir extends TempDirWithCleanup {
 
   }
+  localDataDir2 extends TempDirWithCleanup {
+
+  }
   
   datanode extends  LightweightDataNode {
-    smartfrog.dump.conf true;
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
     dfs.datanode.address dataNodeURL  ;
   }
+
+  datanode2 extends datanode {
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.https.address ""
+  }
+
 }
 
 
-LocalFormat extends LocalHadoopCompound {
-  description "Component to format a filesystem";
-  formatLocal extends FormatFileSystem {
-      smartfrog.dump.conf true;
-      cluster LAZY PARENT:cluster;
-      dataDirectories [LAZY dataDir];
-  }
+/**
+ * A complete filesystem
+ */
+LocalFileSystemCompound extends LocalDataNodeCompound {
+
+
 }
 
 
@@ -143,3 +158,82 @@ LocalClusterCompound extends LocalDataNodeCompound {
     mapred.job.tracker jobTracker:mapred.job.tracker;
   }
 }
+
+
+
+WaitForHadoopLive extends WaitFor {
+  interval 500;
+  timeout 10000;
+}
+
+
+WaitForFilesystemLive extends WaitForHadoopLive  {
+  tracker TBD;
+  jobTrackerLive false;
+  condition extends ClusterStatusCondition {
+    mapred.job.tracker PARENT:tracker;
+  }
+}
+
+WaitForJobTrackerLive extends WaitForFilesystemLive {
+  jobTrackerLive true;
+}
+
+
+WaitForServiceLive extends WaitForHadoopLive  {
+  service TBD;
+  condition extends IsHadoopServiceLive {
+    service LAZY PARENT:service;
+  }
+}
+
+WaitForServiceManagerLive extends WaitForHadoopLive  {
+  service TBD;
+  minCount 1;
+  condition extends IsWorkerCountGood {
+    service LAZY PARENT:service;
+    minCount PARENT:minCount;
+  }
+}
+
+
+
+
+/**
+ * A sequence of operations on a cluster */
+FileSystemTestSequence extends Sequence {
+
+    //the cluster for all the tests
+    cluster namenode;
+    namenode TBD;
+    datanode TBD;
+
+    waitForNameNode extends WaitForServiceLive {
+     service LAZY PARENT:namenode;
+    }
+    waitForDataNode extends WaitForServiceLive {
+     service LAZY PARENT:datanode;
+    }
+    //now wait for the bonding
+    waitForCluster extends WaitForServiceManagerLive {
+     service LAZY PARENT:namenode;
+     minCount 2;
+    }
+
+    rootDirExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path "/";
+    }
+
+    touch extends DfsCreateFile {
+      cluster LAZY PARENT:cluster;
+      path "/test-filename";
+      text "this is a very small file for Hadoop";
+    }
+
+    assertFileExists extends DfsPathExistsWorkflow {
+      cluster LAZY PARENT:cluster;
+      path touch:path;
+    }
+
+  }

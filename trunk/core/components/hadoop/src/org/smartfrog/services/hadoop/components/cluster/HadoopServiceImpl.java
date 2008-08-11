@@ -25,9 +25,10 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.mortbay.util.MultiException;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -36,9 +37,11 @@ import java.rmi.RemoteException;
  * This is a component that deploys a hadoop service. If the
  */
 
-public abstract class HadoopServiceImpl extends HadoopComponentImpl {
+public abstract class HadoopServiceImpl extends HadoopComponentImpl implements HadoopService {
 
     private Service service;
+    private ServiceDeployerThread deployerThread;
+    private static final int SHUTDOWN_DELAY = 1000;
 
     protected HadoopServiceImpl() throws RemoteException {
     }
@@ -51,7 +54,28 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        terminateDeployerThread();
         terminateHadoopService();
+    }
+
+    /**
+     * Terminate the deployer thread
+     */
+    protected void terminateDeployerThread() {
+        ServiceDeployerThread deployer = getDeployerThread();
+        if (deployer != null) {
+
+            terminateDeployerThread(deployer);
+        }
+    }
+
+    /**
+     * Terminate the specified thread. subclasses can use alternate shutdown policies
+     *
+     * @param deployer thread to shut down
+     */
+    protected void terminateDeployerThread(ServiceDeployerThread deployer) {
+        deployer.requestAndWaitForThreadTermination(SHUTDOWN_DELAY);
     }
 
     /**
@@ -68,6 +92,19 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
         pingHadoopService();
     }
 
+
+    /**
+     * Test for the service being live
+     *
+     * @return true if the service is live
+     * @throws RemoteException for RMI problems
+     */
+    @Override
+    public boolean isServiceLive() throws RemoteException {
+        Service s=service;
+        return s != null && s.getServiceState() == Service.ServiceState.LIVE;
+    }
+
     /**
      * Return the name of this service; please override for better messages
      *
@@ -75,6 +112,15 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
      */
     protected String getName() {
         return "Service";
+    }
+
+    /**
+     * Get the deployer thread; may be null
+     *
+     * @return
+     */
+    protected ServiceDeployerThread getDeployerThread() {
+        return deployerThread;
     }
 
     /**
@@ -93,15 +139,19 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
      * @throws SmartFrogLivenessException on a ping failure, or a null service and non-null services are forbidden
      */
     protected void pingHadoopService() throws SmartFrogLivenessException {
-        Service hadoopService = service;
-        if (hadoopService != null) {
-            try {
-                hadoopService.ping();
-            } catch (IOException e) {
-                throw new SmartFrogLivenessException(e, this);
+        try {
+            ServiceDeployerThread deployer = deployerThread;
+            if (deployer != null) {
+                deployer.ping(true);
             }
-        } else if (requireNonNullServiceInPing()) {
-            throw new SmartFrogLivenessException("No running " + getName(), this);
+            Service hadoopService = service;
+            if (hadoopService != null) {
+                hadoopService.ping();
+            } else if (requireNonNullServiceInPing()) {
+                throw new SmartFrogLivenessException("No running " + getName(), this);
+            }
+        } catch (IOException e) {
+            throw new SmartFrogLivenessException(e, this);
         }
     }
 
@@ -133,36 +183,146 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl {
         this.service = service;
     }
 
+
     /**
-     * Deploy a service. It must be in the CREATED state.
-     * The field {@link #service} is set to the service argument, which must be null.
-     * There is special handling for wrapped Jetty exceptions
+     * Deploy a service. It must be in the CREATED state. The field {@link #service} is set to the service argument,
+     * which must be null. There is special handling for wrapped Jetty exceptions
+     *
      * @param hadoopService service to bind to and deploy.
-     * @param conf configuration -used for diagnostics
-     * @throws SmartFrogException on any problem
-     * @throws SFHadoopException for Jetty exceptions and other causes of trouble
+     * @param conf          configuration -used for diagnostics
+     * @throws SmartFrogException           on any problem
+     * @throws SFHadoopException            for Jetty exceptions and other causes of trouble
      * @throws SmartFrogDeploymentException on some wrapped IOExceptions
      */
     protected void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
+        deployerThread = createDeployerThread(hadoopService, conf);
+        deployerThread.start();
+    }
+
+    /**
+     * Create the deployer thread
+     *
+     * @param hadoopService service to bind to and deploy.
+     * @param conf          configuration -used for diagnostics
+     * @return a new thread that is an instance of ServiceDeployerThread
+     */
+    protected ServiceDeployerThread createDeployerThread(Service hadoopService,
+                                                         ManagedConfiguration conf) {
+        return new ServiceDeployerThread(hadoopService, conf, false);
+    }
+
+
+    /**
+     * reject any attempts to set the service property to a non-null value if it is already non-null; stops us trying to
+     * deploy multiple services
+     *
+     * @param hadoopService the service
+     * @throws SmartFrogDeploymentException
+     */
+    private synchronized void setServiceOnce(Service hadoopService) throws SmartFrogDeploymentException {
         if (service != null) {
-            throw new SmartFrogDeploymentException("Cannot bind to a new service ("+hadoopService+")"
+            throw new SmartFrogDeploymentException("Cannot bind to a new service (" + hadoopService + ")"
                     + " when an existing service is in use: "
                     + service);
         }
         setService(hadoopService);
+    }
+
+    /**
+     * Inner deploy operation called on a second thread; can be subclassed for fun.
+     *
+     * @param hadoopService service to deploy
+     * @param conf          configuration
+     * @throws SmartFrogException
+     */
+    private void innerDeploy(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         try {
-            Service.deploy(hadoopService);
+            setServiceOnce(hadoopService);
+            hadoopService.init();
+            hadoopService.start();
+            onServiceDeploymentComplete();
         } catch (IOException e) {
+            //mark as failed
+            //we assume that the service really does know how to terminate
+//                hadoopService.terminate();
             throw SFHadoopException.forward("Failed to deploy " + hadoopService,
                     e,
                     this,
                     conf);
-        } catch(IllegalArgumentException e) {
+        } catch (SmartFrogException e) {
+            throw e;
+        } catch (Throwable e) {
             //convert illegal argument exceptions
             throw SFHadoopException.forward("Failed to deploy " + hadoopService,
                     e,
                     this,
                     conf);
         }
+    }
+
+    /**
+     * Override point: Callback once service deployment is finished. It is not called in a synchronized context.
+     *
+     * @throws IOException        IO/hadoop problems
+     * @throws SmartFrogException smartfrog problems
+     */
+    protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
+        sfLog().info(getName() + " deployment complete: service is now live");
+    }
+
+    /**
+     * This is the thread that starts the deployment
+     */
+    public class ServiceDeployerThread extends WorkflowThread {
+
+        private Service hadoopService;
+        private ManagedConfiguration conf;
+
+        private boolean useWorkflowTermination;
+
+        public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
+                                      boolean useWorkflowTermination) {
+            super(HadoopServiceImpl.this, useWorkflowTermination);
+            this.useWorkflowTermination = useWorkflowTermination;
+            this.hadoopService = hadoopService;
+            this.conf = conf;
+        }
+
+
+        /**
+         * only terminate if there was a failure to deploy.
+         */
+        @Override
+        protected void processRunResults() {
+            if (useWorkflowTermination) {
+                super.processRunResults();
+            } else {
+                //now analyse the result, create a term record and maybe terminate the owner
+                terminateIFFAbnormal();
+            }
+        }
+
+        protected void terminateIFFAbnormal() {
+            boolean isNormal = getThrown() == null;
+            if (!isNormal) {
+                TerminationRecord tr = createTerminationRecord();
+                aboutToTerminate(tr);
+                ComponentHelper helper = new ComponentHelper(HadoopServiceImpl.this);
+                helper.targetForTermination(tr, false, false, false);
+            }
+        }
+
+        /**
+         * The executor method calls {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)} for the actual
+         * deployment
+         *
+         * @throws Throwable any failure desired
+         */
+        @Override
+        public void execute() throws Throwable {
+            innerDeploy(hadoopService, conf);
+        }
+
+
     }
 }
