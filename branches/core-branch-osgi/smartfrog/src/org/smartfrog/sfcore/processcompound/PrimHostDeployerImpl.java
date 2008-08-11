@@ -48,8 +48,6 @@ import java.rmi.RemoteException;
  */
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
-    private LogSF  sflog = LogFactory.sfGetProcessLog();
 
     /** Efficiency holder of sfProcessHost attribute. */
     protected static final Reference refProcessHost =
@@ -129,8 +127,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
             if (pc.equals(local)) {
                 if (parent == null) {
-                    return local.sfDeployComponentDescription(null, parent, target,
-                            null);
+                    return local.sfDeployComponentDescription(null, parent, target, null);
                 } else {
                     return super.deploy(parent);
                 }

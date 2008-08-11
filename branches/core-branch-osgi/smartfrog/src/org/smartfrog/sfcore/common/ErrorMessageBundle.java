@@ -132,7 +132,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { ROOT_MUST_BE_COMPONENT, "The sfConfig attribute of a SmartFrog description must be a Component Description, found a {0}"},
         { CANNOT_LINK_TO_PREDICATE, "Attribute {1} is a link to a predicate. Predicates should be extended and not linked to: in component {0}"},
         { CANNOT_OVERRIDE_FINAL, "Attribute {1} is tagged as sfFinal, it may not be overridden: in component {0}"},
-        { MSG_CANNOT_ADD_VALUE_CHILD, "\"{0}\" cannot be added because its value \"{1}\" is already a child of \"{2}\""}
+        { MSG_CANNOT_ADD_VALUE_CHILD, "\"{0}\" cannot be added because its value \"{1}\" is already a child of \"{2}\""},
 		{ EXISTING_APP_ENV_IS_DIFFERENT, "The process: {0} already has an application environment of name: {1}, but it is different than the designed environment for the application."
                 + LINE_END + "Check whether the application environment has been changed, but not undeployed on this process."}
     };
