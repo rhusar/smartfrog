@@ -26,11 +26,20 @@
 /**
  * Test the local name node
  */
-testLocalDataNode extends ExpectDeploy {
-  description "bring up a data node";
+LocalDataNodeTest extends ExpectDeploy {
 
   action extends LocalDataNodeCompound {
   }
+
+}
+
+/**
+ * Test the local name node
+ */
+testLocalDataNode extends LocalDataNodeTest {
+  description "bring up a data node";
+
+
 
   tests extends Sequence {
     namenodeLive extends CheckNameNodePort {
@@ -44,7 +53,17 @@ testLocalDataNode extends ExpectDeploy {
 }
 
 
+
 testDataNodeForked extends testLocalDataNode {
   action:datanode:sfProcessName "testDataNodeForkedProcess";
   action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
+}
+
+testFileSystemOperations extends LocalDataNodeTest {
+
+  tests extends FileSystemTestSequence {
+    
+    namenode LAZY action:namenode;
+    datanode LAZY action:datanode;;
+  }
 }

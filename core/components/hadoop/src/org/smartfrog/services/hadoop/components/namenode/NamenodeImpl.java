@@ -24,6 +24,7 @@ import org.mortbay.util.MultiException;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -37,9 +38,10 @@ import java.rmi.RemoteException;
  */
 
 public class NamenodeImpl extends FileSystemNodeImpl implements
-        FileSystemNode {
+        FileSystemNode, ClusterManager {
     private static final String NAME = "NameNode";
     public static final String ERROR_NO_START = "Failed to start "+ NAME;
+    private ExtNameNode nameNode;
 
 
     public NamenodeImpl() throws RemoteException {
@@ -72,9 +74,8 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         logDir.mkdirs();
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
         ManagedConfiguration conf = createConfiguration();
-        ExtNameNode node;
         try {
-            node = ExtNameNode.create(this, conf);
+            nameNode = ExtNameNode.create(this, conf);
         } catch (IOException e) {
             throw SFHadoopException.forward(ERROR_NO_START,
                     e,
@@ -86,8 +87,19 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
                     this,
                     conf);
         }
-        deployService(node, conf);
+        deployService(nameNode, conf);
     }
 
-
+    /**
+     * Get the count of current workers
+     *
+     * @return 0 if not live, or the count of active workers
+     * @throws RemoteException for network problems
+     */
+    public int getLiveWorkerCount() throws RemoteException {
+        if (!isServiceLive()) {
+            return 0;
+        }
+        return nameNode.getLiveWorkerCount();
+    }
 }

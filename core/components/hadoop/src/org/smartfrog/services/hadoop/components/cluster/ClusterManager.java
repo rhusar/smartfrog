@@ -17,11 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/hadoop/components/cluster/clusterstatus.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/servicelive.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/clusternode.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/filesystemnode.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/jspstatus.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/checkdiskspace.sf"
-#include "/org/smartfrog/services/hadoop/components/cluster/checkport.sf"
+package org.smartfrog.services.hadoop.components.cluster;
 
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+/**
+ * Created 11-Aug-2008 16:21:01
+ */
+
+
+public interface ClusterManager extends Remote {
+
+    /**
+     * Get the count of current workers
+     * @return 0 if not live, or the count of active workers
+     * @throws RemoteException for network problems
+     */
+    int getLiveWorkerCount() throws RemoteException;
+}

@@ -22,8 +22,8 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
+import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -41,11 +41,12 @@ import java.rmi.RemoteException;
  * Created 19-May-2008 13:55:33
  */
 
-public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
+public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ClusterManager {
 
-    private TrackerThread worker;
+    //private TrackerThread worker;
     private static final String NAME = "JobTracker";
     public static final String ERROR_NO_START = "Failed to start the " + NAME;
+    private ExtJobTracker tracker;
 
     public JobTrackerImpl() throws RemoteException {
     }
@@ -79,11 +80,11 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
                 System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
             }
             ManagedConfiguration configuration = createConfiguration();
-            ExtJobTracker tracker = new ExtJobTracker(configuration);
+            tracker = new ExtJobTracker(configuration);
             deployService(tracker,configuration);
             //now start the worker thread that offers the service
-            worker = new TrackerThread(tracker);
-            worker.start();
+/*            worker = new TrackerThread(tracker);
+            worker.start();*/
         } catch (IOException e) {
             throw new SmartFrogLifecycleException(ERROR_NO_START + e.getMessage(), e, this);
         } catch (InterruptedException e) {
@@ -97,11 +98,46 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
      *
      * @param status termination status
      */
+/*
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         SmartFrogThread t = worker;
         worker = null;
         SmartFrogThread.requestThreadTermination(t);
+    }*/
+
+    /**
+     * Change the shutdown process to include an interrupt
+     * @param deployer
+     */
+    @Override
+    protected void terminateDeployerThread(ServiceDeployerThread deployer) {
+        deployer.requestTerminationWithInterrupt();
+    }
+
+    /**
+     * Create the deployer thread
+     *
+     * @param hadoopService service to bind to and deploy.
+     * @param conf          configuration -used for diagnostics
+     * @return a new thread that is an instance of ServiceDeployerThread
+     */
+    @Override
+    protected ServiceDeployerThread createDeployerThread(Service hadoopService,
+                                                         ManagedConfiguration conf) {
+        return new ServiceDeployerThread(hadoopService, conf, true);
+    }
+
+
+    /**
+     * Get the count of current workers
+     *
+     * @return 0 if not live, or the count of active workers
+     * @throws RemoteException for network problems
+     */
+    public int getLiveWorkerCount() throws RemoteException {
+        return tracker.getNumResolvedTaskTrackers();
     }
 
     /**
@@ -111,11 +147,33 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
-    @Override
+/*    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (worker == null || worker.isFinished()) {
             throw new SmartFrogLivenessException("Worker is not running");
+        }
+    }*/
+
+
+    /**
+     * after deployment, call {@link ExtJobTracker#offerService()} to start the service.
+     * This call will not return until the work is finished
+     * @throws IOException IO problems
+     * @throws SmartFrogException smartfrog problems
+     */
+    @Override
+    protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
+        super.onServiceDeploymentComplete();
+        //check that the tracker is now bound to a filesystem
+        String dir = tracker.getSystemDir();
+        sfLog().info("System dir is "+dir);
+        tracker.getFilesystemName();
+        try {
+            tracker.offerService();
+        } catch (InterruptedException e) {
+            //this is ok, it is time to terminate
+            sfLog().ignore("tracker was interrupted",e);
         }
     }
 

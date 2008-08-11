@@ -30,3 +30,4 @@ ClusterNode extends HadoopConfiguration {
 ManagerNode extends ClusterNode {
   minWorkerCount 1;
 }
+
