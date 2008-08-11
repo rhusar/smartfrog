@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
 
@@ -55,6 +56,18 @@ public class WorkflowThread extends SmartFrogThread {
     public WorkflowThread(Prim owner, boolean workflowTermination,Object notifyObject) {
         super(notifyObject);
         bind(owner, workflowTermination);
+    }
+
+    public Prim getOwner() {
+        return owner;
+    }
+
+    public Reference getOwnerID() {
+        return ownerID;
+    }
+
+    public boolean isWorkflowTermination() {
+        return workflowTermination;
     }
 
     /**
@@ -102,13 +115,13 @@ public class WorkflowThread extends SmartFrogThread {
     public void run() {
         //do the work and catch the result
         super.run();
+        processRunResults();
+    }
+
+    protected void processRunResults() {
         //now analyse the result, create a term record and maybe terminate the owner
         boolean isNormal = getThrown() == null;
-        TerminationRecord tr = new TerminationRecord(
-                isNormal ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                getTerminationMessage(),
-                ownerID,
-                getThrown());
+        TerminationRecord tr = createTerminationRecord();
         aboutToTerminate(tr);
         ComponentHelper helper = new ComponentHelper(owner);
         if (workflowTermination && isNormal) {
@@ -119,6 +132,21 @@ public class WorkflowThread extends SmartFrogThread {
             //put up for termination
             helper.targetForTermination(tr, false, false, false);
         }
+    }
+
+    /**
+     * Create a TR from the termination message of {@link #getTerminationMessage()}
+     * and any exception thrown -the latter determines whether or not the TR
+     * is considered normal or not
+     * @return a termination record
+     */
+    protected TerminationRecord createTerminationRecord() {
+        TerminationRecord tr = new TerminationRecord(
+                getThrown() == null ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
+                getTerminationMessage(),
+                ownerID,
+                getThrown());
+        return tr;
     }
 
     /**
@@ -137,4 +165,5 @@ public class WorkflowThread extends SmartFrogThread {
     protected String getTerminationMessage() {
         return getThrown() == null ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
     }
+    
 }

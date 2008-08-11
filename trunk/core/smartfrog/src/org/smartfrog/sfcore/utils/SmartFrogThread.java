@@ -344,6 +344,17 @@ public class SmartFrogThread extends Thread implements Executable {
     }
 
     /**
+     * Add an interrupt to the thread termination
+     */
+    public synchronized void requestTerminationWithInterrupt() {
+        if (!isTerminationRequested()) {
+            requestTermination();
+            //and interrupt
+            interrupt();
+        }
+    }
+
+    /**
      * Thread safe poll of the termination requested flag
      *
      * @return true if someone has requested this thread's termination
