@@ -194,14 +194,24 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     }
 
 
+    protected final Object getProcessComponentName() throws SmartFrogResolutionException {
+        Object name = null;
+        if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+            name = target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false);
+        }
+        return name;
+    }    
+
+
+    protected LogSF sfLog() {
+        return sflog;
+    }
+
 
     //@todo Remove this legacy code needed for  DNSComponentDeployerImpl
 	//BEGIN LEGACY CODE //////////////
     // This is now in OldAlgorithmClassLoadingEnvironment, but DNSComponentDeployerImpl needs it here.
     // Should be removed very soon.
-
-
-    private LogSF sfLog = LogFactory.sfGetProcessLog();
 
 
     /**

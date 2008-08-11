@@ -51,6 +51,8 @@ import org.smartfrog.sfcore.security.SFSecurityProperties;
 
 import java.net.InetAddress;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.Registry;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -61,6 +63,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.Collections;
 import java.io.IOException;
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -135,9 +138,13 @@ public class ProcessCompoundImpl extends CompoundImpl
     protected Set<Object> processLocks = new HashSet<Object>();
     public static final String ATTR_PORT = "sfPort";
     private static final String JAVA_SECURITY_POLICY = "java.security.policy";
-    ;
+    
 
-
+    private ShutdownHandler shutdownHandler = new ShutdownHandler() {
+        public void shutdown(ProcessCompound processCompound) {
+            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
+        }
+    };
     private int nextSubprocessId = 0;
     private SubprocessStarter subprocessStarter = new PlainJVMSubprocessStarterImpl();
 
