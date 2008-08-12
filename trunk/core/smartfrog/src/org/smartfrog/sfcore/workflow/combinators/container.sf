@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
-Container extends EventCompound {
+Container extends EventCompound, Parallel {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Container";
     //actions extends LAZY {}
 }
