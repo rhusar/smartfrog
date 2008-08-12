@@ -20,19 +20,12 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.common.Logger;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -44,7 +37,8 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.smartfrog.sfcore.common.*;
+
+
 import java.util.Vector;
 
 public class LogImpl implements LogSF, LogRegistration, Serializable {
@@ -258,7 +252,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
             setLevel (configurationLevel);
 
-            loadStartUpLoggers(name, configurationClass, configurationCodeBase, loggersConfiguration);
+            loadStartUpLoggers(name, configurationClass, loggersConfiguration);
 
             //Set lower level of the two, just in case local logger has its own mechanism to set log level
             int i = 3;
@@ -313,15 +307,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *
      * @param name String
      * @param configurationClass Object
-     * @param configurationCodeBase String
      * @param loggersConfiguration Vector
      * @throws RemoteException in case of remote/network failure
      * @throws SmartFrogLogException  if failed to register logger
      */
 
-    private void loadStartUpLoggers(String name, Object configurationClass, String configurationCodeBase, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
+    private void loadStartUpLoggers(String name, Object configurationClass, Vector loggersConfiguration) throws RemoteException, SmartFrogLogException {
         if (configurationClass instanceof String) {
-            localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass, configurationCodeBase);
+            localLog = loadLogger(name, (ComponentDescription)loggersConfiguration.firstElement(), new Integer(currentLogLevel), (String)configurationClass);
             if (localLog.isTraceEnabled()) localLog.trace("Logger registered: "+ localLog.getClass().toString());
         } else if (configurationClass instanceof Vector) {
             String className = null;
@@ -331,9 +324,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 try {
                     className = (String)((Vector)configurationClass).get(i);
                     loggerConfiguration = (ComponentDescription)loggersConfiguration.get(i);
-                    logger = loadLogger(name, loggerConfiguration,
-                                        new Integer(currentLogLevel), className,
-                                        configurationCodeBase);
+                    logger = loadLogger(name, loggerConfiguration, new Integer(currentLogLevel), className);
                     if (i==0) {
                         localLog = logger;
                     } else {
@@ -360,7 +351,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param configurationComponentDescription ComponentDescription Where to find the configuration
      * @param configurationClass Object String or Vector which configuration is to be found
      * @param defaultLoggersConfiguration Vector default Configuration/s for configurationClass/es
-     * @throws SmartFrogResolutionException if failed to resolve
+     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if failed to resolve
      */
     private Vector getLoggersConfigurationForConfigurationClass( ComponentDescription configurationComponentDescription,
         Object configurationClass, Vector defaultLoggersConfiguration) throws SmartFrogResolutionException {
@@ -467,15 +458,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param configuration ComponentDescription
      * @param logLevel Integer
      * @param targetClassName String
-     * @param targetCodeBase String
      * @return Log logger implementing Log interface.
      * @throws SmartFrogLogException if failed to load
      */
 
-   public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName , String targetCodeBase)
+   public static Log loadLogger(String name, ComponentDescription configuration,Integer logLevel, String targetClassName)
           throws SmartFrogLogException{
           try {
-            Class deplClass = Class.forName(targetClassName, targetCodeBase, true);
+            Class deplClass = Class.forName(targetClassName);
 
             Class[] deplConstArgsTypes = { String.class, ComponentDescription.class , Integer.class };
 
@@ -500,7 +490,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         } catch (InvocationTargetException intarexcp) {
             String msg = "Error during initialization of logger."+
                          " Data: name "+name+", targetClassName "+targetClassName+
-                         ", logLevel "+logLevel+", targetCodeBase "+targetCodeBase;
+                         ", logLevel "+logLevel;
+                         //+", targetCodeBase "+targetCodeBase;
+                            
             System.err.println("[ERROR] "+msg+", Reason: "+intarexcp.toString());
             intarexcp.getCause().printStackTrace();
             throw new SmartFrogLogException(MessageUtil.formatMessage(MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);

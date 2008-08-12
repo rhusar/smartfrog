@@ -139,7 +139,7 @@ public class DefaultParser {
   }
 
 
-  protected Vector parseInclude(String fName, String codebase) throws ParseException {
+  protected Vector parseInclude(String fName, SFReference codebase) throws ParseException {
     try {
       return includeHandler.parseInclude(fName, codebase);
     } catch (TokenMgrError tex) {
@@ -484,11 +484,11 @@ Vector AttributeListNoEOF() :
 
 void Includes(Vector res) :
 {
-     String codebase = null;
+     SFReference codebase = null;
      String fName;
 }
 {
-( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
+( [<CODEBASE> codebase = LinkReference() ] <INCLUDE> fName = String()
          { Vector tmp = parseInclude(fName, codebase);
            for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
              res.addElement(e.nextElement());

@@ -10,6 +10,13 @@ import java.rmi.RemoteException;
  */
 public class CoreClassesClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
+
+  /**
+     * @throws RemoteException In case of network/rmi error
+     */
+    public CoreClassesClassLoadingEnvironment() {
+    }
+
     protected void doSfDeploy() throws SmartFrogException, RemoteException {        }
 
     public ClassLoader getClassLoader() {

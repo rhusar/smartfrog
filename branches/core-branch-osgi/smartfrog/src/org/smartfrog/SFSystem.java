@@ -41,9 +41,7 @@ import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -748,7 +746,7 @@ public class SFSystem implements MessageKeys {
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
-     * @see SFClassLoader
+     * @deprecated see #SFLoader.getInputStream(resourceSFURL, null);
      */
     public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
         InputStream is;
@@ -758,37 +756,6 @@ public class SFSystem implements MessageKeys {
             throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL), e);
         }
         return is;
-    }
-
-    /**
-     * Gets ByteArray for the given resource. Throws exception if stream is
-     * null.
-     * @param resourceSFURL Name of the resource. SF url valid.
-     * @return ByteArray (byte []) with the resource data
-     * @throws SmartFrogException if input stream could not be created for the
-     * resource
-     * @see SFClassLoader
-     */
-    public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
-        ByteArrayOutputStream bStrm = null;
-        DataInputStream iStrm = null;
-        try {
-            iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
-            byte[] resourceData;
-            bStrm = new ByteArrayOutputStream();
-            int ch;
-            while ((ch = iStrm.read())!=-1) {
-                bStrm.write(ch);
-            }
-            resourceData = bStrm.toByteArray();
-            bStrm.close();
-            return resourceData;
-        } catch (IOException ex) {
-          throw SmartFrogException.forward(ex);
-        } finally {
-          if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
-          if (iStrm!=null) { try { iStrm.close();} catch (IOException swallowed) { } }
-        }
     }
 
     /**

@@ -12,9 +12,18 @@ import java.io.InputStream;
 import java.net.URL;
 import java.rmi.RemoteException;
 
-public abstract class AbstractClassLoadingEnvironment extends PrimImpl
-        implements ClassLoadingEnvironment
+public abstract class AbstractClassLoadingEnvironment extends PrimImpl implements ClassLoadingEnvironment
 {
+
+
+
+   /**
+
+     * @throws RemoteException In case of network/rmi error
+     */
+    public AbstractClassLoadingEnvironment() {
+    }
+
     public final synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 

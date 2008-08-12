@@ -24,6 +24,13 @@ import java.rmi.RemoteException;
  */
 public class OldAlgorithmClassLoadingEnvironment extends AbstractClassLoadingEnvironment {
 
+
+  /**
+     * @throws RemoteException In case of network/rmi error
+     */
+    public OldAlgorithmClassLoadingEnvironment() throws RemoteException {
+    }
+
     /**
      * Efficiency holder of sfClass reference.
      */

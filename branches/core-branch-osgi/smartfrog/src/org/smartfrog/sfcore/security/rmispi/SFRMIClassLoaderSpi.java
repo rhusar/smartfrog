@@ -278,7 +278,7 @@ public class SFRMIClassLoaderSpi extends RMIClassLoaderSpi {
         return secureResourcesOff;
     }
 
-    public static void setSecurityResourcesOff(boolean secureResourcesOff) {
+    public static void setSecureResourcesOff (boolean secureResourcesOff) {
         SFRMIClassLoaderSpi.secureResourcesOff = secureResourcesOff;
     }	
 

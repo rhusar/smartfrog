@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 
 
 /**

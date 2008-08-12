@@ -113,16 +113,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Reference used to look up sfLivenessDelay attributes.
      */
-    protected static final Reference refLivenessDelay = new Reference(
-            ReferencePart.attrib(
-                    SmartFrogCoreKeys.SF_LIVENESS_DELAY));
+    protected static final Reference refLivenessDelay = new Reference( ReferencePart.attrib( SmartFrogCoreKeys.SF_LIVENESS_DELAY));
 
     /**
      * Reference used to look up sfLivenessFactor attributes.
      */
-    protected static final Reference refLivenessFactor = new Reference(
-            ReferencePart.attrib(
-                    SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
+    protected static final Reference refLivenessFactor = new Reference( ReferencePart.attrib( SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
 
     /**
      * Flag indicating that this component has been terminated.
@@ -199,7 +195,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      *
      * @throws RemoteException In case of network/rmi error
      */
-    public PrimImpl() throws RemoteException {
+    public PrimImpl(){
     }
 
     /**

@@ -1005,7 +1005,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
 
         // Locate timeout
-        Object timeoutObj;
+        Object timeoutObj = null;
         long timeout;
         try {
             timeoutObj = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT);

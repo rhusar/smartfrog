@@ -153,8 +153,7 @@ public class SFClassLoader {
      *         through our class loaders or does not fullfill the security
      *         requirements.
      */
-    public static InputStream getResourceAsStream(String resource,
-        String codebase, boolean useDefaultCodebase) {
+    public static InputStream getResourceAsStream(String resource,  String codebase, boolean useDefaultCodebase) {
         URL resourceURL;
 
         try {
@@ -166,33 +165,27 @@ public class SFClassLoader {
         } catch (Throwable e) {
             // Didn't work, the input is a malformed url or it is inside a
             // jar file and this is not explicit in the url.
-            if (debug != null) {
-                debug.println("getResourceAsStream:1 Cannot get url " +
-                    e.getMessage());
+            if (debug != null) { debug.println("getResourceAsStream:1 Cannot get url " +  e.getMessage());
             }
         }
 
         try {
             // Let's use a relative file path...
             resourceURL = SFLoader.stringToURL(resource);
-
             return getURLAsStream(resourceURL);
         } catch (Throwable e) {
             // Still in trouble, cannot obtain the resource from the file
             // system directly.
             if (debug != null) {
-                debug.println("getResourceAsStream:2 Cannot get url " +
-                    e.getMessage());
+                debug.println("getResourceAsStream:2 Cannot get url " + e.getMessage());
             }
         }
 
         // The preceeding / does not work when looking inside jar files.
-        String resourceInJar = (resource.startsWith("/")
-            ? resource.substring(1) : resource);
+        String resourceInJar = (resource.startsWith("/")  ? resource.substring(1) : resource);
 
         // Try the class loaders
-        Object result = classLoaderHelper(resourceInJar, codebase,
-                useDefaultCodebase, false);
+        Object result = classLoaderHelper(resourceInJar, codebase,  useDefaultCodebase, false);
 
         return ((result instanceof InputStream) ? (InputStream) result : null);
     }
@@ -207,20 +200,10 @@ public class SFClassLoader {
      * @return URL form of the input string
      *
      * @throws Exception if failed to convert string to URL
+     * @deprecated use SFLoader.stringToURL(s) instead.
      */
     static URL stringToURL(String s) throws Exception {
-        try {
-            return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
-            ? new URL("jar:" + s + "!/") : new URL(s));
-        } catch (Exception ex) {
-            // ignore, try another one
-        }
-
-        String fUrl = (new File(s)).getAbsolutePath();
-        fUrl = "file:" + (fUrl.startsWith("/") ? fUrl : ("/" + fUrl));
-
-        return (((s.endsWith(".jar")) && (!(s.startsWith("jar:"))))
-        ? new URL("jar:" + fUrl + "!/") : new URL(fUrl));
+        return SFLoader.stringToURL(s);
     }
 
     /**
@@ -332,8 +315,7 @@ public class SFClassLoader {
      *
      * @return A class or an input stream to the resource
      */
-    static Object classLoaderHelper(String name, String codebase,
-        boolean useDefaultCodebase, boolean isForName) {
+    static Object classLoaderHelper(String name, String codebase,  boolean useDefaultCodebase, boolean isForName) {
         if (debug != null) debug.println(" * classLoaderHelper: name "+name+", codebase "+codebase+", usedefaultcodebase "+useDefaultCodebase+", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
         String msg = (isForName ? "forName" : "getResourceAsStream");
         Object result;

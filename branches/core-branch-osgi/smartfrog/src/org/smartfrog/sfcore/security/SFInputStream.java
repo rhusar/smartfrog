@@ -63,7 +63,7 @@ public class SFInputStream extends FilterInputStream {
      * Accessor to the current socket.
      * @return the last socket used for IO, or null.
      */
-    private static SFSocket getCurrentSocket() {
+    protected static SFSocket getCurrentSocket() {
         return currentSocket.get();
     }
 
