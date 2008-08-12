@@ -23,6 +23,7 @@
     <conf name="full" description="full filesystem image with all artifacts"/>
     <conf name="minimal" description="minimal filesystem image with enough of a layout for other things to install"/>
     <conf name="redist" description="redistributables excluding smartfrog artifacts"/>
+    <conf name="source" description="complete source tree of smartfrog"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributables excluding smartfrog artifacts"/>
     <conf name="documentation"
@@ -34,6 +35,7 @@
     <artifact conf="minimal" name="sf-antbuild-minimal" type="tar"/>
     <artifact conf="full" name="sf-antbuild-full" type="zip"/>
     <artifact conf="full" name="sf-antbuild-full" type="tar"/>
+    <artifact conf="source" name="sf-antbuild-src" type="zip"/>
   </publications>
   <dependencies>
     <dependency org="org.smartfrog"

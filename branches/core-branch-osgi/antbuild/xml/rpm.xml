@@ -33,6 +33,8 @@
     -The artifact can be published with ivy, if that is what you want. This is left as an exercise
      for the reader.
 
+    -Security signing takes place if security.enabled is true
+
 
   </description>
 
@@ -50,13 +52,15 @@
   <property name="project.name" value="sf-${ant.project.name}"/>
   <property name="artifact.name" value="${project.name}"/>
   <property name="trace.enabled" value="true"/>
+  <property name="rpm.includes.jdocs" value="true"/>
   <property name="ivy.artifact.retrieve.pattern"
       value="[conf]/[artifact]-[revision].[ext]"/>
 
   <import file="state.xml" />
   <import file="ivy-mixin.xml" />
   <import file="macros-mixin.xml" />
-
+  <import file="security-mixin.xml" />
+  
 
 
   <target name="check-rpm" depends="init">
@@ -87,7 +91,7 @@
 
 
   <!--the entry point: build the rpm-->
-  <target name="rpm" depends="build-rpm"
+  <target name="rpm" depends="postprocess-rpm"
       description="Create the RPMs"/>
   <target name="dist" depends="rpm"
       description="Default action is to create the RPMs"/>
@@ -121,6 +125,9 @@
     <m:newdir name="build.rpm.dir" location="${build.dir}/rpm"/>
 
     <m:newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
+    <m:newdir name="rpm.link.dir" location="${build.rpm.dir}/root${rpm.links.path}"/>
+    <m:newdir name="rpm.doc.dir" location="${build.rpm.dir}/root${rpm.doc.path}"/>
+    <m:newdir name="rpm.javadocs.root.dir" location="${build.rpm.dir}/root${rpm.javadocs.path.root}"/>
 
     <m:newdir name="build.rpm.metadata.dir"
         location="${build.rpm.dir}/metadata"/>
@@ -155,6 +162,16 @@
     <property name="target.rpm.tar.gz"
         location="${dist.lib.dir}/smartfrog-${rpm.module.name}-${smartfrog.version}.tar.gz"/>
 
+    <property name="built-signed.rpm"
+        location="${rpm.noarch}/smartfrog-${rpm.module.name}-signed-${rpm.suffix}"/>
+    <property name="target-signed.rpm"
+        location="${dist.lib.dir}/smartfrog-${rpm.module.name}-signed-${rpm.suffix}"/>
+    <property name="target-signed.rpm.tar"
+        location="${build.rpm.dir}/smartfrog-${rpm.module.name}-signed-${smartfrog.version}.tar"/>
+    <property name="target-signed.rpm.tar.gz"
+        location="${dist.lib.dir}/smartfrog-${rpm.module.name}-signed-${smartfrog.version}.tar.gz"/>
+
+
     <macrodef name="rpmpackage">
       <attribute name="package"/>
       <sequential>
@@ -163,8 +180,42 @@
         </copy>
       </sequential>
     </macrodef>
+    <macrodef name="rpmjavadocs">
+      <attribute name="package"/>
+      <sequential>
+        <mkdir dir="${rpm.javadocs.root.dir}/@{package}"/>
+        <unzip dest="${rpm.javadocs.root.dir}/@{package}">
+          <fileset file="${ivy.lib.dir}/package-@{package}/*-javadocs-*.zip"/>
+        </unzip>
+      </sequential>
+    </macrodef>
+
+
+    <!-- macro to create a symlink on Unix for the RPM.
+      The artifact is verified as living in the reparented filesystem, 
+      but the symlinks is set to point to the destination relative to root.
+      This is because tar does not fix links up during the packaging.
+    -->
+    <macrodef name="ln">
+      <attribute name="artifact" />
+      <attribute name="version" />
+      <sequential>
+        <fail>
+         <condition>
+          <not><available file="${rpm.lib.dir}/@{artifact}-@{version}.jar" /></not>
+         </condition>
+         Missing destination artifact: ${rpm.lib.dir}/@{artifact}-@{version}.jar
+        </fail>
+        <exec executable="ln" failonerror="true">
+          <arg value="-sf"/>
+          <arg value="${rpm.install.dir}/lib/@{artifact}-@{version}.jar"/>
+          <arg value="${rpm.link.dir}/@{artifact}.jar"/>
+        </exec>
+      </sequential>
+    </macrodef>
   </target>
 
+  <!--copy the .spec file, expanding properties as we go-->
   <target name="copy-rpm-specs" depends="init-rpm">
     <m:expandingcopy todir="${rpm.SPECS}">
       <fileset dir="${rpm.metadata.dir}" includes="**/*.spec"/>
@@ -195,10 +246,14 @@
         location="${rpm.root.dir}/${rpm.install.dir}"/>
     <m:newdir name="rpm.bin.dir"
         location="${core.install.dir}/bin"/>
+    <m:newdir name="rpm.bin.dir"
+        location="${core.install.dir}/bin/security"/>
     <m:newdir name="rpm.lib.dir"
         location="${core.install.dir}/lib"/>
     <m:newdir name="rpm.links.dir"
         location="${core.install.dir}/links"/>
+    <m:newdir name="rpm.signed.lib.dir"
+        location="${core.install.dir}/signedLib" />
   </target>
 
 
@@ -207,14 +262,29 @@
     <rpmpackage package="${rpm.module.name}"/>
   </target>
 
+  
+  <!-- override point: create custom symlinks -->
+  <target name="rpm-symlinks" depends="rpm-components" >
+  </target>
+  
+  <!-- override point -->
+  <target name="rpm-extras" depends="rpm-components,rpm-symlinks" />
 
   <!--
   The tar is passed to rpm to create the artifacts
   -->
-  <target name="prepare-rpm" depends="copy-rpm-specs,rpm-components">
-    <m:tar destfile="${rpmfiles.tar}">
-      <fileset dir="${build.rpm.dir}/root/" includes="**/*"/>
-    </m:tar>
+
+  <target name="ready-to-prepare-rpm" depends="copy-rpm-specs,rpm-extras"/>
+
+  <target name="prepare-rpm" depends="ready-to-prepare-rpm">
+    <!-- to publish more than just opt content, override this -->
+    <property name="rpm.tar.bundles" value="opt" />
+    <exec executable="tar" failonerror="true" 
+      dir="${build.rpm.dir}/root/">
+      <arg value="cvvf"/>
+      <arg file="${rpmfiles.tar}"/>
+      <arg line="${rpm.tar.bundles}"/>
+    </exec>
     <gzip src="${rpmfiles.tar}" destfile="${rpmfiles.tar.gz}"/>
   </target>
 
@@ -233,14 +303,29 @@
         topDir="${rpm.image.dir}"
         failOnError="true"/>
     <copy todir="${dist.lib.dir}" file="${built.rpm}"/>
-    <!--tar up the release-->
-    <m:tar destfile="${target.rpm.tar}">
-      <fileset file="${built.rpm}"/>
-    </m:tar>
+
     <!--and gzip it. This is what gets published-->
     <gzip src="${target.rpm.tar}" destfile="${target.rpm.tar.gz}"/>
 
   </target>
+
+  <target name="copy-rpm" depends="build-rpm" >
+    <!--tar up the release-->
+    <copy todir="${dist.lib.dir}" file="${built.rpm}"/>
+  </target>
+
+  <target name="package-rpm" depends="copy-rpm" >
+    <!--tar up the release-->
+    <m:tar destfile="${target.rpm.tar}">
+      <fileset file="${target.rpm}"/>
+    </m:tar>
+    <gzip destfile="${target.rpm.tar.gz}" src="${target.rpm.tar}"/>
+  </target>
+
+  <target name="postprocess-rpm" depends="package-rpm" >
+
+  </target>
+
 
   <target name="expand-rpm-debian" depends="rpm"
       description="expand the rpm on a debian system, but do not install it">

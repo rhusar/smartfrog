@@ -1,5 +1,5 @@
 <project name="ivy" 
-    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+    xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <description>
     These targets extend compile-and-jar with extra states and transitions,
@@ -12,11 +12,20 @@
   <!--define the published state-->
   <target name="published" depends="ivy-publish"/>
 
+  <target name="ivy-probe-antlib" >
+    <condition property="ivy.found">
+      <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
+    </condition>
+  </target>
 
-  <target name="ivy-init" depends="init-core,load-version-info,artifact-names">
+  <target name="ivy-init-dir" depends="init-core">
     <property name="ivy.dir" location="${root.dir}/antbuild/ivy" />
-    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
-             resource="fr/jayasoft/ivy/ant/antlib.xml">
+  </target>
+  
+  <target name="ivy-init-antlib" depends="ivy-init-dir,load-version-info,artifact-names,ivy-probe-antlib" unless="ivy.found">
+
+    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+        loaderRef="ivyLoader">
       <classpath>
         <pathelement location="${ivy.dir}/lib/ivy-${ivy.version}.jar"/>
       </classpath>
@@ -24,15 +33,18 @@
     <fail >
       <condition >
         <not>
-          <typefound uri="antlib:fr.jayasoft.ivy.ant" name="retrieve"/>
+          <typefound uri="antlib:org.apache.ivy.ant" name="retrieve"/>
         </not>
       </condition>
-      You need the ivy tasks from http://www.jayasoft.org/ivy/download
-      ivy.jar should be installed in ANT_HOME/lib or ${user.home}/.ant/lib
+      You need the ivy tasks from http://ant.apache.org/
     </fail>
+  </target>
+
+
+  <target name="ivy-init" depends="ivy-init-antlib" >
     <!--copy ivy artifacts -->
     <property name="ivy.lib.dir" location="${build.dir}/ivy/lib" />
-    <ivy:configure file="${ivy.dir}/ivyconf.xml"/>
+    <ivy:settings file="${ivy.dir}/ivyconf.xml" override="false"/>
     <property name="ivy.artifact.retrieve.pattern"
         value="[conf]/[artifact]-[revision].[ext]"/>
     <property name="ivy.publish.pattern"
