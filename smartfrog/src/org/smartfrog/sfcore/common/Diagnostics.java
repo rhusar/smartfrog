@@ -46,7 +46,6 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 import java.io.File;
@@ -177,12 +176,12 @@ public final class Diagnostics {
         //header(out, "ClassPath repeats");
         doReportClassPathRepeats(out);
 
-
-        header(out, "CodeBase");
-        doReportCodeBase(out);
-        
-        //header(out, "CodeBase repeats");
-        doReportCodeBaseRepeats(out);
+// no needed since OSGi integration
+//        header(out, "CodeBase");
+//        doReportCodeBase(out);
+//
+//        //header(out, "CodeBase repeats");
+//        doReportCodeBaseRepeats(out);
 
         header(out, "Locale information");
         doReportLocale(out);
@@ -710,10 +709,11 @@ public final class Diagnostics {
     /**
      * Report a listing of codebase used in the current vm.
      * @param out the stream to print the properties to.
+     * @deprecated
      */
     public static void doReportCodeBase(StringBuffer out) {
 
-      String codebaseString = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
+      String codebaseString = System.getProperty(SmartFrogCoreProperty.codebase);
       if (codebaseString!=null) {
           out.append(""+codebaseString.replace(System.getProperty("path.separator").charAt(0), '\n'));
       } else {
@@ -853,11 +853,12 @@ public final class Diagnostics {
    /**
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
+    *  @deprecated
      */
    public static void doReportCodeBaseRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       StringBuffer message = null;
-      String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
+      String codebaseproperty = System.getProperty(SmartFrogCoreProperty.codebase);
       if (codebaseproperty != null) {
           String codebase[] = codebaseproperty.split(System.getProperty("path.separator"));
           message =  Logger.getRepeatsMessage(words, codebase);

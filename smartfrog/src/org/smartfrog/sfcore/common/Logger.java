@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -155,17 +154,18 @@ public class Logger implements MessageKeys {
             if (message !=null) {
                 SFSystem.sfLog().warn("Possible problem with classpath: \n"+message.toString());
             }
-            // Check for repeated Jar files in code base
-            String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
-            if (codebaseproperty != null) {
-                String[] codebase = codebaseproperty.split(System.getProperty(
-                        "path.separator"));
-                message = Logger.getRepeatsMessage(words, codebase);
-                if (message != null) {
-                    SFSystem.sfLog()
-                            .warn("Possible problem with codebase: " + message.toString());
-                }
-            }
+// No more codebase since OSGi integration. Replaced by classloading environments            
+//            // Check for repeated Jar files in code base
+//            String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
+//            if (codebaseproperty != null) {
+//                String[] codebase = codebaseproperty.split(System.getProperty(
+//                        "path.separator"));
+//                message = Logger.getRepeatsMessage(words, codebase);
+//                if (message != null) {
+//                    SFSystem.sfLog()
+//                            .warn("Possible problem with codebase: " + message.toString());
+//                }
+//            }
         } catch (Throwable thr) { /*ignore*/ }
     }
 

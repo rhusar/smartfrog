@@ -56,7 +56,7 @@ public class ConstructAssertions implements PhaseAction {
 
         ComponentDescription parent = cd.sfParent();
         if (parent != null) {
-            Object name = parent.sfContext().keyFor(cd);
+            Object name = parent.sfAttributeKeyFor(cd);
             parent.sfContext().put(name, new SFAssertReference(comp));
         }
     }

@@ -228,7 +228,8 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
          InputStream is=null;
          try {
              //is = SFCLoader.getResourceAsStream(url,codebase, true);
-			 is = SFLoader.getInputStreamSFException(url,codebase,true);
+             //todo review.
+             is = SFLoader.getInputStreamSFException(url);
              if (is==null) {
                  throw new SmartFrogParseException(
                  MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
@@ -237,8 +238,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
          } catch (SmartFrogParseException spex){
              throw spex;
          } catch (Throwable thr) {
-             throw new SmartFrogParseException(MessageUtil.
-                     formatMessage(MSG_ERR_PARSE), thr);
+             throw new SmartFrogParseException(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
          } finally {
              if (is!=null) {
                  try {
