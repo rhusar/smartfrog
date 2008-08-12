@@ -24,14 +24,13 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.SFSystem;
 
 import java.rmi.RemoteException;
 import java.io.File;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created 21-Apr-2008 14:44:35
@@ -57,7 +56,16 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
         //start all our children
         super.sfStart();
 
-        //now run through our children and, for all that implement File or Files, add them to our list.
+
+        Vector<String> fileVector = getFileList();
+
+
+        sfReplaceAttribute(Files.ATTR_FILE_SET_STRING, fileList);
+        sfReplaceAttribute(Files.ATTR_FILELIST, fileVector);
+        checkAndUpdateFileCount();
+    }
+
+    private Vector<String> getFileList() throws RemoteException, SmartFrogException {//now run through our children and, for all that implement File or Files, add them to our list.
         aggregateChildFiles();
         int filesize = fileset.size();
         Vector<String> fileVector = new Vector<String>(filesize);
@@ -72,10 +80,35 @@ public class FilesCompoundImpl extends CompoundImpl implements Files {
             aggregatePath.append(File.pathSeparatorChar);
         }
         fileList = aggregatePath.toString();
-        sfReplaceAttribute(Files.ATTR_FILE_SET_STRING, fileList);
-        sfReplaceAttribute(Files.ATTR_FILELIST, fileVector);
-        checkAndUpdateFileCount();
+        return fileVector;
     }
+
+    //-------- For External use by passing a CD
+    public static String getFileList(ComponentDescription cd) throws RemoteException, SmartFrogException {//now run through our children and, for all that implement File or Files, add them to our list.
+        StringBuilder aggregatePath = new StringBuilder();
+        for (Iterator values = cd.sfValues(); values.hasNext();) {
+              Object value = values.next();
+              if (value instanceof ComponentDescription) {
+                   try {
+                       Fileset fileset = FilesImpl.resolveFileset((ComponentDescription) value);
+                       if (!aggregatePath.toString().equals("")&& aggregatePath.toString().endsWith(""+File.pathSeparatorChar)){
+                           aggregatePath.append(File.pathSeparatorChar);
+                       }
+                       aggregatePath.append(fileset.toString());
+                       return (aggregatePath.toString());
+                   } catch (Exception rex){
+                       SFSystem.sfLog().err( rex );
+                       return null;
+                   }
+              }
+
+          }
+        return aggregatePath.toString();
+    }
+
+
+
+    //-------------- end CD -------------
 
     /**
      * go through our children and aggregate their files
