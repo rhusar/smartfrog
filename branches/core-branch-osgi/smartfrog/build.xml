@@ -58,8 +58,6 @@
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
-    <echo message=" --------------------------------------------------------"/>
-    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
     <echo message="  "/>
     <echo level="verbose">
@@ -112,20 +110,7 @@
     <echo message=""/>
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Initialization path (Libs needed for compiling)                     -->
-  <!-- =================================================================== -->
-  <path id="smartfrog.class.path">
-    <pathelement path="${classpath}"/>
-	<pathelement path="./lib/eclipse.jar"/>
-    <!-- <pathelement path="./lib/ProActive.jar"/>-->
-  </path>
-  <!-- to get the classpath in a printable form -->
-  <pathconvert pathsep="${line.separator}|   |-- "  
-               property="echo.smartfrog.class.path" 
-               refid="smartfrog.class.path">
-  </pathconvert>
-   
+
   
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
@@ -352,14 +337,41 @@
         javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
+    <!-- =================================================================== -->
+  <!-- Initialization path (Libs needed for compiling)                     -->
+  <!-- =================================================================== -->
+  <target name="initClassPath" depends="declare-classpaths"> 
+	<pathconvert property="path.compile.classpath" 
+               refid="compile.classpath">
+    </pathconvert>
+  
+  <path id="smartfrog.class.path">
+    <pathelement path="${classpath}"/>
+	<pathelement path="./lib/eclipse.jar"/>
+	<pathelement path="${path.compile.classpath}"/>
+    <!-- <pathelement path="./lib/ProActive.jar"/>-->
+  </path>
+  <!-- to get the classpath in a printable form -->
+  <pathconvert pathsep="${line.separator}|   |-- "  
+               property="echo.smartfrog.class.path" 
+               refid="smartfrog.class.path">
+  </pathconvert>
+  </target>
+  
+  
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile-source" depends="initbuild,createParser,declare-classpaths" description="Compiles the source code">
+  <target name="compile-source" depends="initbuild,createParser,declare-classpaths,initClassPath" description="Compiles the source code">
     <!-- Compile the java code -->
-    <echo level="verbose">${javac.java.version}
-      build.compiler=${build.compiler}
-      javac.compiler=${javac.compiler}</echo>
+    <pathconvert pathsep="${line.separator}|   |-- "  
+               property="echo.compile.smartfrog.class.path" 
+               refid="smartfrog.class.path">
+    </pathconvert>
+	<echo message=" --------------------------------------------------------"/>
+	<echo message=" javac ${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}"/>
+    <echo message="   Class Path= ${line.separator}|   |-- ${echo.compile.smartfrog.class.path}"/>
+	<echo message=" --------------------------------------------------------"/>
     <javac compiler="${javac.compiler}" 
       srcdir="${src.dir}"
       includes="**/*.java" 
@@ -1070,20 +1082,15 @@
 
   <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
     <ivy:report todir="${ivy.reports.dir}"/>
-    <echo> published Ivy report to 
-${ivy.reports.dir}
+    <echo> published Ivy report to ${ivy.reports.dir}
     </echo>
   </target>
 
-    <target name="declare-classpaths"
-      depends=
-       "ivy.compile.classpath"/>
-
-
-    <target name="ivy.compile.classpath" depends="ivy-resolve">
-      <ivy:cachepath pathid="compile.classpath" conf="compile" />
-      <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
-    </target>
+	<target name="declare-classpaths"  depends= "ivy.compile.classpath"/>
+	<target name="ivy.compile.classpath" depends="ivy-resolve">
+	  <ivy:cachepath pathid="compile.classpath" conf="compile" />
+	  <echo level="verbose">compile.classpath=${toString:compile.classpath}</echo>
+	</target>
 
 
   <!--copy these in to the same dir that the other artifacts go,
