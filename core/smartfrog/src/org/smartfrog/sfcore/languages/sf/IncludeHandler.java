@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf;
 
-import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
-
 import java.util.Vector;
 
 /**
@@ -40,5 +38,5 @@ public interface IncludeHandler {
      *
      * @exception Exception error while locating or parsing include
      */
-    public Vector parseInclude(String include, SFReference codebase) throws Exception;
+    public Vector parseInclude(String include, String codebase) throws Exception;
 }
