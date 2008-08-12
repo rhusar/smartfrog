@@ -68,7 +68,7 @@ public class Phase implements CDVisitor {
             throws SmartFrogResolutionException {
         try {
             ClassLoadingEnvironment env = ApplyReference.resolveEnvironmentHere(cd);
-            PhaseAction p = (PhaseAction) env.loadClass(action).newInstance();
+            PhaseAction p = (PhaseAction) env.loadClass(action.getClass().getName()).newInstance();
             p.forComponent(cd, phaseName, path);
             return p;
         } catch (Exception ex){ 

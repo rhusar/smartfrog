@@ -26,7 +26,6 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -143,7 +142,7 @@ public class CheckSchemaElement extends BaseFunction {
     private boolean isValidClass (String schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
         return ((schemaClass.equals("anyClass"))
                 ||
-                (SFClassLoader.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
+                (Class.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
     }
 
     /**
