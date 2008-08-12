@@ -23,11 +23,14 @@ import org.smartfrog.SFLoader;
 import org.smartfrog.services.filesystem.UriIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.deployer.ClassLoadingEnvironment;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,7 +218,9 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             throws SmartFrogLivenessException {
         InputStream in=null;
         try {
+            //@todo to fix this using ResourceLoader and SFLoader.
             in = SFClassLoader.getResourceAsStream(resource,uriClasspath,false);
+            //in = SFLoader.getInputStream(resource, new ClassLoadingEnvironment());
             /*
             URL url=loader.getResource(resource);
             */

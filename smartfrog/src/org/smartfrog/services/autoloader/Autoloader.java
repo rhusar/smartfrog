@@ -17,6 +17,7 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * Component that will autoload a .sf file to create a child component which is being de-referemced

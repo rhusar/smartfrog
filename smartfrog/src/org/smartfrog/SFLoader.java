@@ -79,7 +79,7 @@ public class SFLoader {
         ByteArrayOutputStream bStrm = null;
         DataInputStream iStrm = null;
         try {
-            iStrm = new DataInputStream(SFSystem.getInputStreamForResource(resourceSFURL));
+            iStrm = new DataInputStream(getInputStream(resourceSFURL,null));
             bStrm = new ByteArrayOutputStream();
             int ch;
             while ((ch = iStrm.read()) != -1) {

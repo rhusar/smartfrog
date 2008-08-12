@@ -21,13 +21,23 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
-import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.JarURLConnection;
+import java.security.cert.Certificate;
+import java.security.CodeSource;
+import java.security.PermissionCollection;
+import java.security.Policy;
+import java.security.ProtectionDomain;
 
+import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
 import org.smartfrog.sfcore.security.rmispi.SFRMIClassLoaderSpi;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
@@ -284,7 +294,7 @@ public class SFSecurity {
      * @return Authenticated information about our peer.
      */
     public static String getPeerAuthenticatedSubjects() {
-        SFSocket inSocket = (SFSocket) SFInputStream.currentSocket.get();
+        SFSocket inSocket = SFInputStream.getCurrentSocket();
 
         return inSocket != null ? inSocket.getPeerAuthenticatedSubjects() : null;
     }

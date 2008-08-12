@@ -134,7 +134,7 @@ public class SFPrimLogImpl extends PrimImpl implements Prim, SFPrimLog, Log {
         String codeBase=null;
         logClass = logCD.sfResolve(ATR_LOGGER_CLASS, logClass, true);
         codeBase = sfResolve(SmartFrogCoreKeys.SF_CODE_BASE, codeBase, false);
-        return LogImpl.loadLogger(logName,logCD, new Integer(logLevel),logClass,codeBase);
+        return LogImpl.loadLogger(logName,logCD, new Integer(logLevel),logClass);
 
     }
 

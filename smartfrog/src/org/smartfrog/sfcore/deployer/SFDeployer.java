@@ -20,22 +20,15 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.deployer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.rmi.RemoteException;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 
 /**
@@ -44,10 +37,11 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  * as part of the component description that is to be deployed.
  */
 public class SFDeployer implements MessageKeys {
-	/**
+    /**
      * Name of default deployer.
      */
-    private static final ComponentDeployer DEFAULT_DEPLOYER = new PrimProcessDeployerImpl();
+
+    private static final ComponentDeployer DEFAULT_DEPLOYER = (ComponentDeployer)new PrimProcessDeployerImpl();
 
     private static final PrimFactory DEFAULT_PRIM_FACTORY = new DefaultPrimFactory();
     private static final Reference PARENT_APP_ENV_REF;
@@ -103,7 +97,7 @@ public class SFDeployer implements MessageKeys {
      * @return deployer for target
      *
      * @throws SmartFrogRuntimeException failed to construct target deployer
-     * @see PrimProcessDeployerImpl
+     * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
     private static ComponentDeployer getDeployer(ComponentDescription component)
             throws SmartFrogRuntimeException
@@ -169,8 +163,7 @@ public class SFDeployer implements MessageKeys {
     {        
         try {
             
-            ComponentDeployer deployer = (ComponentDeployer)
-                    Class.forName(className).newInstance();
+            ComponentDeployer deployer = (ComponentDeployer)  Class.forName(className).newInstance();
             prepareDeployer(deployer, component);
             return deployer;
 
@@ -184,16 +177,17 @@ public class SFDeployer implements MessageKeys {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
                     null, component.sfContext());
-        } catch (InvocationTargetException intarexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INVOCATION_TARGET, className), intarexcp,
-                null, component.sfContext());
-    	}
+        }
+        //@todo remove
+//        catch (InvocationTargetException intarexcp) {
+//            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
+//                    MSG_INVOCATION_TARGET, className), intarexcp,
+//                null, component.sfContext());
+//    	}
     }
 
     private static void prepareDeployer(ComponentDeployer deployer, ComponentDescription component) throws SmartFrogRuntimeException {
-        ComponentDescription sfMeta = (ComponentDescription)
-                component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
+        ComponentDescription sfMeta = (ComponentDescription) component.sfResolveHere(SmartFrogCoreKeys.SF_METADATA);
         deployer.setComponentFactory(getComponentFactory(sfMeta));
         deployer.setTargetComponentDescription(component);
     }

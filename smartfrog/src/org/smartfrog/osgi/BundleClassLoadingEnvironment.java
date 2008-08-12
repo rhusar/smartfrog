@@ -15,6 +15,13 @@ public class BundleClassLoadingEnvironment extends AbstractClassLoadingEnvironme
     private Bundle hostBundle = null;
     private ClassLoader bundleClassLoaderProxy = null;
 
+
+  /**
+     * @throws RemoteException In case of network/rmi error
+     */
+    public BundleClassLoadingEnvironment() throws RemoteException {
+    }
+
     protected synchronized void doSfDeploy() throws SmartFrogException, RemoteException {
 
         BundleContext daemonBundleContext = OSGiUtilities.getDaemonBundleContext(this);

@@ -168,6 +168,11 @@ public interface SmartFrogCoreKeys {
     String SF_DEPLOYER_CLASS ="sfDeployerClass";
 
     /**
+     * Attribute that holds a LAZY reference to the deployer to be used.
+     */
+    public final static String SF_DEPLOYER = "sfDeployer";    
+
+    /**
      * Attribute that determines asynchronous or synchronous termination
      * of compound.
      *
@@ -365,6 +370,14 @@ public interface SmartFrogCoreKeys {
      */
     String KEY_LANGUAGE = "#language";
 
+    // New OSGi class loading env
+
+    /**
+     * The language attribute for functions, which can be set/found from the context.
+     * {@value}
+     */
+    String SF_FUNCTION_CLASS = "sfFunctionClass";
+
     /**
      * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the
      * {@link org.smartfrog.sfcore.deployer.ClassLoadingEnvironment} a component will be loaded from.
@@ -380,23 +393,28 @@ public interface SmartFrogCoreKeys {
     String SF_APPLICATION_ENVIRONMENT = "sfApplicationEnvironment";
 
     /**
+    * Tag used to exclude an attribute in a Context from being serialized. This implies code running in other processes
+    * won't see it.
+    */
+    String SF_TRANSIENT = "sfTransient";
+
+
+    /**
      * Bundle context used to access the OSGi framework services.
      */
-    public final static String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
+    String SF_CORE_BUNDLE_CONTEXT = "sfCoreBundleContext";
 
     /**
      * Attribute (must be LAZY) inside {@link this.SF_METADATA} used to select the PrimFactory
      * component used to create a component instance.
      */
-    public static final String SF_FACTORY = "sfFactory";
+    String SF_FACTORY = "sfFactory";
 
     /**
      * Attribute (defined as sfMeta extends DATA { ... }) used to
      * gather all metadata about a component.
      */
-    public static final String SF_METADATA = "sfMeta";
+    String SF_METADATA = "sfMeta";
 
-
-    //public static final String SF_FUNCTION_CLASS = "sfFunctionClass";    
 
 }

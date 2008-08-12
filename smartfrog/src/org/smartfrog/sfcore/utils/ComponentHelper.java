@@ -436,21 +436,38 @@ public class ComponentHelper {
 
     /**
      * Load a class in the owner's class loading space. Equivalent to calling
-     * Class.forName() in the owner. 
+     * Class.forName() in the owner.
      * @param classname
      * @return class
      * @throws SmartFrogResolutionException if the class could not be found
      * @throws RemoteException for network problems
      */
     public Class loadClass(String classname) throws SmartFrogResolutionException, RemoteException {
+        return loadClass(classname,"");
+    }
+
+    /**
+     * Load a class in the owner's class loading space. Equivalent to calling
+     * Class.forName() in the owner.
+     * 
+     * @param classname class to load
+     * @param message extra message to include in exception
+     * @return loaded class
+     * @throws SmartFrogResolutionException if the class could not be found
+     * @throws RemoteException for network problems
+     */
+    public Class loadClass(String classname, String message) throws SmartFrogResolutionException, RemoteException {
+        String targetCodeBase = getCodebase();
         try {
             return owner.getClass().getClassLoader().loadClass(classname);
-        } catch (ClassNotFoundException ignored) {
-            throw new SmartFrogResolutionException("Not found: " + classname
-                    + ". Classloader: " + owner.getClass().getClassLoader());
-
+        } catch (ClassNotFoundException cnfe) {
+            throw new SmartFrogResolutionException("Class not found: " + classname + " in classloader " + owner.getClass().getClassLoader().toString()
+                    + (message != null && message.length() > 0 ? ('\n' + message) : ""),
+                    cnfe, owner);
         }
     }
+
+
 
     /**
      * find an ancestor of a given type

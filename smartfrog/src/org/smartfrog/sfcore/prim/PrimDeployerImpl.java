@@ -51,10 +51,10 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     protected static final Reference refCodeBase = new Reference(SmartFrogCoreKeys.SF_CODE_BASE);
 
     /** The target description to work of. */
-    public ComponentDescription target;
+    public ComponentDescription target = null;
 
     /** The factory used to get the component instance. */
-    private PrimFactory primFactory;
+    private PrimFactory primFactory = null;
     
 
 

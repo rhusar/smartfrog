@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;

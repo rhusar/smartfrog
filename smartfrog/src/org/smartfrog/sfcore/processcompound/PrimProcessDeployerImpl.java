@@ -38,6 +38,15 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
     protected static final Reference refProcessName = new Reference(
                 SmartFrogCoreKeys.SF_PROCESS_NAME);
 
+
+
+    /**
+     * Constructs PrimHostDeployerImpl object without component description.
+     */
+    public PrimProcessDeployerImpl() {
+        super (null);
+    }
+
     /**
      * Constructs PrimHostDeployerImpl object with component description.
      *
