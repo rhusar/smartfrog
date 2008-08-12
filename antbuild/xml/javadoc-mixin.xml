@@ -5,7 +5,6 @@
   <description>
     Mixin to create javadocs and other documentation.
 
-    TODO: THIS IS NOT YET READY FOR USE 
   </description>
 
 
@@ -117,9 +116,10 @@
 
   <target name="package-javadocs" depends="ready-to-package-javadocs"
           description="package up all the javadocs">
+    <echo >building javadocs into  package "${javadocs.zipentry.prefix}"</echo>
     <zip destfile="${javadocs.zip}">
       <zipfileset dir="${dist.javadoc.dir}" includes="**/*.*"
-                  prefix="javadoc"/>
+          prefix="${javadocs.zipentry.prefix}"/>
     </zip>
   </target>
 

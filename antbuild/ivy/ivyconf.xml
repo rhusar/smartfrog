@@ -1,4 +1,4 @@
-<ivyconf>
+<ivysettings>
   <!--
   see http://www.jayasoft.org/ivy/doc/configuration
   -->
@@ -12,14 +12,16 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   <property name="ivy.ibiblio.root"
-      value="http://mirrors.sunsite.dk/maven2" override="false"/>
+      value="http://repo1.maven.org/maven2/" override="false"/>
+  <property name="maven.restlet.org"
+      value="http://maven.restlet.org/" override="false"/>
   <property name="maven2.pattern"
       value="[organisation]/[module]/[revision]/[module]-[revision]" />
   <property name="maven2.pattern.ext"
       value="${maven2.pattern}.[ext]" />
   <!-- pull in the local repository -->
   <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
-  <conf defaultResolver="default"/>
+  <settings defaultResolver="default"/>
   <resolvers>
 <!-- BUGBUG: not a real m2 repo structure
     <filesystem name="team">
@@ -30,7 +32,8 @@
     </filesystem>-->
     <filesystem name="team">
       ivys="true" artifacts="true"
-      m2compatible="true" >
+      m2compatible="true"
+      checkModified="true" >
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
       <ivy pattern="${root.dir}/antbuild/repository/${maven2.pattern}.xml"/>
     </filesystem>
@@ -45,10 +48,16 @@
         pattern="${maven2.pattern.ext}"
         m2compatible="true"
         />
+    <ibiblio name="maven.restlet.org"
+        root="${maven.restlet.org}"
+        pattern="${maven2.pattern.ext}"
+        m2compatible="true"
+        />
     <chain name="default" dual="true">
       <resolver ref="local"/>
       <resolver ref="team2"/>
       <resolver ref="maven2"/>
+      <resolver ref="maven.restlet.org"/>
     </chain>
     <chain name="internal">
       <resolver ref="local"/>
@@ -76,4 +85,4 @@
     <module organisation="" name=".*" resolver="internal"/>
     <module organisation="" name=".*" resolver="internal"/>-->
   </modules>
-</ivyconf>
+</ivysettings>
