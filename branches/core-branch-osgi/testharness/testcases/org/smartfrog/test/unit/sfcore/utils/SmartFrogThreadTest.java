@@ -48,6 +48,8 @@ public class SmartFrogThreadTest extends TestCase {
         SmartFrogThread thread=new SmartFrogThread(
                 new ThrowingRunnable(
                         new RuntimeException("test")));
+        //IDEs may complain that we call Thread.run instead of Thread.start(),
+        //but this is deliberate...leave the code as is.
         thread.run();
         assertTrue(thread.isThrown());
         try {
@@ -62,6 +64,38 @@ public class SmartFrogThreadTest extends TestCase {
 
 
     /**
+     * Test that an exception is caught in the run
+     * @throws Exception trouble
+     */
+    public void testNotifyingSelf() throws Exception {
+        SmartFrogThread thread = new SmartFrogThread();
+        thread.start();
+        thread.waitForNotification(1000);
+        assertTrue(thread.isFinished());
+    }
+
+    /**
+     * Test that an exception is caught in the run
+     * @throws Exception trouble
+     */
+    public void testNotifyingOther() throws Exception {
+        Object waiter=new Object();
+        SmartFrogThread thread = new SmartFrogThread(waiter);
+        thread.start();
+        synchronized(waiter) {
+            waiter.wait(1000);
+        }
+        assertTrue(thread.isFinished());
+    }
+
+    public void testSleepingTooLong() throws Exception {
+        SmartFrogThread thread = new SmartFrogThread(new SleepingRunnable(10000));
+        thread.start();
+        thread.waitForNotification(1000);
+        assertFalse(thread.isFinished());
+    }
+
+    /**
      * A little runnable that throws an exception
      */
     private static class ThrowingRunnable implements Runnable {
@@ -73,7 +107,7 @@ public class SmartFrogThreadTest extends TestCase {
          * A runnable designed to throw a RuntimeException
          * @param rte the exception to throw
          */
-        public ThrowingRunnable(RuntimeException rte) {
+        ThrowingRunnable(RuntimeException rte) {
             this.rte = rte;
         }
 
@@ -87,6 +121,30 @@ public class SmartFrogThreadTest extends TestCase {
         }
     }
 
+    /**
+     * A little runnable that throws an exception
+     */
+    private static class SleepingRunnable implements Runnable {
 
+        private long sleep;
+
+
+        SleepingRunnable(long sleep) {
+            this.sleep = sleep;
+        }
+
+
+
+        /**
+         * throw any runtime exception we have been created with
+         */
+        public void run() {
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 }

@@ -21,6 +21,7 @@ package org.smartfrog.test.unit.java;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.os.java.RunJavaUtils;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.util.Vector;
 
@@ -61,7 +62,7 @@ public class RunJavaUtilsTest extends TestCase {
     }
 
     public Vector assertCracked(String source, int size) {
-        Vector v = RunJavaUtils.crack(source);
+        Vector v = ListUtils.crack(source);
         assertEquals(size, v.size());
         return v;
     }

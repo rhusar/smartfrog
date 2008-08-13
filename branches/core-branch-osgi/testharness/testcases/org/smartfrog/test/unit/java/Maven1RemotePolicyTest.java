@@ -14,12 +14,8 @@
 
 package org.smartfrog.test.unit.java;
 
-import org.smartfrog.services.os.java.LibraryArtifact;
-import org.smartfrog.services.os.java.LocalCachePolicy;
 import org.smartfrog.services.os.java.Maven1Policy;
 import org.smartfrog.services.os.java.RemoteCachePolicy;
-
-import junit.framework.TestCase;
 
 /**
  * Test Maven1 policy logic

@@ -20,13 +20,13 @@
 package org.smartfrog.test.unit.net;
 
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
-
-import org.smartfrog.sfcore.processcompound.*;
-import org.smartfrog.sfcore.common.*;
 
 /**
  * created Jul 12, 2004 3:55:32 PM
@@ -34,11 +34,10 @@ import org.smartfrog.sfcore.common.*;
 
 public class BasicNetworkingTest extends TestCase {
 
-    Logger log;
+    private static final Log log = LogFactory.getLog(BasicNetworkingTest.class);
 
     public BasicNetworkingTest(String name) {
         super(name);
-        log=Logger.getLogger(name);
     }
 
     public void testHasHostname() throws UnknownHostException {
@@ -57,7 +56,7 @@ public class BasicNetworkingTest extends TestCase {
 
     /**
      * may fail if DNS is badly set up or absent
-     * @throws UnknownHostException
+     * @throws UnknownHostException network problems
      */
     public void testLocalhost() throws UnknownHostException {
         InetAddress addr;
@@ -65,6 +64,9 @@ public class BasicNetworkingTest extends TestCase {
         logAddr("localhost", addr);
     }
 
+    /**
+     * @throws UnknownHostException network problems
+     */
     public void testLoopback() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName(null);
@@ -72,6 +74,9 @@ public class BasicNetworkingTest extends TestCase {
         assertTrue(addr.isLoopbackAddress());
     }
 
+    /**
+     * @throws UnknownHostException network problems
+     */
     public void test127dot0dot0dot1() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName("127.0.0.1");
@@ -82,7 +87,7 @@ public class BasicNetworkingTest extends TestCase {
 
     /**
      * this only valid in an IPv6 context
-     * @throws UnknownHostException
+     * @throws UnknownHostException network problems
      */
     public void testIPv6() throws UnknownHostException {
         InetAddress addr;
@@ -91,22 +96,37 @@ public class BasicNetworkingTest extends TestCase {
         assertTrue(addr.isLoopbackAddress());
     }
 
+    /**
+     * @throws UnknownHostException network problems
+     */
     public void testReverseDNSWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname=addr.getHostName();
         logHostname(hostname);
     }
 
+    /**
+     * @throws UnknownHostException network problems
+     */
     public void testReverseDNSFullyWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname = addr.getCanonicalHostName();
         logHostname(hostname);
     }
 
+    /**
+     * Log the hostname
+     * @param hostname hostname
+     */
     private void logHostname(String hostname) {
         log.info("hostname =" + hostname);
     }
 
+    /**
+     * Log the address
+     * @param type address type
+     * @param addr address value
+     */
     private void logAddr(String type, InetAddress addr) {
         log.info(type + ": " + addr.toString());
     }
