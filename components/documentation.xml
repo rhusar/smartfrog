@@ -139,6 +139,7 @@ For more information: www.smartfrog.org
     <forrest-component component="scripting"/>
     <forrest-component component="slp"/>
     <forrest-component component="www"/>
+    <forrest-component component="vmware"/>
     <forrest-component component="xml" />
     <!--<forrest-component component="xmpp" />-->
 
