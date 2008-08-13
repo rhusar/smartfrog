@@ -78,6 +78,7 @@ To use: ant -f buildRelease release
     <property name="sfLoggingServices.project" location="loggingservices" />
     <property name="releasetest.project" location="releasetest" />
     <!--property name="xml.project" location="xml" /-->
+    <property name="vmware.project" location="vmware" />
     <property name="www.project" location="www" />
     <property name="dns.project" location="dns" />
   </target>
@@ -146,6 +147,7 @@ To use: ant -f buildRelease release
         <include name="sfinstaller/**"/>
         <include name="dns/**"/>
         <include name="www/**"/>
+        <include name="vmware/**"/>
         <include name="lib/**"/>
         <!--include name="xml/**"/-->
         <include name="build.xml"/>
@@ -180,6 +182,7 @@ To use: ant -f buildRelease release
         <exclude name="ssh/test/**"/>
         <exclude name="sfinstaller/test/**"/>
         <exclude name="dns/test/**"/>
+        <exclude name="vmware/test/**"/>
         <exclude name="www/test/**"/>
       </zipfileset>
 	
@@ -211,6 +214,7 @@ To use: ant -f buildRelease release
         <include name="sfinstaller/**"/>
         <include name="dns/**"/>
         <include name="www/**"/>
+        <include name="vmware/**"/>
         <include name="lib/**"/>
         <!--include name="xml/**"/-->
         <include name="build.xml"/>
@@ -245,6 +249,7 @@ To use: ant -f buildRelease release
         <exclude name="ssh/test/**"/>
         <exclude name="sfinstaller/test/**"/>
         <exclude name="dns/test/**"/>
+        <exclude name="vmware/test/**"/>
         <exclude name="www/test/**"/>
       </tarfileset>
       <tarfileset dir=".." prefix="${Name.System}.${version}">
@@ -329,6 +334,7 @@ To use: ant -f buildRelease release
     <copyreleaseszips project="${ssh.project}" />
     <copyreleaseszips project="${sfinstaller.project}" />
     <copyreleaseszips project="${dns.project}" />
+    <copyreleaseszips project="${vmware.project}"/>
     <copyreleaseszips project="${www.project}" />
     <!--copyreleaseszips project="${xml.project}" /-->
 
@@ -364,6 +370,7 @@ To use: ant -f buildRelease release
     <copyreleasestars project="${ssh.project}" />
     <copyreleasestars project="${sfinstaller.project}" />
     <copyreleasestars project="${dns.project}" />
+    <copyreleasestars project="${vmware.project}"/>
     <copyreleasestars project="${www.project}" />
     <!--copyreleasestars project="${xml.project}" /-->
 
