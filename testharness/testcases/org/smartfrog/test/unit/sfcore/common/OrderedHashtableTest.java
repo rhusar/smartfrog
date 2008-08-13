@@ -44,13 +44,13 @@ public class OrderedHashtableTest extends TestCase {
             table = new OrderedHashtable(0,0);
             fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().indexOf("Illegal Load")>=0);
+            assertTrue(e.getMessage().contains("Illegal Load"));
             assertNull(table);
         }
 
     }
 
-    private static Object testItems[] =
+    private static final Object testItems[] =
             {"1","3","2", new Integer(3), new Integer(1) };
 
     /**
@@ -61,13 +61,13 @@ public class OrderedHashtableTest extends TestCase {
     public void testOrdering() throws Exception {
         OrderedHashtable table = null;
         table = new OrderedHashtable(5,5);
-        for(int i=0;i<testItems.length;i++) {
-            table.put(testItems[i],testItems[i]);
+        for (Object testItem : testItems) {
+            table.put(testItem, testItem);
         }
 
         Enumeration keys=table.keys();
-        for (int i = 0; i < testItems.length; i++) {
-            assertEquals(testItems[i],keys.nextElement());
+        for (Object testItem1 : testItems) {
+            assertEquals(testItem1, keys.nextElement());
         }
     }
 
@@ -78,7 +78,7 @@ public class OrderedHashtableTest extends TestCase {
             table = new OrderedHashtable(-4, -1);
             fail();
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().indexOf("Illegal Capacity") >= 0);
+            assertTrue(e.getMessage().contains("Illegal Capacity"));
         }
 
     }

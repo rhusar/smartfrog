@@ -30,7 +30,10 @@ import java.rmi.RemoteException;
 public class ExtractedExceptionTest extends TestCase {
 
 
-    /** Constructs a test case with the given name. */
+    /**
+     *  Constructs a test case with the given name.
+     * @param name test name
+     */
     public ExtractedExceptionTest(String name) {
         super(name);
     }
@@ -44,13 +47,14 @@ public class ExtractedExceptionTest extends TestCase {
     private SmartFrogException chainb;
     private Exception chainc, chaind;
     private AssertionError ae;
-    Throwable sfe2,sfee2,remote2,npe2,chaina2,chainb2,chainc2,chaind2,ae2;
+    private Throwable sfe2,sfee2,remote2,npe2,chaina2,chainb2,chainc2,chaind2,ae2;
 
 
     /** Sets up the fixture, for example, open a network connection.
      *  This method is called before a test is executed.
      * */
     protected void setUp() throws Exception {
+        super.setUp();
         sfe = new SmartFrogException("sfe");
         sfee = new SmartFrogExtractedException("sfee");
         remote = new RemoteException("remote");

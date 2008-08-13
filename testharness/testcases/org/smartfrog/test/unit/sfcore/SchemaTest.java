@@ -20,7 +20,6 @@
 package org.smartfrog.test.unit.sfcore;
 
 
-import junit.framework.TestCase;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.common.SmartFrogException;
