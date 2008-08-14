@@ -617,10 +617,7 @@
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
 
-  <target name="jdocs"
-  depends="ready-to-javadoc,jjdocs"
-  unless="javadoc.disabled"
-  description="Generates the API documentation">
+  <target name="jdocs" depends="ready-to-javadoc,jjdocs"  unless="javadoc.disabled"  description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo>
     ------------Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]---------
@@ -1080,9 +1077,11 @@
     <ivy:retrieve />  
   </target>
 
-  <target name="ivy-report" depends="ivy-resolve" if="ivy.found">
+  <target name="ivy-report" depends="ivy-resolve" unless="ivy-report.disabled" if="ivy.found" >  
     <ivy:report todir="${ivy.reports.dir}"/>
-    <echo> published Ivy report to ${ivy.reports.dir}
+    <echo>
+	------------Creating Ivy report to ${ivy.reports.dir} ---------
+    To skip this stage, set ivy-report.disabled=true
     </echo>
   </target>
 
