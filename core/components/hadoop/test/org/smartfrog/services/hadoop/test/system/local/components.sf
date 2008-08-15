@@ -41,22 +41,26 @@ LightweightNameNode extends NameNode {
 
 LightweightDataNode extends DataNode {
   smartfrog.dump.conf true;
+  dfs.heartbeat.interval 1;
 //  datanode.http.threads 4;
   localhost_any  "127.0.0.1:0";
   dfs.datanode.http.address localhost_any;
-  dfs.datanode.https.address "127.0.0.1:0";
+  dfs.datanode.https.address localhost_any;
 
   /**
    The datanode ipc server address and port.
    If the port is 0 then the server will start on a free port.
   */
   dfs.datanode.ipc.address localhost_any;
+
+  dfs.blockreport.intervalMsec 1000;
+  dfs.blockreport.initialDelay 0;
 }
 
 LocalHadoopCompound extends Compound {
   fs.default.name "hdfs://localhost:8020/";
-  nameNodeURL  "http://localhost:8021";
-  dataNodeURL  "http://localhost:0";
+  nameNodeURL     "http://localhost:8021";
+  dataNodeURL     "http://localhost:0";
 
   logDir extends TempDirWithCleanup {
 
@@ -85,7 +89,7 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     dfs.namenode.startup ACTION_FORMAT;
     dfs.http.address nameNodeURL;
     dfs.permissions false;
-    minWorkerCount 1;
+    minWorkerCount 0;
   }
 }
 
@@ -95,9 +99,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
   localDataDir extends TempDirWithCleanup {
 
   }
-  localDataDir2 extends TempDirWithCleanup {
 
-  }
   
   datanode extends  LightweightDataNode {
     fs.default.name PARENT:fs.default.name;
@@ -106,13 +108,21 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
     dfs.datanode.address dataNodeURL  ;
   }
 
-  datanode2 extends datanode {
-    dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.address ""
-  }
+
+
 
 }
 
+TwoDataNodeCluster extends LocalDataNodeCompound {
+  localDataDir2 extends TempDirWithCleanup {
+
+  }
+
+  datanode2 extends datanode {
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.https.address "https://localhost:0";
+  }
+}
 
 /**
  * A complete filesystem
@@ -160,35 +170,50 @@ LocalClusterCompound extends LocalDataNodeCompound {
 }
 
 
+CLUSTER_STARTUP_TIMEOUT 30000;
 
-WaitForHadoopLive extends WaitFor {
-  interval 500;
-  timeout 10000;
+WaitForHadoopLive extends FailingWaitFor {
+  interval 200;
+  timeout CLUSTER_STARTUP_TIMEOUT ;
 }
 
 
 WaitForFilesystemLive extends WaitForHadoopLive  {
   tracker TBD;
   jobTrackerLive false;
+  message "filesystem not live";
   condition extends ClusterStatusCondition {
     mapred.job.tracker PARENT:tracker;
   }
 }
 
 WaitForJobTrackerLive extends WaitForFilesystemLive {
+  message "job tracker or filesystem not live";
   jobTrackerLive true;
 }
 
 
 WaitForServiceLive extends WaitForHadoopLive  {
   service TBD;
+  message "hadoop service not live";
   condition extends IsHadoopServiceLive {
     service LAZY PARENT:service;
   }
+  else extends Sequence {
+    ping extends PingTarget {
+      target LAZY PARENT:ATTRIB service;
+      sfShouldTerminate true;
+    }
+    exit extends Terminator {
+      description PARENT:ATTRIB message;
+      selftype Terminator:ABNORMAL;
+    }
+  }
 }
 
-WaitForServiceManagerLive extends WaitForHadoopLive  {
+WaitForWorkersLive extends WaitForHadoopLive  {
   service TBD;
+  message "not enough workers for this service";
   minCount 1;
   condition extends IsWorkerCountGood {
     service LAZY PARENT:service;
@@ -207,17 +232,25 @@ FileSystemTestSequence extends Sequence {
     cluster namenode;
     namenode TBD;
     datanode TBD;
+    datanodeCount 1;
 
     waitForNameNode extends WaitForServiceLive {
+     message "namenode not live";
      service LAZY PARENT:namenode;
     }
+/*
+
     waitForDataNode extends WaitForServiceLive {
+     message "datanode not live";
      service LAZY PARENT:datanode;
     }
+
+*/
     //now wait for the bonding
-    waitForCluster extends WaitForServiceManagerLive {
+    waitForCluster extends WaitForWorkersLive {
+     message "cluster workers not live";
      service LAZY PARENT:namenode;
-     minCount 2;
+     minCount datanodeCount;
     }
 
     rootDirExists extends DfsPathExistsWorkflow {

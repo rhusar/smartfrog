@@ -36,4 +36,17 @@ public class ExtTaskTracker extends TaskTracker {
         super(conf, false);
     }
 
+    /**
+     * Override point - aethod called whenever there is a state change.
+     *
+     * The base class logs the event.
+     *
+     * @param oldState existing state
+     * @param newState new state.
+     */
+    @Override
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        LOG.info("State change: TaskTracker is now " + newState);
+    }
 }

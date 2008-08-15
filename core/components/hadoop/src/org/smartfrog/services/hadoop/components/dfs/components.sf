@@ -113,6 +113,8 @@ For more information: www.smartfrog.org
     minSize 0;
     //maximum size of the file (only checked if the path resolves to a file); -1 means 'dont care'
     maxSize -1;
+    //print info about the file?
+    verbose false;
   }
 
 
@@ -121,6 +123,7 @@ For more information: www.smartfrog.org
    * removing the startup and liveness tests
    */
   DfsPathExistsCondition extends DfsPathExists {
+    sfShouldTerminate false;
     checkOnStartup false;
     checkOnLiveness false;
   }
@@ -133,6 +136,7 @@ For more information: www.smartfrog.org
   DfsPathExistsWorkflow extends DfsPathExists {
     sfShouldTerminate true;
     checkOnLiveness false;
+    verbose true;
   }
 
   /**

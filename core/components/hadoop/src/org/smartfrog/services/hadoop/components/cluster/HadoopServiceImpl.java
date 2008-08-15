@@ -267,7 +267,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
      * @throws SmartFrogException smartfrog problems
      */
     protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
-        sfLog().info(getName() + " deployment complete: service is now live");
+        sfLog().info(getName() + " deployment complete: service is now " +getService().getServiceState());
     }
 
     /**

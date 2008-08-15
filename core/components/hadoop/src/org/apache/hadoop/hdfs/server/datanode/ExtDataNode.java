@@ -54,11 +54,13 @@ public class ExtDataNode extends DataNode {
      *
      * @throws IOException if necessary
      */
-/*    @Override
+    @Override
     public void innerStart() throws IOException {
         super.innerStart();
+        verifyServiceState(ServiceState.LIVE);
+        register();
         startWorkerThread();
-    }*/
+    }
 
     /**
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
@@ -91,16 +93,30 @@ public class ExtDataNode extends DataNode {
     }
 
     /**
+     * Override point - aethod called whenever there is a state change.
+     *
+     * The base class logs the event.
+     *
+     * @param oldState existing state
+     * @param newState new state.
+     */
+    @Override
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        LOG.info("State change: DataNode is now " + newState);
+    }
+
+    /**
      * Override the normal run and note that we got stopped
      */
-/*    @Override
+    @Override
     public void run() {
         try {
             super.run();
         } finally {
             stopped();
         }
-    }*/
+    }
 
     /**
      * Ping the node; report an error if we have stopped
@@ -125,10 +141,13 @@ public class ExtDataNode extends DataNode {
         }
     }*/
 
+    
     /**
      * Start the worker thread
      */
     public synchronized void startWorkerThread() {
+
+
         if (worker == null) {
             worker = new DataNodeThread();
             worker.start();

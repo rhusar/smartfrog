@@ -45,6 +45,7 @@ testLocalDataNode extends LocalDataNodeTest {
     namenodeLive extends CheckNameNodePort {
       cluster LAZY action:cluster;
     }
+
     datanodeLive extends CheckDataNodePort {
       cluster LAZY action:cluster;
     }

@@ -167,7 +167,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         super.onServiceDeploymentComplete();
         //check that the tracker is now bound to a filesystem
         String dir = tracker.getSystemDir();
-        sfLog().info("System dir is "+dir);
+        sfLog().info("System dir is " + dir);
         tracker.getFilesystemName();
         try {
             tracker.offerService();

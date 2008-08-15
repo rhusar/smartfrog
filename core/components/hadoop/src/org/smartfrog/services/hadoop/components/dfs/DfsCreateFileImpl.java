@@ -58,7 +58,7 @@ public class DfsCreateFileImpl extends DfsPathOperationImpl implements DfsPathOp
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         String text = sfResolve("text", "", true);
         Path path = getPath();
-        boolean overwrite = sfResolve(DfsCopyOperation.ATTR_OVERWRITE,true,true);
+        boolean overwrite = sfResolve(DfsCopyOperation.ATTR_OVERWRITE, true, true);
         FSDataOutputStream out = null;
         try {
             out = fileSystem.create(path, overwrite);
@@ -70,7 +70,6 @@ public class DfsCreateFileImpl extends DfsPathOperationImpl implements DfsPathOp
                 out.close();
             }
         }
-
-
+        sfLog().info("Created file " + path.toString());
     }
 }

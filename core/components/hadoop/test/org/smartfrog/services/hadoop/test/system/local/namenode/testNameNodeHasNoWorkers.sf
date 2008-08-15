@@ -19,59 +19,10 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
-
-
-
-
-/**
- * Test the local name node
- */
-testLocalNameNodeCompound extends ExpectDeploy {
-  action extends LocalNameNodeCompound {
-  }
-
-  tests extends Sequence {
-    namenodeLive extends CheckNameNodePort {
-      cluster LAZY action:cluster;
-    }
-
-
-  }
-
-}
-
-testNameNodeForked extends testLocalNameNodeCompound {
-  action:sfProcessName "testNameNodeForkedProcess";
-}
-
-
-
-/**
- * Format is a workflow so the test should terminate things
- */
-testLocalFormat extends ExpectTerminate {
-  action LocalFormat;
-}
+#include "/org/smartfrog/services/hadoop/test/system/local/namenode/components.sf"
 
 
 /**
  * Test the local name node
  */
-testNameNodeHasNoWorkers extends ExpectDeployFailure {
-
-  action extends LocalNameNodeCompound {
-  }
-
-  tests extends Sequence {
-
-    wait extends WaitForWorkersLive {
-      service LAZY action:namenode;
-      minCount 1;
-    }
-
-  }
-
-
-
-}
+sfConfig testNameNodeHasNoWorkers ;
