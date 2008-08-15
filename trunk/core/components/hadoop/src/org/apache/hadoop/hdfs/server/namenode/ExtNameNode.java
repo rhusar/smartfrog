@@ -26,6 +26,7 @@ import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.apache.hadoop.util.Service;
 
 import java.io.IOException;
 
@@ -150,4 +151,18 @@ public class ExtNameNode extends NameNode {
         return namesystem.heartbeats.size();
     }
 
+
+    /**
+     * Override point - aethod called whenever there is a state change.
+     *
+     * The base class logs the event.
+     *
+     * @param oldState existing state
+     * @param newState new state.
+     */
+    @Override
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        LOG.info("State change: NameNode is now "+ newState);
+    }
 }

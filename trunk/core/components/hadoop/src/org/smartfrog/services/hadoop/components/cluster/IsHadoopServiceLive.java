@@ -48,7 +48,7 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        service = (HadoopService) sfResolve(ATTR_SERVICE,(Prim)null,true);
+        service = (HadoopService) sfResolve(ATTR_SERVICE, (Prim) null, true);
     }
 
     /**

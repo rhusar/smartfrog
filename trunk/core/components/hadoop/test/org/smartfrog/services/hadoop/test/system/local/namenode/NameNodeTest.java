@@ -43,4 +43,11 @@ public class NameNodeTest extends DeployingTestBase {
     public void testLocalFormat() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE,"testLocalFormat");
     }
+
+
+    public void testNameNodeHasNoWorkers() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeHasNoWorkers");
+    }
+
+
 }

@@ -30,13 +30,14 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.net.URI;
 
 /**
  * Created 27-May-2008 15:42:48
  */
 
 public class DfsPathExistsImpl extends DfsPathOperationImpl
-        implements CheckableCondition, DfsPathOperation {
+        implements CheckableCondition, DfsPathOperation, FileExists {
 
     private boolean canBeFile = false;
     private boolean canBeDir = false;
@@ -44,6 +45,9 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
     private long maxFileSize = -1;
 
     private boolean checkOnLiveness;
+    private boolean verbose;
+    public static final String ATTR_VERBOSE="verbose";
+
     private DistributedFileSystem dfs;
 
 
@@ -65,18 +69,39 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
         canBeDir = sfResolve(FileExists.ATTR_CAN_BE_DIR, true, true);
         minFileSize = sfResolve(FileExists.ATTR_MIN_SIZE, minFileSize, true);
         maxFileSize = sfResolve(FileExists.ATTR_MAX_SIZE, maxFileSize, true);
-
+        verbose = sfResolve(ATTR_VERBOSE, verbose, true);
         if (checkOnStartup) {
             checkPathExists();
         }
         //Workflow integration
         new ComponentHelper(this).sfSelfDetachAndOrTerminate(null,
-                "Assert",
+                "PathExists",
                 null,
                 null);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS,
                 true,
                 false);
+    }
+
+    /**
+     * get the absolute path of this file
+     *
+     * @return String
+     * @throws RemoteException In case of network/rmi error
+     */
+    public String getAbsolutePath() throws RemoteException {
+        return getPath().toString();
+    }
+
+
+    /**
+     * get the URI of this file
+     *
+     * @return URI
+     * @throws RemoteException In case of network/rmi error
+     */
+    public URI getURI() throws RemoteException {
+        return getPath().toUri();
     }
 
     /**
@@ -140,6 +165,10 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
                 throw new SmartFrogLivenessException("Missing path " + filename);
             }
             FileStatus status = dfs.getFileStatus(getPath());
+            if(verbose) {
+                sfLog().info("Path "+getPath() +" size "+status.getLen()
+                        +" last modified:"+status.getModificationTime());
+            }
             if (status.isDir()) {
                 if (!canBeDir) {
                     throw new SmartFrogLivenessException("Not allowed to be a directory: " + filename);

@@ -18,21 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-IsHadoopServiceLive extends Prim {
-  sfClass "org.smartfrog.services.hadoop.components.cluster.IsHadoopServiceLive";
-  //define a service to look for
-  service TBD;
-  //or an array of services
-  //services [];
+
+#include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
+
+
+
+sfConfig extends LocalDataNodeCompound {
 
 }
-
-/**
- * This component checks for the worker count being good.
- */
-IsWorkerCountGood extends IsHadoopServiceLive {
-  sfClass "org.smartfrog.services.hadoop.components.cluster.IsWorkerCountGood";
-  minCount 1;
-}
-
-
