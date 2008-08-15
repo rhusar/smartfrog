@@ -1423,14 +1423,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                     COMPONENT_TERMINATED));
         }
 
-        /*
-        try {
-            System.out.println("validated " + sfCompleteNameSafe() + ": " + sfValid());
-        } catch (Exception e) {
-            System.out.println("validated " + sfCompleteNameSafe() + ": failed with " + e);
-        }
-        */
-
         if (source == null) {
             return;
         }
