@@ -83,9 +83,9 @@ public class Run extends EventCompoundImpl implements Compound {
     /**
      * Constructs Run.
      *
-     * @throws java.rmi.RemoteException In case of RMI or network failure.
+     * @throws RemoteException In case of RMI or network failure.
      */
-    public Run() throws java.rmi.RemoteException {
+    public Run() throws RemoteException {
         super();
     }
 
@@ -116,7 +116,7 @@ public class Run extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        this.readSFAttributes();
+        readSFAttributes();
         newComponentCD = getComponentDescription();
     }
 
@@ -138,7 +138,8 @@ public class Run extends EventCompoundImpl implements Compound {
             if ((parent != null) && (newComponentName==null)) {
                 String parentName = "parentName";
                 try { parentName = parent.sfCompleteName().toString(); } catch (Throwable ex){}
-                String message = sfCompleteNameSafe()+ " needs to provide a name () when providing a parent ('parent' "+ parentName+")";
+                String message = sfCompleteNameSafe()+ " needs to provide a name () when providing a parent ('parent' "
+                        + parentName+")";
                 if (sfLog().isErrorEnabled()) sfLog().error(message);
                 throw new SmartFrogDeploymentException( message , this, sfContext());
             }
@@ -151,7 +152,7 @@ public class Run extends EventCompoundImpl implements Compound {
                 } catch (Exception ignored) { }
                 try {
                     String compNameStr = "";
-                    if (compName!=null)compNameStr = compName.toString();
+                    if (compName != null) compNameStr = compName.toString();
                     comp.sfTerminate(TerminationRecord.abnormal( "failed to deploy and start correctly "+ compNameStr,
                             name,e));
                 } catch (Exception ignored) {}
