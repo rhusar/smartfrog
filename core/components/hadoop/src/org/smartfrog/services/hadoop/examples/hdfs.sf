@@ -1,0 +1,124 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/hadoop/components/components.sf"
+
+debugMode false;
+
+LightweightJobTracker extends JobTracker {
+  smartfrog.dump.conf debugMode ;
+//  jobtracker.http.threads 4;
+}
+
+LightweightTaskTracker extends TaskTracker {
+  description "A task tracker with less threads than normal";
+  smartfrog.dump.conf debugMode ;
+  tasktracker.http.threads 4;
+}
+
+LightweightNameNode extends NameNode {
+  smartfrog.dump.conf debugMode ;
+//  namenode.http.threads 4;
+}
+
+LightweightDataNode extends DataNode {
+  dfs.heartbeat.interval 1;
+//  datanode.http.threads 4;
+  localhost_any  "127.0.0.1:0";
+  dfs.datanode.http.address localhost_any;
+  dfs.datanode.https.address localhost_any;
+  dfs.datanode.ipc.address localhost_any;
+
+  dfs.blockreport.intervalMsec (10 * 60* 1000);
+  //delay is in seconds
+  dfs.blockreport.initialDelay 60;
+  smartfrog.dump.conf debugMode;
+}
+
+LocalHadoopCompound extends Compound {
+  fs.default.name "hdfs://localhost:8020/";
+  nameNodeURL     "http://localhost:8021";
+  dataNodeURL     "http://localhost:0";
+
+  logDir extends TempDirWithCleanup {
+
+  }
+
+  dataDir extends TempDirWithCleanup {
+
+  }
+
+  nameDir extends TempDirWithCleanup {
+
+  }
+
+}
+
+LocalNameNodeCompound extends LocalHadoopCompound {
+  description "A name node";
+
+  cluster LAZY namenode;
+
+  namenode extends LightweightNameNode {
+    sfProcessName "namenode";
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY dataDir];
+    nameDirectories [LAZY nameDir];
+    logDir LAZY PARENT:logDir;
+    dfs.namenode.startup ACTION_FORMAT;
+    dfs.http.address nameNodeURL;
+    dfs.permissions false;
+    minWorkerCount 0;
+  }
+}
+
+OneNodeHDFS extends LocalNameNodeCompound {
+  description "A data node bound to a temporary directory";
+
+  localDataDir extends TempDirWithCleanup {
+
+  }
+
+  datanode extends LightweightDataNode {
+    sfProcessName "datanode1";
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
+  }
+
+}
+
+TwoNodeHDFS extends OneNodeHDFS {
+  localDataDir2 extends TempDirWithCleanup {
+
+  }
+
+  datanode2 extends datanode {
+    sfProcessName "datanode2";
+    dataDirectories [LAZY localDataDir2];
+    dfs.datanode.https.address "https://localhost:0";
+  }
+}
+
+sfConfig extends TwoNodeHDFS {
+
+}

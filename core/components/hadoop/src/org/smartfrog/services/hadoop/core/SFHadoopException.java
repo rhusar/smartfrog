@@ -124,9 +124,10 @@ public class SFHadoopException extends SmartFrogException {
      * @param conf optional configuration
      * @return a new exception
      */
+    @SuppressWarnings("unchecked")
     public static SFHadoopException forward(String message, MultiException multiExcept, Prim sfObject,
                                             ManagedConfiguration conf) {
-        List<Throwable> exceptions = multiExcept.getExceptions();
+        List<Throwable> exceptions = (List < Throwable >) multiExcept.getExceptions();
         int exCount = exceptions.size();
         if (exCount == 1) {
             //special case: one child.
@@ -138,7 +139,7 @@ public class SFHadoopException extends SmartFrogException {
         }
 
         StringWriter sw = new StringWriter();
-        PrintWriter pw = null;
+        PrintWriter pw;
         pw = new PrintWriter(sw);
         try {
             for (Throwable thrown : exceptions) {
