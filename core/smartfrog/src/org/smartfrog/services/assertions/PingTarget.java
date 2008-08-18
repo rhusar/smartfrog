@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.assertions;
+
+/**
+ * Created 15-Aug-2008 14:35:49
+ */
 
 
+public interface PingTarget {
 
-#include "/org/smartfrog/services/assertions/assert.sf"
-#include "/org/smartfrog/services/assertions/testcomponents.sf"
-#include "/org/smartfrog/services/assertions/testblock.sf"
-#include "/org/smartfrog/services/assertions/exceptionthrower.sf"
-#include "/org/smartfrog/services/assertions/fail.sf"
-#include "/org/smartfrog/services/assertions/exceptions.sf"
-#include "/org/smartfrog/services/assertions/pingtarget.sf"
+    String ATTR_TARGET = "target";
+}

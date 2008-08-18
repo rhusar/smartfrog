@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,13 @@ For more information: www.smartfrog.org
 */
 
 
-
-#include "/org/smartfrog/services/assertions/assert.sf"
-#include "/org/smartfrog/services/assertions/testcomponents.sf"
-#include "/org/smartfrog/services/assertions/testblock.sf"
-#include "/org/smartfrog/services/assertions/exceptionthrower.sf"
-#include "/org/smartfrog/services/assertions/fail.sf"
-#include "/org/smartfrog/services/assertions/exceptions.sf"
-#include "/org/smartfrog/services/assertions/pingtarget.sf"
+/**
+ * Ping a component on startup, and again on ping() operations
+ * the failing exception will be relayed up.
+ * This component can be used in workflows to fail if a remote component
+ * is not yet live, and retains the fault detail in the logs
+ */
+PingTarget extends WorkflowPrim {
+  sfClass "org.smartfrog.services.assertions.PingTargetImpl";
+  target TBD;
+}
