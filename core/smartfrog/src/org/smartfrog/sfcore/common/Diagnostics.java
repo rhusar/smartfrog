@@ -44,6 +44,7 @@ import org.smartfrog.Version;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -381,7 +382,7 @@ public final class Diagnostics {
      * @param compound Compound
      */
     public static void doReportCompound(StringBuffer out, Compound compound) {
-      Enumeration enu = null;
+      Enumeration<Liveness> enu = null;
       StringBuilder childrenInfo = new StringBuilder();
       Prim child = null;
       try {

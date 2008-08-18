@@ -128,6 +128,7 @@ public class ParentHelper implements ChildMinder {
      * @return a cloned list of all deployed children
      * @since SmartFrog 3.13.003
      */
+    @SuppressWarnings("unchecked")
     public List<Prim> sfChildList() {
         return (List<Prim>) sfChildren.clone();
     }

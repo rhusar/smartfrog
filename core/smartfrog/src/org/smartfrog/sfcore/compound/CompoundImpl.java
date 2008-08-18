@@ -473,8 +473,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return enumeration over children
      */
-    public Enumeration sfChildren() {
-        return new SerializableEnumeration<Prim>(sfChildren);
+    @SuppressWarnings("unchecked")
+    public Enumeration<Liveness> sfChildren() {
+        return new SerializableEnumeration<Liveness>((List) sfChildren);
     }
 
     /**
@@ -486,6 +487,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @since SmartFrog 3.13.003
      * @return a cloned list of all deployed children
      */
+    @SuppressWarnings("unchecked")
     public List<Prim> sfChildList() {
     	return (List<Prim>)sfChildren.clone();
     }
