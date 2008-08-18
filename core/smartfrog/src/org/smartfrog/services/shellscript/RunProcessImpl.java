@@ -73,10 +73,6 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
     /** java Exec exitValue */
     private int exitValue = NOT_YET_EXITED;
-    /**
-     * The value that implies we have no exit code yet: {@value}
-     */
-    private static final int NOT_YET_EXITED = -9999;
 
 
     private Runtime runtime = Runtime.getRuntime();
@@ -204,7 +200,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
 
             try {
                 Thread.sleep(time / periods);
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException ignored) {
                 sfLog.debug("interrupted");
             }
         }
@@ -501,7 +497,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
                         sfLog.trace("waiting for stderr filter");
                     }
                     stderrFilter.join();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                     if (sfLog.isTraceEnabled()) {
                         sfLog.trace("interrupted while waiting for stderr filter");
                     }
@@ -544,7 +540,7 @@ public class RunProcessImpl extends Thread implements RunProcess {
                     sfLog.trace("kill" + " -- waiting for exit");
                 }
                 process.waitFor();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
 
             if (sfLog.isDebugEnabled()) {
