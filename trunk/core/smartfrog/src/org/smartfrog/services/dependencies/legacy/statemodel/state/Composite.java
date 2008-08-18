@@ -5,6 +5,7 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogUpdateException;
+import org.smartfrog.sfcore.prim.Liveness;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -33,7 +34,7 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 
    //child down to State, where it is handled
    public void handleStateChange() {
-      for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
+      for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
          Object c = e.nextElement();
          if (c instanceof StateChangeNotification) try {
             ((StateChangeNotification)c).handleStateChange();
