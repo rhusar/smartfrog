@@ -58,29 +58,36 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	 * Record the constraint goals to be processed
     	 */
     	Vector goal = new Vector();
+    	
     	/**
     	 * Records the attributes other than constraint goal preds
     	 */
     	Vector attrs = new Vector();
+    	
     	/**
     	 * Record the values of the attributes other than constraint goal preds
     	 */
     	Vector values = new Vector();
+    	
+    	/**
+    	 * Automatic variables...
+    	 */
     	Vector autos = new Vector();
-    	//Vector reg_logic = new Vector();	
+    	
+    	/**
+    	 * The description pertaining to the Constraint
+    	 */
+    	ComponentDescription comp = context.getOriginatingDescr();
     	
     	/**
     	 * The context pertaining to the Constraint
     	 */
-    	ComponentDescription comp = context.getOriginatingDescr();
     	Context orgContext = comp.sfContext();
     	    	
-    	//UserVars?
+    	/**
+    	 * User variables present?
+    	 */
     	boolean isuservars=false;
-    	
-    	
-    	//First off, just in case I am an aggregated constraint...
-    	boolean aggregated_b = false;
     	
 		CoreSolver.getInstance().setShouldUndo(true);
 		Enumeration attr_enum = orgContext.keys();
@@ -88,10 +95,8 @@ public class Constraint extends BaseFunction implements MessageKeys {
 		while (attr_enum.hasMoreElements()){
 			Object attr = attr_enum.nextElement();
 		
-    		try {
+    	    try {
 				if (orgContext.sfContainsTag(attr, "sfAggregatedConstraintSource")){
-					
-					aggregated_b = true;   //We are an Agg Constraint...
 					
 					Object val = orgContext.get(attr);
 					if (!(val instanceof Vector)) throw new SmartFrogFunctionResolutionException("sfAggregatedConstraintSource-tagged attributes in AggregatedConstraint: "+comp+" must have Vector values.");
@@ -125,7 +130,7 @@ public class Constraint extends BaseFunction implements MessageKeys {
 			    	if (freevars) comp.sfContext().sfAddTag(newattr_s, "sfAggregatedConstraintFreeVars");
 				
 				}
-			} catch (Exception e){/*shouldn't happen*/}    		
+			} catch (Exception e){/*shouldn't happen, so will ignore*/}    		
 
 		}
 					
@@ -139,16 +144,16 @@ public class Constraint extends BaseFunction implements MessageKeys {
     		try {
     			if (orgContext.sfContainsTag(key, "sfConstraint")) goal_attrs.add(key);
     			else { 
-    				if (val instanceof String && !isLegal((String) val)) continue;
-
-    				attrs.add(key.toString());  
+    				
+    				if (val instanceof String && !isLegal((String)val)) continue;
+    				
+    				attrs.add(key);  
 	    			values.add(val);
 
 	    			//Set the attribute name originating this FreeVar
 	    			if (val instanceof FreeVar) {
 	    				FreeVar fv = (FreeVar) val;
 	    				if (fv.getConsEvalKey()==null) fv.setConsEvalKey(key);
-	    				//System.out.println("The Key! "+fv.getConsEvalKey());
 	    				
 	    				//Make sure range is appropriated in free var
 	    				fv.setRange(comp);
@@ -265,7 +270,12 @@ public class Constraint extends BaseFunction implements MessageKeys {
      */
     public class SmartFrogConstraintBacktrackError extends Error{};
     
-    boolean isLegal(String val){
+    /**
+     * Checks whether string "sent" to Eclipse is "legal"...  
+     * @param val String to be checked
+     * @return Whether legal
+     */
+    private boolean isLegal(String val){
     	if (val.indexOf(0x21)>-1) return false;
     	if (val.indexOf(0x22)>-1) return false;
     	if (val.indexOf(0x23)>-1) return false;
@@ -284,6 +294,14 @@ public class Constraint extends BaseFunction implements MessageKeys {
     	return true;
     }
     
+    /**
+     * Assigns attribute a value within array as part of farming out of results on AggregatedConstraints...
+     * @param source_cd Reference component description from which to resolve parent comp of target attr
+     * @param interPath Reference path to parent comp of target attr
+     * @param key  Attribute to set
+     * @param val  Value to set
+     * @throws SmartFrogFunctionResolutionException
+     */
     void replace(ComponentDescription source_cd, String interPath, String key, Object val) throws SmartFrogFunctionResolutionException{
     	ComponentDescription refined_cd;
     	try {
