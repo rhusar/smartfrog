@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.SFLoader;
 
 
 /**
@@ -40,6 +41,26 @@ import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
  *
  */
 public class DefaultIncludeHandler implements IncludeHandler {
+
+    String baseCodebase;
+
+    /**
+     * Constructor.
+     */
+    public DefaultIncludeHandler() {
+        baseCodebase = null;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param baseCodebase the codebase for this include handler to which will be appended the codebase passed in the
+     * parseIncldue method.
+     * @deprecated
+     */
+    public DefaultIncludeHandler(String baseCodebase) {
+        this.baseCodebase = baseCodebase;
+    }
 
     /**
      * Parses given include. This implementation constructs a new DefaultParser
@@ -62,4 +83,46 @@ public class DefaultIncludeHandler implements IncludeHandler {
         ).AttributeList();
     }
 
+    /**
+     * Locate the include and returns an input stream on it. This uses
+     * SFSystem.stringToURL to check whether include is a URL or a file. On
+     * failure it tries to use standard getResourceAsStream to get the inlude
+     * of the classpath. Subclasses can override to provide additional means
+     * of locating includes.
+     *
+     * @param include include to locate
+     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
+     *
+     * @return Reader (UTF-8) on located include
+     *
+     * @exception Exception failed to locate or open include
+     */
+    protected Reader openInclude(String include, String codebase) throws Exception {
+        InputStream is = null;
+
+        //is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
+        //@todo review
+		is = SFLoader.getInputStreamSFException(include);
+
+        if (is == null) {
+            throw new Exception("Include file: " + include + " not found");
+        }
+
+        return new InputStreamReader(is, "utf-8");
+    }
+
+    /**
+     * build a concatenated codebase from the base codebase and the codebase passed as a parameter
+
+     *
+     *  @param codebase the codeebase to concatenate to the base. May be null.
+     * @deprecated
+     */
+    protected String actualCodebase(String codebase) {
+        String actualCodebase = null;
+        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
+        else if (baseCodebase != null) actualCodebase = baseCodebase;
+        else if (codebase != null) actualCodebase = codebase;
+        return actualCodebase;
+    }
 }
