@@ -20,12 +20,11 @@
 package org.smartfrog.sfcore.workflow.conditional;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
-
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 /** created 30-Nov-2006 13:35:19 */
 
@@ -49,17 +48,29 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        interval = sfResolve(ATTR_INTERVAL, interval, true);
-        timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
-        if(sfLog().isDebugEnabled())
-            sfLog().debug("Waiting for "+timeout+" milliseconds, with a check every "+interval+" milliseconds");
+        readValues();
         thread = new SmartFrogThread(this);
         thread.start();
     }
 
+    /**
+     * read the values of this component. Subclass
+     * (calling super.readValues() to read in more data during the condition)
+     * @throws SmartFrogException problems reading in data
+     * @throws RemoteException network problems
+     */
+    protected void readValues() throws SmartFrogException, RemoteException {
+        interval = sfResolve(ATTR_INTERVAL, interval, true);
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, true);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("Waiting for " + timeout
+                    + " milliseconds, with a check every " + interval + " milliseconds");
+        }
+    }
+
 
     /**
-     * Handle notifications of termination
+     * shut down thread during termination
      *
      * @param status termination status of sender
      * @param comp   sender of termination
@@ -98,20 +109,19 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
                     test = evaluate();
                     now = System.currentTimeMillis();
                 }
+                long interval = now - start;
                 if (sfLog().isDebugEnabled()) {
                     sfLog().debug("WaitFor "
-                            + (test?"succeeded":"timed out")
-                            +" after "+(now-start)+" milliseconds");
+                            + (test ? "succeeded" : "timed out")
+                            + " after " + interval + " milliseconds");
                 }
-
-                //we have either timed out or the test has passed.
-                //chose the branch to test
-                String branch = test ? ATTR_THEN : ATTR_ELSE;
-                Prim prim = deployChildCD(branch, false);
+                //handle the completion
+                boolean toFinish = onWaitForComplete(test);
                 //then finish if we did not deploy anything
-                if (prim == null) {
+                if (toFinish) {
                     finish();
                 }
+
             } catch (RemoteException e) {
                 fault = e;
             } catch (SmartFrogException e) {
@@ -130,5 +140,23 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
             }
         }
 
+    }
+
+    /**
+     * This is an override point; handling of post-condition operations.
+     * The base class chooses a branch to spawn on success/failure
+     * @param success whether or not the waitfor was a success
+     * @return true if the workflow should now schedule itself for completion.
+     * Any exception thrown will trigger abnormal component termination
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems.
+     */
+    protected boolean onWaitForComplete(boolean success)
+            throws SmartFrogException, RemoteException{
+        //we have either timed out or the test has passed.
+        //chose the branch to test
+        String branch = success ? ATTR_THEN : ATTR_ELSE;
+        Prim prim = deployChildCD(branch, false);
+        return prim == null;
     }
 }
