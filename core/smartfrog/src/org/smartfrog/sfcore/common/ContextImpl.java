@@ -732,7 +732,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
 		attributeTags.remove(key);
 		attributeTagsWrappers.remove(key);
 		
-		CoreSolver.getInstance().addUndo(this, key, r);
+		CoreSolver.getInstance().addUndoPut(this, key, r);
 		return r;
 	}
 
@@ -880,7 +880,7 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     public Object put(Object key, Object value) {
     	Object oldValue = super.put(key, value);
  
-    	CoreSolver.getInstance().addUndo(this, key, oldValue);
+    	CoreSolver.getInstance().addUndoPut(this, key, oldValue);
         return oldValue;
     }
 
@@ -913,12 +913,13 @@ public class ContextImpl extends OrderedHashtable implements Context, Serializab
     	Iterator comp_iter = comp_cxt.orderedAttributes();
     	Iterator my_iter = orderedAttributes();
     	
-    	while(my_iter.hasNext()){
-    		if (!comp_iter.hasNext()) return false;
-    		String akey = (String) my_iter.next();
-    		String ckey = (String) comp_iter.next();
-    		if (!akey.equals(ckey)) return false;
+    	while(my_iter.hasNext()) {
+    		if (!comp_iter.hasNext() //Absence of any attribute in sub to reflect attribute in super  
+    				|| 
+    				//Attribute in sub not in common with super
+    				!my_iter.next().equals(comp_iter.next())) return false;
     	}
+    	
     	return true;
     }
     
