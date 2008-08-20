@@ -1,22 +1,22 @@
 /** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
- For more information: www.smartfrog.org
+For more information: www.smartfrog.org
 
- */
+*/
 package org.smartfrog.sfcore.languages.sf.constraints;
 
 
@@ -32,10 +32,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.smartfrog.SFParse;
-import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
@@ -59,891 +59,743 @@ import com.parctechnologies.eclipse.ToEclipseQueue;
 /**
  * Implementation of solver for Eclipse
  */
-public class EclipseSolver extends CoreSolver
-        implements Runnable, QueueListener {
-
-  /**
-   * Default Eclipse options
-   */
-  private EclipseEngineOptions eclipseEngineOptions;
-
-  /**
-   * Eclipse engine
-   */
-  private EclipseEngine eclipse;
-
-  /**
-   * Record object to send to eclipse side
-   */
-  private Object get_val;
-
-  /**
-   * Thread for main eclipse goal
-   */
-  private Thread ecrThread;
-
-  /**
-   * sfConfig browser for purpose of setting user variables
-   */
-  private CDBrowser cdbm;
-
-  /**
-   * Are there user variables?
-   */
-  private boolean isuservars;
-
-  /**
-   * Component description pertaining to Constraint type being solved
-   */
-  private ComponentDescription solve_comp;
-
-  /**
-   * Queue for coms TO eclipse
-   */
-  private ToEclipseQueue java_to_eclipse;
-
-  /**
-   * Queue for coms FROM eclipse
-   */
-  private FromEclipseQueue eclipse_to_java;
-  /**
-   * Lock for object, so that solve method waits until constraint goal done
-   * before exiting
-   */
-  private ReentrantLock solverLock = new ReentrantLock();
-  /**
-   * Condition for lock, so that solve method waits until constraint goal done
-   * before exiting
-   */
-  private Condition solverFinished = solverLock.newCondition();
-  /**
-   * Indicates whether the eclipse secondary thread (for main eclipse goal) has
-   * sought and lock yet
-   */
-  private boolean ecr_sought_lock = false;
-  /**
-   * Latest constraint goal has finished?
-   */
-  private boolean cons_finished = false;
-
-  /**
-   * Stores any exception thrown from Eclipse thread
-   */
-  private Exception general_error = null;
-
-  /**
-   * Relative path to constraint theory files
-   */
-  private static final String pathswitch = "/../constraints/";
-
-  /**
-   * Name of core theory file
-   */
-  private static final String coreFileSuffix = "core.ecl";
-  /**
-   * Name of additional theory file
-   */
-  private static final String theoryFileSuffix = "base.ecl";
-
-  /**
-   * Property indicating where to find additional user-specified theory files
-   */
-  private final String theoryFilePath
-          = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFilePath";
-
-
-  private ConstraintResolutionState cresState;
-
-  /**
-   * Eclipse main goal to run in secondary thread
-   */
-  public void run() {
-    try {
-      eclipse.rpc("sfsolve");
-    } catch (Exception e) {
-      general_error = e;
-      yieldLockFromECRThread();
+public class EclipseSolver extends CoreSolver implements Runnable, QueueListener {
+	
+    /**
+     * Default Eclipse options 
+     */
+	private EclipseEngineOptions m_eclipseEngineOptions;     
+	
+	/**
+	 * Eclipse engine
+	 */
+	private EclipseEngine m_eclipse;
+	
+	/**
+	 * Object to send to eclipse side
+	 */
+    Object m_get_val;
+    
+    /**
+     * Thread for main eclipse goal
+     */
+    Thread m_ecr;  
+    
+    /**
+     * sfConfig browser for purpose of setting user variables 
+     */
+    CDBrowser m_cdbm;   
+    
+    /**
+     * Are there user variables?
+     */
+    boolean m_isuservars;
+    
+    /**
+     * Component description pertaining to Constraint type being solved
+     */
+    ComponentDescription m_solve_comp;  
+    
+    /**
+     * Queue for coms TO eclipse
+     */
+    ToEclipseQueue m_java_to_eclipse;
+    
+    /**
+     * Queue for coms FROM eclipse
+     */
+    FromEclipseQueue m_eclipse_to_java;
+    
+    /**
+     * Lock for object, so that solve method waits until constraint goal done before exiting
+     */
+    ReentrantLock m_solverLock = new ReentrantLock();
+    
+    /**
+     * Condition for lock, so that solve method waits until constraint goal done before exiting
+     */
+    Condition m_solverFinished = m_solverLock.newCondition();
+    
+    /**
+     * Indicates whether the eclipse secondary thread (for main eclipse goal) has sought and lock yet
+     */
+    boolean m_ecr_sought_lock = false;
+    
+    /**
+     * Latest constraint goal has finished?
+     */
+    boolean m_cons_finished = false;
+    
+    /**
+     * Stores any exception thrown from Eclipse thread
+     */
+    Exception m_general_error = null;
+    	
+    /**
+     * Location (relative switch) of eclipse theory file specific to smartfrog constraint solving within Eclipse installation
+     */
+    private static final String m_eclipse_switch = "/smartfrog/";
+       
+    /**
+     * Property prefix for theory files...
+     */
+    private final String m_theoryFile_prefix = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFile";
+    
+    /**
+     * Property indicating where to find eclipse installation
+     */
+    private final String m_eclipseDir_specifier = "opt.smartfrog.sfcore.languages.sf.constraints.eclipseDir";
+    //NOTE: eclipseDir property is a temporary solution pending resolution of best way to include eclipse in release...
+    
+    /**
+     * Property indicating where to find eclipse installation
+     */
+    private final String m_userVar_browser = "org.smartfrog.sfcore.languages.sf.constraints.CDBrowser";
+    
+    /**
+     * Resolution state for constraint solving...
+     */
+    private ConstraintResolutionState m_cresState;
+    
+    /**
+     * Status of solving for reflection in user var sfConfig browser
+     */
+    EclipseStatus m_est;
+    
+    /**
+     * Attributes with ranges to be sought...
+     */
+    Vector<EclipseCDAttr> m_rangeAttrs = new Vector<EclipseCDAttr>();
+    
+    /**
+     * Current attribute in user var sfConfig browser being manipulated
+     */
+    private EclipseCDAttr m_ecda;
+        
+    
+    /**
+     * Protected constructor
+     */
+    protected EclipseSolver() throws SmartFrogRuntimeException {
+    	prepareSolver();
     }
-  }
-
-  private static String sfHOME = SFSystem.getEnv("SFHOME");
-  private static String corefile = sfHOME + pathswitch + coreFileSuffix;
-  private static String thfile = sfHOME + pathswitch + theoryFileSuffix;
-
-  static {
-    if (sfHOME != null) {
-      corefile = sfHOME + pathswitch + coreFileSuffix;
-      thfile = sfHOME + pathswitch + theoryFileSuffix;
+    
+    /**
+     * Set cuurrent attribute in user var sfConfig browser being manipulated
+     */
+    public void setEclipseCDAttr(EclipseCDAttr ecda){
+    	m_ecda = ecda;
     }
-  }
+    
+    /**
+     * Eclipse main goal to run in secondary thread
+     */
+    public void run(){  	
+    	try {
+    		m_eclipse.rpc("sfsolve");
+    	} catch (Exception e){
+    		m_general_error=e;
+    		yieldLockFromECRThread();
+    	}
+    }
+    
+    /**
+     * Constraints are possible (ie supported) if this class is loaded...
+     */
+    public boolean getConstraintsPossible(){ return true; }
+    
+    /**
+     * Prepare the solver
+     */
+    private void prepareSolver() throws SmartFrogResolutionException {
+    	//Prepare theory...
+    	
+        String unable = "Unable to load Eclipse-based solver:";
+  	   
+    	// Get Eclipse Installation Directory... 
+	    String eclipseDir = System.getProperty(m_eclipseDir_specifier);
+	    if (eclipseDir==null) eclipseDir=System.getenv("ECLIPSEDIRECTORY");
+    
+	    //Throw on lack of info re eclipse directory...
+	    if (eclipseDir==null) throw new SmartFrogResolutionException(unable+" eclipse directory property unspecified ("+m_eclipseDir_specifier+")"); 
+	    
+	    //Set up eclipse...
+    	m_eclipseEngineOptions  = new EclipseEngineOptions(new File(eclipseDir));
+	
+    	// Connect the Eclipse's standard streams to the JVMs
+		m_eclipseEngineOptions.setUseQueues(false);
 
-  public boolean getConstraintsPossible() {
-    return true;
-  }
+		// Initialise Eclipse
+		try {
+			m_eclipse = EmbeddedEclipse.getInstance(m_eclipseEngineOptions);
+		} catch (Exception e){
+			throw new SmartFrogResolutionException(unable+" can not get eclipse instance, "+e); 
+		}
+	
+		int idx=0;
+		String theoryFile = System.getProperty(m_theoryFile_prefix+idx);
+		
+		if (theoryFile==null) theoryFile = "core.ecl";  //temporary
+		
+		while (theoryFile!=null){
+			//Consult core theory files
+			//eclipseDir/...  is not necessarily the best place to put the theory files...
+			try {
+				m_eclipse.compile(new File(eclipseDir+m_eclipse_switch+theoryFile));
+			} catch (Exception e){
+				throw new SmartFrogResolutionException(unable+" can not compile theory source: "+theoryFile+" , "+e); 
+			}
+			idx++;
+			theoryFile = System.getProperty(m_theoryFile_prefix+idx);
+		}
+		
+		// Set up the java representation of two queue streams
+		try {
+			m_java_to_eclipse = m_eclipse.getToEclipseQueue("java_to_eclipse");
+			m_eclipse_to_java = m_eclipse.getFromEclipseQueue("eclipse_to_java");
+			m_eclipse_to_java.setListener(this);
+		} catch (Exception e){
+			throw new SmartFrogResolutionException(unable+" general queue exception, "+e); 
+		}
+   }    
+    
+	/**
+	 * Reset "backtracked to" Context information
+	 */
+    public void resetDoneBacktracking(){
+    	if (m_cresState!=null) m_cresState.resetDoneBacktracking();
+    }
+    
+	/**
+	 * On backtracking, we have backtracked to the returned context
+	 * @return Context to which backtracking has unwound to, null if no backtracking
+	 */
+    public Context hasBacktrackedTo(){
+    	if (m_cresState!=null) return m_cresState.hasBacktrackedTo();
+    	else return null;
+    }
+    
+    /**Should we undo actions involving contexts and FreeVars?
+     * @param undo Should we?
+     */
+    public void setShouldUndo(boolean undo){
+    	if (m_cresState!=null) m_cresState.setConstraintsShouldUndo(undo);
+    }
+    
+	/**
+	 * Adds single undo action to current lhr for undo attribute setting in a Context
+   	 * @param ctxt context for undo action
+     * @param key  key to undo put value
+   	 * @param value value to restore
+	 */
+	public void addUndoPut(Context ctxt, Object key, Object value){
+		if (m_cresState!=null) m_cresState.addUndoPut(ctxt, key, value);
+	}
+		
+	/**
+	 * Adds single undo action to current lhr for undoing FreeVar info setting
+   	 * @param fv  FreeVar
+     */
+	public void addUndoFVInfo(FreeVar fv){
+		if (m_cresState!=null) m_cresState.addUndoFVInfo(fv);
+	}	
+	
+	/**
+	 * Adds single undo action to current lhr for undoing FreeVar type string setting
+   	 * @param fv  FreeVar
+     */
+	public void addUndoFVTypeStr(FreeVar fv){
+		if (m_cresState!=null) m_cresState.addUndoFVTypeStr(fv);
+	}	
+         
+    /**
+     * Stop solving altogether
+     */
+    public void stopSolving() {
+    	javaToEclipse("sfstop");
+		m_ecr=null;	
+		m_cresState = null;
+    }   
 
+    /**
+     * Solve a Constraint goal
+     */
+    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector goal, Vector autos, boolean isuservars) throws Exception {    	   	
+    	
+    	//New Constraint Evaluation History, if appropriate...
+    	if (m_cresState==null) m_cresState = new ConstraintResolutionState();
+    	
+    	//Set comp as current solving comp descr
+    	m_solve_comp = comp;
+    	
+    	//Set is user vars?
+    	m_isuservars = isuservars;
+    	
+    	//Construct goal
+    	String _attrs = mapValueJE(attrs);
+    	String _values = mapValueJE(values); 
+    	String _goal = mapValueJE(goal);
+    	String _autos = mapValueJE(autos);
+    	String verbose = (SFParse.isVerboseOptSet() ? "true":"false");
+    	    	
+    	m_get_val = "sfsolve("+_attrs+", "+_values+", "+
+    					m_cresState.addConstraintEval(comp.sfContext())+", "+_goal+", "+_autos+", "+verbose+")";
+    	
 
-  /**
-   * Prepare the solver
-   */
-  protected void prepareSolver() throws SmartFrogResolutionException {
-
-    if (sfHOME == null) {
-      throw new SmartFrogResolutionException(
-              "Environment variable SFHOME must be set. Context: constraint processing");
+    	//Allocate new thread for goal and start it
+    	m_cons_finished = m_ecr_sought_lock = false;
+    	if (m_ecr==null) {
+    		m_ecr = new Thread(this); 
+	    	m_ecr.start();
+    	}	
+    	
+    	//Let rip...
+    	javaToEclipse(); 
+    	
+    	//Lock me to make sure I don't complete before constraint eval does...
+		m_solverLock.lock();
+    	if (!m_cons_finished) m_solverFinished.await();
+		m_solverLock.unlock();
+	
+		//Has Eclipse solver thread bombed?
+		if (m_general_error!=null) throw m_general_error;
+   }
+    
+    /**
+     * Maps Java object to String for transfer to Eclipse 
+     * @param v  object to be transformed
+     * @return eclipse string
+     */
+    private String mapValueJE(Object v) throws SmartFrogResolutionException { 
+        return mapValueJE(v, false);
     }
 
-    // create the theory
-    try {
-      prepareTheory(corefile, thfile);
-    } catch (Exception e) {
-      throw new SmartFrogResolutionException(
-              "Unable to parse base theory for constraint resolution. ", e);
-    }
-
-    //Add the path root
-    String thpath = System.getProperty(theoryFilePath);
-
-    if (thpath != null) {
-      try {
-        runGoal("add_path(\"" + thpath + "\")");
-      } catch (Exception e) {
-        throw new SmartFrogResolutionException(
-                "Unable to add root theory file path. ", e);
-      }
-    }
-  }
-
-  public void resetDoneBacktracking() {
-    if (cresState != null) cresState.resetDoneBacktracking();
-  }
-
-  public Context hasBacktrackedTo() {
-    if (cresState != null) {
-      return cresState.hasBacktrackedTo();
-    } else {
-      return null;
-    }
-  }
-
-  public void setShouldUndo(boolean undo) {
-    if (cresState != null) cresState.setConstraintsShouldUndo(undo);
-  }
-
-  /**
-   * Add undo action to current lhr
-   *
-   * @param ctxt
-   * @param key
-   * @param value
-   */
-  public void addUndo(Context ctxt, Object key, Object value) {
-    if (cresState != null) cresState.addUndo(ctxt, key, value);
-  }
-
-  /**
-   * Add undo action to current lhr
-   *
-   * @param fv
-   * @param type
-   */
-  public void addUndo(FreeVar fv, int type) {
-    if (cresState != null) cresState.addUndo(fv, type);
-  }
-
-
-  /**
-   * Prepare the engine with two theories
-   */
-  public void prepareTheory(String coreFile, String coreFile2)
-          throws Exception {
-    // Get Eclipse Installation Directory...
-    String eclipseDirectory = System.getenv("ECLIPSEDIRECTORY");
-
-    if (eclipseDirectory == null) {
-      throw new Exception(); //handle properly...
-    }
-
-    //Set up eclipse...
-    eclipseEngineOptions = new EclipseEngineOptions(new File(eclipseDirectory));
-
-    // Connect the Eclipse's standard streams to the JVMs
-    eclipseEngineOptions.setUseQueues(false);
-
-    // Initialise Eclipse
-    eclipse = EmbeddedEclipse.getInstance(eclipseEngineOptions);
-
-    //Consult core theory file
-    eclipse.compile(new File(coreFile));
-
-    //Consult core theory file
-    eclipse.compile(new File(coreFile2));
-
-    // Set up the java representation of two queue streams
-    java_to_eclipse = eclipse.getToEclipseQueue("java_to_eclipse");
-    eclipse_to_java = eclipse.getFromEclipseQueue("eclipse_to_java");
-
-    eclipse_to_java.setListener(this);
-  }
-
-  /**
-   * Run eclipse goal...
-   */
-  public void runGoal(String goal) {/*Do nothing for now*/}
-
-  ;
-
-  /**
-   * Stop solving altogether
-   */
-  public void stopSolving() throws Exception {
-    get_val = "sfstop";
-    try {
-      java_to_eclipse.setListener(this);
-      //((EmbeddedEclipse) m_eclipse).destroy();   Do not destroy. Remove this. Need to do a "clean" of existing...
-    } catch (Exception ignored) {
-
-    }
-    ecrThread = null;
-    cresState = null;
-  }
-
-  /**
-   * Solve a Constraint goal
-   */
-  public void solve(ComponentDescription comp, Vector attrs, Vector values,
-                    Vector goal, Vector autos, boolean isuservars)
-          throws Exception {
-
-    //New Constraint Evaluation History, if appropriate...
-    if (cresState == null) {
-      cresState = new ConstraintResolutionState();
-    }
-
-    //Set comp as current solving comp descr
-    solve_comp = comp;
-
-    //Set is user vars?
-    this.isuservars = isuservars;
-
-    //Construct goal
-    String _attrs = mapValueJE(attrs);
-    String _values = mapValueJE(values);
-    String _goal = mapValueJE(goal);
-    String _autos = mapValueJE(autos);
-    String verbose = (SFParse.isVerboseOptSet() ? "true" : "false");
-
-    get_val = "sfsolve(" + _attrs + ", " + _values + ", " +
-            cresState.addConstraintEval(comp.sfContext()) + ", " + _goal + ", "
-            + _autos + ", " + verbose + ")";
-
-    //System.out.println(m_get_val);
-
-    //Allocate new thread for goal and start it
-    cons_finished = ecr_sought_lock = false;
-
-    if (ecrThread == null) {
-      ecrThread = new Thread(this);
-      ecrThread.start();
-    }
-
-    //Let rip...
-    try {
-      java_to_eclipse.setListener(this);
-    } catch (Exception e) {
-    }
-
-    //Lock me to make sure I don't complete before constraint eval does...
-    solverLock.lock();
-    if (!cons_finished) {
-      solverFinished.await();
-    }
-    solverLock.unlock();
-
-    if (general_error != null) {
-      throw general_error;
-    }
-  }
-
-  /**
-   * Maps Java object to String for transfer to Eclipse
-   *
-   * @param v object to be transformed
-   * @return eclipse string
-   */
-  private String mapValueJE(Object v) throws SmartFrogResolutionException {
-    return mapValueJE(v, false);
-  }
-
-  /**
-   * Maps Java object to String for transfer to Eclipse
-   *
-   * @param v      object to be transformed
-   * @param quoted indicates whether Strings should be double quoted
-   * @return eclipse string
-   */
-  private String mapValueJE(Object v, boolean quoted)
-          throws SmartFrogResolutionException {
-    if (v instanceof FreeVar) {
-      FreeVar fv = (FreeVar) v;
-      if (fv.getConsEvalKey() != null) {
-        if (fv.getConsEvalIdx() == -1) {
-          fv.setConsEvalIdx(
-                  cresState.getConsEvalIdx() + 1);  //+1 as yet to add entry
-
-          String range_s = "null";
-          Object range = fv.getRange();
-          if (range != null) {
-            if (range instanceof String) {
-              range_s = (String) range;
-            } else if (range instanceof Vector) {
-              range_s = mapValueJE(range);
-            } else {
-              throw new SmartFrogResolutionException(
-                      "Invalid range specifier for FreeVar: " + v);
-            }
-          }
-
-          Object defVal = fv.getDefVal();
-          String defVal_s = (defVal != null ? defVal_s = ", " + defVal
-                  .toString() : "");
-          return "sfvar(" + range_s + defVal_s + ")";
-
-        } else {
-          return "sfref(" + fv.getConsEvalIdx() + ", "
-                  + fv.getConsEvalKey() + ")";
+    /**
+     * Maps Java object to String for transfer to Eclipse 
+     * @param v  object to be transformed
+     * @param quoted indicates whether Strings should be double quoted
+     * @return eclipse string
+     */
+    private String mapValueJE(Object v, boolean quoted) throws SmartFrogResolutionException { 
+    	if (v instanceof FreeVar) {
+    		FreeVar fv = (FreeVar) v;
+    		if (fv.getConsEvalKey()!=null){	    		
+	    		if (fv.getConsEvalIdx()==-1){
+	    			fv.setConsEvalIdx(m_cresState.getConsEvalIdx()+1);  //+1 as yet to add entry
+	    			
+	    			String range_s = "null";
+	    			Object range = fv.getRange();
+	    			if (range!=null){
+	    				if (range instanceof String) range_s = (String) range;
+	    				else if (range instanceof Vector) range_s = mapValueJE(range);
+	    				else throw new SmartFrogResolutionException("Invalid range specifier for FreeVar: "+v);
+	    			}
+	    			
+	    			Object defVal = fv.getDefVal();
+	    			String defVal_s = (defVal!=null? ", "+defVal.toString() : "");
+	    			return "sfvar("+range_s+defVal_s+")";
+	    			
+	    		} else return "sfref("+fv.getConsEvalIdx()+", "+fv.getConsEvalKey()+")";
+    		} else {
+    			return v.toString();
+    		}
+    	}
+    	else if (v instanceof Number) return v.toString();
+        else if (v instanceof Vector) {
+        	String val = "[";
+        	boolean first=true;
+        	Iterator it = ((Vector)v).iterator();
+        	while (it.hasNext()) {
+        		if (first) first=false;
+        		else val += ", ";
+        		
+        		val += mapValueJE(it.next(), quoted);
+        	}
+        	val += "]";
+        	return val;
+        } else if (v instanceof String) {
+        	if (quoted) return "\""+v+"\"";
+        	else return (String)v;
+        } else if (v instanceof SFNull){
+        	return "sfnull";
+        } else if (v instanceof SFReference) {
+        	ReferencePart rp = ((SFReference)v).firstElement();
+        	if (rp instanceof AttribReferencePart) {
+        		String ret_s = ((AttribReferencePart)rp).getValue().toString();
+        		if (quoted) ret_s = "\""+ret_s+"\"";
+        		return ret_s;
+        	}
+        	else return null;
         }
-      } else {
-        return v.toString();
-      }
-    } else if (v instanceof Number) {
-      return v.toString();
-    } else if (v instanceof Vector) {
-      String val = "[";
-      boolean first = true;
-      Iterator it = ((Vector) v).iterator();
-      while (it.hasNext()) {
-        if (first) {
-          first = false;
-        } else {
-          val += ", ";
+        else if (v instanceof ComponentDescription) return "sfcd";
+        else if (v instanceof Boolean) return (((Boolean)v).booleanValue() ? "true" : "false");
+        else return null;
+    }
+    
+
+    /**
+     * Maps Eclipse object to Java object after transfer from Eclipse 
+     * @param v  object to be transformed
+     * @return transformed object
+     */
+    private Object mapValueEJ(Object v)  {
+    	return mapValueEJ(v, false);
+    }
+    
+    /**
+     * Maps Eclipse object to Java object after transfer from Eclipse 
+     * @param v  object to be transformed
+     * @param ref_create indicates whether references should be created for atoms -- used for subtyping directives
+     * @return transformed object
+     */
+    private Object mapValueEJ(Object v, boolean ref_create)  {
+    	if (v==null) return new FreeVar();
+    	else if (v.equals(Collections.EMPTY_LIST)) return new Vector();
+    	else if (v instanceof Number) return v;
+        else if (v instanceof Collection) {
+            Vector result = new Vector();
+            Iterator it = ((Collection)v).iterator();  
+            while (it.hasNext()) result.add(mapValueEJ(it.next(), ref_create));
+            return result;
+        } else if (v instanceof String) return v;
+        else if (v instanceof Atom){
+        	Atom va = (Atom) v;
+        	if (va.functor().equals("sfnull")) return SFNull.get();
+        	else {
+        		String va_s = va.functor();
+        		try {
+        			if (ref_create) return Reference.fromString(va_s);
+        			return va_s;
+        		} catch (SmartFrogResolutionException sfre){
+        			throw new RuntimeException("mapValueEJ: Trouble in creating reference from attribute string for subtyping. ");	
+        		}
+        	}
+        } else throw new RuntimeException("mapValueEJ: unknown data *from* solver " + v);	
+    }	    
+    
+   
+    /**
+     * Populate sfConfig browser for setting user variables...
+     */    
+    private void populateBrowser(){
+           Object root = m_cdbm.attr(null, "sfConfig", false);
+	       populateBrowser(orig, root, false);	
+	}
+	
+    /**
+     * Populate sfConfig browser for setting user variables...
+     * @param cd current component description being added to browser
+     * @param root browser object corresponding to sfConfig 
+     * @param showme whether I should be shown -- determined by whether I am the Constraint component description currently being solved... 
+     */
+	private void populateBrowser(ComponentDescription cd, Object root, boolean showme){ 	
+	    	Iterator attriter = cd.sfAttributes();
+	    	Context cxt = cd.sfContext();
+	    	//String cxts = create_ref_str(cd);
+	    	while (attriter.hasNext()){
+	    		Object attr = attriter.next();
+	    		Object val = null;
+	    		
+	    		try {
+	    		   val = cxt.sfResolveAttribute(attr);
+	    		}  catch (Exception e){
+	    			throw new RuntimeException("Can not resolve attribute when populating browser", e);
+	    		}
+	    		
+	    		if (val instanceof SFApplyReference){
+	    			SFApplyReference val_ar = (SFApplyReference) val;
+	    			val = val_ar.getComponentDescription(); 
+	    		} 
+	    		
+	    		if (val instanceof ComponentDescription){
+	    			boolean showkids = (!showme && m_solve_comp==val);
+	    			Object chroot = m_cdbm.attr(root, attr.toString(), showme);
+	    			populateBrowser((ComponentDescription)val, chroot, showkids);
+	    		} else {	    		
+		    		EclipseCDAttr ecda = new EclipseCDAttr(this, attr.toString(), val);
+		    		
+	                m_cdbm.attr(root, ecda, showme);
+	                try {
+	                	if (cd==m_solve_comp && cxt.sfContainsTag(attr, "sfConstraintUserVar") && val instanceof FreeVar) {
+	             		   m_rangeAttrs.add(ecda);
+	             		   ecda.set(false);             		   
+	                    } else {
+	 		    			ecda.set(true);
+	 		    		}
+	 	    		}  catch (Exception e){
+	 	    			throw new RuntimeException("Can not check attribute for tag", e);
+	 	    		}
+		    		
+	    		}
+	    		
+	    	}
+	    	
+	    }
+	    
+	/**
+	 * Kill sfConfig browser for user variables
+	 */
+	public void killBrowser(){
+		m_cdbm.kill();
+	}
+
+	/**
+	 * Communicate supplied parameter to Eclipse side 
+	 * @param val Object to be sent
+	 */
+	public void javaToEclipse(Object val){
+		m_get_val = val;  	
+		javaToEclipse();
+	}
+	
+	/**
+	 * Communicate m_get_val to Eclipse side 
+	 */
+	public void javaToEclipse(){
+		try{
+	    	m_java_to_eclipse.setListener(this);
+		} catch (Exception e){
+            throw new RuntimeException("Unanable to reset JtoE listener");            	
         }
+	}
 
-        val += mapValueJE(it.next(), quoted);
-      }
-      val += "]";
-      return val;
-    } else if (v instanceof String) {
-      if (quoted) {
-        return "\"" + v + "\"";
-      } else {
-        return (String) v;
-      }
-    } else if (v instanceof SFNull) {
-      return "sfnull";
-    } else if (v instanceof SFReference) {
-      ReferencePart rp = ((SFReference) v).firstElement();
-      if (rp instanceof AttribReferencePart) {
-        String ret_s = ((AttribReferencePart) rp).getValue().toString();
-        if (quoted) {
-          ret_s = "\"" + ret_s + "\"";
+
+	/**
+	 * Initiated by Eclipse side -- process user variables in Constraint description...
+	 */
+    void sfuser(){
+    	
+    	//If no user variables, then we are done...
+    	if (!m_isuservars){
+        	javaToEclipse(new Atom("done"));
+         	return;
         }
-        return ret_s;
-      } else {
-        return null;
-      }
-    } else if (v instanceof ComponentDescription) {
-      return "sfcd";
-    } else if (v instanceof Boolean) {
-      return v.toString();
-    } else {
-      return null;
-    }
-  }
-
-
-  /**
-   * Maps Eclipse object to Java object after transfer from Eclipse
-   *
-   * @param v object to be transformed
-   * @return transformed object
-   */
-  private Object mapValueEJ(Object v) {
-    return mapValueEJ(v, false);
-  }
-
-  /**
-   * Maps Eclipse object to Java object after transfer from Eclipse
-   *
-   * @param v          object to be transformed
-   * @param ref_create indicates whether references should be created for atoms
-   *                   -- used for subtyping directives
-   * @return transformed object
-   */
-  private Object mapValueEJ(Object v, boolean ref_create) {
-    if (v == null) {
-      return new FreeVar();
-    } else if (v.equals(Collections.EMPTY_LIST)) {
-      return new Vector();
-    } else if (v instanceof Number) {
-      return v;
-    } else if (v instanceof Collection) {
-      Vector result = new Vector();
-      Iterator it = ((Collection) v).iterator();
-      while (it.hasNext()) {
-        result.add(mapValueEJ(it.next(), ref_create));
-      }
-      return result;
-    } else if (v instanceof String) {
-      return v;
-    } else if (v instanceof Atom) {
-      Atom va = (Atom) v;
-      if (va.functor().equals("sfnull")) {
-        return SFNull.get();
-      } else {
-        String va_s = va.functor();
-        try {
-          if (ref_create) return Reference.fromString(va_s);
-          return va_s;
-        } catch (SmartFrogResolutionException sfre) {
-          throw new SmartFrogEclipseRuntimeException(
-                  "mapValueEJ: Trouble in creating reference from attribute string for subtyping. ");
-        }
-      }
-    } else {
-      throw new SmartFrogEclipseRuntimeException(
-              "mapValueEJ: unknown data *from* solver " + v);
-    }
-  }
-
-  /**
-   * Unchecked Eclipse Exception, for throwing from Listeners dataAvailable,
-   * dataRequest
-   *
-   * @author anfarr
-   */
-  static public class SmartFrogEclipseRuntimeException
-          extends RuntimeException {
-    SmartFrogEclipseRuntimeException(Throwable cause) {
-      super(null, cause);
-    }
-
-    SmartFrogEclipseRuntimeException(String msg, Throwable cause) {
-      super(msg, cause);
-    }
-
-    SmartFrogEclipseRuntimeException(String msg) {
-      super(msg, null);
-    }
-  }
-
-  private EclipseStatus est;
-  private Vector rangeAttrs = new Vector();
-  private EclipseCDAttr ecda;
-
-  public class EclipseStatus {
-    private boolean done;
-    private int undo;
-    private boolean back;
-    private String ref;
-    private String val;
-
-    public void undo() {
-      get_val = new Atom("back");
-      try {
-        java_to_eclipse.setListener(EclipseSolver.this);
-      } catch (Exception e) {
-        throw new SmartFrogEclipseRuntimeException(
-                "Unanable to set JtoE listener", e);
-      }
-    }
-
-    public void done() {
-
-      cdbm.kill();
-      Iterator atiter = rangeAttrs.iterator();
-      get_val = new Atom("done");
-
-      try {
-        java_to_eclipse.setListener(EclipseSolver.this);
-      } catch (Exception e) {
-        throw new SmartFrogEclipseRuntimeException(
-                "Unable to set JtoE listener", e);
-      }
-
-    }
-
-    public boolean isDone() {
-      return done;
-    }
-
-    public void setBack(boolean back) {
-      this.back = back;
-    }
-
-    public boolean isBack() {
-      return back;
-    }
-
-    public int getUndo() {
-      return undo;
-    }
-
-    public String getUndoLabel() {
-      if (ref != null) {
-        return ref + " currently set to " + val;
-      } else {
-        return "";
-      }
-    }
-  }
-
-
-  public class EclipseCDAttr {
-    private String name;
-    private Object val;
-    private Object range;
-    private boolean set;
-    private ComponentDescription cd;
-    private Class vclass;
-
-    public boolean isSet() {
-      return set;
-    }
-
-    public boolean process_sel(String entry) {
-      ecda = this;
-      Collection c = (Collection) range;
-      Iterator iter = c.iterator();
-      while (iter.hasNext()) {
-        String el = iter.next().toString();
-        if (el.equals(entry)) {
-          get_val = new CompoundTermImpl("set", new Atom(name),
-                  new Atom(entry));
-          try {
-            java_to_eclipse.setListener(EclipseSolver.this);
-          } catch (Exception e) {
-            throw new SmartFrogEclipseRuntimeException(
-                    "Unanable to reset JtoE listener", e);
-          }
-
-          return true;
-        }
-      }
-      return false;
-    }
-
-    public String getRangeAsString() {
-      return range.toString();
-    }
-
-    public String getAttrName() {
-      return name;
-    }
-
-    public String toString() {
-      if (set) {
-        return name + " has value: " + val;
-      } else {
-        return name + " ranges over: " + range;
-      }
-    }
-  }
-
-  void populateBrowser() {
-    Object root = cdbm.attr(null, "sfConfig", false);
-    populateBrowser(orig, root, false);
-  }
-
-  void populateBrowser(ComponentDescription cd, Object root, boolean showme) {
-
-    Iterator attriter = cd.sfAttributes();
-    Context cxt = cd.sfContext();
-    //String cxts = create_ref_str(cd);
-    while (attriter.hasNext()) {
-      Object attr = attriter.next();
-
-      Object val = null;
-
-      try {
-        val = cxt.sfResolveAttribute(attr);
-      } catch (Exception e) {
-        throw new SmartFrogEclipseRuntimeException(
-                "Can not resolve attribute when populating browser", e);
-      }
-
-      if (val instanceof SFApplyReference) {
-        SFApplyReference val_ar = (SFApplyReference) val;
-        val = val_ar.getComponentDescription();
-      }
-
-      if (val instanceof ComponentDescription) {
-        boolean showkids = (!showme && solve_comp == val);
-        Object chroot = cdbm.attr(root, attr.toString(), showme);
-        populateBrowser((ComponentDescription) val, chroot, showkids);
-      } else {
-        EclipseCDAttr ecda = new EclipseCDAttr();
-        ecda.cd = cd;
-        ecda.name = attr.toString();
-        ecda.val = val;
-        cdbm.attr(root, ecda, showme);
-        try {
-          if (cd == solve_comp && cxt.sfContainsTag(attr, "sfConstraintUserVar")
-                  && val instanceof FreeVar) {
-            rangeAttrs.add(ecda);
-            ecda.set = false;
-          } else {
-            ecda.set = true;
-          }
-        } catch (Exception e) {
-          throw new SmartFrogEclipseRuntimeException(
-                  "Can not check attribute for tag", e);
-        }
-
-      }
-
-    }
-
-  }
-
-  void sfuser() {
-
-    String classname = System.getProperty(
-            "org.smartfrog.sfcore.languages.sf.constraints.CDBrowser");
-    if (classname == null || !isuservars) {
-      get_val = new Atom("done");
-      try {
-        java_to_eclipse.setListener(EclipseSolver.this);
-      } catch (Exception e) {
-        throw new SmartFrogEclipseRuntimeException(
-                "Unable to set JtoE listener",e);
-      }
-      return;
-    }
-
-    try {
-      cdbm = (CDBrowser) SFClassLoader.forName(classname).newInstance();
-
-    } catch (Exception e) {
-      throw new SmartFrogEclipseRuntimeException(
-              "Can not instantiate CD Browser",e);
-
-    }
-
-    populateBrowser();
-
-
-    if (rangeAttrs.size() != 0) {
-
-      List ranges = new LinkedList();
-      Iterator raiter = rangeAttrs.iterator();
-      while (raiter.hasNext()) {
-        EclipseCDAttr ecda = (EclipseCDAttr) raiter.next();
-        ranges.add(ecda.getAttrName());
-      }
-
-      est = new EclipseStatus();
-      cdbm.setES(est);
-      get_val = new CompoundTermImpl("range", ranges);
-
-    } else {
-      get_val = new Atom("done");
-    }
-
-    try {
-      java_to_eclipse.setListener(EclipseSolver.this);
-    } catch (Exception e) {
-      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener",e);
-    }
-
-  }
-
-
-  void range(CompoundTerm ct) {
-    Collection c = (Collection) ct.arg(1);
-    Iterator citer = c.iterator();
-    Iterator riter = rangeAttrs.iterator();
-    boolean all_done = true;
-
-    while (citer.hasNext()) {
-      EclipseCDAttr ecda = (EclipseCDAttr) riter.next();
-      Collection range = (Collection) citer.next();
-      if (range.size() > 1) {
-        ecda.range = mapValueEJ(range);
-        ecda.set = false;
-        all_done = false;
-      } else {
-        Iterator range_iter = range.iterator();
-        ecda.val = mapValueEJ(range_iter.next());
-        ecda.set = true;
-      }
-    }
-
-    est.done = all_done;
-    cdbm.redraw();
-  }
-
-  void set(CompoundTerm ct) {
-    est.undo = ((Integer) ct.arg(1)).intValue();
-    Object ref = ct.arg(2);
-    est.ref = (ref != null ? ((CompoundTerm) ref).functor() : null);
-    Object val = ct.arg(3);
-    est.val = (val != null ? ((CompoundTerm) val).functor() : null);
-    est.back = ((CompoundTerm) ct.arg(4)).functor().equals("back");
-    get_val = new Atom("range");
-    try {
-      java_to_eclipse.setListener(EclipseSolver.this);
-    } catch (Exception e) {
-      throw new SmartFrogEclipseRuntimeException("Unable to set JtoE listener",e);
-    }
-  }
-
-
-  /**
-   * Called when Eclipse flushes source
-   */
-  public void dataAvailable(Object source) {
-
-    FromEclipseQueue m_iqueue = null;
-    EXDRInputStream m_iqueue_formatted = null;
-
-    if (m_iqueue == null) {
-      m_iqueue = (FromEclipseQueue) source;
-      m_iqueue_formatted = new EXDRInputStream(m_iqueue);
-    }
-
-    CompoundTerm ct = null;
-    try {
-      ct = (CompoundTerm) m_iqueue_formatted.readTerm();
-    } catch (IOException ioe) {
-      throw new SmartFrogEclipseRuntimeException(
-              "dataAvailable: Unable to *read* from input stream. ", ioe);
-    }
-
-    String func = ct.functor();
-
-    if (func.equals("sffailed")) {
-      throw new SmartFrogEclipseRuntimeException(
-              "Unable to solve constraints. General failure.");
-    } else if (func.equals("sfuser")) {
-      sfuser();
-    } else if (func.equals("range")) {
-      range(ct);
-    } else if (func.equals("set")) {
-      set(ct);
-    } else if (func.equals("norange")) {
-      throw new SmartFrogEclipseRuntimeException(
-              "Unable to collect range information for sfConsUser tagged attributes. Probably because it has not been set in constraint annotations");
-    }
-    //If done on constraint goal, yield lock so solve() may complete
-    else if (func.equals("sfdonegoal")) {
-      yieldLockFromECRThread();
-    }
-    //Setting an attributes value
-    else if (func.equals("sfset")) {
-
-      int idx = ((Integer) ct.arg(1)).intValue();
-      Object val = mapValueEJ(ct.arg(2));
-      String qual = ((Atom) ct.arg(3)).functor();
-      Collection ctar = (Collection) ct.arg(4);
-      int cidx = ((Integer) ct.arg(5)).intValue();
-
-
-      boolean sfcd = false;
-
-      if (val instanceof String) {
-        String val_s = (String) val;
-        if (val_s.indexOf("sfcd") == 0) {
-          sfcd = true;
-          val = val_s.substring(4);
-        }
-      }
-
-      FreeVar fv = null;
-      if (qual.equals("first")) {
-        val = fv = new FreeVar();
-      }
-
-      Iterator tar_iter = ctar.iterator();
-      cresState.backtrackConstraintAss(idx, cidx);
-
-      if (sfcd) val = cresState.adjustSetValue(val);
-
-      boolean first = true;
-      while (tar_iter.hasNext()) {
-        CompoundTerm prim = (CompoundTerm) tar_iter.next();
-        cidx = ((Integer) prim.arg(1)).intValue();
-        String key = ((Atom) prim.arg(2)).functor();
-
-        if (first) {
-          if (fv != null) {
-            fv.setConsEvalIdx(cidx);
-            fv.setConsEvalKey(key);
-          }
-          first = false;
-        }
-        try {
-          boolean success = cresState
-                  .addConstraintAss(solve_comp, idx, key, val, cidx);
-          get_val = "" + success;
-        } catch (SmartFrogResolutionException smfre) {
-          throw new SmartFrogEclipseRuntimeException(smfre);
-        }
-        try {
-          java_to_eclipse.setListener(this);
-        } catch (Exception e) {
-        }
-      }
-
-    } else if (func.equals("sfsubtype")) {
-      String attr = ((Atom) ct.arg(1)).functor();
-      Vector types = (Vector) mapValueEJ(ct.arg(2),
-              true);  //by this stage we know its a Vector
-      cresState.setTyping(attr, types);
-    }
-  }
-
-  /**
-   * Yields lock so that solve() may finish
-   */
-  void yieldLockFromECRThread() {
-    //Need to own lock in order to signal to opposition...
-    if (!ecr_sought_lock) solverLock.lock();
-
-    cons_finished = true;
-    solverFinished.signalAll();
-    solverLock.unlock();
-  }
-
-  /**
-   * Called when Eclipse demands data
-   */
-  public void dataRequest(Object source) {
-    ToEclipseQueue oqueue = null;
-    EXDROutputStream oqueue_formatted = null;
-
-    if (!ecr_sought_lock) {
-      ecr_sought_lock = true;
-      solverLock.lock();
-    }
-
-    if (oqueue == null) {
-      oqueue = (ToEclipseQueue) source;
-      oqueue_formatted = new EXDROutputStream(oqueue);
-    }
-
-    try {
-      if (get_val != null) {
-        oqueue_formatted.write(get_val);
-        java_to_eclipse.setListener(null);
-        get_val = null;
-      } else {
-        throw new SmartFrogEclipseRuntimeException(
-                "dataRequest: No data available to write. ");
-      }
-    } catch (IOException ioe) {
-      throw new SmartFrogEclipseRuntimeException(
-              "dataRequest: Unable to *write* on output stream. ", ioe);
-    }
-  }
+    	
+    	//Get sfConfig browser class
+         String classname = System.getProperty(m_userVar_browser);   
+         if (classname==null) throw new RuntimeException("Can not instantiate CD Browser, property not set...");
+         
+         try {            
+         	m_cdbm = (CDBrowser) SFClassLoader.forName(classname).newInstance(); 
+         } catch (Exception e){
+         	throw new RuntimeException("Can not instantiate CD Browser");
+         }
+         
+         //Populate the browser
+         populateBrowser();
+         
+         //User variables to be set in m_rangeAttrs, communicate these to eclipse side to get ranges...
+         if (m_rangeAttrs.size()!=0) {
+         	
+	        	List ranges = new LinkedList();
+	        	Iterator raiter = m_rangeAttrs.iterator();
+	        	while (raiter.hasNext()){
+	        		EclipseCDAttr ecda = (EclipseCDAttr) raiter.next();
+                    ranges.add(ecda.getAttrName());	        		
+	        	}
+	     
+	        	m_est = new EclipseStatus(this);
+	        	m_cdbm.setES(m_est);
+	        	javaToEclipse(new CompoundTermImpl("range", ranges));
+	        	
+         } else {
+        	 javaToEclipse(new Atom("done"));
+         }
+          
+	    }
+	    
+	    /**
+	     * We have ranges for user variables from eclipse, need to display them...
+	     * @param ct CompoundTerm containing range information
+	     */
+	    void range(CompoundTerm ct){
+	    	Collection c = (Collection)ct.arg(1);
+	    	Iterator citer = c.iterator();
+	    	Iterator riter = m_rangeAttrs.iterator();
+	    	boolean all_done=true;
+	    	
+	    	while (citer.hasNext()){
+	    		EclipseCDAttr ecda = (EclipseCDAttr) riter.next();
+	    		Collection range = (Collection) citer.next();
+	    		if (range.size()>1) {
+	    			ecda.setRange(mapValueEJ(range));
+	    			ecda.set(false);
+	    			all_done=false;
+	    		} else {
+	    			Iterator range_iter = range.iterator();
+	    			ecda.setValue(mapValueEJ(range_iter.next()));
+	    			ecda.set(true);
+	    		}
+	    	}
+	    	
+	    	m_est.setDone(all_done);
+	    	m_cdbm.redraw();
+	    }
+	    
+	    /**
+	     * Last set or undo has been processed by eclipse.  Eclipse reflects this information back to us, and in turn we ask Eclipse for updated range info...
+	     * @param ct
+	     */
+	    void set(CompoundTerm ct){	    	
+	    	m_est.setUndo(((Integer)ct.arg(1)).intValue());
+	    	Object ref = ct.arg(2);
+	    	m_est.setAttr((ref!=null? ((CompoundTerm)ref).functor() : null));
+	    	Object val = ct.arg(3);
+	    	m_est.setValue((val!=null? ((CompoundTerm)val).functor() : null));
+	    	m_est.setBack(((CompoundTerm)ct.arg(4)).functor().equals("back"));
+	    	javaToEclipse(new Atom("range"));
+	    }
+    
+     
+	    /**
+	     * Called when Eclipse flushes FromEclipse queue
+	     */ 
+	    public void dataAvailable(Object source)
+	    {	    	
+
+	        FromEclipseQueue m_iqueue = null;
+	        EXDRInputStream m_iqueue_formatted = null;
+	    	
+	       if(m_iqueue == null){
+			m_iqueue = (FromEclipseQueue) source;
+			m_iqueue_formatted = new EXDRInputStream(m_iqueue);
+	       }
+	
+	         CompoundTerm ct = null;
+	         try{ 
+	           ct = (CompoundTerm) m_iqueue_formatted.readTerm();
+	         } catch (IOException ioe){
+	        	 throw new RuntimeException("dataAvailable: Unable to *read* from input stream. ", ioe);
+	         }
+	         
+	         String func = ct.functor();
+	         
+	         //Handle general failure...
+	         if (func.equals("sffailed")) {
+	        	 throw new RuntimeException("Unable to solve constraints. General failure.");
+	         }
+	         
+	         //Handle eclipse dictating that user variables are filled in
+	         else if (func.equals("sfuser")) sfuser();	         
+	         
+	         //Handle range info for user variables from eclipse
+	         else if (func.equals("range")) range(ct);
+	         
+	         //Handle set information for user variable from eclipse
+	         else if (func.equals("set")) set(ct);
+	         
+	         //Handle inability to collect range information for user variables 
+	         else if (func.equals("norange")) throw new RuntimeException("Unable to collect range information for sfConsUser tagged attributes. Probably because it has not been set in constraint annotations");
+	         
+	         //Handle done on constraint goal, yield lock so solve() may complete
+	         else if (func.equals("sfdonegoal")) yieldLockFromECRThread();
+
+	         //Handle regular setting of an attributes value 
+	         else if (func.equals("sfset")){
+	        	 
+	        	 //Variable setting index in constraint solving...  
+	        	 int idx = ((Integer) ct.arg(1)).intValue();
+	        	 
+	        	 //Variable value
+	        	 Object val = mapValueEJ(ct.arg(2));
+	        	 
+	        	 //Qualification for setting
+	        	 String qual = ((Atom) ct.arg(3)).functor();
+	        	 
+	        	 //List of attributes to be set with value
+	        	 Collection ctar = (Collection) ct.arg(4);
+	        	 
+	        	 //Index of Constraint context responsible 
+	        	 int cidx = ((Integer) ct.arg(5)).intValue();
+	        	 
+	        	 //Get whether the value to be set is actually a component description, and if so adjust accordingly...
+	        	 if (val instanceof String){
+	        		 String val_s = (String) val;
+	        	     if (val_s.indexOf("sfcd")==0) {
+	        	    	 val = m_cresState.adjustSetValue(val_s.substring(4));
+	        	     }
+	        	 }
+	        	 
+	        	 //Backtrack as necessary...
+	        	 m_cresState.backtrackConstraintAss(idx,cidx);
+
+	        	 //Assign value to appropriate attributes...
+	        	 boolean first=true;
+	        	 Iterator tar_iter = ctar.iterator();
+	        	 while (tar_iter.hasNext()){
+	        		 CompoundTerm prim = (CompoundTerm) tar_iter.next();
+	        		 cidx=((Integer)prim.arg(1)).intValue();
+	        		 String key=((Atom)prim.arg(2)).functor();
+	        		 
+	        		 if (first){
+	        			 //For VARs within Vectors which are first up then we need to set eval idx and key...
+	    	        	 if (qual.equals("first")){
+	    	        		FreeVar fv = new FreeVar();
+	    	        		val = fv;
+	        				fv.setConsEvalIdx(cidx); 
+	        				fv.setConsEvalKey(key);
+	        			 }
+	        			 first=false;
+	        		 }
+	        		 try {
+	        			 boolean success = m_cresState.addConstraintAss(m_solve_comp, key, val, cidx);
+	        			 m_get_val = ""+success;
+	        		 } catch (SmartFrogResolutionException smfre){
+	        			 throw new RuntimeException(smfre);
+	        		 }
+         	    	 javaToEclipse();
+	        	 }
+	        	 
+	         //Handle if we are asserting a sub type...
+	         } else if (func.equals("sfsubtype")){
+	        	 String attr = ((Atom) ct.arg(1)).functor();
+	        	 Vector types = (Vector) mapValueEJ(ct.arg(2), true);  //by this stage we know its a Vector
+	        	 m_cresState.setTyping(attr, types);
+	         }
+	    }
+	
+	    /**
+	     * Yields lock so that solve() may finish
+	     *
+	     */
+	    void yieldLockFromECRThread(){
+	    	//Need to own lock in order to signal to opposition...
+	    	 if (!m_ecr_sought_lock)  m_solverLock.lock();
+	    	
+	       	 m_cons_finished=true;
+	    	 m_solverFinished.signalAll();
+	    	 m_solverLock.unlock();
+	    }
+	    
+	    /**
+	     * Called when Eclipse demands data 
+	     */
+	    public void dataRequest(Object source)
+	    {
+	        ToEclipseQueue m_oqueue = null;
+	        EXDROutputStream m_oqueue_formatted = null;
+	    	
+	    	if (!m_ecr_sought_lock) {
+	    		m_ecr_sought_lock = true;
+	    		m_solverLock.lock();
+	    	}
+	    	
+	    	if(m_oqueue == null){
+				m_oqueue = (ToEclipseQueue) source;
+				m_oqueue_formatted = new EXDROutputStream(m_oqueue);
+		    }
+		    	    	
+	    	try { 
+		    	if (m_get_val!=null) {
+		    		m_oqueue_formatted.write(m_get_val);
+		    		m_java_to_eclipse.setListener(null);
+		    		m_get_val=null;
+		    	} else {
+		    		throw new RuntimeException("dataRequest: No data available to write. ");
+		    	}
+	    	} catch (IOException ioe){
+	    		throw new RuntimeException("dataRequest: Unable to *write* on output stream. ", ioe);
+    	    }
+	    }	    
 }
 

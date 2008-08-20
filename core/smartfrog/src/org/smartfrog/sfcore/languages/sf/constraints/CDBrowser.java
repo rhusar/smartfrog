@@ -27,10 +27,10 @@ package org.smartfrog.sfcore.languages.sf.constraints;
 public interface CDBrowser {
 	
 	/**
-	 * Sets an unspecified object as pertaining to the state of the solving engine
+	 * Sets EclipseStatus object pertaining to status information for browser 
 	 * @param es
 	 */
-	void setES(Object es);
+	void setES(EclipseStatus es);
 	
 	/**
 	 * Add attribute to the hierarchy to be displayed
