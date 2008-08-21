@@ -58,6 +58,11 @@ public class CoreSolver {
 	protected SFComponentDescription orig;
     
 	/**
+	 * Solver class property
+	 */
+	public static final String g_solver_className = "org.smartfrog.sfcore.languages.sf.constraints.SolverClassName";
+	
+	/**
 	 * Protected Constructor
 	 */
 	protected CoreSolver(){}
@@ -75,7 +80,7 @@ public class CoreSolver {
 	        	if (solver==null){
 	                String classname=null; 
 	                	
-	                try {classname = System.getProperty("org.smartfrog.sfcore.languages.sf.constraints.SolverClassName");
+	                try {classname = System.getProperty(g_solver_className);
 	                }catch (Exception e){/*Do nothing*/}
 	                
 	                try {if (classname==null) classname = System.getenv("SOLVERCLASS");
