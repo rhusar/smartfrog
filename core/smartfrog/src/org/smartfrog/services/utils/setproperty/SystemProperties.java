@@ -15,6 +15,7 @@ public interface SystemProperties extends Remote {
     String ATTR_SETONDEPLOY = "setOnDeploy";
     String ATTR_SETONEARLYDEPLOY = "setOnEarlyDeploy";
     String ATTR_UNSETONTERMINATE = "unsetOnTerminate";
+    String ATTR_IGNORESECURITYEXCEPTIONS = "ignoreSecurityExceptions";
 
     /**
      * Set a property in this JVM
