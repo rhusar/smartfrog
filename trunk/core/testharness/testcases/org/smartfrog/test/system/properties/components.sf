@@ -40,6 +40,17 @@ workflowprops extends sysprops {
     sfShouldTerminate true;
 }
 
+securityprops extends SecurityProperties {
+  properties [
+    [ key1, value1 ],
+    [ key2, value2 ]
+  ]
+}
+
+workflowsecurityprops extends securityprops {
+    sfShouldTerminate true;
+}
+
 AssertPropertySet extends EvaluateCondition {
   sfShouldTerminate true;
   property TBD;
@@ -158,4 +169,23 @@ testUnsetOnSequence extends ExpectDeploy {
 
   }
 
+}
+
+testSecurityPropertiesSet extends ExpectDeploy {
+  description "try setting security properties";
+
+  action securityprops;
+
+  tests extends Sequence{
+    checkKey1 extends workflowAssert {
+      equalsString1 "";
+      equalsString2 LAZY OPTIONAL("") PROPERTY key.1;
+    }
+
+    checkKey2 extends workflowAssert {
+      equalsString1 "";
+      equalsString2 LAZY OPTIONAL("") PROPERTY key.2;
+    }
+
+  }
 }

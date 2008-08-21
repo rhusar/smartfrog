@@ -47,9 +47,12 @@ SystemPropertiesSchema extends Schema {
     }
     
     unsetOnTerminate extends Boolean {
-      description "should these properties be unset during termination (Java1.5 only)";
+      description "should these properties be unset during termination";
     }
 
+    ignoreSecurityExceptions extends Boolean {
+      description "should security exceptions be ignored?";
+    }
 }
 
 
@@ -61,4 +64,18 @@ SystemProperties extends WorkflowPrim {
     setOnEarlyDeploy false;
     setOnDeploy true;
     unsetOnTerminate true;
+    ignoreSecurityExceptions false;
+}
+
+/**
+ * A component that sets security properties in the local JVM.
+ *
+ * Security properties are set with java.security.Security.setProperty
+ * and cannot be unset.
+ */
+SecurityProperties extends SystemProperties { 
+
+  sfClass "org.smartfrog.services.utils.setproperty.SecurityPropertiesImpl";
+  //this is a no-op anyway
+  unsetOnTerminate false;
 }
