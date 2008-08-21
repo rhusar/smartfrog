@@ -23,14 +23,14 @@ package org.smartfrog.test.system.constraints;
 
 import java.util.Vector;
 
-import junit.framework.TestCase;
-
 import org.smartfrog.SFParse;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
+import org.smartfrog.sfcore.languages.sf.constraints.EclipseSolver;
+import org.smartfrog.test.DeployingTestBase;
 
-
-public class ConstraintsTest extends TestCase {
+public class ConstraintsTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/constraints/";
     private boolean succ=false;
@@ -41,9 +41,13 @@ public class ConstraintsTest extends TestCase {
     }
     
     private boolean failedSolver(){    	
+    	//This is a temporary guard on running this test or degeneratively skipping it until we have the 
+    	//issue of including Eclipse in the release sorted out.  For now, only ADHF runs the constraints tests
+    	//and whether they run or not is simply determined by the presence of the ECLIPSEDIRECTORY env variable.
+    	//This whole method will go eventually.
     	if (first){
     		first=false;
-    		succ=(System.getenv("ECLIPSEDIRECTORY")!=null && System.getenv("SOLVERCLASS")!=null);    		
+    		succ=(System.getenv("ECLIPSEDIRECTORY")!=null);    		
     	}
     	
     	if (!succ) {
