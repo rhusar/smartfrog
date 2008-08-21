@@ -147,6 +147,12 @@ public interface MessageKeys {
      * Message key: unable to locate file or url.
      */
     String MSG_URL_NOT_FOUND = "MSG_URL_NOT_FOUND";
+
+    /**
+     * Message key: unable to locate resource in class loading environment.
+     */
+    String MSG_RESOURCE_NOT_FOUND_IN_CLASS_ENV = "MSG_RESOURCE_NOT_FOUND_IN_CLASS_ENV";
+
     /**
      * Message key: error in deployment of url .
      */

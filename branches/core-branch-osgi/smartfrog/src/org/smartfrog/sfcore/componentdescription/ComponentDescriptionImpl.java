@@ -37,19 +37,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Diagnostics;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.PrettyPrinting;
-import org.smartfrog.sfcore.common.SFMarshalledObject;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.parser.Phases;
@@ -170,7 +158,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                         if (keyName!=null) name=keyName.toString();
                     }
                 } catch (Throwable e) {
-                    if (sfLog().isIgnoreEnabled()) { sfLog().ignore("Problem trying to get the real name of a copied CD",e);}
+                    if ((sfLog()!= null) && (sfLog().isIgnoreEnabled())) { sfLog().ignore("Problem trying to get the real name of a copied CD",e);}
                 }
                 sfCompleteName.addElement(new HereReferencePart(name+"*copy*"));
                if (((sfLog()!= null) && sfLog().isTraceEnabled())){
@@ -1137,8 +1125,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @param language language extension to use.
      * @return this configuration description with system properties added.
      */
-    public static ComponentDescription addSystemProperties(String startWith,
-        ComponentDescription compDesc, String language) {
+    public static ComponentDescription addSystemProperties(String startWith, ComponentDescription compDesc, String language) {
         SFParser parser = null;
         Properties props = null;
         try {
@@ -1210,8 +1197,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          * @return Component Description
          * @throws SmartFrogException In case of SmartFrog system error
          */
-        public static ComponentDescription getClassComponentDescription (Object obj,
-          boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
+        public static ComponentDescription getClassComponentDescription (Object obj, boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
           return getClassComponentDescription (obj,addSystemProperties,newPhases,"sf");
       }
 
@@ -1229,36 +1215,41 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return Component Description
      * @throws SmartFrogException In case of SmartFrog system error
      */
-    public static ComponentDescription getClassComponentDescription (Object obj,
-          boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
-        //Get Component description for this log class
+    public static ComponentDescription getClassComponentDescription (Object obj, boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
+        ComponentDescription cmpDesc;
+        //Get Component description for this obj class
         String className = obj.getClass().toString();
         if (obj instanceof java.lang.String) className = obj.toString();
         if (className.startsWith("class ")) {
             className = className.substring(6);
         }
-        String tempClassName = className.replace('.','/');
-        String urlDescription = tempClassName+"."+languageExtension;
-        Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
-
-        Vector phases = null;
-        if (newPhases!=null){
-            phases = newPhases;
-        } else {
-            Phases top = null;
-            top = new SFParser(languageExtension).sfParseResource( urlDescription.toLowerCase());
-            phases = top.sfGetPhases();
-            //This only works for SF 1 language. This should be more generic.
-            if ((languageExtension.equals("sf"))&&(phases.contains(PhaseNames.SFCONFIG))){
-                phases.remove(PhaseNames.SFCONFIG);
+        // If system has not been initialized then the basic classloader is not in place and resources (descriptions) cannot be loaded!
+        //@todo review this flag name used as system flag init. Needs a better name or a different flag
+        if (Logger.initialized()) {
+            String tempClassName = className.replace('.','/');
+            String urlDescription = tempClassName+"."+languageExtension;
+            Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
+            System.out.println("About to parse description for class");
+            Vector phases = null;
+            if (newPhases!=null){
+                phases = newPhases;
+            } else {
+                Phases top = null;
+                System.out.println("Parser loading - "+ urlDescription.toLowerCase());
+                top = new SFParser(languageExtension).sfParseResource( urlDescription.toLowerCase());
+                phases = top.sfGetPhases();
+                //This only works for SF 1 language. This should be more generic.
+                if ((languageExtension.equals("sf"))&&(phases.contains(PhaseNames.SFCONFIG))){
+                    phases.remove(PhaseNames.SFCONFIG);
+                }
             }
+            // Get componentDescription and Entry
+            cmpDesc = ComponentDescriptionImpl.sfComponentDescription( urlDescription.toLowerCase(),phases, selectedRef);
+        } else {
+            //Empty description so that the system properties can still be added.
+            cmpDesc = new ComponentDescriptionImpl (null,null,true);
+
         }
-        // Get componentDescription and Entry
-        
-        ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
-                                                                   urlDescription.toLowerCase()
-                                                                 , phases
-                                                                 , selectedRef);
         if (addSystemProperties){
             //add properties that start with package name.
             cmpDesc = ComponentDescriptionImpl.addSystemProperties( className+".", cmpDesc, languageExtension);
@@ -1301,7 +1292,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
       } catch (Throwable thr){
         //ignore
-        if (sfLog().isWarnEnabled()){ sfLog().warn(thr);}
+        if ((sfLog()!= null) && sfLog().isWarnEnabled()){ sfLog().warn(thr);}
       }
       return cd;
     }

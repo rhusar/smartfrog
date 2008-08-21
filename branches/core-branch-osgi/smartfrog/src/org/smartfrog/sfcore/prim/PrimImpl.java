@@ -85,8 +85,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         implements Prim, MessageKeys {
 
     /**
-     * Component Log. This log is used to from any component. Initialized to log
-     * into the core log: SF_CORE_LOG It can be replaced using sfSetLog()
+     * Component Log. This log is used to from any component. It can be replaced using sfSetLog()
      */
     private LogSF sfLog = LogFactory.sfGetProcessLog();
 

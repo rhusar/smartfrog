@@ -63,8 +63,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_NULL_URL, "Url is null" },
         { MSG_LOADING_URL, "Trying to load {0}" },
         { MSG_LANG_NOT_FOUND, "Unable to locate language in URL: {0}" },
-        { MSG_URL_NOT_FOUND, "Unable to locate File or URL: {0} for component: {1} "+
-            LINE_END + "    Reason: The path to URL may be incorrect or file may be missing"},
+        { MSG_URL_NOT_FOUND, "Unable to locate File or URL: {0} for component: {1} "+ LINE_END + "    Reason: The path to URL may be incorrect or file may be missing"},
+        { MSG_RESOURCE_NOT_FOUND_IN_CLASS_ENV, "Unable to locate resource {0} in environment {1}, env content: {2} "},   
         { MSG_ERR_DEPLOY_FROM_URL,
           "Error during deployment of URL: {0}, for component: {1}"},
         { MSG_STACKTRACE_FOLLOWS, "Stack trace follows:"},
