@@ -214,7 +214,7 @@ TOKEN : /* reserved words */
    <APPLY: "APPLY">
  | <ASSERT: "ASSERT">
  | <ATTRIB: "ATTRIB">
- | <CODEBASE: "#codebase">
+ | <CODEBASE: "#from">
  | <COMMA: ",">
  | <DATA: "DATA">
  | <EXTENDS: "extends">

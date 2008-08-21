@@ -34,11 +34,11 @@ public interface IncludeHandler {
      * construct the vector of attributes
      *
      * @param include include file to parse
-     * @param codebase an optional codebase where the include may be found. If null, use the default code base
+     * @param from an optional codebase where the include may be found. If null, use the default code base
      *
      * @return vector of attribute name X value pairs
      *
      * @exception Exception error while locating or parsing include
      */
-    public Vector parseInclude(String include, SFReference codebase) throws Exception;
+    public Vector parseInclude(String include, SFReference from) throws Exception;
 }

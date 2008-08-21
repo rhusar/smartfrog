@@ -77,7 +77,7 @@ public class ResourceLoader {
      * @return an input stream if the resource was found and loaded
      * @throws RuntimeException if the resource is not on the classpath
      */
-    private InputStream loadResourceThroughSmartFrog(String resourcename) throws IOException {
+    private InputStream loadResourceThroughSmartFrog(String resourcename) throws IOException {        
         return SFLoader.getInputStream(resourcename, loadingEnv);
     }
 

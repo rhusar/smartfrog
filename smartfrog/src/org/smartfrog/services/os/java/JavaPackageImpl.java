@@ -244,17 +244,17 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      * We also search the parent tree, which is potentially wrong
      * @param resource
      */
-    private void  checkForResource(String resource)
-            throws SmartFrogLivenessException {
+    private void  checkForResource(String resource) throws SmartFrogLivenessException {
         InputStream in=null;
         try {
             in = SFLoader.getInputStream(resource, helper.getClassLoadingEnvironment());
             
         } catch (IOException e) {
-            throw new SmartFrogLivenessException("could not find " + resource
-                    + " in " + uriClasspath, e, this);
+            throw new SmartFrogLivenessException("could not find " + resource + " in " + uriClasspath, e, this);             
         } catch (SmartFrogResolutionException e) {
             throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
+        } catch (SmartFrogException e) {
+            throw new SmartFrogLivenessException("could not find " + resource + " in " + uriClasspath, e, this);
         } finally {
             if (in != null) {
                 try {

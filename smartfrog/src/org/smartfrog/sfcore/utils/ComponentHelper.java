@@ -378,16 +378,20 @@ public class ComponentHelper {
      * @throws SmartFrogException if the resource is not on the classpath
      * @throws RemoteException in case of Remote/network error
      */
-    public InputStream loadResource(String resourcename)
-            throws SmartFrogException, RemoteException
+    public InputStream loadResource(String resourcename) throws SmartFrogException, RemoteException
     {
         final InputStream in;
         final ClassLoadingEnvironment classLoadingEnvironment = getClassLoadingEnvironment();
-        try {
+		try {
             in = SFLoader.getInputStream(resourcename, classLoadingEnvironment);
         } catch (IOException e) {
-            throw new SmartFrogException("Not found: " + resourcename + " in environment: " + classLoadingEnvironment, e);
+            if (e.getCause() instanceof SmartFrogException) {
+           	 	throw (SmartFrogException) e.getCause(); 
+            } else {
+            	throw new SmartFrogException("Not found: " + resourcename + " in environment: " + classLoadingEnvironment, e);
+        	}
         }
+
         return in;
     }
 

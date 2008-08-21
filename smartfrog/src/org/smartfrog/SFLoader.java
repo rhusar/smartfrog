@@ -33,34 +33,48 @@ public class SFLoader {
      * @return An InputStream to the resource.
      */
     public static InputStream getInputStream(String resource, ClassLoadingEnvironment repository) throws IOException {
-        URL resourceURL;
-
         try {
-            // Try first to directly generate a URL from resource
-            resourceURL = new URL(resource);
+            URL resourceURL;
 
-            return SFSecurity.getSecureInputStream(resourceURL);
-        } catch (Throwable e) {
-            // Didn't work, the input is a malformed url or it is inside a
-            // jar file and this is not explicit in the url.
+            try {
+                // Try first to directly generate a URL from resource
+                resourceURL = new URL(resource);
+
+                return SFSecurity.getSecureInputStream(resourceURL);
+            } catch (Throwable e) {
+                // Didn't work, the input is a malformed url or it is inside a
+                // jar file and this is not explicit in the url.
+            }
+
+            try {
+                // Let's use a relative file path...
+                resourceURL = stringToURL(resource);
+                return SFSecurity.getSecureInputStream(resourceURL);
+            } catch (Throwable e) {
+                // Still in trouble, cannot obtain the resource from the file
+                // system directly.
+            }
+
+            // The forward / does not work when using ClassLoader.getResourceAsStream
+            String resourceInJar = resource.startsWith("/") ? resource.substring(1) : resource;
+
+            // Try the class loaders
+            if (repository != null) return repository.getResourceAsStream(resourceInJar);
+            else return defaultRepository().getResourceAsStream(resourceInJar);
+
+        } catch (IOException e) {
+            String repositoryClass;
+            String envContent = "";
+            if (repository == null){
+               repositoryClass = defaultRepository().getClass().getName();
+               envContent = defaultRepository().getClassLoader().toString();
+            } else {
+               repositoryClass = repository.getClass().getName();
+               envContent = repository.getClassLoader().toString();
+            }
+            String msg = MessageUtil.formatMessage(MessageKeys.MSG_RESOURCE_NOT_FOUND_IN_CLASS_ENV, resource, repositoryClass, envContent);
+            throw new IOException (new SmartFrogException(msg, e));  
         }
-
-        try {
-            // Let's use a relative file path...
-            resourceURL = stringToURL(resource);
-
-            return SFSecurity.getSecureInputStream(resourceURL);
-        } catch (Throwable e) {
-            // Still in trouble, cannot obtain the resource from the file
-            // system directly.
-        }
-
-        // The forward / does not work when using ClassLoader.getResourceAsStream
-        String resourceInJar = resource.startsWith("/") ? resource.substring(1) : resource;
-
-        // Try the class loaders
-        if (repository != null) return repository.getResourceAsStream(resourceInJar);
-        else return defaultRepository().getResourceAsStream(resourceInJar);
     }
 
     static ClassLoadingEnvironment defaultRepository() {
@@ -79,7 +93,7 @@ public class SFLoader {
         ByteArrayOutputStream bStrm = null;
         DataInputStream iStrm = null;
         try {
-            iStrm = new DataInputStream(getInputStream(resourceSFURL,null));
+            iStrm = new DataInputStream(SFSystem.getInputStreamForResource(resourceSFURL));
             bStrm = new ByteArrayOutputStream();
             int ch;
             while ((ch = iStrm.read()) != -1) {
@@ -98,12 +112,11 @@ public class SFLoader {
 
     public static InputStream getInputStreamSFException(String url) throws SmartFrogParseException {
         InputStream is;
+        // TODO: Check if access to a user code repository is needed
         try {
-            // TODO: Check if access to a user code repository is needed
             is = getInputStream(url, null);
         } catch (IOException e) {
-            String msg = MessageUtil.
-                    formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, url);
+            String msg = MessageUtil.formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, url);
             throw new SmartFrogParseException(msg, e);
         }
         return is;
