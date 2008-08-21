@@ -39,7 +39,6 @@ public class SFLoader {
             try {
                 // Try first to directly generate a URL from resource
                 resourceURL = new URL(resource);
-
                 return SFSecurity.getSecureInputStream(resourceURL);
             } catch (Throwable e) {
                 // Didn't work, the input is a malformed url or it is inside a
@@ -63,6 +62,9 @@ public class SFLoader {
             else return defaultRepository().getResourceAsStream(resourceInJar);
 
         } catch (IOException e) {
+            if (e.getCause() instanceof SmartFrogException) {
+               throw e;
+            }
             String repositoryClass;
             String envContent = "";
             if (repository == null){
@@ -116,8 +118,13 @@ public class SFLoader {
         try {
             is = getInputStream(url, null);
         } catch (IOException e) {
+
             String msg = MessageUtil.formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, url);
-            throw new SmartFrogParseException(msg, e);
+            if (e.getCause() instanceof SmartFrogException) {
+               throw new  SmartFrogParseException(e.getCause().getMessage(), e.getCause().getCause());
+            } else {
+                throw new SmartFrogParseException(msg, e);
+            }    
         }
         return is;
     }
