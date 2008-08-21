@@ -231,8 +231,7 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
              //todo review.
              is = SFLoader.getInputStreamSFException(url);
              if (is==null) {
-                 throw new SmartFrogParseException(
-                 MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
+                 throw new SmartFrogParseException(MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
              }
              return sfParse(is);
          } catch (SmartFrogParseException spex){
