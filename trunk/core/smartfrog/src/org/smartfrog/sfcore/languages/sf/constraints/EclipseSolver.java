@@ -134,23 +134,23 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     /**
      * Location (relative switch) of eclipse theory file specific to smartfrog constraint solving within Eclipse installation
      */
-    private static final String m_eclipse_switch = "/smartfrog/";
+    private static final String g_eclipse_switch = "/smartfrog/";
        
     /**
      * Property prefix for theory files...
      */
-    private final String m_theoryFile_prefix = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFile";
+    private static final String g_theoryFile_prefix = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFile";
     
     /**
      * Property indicating where to find eclipse installation
      */
-    private final String m_eclipseDir_specifier = "opt.smartfrog.sfcore.languages.sf.constraints.eclipseDir";
+    public static final String g_eclipseDir_specifier = "opt.smartfrog.sfcore.languages.sf.constraints.eclipseDir";
     //NOTE: eclipseDir property is a temporary solution pending resolution of best way to include eclipse in release...
     
     /**
      * Property indicating where to find eclipse installation
      */
-    private final String m_userVar_browser = "org.smartfrog.sfcore.languages.sf.constraints.CDBrowser";
+    private static final String g_userVar_browser = "org.smartfrog.sfcore.languages.sf.constraints.CDBrowser";
     
     /**
      * Resolution state for constraint solving...
@@ -213,11 +213,11 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         String unable = "Unable to load Eclipse-based solver:";
   	   
     	// Get Eclipse Installation Directory... 
-	    String eclipseDir = System.getProperty(m_eclipseDir_specifier);
+	    String eclipseDir = System.getProperty(g_eclipseDir_specifier);
 	    if (eclipseDir==null) eclipseDir=System.getenv("ECLIPSEDIRECTORY");
     
 	    //Throw on lack of info re eclipse directory...
-	    if (eclipseDir==null) throw new SmartFrogResolutionException(unable+" eclipse directory property unspecified ("+m_eclipseDir_specifier+")"); 
+	    if (eclipseDir==null) throw new SmartFrogResolutionException(unable+" eclipse directory property unspecified ("+g_eclipseDir_specifier+")"); 
 	    
 	    //Set up eclipse...
     	m_eclipseEngineOptions  = new EclipseEngineOptions(new File(eclipseDir));
@@ -233,20 +233,19 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 		}
 	
 		int idx=0;
-		String theoryFile = System.getProperty(m_theoryFile_prefix+idx);
-		
-		if (theoryFile==null) theoryFile = "core.ecl";  //temporary
+		String theoryFile = System.getProperty(g_theoryFile_prefix+idx);
+		if (theoryFile==null) theoryFile = "core.ecl";
 		
 		while (theoryFile!=null){
 			//Consult core theory files
 			//eclipseDir/...  is not necessarily the best place to put the theory files...
 			try {
-				m_eclipse.compile(new File(eclipseDir+m_eclipse_switch+theoryFile));
+				m_eclipse.compile(new File(eclipseDir+g_eclipse_switch+theoryFile));
 			} catch (Exception e){
 				throw new SmartFrogResolutionException(unable+" can not compile theory source: "+theoryFile+" , "+e); 
 			}
 			idx++;
-			theoryFile = System.getProperty(m_theoryFile_prefix+idx);
+			theoryFile = System.getProperty(g_theoryFile_prefix+idx);
 		}
 		
 		// Set up the java representation of two queue streams
@@ -572,7 +571,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         }
     	
     	//Get sfConfig browser class
-         String classname = System.getProperty(m_userVar_browser);   
+         String classname = System.getProperty(g_userVar_browser);   
          if (classname==null) throw new RuntimeException("Can not instantiate CD Browser, property not set...");
          
          try {            
