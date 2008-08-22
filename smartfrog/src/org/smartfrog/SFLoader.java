@@ -75,7 +75,9 @@ public class SFLoader {
                envContent = repository.getClassLoader().toString();
             }
             String msg = MessageUtil.formatMessage(MessageKeys.MSG_RESOURCE_NOT_FOUND_IN_CLASS_ENV, resource, repositoryClass, envContent);
-            throw new IOException (new SmartFrogException(msg, e));  
+            IOException ioex = new IOException();
+            ioex.initCause(new SmartFrogException(msg, e));
+            throw ioex;  
         }
     }
 
