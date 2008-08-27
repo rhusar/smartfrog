@@ -365,7 +365,7 @@ java.class.path=
             includeAntRuntime="${javac.include.ant}"
             memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
-            >
+            >	   
        </javac>
     </presetdef>
 
@@ -1186,7 +1186,8 @@ java.class.path=
       <echo message=" --------------------------------------------------------"/>
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
-      <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+		<echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
+        <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
