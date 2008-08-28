@@ -35,7 +35,7 @@ import java.util.List;
 public class TestLogImpl extends AbstractTestLog implements TestLog {
 
 
-    private List<LogEntry> logEntries = new ArrayList();
+    private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
 
     public TestLogImpl() throws RemoteException {
@@ -44,7 +44,7 @@ public class TestLogImpl extends AbstractTestLog implements TestLog {
     /**
      * Add an entry to the buffer
      *
-     * @param entry
+     * @param entry entry to log
      */
     public void log(LogEntry entry) {
         logEntries.add(entry);

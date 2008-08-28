@@ -36,7 +36,7 @@ TimeoutCompoundSchema extends Schema {
     failOnTimeout extends Boolean;
     //message to get logged at info level
     timeoutMessage extends String;
-    //timeout in seconds. If <=0 the timeout is disabled
+    //timeout in milliseconds. If <=0 the timeout is disabled
     timeout extends Integer;
 }
 
@@ -48,7 +48,7 @@ TimeoutCompound  extends Compound {
     timeoutCompoundSchema extends TimeoutCompoundSchema;
     failOnTimeout true;
     timeoutMessage "timeout";
-    timeout 600;
+    timeout 60000;
 }
 
 
