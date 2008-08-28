@@ -28,14 +28,27 @@ import java.util.HashMap;
 
 
 public interface TestContextInjector {
+
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_PRIM = "prim";
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_LISTENER = "listener";
+    /**
+     * Attribute
+     * {@value}
+     */
     String ATTR_PROPERTIES = "properties";
 
     /**
      * Set the context of a test.
      *
-     * @param context
+     * @param context the name to value context
      */
-    void setTestContext(HashMap context);
+    void setTestContext(HashMap<String, Object> context);
 }

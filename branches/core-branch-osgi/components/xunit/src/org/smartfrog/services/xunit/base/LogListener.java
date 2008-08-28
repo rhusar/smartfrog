@@ -25,6 +25,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
+ * Interface for anything listening to log events
  * created 18-May-2006 15:40:02
  */
 
@@ -33,7 +34,7 @@ public interface LogListener extends Remote {
     /**
      * Log an event
      * @param event what happened
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException on network trouble
      */
     void log(LogEntry event) throws RemoteException;
 

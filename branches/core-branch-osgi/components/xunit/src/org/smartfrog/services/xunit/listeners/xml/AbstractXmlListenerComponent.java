@@ -23,7 +23,6 @@ package org.smartfrog.services.xunit.listeners.xml;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestSuite;
-import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -39,9 +38,11 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
+ * An abstract base class for XML Listeners
  */
 public abstract class AbstractXmlListenerComponent extends PrimImpl
         implements XmlListenerFactory {
+    public static final String ERROR_UNABLE_TO_CREATE_DEST_DIR = "Unable to create destination directory ";
     private Log log;
     protected ComponentHelper helper = new ComponentHelper(this);
     protected String outputDir;
@@ -58,13 +59,16 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
     }
 
     /**
-     * add a mapping of suite to file
+     * add a mapping of suite to file.
+     * </p>
+     * If the suitename is already registered, a warning is output, but the method still continues.
      *
-     * @param suitename
-     * @param xmlFilename
+     * @param hostname hostname (ignored in the base class)
+     * @param suitename suite to use
+     * @param xmlFilename the XML filename being created
      */
     protected synchronized void addMapping(String hostname,String suitename, String xmlFilename) {
-        if (getMapping(suitename) != null) {
+        if (getMapping(hostname,suitename) != null) {
             log.warn("A suite called " +
                     suitename
                     + " exists; its output will be overwritten");
@@ -78,7 +82,7 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param suitename suite to lookup
      * @return absolute path of the output file, or null for no mapping.
      */
-    private synchronized String getMapping(String suitename) {
+    private synchronized String getMapping(String hostname,String suitename) {
         return testFiles.get(suitename);
     }
 
@@ -88,19 +92,19 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * @param hostname host name
      * @param suitename test suite
      * @return name of output file, or null for no match
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException network problems
      */
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException {
-        return getMapping(suitename);
+        return getMapping(hostname,suitename);
     }
 
     /**
      * work out the output dir
      *
      * @return the dir that output is in
-     * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException if it is not specified
-     * @throws java.rmi.RemoteException
+     * @throws SmartFrogResolutionException if it is not specified
+     * @throws RemoteException network problems
      */
     protected String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
@@ -119,43 +123,44 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException network problems
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = helper.getLogger();
+        log = sfLog();
     }
 
     /**
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException network problems
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        log = sfLog();
         outputDir = lookupOutputDir();
         File destDir = new File(outputDir);
         destDir.mkdirs();
         if (!destDir.exists()) {
             throw new SmartFrogInitException(
-                    "Unable to create destination directory " + destDir);
+                    ERROR_UNABLE_TO_CREATE_DEST_DIR + destDir);
         }
         preamble = sfResolve(XmlListenerFactory.ATTR_PREAMBLE, (String) null, false);
         useHostname = sfResolve(XmlListenerFactory.ATTR_USE_HOSTNAME, true, true);
         useProcessname = sfResolve(XmlListenerFactory.ATTR_USE_PROCESSNAME, true, true);
         suffix = sfResolve(XmlListenerFactory.ATTR_SUFFIX, suffix, false);
-        log.info("output dir is " + outputDir
-                + "; hostname=" + useHostname
-                +" ; useProcessname="
-                +useProcessname);
-        log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
+        if(log.isInfoEnabled()) {
+            log.info("output dir is " + outputDir
+                    + "; hostname=" + useHostname
+                    +" ; useProcessname="
+                    +useProcessname);
+            log.info("preamble is " + (preamble != null ? preamble : "(undefined)"));
+        }
     }
 
     /**
@@ -199,31 +204,39 @@ public abstract class AbstractXmlListenerComponent extends PrimImpl
             //set the absolute path of the file
             log.debug(
                     "Setting " +
-                    XmlListener.ATTR_FILE +
+                    FileListener.ATTR_FILE +
                     "attribute on test suite");
-            ((Prim)suite).sfReplaceAttribute(XmlListener.ATTR_FILE,
+            ((Prim)suite).sfReplaceAttribute(FileListener.ATTR_FILE,
                     destpath);
         }
 
         try {
             Date start = new Date(timestamp);
-            OneHostXMLListener xmlLog;
-            xmlLog = createNewSingleHostListener(hostname, 
+            FileListener fileLog;
+            fileLog = createNewSingleHostListener(hostname,
                 destFile, 
                 processname, 
                 suitename, 
                 start);
-            xmlLog.open();
-            return xmlLog;
+            fileLog.open();
+            return fileLog;
         } catch (IOException e) {
             throw SmartFrogException.forward("Failed to open ", e);
         }
     }
 
     /**
-     * {@inheritDoc}
+     * Something for implementations to implement to create a listener for a single host.
+     *
+     * @param hostname hostname
+     * @param destFile destination file
+     * @param processname name of the process
+     * @param suitename name of the suite
+     * @param start timestamp the tests started
+     * @return a new XML listener
+     * @throws IOException if the file cannot be created
      */
-    protected abstract OneHostXMLListener createNewSingleHostListener(String hostname,
+    protected abstract FileListener createNewSingleHostListener(String hostname,
                                                                       File destFile,
                                                                       String processname,
                                                                       String suitename,

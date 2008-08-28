@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.services.xunit.serial.ThrowableTraceInfo;
 import org.smartfrog.services.xunit.log.TestListenerLog;
@@ -48,7 +50,7 @@ import java.util.Enumeration;
  * has been written for TestBlock instances. 
  */
 
-public class TestRunnerImpl extends CompoundImpl implements TestRunner,
+public class TestRunnerImpl extends EventCompoundImpl implements TestRunner,
         Runnable, TestBlock {
 
     private Log log;
@@ -95,7 +97,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     /**
      * thread to run the tests
      */
-    private Thread worker = null;
+    private SmartFrogThread worker = null;
 
     /**
      * keeper of statistics
@@ -107,9 +109,13 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      */
     private RunnerConfiguration configuration = new RunnerConfiguration();
 
+    /** Error text {@value} */
     public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
+    /** Error text {@value} */
     public static final String TESTS_FAILED = "Tests Failed";
-    private static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
+    /** Error text {@value} */
+    public static final String TEST_WAS_INTERRUPTED = "Test was interrupted";
+    private Prim listenerPrim;
 
     /**
      * constructor
@@ -120,11 +126,20 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         helper = new ComponentHelper(this);
     }
 
-    private synchronized Thread getWorker() {
+
+    /**
+     * {@inheritDoc}
+     * @return false, always
+     */
+    @Override
+    protected boolean isOldNotationSupported() {
+        return false;
+    }
+    private synchronized SmartFrogThread getWorker() {
         return worker;
     }
 
-    private synchronized void setWorker(Thread worker) {
+    private synchronized void setWorker(SmartFrogThread worker) {
         this.worker = worker;
     }
 
@@ -166,18 +181,21 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
-        //this will deploy all our children, including the test suites
+        //
         super.sfStart();
+        //create and deploy all the children
+        synchCreateChildren();
+        //now start working with them
         name = sfCompleteName();
-        Object o = sfResolve(ATTR_LISTENER,
-                configuration.getListenerFactory(),
+        listenerPrim = sfResolve(ATTR_LISTENER,
+                (Prim)configuration.getListenerFactory(),
                 true);
-        if (!(o instanceof TestListenerFactory)) {
+        if (!(listenerPrim instanceof TestListenerFactory)) {
             throw new SmartFrogException("The attribute " +
                     ATTR_LISTENER
-                    + "must refer to an implementation of TestListenerFactory");
+                    + " must refer to an implementation of TestListenerFactory");
         }
-        TestListenerFactory listenerFactory = (TestListenerFactory) o;
+        TestListenerFactory listenerFactory = (TestListenerFactory) listenerPrim;
         String listenerName = ((Prim) listenerFactory).sfResolve(
                 TestListenerFactory.ATTR_NAME,
                 "",
@@ -255,7 +273,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
         if (getWorker() != null) {
             throw new SmartFrogException(ERROR_TESTS_IN_PROGRESS);
         }
-        Thread thread = new Thread(this);
+        SmartFrogThread thread = new SmartFrogThread(this);
         thread.setName("tester");
         thread.setPriority(threadPriority);
         log.info("Starting new tester at priority " + threadPriority);
@@ -333,9 +351,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
 
     private boolean executeBatchTests() throws RemoteException, SmartFrogException, InterruptedException {
         boolean successful = true;
-        Enumeration e = sfChildren();
-        while (e.hasMoreElements()) {
-            Object child = e.nextElement();
+        for (Prim child:sfChildList()) {
             if (child instanceof TestSuite) {
                 TestSuite suiteComponent = (TestSuite) child;
                 successful &= executeTestSuite(suiteComponent);
@@ -406,7 +422,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
      *
      * @param testSuite test suite to patch
      * @throws RemoteException network trouble
-     * @throws SmartFrogException other problems
+     * @throws SmartFrogRuntimeException other problems
      */
     private synchronized void updateResultAttributes(Prim testSuite)
             throws SmartFrogRuntimeException, RemoteException {
@@ -468,8 +484,8 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner,
     /**
      * Get test execution statistics
      *
-     * @return stats
-     * @throws java.rmi.RemoteException
+     * @return statistics
+     * @throws RemoteException
      */
     public Statistics getStatistics() throws RemoteException {
         return statistics;

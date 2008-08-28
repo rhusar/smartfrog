@@ -46,6 +46,10 @@ public class ConsoleListenerImpl extends PrimImpl
 
     private PrintStream outputstream = System.out;
 
+    /**
+     * create an instance of the console listener
+     * @throws RemoteException network problems
+     */
     public ConsoleListenerImpl() throws RemoteException {
     }
 
@@ -53,7 +57,7 @@ public class ConsoleListenerImpl extends PrimImpl
     /**
      * set a new output stream
      *
-     * @param out
+     * @param out the output stream
      */
     public void setOutputStream(PrintStream out) {
         outputstream = out;
@@ -62,7 +66,7 @@ public class ConsoleListenerImpl extends PrimImpl
     /**
      * get the current output stream
      *
-     * @return
+     * @return the output stream
      */
     public PrintStream getOutputstream() {
         return outputstream;
@@ -82,7 +86,7 @@ public class ConsoleListenerImpl extends PrimImpl
 
     /**
      * Print a line
-     * @param line
+     * @param line line to print
      */
     public void println(String line) {
         outputstream.println(line);
@@ -123,9 +127,9 @@ public class ConsoleListenerImpl extends PrimImpl
         }
         println(fault.getClassname());
         println(fault.getMessage());
-        StackTraceElement stack[] = fault.getStack();
-        for (int i = 0; i < stack.length; i++) {
-            println(stack[i].toString());
+        StackTraceElement[] stack = fault.getStack();
+        for (StackTraceElement aStack : stack) {
+            println(aStack.toString());
         }
         flush();
         //recurse
