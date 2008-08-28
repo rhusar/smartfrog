@@ -1229,13 +1229,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             String tempClassName = className.replace('.','/');
             String urlDescription = tempClassName+"."+languageExtension;
             Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
-            System.out.println("About to parse description for class");
             Vector phases = null;
             if (newPhases!=null){
                 phases = newPhases;
             } else {
                 Phases top = null;
-                System.out.println("Parser loading - "+ urlDescription.toLowerCase());
                 top = new SFParser(languageExtension).sfParseResource( urlDescription.toLowerCase());
                 phases = top.sfGetPhases();
                 //This only works for SF 1 language. This should be more generic.
