@@ -1,2 +1,3 @@
 javadoc.disabled=true
 ivy-report.disabled=true
+publish.disabled=true
