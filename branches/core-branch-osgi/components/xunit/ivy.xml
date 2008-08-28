@@ -15,16 +15,20 @@
     <conf name="default" extends="master,runtime"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private" 
+    <conf name="compile" visibility="private"  extends="antxml"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
-    <conf name="test" extends="default,compile"
+    <conf name="test" extends="default,compile,antxml"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
     <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
+    <conf name="antxml"
+        description="extra dependencies for Ant XML output"/>
+
+
     <conf name="documentation"
           description="all documentation artifacts"/>
   </configurations>
@@ -44,10 +48,6 @@
         name="sf-tasks" changing="true"
         rev="latest.integration"
         conf="build->default"/>
-<!--    <dependency org="org.smartfrog"
-        name="sf-xml" changing="true"
-        rev="latest.integration"
-        conf="compile->master;runtime->default"/>-->
     <dependency org="org.smartfrog"
         name="sf-testharness" changing="true"
         rev="latest.integration"
@@ -56,6 +56,21 @@
         name="sf-loggingservices"
         changing="true"
         rev="latest.integration"
-        conf="daemon->default;compile->default;runtime->runtime;redist->redist"/>    
+        conf="daemon,compile->default;runtime->runtime;redist->redist"/>
+
+    <!-- ant is pulled in to test the AntXML; if junitreport can handle it,
+         then it must be OK -->
+    <dependency org="org.smartfrog"
+        name="sf-ant" changing="true"
+        rev="latest.integration"
+        conf="test->runtime,default,ant-optional"/>
+
+    <!--Xom is pulled in for AntXML support.
+    It is mandatory during compile and test, but only needed at runtime if
+    you want the (classic) Ant XML output-->
+    <dependency org="xom"
+        name="xom"
+        rev="${xom.version}"
+        conf="antxml->master"/>
   </dependencies>
 </ivy-module>
