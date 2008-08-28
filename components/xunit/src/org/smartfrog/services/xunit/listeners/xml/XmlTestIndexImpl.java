@@ -28,14 +28,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,7 +42,7 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     protected Log log;
     protected ComponentHelper helper = new ComponentHelper(this);
     protected String outputDir;
-    protected List results=new ArrayList();
+    protected List<ResultSet> results=new ArrayList<ResultSet>();
     protected boolean dirty=true;
     private Statistics total = new Statistics();
 
@@ -53,10 +50,15 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
     public XmlTestIndexImpl() throws RemoteException {
     }
 
+    /**
+     * deployment
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = helper.getLogger();
+        log = sfLog();
     }
 
     /**
@@ -136,8 +138,8 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
      * run through all the results; return true if any one of them changed
      * (which implies a rebuild of the page is needed)
      * @return true if a result changed
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException trouble
+     * @throws RemoteException network problems
      */
     public boolean updateResults() throws SmartFrogResolutionException,
             RemoteException {
@@ -149,54 +151,6 @@ public class XmlTestIndexImpl extends PrimImpl implements XmlTestIndex {
         }
         return changed;
     }
-
-    public static final class ResultSet implements Serializable {
-        public Statistics statistics;
-        public TestSuite suite;
-        public String hostname;
-        public String processname;
-        public String suitename;
-        public File filename;
-
-        public ResultSet() {
-        }
-
-        public ResultSet(
-                         TestSuite suite,
-                         String hostname,
-                         String processname, String suitename, File filename) {
-            this.suite = suite;
-            this.hostname = hostname;
-            this.processname = processname;
-            this.suitename = suitename;
-            this.filename = filename;
-            statistics = new Statistics();
-        }
-
-        public boolean isFinished() {
-            return suite==null;
-        }
-
-        public synchronized boolean update(Statistics total) throws SmartFrogResolutionException,
-                RemoteException {
-            boolean changed=false;
-            if(suite!=null) {
-                Statistics updated=new Statistics();
-                boolean finished=updated.retrieveResultAttributes((Prim) suite);
-                if(finished) {
-                    //stop updating
-                    suite=null;
-                }
-                if(!statistics.isEqual(updated)) {
-                    statistics=updated;
-                    changed=true;
-                }
-            }
-            total.add(statistics);
-            return changed;
-        }
-    }
-
 
 
 }

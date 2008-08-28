@@ -20,6 +20,8 @@
 package org.smartfrog.services.xunit.listeners.html;
 
 import org.smartfrog.services.xunit.listeners.xml.AbstractXmlListenerComponent;
+import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
+import org.smartfrog.services.xunit.listeners.xml.FileListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.logging.Log;
@@ -34,7 +36,7 @@ import java.util.Date;
  * This is a listener of tests
  * Implement the {@link org.smartfrog.services.xunit.listeners.xml.XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory; the listening is done by
- * {@link org.smartfrog.services.xunit.listeners.html.OneHostXMLListener }
+ * {@link OneHostXMLListener }
  */
 public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
         implements HtmlTestListenerFactory {
@@ -78,7 +80,7 @@ public class HtmlTestListenerComponent extends AbstractXmlListenerComponent
      * @throws SmartFrogException error while deploying
      * @throws RemoteException In case of network/rmi error
      */
-    protected OneHostXMLListener createNewSingleHostListener(String hostname,
+    protected FileListener createNewSingleHostListener(String hostname,
                                                              File destFile,
                                                              String processname, 
                                                              String suitename,

@@ -36,12 +36,18 @@ import java.rmi.RemoteException;
 public abstract class AbstractListenerImpl extends PrimImpl implements TestListener {
 
 
-    public AbstractListenerImpl() throws RemoteException {
+    /**
+     * Constructor for children to extend
+     * @throws RemoteException network problems
+     */
+    protected AbstractListenerImpl() throws RemoteException {
     }
 
 
     /**
-     * end this test suite. After calling this, caller should discard all references; they may no longer be valid. <i>No
+     * end this test suite.
+     * <p/>
+     * After calling this, caller should discard all references; they may no longer be valid. <i>No
      * further methods may be called</i>
      * @throws RemoteException    network problems
      * @throws SmartFrogException other problems
@@ -98,7 +104,7 @@ public abstract class AbstractListenerImpl extends PrimImpl implements TestListe
      * Log an event
      *
      * @param event what happened
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     public void log(LogEntry event) throws RemoteException {
 

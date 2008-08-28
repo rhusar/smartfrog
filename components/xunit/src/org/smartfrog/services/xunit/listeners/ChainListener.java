@@ -54,7 +54,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
     /**
      * Run through every factory and create a listener from each one, adding each
      * returned instance to the listener factory.
-     * @param factories
+     * @param factories a list of listener factories
      * @param suite     the test suite that is about to run. May be null,
      *                  especially during testing.
      * @param hostname  name of host
@@ -98,9 +98,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      * {@inheritDoc}
      */
     public void endSuite() throws RemoteException, SmartFrogException {
-        Iterator i=iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for(TestListener testListener:this) {
             testListener.endSuite();
         }
     }
@@ -110,10 +108,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      */
     public void addError(TestInfo test) throws RemoteException,
             SmartFrogException {
-
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for (TestListener testListener : this) {
             testListener.addError(test);
         }
     }
@@ -123,9 +118,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      */
     public void addFailure(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for (TestListener testListener : this) {
             testListener.addFailure(test);
         }
 
@@ -136,9 +129,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      */
     public void endTest(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for (TestListener testListener : this) {
             testListener.endTest(test);
         }
     }
@@ -148,9 +139,7 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      */
     public void startTest(TestInfo test) throws RemoteException,
             SmartFrogException {
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for (TestListener testListener : this) {
             testListener.startTest(test);
         }
     }
@@ -159,12 +148,9 @@ public class ChainListener implements TestListener,Iterable<TestListener> {
      * {@inheritDoc}
      */
     public void log(LogEntry event) throws RemoteException {
-        Iterator i = iterator();
-        while (i.hasNext()) {
-            TestListener testListener = (TestListener) i.next();
+        for (TestListener testListener : this) {
             testListener.log(event);
         }
-
     }
 
 }

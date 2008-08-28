@@ -23,9 +23,9 @@ import org.smartfrog.services.xunit.base.TestListener;
 import org.smartfrog.services.xunit.base.TestListenerFactory;
 import org.smartfrog.services.xunit.base.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.compound.CompoundImpl;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.Vector;
  * created 21-Apr-2006 11:27:58
  */
 
-public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
+public class ChainListenerImpl extends CompoundImpl implements TestListenerFactory {
 
     /**
      * The name of a factory
@@ -60,9 +60,8 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
      *
-     * @throws SmartFrogException
-     *                                  error while deploying
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException  error while deploying
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -73,8 +72,7 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws SmartFrogException
-     *                                  failure while starting
+     * @throws SmartFrogException failure while starting
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
@@ -87,6 +85,13 @@ public class ChainListenerImpl extends PrimImpl implements TestListenerFactory {
             TestListenerFactory factory = (TestListenerFactory) elt;
             factories.add(factory);
         }
+        //the children are live, so let's add them to the listener list.
+        for (Prim child : sfChildList()) {
+            if (child instanceof TestListenerFactory) {
+                factories.add((TestListenerFactory) child);
+            }
+        }
+
     }
 
     /**

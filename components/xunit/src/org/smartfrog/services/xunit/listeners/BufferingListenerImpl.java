@@ -33,13 +33,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class buffers received messages Date: 27-Jun-2004 Time: 21:26:28
+ * This class buffers received messages.
+ * <p/>
+ * Created Date: 27-Jun-2004 Time: 21:26:28
  */
 public class BufferingListenerImpl extends AbstractListenerImpl
         implements BufferingListener {
 
 
+    /**
+     * create a new instance
+     * @throws RemoteException network problems
+     */
     public BufferingListenerImpl() throws RemoteException {
+        events = new ArrayList<TestInfo>();
         errors = new ArrayList<TestInfo>();
         failures = new ArrayList<TestInfo>();
         starts = new ArrayList<TestInfo>();
@@ -47,10 +54,19 @@ public class BufferingListenerImpl extends AbstractListenerImpl
         messages = new ArrayList<LogEntry>();
     }
 
-    private List<TestInfo> errors, failures, starts, ends;
+    /**
+     * Lists of different results
+     */
+    private List<TestInfo> events, errors, failures, starts, ends;
 
+    /**
+     * logged messages
+     */
     private List<LogEntry> messages;
 
+    /**
+     * Count of started/finished sessions
+     */
     private int sessionStartCount, sessionEndCount;
 
 
@@ -101,7 +117,7 @@ public class BufferingListenerImpl extends AbstractListenerImpl
     }
 
     /**
-     * get the number of end
+     * get the number of ended tests
      *
      * @return the end count
      * @throws RemoteException for network trouble

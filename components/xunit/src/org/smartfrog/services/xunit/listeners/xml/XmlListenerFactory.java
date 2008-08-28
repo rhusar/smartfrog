@@ -76,7 +76,7 @@ public interface XmlListenerFactory extends TestListenerFactory {
      * @param hostname host that the suite ran on
      * @param suitename test suite
      * @return name of output file, or null for no match
-     * @throws RemoteException
+     * @throws RemoteException network problems
      */
     public String lookupFilename(String hostname,
                                  String suitename) throws RemoteException;

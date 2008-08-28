@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
 /**
- * Compoennt to create indices
+ * Component to create indices
  */
 
 XmlTestIndexSchema extends Schema {
@@ -38,14 +38,13 @@ XmlTestIndexSchema extends Schema {
 XmlTestIndex extends Prim {
   sfClass "org.smartfrog.services.xunit.listeners.XmlTestIndexImpl";
   xmlTestIndexSchema extends XmlTestIndexSchema;
+  name "XmlTestIndex";
 }
 
 /**
  * XML listener is the most complex beast
  */
-XmlListenerSchema extends Schema {
-/** output directories are compulsory and can be a path or a File ref*/
-    outputDirectory extends FilenameType ;
+XmlListenerSchema extends DirectoryBasedTestListenerSchema {
     //outputFile extends Compulsory ;
     //XML preamble: comments, XSLT references, etc.
     preamble extends OptionalString;

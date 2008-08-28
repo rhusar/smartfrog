@@ -19,36 +19,33 @@
  */
 package org.smartfrog.services.xunit.base;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.services.xunit.serial.Statistics;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.xunit.serial.Statistics;
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 /**
  * This is an abstract base class for test suites.
  * Its key feature is that it provides a thread local context variable that can be used to retrieve the current
  * context of a running test.
  *
- * Because it extends ConditionCompound, it has the event workflow lifecycle, and the 
+ * Because it extends ConditionCompound, it has the event workflow lifecycle
  * created 10-Oct-2006 11:39:29
  */
 
 public abstract class AbstractTestSuite extends ConditionCompound implements TestSuite {
 
 
-    private static final ThreadLocal<RunnerConfiguration> configurationContext =new ThreadLocal<RunnerConfiguration>();
+    private static ThreadLocal<RunnerConfiguration> configurationContext;
 
-    private static final ThreadLocal<Prim> testSuiteContext =new ThreadLocal<Prim>();
+    private static ThreadLocal<Prim> testSuiteContext;
     /**
      * Statistics about this test
      */
@@ -61,6 +58,20 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * assistance
      */
     protected ComponentHelper helper;
+
+    /**
+     * Error Text
+     * </p>
+     * {@value}
+     */
+    public static final String ERROR_OVERWRITING_CONTEXT = "Overwriting an existing thread-local configuration context.\n"
+        +"Multiple thread runners may be active in the same thread\n"
+        +"or the tests are themselves deploying tests.";
+    /**
+     * Error Text
+     * {@value}
+     */
+    public static final String ERROR_OVERWRITING_SELF = "The component is overwriting its own configuration";
 
     protected AbstractTestSuite() throws RemoteException {
     }
@@ -112,6 +123,21 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
         setHostname(host.getHostName());
     }
 
+
+    /**
+     * Deregisters from all current registrations.
+     *
+     * @param status Termination  Record
+     */
+    @Override
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        //reset the state in this thread
+        getConfigurationContext().set(null);
+        resetTestSuiteContext();
+        super.sfTerminateWith(status);
+
+    }
+
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
@@ -122,34 +148,39 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     public void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException {
         boolean overwriting=false;
         boolean overwritingourselves=false;
-        synchronized(configurationContext) {
-            RunnerConfiguration current = configurationContext.get();
+        synchronized(getConfigurationContext()) {
+            RunnerConfiguration current = getConfigurationContext().get();
             if(current !=null && configuration!=null) {
                 overwriting=true;
                 overwritingourselves= current == configuration;
             }
-            configurationContext.set(configuration);
+            getConfigurationContext().set(configuration);
             //set or reset the test suite context
             if(configuration!=null) {
-                if (testSuiteContext.get() != null) {
+                if (getTestSuiteContext().get() != null) {
                     overwriting = true;
                 }
 
-                testSuiteContext.set(this);
+                getTestSuiteContext().set(this);
             } else {
-                testSuiteContext.set(null);
+                resetTestSuiteContext();
             }
         }
         if (overwriting) {
             //warn that something got overwritten. It is probably harmless, but can
             //cause interesting behaviour
-            sfLog().info("Overwriting an existing thread-local configuration context.\n"
-                +"Multiple thread runners may be active in the same thread\n"
-                +"or the tests are themselves deploying tests.");
+            sfLog().info(ERROR_OVERWRITING_CONTEXT);
             if(overwritingourselves) {
-                sfLog().info("The component is overwriting its own configuration");
+                sfLog().info(ERROR_OVERWRITING_SELF);
             }
         }
+    }
+
+    /**
+     * Reset our test suite context
+     */
+    private void resetTestSuiteContext() {
+        getTestSuiteContext().set(null);
     }
 
 
@@ -158,7 +189,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return the configuration (may be null)
      */
     public static RunnerConfiguration getConfiguration() {
-        return configurationContext.get();
+        return getConfigurationContext().get();
     }
 
     /**
@@ -166,7 +197,7 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      * @return the configuration (may be null)
      */
     public static Prim getTestSuite() {
-        return testSuiteContext.get();
+        return getTestSuiteContext().get();
     }
 
 
@@ -193,40 +224,6 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
      */
     protected void reportSkippedTestSuite () throws RemoteException, SmartFrogException {
         //TODO: any reporting
-    }
-
-    /**
-     * flatten a string list, validating type as we go. recurses as much as we
-     * need to. At its most efficient if no flattening is needed.
-     *
-     * @param src source list
-     * @param name name of the list, for reporting errors
-     * @return a flatter list
-     * @throws SmartFrogInitException if there is an element that is not of the right type
-     */
-    public List<String> flattenStringList(List src, String name)
-            throws SmartFrogException {
-        if (src == null) {
-            return new ArrayList<String>(0);
-        }
-        List<String> dest = new ArrayList<String>(src.size());
-        for(Object element:src) {
-            if (element instanceof List) {
-                List<String> l2 = flattenStringList((List) element, name);
-                for (String s:l2) {
-                    dest.add(s);
-                }
-            } else if (!(element instanceof String)) {
-                throw new SmartFrogInitException("An element in "
-                        +
-                        name +
-                        " is not string or a list: " +
-                        element.toString() + " class=" + element.getClass());
-            } else {
-                dest.add((String) element);
-            }
-        }
-        return dest;
     }
 
     /**
@@ -259,18 +256,18 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
 
     /**
      * Create a new listener from the current factory.
-     * @param name name of the suite
+     * @param suiteName name of the suite
      * @return a new listener
-     * @throws SmartFrogRuntimeException if needed
+     * @throws SmartFrogException if needed
      * @throws RemoteException on network trouble
      */
-    protected TestListener listen(String name) throws RemoteException, SmartFrogException {
+    protected TestListener listen(String suiteName) throws RemoteException, SmartFrogException {
         TestListenerFactory listenerFactory = getTestListenerFactory();
 
         TestListener newlistener = listenerFactory.listen(this,
                 getHostname(),
                 sfDeployedProcessName(),
-                name,
+                suiteName,
                 System.currentTimeMillis());
         return newlistener;
     }
@@ -285,5 +282,27 @@ public abstract class AbstractTestSuite extends ConditionCompound implements Tes
     protected void updateResultAttributes(boolean finished)
             throws SmartFrogRuntimeException, RemoteException {
         getStats().updateResultAttributes(this, finished);
+    }
+
+    /**
+     * Get the current configuration; create it if needed
+     * @return the configuration context thread local
+     */
+    private static synchronized ThreadLocal<RunnerConfiguration> getConfigurationContext() {
+        if(configurationContext==null) {
+            configurationContext=new ThreadLocal<RunnerConfiguration>();
+        }
+        return configurationContext;
+    }
+
+    /**
+     * Get the current test suite context; create it if needed
+     * @return the test suite context thread local
+     */
+    private static synchronized ThreadLocal<Prim> getTestSuiteContext() {
+        if (testSuiteContext == null) {
+            testSuiteContext = new ThreadLocal<Prim>();
+        }
+        return testSuiteContext;
     }
 }
