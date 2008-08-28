@@ -235,7 +235,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         logName = name;
         try {
             //Check Class and read configuration...including system.properties
-            classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
+            if (Logger.initialized()) {
+                classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
+            }
             if (classComponentDescription!=null){
                configurationClass = getConfigurationClass(classComponentDescription,configurationClass);
                loggersConfiguration = getLoggersConfigurationForConfigurationClass(classComponentDescription, configurationClass, loggersConfiguration);

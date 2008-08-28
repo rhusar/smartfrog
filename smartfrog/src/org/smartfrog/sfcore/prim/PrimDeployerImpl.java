@@ -60,6 +60,11 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     private PrimFactory primFactory = null;
     
 
+    /**
+     * Constructs a component deployer for given description.
+     */
+    public PrimDeployerImpl() {
+    }
 
     /**
      * Constructs a component deployer for given description.
