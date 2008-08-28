@@ -4,20 +4,37 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
- * Thi
+ * This component is a compound that kills its children after a defined time in
+ * seconds if they have not already terminated of their own accord.
+ *
+ * It lets us add timeouts around a test suite or other component, without
+ * adding lots of timeout logic to the component itself.
+ *
+ * Warning: Java does not really like threads being killed. The safest way to
+ * work with this is to run the child components in their own processes.
+ <pre>
+ TimeoutCompoundSchema extends Schema {
+    failOnTimeout extends Boolean;
+     //message to get logged at info level
+     timeoutMessage extends String;
+     //timeout in seconds. If <=0 the timeout is disabled
+     timeout extends Integer;
+    }
+ </pre>
  */
-public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound{
+
+public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound {
 
     private boolean failOnTimeout;
 
     //message to get logged at info level
     private String timeoutMessage ;
-    //timeout in seconds. If <=0 the timeout is disabled
+    //timeout in milliseconds. If <=0 the timeout is disabled
     private int timeout;
 
     private WatchDogThread watchdog;
@@ -28,27 +45,12 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
 
 
     /**
-     * Deploy the compound. Deployment is defined as iterating over the context
-     * and deploying any parsed eager components.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure deploying compound or
-     *                                  sub-component
-     * @throws java.rmi.RemoteException In case of Remote/nework error
-     */
-    public synchronized void sfDeploy()
-            throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-    }
-
-    /**
      * Starts the compound. This sends a synchronous sfStart to all managed
      * components in the compound context. Any failure will cause the compound
      * to terminate
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failed to start compound
-     * @throws java.rmi.RemoteException In case of Remote/nework error
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/network error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -96,10 +98,8 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
                 null);
 
         int terminated=0;
-        for (Enumeration e = sfChildren();
-             e.hasMoreElements();) {
+        for (Prim child:sfChildList()) {
             try {
-                Prim child = (Prim) e.nextElement();
                 if(!child.sfIsTerminated() && !child.sfIsTerminating()) {
                     terminated++;
                     child.sfDetachAndTerminate(terminationRecord);
@@ -117,10 +117,10 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
     /**
      * Watchdog thread
      */
-    private class WatchDogThread extends Thread {
+    private class WatchDogThread extends SmartFrogThread {
 
         //timeout in seconds. If <=0 the timeout is disabled
-        private int timeout;
+        private int timeoutMillis;
 
 
         /**
@@ -128,11 +128,14 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          *
          */
         public WatchDogThread(int timeout) {
-            this.timeout = timeout;
+            timeoutMillis = timeout;
         }
 
+        /**
+         * Stop the thread watching by interrupting its sleep.
+         */
         public void stopWatching() {
-            this.interrupt();
+            interrupt();
         }
 
 
@@ -140,15 +143,16 @@ public class TimeoutCompoundImpl extends CompoundImpl implements TimeoutCompound
          * {@inheritDoc}
          *
          */
-        public void run() {
-            if(timeout<=0) {
+        public void execute() throws Throwable {
+            if(timeoutMillis <=0) {
                 return;
             }
-            int sleepTime = timeout * 1000;
+            int sleepTime = timeoutMillis;
 
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
+                //we were asked to stop watching; skip the timeout
                 return;
             }
 

@@ -38,6 +38,10 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
     private List<LogListener> listeners;
     public static final String ERROR_DUPLICATE_ADD = "Duplicate listener registration";
 
+    /**
+     * Create a new test listerner log
+     * @throws RemoteException if the superclass throws it
+     */
 
     public TestListenerLogImpl() throws RemoteException {
         listeners = new ArrayList<LogListener>(1);
@@ -47,7 +51,8 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * log an event by passing it to each entry in turn.
      * A remote exception in one propagates to all
      *
-     * @param entry
+     * @param entry an entry
+     * @throws RemoteException in case of remote/network error
      */
     public void log(LogEntry entry) throws RemoteException {
         for(LogListener listener:listeners) {
@@ -59,7 +64,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
      * Add a listener to log events
      *
      * @param listener listener, can be null
-     * @throws SmartFrogException
+     * @throws SmartFrogException if a duplicate is added
      */
     public void addLogListener(LogListener listener) throws SmartFrogException {
         if(listeners.indexOf(listener)>=0) {
@@ -71,7 +76,7 @@ public class TestListenerLogImpl extends AbstractTestLog implements TestListener
     /**
      * Remove a log listener. Harmless if the log is not active
      *
-     * @param listener
+     * @param listener listener to remove
      */
     public void removeLogListener(LogListener listener)  {
         listeners.remove(listener);

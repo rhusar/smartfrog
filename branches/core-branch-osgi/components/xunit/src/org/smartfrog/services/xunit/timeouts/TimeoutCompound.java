@@ -11,19 +11,22 @@ import java.rmi.Remote;
  *
  * Warning: Java does not really like threads being killed. The safest way to
  * work with this is to run the child components in their own processes.
+ <pre>
  TimeoutCompoundSchema extends Schema {
  failOnTimeout extends Boolean;
  //message to get logged at info level
  timeoutMessage extends String;
  //timeout in seconds. If <=0 the timeout is disabled
  timeout extends Integer;
- }*
+ }
+ </pre>
+
  */
 public interface TimeoutCompound extends Remote {
 
 
     /**
-     * what is the timeout in seconds?
+     * what is the timeout in milliseconds?
      * {@value}
      */
     String ATTR_TIMEOUT="timeout";
