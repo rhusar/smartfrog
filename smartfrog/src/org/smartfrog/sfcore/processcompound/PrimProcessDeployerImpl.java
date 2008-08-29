@@ -44,7 +44,7 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
      * Constructs PrimHostDeployerImpl object without component description.
      */
     public PrimProcessDeployerImpl() {
-        super (null);
+        this (null);
     }
 
     /**
