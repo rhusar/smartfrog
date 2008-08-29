@@ -94,9 +94,6 @@ public class CDPrinter {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-
-        
-
         for (Iterator i = cd.sfAttributes(); i.hasNext(); ) {
             Object next = i.next();
             Object value = cd.sfContext().get(next);

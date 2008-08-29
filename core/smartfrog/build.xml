@@ -58,6 +58,7 @@
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
+	<echo message="      Build dir: ${basedir} "/>
     <echo message=" --------------------------------------------------------"/>
     <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
@@ -466,7 +467,8 @@
   <target name="copyGif" depends="initbuild">
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
-        <include name="**/*.gif"/>
+        <include name="**/*.ico"/>
+		<include name="**/*.gif"/>
       </fileset>
     </copy>
   </target>
