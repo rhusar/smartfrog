@@ -49,6 +49,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -187,6 +188,8 @@ public final class Diagnostics {
 
         header(out, "Locale information");
         doReportLocale(out);
+
+        doReportLoggers (out);        
     }
 
 
@@ -867,5 +870,16 @@ public final class Diagnostics {
       out.append("\n");
    }
 
+
+   /**
+     * Report list of Logger registered in LogFactory
+     * @param out StringBuffer
+     */
+    public static void doReportLoggers(StringBuffer out) {
+        header(out, "Loggers registered in process compound");
+        LogFactory.doReportLoggers(out);
+        out.append(out);
+        out.append("\n");
+    }
 
 }
