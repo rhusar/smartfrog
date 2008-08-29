@@ -11,6 +11,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.rmi.RemoteException;
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 /**
  *  Log Factory
@@ -293,5 +294,21 @@ public  class LogFactory {
         return getOwnerLog(owner, owner);
     }
 
+    /**
+     * Report list of Logger registered in LogFactory
+     * @param out StringBuffer
+     */
+    public static void doReportLoggers(StringBuffer out) {
+        for (Enumeration e = loggers.keys(); e.hasMoreElements(); ) {
+           out.append ((String) e.nextElement());
+           out.append ("\n");
+        }
+    }
+
+    public String toString () {
+        StringBuffer out = new StringBuffer();
+        doReportLoggers(out);
+        return out.toString();
+    }
 
 }
