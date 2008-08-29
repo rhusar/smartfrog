@@ -148,8 +148,8 @@ public class RunProcessImpl extends Thread implements RunProcess {
     }
 
     /**
-     * Flag that is true if the process is consideered active
-     * @return
+     * Flag that is true if the process is considered active
+     * @return true if the the process is working
      */
     public boolean ready() {
         return (getProcessState() == STATE_PROCESSING);
