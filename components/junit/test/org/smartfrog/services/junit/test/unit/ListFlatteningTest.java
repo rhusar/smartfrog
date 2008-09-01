@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ package org.smartfrog.services.junit.test.unit;
 import junit.framework.TestCase;
 import org.smartfrog.services.junit.junit3.JUnit3TestSuiteImpl;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,23 +49,23 @@ public class ListFlatteningTest extends TestCase {
         flat.add("2");
         flat.add("3");
         flat.add("4");
-        List<String> flat2 = junit.flattenStringList(l2, "l2");
+        List<String> flat2 = ListUtils.flattenStringList(l2, "l2");
         assertEquals(flat, flat);
         assertEquals(flat, flat2);
         l2.add(new ArrayList());
         l1.add(l2);
-        List<String> flat3 = junit.flattenStringList(l1, "l1");
+        List<String> flat3 = ListUtils.flattenStringList(l1, "l1");
         assertEquals(flat, flat3);
         List l4 = new ArrayList();
         l4.add(l1);
         l4.add(new Integer("3"));
         try {
-            List<String> flat4 = junit.flattenStringList(l4, "l5");
+            List<String> flat4 = ListUtils.flattenStringList(l4, "l5");
             fail("should have thrown something");
         } catch (SmartFrogInitException e) {
             //expected
         }
-        List<String> flat5 = junit.flattenStringList(null, "flat5");
+        List<String> flat5 = ListUtils.flattenStringList(null, "flat5");
         assertEquals(0, flat5.size());
     }
 

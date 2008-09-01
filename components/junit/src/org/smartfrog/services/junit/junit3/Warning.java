@@ -33,6 +33,17 @@ public class Warning extends TestCase {
 
     private Throwable thrown;
 
+    public Warning(String name) {
+        super(name);
+    }
+
+    public Throwable getThrown() {
+        return thrown;
+    }
+
+    public void setThrown(Throwable thrown) {
+        this.thrown = thrown;
+    }
 
     /**
      * Constructs a test case with the given name.
@@ -53,15 +64,16 @@ public class Warning extends TestCase {
     public Warning(String name, String message) {
         super(name);
         thrown=new AssertionFailedError(message);
-
     }
 
 
     /**
      * Throws whatever is in the thrown attribute
-     * @throws Throwable
+     * @throws Throwable whatever we were constructed with
      */
     public void testReportError() throws Throwable {
-        throw thrown;
+        if (thrown != null) {
+            throw thrown;
+        }
     }
 }

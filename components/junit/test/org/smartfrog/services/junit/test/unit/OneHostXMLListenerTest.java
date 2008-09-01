@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 package org.smartfrog.services.junit.test.unit;
 
 import org.smartfrog.services.junit.test.system.TestRunnerTestBase;
-import org.smartfrog.services.xunit.listeners.html.OneHostXMLListener;
+import org.smartfrog.services.xunit.listeners.xml.OneHostXMLListener;
 import org.smartfrog.services.xunit.serial.TestInfo;
 
 import java.io.File;

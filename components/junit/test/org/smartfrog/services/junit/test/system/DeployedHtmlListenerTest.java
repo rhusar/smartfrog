@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package org.smartfrog.services.junit.test.system;
 
 import org.smartfrog.services.xunit.base.TestRunner;
 import org.smartfrog.services.xunit.listeners.html.HtmlTestListenerFactory;
-import org.smartfrog.services.xunit.listeners.xml.XmlListener;
+import org.smartfrog.services.xunit.listeners.xml.FileListener;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class DeployedHtmlListenerTest extends TestRunnerTestBase {
                 application.sfResolve(DeployedHtmlListenerTest.TEST_SUITE_COMPONENT_NAME,
                         (Prim) null,
                         true);
-        String output = tests.sfResolve(XmlListener.ATTR_FILE,
+        String output = tests.sfResolve(FileListener.ATTR_FILE,
                 "",
                 true);
         File xmlfile = new File(output);
