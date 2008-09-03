@@ -196,14 +196,18 @@ public class ServerSetup {
             }
         }
 
-        try {
-            listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, ext);
+        sendExtension(inTargetMachine, ext);
+    }
+
+	public static void sendExtension(String inTargetMachine, XMPPEventExtension inExt) {
+		try {
+            listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, inExt);
         } catch (XMPPException e) {
             log.error(e.getMessage());
         }
-    }
+	}
 
-    /**
+	/**
 	 * Starts up Avalanche server. Avalanche server must be installed and @see setAvalancheHome(String)
 	 * should be set properly before calling this method. 
 	 * @throws Exception

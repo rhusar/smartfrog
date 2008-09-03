@@ -22,6 +22,7 @@ package org.smartfrog.avalanche.server;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.jivesoftware.smack.XMPPException;
 
 import java.rmi.Remote;
@@ -128,6 +129,8 @@ public interface AvalancheServer extends Remote {
      * @param inTargetMachine The host of the virtual machine.
      * @param inVMName The name of the virtual machine.
      * @param inCmd The command to execute.
+	 * @throws java.rmi.RemoteException
+	 * @throws org.smartfrog.sfcore.common.SmartFrogException
      */
     public void sendVMCommand(String inTargetMachine, String inVMName, String inCmd)
             throws RemoteException, SmartFrogException;
@@ -142,7 +145,17 @@ public interface AvalancheServer extends Remote {
     public void sendVMCommand(String inTargetMachine, String inVMName, String inCmd, HashMap<String, String> inAdditionalProperties)
             throws RemoteException, SmartFrogException;
 
-    /**
+	/**
+	 * Send a XMPPEventExtension to a host.
+	 * @param inTargetMachine The host of the virtual machine.
+	 * @param inExt The event extension to send.
+	 * @throws RemoteException
+	 * @throws SmartFrogException
+	 */
+	public void sendXMPPExtension(String inTargetMachine, XMPPEventExtension inExt)
+			throws RemoteException, SmartFrogException;
+
+	/**
      * Ignites the given hosts if they are present in the database.
      * @param inHosts The list of hostnames.
      * @throws RemoteException
