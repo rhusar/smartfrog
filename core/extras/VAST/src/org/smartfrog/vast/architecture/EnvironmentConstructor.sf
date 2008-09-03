@@ -23,11 +23,11 @@ EnvironmentConstructor extends Compound {
     sfClass "org.smartfrog.vast.architecture.EnvironmentConstructorImpl";
 
     // reference to the avalanche server component
-    Avalanche extends LAZY {};
+    Avalanche TBD;
     
     // physical machines
-    PhysicalMachines extends LAZY {};
+    PhysicalMachines TBD;
 
     // virtual machines
-    VirtualMachines extends LAZY {};
+    VirtualMachines TBD;
 }
