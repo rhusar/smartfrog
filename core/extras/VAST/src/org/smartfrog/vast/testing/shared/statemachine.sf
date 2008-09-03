@@ -61,23 +61,41 @@ SUTState extends Compound {
 
 // an action
 SUTAction extends Prim {
-	sfClass "org.smartfrog.vast.testing.shared.SUTActionImpl";
-
 	-- extends Schema {
 		// name of this action
 		Name extends String;
 
-		// optional seconds to wait
+		// optional seconds to wait after execution
 		Wait extends Integer;
 
 		// host where this action should take place
 		Host extends String;
-
-		// name of the script to execute
-		ScriptName extends String;
 	}
 
 	Wait 0;
+}
+
+ScriptAction extends SUTAction {
+	sfClass "org.smartfrog.vast.testing.shared.ScriptActionImpl";
+
+	-- extends Schema {
+		// name of the script to execute
+		ScriptName extends String;
+
+		// name for the subprocess
+		ProcessName extends String;
+	}
+}
+
+FunctionCallAction extends SUTAction {
+	sfClass "org.smartfrog.vast.testing.shared.InvokeFunctionActionImpl";
+
+	-- extends Schema {
+		// name of the function to call
+		FunctionName extends String;
+	}
+
+	Parameters TBD;
 }
 
 // a sequence of actions with a state as a result
@@ -89,6 +107,19 @@ SUTTestSequence extends Compound {
 
 	// actions to execute
 	Actions TBD;
+
+	-- extends Schema {
+		// how long to wait before checking the resulting state
+		Wait extends Integer;
+
+		// name of the sequence
+		Name extends String;
+
+		// expect failure?
+		ExpectFailure extends Boolean;
+	}
+
+	ExpectFailure false;
 }
 
 // set of test sequences

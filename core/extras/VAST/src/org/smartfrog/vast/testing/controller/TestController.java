@@ -28,11 +28,11 @@ public interface TestController extends Remote {
 	/** @value */
 	public static final String ATTR_BROADCAST_ADDRESS = "BroadcastAddress";
 	/** @value */
-	public static final String ATTR_TTL = "TTL";
-	/** @value */
 	public static final String ATTR_PORT = "Port";
 	/** @value */
 	public static final String ATTR_NIC = "NIC";
-
-
+   	/** @value */
+	public static final String ATTR_TEST_SUITE = "testSuite";
+	/** @value */
+	public static final String ATTR_AVL = "avlListener";
 }

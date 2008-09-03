@@ -18,24 +18,36 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.testing.shared;
+package org.smartfrog.vast.testing.networking.messages;
 
-import org.smartfrog.vast.testing.networking.messages.VastMessage;
+import java.net.InetAddress;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+public class CutNetworkConnection implements VastMessage {
+	private String IPAddress;
+	private int Index;
 
-public interface SUTAction extends Remote {
-	public static final String ATTR_HOST = "Host";
-	public static final String ATTR_WAIT = "Wait";
-	public static final String ATTR_NAME = "Name";
+	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
+		inMessageCallback.OnCutNetworkConnection(Index, IPAddress);
+	}
 
+	public CutNetworkConnection(int index, String IPAddress) {
+		Index = index;
+		this.IPAddress = IPAddress;
+	}
 
-	public String getName() throws RemoteException;
+	public String getIPAddress() {
+		return IPAddress;
+	}
 
-	public int getWait() throws RemoteException;
+	public void setIPAddress(String IPAddress) {
+		this.IPAddress = IPAddress;
+	}
 
-	public String getHost() throws RemoteException;
+	public int getIndex() {
+		return Index;
+	}
 
-	public VastMessage getActionMessage() throws RemoteException;
+	public void setIndex(int index) {
+		Index = index;
+	}
 }

@@ -30,16 +30,19 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 #include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/vast/testing/networking/MCCSchema.sf"
+#include "/org/smartfrog/vast/testing/VastSchema.sf"
 
 TestRunner extends Compound {
 	sfClass "org.smartfrog.vast.testing.runner.TestRunnerImpl";
 
-	SmartFrogHome (ENVPROPERTY SFHOME);
+	vastSchema extends VastSchema;
 
-	mccSchema extends MCCSchema;
+	SmartFrogHome (ENVPROPERTY SFHOME);
 
 	BroadcastAddress "192.168.4.255";
 	Port 4444;
 	NIC (ENVPROPERTY SFSERVERHOSTNAME);
+
+	SUTNetworkAddress (ENVPROPERTY AVALANCHE_HOST_ADDRESS);
+	SFDaemonPort 3800;
 }

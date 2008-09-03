@@ -18,47 +18,46 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.testing.networking;
+package org.smartfrog.vast.testing.networking.messages;
 
-import org.smartfrog.vast.testing.networking.messages.VastMessage;
-
-import java.io.Serializable;
 import java.net.InetAddress;
 
-/**
- * A vast packet.
- */
-public class VastPacket implements Serializable {
-	private VastMessage vastMessage;
-	private int Clock;
-	private InetAddress Target;
+public class SetupNetworkConnection implements VastMessage {
+	private int Index;
+	private String IPAddress;
+	private String NetMask;
 
-	public VastPacket(int clock, VastMessage vastMessage) {
-		Clock = clock;
-		this.vastMessage = vastMessage;
+	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
+		inMessageCallback.OnSetupNetworkConnection(Index, IPAddress, NetMask);
 	}
 
-	public int getClock() {
-		return Clock;
+	public SetupNetworkConnection(int index, String IPAddress, String netMask) {
+		Index = index;
+		this.IPAddress = IPAddress;
+		NetMask = netMask;
 	}
 
-	public void setClock(int clock) {
-		Clock = clock;
+	public String getIPAddress() {
+		return IPAddress;
 	}
 
-	public VastMessage getMessage() {
-		return vastMessage;
+	public void setIPAddress(String IPAddress) {
+		this.IPAddress = IPAddress;
 	}
 
-	public void setMessage(VastMessage vastMessage) {
-		this.vastMessage = vastMessage;
+	public String getNetMask() {
+		return NetMask;
 	}
 
-	public InetAddress getTarget() {
-		return Target;
+	public void setNetMask(String netMask) {
+		NetMask = netMask;
 	}
 
-	public void setTarget(InetAddress target) {
-		Target = target;
+	public int getIndex() {
+		return Index;
+	}
+
+	public void setIndex(int index) {
+		Index = index;
 	}
 }
