@@ -52,7 +52,7 @@
 		</jar>
 	</target>
 
-	<target name="allJars" depends="helperJar,controllerJar,architectureJar,runnerJar"/>
+	<target name="allJars" depends="setup-library,helperJar,controllerJar,architectureJar,runnerJar"/>
 
 	<target name="architectureJar">
 		<jar jarfile="${dist.dir}/lib/vast-arch.jar" basedir="${build.classes.dir}"
@@ -60,20 +60,31 @@
 	</target>
 
 	<target name="controllerJar">
-		<copy tofile="${build.classes.dir}/org/smartfrog/vast/testing/start.sf" file="${vast.code.dir}/testing/startController.sf"
+		<copy tofile="${build.classes.dir}/org/smartfrog/vast/testing/start.sf"
+			  file="${vast.code.dir}/testing/startController.sf"
 			  overwrite="true"/>
 		<jar jarfile="${dist.dir}/lib/vast-controller.jar" basedir="${build.classes.dir}"
-			 includes="**/controller/**,**/networking/**,**/testing/start.sfcd,**/testing/start.sf" update="yes"/>
+			 includes="**/controller/**,**/archive/**,**/networking/**,**/testing/start.sf,**/testing/VastSchema.sf,**/helper/**,**/shared/**"
+			 update="yes"/>
 		<delete file="${build.classes.dir}/org/smartfrog/vast/testing/start.sf"/>
 	</target>
 
 	<target name="runnerJar">
-		<copy tofile="${build.classes.dir}/org/smartfrog/vast/testing/start.sf" file="${vast.code.dir}/testing/startRunner.sf"
+		<copy tofile="${build.classes.dir}/org/smartfrog/vast/testing/start.sf"
+			  file="${vast.code.dir}/testing/startRunner.sf"
 			  overwrite="true"/>
 		<jar jarfile="${dist.dir}/lib/vast-runner.jar" basedir="${build.classes.dir}"
-			 includes="**/runner/**,**/archive/**,**/networking/**,**/testing/start.sfcd,**/testing/start.sf"
+			 includes="**/runner/**,**/archive/**,**/networking/**,**/testing/start.sf,**/testing/VastSchema.sf,**/helper/**,**/shared/**"
 			 update="yes"/>
 		<delete file="${build.classes.dir}/org/smartfrog/vast/testing/start.sf"/>
+	</target>
+
+	<target name="setup-library" depends="ivy-retrieve">
+		<property name="dist.dependencies.dir" location="${dist.dir}/dependencies"/>
+		<mkdir dir="${dist.dependencies.dir}"/>
+		<copy todir="${dist.dependencies.dir}">
+			<fileset dir="${ivy.lib.dir}/default" includes="*.jar"/>
+		</copy>
 	</target>
 
 </project>

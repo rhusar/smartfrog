@@ -32,4 +32,4 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "/org/smartfrog/vast/testing/controller/TestController.sf";
 
-sfConfig extends TestController;
+sfConfig extends ControllerNode;
