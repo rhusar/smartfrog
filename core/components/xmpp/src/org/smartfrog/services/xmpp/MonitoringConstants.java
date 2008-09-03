@@ -28,10 +28,14 @@ public class MonitoringConstants {
 	public static final int MODULE_VANISH  = 3;
 	public static final int MODULE_INFO = 4;
 
-    // message types for vm events
+    // message type for vm events
     public static final int VM_MESSAGE = 10;
 
-    public static final int HOST_VANISH = 100;
+	// message types for vast
+	public static final int VAST_START = 20;
+ 	public static final int VAST_STOP = 21;
+
+	public static final int HOST_VANISH = 100;
 	public static final int HOST_SHUTTING_DOWN = 101;
 	public static final int HOST_STARTED = 102;
 }
