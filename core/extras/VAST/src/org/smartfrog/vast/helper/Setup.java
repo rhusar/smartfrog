@@ -21,8 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.vast.helper;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.io.File;
+import java.io.*;
 
 /**
  * Helper class to setup everything required to run the TestRunner on the test node.
@@ -31,16 +30,26 @@ public class Setup {
     /**
      * List of the names of the network interface cards.
      */
-    ArrayList<String> listNICNames;
+    private ArrayList<String> listNICNames;
 
     /**
      * Helper class for the os native functions.
      */
-    Helper helper;
+    private Helper helper;
 
-    public Setup() {
-        helper = HelperFactory.getHelper();
-    }
+	/**
+	 * Output file.
+	 */
+	private PrintStream out;
+
+	public Setup() {
+		try {
+			out = new PrintStream(new FileOutputStream("helper.txt", true));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		helper = HelperFactory.getHelper(out);
+	}
     
     public static void main(String args[]) {
         Setup setup = new Setup();
@@ -48,12 +57,14 @@ public class Setup {
 	}
 
 	private void printUsage() {
-		System.out.println("----- Usage: -----");
-		System.out.println("helper.jar [option]");
-		System.out.println();
-		System.out.println("----- Options: -----");
-		System.out.println("-nic [ip] [mask] (opt)gw [gw ip]\tSets an NIC to the specified IP using the given subnet mask.\n\t\t\t\tOptionally sets this NIC as default gw for the given gw address.\n\t\t\t\tMight occur more than once. The NIC which will be used is determined by the occurance: \n\t\t\t\tfirst discovered NIC will be used for the first specified -nic option.");
-		System.out.println("-help \t\t\t\tTo display this help.");
+		out.println("----- Usage: -----");
+		out.println("helper.jar [option]");
+		out.println();
+		out.println("----- Options: -----");
+		out.println("-nic [ip] [mask] (opt)gw [gw ip]\tSets an NIC to the specified IP using the given subnet mask.\n\t\t\t\tOptionally sets this NIC as default gw for the given gw address.\n\t\t\t\tMight occur more than once. The NIC which will be used is determined by the occurance: \n\t\t\t\tfirst discovered NIC will be used for the first specified -nic option.");
+		out.println("-hname [hostname]\t\tSet the hostname for this machine.\n");
+		out.println("-dns [hostname] [ip]\t\tAdd a DNS entry.");
+		out.println("-help \t\t\t\tTo display this help.");
 	}
 
 	/**
@@ -80,12 +91,20 @@ public class Setup {
 					helper.setDefaultGateway(args[i+1], listNICNames.get(iNICIndex - 1));
 					i+=1;
 				}
+				else if(args[i].equals("-hname")) {
+					helper.setHostname(args[i+1]);
+					i+=1;
+				}
+				else if(args[i].equals("-dns")) {
+					helper.addDNSEntry(args[i+1], args[i+2]);
+					i+=2;
+				}
 				else if (args[i].equals("-help")) {
 					printUsage();
 					return;
 				}
 			} catch (IndexOutOfBoundsException e) {
-				System.err.println("wrong parameters");
+				out.println("wrong parameters");
 				printUsage();
 				return;
 			}
