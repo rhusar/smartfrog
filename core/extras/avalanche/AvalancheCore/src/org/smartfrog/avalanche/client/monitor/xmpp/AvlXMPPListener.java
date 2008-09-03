@@ -17,11 +17,8 @@ import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Calendar;
 
 public class AvlXMPPListener extends XmppListenerImpl {
@@ -61,9 +58,9 @@ public class AvlXMPPListener extends XmppListenerImpl {
 
         if (!sendMessage("avl@" + getServer(), "None", "AE", ext))
             sfLog().error("Error sending packet.");
-    }
+	}
 
-    /**
+	/**
      * Some classes may override this
      *
      * @throws SmartFrogException resolution problems
@@ -87,7 +84,8 @@ public class AvlXMPPListener extends XmppListenerImpl {
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
+		sfLog().info("AvlXMPPListener deploying.");
+		super.sfDeploy();
         hostname = (String) sfResolve("hostAddress", true);
 
         sfLog().info("AvlXMPPListener deployed.");

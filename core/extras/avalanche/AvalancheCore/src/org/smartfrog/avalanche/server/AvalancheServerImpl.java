@@ -32,6 +32,7 @@ import org.smartfrog.avalanche.core.host.AccessModeType;
 import org.smartfrog.avalanche.core.host.DataTransferModeType;
 import org.smartfrog.avalanche.core.module.PlatformSelectorType;
 import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
+import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.jivesoftware.smack.XMPPException;
 
 import java.rmi.RemoteException;
@@ -149,7 +150,11 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
         }
     }
 
-    public void addAccessMode(String inName, String inType, String inUser, String inPassword, boolean inIsDefault) throws RemoteException, SmartFrogException {
+	public void sendXMPPExtension(String inTargetMachine, XMPPEventExtension inExt) throws RemoteException, SmartFrogException {
+		ServerSetup.sendExtension(inTargetMachine, inExt);
+	}
+
+	public void addAccessMode(String inName, String inType, String inUser, String inPassword, boolean inIsDefault) throws RemoteException, SmartFrogException {
         // get the host manager
         try {
             HostManager hm = getAvalancheFactory().getHostManager();
