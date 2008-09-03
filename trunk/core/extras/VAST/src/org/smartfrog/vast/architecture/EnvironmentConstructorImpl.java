@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.avalanche.server.AvalancheServer;
 import org.smartfrog.avalanche.server.engines.sf.SFAdapter;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.services.vmware.VMWareConstants;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.vast.archive.ZipArchive;
@@ -65,6 +66,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 * The list containing the configuration details for the virtual machines.
 	 */
 	private ArrayList<VirtualMachineConfig> listVirtualMachines = new ArrayList<VirtualMachineConfig>();
+
+	/**
+	 * Compiled arguments for the helper to set the hostnames of all vitual machines for all of them.
+	 */
+	private String HostnameList = "";
 
 	public EnvironmentConstructorImpl() throws RemoteException {
 
@@ -144,6 +150,9 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 								conf.setVastController((Boolean) virtObj.sfResolve(VirtualMachineConfig.ATTR_VAST_CONTROLLER, true));
 								conf.setSUTPackage(virtObj.sfResolve(VirtualMachineConfig.ATTR_SUT_PACKAGE, "", false));
 
+								// construct the hostname parameters
+								HostnameList = String.format("-dns %s %s %s", conf.getDisplayName(), conf.getHostAddress(), HostnameList);
+
 								if (conf.isVastController())
 									VastController = conf;
 
@@ -163,6 +172,23 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	}
 
 	/**
+	 * Copies the template default.ini file to the package location and replaces the template indicators with the given ip.
+	 * @param inSrc
+	 * @param inDest
+	 * @param inIP
+	 */
+	private void copyDefaultIni(File inSrc, File inDest, String inIP) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(inSrc));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(inDest));
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			writer.write(line.replace("[vast ip]", inIP));
+		}
+		reader.close();
+		writer.close();
+	}
+
+	/**
 	 * Prepares the SUT packages.
 	 */
 	private void prepareSUTPackages() throws SmartFrogException, RemoteException {
@@ -172,9 +198,8 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 			try {
 				File destSUT = null;
 				File destVAST;
-				File destStartSF = new File(strBasePath + "smartfrog/dist/vast/start.sf");
+					
 				if (!conf.isVastController()) {
-					// prepare SUT package
 					// copy the appropriate sut package to the sf distribution package
 					destSUT = new File(strBasePath + "smartfrog/dist/vast/" + conf.getSUTPackage());
 					FileSystem.fCopy(new File(strBasePath + "SUT/" + conf.getSUTPackage()), destSUT);
@@ -220,9 +245,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 				// delete it so it wont be contained in the
 				// following packages
 				if (destSUT != null)
-					destSUT.delete();
-				destVAST.delete();
-				destStartSF.delete();
+					if (destSUT.exists())
+						destSUT.delete();
+
+				if (destVAST.exists())
+					destVAST.delete();
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new SmartFrogException(e);
@@ -330,8 +357,22 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		// stop the virtual machines
 		stopVirtualMachines();
 
-		// stop the daemons on the ignites machines
+		// give the daemon some time before killing it
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			sfLog().error(e);
+		}
+
+		// stop the daemons on the ignited machines
 		stopPhysicalHosts();
+
+		// give the daemon some time before killing it
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			sfLog().error(e);
+		}
 	}
 
 	/**
@@ -512,7 +553,17 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 				// check if all virtual machines are running
 				if (checkVirtualEnv()) {
-					// TODO: perform tests
+					// send go message to the controller
+					try {
+						// create the message
+						XMPPEventExtension ext = new XMPPEventExtension();
+						ext.setMessageType(MonitoringConstants.VAST_START);
+
+						// send the message
+						refAvlServer.sendXMPPExtension(VastController.getHostAddress(), ext);
+					} catch (Exception e) {
+						sfLog().error(e);
+					}
 				}
 
 				return;
@@ -629,6 +680,7 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 				} else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
 					if (strResponse.equals("success")) {
 						sfLog().info("tools running");
+
 						// home dir created, copy the helper into the vm
 						copyHelper(inPacket, strVMName, phyHost, vmTarget);
 					} else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
@@ -642,9 +694,30 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 					} else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
 				} else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
 					if (strResponse.equals("success")) {
-						// vast helper executed, now ignite the virtual machines
-						// with the appropriate package (sf + test runner + SUT)
-						igniteVirtualMachine(vmTarget);
+						// try to ping the machine for 1 minute
+						for (int i = 0; i < 60; ++i) {
+							if (ping(vmTarget.getHostAddress())) {
+								 // vast helper executed, now ignite the virtual machines
+								// with the appropriate package (sf + test runner + SUT)
+								igniteVirtualMachine(vmTarget);
+								return;	
+							} else
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+
+								}
+						}
+
+						if (vmTarget.getNetworkSetupHelperTries() < 5) {
+							sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Retrying network setup helper.");
+
+							// copy the helper into the vm again
+							copyHelper(inPacket, strVMName, phyHost, vmTarget);
+
+							vmTarget.setNetworkSetupHelperTries(vmTarget.getNetworkSetupHelperTries() + 1);
+						}
+						else sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Maximum tries reached.");
 					}
 				}
 			}
@@ -658,12 +731,14 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		HashMap<String, String> map = new HashMap<String, String>();
 
 		String gwAddr = inVMTarget.getHostAddress().substring(0, inVMTarget.getHostAddress().lastIndexOf(".")) + ".1";
-		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s",
+		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s -hname %s %s",
 			inVMTarget.getHostAddress(),
 			inVMTarget.getHostMask(),
 			gwAddr,
 			inVMTarget.getVastNetworkIP(),
-			inVMTarget.getVastNetworkMask()));
+			inVMTarget.getVastNetworkMask(),
+			inVMTarget.getDisplayName(),
+			HostnameList));
 
 		for (Argument arg : inVMTarget.getListArguments())
 			if (arg.getName().equals("JAVA_HOME"))
@@ -710,5 +785,30 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		refAvlServer.igniteHosts(new String[]{inVM.getHostAddress()},
 			String.format("%s/temp/vast/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()),
 			String.format("%s/temp/vast/sfinstaller.vm", refAvlServer.getAvalancheHome()));
+	}
+
+	/**
+	 * Pings a host.
+	 * @param inHost Address to ping.
+	 * @return True if the ping was successful, false otherwise.
+	 */
+	private boolean ping(String inHost) {
+		ProcessBuilder pb;
+		if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+			pb = new ProcessBuilder("ping", inHost);
+		}
+		else {
+			pb = new ProcessBuilder("ping", "-c", "4", inHost);
+		}
+
+		try {
+			Process p = pb.start();
+			p.waitFor();
+			return (p.exitValue() == 0);
+		} catch (Exception e) {
+			sfLog().error(e);
+		}
+
+		return false;
 	}
 }

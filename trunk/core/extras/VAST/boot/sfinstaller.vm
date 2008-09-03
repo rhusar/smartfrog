@@ -82,7 +82,9 @@ sfConfig extends Parallel {
 							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
 							 "export SFSERVERHOSTNAME=$daemon.bindip",
 				 			 "cd ${daemon.installdir}/$daemon.releasename",
-                        	 			 "nohup sfDaemon -headless &"];
+                        	 			 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 5",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#else 
 					Telnet:commands ["mkdir -p ${daemon.installdir}",
 							"cd ${daemon.installdir}",
@@ -101,7 +103,9 @@ sfConfig extends Parallel {
 							"export AVALANCHE_HOST_ADDRESS=$daemon.host",
 							"export SFSERVERHOSTNAME=$daemon.bindip",
 						 	 "cd ${daemon.installdir}/$daemon.releasename",
-                        	 			 "nohup sfDaemon -headless &"];
+                        	 			 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#end
 			#else
 				#if ($dynamicLoadingOn)
@@ -115,7 +119,9 @@ sfConfig extends Parallel {
 							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
 							 "export SFSERVERHOSTNAME=$daemon.bindip",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-							 "nohup sfDaemon -headless &"];
+							 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#else
 					Telnet:commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
@@ -126,7 +132,9 @@ sfConfig extends Parallel {
 										"export AVALANCHE_HOST_ADDRESS=$daemon.host",
 										"export SFSERVERHOSTNAME=$daemon.bindip",
 							 "cd ${daemon.installdir}/$daemon.releasename",
-		                        		 "nohup sfDaemon -headless &"];
+		                        		 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#end
 			#end
 	    #elseif ($daemon.isWindows())
@@ -210,7 +218,9 @@ sfConfig extends Parallel {
 							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
 							 "export SFSERVERHOSTNAME=$daemon.bindip",
 				 			 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon -headless &"];
+                        	 			 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#else 
 					commands ["mkdir -p ${daemon.installdir}",
 							 "cd ${daemon.installdir}",
@@ -228,9 +238,11 @@ sfConfig extends Parallel {
  				 		 	 "export SFSECURITY_ON=ENABLED",
                         	 			 "export PATH=$SFHOME/bin:$PATH",
 							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",		
-							"export SFSERVERHOSTNAME=$daemon.bindip",							 
+							"export SFSERVERHOSTNAME=$daemon.bindip",
 						 	 "cd ${daemon.installdir}/${daemon.releasename}",
-                        	 			 "nohup sfDaemon -headless &"];
+                        	 			 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf"];
 				#end
 			#else
 				#if ($dynamicLoadingOn)
@@ -245,7 +257,9 @@ sfConfig extends Parallel {
 							 "export AVALANCHE_HOST_ADDRESS=$daemon.host",
 							 "export SFSERVERHOSTNAME=$daemon.bindip",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-							 "nohup sfDaemon -headless &"];
+							 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+							 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf > start.txt"];
 				#else
 					commands ["mkdir -p ${daemon.installdir}",
 								"cd ${daemon.installdir}",
@@ -257,7 +271,9 @@ sfConfig extends Parallel {
 										"export AVALANCHE_HOST_ADDRESS=$daemon.host",
 										"export SFSERVERHOSTNAME=$daemon.bindip",
 							 "cd ${daemon.installdir}/${daemon.releasename}",
-	                        			 "nohup sfDaemon -headless &"];
+	                        			 "nohup sfDaemon -J \"-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorBindAddress=${daemon.bindip}\" -headless &",
+	                        			 "sleep 30",
+	                        			 "sfStart ${daemon.bindip} vast org/smartfrog/vast/testing/start.sf > start.txt"];
 				#end
 			#end
 	    #end

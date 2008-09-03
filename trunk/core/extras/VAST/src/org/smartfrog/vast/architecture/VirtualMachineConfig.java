@@ -68,6 +68,17 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
 	// is this the vast controller vm?
 	private boolean VastController;
 
+	// how many times has it been tried to set up the network using the helper?
+	private int NetworkSetupHelperTries;
+
+	public int getNetworkSetupHelperTries() {
+		return NetworkSetupHelperTries;
+	}
+
+	public void setNetworkSetupHelperTries(int networkSetupHelperTries) {
+		NetworkSetupHelperTries = networkSetupHelperTries;
+	}
+
 	public String getSUTPackage() {
 		return SUTPackage;
 	}
