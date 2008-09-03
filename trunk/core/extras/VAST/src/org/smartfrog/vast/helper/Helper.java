@@ -46,4 +46,24 @@ public interface Helper {
 	 * @param inNICName The name of the NIC.
 	 */
 	public void setDefaultGateway(String inGatewayAddress, String inNICName);
+
+	/**
+	 * Sets the hostname of this machine.
+	 * @param inName The hostname.
+	 */
+	public void setHostname(String inName);
+
+	/**
+	 * Adds a DNS entry.
+	 * @param inName The name of the host.
+	 * @param inIP The ip of the host.
+	 */
+	public void addDNSEntry(String inName, String inIP);
+
+	/**
+	 * Shuts down a network interface card with the given ip.
+	 * @param inNICName Name of the NIC.
+	 * @param inIP The ip.
+	 */
+	public void cutNetworkConnection(String inNICName, String inIP);
 }

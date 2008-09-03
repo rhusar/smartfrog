@@ -23,12 +23,16 @@ package org.smartfrog.vast.helper;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class HelperLinux implements Helper {
-    public ArrayList<String> retrieveNICNames() {
+	private PrintStream out;
+
+	public HelperLinux(PrintStream out) {
+		this.out = out;
+	}
+
+	public ArrayList<String> retrieveNICNames() {
         // the list which will be returned
         ArrayList<String> names = new ArrayList<String>();
 
@@ -56,14 +60,15 @@ public class HelperLinux implements Helper {
 			// parse the output
             Pattern pattern = Pattern.compile("^(\\w{1,9})\\s+Link\\sencap\\:Ethernet.*$");
             for(String strLine : outBuffer) {
-                Matcher matcher = pattern.matcher(strLine);
+				out.println(strLine);
+				Matcher matcher = pattern.matcher(strLine);
                 if (matcher.matches()) {
                     names.add(matcher.group(1));
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(out);
         }
 
         return names;
@@ -85,7 +90,7 @@ public class HelperLinux implements Helper {
 
 				ps.waitFor();
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(out);
             }
         }
     }
@@ -105,8 +110,75 @@ public class HelperLinux implements Helper {
 
 				ps.waitFor();
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(out);
             }
+		}
+	}
+
+	public void setHostname(String inName) {
+		try {
+			Process ps = Runtime.getRuntime().exec(String.format("hostname %s", inName));
+
+			// just for blocking prevention
+			ArrayList<String> outBuffer = new ArrayList<String>();
+			ArrayList<String> errBuffer = new ArrayList<String>();
+			ReaderThread rtOut = new ReaderThread(ps.getInputStream(), outBuffer);
+			ReaderThread rtErr = new ReaderThread(ps.getErrorStream(), errBuffer);
+			rtOut.start();
+			rtErr.start();
+
+			ps.waitFor();
+		} catch (Exception e) {
+			e.printStackTrace(out);
+		}
+	}
+
+	public void addDNSEntry(String inName, String inIP) {
+		if (Validator.isValidIP(inIP)){
+			try {
+				// read the etc lines
+				ArrayList<String> lines = new ArrayList<String>();
+				BufferedReader reader = new BufferedReader(new FileReader("/etc/hosts"));
+				String buffer;
+				while ((buffer = reader.readLine()) != null)
+					lines.add(buffer);
+				reader.close();
+
+				// write the etc lines
+				BufferedWriter writer = new BufferedWriter(new FileWriter("/etc/hosts"));
+				writer.write(String.format("%s\t%s\n", inIP, inName));
+				for (String str : lines) {
+					out.println(str);
+					writer.write(str + "\n");
+				}
+				writer.close();
+			} catch (Exception e) {
+				e.printStackTrace(out);
+			}
+		}
+	}
+
+	public void cutNetworkConnection(String inNICName, String inIP) {
+		if (Validator.isValidIP(inIP)){
+			try {
+				// execute the ifconfig command
+				Process ps = Runtime.getRuntime().exec(String.format("ifconfig %s down", inNICName));
+
+				// read the output and the error stream
+				// doing this asynchronously prevents blocking
+				// of the process
+				ArrayList<String> outBuffer = new ArrayList<String>();
+				ArrayList<String> errBuffer = new ArrayList<String>();
+				ReaderThread rtOut = new ReaderThread(ps.getInputStream(), outBuffer);
+				ReaderThread rtErr = new ReaderThread(ps.getErrorStream(), errBuffer);
+				rtOut.start();
+				rtErr.start();
+
+				// wait for ifconfig to finish
+				ps.waitFor();
+			} catch (Exception e) {
+				e.printStackTrace(out);
+			}
 		}
 	}
 }

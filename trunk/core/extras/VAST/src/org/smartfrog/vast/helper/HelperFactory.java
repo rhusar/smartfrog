@@ -20,11 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.vast.helper;
 
+import java.io.PrintStream;
+
 public class HelperFactory {
-    public static Helper getHelper() {
+    public static Helper getHelper(PrintStream inOut) {
         if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
-            return new HelperWin();
+            return new HelperWin(inOut);
         else
-            return new HelperLinux();
+            return new HelperLinux(inOut);
     }
 }
