@@ -91,9 +91,10 @@ public class BroadcastCommunicator extends Thread {
 		return BroadcastAddress;
 	}
 
-	public void sendMessage(VastMessage inVastMessage) throws IOException {
+	public void sendMessage(InetAddress inTarget, VastMessage inVastMessage) throws IOException {
 		// create the vast packet
 		VastPacket packet = new VastPacket(logicalClock.newEvent(), inVastMessage);
+		packet.setTarget(inTarget);
 
 		// create the streams
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -146,6 +147,7 @@ public class BroadcastCommunicator extends Thread {
 	 * @param inPacket
 	 */
 	public void processPacket(DatagramPacket inPacket) throws IOException, ClassNotFoundException {
+		// ensure it's not our own package
 		if (!inPacket.getAddress().equals(LocalAddress)) {
 			// create the streams
 			ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(inPacket.getData()));
@@ -156,12 +158,19 @@ public class BroadcastCommunicator extends Thread {
 			// sync the clock
 			logicalClock.receivedEvent(pkt.getClock());
 
-			// retrieve the message
-			VastMessage msg = pkt.getMessage();
+			System.out.println("Received packet:" + pkt);
 
-			// invoke the callback functions
-			for (MessageCallback mc : listCallbacks)
-				msg.invoke(inPacket.getAddress(), mc);
+			// ensure it's meant for us
+			if (pkt.getTarget() == null || pkt.getTarget().equals(LocalAddress)) {
+				// retrieve the message
+				VastMessage msg = pkt.getMessage();
+
+				System.out.println("Received message:" + msg);
+
+				// invoke the callback functions
+				for (MessageCallback mc : listCallbacks)
+					msg.invoke(inPacket.getAddress(), mc);
+			}
 		}
 	}
 }

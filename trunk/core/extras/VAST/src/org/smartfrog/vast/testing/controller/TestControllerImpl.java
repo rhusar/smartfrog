@@ -24,21 +24,28 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.vast.testing.networking.BroadcastCommunicator;
 import org.smartfrog.vast.testing.networking.messages.MessageCallback;
+import org.smartfrog.vast.testing.networking.messages.StartSfScript;
+import org.smartfrog.vast.testing.shared.TestSuite;
+import org.smartfrog.vast.testing.shared.SUTTestSequence;
+import org.smartfrog.vast.testing.shared.SUTAction;
+import org.smartfrog.avalanche.client.monitor.xmpp.AvlXMPPListener;
+import org.smartfrog.services.xmpp.*;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Vector;
 
-public class TestControllerImpl extends PrimImpl implements TestController, MessageCallback {
+public class TestControllerImpl extends PrimImpl implements TestController, MessageCallback, LocalXmppPacketHandler {
 	/**
 	 * home directory of the smartfrog daemon
 	 */
 	private String sfHome;
-	/**
-	 * TTL for MCC.
-	 */
-	private int TTL;
+
 	/**
 	 * Port for MCC.
 	 */
@@ -53,9 +60,19 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 	private InetAddress BroadcastAddress;
 
 	/**
+	 * Reference to the avl listener.
+	 */
+	private AvlXMPPListener refAvlListener;
+
+	/**
 	 * The multicast communicator class.
 	 */
 	private BroadcastCommunicator MCC;
+
+	/**
+	 * The test suite.
+	 */
+	private TestSuite testSuite;
 
 	public TestControllerImpl() throws RemoteException {
 
@@ -68,7 +85,6 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 		sfHome = (String) sfResolve(ATTR_SFHOME, true);
 
 		// resolve the mcc attributes
-		TTL = (Integer) sfResolve(ATTR_TTL, true);
 		Port = (Integer) sfResolve(ATTR_PORT, true);
 		NIC = (String) sfResolve(ATTR_NIC, true);
 		String multi = (String) sfResolve(ATTR_BROADCAST_ADDRESS, true);
@@ -89,9 +105,100 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// get the reference to the avl listener
+		refAvlListener = (AvlXMPPListener) sfResolve(ATTR_AVL, true);
+
+		// register with the listener
+		refAvlListener.registerPacketHandler(this);
+
+		// resolve the test suite
+		testSuite = (TestSuite) sfResolve(ATTR_TEST_SUITE, true);
 	}
 
-	public void OnHelloBroadcast(String inFrom) {
+	/**
+	 * Run the tests.
+	 */
+	private void runTests() {
+		try {
+			// execute each sequence
+			for (SUTTestSequence seq : testSuite.getTestSequences()) {
+				// execute the actions
+				for (SUTAction action : seq.getActions()) {
+					MCC.sendMessage(InetAddress.getByName(action.getHost()), action.getActionMessage());
+					if (action.getWait() > 0) {
+						try {
+							Thread.sleep(action.getWait() * 1000);
+						} catch (Exception e) {
+							sfLog().error(e);
+						}
+					}
+				}
+
+				// check the result
+				
+			}
+		} catch (Exception e) {
+			sfLog().error(e);
+		}
+	}
+
+	/**
+	 * Stop the tests.
+	 */
+	private void stopTests() {
+		
+	}
+
+	public PacketFilter getFilter() {
+		return new XMPPEventFilter();
+	}
+
+	public void processPacket(Packet packet) {
+		sfLog().info("TestControllerImpl: Received packet: " + packet.getFrom() + ": " + packet.toXML());
+
+        // get the extension
+        XMPPEventExtension ext = (XMPPEventExtension) packet.getExtension(XMPPEventExtension.rootElement, XMPPEventExtension.namespace);
+        if (ext != null)
+        {
+            sfLog().info("Received monitoring constant: " + ext.getMessageType());
+			switch (ext.getMessageType()) {
+				case MonitoringConstants.VAST_START:
+					runTests();
+					break;
+				case MonitoringConstants.VAST_STOP:
+					stopTests();
+					break;
+				default: break;
+			}
+		}
+	}
+
+	public void OnHelloBroadcast(InetAddress inFrom) {
+
+	}
+
+	public void OnStartSUTDaemon() {
+		
+	}
+
+	public void OnCutNetworkConnection(int inIndex, String inIP) {
+
+	}
+
+	public void OnSetupNetworkConnection(int inIndex, String inIP, String inMask) {
+		
+	}
+
+	public void OnRunSfScript(String inScript, Map<String, String> inEnv) {
+
+	}
+
+	public void OnStartSfScript(String inScript, String inProcessName, Map<String, String> inEnv) {
+		
+	}
+
+	public void OnInvokeFunction(String inFunctionName, Vector inParameters) {
 		
 	}
 }

@@ -18,24 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.testing.shared;
+package org.smartfrog.vast.testing.networking.messages;
 
-import org.smartfrog.vast.testing.networking.messages.VastMessage;
+import java.net.InetAddress;
+import java.util.Map;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-
-public interface SUTAction extends Remote {
-	public static final String ATTR_HOST = "Host";
-	public static final String ATTR_WAIT = "Wait";
-	public static final String ATTR_NAME = "Name";
-
-
-	public String getName() throws RemoteException;
-
-	public int getWait() throws RemoteException;
-
-	public String getHost() throws RemoteException;
-
-	public VastMessage getActionMessage() throws RemoteException;
+public class StartSUTDaemon implements VastMessage {
+	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
+		inMessageCallback.OnStartSUTDaemon();
+	}
 }

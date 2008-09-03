@@ -24,6 +24,6 @@ import java.net.InetAddress;
 
 public class HelloBroadcast implements VastMessage {
 	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
-		inMessageCallback.OnHelloBroadcast(inFrom.getHostAddress());
+		inMessageCallback.OnHelloBroadcast(inFrom);
 	}
 }

@@ -18,47 +18,47 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.testing.networking;
+package org.smartfrog.vast.testing.networking.messages;
 
-import org.smartfrog.vast.testing.networking.messages.VastMessage;
-
-import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Map;
 
-/**
- * A vast packet.
- */
-public class VastPacket implements Serializable {
-	private VastMessage vastMessage;
-	private int Clock;
-	private InetAddress Target;
+public class StartSfScript implements VastMessage {
+	private String Script;
+	private String ProcessName;
+	private Map<String, String> Env;
 
-	public VastPacket(int clock, VastMessage vastMessage) {
-		Clock = clock;
-		this.vastMessage = vastMessage;
+	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
+		inMessageCallback.OnStartSfScript(Script, ProcessName, Env);
 	}
 
-	public int getClock() {
-		return Clock;
+	public StartSfScript(Map<String, String> env, String processName, String script) {
+		Env = env;
+		ProcessName = processName;
+		Script = script;
 	}
 
-	public void setClock(int clock) {
-		Clock = clock;
+	public String getProcessName() {
+		return ProcessName;
 	}
 
-	public VastMessage getMessage() {
-		return vastMessage;
+	public void setProcessName(String processName) {
+		ProcessName = processName;
 	}
 
-	public void setMessage(VastMessage vastMessage) {
-		this.vastMessage = vastMessage;
+	public String getScript() {
+		return Script;
 	}
 
-	public InetAddress getTarget() {
-		return Target;
+	public void setScript(String script) {
+		Script = script;
 	}
 
-	public void setTarget(InetAddress target) {
-		Target = target;
+	public Map<String, String> getEnv() {
+		return Env;
+	}
+
+	public void setEnv(Map<String, String> env) {
+		Env = env;
 	}
 }

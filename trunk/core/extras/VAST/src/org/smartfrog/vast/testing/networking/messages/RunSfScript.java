@@ -18,24 +18,37 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.vast.testing.shared;
+package org.smartfrog.vast.testing.networking.messages;
 
-import org.smartfrog.vast.testing.networking.messages.VastMessage;
+import java.net.InetAddress;
+import java.util.Map;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+public class RunSfScript implements VastMessage {
+	private String Script;
+	private Map<String, String> Env;
 
-public interface SUTAction extends Remote {
-	public static final String ATTR_HOST = "Host";
-	public static final String ATTR_WAIT = "Wait";
-	public static final String ATTR_NAME = "Name";
+	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
+		inMessageCallback.OnRunSfScript(Script, Env);
+	}
 
+	public RunSfScript(Map<String, String> env, String script) {
+		Env = env;
+		Script = script;
+	}
 
-	public String getName() throws RemoteException;
+	public String getScript() {
+		return Script;
+	}
 
-	public int getWait() throws RemoteException;
+	public void setScript(String script) {
+		Script = script;
+	}
 
-	public String getHost() throws RemoteException;
+	public Map<String, String> getEnv() {
+		return Env;
+	}
 
-	public VastMessage getActionMessage() throws RemoteException;
+	public void setEnv(Map<String, String> env) {
+		Env = env;
+	}
 }
