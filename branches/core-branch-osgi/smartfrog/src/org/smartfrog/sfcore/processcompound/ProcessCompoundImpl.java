@@ -416,7 +416,7 @@ public class ProcessCompoundImpl extends CompoundImpl
         }
         // Add boot time only in rootProcess
         if (sfIsRoot) {
-            sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
+            sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, Logger.getBootDate());
         }
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root

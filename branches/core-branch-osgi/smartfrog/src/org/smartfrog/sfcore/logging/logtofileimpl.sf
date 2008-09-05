@@ -23,8 +23,9 @@ For more information: www.smartfrog.org
 LogToFileImpl extends  LogToStreamsImpl {
   path (PROPERTY java.io.tmpdir ++ "/sflogs"); //".";
   logFileExtension "sf.log";
-  useDatedFileName true;
-  fileNameDateFormat "yyyy.MM.dd_HH";//""yyyyMMdd-HHmmss_SSSzzz";
+  useBootDate true;
+  useDatedFileName false;
+  fileNameDateFormat "yyyy.MM.dd_HHmmss";//""yyyyMMdd-HHmmss_SSSzzz";
   useLogNameInFileName false;
   useHostNameInFileName true;
   useProcessNameInFileName false;
