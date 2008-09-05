@@ -64,6 +64,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      * Constructs a component deployer for given description.
      */
     public PrimDeployerImpl() {
+        this(null);
     }
 
     /**

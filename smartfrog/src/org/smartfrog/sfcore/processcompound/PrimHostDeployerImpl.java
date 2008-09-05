@@ -50,12 +50,10 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
 
 
     /** Efficiency holder of sfProcessHost attribute. */
-    protected static final Reference refProcessHost =
-        new Reference(SmartFrogCoreKeys.SF_PROCESS_HOST);
+    protected static final Reference refProcessHost =  new Reference(SmartFrogCoreKeys.SF_PROCESS_HOST);
 
     /** Efficiency holder of sfRootLocatorPort attribute. */
-    protected static final Reference refRootLocatorPort =
-        new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT);
+    protected static final Reference refRootLocatorPort = new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT);
 
 
     /**

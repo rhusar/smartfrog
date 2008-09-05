@@ -132,12 +132,12 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * To get from where this Log was called
      */
-    private static CallDetective detective = CallDetective.Factory.makeCallDetective();
+    private static CallDetective detective = CallDetective.Factory.makeCallDetective();                                                                               
 
     /**
      * Depth in StackTrace it will depend on how this Log is used and connected to LogImpl
      */
-    protected int callDepth = 8;
+    protected int callDepth = 9;
 
     /**
      * buffer size

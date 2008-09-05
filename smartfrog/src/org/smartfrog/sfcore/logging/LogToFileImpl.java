@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
@@ -71,6 +72,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /** Use ProcessName in file name */
     boolean useProcessNameInFileName = true;
+
+    /** Use ProcessName in file name */
+     boolean useBootDateInFileName = true;
+
 
     /** Redirect system.out and system.err */
     boolean redirectSystemOutputs = false;
@@ -198,9 +203,10 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           useLogNameInFileName = cd.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
           useHostNameInFileName = cd.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
           useProcessNameInFileName = cd.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
+          useBootDateInFileName = cd.sfResolve(ATR_USE_BOOT_DATE_IN_FILE_NAME,useBootDateInFileName, false);
+
           try {
-             fileNameDateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_FILE_NAME_DATE_FORMAT,
-                     FILE_DATE_FORMAT, false));
+             fileNameDateFormatter = new SimpleDateFormat(cd.sfResolve(ATR_FILE_NAME_DATE_FORMAT, FILE_DATE_FORMAT, false));
           } catch (Exception ex) {
              if (this.isErrorEnabled())this.error("fileNameDateFormatter", ex);
           }
@@ -265,7 +271,13 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             }
            newfileName.append(instanceName);
         }
-
+        if (useBootDateInFileName){
+            if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
+                            newfileName.append("_");
+            }
+            // add the extension
+            newfileName.append(fileNameDateFormatter.format(Logger.getBootDate()));
+        }
         if (datedName){
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");

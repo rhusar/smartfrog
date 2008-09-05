@@ -663,10 +663,10 @@
     </java>
   </target>
 
-  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs"/>
+  <target name="ready-to-package-javadocs" depends="artifact-names,jdocs" unless="javadoc.disabled"/>
 
  <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
-  <target name="package-javadocs" depends="ready-to-package-javadocs"
+  <target name="package-javadocs" depends="ready-to-package-javadocs" unless="javadoc.disabled"
       description="package up all the javadocs">
     <property name="javadocs.zipfile.package" value="" />
     <zip destfile="${javadocs.zip}" whenempty="create">
@@ -793,9 +793,7 @@
   <target name="published-distribution" depends="dist"
       description="create a distribution and publish all artifacts with Ivy"/>
   <target name="dis"
-      depends="build,jars,copybins,copyPrivate,copydocs,
-      copylibs,copyexamples,copyTestCA,buildSetup"
-      description="Fast dist. No ivy publish">
+      depends="build,jars,copybins,copyPrivate,copydocs, copylibs,copyexamples,copyTestCA,buildSetup" description="Fast dist. No ivy publish">
   </target>
 	  
   <target name="dist"
@@ -921,7 +919,7 @@
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-  <target name="m2-init" depends="init,generateversion,target-names">
+  <target name="m2-init" depends="init,generateversion,target-names" unless="publish.disabled">
 
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
@@ -980,7 +978,7 @@
 
 
    <!-- create POMs from templates held in the metadata dir -->
-   <target name="m2-pom" depends="m2-init,sha1macro" >
+   <target name="m2-pom" depends="m2-init,sha1macro" unless="publish.disabled">
    
      <expandingcopy file="${metadata.dir}/smartfrog.pom"
        tofile="${smartfrog.pom}"/>
@@ -999,7 +997,7 @@
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the maven2 publish repository -->
   <!-- ========================================================== -->
-  <target name="m2-install" depends="checksum-target-jar,m2-pom"
+  <target name="m2-install" depends="checksum-target-jar,m2-pom" unless="publish.disabled"
       description="copy the JAR file maven publish repository">
 
     <macrodef name="m2-install">
@@ -1114,16 +1112,20 @@
 
   <target name="ready-to-publish" depends="copy-target-jars,ivy-report,unzip-install-artifact,documentation"/>
 
-  <target name="ivy-publish" depends="ready-to-publish" if="ivy.found">
+  <target name="ivy-publish" depends="ready-to-publish" unless="publish.disabled" if="ivy.found"> 
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
         artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
   
-  <target name="published" depends="ivy-publish,m2-install"
-      description="Publish artifacts to the local repositories"
-      />
+  <target name="published" depends="ivy-publish,m2-install" unless="publish.disabled"
+      description="Publish artifacts to the local repositories">
+	  <echo>
+	------------ Publish artifacts ---------
+    To skip this stage, set publish.disabled=true
+    </echo> 
+  </target> 	
 
   <target name="artifact-names" depends="target-names">
     <property name="artifacts.dir" location="${build.extra.dir}/artifacts" />

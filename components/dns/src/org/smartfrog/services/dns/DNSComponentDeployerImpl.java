@@ -37,6 +37,22 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 public class DNSComponentDeployerImpl extends PrimDeployerImpl  {
 
 
+   /**
+     * Constructs a component deployer for given description.
+     */
+    public DNSComponentDeployerImpl() {
+       this(null);
+    }
+
+    /**
+     * Constructs a component deployer for given description.
+     *
+     * @param descr target description
+     */
+    public DNSComponentDeployerImpl(ComponentDescription descr) {
+        target = descr;
+    }
+
     /**
      * Creates a DNS component instantiated from a description, calling its
      * initialization method sfDeployWith.

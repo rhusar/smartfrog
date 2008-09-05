@@ -26,11 +26,14 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Date;
 
 /**
  * Class used to store some flags used for log reporting.
  */
 public class Logger implements MessageKeys {
+
+    private static Date  bootDate = null;
 
     /** Used as default value in diagnostics for remote host {@value} */
     public static final String SMARTFROG_URL = "http://www.smartfrog.org/";
@@ -102,7 +105,7 @@ public class Logger implements MessageKeys {
     /**
      * empty constructor
      */
-    private Logger(){
+    private Logger(){        
     }
 
     /**
@@ -110,6 +113,9 @@ public class Logger implements MessageKeys {
      */
     public static synchronized void  init() {
         if (initialized) return;
+
+        getBootDate();
+
         ComponentDescription configuration = null;
         //Check Class and read configuration...including system.properties
         try {
@@ -141,6 +147,12 @@ public class Logger implements MessageKeys {
         reportRepeatedJars();
 
     }
+
+    public static Date getBootDate (){
+        if (bootDate == null) bootDate = new Date(System.currentTimeMillis());;
+        return bootDate;
+    }    
+    
 
     /**
      * Warn of repeated .jars

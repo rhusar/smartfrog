@@ -83,46 +83,4 @@ public class DefaultIncludeHandler implements IncludeHandler {
         ).AttributeList();
     }
 
-    /**
-     * Locate the include and returns an input stream on it. This uses
-     * SFSystem.stringToURL to check whether include is a URL or a file. On
-     * failure it tries to use standard getResourceAsStream to get the inlude
-     * of the classpath. Subclasses can override to provide additional means
-     * of locating includes.
-     *
-     * @param include include to locate
-     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
-     *
-     * @return Reader (UTF-8) on located include
-     *
-     * @exception Exception failed to locate or open include
-     */
-    protected Reader openInclude(String include, String codebase) throws Exception {
-        InputStream is = null;
-
-        //is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
-        //@todo review
-		is = SFLoader.getInputStreamSFException(include);
-
-        if (is == null) {
-            throw new Exception("Include file: " + include + " not found");
-        }
-
-        return new InputStreamReader(is, "utf-8");
-    }
-
-    /**
-     * build a concatenated codebase from the base codebase and the codebase passed as a parameter
-
-     *
-     *  @param codebase the codeebase to concatenate to the base. May be null.
-     * @deprecated
-     */
-    protected String actualCodebase(String codebase) {
-        String actualCodebase = null;
-        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
-        else if (baseCodebase != null) actualCodebase = baseCodebase;
-        else if (codebase != null) actualCodebase = codebase;
-        return actualCodebase;
-    }
 }
