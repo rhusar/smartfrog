@@ -120,6 +120,11 @@
   <property file="../build.properties"/>
   <!-- properties file to modify version.sf -->
   <property file="sf-build-version.properties"/>
+  
+  <!-- where the ivy/maven artifacts are stored -->
+  <property name="artifactsCache.dir" location="../artifactsCache"/>
+    <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
+  
 
   <property environment="env"/>
   <!-- Release Directories -->
@@ -923,7 +928,7 @@
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts.
       -->
-    <property name="m2.repository" location="${user.home}/.m2/repository"/>
+    <property name="m2.repository" location="${artifactsCache.dir}/.m2/repository"/>
     <!-- and by default, they publish somewhere other than the local repository-->
     <property name="m2.publish.repository" location="${core.dir}/build/m2/repository"/>
     <mkdir dir="${m2.publish.repository}"/>
@@ -1028,6 +1033,7 @@
       <attribute name="pom" />
       <attribute name="pom.md5" default="@{pom}.md5"/>
       <sequential>
+	    <echo>Copying @{target} to @{destdir}</echo>
         <mkdir dir="@{destdir}"/>
         <copy file="@{target}" todir="@{destdir}"/>
         <!-- copy a pom -->
@@ -1055,7 +1061,7 @@
       pom="${sf-examples.pom}"
       />
     <m2-install
-      destdir="${m2.sf-rmi-spi.jar}"
+      destdir="${m2.sf-rmi-spi}"
       target="${sf-rmi-spi.jar}"
 	  target.md5="${dist.metadata.dir}/${sf-rmi-spi.stub}.jar.md5"
       pom="${sf-rmi-spi.pom}"
@@ -1368,7 +1374,7 @@
   </target>
   
   <!-- CLOVER -->
-  <taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/>
+  <!--<taskdef resource="cloverlib.xml" classpath="./clover/clover.jar"/> -->
 	
   <target name="with.clover">
    <clover-setup/>
