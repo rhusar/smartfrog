@@ -22,8 +22,6 @@ package org.smartfrog.vast.testing.runner;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.vast.archive.TarArchive;
@@ -31,6 +29,7 @@ import org.smartfrog.vast.archive.ZipArchive;
 import org.smartfrog.vast.archive.BaseArchive;
 import org.smartfrog.vast.testing.networking.BroadcastCommunicator;
 import org.smartfrog.vast.testing.networking.messages.MessageCallback;
+import org.smartfrog.vast.testing.networking.messages.PublishedAttribute;
 import org.smartfrog.vast.testing.shared.LogFromStreamThread;
 import org.smartfrog.vast.helper.Helper;
 import org.smartfrog.vast.helper.HelperFactory;
@@ -250,22 +249,57 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 
 				printOutput(ps);
 
-				SUTDaemonRunning = true;
-
 				// ping the daemon for 2 minutes
 				// once it's reachable continue
+				ProcessCompound daemon = null;
 				for(int i = 0; i < 120; ++i)
 				{
 					try {
-						ProcessCompound daemon = SFProcess.sfSelectTargetProcess(SUTNetAddress, null);
+						daemon = SFProcess.sfSelectTargetProcess(SUTNetAddress, null);
 						daemon.sfPing(this);
 						break;
 					} catch (Exception e) {
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e1) {
-
 						}
+					}
+
+					if (i == 120) {
+						sfLog().error("Daemon still not running after two minutes.");
+						// TODO: send error message or implement error behaviour
+						return;
+					}
+				}
+
+				SUTDaemonRunning = true;
+
+				// start the touchpoint
+				OnStartSfScript("org/smartfrog/vast/testing/runner/TouchPoint.sf", "touchpoint", SUTEnv);
+
+				// wait for the touchpoint
+				TouchPoint tp;
+				for(int i = 0; i < 120; ++i)
+				{
+					try {
+						// resolve the touchpoint
+						tp = (TouchPoint) daemon.sfResolve("touchpoint", true);
+
+						// touch the touchpoint so the SUT knows how to send broadcasts
+						tp.touch(this);
+						
+						break;
+					} catch (Exception e) {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+						}
+					}
+
+					if (i == 120) {
+						sfLog().error("Touchpoint still not available after two minutes.");
+						// TODO: send error message or implement error behaviour
+						return;
 					}
 				}
 
@@ -331,5 +365,17 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 
 	public void OnInvokeFunction(String inFunctionName, Vector inParameters) {
 		// TODO: invoke function
+	}
+
+	public void OnPublishedAttribute(InetAddress inHost, String inProcessName, String inKey, String inValue) {
+		// to nothing
+	}
+
+	public void PublishAttribute(PublishedAttribute inAttrMsg) throws RemoteException {
+		try {
+			BCC.sendMessage(null, inAttrMsg);
+		} catch (IOException e) {
+			sfLog().error(e);
+		}
 	}
 }

@@ -72,4 +72,13 @@ public interface MessageCallback {
 	 * @param inParameters The parameters.
 	 */
 	public void OnInvokeFunction(String inFunctionName, Vector inParameters);
+
+	/**
+	 * An attribute on a host has been updated.
+	 * @param inHost The host where the process can be found.
+	 * @param inProcessName The process to which the attribute belongs.
+	 * @param inKey The name of the attribute.
+	 * @param inValue The attribute's value.
+	 */
+	public void OnPublishedAttribute(InetAddress inHost, String inProcessName, String inKey, String inValue);
 }

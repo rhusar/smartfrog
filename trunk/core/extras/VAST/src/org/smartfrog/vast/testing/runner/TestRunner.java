@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.vast.testing.runner;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.vast.testing.networking.messages.PublishedAttribute;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -44,4 +45,11 @@ public interface TestRunner extends Remote {
 	 * @throws RemoteException
 	 */
 	public void setupSUT() throws RemoteException, SmartFrogException;
+
+	/**
+	 * Publishes an attribute to the distributed system.
+	 * @param inAttrMsg The published attribute message.
+	 * @throws RemoteException
+	 */
+	public void PublishAttribute(PublishedAttribute inAttrMsg) throws RemoteException;
 }
