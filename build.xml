@@ -38,6 +38,11 @@ For more information: www.smartfrog.org
     <property file="build.properties" />
     <property environment="env" />
     <!-- look for a feature that only came in in ant 1.7alpha -->
+	
+	<!-- where the ivy/maven artifacts are stored -->
+    <property name="artifactsCache.dir" location="artifactsCache"/>
+    <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
+	
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
     <property name="toplevel.dir" location=".." />
@@ -415,7 +420,7 @@ For more information: www.smartfrog.org
 
 
   <target name="ivy-properties">
-    <property name="ivy.user.dir" location="${user.home}/.ivy" />
+    <property name="ivy.user.dir" location="${artifactsCache.dir}/.ivy" />
     <property name="ivy.local.dir" location="${ivy.user.dir}/local" />
     <property name="ivy.cache.dir" location="${ivy.user.dir}/cache" />
 
@@ -423,7 +428,7 @@ For more information: www.smartfrog.org
     <property name="ivy.smartfrog.version" value="latest.integration" />
     <property name="ivy.jar" location="antbuild/ivy/lib/ivy-${ivy.version}.jar"/>
     <!--Ivy 2 uses some separate directories, that also need cleanup-->
-    <property name="ivy2.user.dir" location="${user.home}/.ivy2" />
+    <property name="ivy2.user.dir" location="${artifactsCache.dir}/.ivy2" />
     <property name="ivy2.local.dir" location="${ivy2.user.dir}/local" />
     <property name="ivy2.cache.dir" location="${ivy2.user.dir}/cache" />
   </target>
