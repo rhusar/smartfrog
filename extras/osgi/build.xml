@@ -3,6 +3,9 @@
 
     <property file="build.properties" />
     <property name="sf.dir" value="../../smartfrog"/>
+	<!-- where the ivy/maven artifacts are stored -->
+    <property name="artifactsCache.dir" location="../../artifactsCache"/>
+    <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
 
     <target name="init">
         <filelist id="child.projects" dir="." >
@@ -44,13 +47,13 @@
     </target>
 
     <target name="copyJarsAround">
-        <copy todir="${user.home}/Dev/equinox/plugins" overwrite="true">
+        <copy todir="${artifactsCache.dir}/Dev/equinox/plugins" overwrite="true">
             <fileset dir="daemon-bundle/dist/lib/" includes="sf-*.jar"/>
             <fileset dir="rmiclassloading-extension-bundle/dist/lib/" includes="sf-*.jar"/>
             <fileset dir="test-bundle/dist/lib/" includes="sf-*.jar"/>            
         </copy>
 
-        <copy todir="${user.home}/public_html" overwrite="true">
+        <copy todir="${artifactsCache.dir}/public_html" overwrite="true">
             <fileset dir="daemon-bundle/dist/lib/" includes="sf-*.jar"/>
             <fileset dir="rmiclassloading-extension-bundle/dist/lib/" includes="sf-*.jar"/>
             <fileset dir="test-bundle/dist/lib/" includes="sf-*.jar"/>
