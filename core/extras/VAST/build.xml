@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="vast" default="allJars">
+<project name="vast" basedir="." default="allJars">
 
 	<!--
 		/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -28,19 +28,20 @@
 	</description>
 
 	<!-- override point -->
+	<echo message="==================================================================="/>
+	<echo message="= ${ant.project.name}"/>
 
 	<!--<property file="build.properties"/>-->
+	<property file="build.properties"/>
 	<property name="root.dir" location="../.."/>
 	<property name="ivy.enabled" value="true"/>
+	<property name="is.component" value="true"  />
 
 	<!-- Import common stuff -->
 	<!--available file="../../common.xml" property="root.dir" value="../.."/-->
 	<import file="${root.dir}/common.xml"/>
 
 	<property name="vast.code.dir" location="src/org/smartfrog/vast"/>
-
-	<echo message="==================================================================="/>
-	<echo message="= ${ant.project.name}"/>
 
 	<target name="helperJar" depends="ready-to-jar">
 		<mkdir dir="dist/helper"/>

@@ -22,12 +22,15 @@ package org.smartfrog.vast.testing.controller;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.vast.testing.networking.BroadcastCommunicator;
 import org.smartfrog.vast.testing.networking.messages.MessageCallback;
 import org.smartfrog.vast.testing.networking.messages.StartSfScript;
 import org.smartfrog.vast.testing.shared.TestSuite;
 import org.smartfrog.vast.testing.shared.SUTTestSequence;
 import org.smartfrog.vast.testing.shared.SUTAction;
+import org.smartfrog.vast.testing.shared.SUTAttribute;
 import org.smartfrog.avalanche.client.monitor.xmpp.AvlXMPPListener;
 import org.smartfrog.services.xmpp.*;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -135,8 +138,19 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 					}
 				}
 
+				// wait
+				if (seq.getWait() > 0) {
+					try {
+							Thread.sleep(seq.getWait() * 1000);
+						} catch (Exception e) {
+							sfLog().error(e);
+						}
+				}
+
 				// check the result
-				
+				for (SUTAttribute attr : seq.getResult().getAttributes()) {
+					ProcessCompound pc = SFProcess.sfSelectTargetProcess(attr.getHost(), null);
+				}
 			}
 		} catch (Exception e) {
 			sfLog().error(e);
@@ -200,5 +214,9 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 
 	public void OnInvokeFunction(String inFunctionName, Vector inParameters) {
 		
+	}
+
+	public void OnPublishedAttribute(InetAddress inHost, String inProcessName, String inKey, String inValue) {
+		sfLog().info(inHost + ", " + inProcessName + " published attribute " + inKey + "=" + inValue);
 	}
 }

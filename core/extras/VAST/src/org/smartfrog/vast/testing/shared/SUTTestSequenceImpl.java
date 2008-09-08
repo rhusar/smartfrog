@@ -34,6 +34,9 @@ import java.rmi.RemoteException;
 public class SUTTestSequenceImpl extends CompoundImpl implements SUTTestSequence {
 	private SUTState Result;
 	private ArrayList<SUTAction> Actions = new ArrayList<SUTAction>();
+	private String 	Name;
+	private int		Wait;
+	private boolean	ExpectFailure;
 
 	public SUTTestSequenceImpl() throws RemoteException {
 	}
@@ -44,6 +47,9 @@ public class SUTTestSequenceImpl extends CompoundImpl implements SUTTestSequence
 		sfLog().info("deploying SUTTestSequenceImpl");
 
 		Result = (SUTState) sfResolve(ATTR_RESULT, (Object)null, true);
+		Wait = (Integer) sfResolve(ATTR_WAIT, true);
+		Name = (String) sfResolve(ATTR_NAME, true);
+		ExpectFailure = (Boolean) sfResolve(ATTR_EXPECT_FAILURE, true);
 	}
 
 	protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
@@ -69,5 +75,17 @@ public class SUTTestSequenceImpl extends CompoundImpl implements SUTTestSequence
 
 	public SUTState getResult() throws RemoteException {
 		return Result;
+	}
+
+	public boolean getExpectFailure() throws RemoteException {
+		return ExpectFailure;
+	}
+
+	public String getName() throws RemoteException {
+		return Name;
+	}
+
+	public int getWait() throws RemoteException {
+		return Wait;
 	}
 }

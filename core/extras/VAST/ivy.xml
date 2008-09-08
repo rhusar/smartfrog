@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="http://ivyrep.jayasoft.org/ivy-doc.xsl"?>
 <ivy-module version="1.0">
-	<info organisation="org.smartfrog" module="vast">
+	<info organisation="org.smartfrog" module="sf-vast">
 		<license name="LGPL"/>
 		<ivyauthor name="Hewlett-Packard" url="http://www.smartfrog.org"/>
 		<description>
@@ -42,6 +42,10 @@
 					changing="true"
 					rev="latest.integration"
 					conf="compile,runtime,daemon->services"/>
+		<dependency org="org.smartfrog"
+					name="sf-tasks"
+					rev="latest.integration"
+					conf="build->default"/>
 		<dependency org="org.smartfrog"
 					name="sf-avalanche-core"
 					rev="latest.integration"
