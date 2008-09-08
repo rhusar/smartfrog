@@ -20,7 +20,7 @@
         description="the classpath needed to run systemtests"/>
     <conf name="test" extends="unittest,systemtest"
         description="the classpath needed to run tests"/>
-    <conf name="core" description="the core smartfrog JAR only"/>
+    <conf name="core" description="the core smartfrog JARs only"/>
     <conf name="services"
         description="the core and sfServices JAR" extends="core,services-master"/>
     <conf name="services-master" description="the sfServices JAR" />

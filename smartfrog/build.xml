@@ -665,7 +665,7 @@
   <target name="ready-to-package-javadocs" depends="artifact-names,jdocs" unless="javadoc.disabled"/>
 
  <!--create a zipfile with the javadocs; the prefix in the zip file is configurable-->
-  <target name="package-javadocs" depends="ready-to-package-javadocs" unless="javadoc.disabled"
+  <target name="package-javadocs" depends="ready-to-package-javadocs"
       description="package up all the javadocs">
     <property name="javadocs.zipfile.package" value="" />
     <zip destfile="${javadocs.zip}" whenempty="create">
@@ -709,25 +709,24 @@
 
     <property name="sf-examples.title"
         value="sfExamples" />
-
     <property name="sf-examples.stub"
       value="${sf-examples.title}-${Version}" />
     <property name="sf-examples.jar"
       location="${dist.lib.dir}/${sf-examples.stub}.jar" />
 
     <property name="sf-rmi-spi.title"
-        value="sfRmiSpi" />
+        value="sfRmiSpi" />		
     <property name="sf-rmi-spi.stub"
-      value="${sf-rmi-spi.title}-${Version}" />
+      value="${sf-rmi-spi.title}-${Version}" />	  
     <property name="sf-rmi-spi.jar"
       location="${dist.lib.dir}/${sf-rmi-spi.stub}.jar" />
 
-      <property name="sf-osgi.title"
-                value="sfOSGi"/>
-      <property name="sf-osgi.stub"
-                value="${sf-osgi.title}-${Version}"/>
-      <property name="sf-osgi.jar"
-                location="${dist.lib.dir}/${sf-osgi.stub}.jar"/>
+    <property name="sf-osgi.title"
+	  value="sfOSGi"/>
+	<property name="sf-osgi.stub"
+	  value="${sf-osgi.title}-${Version}"/>
+	<property name="sf-osgi.jar"
+	  location="${dist.lib.dir}/${sf-osgi.stub}.jar"/>
 
   </target>
 
@@ -955,26 +954,31 @@
       groupIDpath="${m2.groupID.path}"
       artifactID="sfExamples"
       version="${Version}" />
-    <m2-makepath property="m2.sf-rmi-spi"
-      groupIDpath="${m2.groupID.path}"
-      artifactID="sf-osgi"
-      version="${Version}" />
     <m2-makepath property="m2.sf-osgi"
       groupIDpath="${m2.groupID.path}"
-      artifactID="sf-rmi-spi"
+      artifactID="sfOSGi"
       version="${Version}" />
-
-
-
+    <m2-makepath property="m2.rmi-spi"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="sfRmiSpi"
+      version="${Version}" />
 	  
     <property name="smartfrog.pom"
       location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
     <property name="target.pom"
       value="${smartfrog.pom}" />
+	  
     <property name="sf-services.pom"
       location="${dist.metadata.dir}/${sf-services.stub}.pom" />
+	  
     <property name="sf-examples.pom"
       location="${dist.metadata.dir}/${sf-examples.stub}.pom" />
+	
+	<property name="sf-osgi.pom"
+      location="${dist.metadata.dir}/${sf-osgi.stub}.pom" />	
+	
+	<property name="sf-rmi-spi.pom"
+      location="${dist.metadata.dir}/${sf-rmi-spi.stub}.pom" />
 	  
      <property name="metadata.dir" location="bin/metadata" />
      <presetdef name="expandingcopy">
@@ -996,9 +1000,9 @@
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
-	 <expandingcopy file="${metadata.dir}/sf-rmi-spi.pom"
+	 <expandingcopy file="${metadata.dir}/sfRmiSpi.pom"
          tofile="${sf-rmi-spi.pom}"/>
-	 <expandingcopy file="${metadata.dir}/sf-osgi.pom"
+	 <expandingcopy file="${metadata.dir}/sfOSGi.pom"
          tofile="${sf-osgi.pom}"/>
 		 
      <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
@@ -1198,6 +1202,8 @@
         <include name="${smartfrog.stub}.*" />
         <include name="${sf-services.stub}.*" />
         <include name="${sf-examples.stub}.*" />
+		<include name="${sf-rmi-spi.stub}.*" />
+		<include name="${sf-osgi.stub}.*" />
       </zipfileset>
     </zip>
   </target>
@@ -1208,6 +1214,8 @@
     <fileexists file="${unzip.install.dir}/lib/${smartfrog.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-services.stub}.jar" />
     <fileexists file="${unzip.install.dir}/lib/${sf-examples.stub}.jar" />
+	<fileexists file="${unzip.install.dir}/lib/${sf-rmi-spi.stub}.jar" />
+	<fileexists file="${unzip.install.dir}/lib/${sf-osgi.stub}.jar" />
   </target>
 
   <target name="publish-all" depends="published" />  
