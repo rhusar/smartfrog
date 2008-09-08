@@ -349,7 +349,6 @@
     <pathelement path="${classpath}"/>
 	<pathelement path="./lib/eclipse.jar"/>
 	<pathelement path="${path.compile.classpath}"/>
-    <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
   <!-- to get the classpath in a printable form -->
   <pathconvert pathsep="${line.separator}|   |-- "  
@@ -956,6 +955,17 @@
       groupIDpath="${m2.groupID.path}"
       artifactID="sfExamples"
       version="${Version}" />
+    <m2-makepath property="m2.sf-rmi-spi"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="sf-osgi"
+      version="${Version}" />
+    <m2-makepath property="m2.sf-osgi"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="sf-rmi-spi"
+      version="${Version}" />
+
+
+
 	  
     <property name="smartfrog.pom"
       location="${dist.metadata.dir}/${smartfrog.stub}.pom" />
@@ -986,10 +996,17 @@
          tofile="${sf-services.pom}"/>
      <expandingcopy file="${metadata.dir}/sfExamples.pom"
          tofile="${sf-examples.pom}"/>
+	 <expandingcopy file="${metadata.dir}/sf-rmi-spi.pom"
+         tofile="${sf-rmi-spi.pom}"/>
+	 <expandingcopy file="${metadata.dir}/sf-osgi.pom"
+         tofile="${sf-osgi.pom}"/>
 		 
      <sha1 file="${smartfrog.pom}"   todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-services.pom}" todir="${dist.metadata.dir}"/>
      <sha1 file="${sf-examples.pom}" todir="${dist.metadata.dir}"/>
+	 <sha1 file="${sf-rmi-spi.pom}" todir="${dist.metadata.dir}"/>
+	 <sha1 file="${sf-osgi.pom}" todir="${dist.metadata.dir}"/>
+
    </target>
 
 
@@ -1033,6 +1050,20 @@
 	  target.md5="${dist.metadata.dir}/${sf-examples.stub}.jar.md5"
       pom="${sf-examples.pom}"
       />
+    <m2-install
+      destdir="${m2.sf-rmi-spi.jar}"
+      target="${sf-rmi-spi.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-rmi-spi.stub}.jar.md5"
+      pom="${sf-rmi-spi.pom}"
+      />
+    <m2-install
+      destdir="${m2.sf-osgi}"
+      target="${sf-osgi.jar}"
+	  target.md5="${dist.metadata.dir}/${sf-osgi.stub}.jar.md5"
+      pom="${sf-osgi.pom}"
+      />
+
+
   </target>
 
 
@@ -1103,6 +1134,7 @@
   <!--copy these in to the same dir that the other artifacts go,
   so that they can be published together-->
   <target name="copy-target-jars" depends="jars,artifact-names">
+    <echo>Publishing artifacts to ${artifacts.dir} </echo>
     <copy file="${smartfrog.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-services.jar}" todir="${artifacts.dir}" />
     <copy file="${sf-examples.jar}" todir="${artifacts.dir}" />
