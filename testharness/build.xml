@@ -69,6 +69,7 @@
   <!-- override point -->
   <property file="build.properties"/>
   <property name="ivy.enabled" value="true"/>
+
   <property name="system.tests" value="true"/>
   <!-- this component keeps its test files in a different place from the
        rest, for historical reasons (i.e. it is nothing but test) -->
@@ -77,6 +78,10 @@
   <property name="root.dir" location=".."/>
   <property name="coverage.dir" location="${root.dir}/build/coverage"/>
   <property name="coverage.report.dir" location="${coverage.dir}/report"/>
+  
+   <!-- where the ivy/maven artifacts are stored -->
+  <property name="artifactsCache.dir" location="${root.dir}/.artifacts_cache"/>
+  <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
   
   
 

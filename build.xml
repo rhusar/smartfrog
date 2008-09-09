@@ -40,8 +40,9 @@ For more information: www.smartfrog.org
     <!-- look for a feature that only came in in ant 1.7alpha -->
 	
 	<!-- where the ivy/maven artifacts are stored -->
-    <property name="artifactsCache.dir" location="artifactsCache"/>
+    <property name="artifactsCache.dir" location=".artifacts_cache"/>
     <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
+	<property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 	
     <available property="nice.task.present"
       classname="org.apache.tools.ant.taskdefs.Nice" />
