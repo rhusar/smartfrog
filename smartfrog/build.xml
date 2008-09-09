@@ -36,6 +36,93 @@
     relevant JAR files into the javacc subdirectory
   </description>
 
+<!-- =================================================================== -->
+  <!-- Global properties                                                   -->
+  <!-- =================================================================== -->
+  <!-- local and one level up settings are read in before anything else -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <!-- properties file to modify version.sf -->
+  <property file="sf-build-version.properties"/>
+  
+  
+  <!-- this is where we work out the base directory    -->
+  <!-- only here when running this task raw, to test targets inside -->
+  <property name="ant.file.common" location="${ant.file}" />
+  <!-- this will be set by the runtime during importation --> 
+
+  <!-- it is how we infer the base directory of the system -->
+  <dirname property="antfile.dir" file="${ant.file.common}"/>
+	
+  <property name="core.dir" location="${antfile.dir}/.."/>
+  <!-- where the ivy/maven artifacts are stored -->
+  <property name="artifactsCache.dir" location="../.artifacts_cache"/>
+   
+  <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
+
+  <property environment="env"/>
+  <!-- Release Directories -->
+  <property name="src" value="src"/>
+  <!-- where the source is -->
+  <property name="src.dir" location="src"/>
+  <!-- where all compiled artifacts should go -->
+  <property name="build.dir" location="build"/>
+  <property name="build" location="${build.dir}"/>
+  <!-- where the files for the jar file go -->
+  <property name="build.classes.dir" location="${build.dir}"/>
+  <property name="build.extra.dir" location="buildextra"/>
+  <property name="dist.dir" location="dist"/>
+  <!-- where the files to zip go -->
+  <property name="releases.dir" location="releases"/>
+  <!-- where the dated zips go, don't clean -->
+  <property name="bin" value="bin"/>
+  <!-- where all the executables go -->
+  <property name="lib" value="lib"/>
+  <!-- where all the jar files go -->
+  <property name="signedLib" value="signedLib"/>
+  <!-- dir to export jar files -->
+  <property name="testCA" value="testCA"/>
+  <!-- all protected files -->
+  <property name="private" value="private"/>
+  <property name="docs" value="docs"/>
+  <property name="doc.dir" location="${docs}"/>
+  <property name="jdocs" value="${doc.dir}/jdocs"/>
+  <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
+  <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
+  <property name="dist.metadata.dir" location="${dist.lib.dir}/metadata"/>
+  <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
+  <property name="dist.src.dir" location="${dist.dir}/${src}"/>
+  <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
+  <property name="dist.private.dir" location="${dist.dir}/${private}"/>
+  <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
+  <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
+  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
+  <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
+  <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
+  <!--property name="redist" value="redist"/ -->
+  <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
+
+
+  <!-- Compile options for Smartfrog Release -->
+  <property name="javac.debug.mode" value="on"/>
+  <!-- turn on compile -g -->
+  <property name="javac.debug.level" value="lines,vars,source"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="build.compiler" value="modern"/>
+  <property name="javac.compiler" value="${build.compiler}"/>
+  <property name="javac.max.memory" value="192m" />
+    
+  <!--use the forking compiler with tuned memory use and profiling diagnostics-->
+  <property name="rmic.compiler" value="forking"/>
+  <property name="rmic.max.memory" value="192m" />
+  <property name="rmic.forking.commandline.extras" value="" />
+  <property name="rmic.forking.commandline" 
+    value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
+ 
+  <!-- override point for javacc -->
+  <property name="javacc.dir" location="javacc"/>
+  <!-- Security related files -->
+  <property name="manifestName" value="${private}/sealManifest.mf"/>
 
 
   <!-- =================================================================== -->
@@ -112,86 +199,7 @@
 
 
   
-  <!-- =================================================================== -->
-  <!-- Global properties                                                   -->
-  <!-- =================================================================== -->
-  <!-- local and one level up settings are read in before anything else -->
-  <property file="build.properties"/>
-  <property file="../build.properties"/>
-  <!-- properties file to modify version.sf -->
-  <property file="sf-build-version.properties"/>
   
-  <!-- where the ivy/maven artifacts are stored -->
-  <property name="artifactsCache.dir" location="../.artifacts_cache"/>
-   
-  <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
-
-  <property environment="env"/>
-  <!-- Release Directories -->
-  <property name="src" value="src"/>
-  <!-- where the source is -->
-  <property name="src.dir" location="src"/>
-  <!-- where all compiled artifacts should go -->
-  <property name="build.dir" location="build"/>
-  <property name="build" location="${build.dir}"/>
-  <!-- where the files for the jar file go -->
-  <property name="build.classes.dir" location="${build.dir}"/>
-  <property name="build.extra.dir" location="buildextra"/>
-  <property name="dist.dir" location="dist"/>
-  <!-- where the files to zip go -->
-  <property name="releases.dir" location="releases"/>
-  <!-- where the dated zips go, don't clean -->
-  <property name="bin" value="bin"/>
-  <!-- where all the executables go -->
-  <property name="lib" value="lib"/>
-  <!-- where all the jar files go -->
-  <property name="signedLib" value="signedLib"/>
-  <!-- dir to export jar files -->
-  <property name="testCA" value="testCA"/>
-  <!-- all protected files -->
-  <property name="private" value="private"/>
-  <property name="docs" value="docs"/>
-  <property name="doc.dir" location="${docs}"/>
-  <property name="jdocs" value="${doc.dir}/jdocs"/>
-  <property name="SFjdocs" value="${doc.dir}/SFjdocs"/>
-  <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
-  <property name="dist.metadata.dir" location="${dist.lib.dir}/metadata"/>
-  <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
-  <property name="dist.src.dir" location="${dist.dir}/${src}"/>
-  <property name="dist.docs.dir" location="${dist.dir}/${docs}"/>
-  <property name="dist.private.dir" location="${dist.dir}/${private}"/>
-  <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
-  <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
-  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
-  <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
-  <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
-  <!--property name="redist" value="redist"/ -->
-  <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
-
-
-  <!-- Compile options for Smartfrog Release -->
-  <property name="javac.debug.mode" value="on"/>
-  <!-- turn on compile -g -->
-  <property name="javac.debug.level" value="lines,vars,source"/>
-  <property name="javac.java.version" value="1.5"/>
-  <property name="build.compiler" value="modern"/>
-  <property name="javac.compiler" value="${build.compiler}"/>
-  <property name="javac.max.memory" value="192m" />
-    
-  <!--use the forking compiler with tuned memory use and profiling diagnostics-->
-  <property name="rmic.compiler" value="forking"/>
-  <property name="rmic.max.memory" value="192m" />
-  <property name="rmic.forking.commandline.extras" value="" />
-  <property name="rmic.forking.commandline" 
-    value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
- 
-  <!-- override point for javacc -->
-  <property name="javacc.dir" location="javacc"/>
-  <!-- Security related files -->
-  <property name="manifestName" value="${private}/sealManifest.mf"/>
-
-
-
   <!-- ================================================================== -->
   <!-- Import the security-related ant file -->
   <!-- ================================================================== -->
