@@ -12,7 +12,7 @@
           http://www.ibiblio.net/pub/packages/maven2
   -->
   
-   <property name="artifactsCache.dir" value="../../.artifacts_cache"/>
+   <property name="artifactsCache.dir" value="${core.dir}/.artifacts_cache"/>
    <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
    <property name="ivy.default.ivy.user.dir" value="${artifactsCache.dir}"/>
   
