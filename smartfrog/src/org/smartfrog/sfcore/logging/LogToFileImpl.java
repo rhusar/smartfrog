@@ -49,7 +49,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     StringBuilder fullLogFileName = new StringBuilder();
 
     /** String name for path. */
-    String path=".";//+File.separator+"log";
+    String path="./logs_dir";//+File.separator+"log";
 
     /**
      *  Log File extension
