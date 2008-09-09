@@ -11,6 +11,11 @@
           http://ibiblio.lsu.edu/main/pub/packages/maven2
           http://www.ibiblio.net/pub/packages/maven2
   -->
+  
+   <property name="artifactsCache.dir" value="../../.artifacts_cache"/>
+   <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
+   <property name="ivy.default.ivy.user.dir" value="${artifactsCache.dir}"/>
+  
   <property name="ivy.ibiblio.root"
       value="http://repo1.maven.org/maven2/" override="false"/>
   <property name="maven.restlet.org"

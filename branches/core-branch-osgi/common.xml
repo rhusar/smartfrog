@@ -71,9 +71,9 @@
     <property name="core.dir" location="${antfile.dir}"/>
 	
 	 <!-- where the ivy/maven artifacts are stored -->	 
-    <property name="artifactsCache.dir" location="${core.dir}/artifactsCache"/>
+    <property name="artifactsCache.dir" location="${core.dir}/.artifacts_cache"/>
     <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
-	
+	<property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 	
     <!--if unset, we work it out here too-->
     <property name="root.dir" location="${core.dir}"/>

@@ -122,9 +122,9 @@
   <property file="sf-build-version.properties"/>
   
   <!-- where the ivy/maven artifacts are stored -->
-  <property name="artifactsCache.dir" location="../artifactsCache"/>
-    <!--<property name="artifactsCache.dir" location="${user.home}"/>-->
-  
+  <property name="artifactsCache.dir" location="../.artifacts_cache"/>
+   
+  <property name="ivy.default.ivy.user.dir" location="${artifactsCache.dir}"/>
 
   <property environment="env"/>
   <!-- Release Directories -->
@@ -963,7 +963,7 @@
       groupIDpath="${m2.groupID.path}"
       artifactID="sfOSGi"
       version="${Version}" />
-    <m2-makepath property="m2.rmi-spi"
+    <m2-makepath property="m2.sf-rmi-spi"
       groupIDpath="${m2.groupID.path}"
       artifactID="sfRmiSpi"
       version="${Version}" />
