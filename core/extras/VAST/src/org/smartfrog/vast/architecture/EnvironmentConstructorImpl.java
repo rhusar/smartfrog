@@ -34,6 +34,7 @@ import org.smartfrog.services.vmware.VMWareConstants;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.vast.archive.ZipArchive;
 import org.smartfrog.vast.archive.TarArchive;
+import org.smartfrog.vast.architecture.CommandDispatcher.CommandController;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.rmi.RemoteException;
@@ -58,6 +59,11 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	VirtualMachineConfig VastController = null;
 
 	/**
+	 * The command controller.
+	 */
+	CommandController cmdCtrl = null;
+
+	/**
 	 * The list containing the configuration details for the physical machine.
 	 */
 	private ArrayList<PhysicalMachineConfig> listPhysicalMachines = new ArrayList<PhysicalMachineConfig>();
@@ -78,10 +84,6 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 	public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
 		super.sfDeploy();
-
-		sfLog().info("deploying");
-
-		sfLog().info("successfully deployed");
 	}
 
 	protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
@@ -168,7 +170,28 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 			}
 		}
 
+		setRemainingValues();
+
 		sfLog().info("successfully deployed with children");
+	}
+
+	/**
+	 * Sets the remaining values of the virtual machines which can only be set after all descriptions have been resolved.
+	 */
+	private void setRemainingValues() {
+		 for (VirtualMachineConfig virt : listVirtualMachines) {
+			 for (PhysicalMachineConfig phy : listPhysicalMachines) {
+				 if (virt.getAffinity().equals(phy.getHostAddress())) {
+					 for (Argument arg : phy.getListArguments())
+						if (arg.getName().equals("AVALANCHE_HOME"))
+							virt.setHelperPathOnHostOS(String.format("%s/smartfrog/dist/vast/helper.jar", arg.getValue()));
+
+					 break;
+				 }
+			 }
+
+			 virt.setHostList(HostnameList);
+		 }
 	}
 
 	/**
@@ -336,6 +359,9 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		// register the listener with avalanche
 		refAvlServer.addXMPPHandler(new VastListener(this));
 
+		// create the command controller
+		cmdCtrl = new CommandController(refAvlServer, sfLog());
+
 		try {
 			prepareSUTPackages();
 		} catch (Exception e1) {
@@ -375,20 +401,20 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 		}
 	}
 
-	/**
-	 * Deletes the virtual machines.
-	 */
-	private void revertVMsToSnapshots() {
-		for (VirtualMachineConfig virt : listVirtualMachines) {
-			if (checkPhysicalExistance(virt.getAffinity())) {
-				try {
-					refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "reverttosnapshot");
-				} catch (Exception e) {
-					sfLog().error("Error while trying send reverttosnapshot command", e);
-				}
-			}
-		}
-	}
+//	/**
+//	 * Deletes the virtual machines.
+//	 */
+//	private void revertVMsToSnapshots() {
+//		for (VirtualMachineConfig virt : listVirtualMachines) {
+//			if (checkPhysicalExistance(virt.getAffinity())) {
+//				try {
+//					refAvlServer.sendVMCommand(virt.getAffinity(), virt.getDisplayName(), "reverttosnapshot");
+//				} catch (Exception e) {
+//					sfLog().error("Error while trying send reverttosnapshot command", e);
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Stops the daemons running on the physical hosts.
@@ -538,8 +564,8 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 
 				// check if all machines are running
 				if (checkPhysicalEnv()) {
-					// first try to revert to snapshots
-					revertVMsToSnapshots();
+					// start the command control
+					cmdCtrl.executeCommands(listVirtualMachines);
 				}
 
 				return;
@@ -615,200 +641,203 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 * @param inPacketExtension The packet extension containing the relevant data.
 	 */
 	public void handleVMMessages(Packet inPacket, XMPPEventExtension inPacketExtension) {
-		// retrieve the basic attributes
-		String strCommand = inPacketExtension.getPropertyBag().get(VMWareConstants.VMCMD);
-		String strResponse = inPacketExtension.getPropertyBag().get(VMWareConstants.VMRESPONSE);
-		String strVMName = inPacketExtension.getPropertyBag().get(VMWareConstants.VMNAME);
+		cmdCtrl.handleResponse(inPacket, inPacketExtension);
 
-		// get the physical host
-		PhysicalMachineConfig phyHost = null;
-		for (PhysicalMachineConfig cur : listPhysicalMachines)
-			if (cur.getHostAddress().equals(inPacketExtension.getHost())) {
-				phyHost = cur;
-				break;
-			}
-
-		// get the according vm
-		VirtualMachineConfig vmTarget = null;
-		for (VirtualMachineConfig cur : listVirtualMachines)
-			if (cur.getDisplayName().equals(strVMName)
-				&& cur.getAffinity().equals(inPacketExtension.getHost())) {
-				vmTarget = cur;
-				break;
-			}
-
-		if (phyHost != null && vmTarget != null) {
-			try {
-				if (strCommand.equals(VMWareConstants.VM_CMD_REVERT)) {
-					if (strResponse.equals("success")) {
-						// send credentials
-						HashMap<String, String> map = new HashMap<String, String>();
-						map.put(VMWareConstants.VM_SET_GUEST_CRED_USER, vmTarget.getGuestUser());
-						map.put(VMWareConstants.VM_SET_GUEST_CRED_PASS, vmTarget.getGuestPass());
-						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_SET_GUEST_CRED, map);
-
-						// send the start command
-						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-					} else {
-						// send delete command
-						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_DELETE);
-
-						// send create command
-						HashMap<String, String> map = new HashMap<String, String>();
-						map.put(VMWareConstants.VM_CREATE_MASTER, vmTarget.getSourceImage());
-						map.put(VMWareConstants.VM_CREATE_NAME, vmTarget.getDisplayName());
-						map.put(VMWareConstants.VM_CREATE_USER, vmTarget.getGuestUser());
-						map.put(VMWareConstants.VM_CREATE_PASS, vmTarget.getGuestPass());
-						refAvlServer.sendVMCommand(vmTarget.getAffinity(), null, VMWareConstants.VM_CMD_CREATE, map);
-					}
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
-					// a response to a create command
-					if (strResponse.equals("success")) {
-						takeSnapshot(inPacket, strVMName);
-					} else sfLog().error("Failed to create vm: " + inPacketExtension);
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
-					if (!strResponse.equals("success"))
-						sfLog().warn("Failed to take snapshot of vm: " + inPacketExtension);
-
-					// start the vm, regardless of the success or failure of taking a snapshot
-					refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
-					if (strResponse.equals("success")) {
-						sfLog().info("vm created: " + strVMName);
-						waitForTools(inPacket, strVMName, vmTarget);
-					} else sfLog().error("Failed to start vm: " + inPacketExtension);
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
-					if (strResponse.equals("success")) {
-						sfLog().info("tools running");
-
-						// home dir created, copy the helper into the vm
-						copyHelper(inPacket, strVMName, phyHost, vmTarget);
-					} else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
-					if (strResponse.equals("success")) {
-						if (inPacketExtension.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST).endsWith("helper.jar")) {
-							sfLog().info("vast helper copied");
-							// helper copied, start it
-							executeHelper(inPacket, strVMName, vmTarget);
-						}
-					} else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
-				} else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
-					if (strResponse.equals("success")) {
-						// try to ping the machine for 1 minute
-						for (int i = 0; i < 60; ++i) {
-							if (ping(vmTarget.getHostAddress())) {
-								 // vast helper executed, now ignite the virtual machines
-								// with the appropriate package (sf + test runner + SUT)
-								igniteVirtualMachine(vmTarget);
-								return;	
-							} else
-								try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e) {
-
-								}
-						}
-
-						if (vmTarget.getNetworkSetupHelperTries() < 5) {
-							sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Retrying network setup helper.");
-
-							// copy the helper into the vm again
-							copyHelper(inPacket, strVMName, phyHost, vmTarget);
-
-							vmTarget.setNetworkSetupHelperTries(vmTarget.getNetworkSetupHelperTries() + 1);
-						}
-						else sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Maximum tries reached.");
-					}
-				}
-			}
-			catch (Exception e) {
-				sfLog().error(e);
-			}
-		}
+//		// retrieve the basic attributes
+//		String strCommand = inPacketExtension.getPropertyBag().get(VMWareConstants.VMCMD);
+//		String strResponse = inPacketExtension.getPropertyBag().get(VMWareConstants.VMRESPONSE);
+//		String strVMName = inPacketExtension.getPropertyBag().get(VMWareConstants.VMNAME);
+//
+//		// get the physical host
+//		PhysicalMachineConfig phyHost = null;
+//		for (PhysicalMachineConfig cur : listPhysicalMachines)
+//			if (cur.getHostAddress().equals(inPacketExtension.getHost())) {
+//				phyHost = cur;
+//				break;
+//			}
+//
+//		// get the according vm
+//		VirtualMachineConfig vmTarget = null;
+//		for (VirtualMachineConfig cur : listVirtualMachines)
+//			if (cur.getDisplayName().equals(strVMName)
+//				&& cur.getAffinity().equals(inPacketExtension.getHost())) {
+//				vmTarget = cur;
+//				break;
+//			}
+//
+//		if (phyHost != null && vmTarget != null) {
+//			try {
+//				if (strCommand.equals(VMWareConstants.VM_CMD_REVERT)) {
+//					if (strResponse.equals("success")) {
+//						// send credentials
+//						HashMap<String, String> map = new HashMap<String, String>();
+//						map.put(VMWareConstants.VM_SET_GUEST_CRED_USER, vmTarget.getGuestUser());
+//						map.put(VMWareConstants.VM_SET_GUEST_CRED_PASS, vmTarget.getGuestPass());
+//						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_SET_GUEST_CRED, map);
+//
+//						// send the start command
+//						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
+//					} else {
+//						// send delete command
+//						refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_DELETE);
+//
+//						// send create command
+//						HashMap<String, String> map = new HashMap<String, String>();
+//						map.put(VMWareConstants.VM_CREATE_MASTER, vmTarget.getSourceImage());
+//						map.put(VMWareConstants.VM_CREATE_NAME, vmTarget.getDisplayName());
+//						map.put(VMWareConstants.VM_CREATE_USER, vmTarget.getGuestUser());
+//						map.put(VMWareConstants.VM_CREATE_PASS, vmTarget.getGuestPass());
+//						refAvlServer.sendVMCommand(vmTarget.getAffinity(), null, VMWareConstants.VM_CMD_CREATE, map);
+//					}
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
+//					// a response to a create command
+//					if (strResponse.equals("success")) {
+//						takeSnapshot(inPacket, strVMName);
+//					} else sfLog().error("Failed to create vm: " + inPacketExtension);
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_TAKE_SNAPSHOT)) {
+//					if (!strResponse.equals("success"))
+//						sfLog().warn("Failed to take snapshot of vm: " + inPacketExtension);
+//
+//					// start the vm, regardless of the success or failure of taking a snapshot
+//					refAvlServer.sendVMCommand(inPacket.getFrom(), strVMName, VMWareConstants.VM_CMD_START);
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_START)) {
+//					if (strResponse.equals("success")) {
+//						sfLog().info("vm created: " + strVMName);
+//						waitForTools(inPacket, strVMName, vmTarget);
+//					} else sfLog().error("Failed to start vm: " + inPacketExtension);
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_WAIT_FOR_TOOLS)) {
+//					if (strResponse.equals("success")) {
+//						sfLog().info("tools running");
+//
+//						// home dir created, copy the helper into the vm
+//						copyHelper(inPacket, strVMName, phyHost, vmTarget);
+//					} else sfLog().error("Error while creating directory in guest os: " + inPacketExtension);
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST)) {
+//					if (strResponse.equals("success")) {
+//						if (inPacketExtension.getPropertyBag().get(VMWareConstants.VM_COPY_HTOG_DEST).endsWith("helper.jar")) {
+//							sfLog().info("vast helper copied");
+//							// helper copied, start it
+//							executeHelper(inPacket, strVMName, vmTarget);
+//						}
+//					} else sfLog().error("Error while copying file from host to guest: " + inPacketExtension);
+//				} else if (strCommand.equals(VMWareConstants.VM_CMD_EXECUTE)) {
+//					if (strResponse.equals("success")) {
+//						// try to ping the machine for 5 * 22 seconds
+//						for (int i = 0; i < 5; ++i) {
+//							if (ping(vmTarget.getHostAddress())) {
+//								 // vast helper executed, now ignite the virtual machines
+//								// with the appropriate package (sf + test runner + SUT)
+//								igniteVirtualMachine(vmTarget);
+//								return;
+//							} else
+//								sfLog().info("Ping to " + vmTarget.getHostAddress() + " failed. Retrying.");
+//								try {
+//									Thread.sleep(1000);
+//								} catch (InterruptedException e) {
+//
+//								}
+//						}
+//
+//						if (vmTarget.getNetworkSetupHelperTries() < 5) {
+//							sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Retrying network setup helper.");
+//
+//							// copy the helper into the vm again
+//							copyHelper(inPacket, strVMName, phyHost, vmTarget);
+//
+//							vmTarget.setNetworkSetupHelperTries(vmTarget.getNetworkSetupHelperTries() + 1);
+//						}
+//						else sfLog().error("Error: virtual machine " + vmTarget.getDisplayName() + " not reachable. Maximum tries reached.");
+//					}
+//				}
+//			}
+//			catch (Exception e) {
+//				sfLog().error(e);
+//			}
+//		}
 	}
 
-	private void executeHelper(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
-		HashMap<String, String> map = new HashMap<String, String>();
-
-		String gwAddr = inVMTarget.getHostAddress().substring(0, inVMTarget.getHostAddress().lastIndexOf(".")) + ".1";
-		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s -hname %s %s",
-			inVMTarget.getHostAddress(),
-			inVMTarget.getHostMask(),
-			gwAddr,
-			inVMTarget.getVastNetworkIP(),
-			inVMTarget.getVastNetworkMask(),
-			inVMTarget.getDisplayName(),
-			HostnameList));
-
-		for (Argument arg : inVMTarget.getListArguments())
-			if (arg.getName().equals("JAVA_HOME"))
-				map.put(VMWareConstants.VM_EXECUTE_CMD, String.format("%s/bin/java", arg.getValue()));
-
-		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_EXECUTE, map);
-	}
-
-	private void copyHelper(Packet inPacket, String inVMName, PhysicalMachineConfig inPhyHost, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
-		HashMap<String, String> map = new HashMap<String, String>();
-
-		for (Argument arg : inPhyHost.getListArguments())
-			if (arg.getName().equals("AVALANCHE_HOME"))
-				map.put(VMWareConstants.VM_COPY_HTOG_SOURCE, String.format("%s/smartfrog/dist/vast/helper.jar", arg.getValue()));
-
-		for (Argument arg : inVMTarget.getListArguments())
-			if (arg.getName().equals("AVALANCHE_HOME"))
-				map.put(VMWareConstants.VM_COPY_HTOG_DEST, String.format("%s/helper.jar", arg.getValue()));
-
-		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST, map);
-	}
-
-	private void waitForTools(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(VMWareConstants.VM_WAIT_FOR_TOOLS_TIMEOUT, String.format("%d", inVMTarget.getToolsTimeout()));
-		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_WAIT_FOR_TOOLS, map);
-	}
-
-	private void takeSnapshot(Packet inPacket, String inVMName) throws RemoteException, SmartFrogException {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, "vast_snapshot");
-		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, "Snapshot taken by VAST");
-		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY, "false");
-		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_TAKE_SNAPSHOT, map);
-	}
-
-	/**
-	 * Ignites a virtual machine.
-	 *
-	 * @param inVM
-	 */
-	private void igniteVirtualMachine(VirtualMachineConfig inVM) throws SmartFrogException, RemoteException {
-		// ignite it with the according package
-		refAvlServer.igniteHosts(new String[]{inVM.getHostAddress()},
-			String.format("%s/temp/vast/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()),
-			String.format("%s/temp/vast/sfinstaller.vm", refAvlServer.getAvalancheHome()));
-	}
-
-	/**
-	 * Pings a host.
-	 * @param inHost Address to ping.
-	 * @return True if the ping was successful, false otherwise.
-	 */
-	private boolean ping(String inHost) {
-		ProcessBuilder pb;
-		if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-			pb = new ProcessBuilder("ping", inHost);
-		}
-		else {
-			pb = new ProcessBuilder("ping", "-c", "4", inHost);
-		}
-
-		try {
-			Process p = pb.start();
-			p.waitFor();
-			return (p.exitValue() == 0);
-		} catch (Exception e) {
-			sfLog().error(e);
-		}
-
-		return false;
-	}
+//	private void executeHelper(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+//		HashMap<String, String> map = new HashMap<String, String>();
+//
+//		String gwAddr = inVMTarget.getHostAddress().substring(0, inVMTarget.getHostAddress().lastIndexOf(".")) + ".1";
+//		map.put(VMWareConstants.VM_EXECUTE_PARAM, String.format("-jar /tmp/helper.jar -nic %s %s gw %s -nic %s %s -hname %s %s",
+//			inVMTarget.getHostAddress(),
+//			inVMTarget.getHostMask(),
+//			gwAddr,
+//			inVMTarget.getVastNetworkIP(),
+//			inVMTarget.getVastNetworkMask(),
+//			inVMTarget.getDisplayName(),
+//			HostnameList));
+//
+//		for (Argument arg : inVMTarget.getListArguments())
+//			if (arg.getName().equals("JAVA_HOME"))
+//				map.put(VMWareConstants.VM_EXECUTE_CMD, String.format("%s/bin/java", arg.getValue()));
+//
+//		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_EXECUTE, map);
+//	}
+//
+//	private void copyHelper(Packet inPacket, String inVMName, PhysicalMachineConfig inPhyHost, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+//		HashMap<String, String> map = new HashMap<String, String>();
+//
+//		for (Argument arg : inPhyHost.getListArguments())
+//			if (arg.getName().equals("AVALANCHE_HOME"))
+//				map.put(VMWareConstants.VM_COPY_HTOG_SOURCE, String.format("%s/smartfrog/dist/vast/helper.jar", arg.getValue()));
+//
+//		for (Argument arg : inVMTarget.getListArguments())
+//			if (arg.getName().equals("AVALANCHE_HOME"))
+//				map.put(VMWareConstants.VM_COPY_HTOG_DEST, String.format("%s/helper.jar", arg.getValue()));
+//
+//		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_COPY_HOST_TO_GUEST, map);
+//	}
+//
+//	private void waitForTools(Packet inPacket, String inVMName, VirtualMachineConfig inVMTarget) throws RemoteException, SmartFrogException {
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		map.put(VMWareConstants.VM_WAIT_FOR_TOOLS_TIMEOUT, String.format("%d", inVMTarget.getToolsTimeout()));
+//		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_WAIT_FOR_TOOLS, map);
+//	}
+//
+//	private void takeSnapshot(Packet inPacket, String inVMName) throws RemoteException, SmartFrogException {
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_NAME, "vast_snapshot");
+//		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_DESCRIPTION, "Snapshot taken by VAST");
+//		map.put(VMWareConstants.VM_TAKE_SNAPSHOT_INCLUDE_MEMORY, "false");
+//		refAvlServer.sendVMCommand(inPacket.getFrom(), inVMName, VMWareConstants.VM_CMD_TAKE_SNAPSHOT, map);
+//	}
+//
+//	/**
+//	 * Ignites a virtual machine.
+//	 *
+//	 * @param inVM
+//	 */
+//	private void igniteVirtualMachine(VirtualMachineConfig inVM) throws SmartFrogException, RemoteException {
+//		// ignite it with the according package
+//		refAvlServer.igniteHosts(new String[]{inVM.getHostAddress()},
+//			String.format("%s/temp/vast/%s", refAvlServer.getAvalancheHome(), inVM.getSUTPackage()),
+//			String.format("%s/temp/vast/sfinstaller.vm", refAvlServer.getAvalancheHome()));
+//	}
+//
+//	/**
+//	 * Pings a host.
+//	 * @param inHost Address to ping.
+//	 * @return True if the ping was successful, false otherwise.
+//	 */
+//	private boolean ping(String inHost) {
+//		ProcessBuilder pb;
+//		if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+//			pb = new ProcessBuilder("ping", inHost);
+//		}
+//		else {
+//			pb = new ProcessBuilder("ping", "-c", "4", inHost);
+//		}
+//
+//		try {
+//			Process p = pb.start();
+//			p.waitFor();
+//			return (p.exitValue() == 0);
+//		} catch (Exception e) {
+//			sfLog().error(e);
+//		}
+//
+//		return false;
+//	}
 }

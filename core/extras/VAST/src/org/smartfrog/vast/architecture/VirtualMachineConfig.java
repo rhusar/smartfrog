@@ -19,6 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.vast.architecture;
 
+import org.smartfrog.vast.architecture.CommandDispatcher.Command;
+import org.smartfrog.vast.architecture.CommandDispatcher.TimerThread;
+
 public class VirtualMachineConfig extends PhysicalMachineConfig {
     public static String ATTR_AFFINITY = "Affinity";
     public static String ATTR_NAME = "Name";
@@ -40,7 +43,10 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
     // virtual machine should be created
     private String SourceImage;
 
-    // user account for the guest os
+	// path to the helper on the host os
+	private String HelperPathOnHostOS;
+
+	// user account for the guest os
     private String GuestUser;
 
     // password for the user account
@@ -70,6 +76,64 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
 
 	// how many times has it been tried to set up the network using the helper?
 	private int NetworkSetupHelperTries;
+
+	// the current command that is being processed
+	private Command currentCommand;
+
+	// command timeout timer
+	private TimerThread timerThread = new TimerThread(this);
+	private Thread curThread;
+
+	// list of hostnames which this machine has to know
+	private String HostList;
+
+	/**
+	 * Sets the timer. Also sets it to the current command.
+	 */
+	public void setTimer() {
+		timerThread.setCommand(currentCommand);
+		timerThread.setTime(1000 * 120);
+	}
+
+	/**
+	 * Starts the timer if not already running.
+	 */
+	public void startTimer() {
+		if (curThread != null && !curThread.isAlive())
+			curThread = new Thread(timerThread);
+	}
+
+	/**
+	 * Stops the timer if running.
+	 */
+	public void stopTimer() {
+		if (curThread != null && curThread.isAlive())
+			timerThread.stopTimer();
+	}
+
+	public String getHostList() {
+		return HostList;
+	}
+
+	public void setHostList(String hostList) {
+		HostList = hostList;
+	}
+
+	public String getHelperPathOnHostOS() {
+		return HelperPathOnHostOS;
+	}
+
+	public void setHelperPathOnHostOS(String helperPathOnHostOS) {
+		HelperPathOnHostOS = helperPathOnHostOS;
+	}
+
+	public Command getCurrentCommand() {
+		return currentCommand;
+	}
+
+	public void setCurrentCommand(Command currentCommand) {
+		this.currentCommand = currentCommand;
+	}
 
 	public int getNetworkSetupHelperTries() {
 		return NetworkSetupHelperTries;
