@@ -1216,16 +1216,14 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws SmartFrogException In case of SmartFrog system error
      */
     public static ComponentDescription getClassComponentDescription (Object obj, boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
-        ComponentDescription cmpDesc;
+        ComponentDescription cmpDesc=null;
         //Get Component description for this obj class
         String className = obj.getClass().toString();
         if (obj instanceof java.lang.String) className = obj.toString();
         if (className.startsWith("class ")) {
             className = className.substring(6);
         }
-        // If system has not been initialized then the basic classloader is not in place and resources (descriptions) cannot be loaded!
-        //@todo review this flag name used as system flag init. Needs a better name or a different flag
-        if (Logger.initialized()) {
+        try {
             String tempClassName = className.replace('.','/');
             String urlDescription = tempClassName+"."+languageExtension;
             Reference selectedRef = new Reference (tempClassName.substring(tempClassName.lastIndexOf("/")+1));
@@ -1243,11 +1241,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             }
             // Get componentDescription and Entry
             cmpDesc = ComponentDescriptionImpl.sfComponentDescription( urlDescription.toLowerCase(),phases, selectedRef);
-        } else {
             //Empty description so that the system properties can still be added.
-            cmpDesc = new ComponentDescriptionImpl (null,null,true);
+        } catch (Exception ex) {
+            if ((sfLog!= null) && sfLog.isErrorEnabled()){ sfLog.error(ex.getMessage() + ". Continuing",ex);}
+            else {
+                ex.printStackTrace();
+            }
 
         }
+        if (cmpDesc==null)cmpDesc = new ComponentDescriptionImpl (null,null,true);
         if (addSystemProperties){
             //add properties that start with package name.
             cmpDesc = ComponentDescriptionImpl.addSystemProperties( className+".", cmpDesc, languageExtension);

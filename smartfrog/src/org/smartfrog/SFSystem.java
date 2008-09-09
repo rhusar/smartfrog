@@ -419,6 +419,7 @@ public class SFSystem implements MessageKeys {
 
         //SmartFrog version info
         showVersionInfo();
+
         logInitStatus();
 
         //read command line options
@@ -647,10 +648,12 @@ public class SFSystem implements MessageKeys {
             
             // Read init properties
             readPropertiesFromIniFile();
-            sfLog();
 
             // Init special static properties
             Logger.init();
+
+            sfLog();
+
             //Notifies any possible problem with security init.
             checkSecurityStatus();
             alreadySystemInit = true;

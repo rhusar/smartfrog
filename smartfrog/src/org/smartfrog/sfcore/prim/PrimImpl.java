@@ -87,7 +87,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Component Log. This log is used to from any component. It can be replaced using sfSetLog()
      */
-    private LogSF sfLog = LogFactory.sfGetProcessLog();
+    private LogSF sfLog = null;
 
     /**
      * Static attribute that hold the lifecycle hooks for sfDeploy.
