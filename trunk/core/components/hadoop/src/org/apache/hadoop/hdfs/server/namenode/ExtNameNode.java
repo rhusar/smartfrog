@@ -26,7 +26,6 @@ import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
-import org.apache.hadoop.util.Service;
 
 import java.io.IOException;
 
@@ -128,17 +127,17 @@ public class ExtNameNode extends NameNode {
     /**
      * Ping the node
      *
-     * @throws IOException if the node is unhappy
+     * @throws IOException if the node is unhappy @param status
      */
     @Override
-    public synchronized void innerPing()
+    public synchronized void innerPing(ServiceStatus status)
             throws IOException {
         if (checkRunning) {
-            super.innerPing();
             int workers = getLiveWorkerCount();
             if(workers < minWorkerCount ){
-                throw new LivenessException("The number of worker nodes is only " + workers
-                +" - less than the minimum of " + minWorkerCount);
+              throw new LivenessException("The number of worker nodes is only "
+                      + workers
+                      +"\n - less than the minimum of " + minWorkerCount);
             };
         }
     }

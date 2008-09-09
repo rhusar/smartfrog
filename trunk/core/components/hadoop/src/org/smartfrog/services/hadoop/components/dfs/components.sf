@@ -218,3 +218,16 @@ For more information: www.smartfrog.org
   DfsTouchFile extends DfsCreateFile {
     text "";
   }
+
+  DfsFsck extends DfsOperation {
+
+    sfClass "org.smartfrog.services.hadoop.components.dfs.DfsFsckImpl";
+    sfShouldTerminate true;
+    move false;
+    delete false;
+    files false;
+    openForWrite false;
+    blocks false;
+    locations false;
+    racks false;
+  }

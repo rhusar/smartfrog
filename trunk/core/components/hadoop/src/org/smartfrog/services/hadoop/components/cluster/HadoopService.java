@@ -19,8 +19,11 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
+import org.apache.hadoop.util.Service;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * Created 08-Jul-2008 13:28:24
@@ -35,4 +38,20 @@ public interface HadoopService extends Remote {
      * @throws RemoteException for RMI problems
      */
     boolean isServiceLive() throws RemoteException;
+
+    /**
+     * Get the service state
+     * @return the current service state, or UNDEFINED if there is no service
+     * @throws RemoteException for RMI problems
+     */
+    Service.ServiceState getServiceState() throws RemoteException;
+
+    /**
+     * Ping the service and get its service state
+     * @return the current service status, or null if there is no service
+     * @throws RemoteException for RMI problems
+     * @throws IOException for pinging problems
+     */
+    Service.ServiceStatus pingService() throws IOException;
+
 }
