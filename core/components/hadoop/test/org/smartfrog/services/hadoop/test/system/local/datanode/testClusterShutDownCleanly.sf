@@ -19,30 +19,10 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.datanode;
+#include "/org/smartfrog/services/hadoop/test/system/local/datanode/components.sf"
 
-import org.smartfrog.test.DeployingTestBase;
 
 /**
- *
+ * Test case
  */
-public class FileSystemOperationsTest extends DeployingTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
-
-    public FileSystemOperationsTest(String name) {
-        super(name);
-    }
-
-    public void testClusterShutDownCleanly() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-    }
-    
-    public void testFileSystemOperations() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemOperations");
-    }
-
-    public void testClusterShutDownCleanly2() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-    }
-
-}
+sfConfig testClusterShutDownCleanly ;

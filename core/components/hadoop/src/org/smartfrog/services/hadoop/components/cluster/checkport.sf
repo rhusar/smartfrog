@@ -35,11 +35,19 @@ CheckPort extends WorkflowPrim {
   */
   livenessTimeout 0;
 
+  /**
+   * an address pair like hostname:port
+   * for setting to any arbitrary combination
+   */
+  address "";
+  //localhost definition
+  LOCALHOST "127.0.0.1";
+
   /** lazy reference to a cluster configuration */
-  cluster TBD;
+  cluster NULL;
 
   /** name of the attribute to use for the address */
-  attribute TBD;
+  attribute "";
   checkOnStartup true;
   checkOnLiveness false;
   sfShouldTerminate true;

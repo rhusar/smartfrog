@@ -24,10 +24,10 @@ import org.apache.hadoop.conf.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Utility methods that need to be in the right package
- *
  */
 
 public class ExtDfsUtils {
@@ -37,12 +37,14 @@ public class ExtDfsUtils {
 
     /**
      * Format a name node
+     *
      * @param dirsToFormat directories to format
-     * @param conf the configuration
+     * @param conf         the configuration
      * @throws IOException for formatting problems
      */
     public static void formatNameNode(Collection<File> dirsToFormat, Configuration conf) throws IOException {
-        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat), conf);
+        Collection<File> editDirs = new ArrayList<File>();
+        FSNamesystem nsys = new FSNamesystem(new FSImage(dirsToFormat, editDirs), conf);
         nsys.dir.fsImage.format();
     }
 }

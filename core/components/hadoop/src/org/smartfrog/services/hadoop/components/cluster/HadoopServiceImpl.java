@@ -32,12 +32,14 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * This is a component that deploys a hadoop service. If the
  */
 
-public abstract class HadoopServiceImpl extends HadoopComponentImpl implements HadoopService {
+public abstract class HadoopServiceImpl extends HadoopComponentImpl
+        implements HadoopService {
 
     private Service service;
     private ServiceDeployerThread deployerThread;
@@ -54,8 +56,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        terminateDeployerThread();
         terminateHadoopService();
+        terminateDeployerThread();
     }
 
     /**
@@ -64,7 +66,6 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
     protected void terminateDeployerThread() {
         ServiceDeployerThread deployer = getDeployerThread();
         if (deployer != null) {
-
             terminateDeployerThread(deployer);
         }
     }
@@ -101,7 +102,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
      */
     @Override
     public boolean isServiceLive() throws RemoteException {
-        Service s=service;
+        Service s = service;
         return s != null && s.getServiceState() == Service.ServiceState.LIVE;
     }
 
@@ -137,8 +138,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
      * Ping the hadoop service.
      *
      * @throws SmartFrogLivenessException on a ping failure, or a null service and non-null services are forbidden
+     * @throws RemoteException for remoting problems
      */
-    protected void pingHadoopService() throws SmartFrogLivenessException {
+    protected void pingHadoopService() throws SmartFrogLivenessException, RemoteException {
         try {
             ServiceDeployerThread deployer = deployerThread;
             if (deployer != null) {
@@ -146,10 +148,32 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
             }
             Service hadoopService = service;
             if (hadoopService != null) {
-                hadoopService.ping();
+                Service.ServiceStatus serviceStatus = hadoopService.ping();
+                List<Throwable> throwables = serviceStatus.getThrowables();
+                if (!throwables.isEmpty()) {
+                    //trouble
+                    throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(
+                            new SFHadoopException(serviceStatus, this));
+                }
+                //now look at the service state alone
+                //as SF has stricter service state rules
+                Service.ServiceState state = serviceStatus.getState();
+                switch(state) {
+                    case UNDEFINED:
+                    case CREATED:
+                    case INITIALIZED:
+                    case FAILED:
+                    case TERMINATED:
+                        throw new SmartFrogLivenessException("Service is not live: "+serviceStatus, this);
+                    case STARTED:
+                    case LIVE:
+                        break;
+                }
             } else if (requireNonNullServiceInPing()) {
                 throw new SmartFrogLivenessException("No running " + getName(), this);
             }
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException e) {
             throw new SmartFrogLivenessException(e, this);
         }
@@ -160,8 +184,11 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
      * terminated
      */
     protected synchronized void terminateHadoopService() {
-        Service.terminate(service);
-        service = null;
+        if (service != null) {
+            sfLog().debug("Terminating hadoop service");
+            Service.terminate(service);
+            service = null;
+        }
     }
 
 
@@ -200,6 +227,31 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public Service.ServiceState getServiceState() throws RemoteException {
+        Service hadoop = service;
+        if (hadoop == null) {
+            return Service.ServiceState.UNDEFINED;
+        } else {
+            return hadoop.getServiceState();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Service.ServiceStatus pingService() throws IOException {
+        Service hadoop = service;
+        if(hadoop ==null) {
+            return null;
+        } else {
+            return hadoop.ping();
+        }
+    }
+
+
+    /**
      * Create the deployer thread
      *
      * @param hadoopService service to bind to and deploy.
@@ -217,7 +269,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
      * deploy multiple services
      *
      * @param hadoopService the service
-     * @throws SmartFrogDeploymentException
+     * @throws SmartFrogDeploymentException if a service is already deployed 
      */
     private synchronized void setServiceOnce(Service hadoopService) throws SmartFrogDeploymentException {
         if (service != null) {
@@ -244,15 +296,17 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
         } catch (IOException e) {
             //mark as failed
             //we assume that the service really does know how to terminate
-//                hadoopService.terminate();
+            hadoopService.terminate();
             throw SFHadoopException.forward("Failed to deploy " + hadoopService,
                     e,
                     this,
                     conf);
         } catch (SmartFrogException e) {
+            hadoopService.terminate();
             throw e;
         } catch (Throwable e) {
             //convert illegal argument exceptions
+            hadoopService.terminate();
             throw SFHadoopException.forward("Failed to deploy " + hadoopService,
                     e,
                     this,
@@ -326,3 +380,4 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl implements H
 
     }
 }
+

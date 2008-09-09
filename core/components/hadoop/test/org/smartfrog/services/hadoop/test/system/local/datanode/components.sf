@@ -60,7 +60,18 @@ testDataNodeForked extends testLocalDataNode {
   action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
 }
 
+
+testClusterShutDownCleanly extends ExpectTerminate {
+
+  description "check that the cluster shut down";
+  action extends WaitForPortFree {
+
+  }
+}
+
 testFileSystemOperations extends LocalDataNodeTest {
+
+  description "run some operations against the file system";
 
   tests extends FileSystemTestSequence {
     
@@ -68,3 +79,4 @@ testFileSystemOperations extends LocalDataNodeTest {
     datanode LAZY action:datanode;;
   }
 }
+

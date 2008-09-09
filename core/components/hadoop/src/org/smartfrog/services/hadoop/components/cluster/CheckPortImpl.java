@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.apache.hadoop.net.NetUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -46,6 +47,14 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      * {@value}
      */
     public static final String ATTR_ADDRESS_ATTRIBUTE = "attribute";
+
+
+    /**
+     * If non null, takes priority over anything else
+     * {@value}
+     */
+    public static final String ATTR_ADDRESS = "address";
+
     /**
      * {@value}
      */
@@ -73,15 +82,20 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         ManagedConfiguration configuration = createConfiguration(ATTR_CLUSTER);
-        String addressAttribute = sfResolve(ATTR_ADDRESS_ATTRIBUTE, "", true);
         connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, 0, true);
         int timeout = sfResolve(ATTR_LIVENESS_TIMEOUT, 0, true);
         if (timeout > 0) {
             livenessTimeout = System.currentTimeMillis() + timeout;
         }
-        address = configuration.bindToNetwork(addressAttribute,
-                "stubOldAddressNameShouldNotResolve",
-                "stubOldAddressPortShouldNotResolve");
+        String addressInline = sfResolve(ATTR_ADDRESS, "", true);
+        if (addressInline.length() > 0) {
+            address = NetUtils.createSocketAddr(addressInline);
+        } else {
+            String addressAttribute = sfResolve(ATTR_ADDRESS_ATTRIBUTE, "", true);
+            address = configuration.bindToNetwork(addressAttribute,
+                    "stubOldAddressNameShouldNotResolve",
+                    "stubOldAddressPortShouldNotResolve");
+        }
         sfLog().info("Checking host:port " + address.toString());
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);

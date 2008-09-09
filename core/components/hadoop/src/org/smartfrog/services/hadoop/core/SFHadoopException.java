@@ -23,13 +23,15 @@ import org.mortbay.util.MultiException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.apache.hadoop.util.Service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
 /**
- * A SmartFrogException with special hadoop support, one that can strip out jetty content. Created 01-May-2008 14:37:07
+ * A SmartFrogException with special hadoop support, one that can
+ * extract information from Hadoop classes (and helper libraries)
  */
 
 public class SFHadoopException extends SmartFrogException {
@@ -105,6 +107,19 @@ public class SFHadoopException extends SmartFrogException {
     }
 
     /**
+     * Build an exception from a status object
+     * @param status the status object
+     * @param owner the owning Prim (can be null)
+     */
+    public SFHadoopException(Service.ServiceStatus status, Prim owner) {
+      super(status.toString(), owner);
+      List<Throwable> causes = status.getThrowables();
+      if(!causes.isEmpty()) {
+          initCause(causes.get(0));
+      }
+    }
+
+    /**
      * Dump the configuration to the {@link #CONFIGURATION} attribute
      *
      * @param conf configuration
@@ -138,23 +153,37 @@ public class SFHadoopException extends SmartFrogException {
                     sfObject);
         }
 
+        String trace = dumpToString(exceptions);
+        return new SFHadoopException(message
+                + maybeDumpConfiguration(conf)
+                + "\nmultiple (" + exCount + ") nested exceptions: \n"
+                + multiExcept.getMessage() + "\n"
+                + trace,
+                multiExcept,
+                sfObject);
+    }
+
+    /**
+     * Dump the exception list to a string. If it is empty, return the empty string
+     * @param throwables a list of thrown exceptions
+     * @return a dumped set of stack traces, or an empty string.
+     */
+    private static String dumpToString(List<Throwable> throwables) {
+        if (throwables.size() == 0) {
+            return "";
+        }
         StringWriter sw = new StringWriter();
         PrintWriter pw;
         pw = new PrintWriter(sw);
         try {
-            for (Throwable thrown : exceptions) {
+            for (Throwable thrown : throwables) {
                 thrown.printStackTrace(pw);
             }
         } finally {
             pw.close();
         }
-        return new SFHadoopException(message
-                + maybeDumpConf(conf)
-                + "\nmultiple (" + exCount + ") nested exceptions: \n"
-                + multiExcept.getMessage() + "\n"
-                + sw.toString(),
-                multiExcept,
-                sfObject);
+        String trace = sw.toString();
+        return trace;
     }
 
     /**
@@ -173,7 +202,7 @@ public class SFHadoopException extends SmartFrogException {
         } else {
             return new SFHadoopException(message + ": "
                         + throwable.getMessage()
-                        + maybeDumpConf(conf),
+                        + maybeDumpConfiguration(conf),
                         throwable,sfObject);
         }
 
@@ -183,9 +212,9 @@ public class SFHadoopException extends SmartFrogException {
      * Dump the configuration into the string if {@link #SMARTFROG_DUMP_CONF} is true
      * in the configuration.
      * @param conf configuration to work with
-     * @return an empty string or a dump configuration
+     * @return an empty string or a dumped configuration
      */
-    private static String maybeDumpConf(ManagedConfiguration conf) {
+    private static String maybeDumpConfiguration(ManagedConfiguration conf) {
         try {
             if (conf != null && conf.getBoolean(SMARTFROG_DUMP_CONF, false)) {
                 return "\n" + conf.dumpQuietly();

@@ -22,10 +22,9 @@
 package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +38,7 @@ import java.util.AbstractList;
 public class ExtDataNode extends DataNode {
 
     private volatile boolean stopped;
-    private DataNodeThread worker;
+    private ExtDataNodeThread worker;
     private Prim owner;
 
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
@@ -57,7 +56,7 @@ public class ExtDataNode extends DataNode {
     @Override
     public void innerStart() throws IOException {
         super.innerStart();
-        verifyServiceState(ServiceState.LIVE);
+        //verifyServiceState(ServiceState.LIVE);
         register();
         startWorkerThread();
     }
@@ -65,15 +64,18 @@ public class ExtDataNode extends DataNode {
     /**
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
-/*    @Override
+    @Override
     public synchronized void innerTerminate() throws IOException {
+        LOG.info("Terminating ExtDataNode");
         super.innerTerminate();
+/*
         if (!isStopped()) {
             stopped();
             SmartFrogThread.requestThreadTermination(worker);
             worker = null;
         }
-    }*/
+*/
+    }
 
 
   /**
@@ -149,7 +151,7 @@ public class ExtDataNode extends DataNode {
 
 
         if (worker == null) {
-            worker = new DataNodeThread();
+            worker = new ExtDataNodeThread();
             worker.start();
         }
     }
@@ -158,12 +160,12 @@ public class ExtDataNode extends DataNode {
     /**
      * This is a private worker thread that can be interrupted better
      */
-    private class DataNodeThread extends WorkflowThread {
+    private class ExtDataNodeThread extends WorkflowThread {
 
         /**
          * Creates a new thread
          */
-        private DataNodeThread() {
+        private ExtDataNodeThread() {
             super(ExtDataNode.this.owner, true);
         }
 
@@ -176,7 +178,12 @@ public class ExtDataNode extends DataNode {
          */
         @Override
         public void execute() throws Throwable {
+          try {
             ExtDataNode.this.run();
+          } catch (Throwable e) {
+            LOG.error("error while in state "+getState()+": " + e.getMessage(),e);
+            throw e;
+          }
         }
 
         /**
@@ -185,6 +192,7 @@ public class ExtDataNode extends DataNode {
         @Override
         public synchronized void requestTermination() {
             if (!isTerminationRequested()) {
+                LOG.info("Terminating the ExtDataNodeThread");
                 super.requestTermination();
                 //and interrupt
                 interrupt();

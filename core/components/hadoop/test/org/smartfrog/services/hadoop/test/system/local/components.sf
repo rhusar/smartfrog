@@ -171,9 +171,11 @@ LocalClusterCompound extends LocalDataNodeCompound {
 
 
 CLUSTER_STARTUP_TIMEOUT 30000;
+CLUSTER_POLL_INTERVAL 200;
+CLUSTER_SHUTDOWN_TIMEOUT 10000;
 
 WaitForHadoopLive extends FailingWaitFor {
-  interval 200;
+  interval CLUSTER_POLL_INTERVAL;
   timeout CLUSTER_STARTUP_TIMEOUT ;
 }
 
@@ -221,6 +223,17 @@ WaitForWorkersLive extends WaitForHadoopLive  {
   }
 }
 
+WaitForPortFree extends FailingWaitFor {
+  interval CLUSTER_POLL_INTERVAL;
+  timeout CLUSTER_SHUTDOWN_TIMEOUT;
+  port "8020";
+  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
+  condition extends Not {
+    condition extends CheckPortCondition {
+      address PARENT:PARENT:address;
+    }
+  }
+}
 
 
 

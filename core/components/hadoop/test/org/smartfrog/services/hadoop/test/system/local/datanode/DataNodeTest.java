@@ -36,7 +36,18 @@ public class DataNodeTest extends DeployingTestBase {
     public void testLocalDataNode() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalDataNode");
     }
-    public void testDataNodeForked() throws Throwable {
+
+    public void testClusterShutDownCleanly() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+    }
+
+
+    public void NotestDataNodeForked() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testDataNodeForked");
     }
+
+    public void NotestClusterShutDownCleanly2() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+    }
+
 }
