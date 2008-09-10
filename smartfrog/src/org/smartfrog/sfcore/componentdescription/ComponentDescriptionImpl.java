@@ -1163,11 +1163,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                             sfLog.trace("Adding to CompDesc system property '"+ cxtKey +"' with value = "+value+", "+ value.getClass().getName());
                         }
                     } catch (SmartFrogRuntimeException ex1) {
-                        //System.err.println(ex1);
+                        if ((sfLog!= null) && sfLog.isIgnoreEnabled())sfLog.ignore(ex1);
                     }
                 }
             }
-//        } catch (SmartFrogException ex2) {
         } catch (Exception ex2) {
           if (sfLog != null) {
             if (sfLog.isErrorEnabled()) {

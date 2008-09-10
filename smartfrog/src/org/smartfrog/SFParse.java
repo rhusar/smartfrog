@@ -132,7 +132,7 @@ public class SFParse implements MessageKeys {
             Phases top;
             InputStream is=null;
             try {
-                is = SFClassLoader.getResourceAsStream(fileUrl);
+                is = SFLoader.getInputStreamSFException(fileUrl);
                 if (is == null) {
                     String msg = MessageUtil.
                             formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
@@ -272,9 +272,14 @@ public class SFParse implements MessageKeys {
             } catch (IOException e) {
               if (SFSystem.sfLog().isErrorEnabled()){
                 SFSystem.sfLog().error(e);
-              }
-              //Logger.log(e);
+              }finally {
+                if (newFile != null) try {
+                    newFile.close();
+                } catch (IOException e) {
+                    SFSystem.sfLog().error(e);
+                }
             }
+
          }
     }
 

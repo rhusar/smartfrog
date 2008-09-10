@@ -41,7 +41,9 @@ import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.security.rmispi.ClassLoaderRegistry;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -534,15 +536,6 @@ public class SFSystem implements MessageKeys {
             System.setProperty("java.awt.headless", "true");
         }
     }
-
-
-//  Was this used? - Julio - if not, then remove.
-//    private void maybeGoNoExitCodeOptionSet(OptionSet opts) {
-//        if (opts.headless) {
-//            sfLog().info(HEADLESS_MODE_MESSAGE);
-//            System.setProperty("java.awt.headless", "true");
-//        }
-//    }
 
     /**
      * Prints StackTrace
