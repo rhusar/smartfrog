@@ -33,35 +33,104 @@ public interface JettyIntf extends JavaWebApplicationServer {
      * jetty home attribute
      * {@value}
      */
-    public static final String ATTR_JETTY_HOME = "jettyhome";
+    String ATTR_JETTY_HOME = "jettyhome";
 
 
     /**
      * cached jetty server
      * {@value}
      */
-    public static final String ATTR_JETTY_SERVER = "Jetty Server";
+    String ATTR_JETTY_SERVER = "Jetty Server";
 
     /**
      * logging flag.
      * {@value}
      */
 
-    public static final String ATTR_ENABLE_LOGGING="enableLogging";
+    String ATTR_ENABLE_LOGGING="enableLogging";
 
     /**
      * log dir.
      * {@value}
      */
 
-    public static final String ATTR_LOGDIR="logDir";
+    String ATTR_LOGDIR="logDir";
+
 
     /**
      * log pattern.
      * {@value}
      */
 
-    public static final String ATTR_LOGPATTERN="logPattern";
-    
+    String ATTR_LOGIGNOREPATHS = "logIgnorePaths";
+    /**
+     * log pattern.
+     * {@value}
+     */
 
+    String ATTR_LOGPATTERN="logPattern";
+
+    /**
+     * timezone for log data.
+     * {@value}
+     */
+
+    String ATTR_LOG_TZ = "logTimezone";
+
+    /**
+     * should log data be appended?
+     *
+     * {@value}
+     */
+
+    String ATTR_LOG_APPEND = "logAppend";
+
+    /**
+     * days to keep for log data.
+     *  {@value}
+     */
+
+    String ATTR_LOG_KEEP_DAYS = "logKeepDays";
+
+    /**
+     * is the log extended?
+     *  {@value}
+     */
+
+    String ATTR_LOG_EXTENDED = "logExtended";
+
+    /**
+     * max# of threads in the pool.
+     * {@value}
+     */
+    String ATTR_MAXTHREADS="maxThreads";
+
+    /**
+     * min# of threads in the pool.
+     * {@value}
+     */
+    String ATTR_MINTHREADS = "minThreads";
+
+    /**
+     * max idle time for a thread before it is closed
+     * {@value}
+     */
+
+    String ATTR_MAXIDLETIME = "maxIdleTime";
+
+
+    /**
+     * {@value}
+     */
+    String ATTR_STOP_AT_SHUTDOWN = "stopAtShutdown";
+
+    /**
+     * {@value}
+     */
+    String ATTR_SEND_SERVER_VERSION = "sendServerVersion";
+
+    /**
+     * {@value}
+     */
+    String ATTR_SEND_DATE_HEADER = "sendDateHeader";
 }

@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 20052--7 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -18,61 +18,9 @@
 
  */
 
-#include "/org/smartfrog/components.sf";
-#include "/org/smartfrog/services/jetty/components.sf";
-#include "/org/smartfrog/services/filesystem/components.sf";
-
-/**
- * This is an example of jetty component
- */
+#include "/org/smartfrog/services/www/jetty/test/system/components.sf"
 
 
-/**
- * Specify the jetty home path here
- */
-jetty_home PROPERTY test.jetty.home;
-
-//hard coded hostname,
-hostname "127.0.0.1";
-
-resourcebase LAZY PROPERTY java.io.tmpdir;
 
 
-/*
-  * serves up the entire temp directory
-*/
-TempDirServletContext extends JettyServletContext {
- contextPath "/";
- resourceBase LAZY PROPERTY java.io.tmpdir;
-}
-
-
-/*
-* A jetty server that serves up the temp directory jetty under java.io.tmpdir
-*/
-TempDirServer extends CoreJettyServer {
-  sfSyncTerminate true;
-  
-  jettyhome ROOT:jetty_home;
-  listenerPort TBD;
-  listener extends JettyListener {
-    listenerPort PARENT:listenerPort;
-    server LAZY PARENT;
-  }
-
-   tempDir extends TempDirWithCleanup {
-      prefix "jetty";
-   }
-
-  tempDirServletContext extends TempDirServletContext {
-    resourceBase LAZY tempDir:absolutePath;
-    server LAZY PARENT;
-  }
-}
-
-
-Root extends RootWAR {
- contextPath "/";
- filename ((ROOT:jetty_home) ++ "/demo/webapps/root");
-}
 

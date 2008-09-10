@@ -40,10 +40,14 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
   <property name="ivy.enabled" value="true"/>
-  <property name="system.tests" value="true" />
+  <property name="system.tests" value="false" />
+  <property name="system.tests" value="true" /> 
+
+  <echo message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+  
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
-  <import file="${root.dir}/common.xml"/>
+  <import file="../../common.xml"/>
   
   <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
   <property name="deploy.sf" value="${example.path}/example1.sf"/>
@@ -77,6 +81,13 @@ For more information: www.smartfrog.org
   <target name="ready-to-test" depends="common.ready-to-test,testwar">
     <property name="test.jetty.home"
         location="${test.src.dir}/files/jettyhome"/>
+    <property name="test.demo.webapp"
+        location="${test.src.dir}/files/jettyhome/demo/webapps/root"/>
+    <echo level="verbose" >
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
+    </echo>
   </target>
 
   <!--pick up the test war from Ivy-->
