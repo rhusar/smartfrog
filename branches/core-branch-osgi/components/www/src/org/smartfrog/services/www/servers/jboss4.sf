@@ -101,7 +101,7 @@ JBoss4Server extends ServerBase {
         sysProperties [
             ["sun.rmi.dgc.client.gcInterval",gcInterval ],
             ["sun.rmi.dgc.server.gcInterval",gcInterval ],
-            PARENT:sysProperties
+            PARENT:PARENT:sysProperties
         ];
     
         maxMemory 512;

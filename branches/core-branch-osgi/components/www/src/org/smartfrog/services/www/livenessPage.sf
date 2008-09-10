@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/* (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,8 @@ For more information: www.smartfrog.org
   * Include the core smartfrog components.
   */
  #include "/org/smartfrog/components.sf"
-
+ #include "/org/smartfrog/services/www/httpcodes.sf"
+ #include "/org/smartfrog/services/www/mimetypes.sf"
 
  /**
   * for liveness pages you need to give either the url, or the
@@ -42,7 +43,7 @@ For more information: www.smartfrog.org
   * If the URL is not specified, the attribute <code>url</code>
   * is set to the full URL at startup time.
   */
- LivenessPageSchema extends Schema {
+ HttpPageSchema extends Schema {
 
   //either
      //full URL to the page
@@ -54,9 +55,11 @@ For more information: www.smartfrog.org
      host extends OptionalString;
      //protocol, default http
      protocol extends OptionalString;
+
+     //path can be something like the web application, or a directory
      path extends OptionalString;
-     
-     //page
+
+     //the page is appended to it, if set, and a / is placed between then
      page extends OptionalString;
      //query list of things that get turned into queries -without escaping.
      //vectors inside are treated as name=value pairs
@@ -64,29 +67,66 @@ For more information: www.smartfrog.org
      //    name&users&error=500
      queries extends OptionalVector;
 
+      //a flag to set to turn require authentication
+     authenticationRequired extends Boolean;
+      //if the username is set, the password is needed
+     username extends OptionalString;
+     //a password provider can be used, or a string value
+     password extends Optional;
+
    //and any of
+
+     //headers
+     headers extends Vector;
+
+     //list of allowed mime types
+     mimeType extends Vector;
+
+     //response code below which the fetch is an error
+     minimumResponseCode extends Integer;
+     //error code above which an error has occurred,
+     maximumResponseCode extends Integer;
+     //flag to follow redirects
+     followRedirects extends Boolean;
+      //connect timeout in milliseconds
+     connectTimeout extends Integer;
+
+
+
+ }
+
+ /**
+  * for liveness pages you need to give either the url, or the
+  * built up URL
+  * ${protocol}://${host}:${port}/[${path}]/${[page][?queries]
+  * if the URL is specified, the alternate set is ignored.
+  * If the URL is not specified, the attribute <code>url</code>
+  * is set to the full URL at startup time.
+  */
+ LivenessPageSchema extends HttpPageSchema {
 
      //flag to set if you want any error text fetched from
      //the remote site. This is good for diagnostics.
-     fetchErrorText extends OptionalBoolean;
-     //response code below which the fetch is an error
-     minimumResponseCode extends OptionalInteger;
-     //error code above which an error has occurred,
-     //default is 299.
-     maximumResponseCode extends OptionalInteger;
-     //flag to follow redirects
-     followRedirects extends OptionalBoolean;
+     fetchErrorText extends Boolean;
+
      //check frequency. This is the number of pings between checks
-     //and so lets us probe less often than normal. default=1
+     //and so lets us probe less often than normal.
+     //this is in milliseconds
      checkFrequency extends OptionalInteger;
 
      //flag to say that the check is on/off; useful during development
-     enabled extends OptionalBoolean;
+     enabled extends  Boolean;
 
      //check on startup
      checkOnStartup extends Boolean;
      //check on liveness
      checkOnLiveness extends Boolean;
+
+     //print the response
+     logResponse extends Boolean;
+
+     //a regular expression to validate the content, if not empty
+     responseRegexp extends String;
  }
 
  /*
@@ -98,18 +138,25 @@ For more information: www.smartfrog.org
  LivenessPage extends WorkflowPrim {
      livenessPageSchema extends LivenessPageSchema;
      sfClass "org.smartfrog.services.www.LivenessPageComponent";
-     fetchErrorText true;
-     maximumResponseCode 299;
-     minimumResponseCode 200;
-     followRedirects true;
-     checkFrequency 1;
-     enabled true;
+
+     authenticationRequired false;
+     checkFrequency 1000;
      checkOnStartup false;
      checkOnLiveness true;
+     connectTimeout -1;
+     enabled true;
+     fetchErrorText true;
+     followRedirects true;
+     headers [];
      host "127.0.0.1";
-     protocol "http";
-     port 80;
-     page "/";
+     logResponse false;
+     protocol HttpCodes:HTTP;
+     maximumResponseCode HttpCodes:END_2XX;
+     minimumResponseCode HttpCodes:START_2XX;
+     mimeType [];
+     path "/";
+     port HttpCodes:CHOOSE_PORT;
+     responseRegexp "";
  }
 
 
@@ -117,15 +164,18 @@ For more information: www.smartfrog.org
  * This is the variant for use in a workflow sequence; it blocks
  * the sequence until the page arrives.
  *
- * In WaitForPage, checkFrequency becomes the time in seconds between
+ * In WaitForPage, checkFrequency becomes the time in milliseconds between
  * polls on the page
  */
-  
+  WaitForPageSchema extends Schema {
+    //timeout in milliseconds
+    timeout extends Integer;
+  }
+
   WaitForPage extends LivenessPage {
-    WaitForPageSchema extends Schema {
-      timeout extends Integer;
-    }
+    waitForPageSchema extends WaitForPageSchema; 
     sfClass "org.smartfrog.services.www.WaitForPageImpl";
+    checkFrequency 500;
     fetchErrorText false;
     checkOnLiveness false;
     sfShouldTerminate true;

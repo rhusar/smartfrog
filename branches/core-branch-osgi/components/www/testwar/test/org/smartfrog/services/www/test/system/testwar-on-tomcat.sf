@@ -1,6 +1,6 @@
 
-#include "org/smartfrog/services/www/test/system/testwar-base.sf";
-#include "org/smartfrog/services/www/tomcat/components.sf";
+#include "/org/smartfrog/services/www/test/system/testwar-base.sf";
+#include "/org/smartfrog/services/www/tomcat/components.sf";
 
 sfConfig extends TestWarBoundToMySql {
 

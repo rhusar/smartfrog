@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,16 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www;
 
-import java.rmi.Remote;
+
 
 /**
- * Anything that can be deployed within a servlet context
+ Popular Mime type constants
+
  */
-public interface ServletContextComponent extends Remote {
-    /**
-     * context to declare for {@value}
-     */
-    String ATTR_SERVLET_CONTEXT = "context";
+
+
+MimeTypes extends {
+
+  APPLICATION_ATOM_XML "application/atom+xml";
+  APPLICATION_JSON "application/json";
+  APPLICATION_RDF_XML "application/rdf+xml";
+  APPLICATION_WWW_FORM "application/x-www-form-urlencoded";
+  APPLICATION_XHTML_XML "application/xhtml+xml";
+  APPLICATION_XML  "application/xml";
+  TEXT_PLAIN "text/plain"
+  TEXT_CSS "text/css"
+  TEXT_HTML "text/html"
+  TEXT_XML "text/xml"
+  IMAGE_BMP "image/bmp";
+  IMAGE_GIF "image/gif";
+  IMAGE_ICON "image/x-icon";
+  IMAGE_JPEG "image/jpeg";
+  IMAGE_PNG "image/png";
+  IMAGE_SVG "image/svg+xml";
 }

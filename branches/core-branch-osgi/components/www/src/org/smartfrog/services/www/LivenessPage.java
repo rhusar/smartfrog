@@ -21,7 +21,6 @@ package org.smartfrog.services.www;
 
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
@@ -30,24 +29,8 @@ import java.rmi.RemoteException;
  */
 
 
-public interface LivenessPage extends Remote {
+public interface LivenessPage extends HttpAttributes {
 
-    String ATTR_URL = "url";
-    String ATTR_HOST = "host";
-    String ATTR_PORT = "port";
-    String ATTR_PROTOCOL = "protocol";
-    String ATTR_PAGE = "page";
-    String ATTR_PATH = "path";
-    String ATTR_FOLLOW_REDIRECTS = "followRedirects";
-    String ATTR_ERROR_TEXT = "fetchErrorText";
-    String ATTR_MINIMUM_RESPONSE_CODE = "minimumResponseCode";
-    String ATTR_MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
-    String ATTR_CHECK_FREQUENCY = "checkFrequency";
-    String ATTR_ENABLED = "enabled";
-    String ATTR_QUERIES = "queries";
-    String ATTR_MIME_TYPES = "mimeType";
-    String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
-    String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
     /**
      * Check the page, regardless of whether the component is enabled or not.

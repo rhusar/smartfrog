@@ -57,6 +57,12 @@ public interface ApplicationServerContext extends Remote {
      */
     String ERROR_FILE_NOT_FOUND = "File not found:";
 
+    /**
+     * Deploy the component
+     *
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
+     */
     void deploy() throws SmartFrogException, RemoteException;
 
     /**
@@ -79,7 +85,7 @@ public interface ApplicationServerContext extends Remote {
     /**
      * liveness check
      *
-     * @throws SmartFrogException for deployment problems
+     * @throws SmartFrogLivenessException for deployment problems
      * @throws RemoteException for RMI/Networking problems
      */
     void ping() throws SmartFrogLivenessException, RemoteException;

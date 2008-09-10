@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.www.diagnostics;
 
-import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -31,15 +31,13 @@ public class HostExistsFunction extends BaseUnaryOperator {
 
 
     /**
-     * The method to implement the functionality of any operator.
-     *
-     * @param a Object 1 for operator
-     *
-     * @return an Object
+     * @param host the host to look for
+     * @return true if the host exists
+     * @throws SmartFrogFunctionResolutionException for signature compatibility
      */
-    protected Object doOperator(Object a)
+    protected Object doOperator(Object host)
             throws SmartFrogFunctionResolutionException {
-        String hostname=(String) a;
+        String hostname=(String) host;
         return Boolean.valueOf(hostExists(hostname));
     }
 

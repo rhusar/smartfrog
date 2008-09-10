@@ -21,15 +21,24 @@ package org.smartfrog.services.www.diagnostics;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * Component to look for hosts
  */
 public interface HostExists extends Remote {
+    /**
+     * {@value}
+     */
     String ATTR_HOSTNAME="hostname";
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_ON_STARTUP="checkOnStartup";
+    /**
+     * {@value}
+     */
     String ATTR_CHECK_ON_LIVENESS="checkOnLiveness";
 
     /**

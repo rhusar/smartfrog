@@ -35,6 +35,10 @@ public class MimeTypeImpl extends ServletContextComponentImpl implements MimeTyp
     private String type;
 
 
+    /**
+     * constructor
+     * @throws RemoteException from the superclass
+     */
     public MimeTypeImpl() throws RemoteException {
     }
 

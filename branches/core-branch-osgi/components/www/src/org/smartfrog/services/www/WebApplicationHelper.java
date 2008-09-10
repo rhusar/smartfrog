@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.www;
 
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
 import java.net.InetAddress;
+import java.rmi.RemoteException;
 
 /**
  * Things to help web applications.
@@ -41,12 +41,12 @@ public class WebApplicationHelper extends ComponentHelper {
      * Concatenate two paths together, inserting a '/' if needed, and ensuring
      * that there is no '//' at the join.
      *
-     * @param path1
-     * @param path2
+     * @param path1 first path
+     * @param path2 secpnd path
      * @return concatenated paths
      */
     public static String concatPaths(String path1, String path2) {
-        StringBuffer buffer = new StringBuffer(path1.length() +
+        StringBuilder buffer = new StringBuilder(path1.length() +
                 path2.length() +
                 1);
         boolean endsWithSlash = path1.endsWith("/");
@@ -67,6 +67,7 @@ public class WebApplicationHelper extends ComponentHelper {
      * Get the ipaddrs of the local machine
      *
      * @return the IP address that we are deployed on
+     * @throws RemoteException if the owner is not talking
      */
     public String getIpAddress() throws RemoteException {
         InetAddress deployedHost = getOwner().sfDeployedHost();
@@ -75,10 +76,10 @@ public class WebApplicationHelper extends ComponentHelper {
     }
 
     /**
-     * strip any trailing * from a path and give the base bit up to where that
+     * strip any trailing '*' from a path and give the base bit up to where that
      * began.
      *
-     * @param path
+     * @param path path to tidy up
      * @return the stripped path
      */
     public static String deregexpPath(String path) {
