@@ -252,8 +252,9 @@ public class SFParse implements MessageKeys {
          }
          if (opts.statusReportHTML){
            printItemReportHTML(report);
+           FileWriter newFile = null;
            try {
-              FileWriter newFile = new FileWriter(opts.fileName+"_report.html");
+              newFile = new FileWriter(opts.fileName+"_report.html");
               newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
               newFile.write("<body>"+"\n");
               newFile.write("<font color=\"BLUE\" size=\"5\">Status report<font/>"+"\n");
@@ -272,14 +273,14 @@ public class SFParse implements MessageKeys {
             } catch (IOException e) {
               if (SFSystem.sfLog().isErrorEnabled()){
                 SFSystem.sfLog().error(e);
-              }finally {
+              }
+           } finally {
                 if (newFile != null) try {
                     newFile.close();
                 } catch (IOException e) {
                     SFSystem.sfLog().error(e);
                 }
-            }
-
+           }
          }
     }
 
