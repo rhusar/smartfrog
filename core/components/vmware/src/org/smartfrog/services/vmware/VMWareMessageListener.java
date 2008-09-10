@@ -246,8 +246,8 @@ public class VMWareMessageListener extends PrimImpl implements LocalXmppPacketHa
                                     pass    = ext.getPropertyBag().get(VMWareConstants.VM_CREATE_PASS);
 
                             // create a vmware from a master model
-                            response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.createCopyOfMaster(master, name, user, pass));
-                            response.getPropertyBag().put(VMWareConstants.VMNAME, name);
+							response.getPropertyBag().put(VMWareConstants.VMNAME, name);
+							response.getPropertyBag().put(VMWareConstants.VMRESPONSE, manager.createCopyOfMaster(master, name, user, pass));
 						}
                         else if (command.equals(VMWareConstants.VM_CMD_DELETE)) {
                             // delete a vmware

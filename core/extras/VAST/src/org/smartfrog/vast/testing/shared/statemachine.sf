@@ -44,6 +44,9 @@ SUTAttribute extends Prim {
 
 		// host where this attribute can be found
 		Host extends String;
+
+		// process on the host where this attribute can be found
+		Process extends OptionalString;
 	}
 }
 

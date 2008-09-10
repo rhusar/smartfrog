@@ -625,7 +625,7 @@ public class EnvironmentConstructorImpl extends CompoundImpl implements Environm
 	 * @param inPacket		  The packet containing the message.
 	 * @param inPacketExtension The packet extension containing the relevant data.
 	 */
-	public void handleVMMessages(Packet inPacket, XMPPEventExtension inPacketExtension) {
-		cmdCtrl.handleResponse(inPacket, inPacketExtension);
+	public void handleVMMessages(XMPPEventExtension inPacketExtension) {
+		cmdCtrl.handleResponse(inPacketExtension);
 	}
 }

@@ -2,14 +2,17 @@ package org.smartfrog.vast.architecture.CommandDispatcher;
 
 import org.smartfrog.avalanche.server.AvalancheServer;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.vast.architecture.VirtualMachineConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DispatcherThread extends Thread {
 	private AvalancheServer refAvl = null;
 	private String TargetHost;
-	private ArrayList<XMPPEventExtension> Messages = new ArrayList<XMPPEventExtension>(10);
+	private ArrayList<MessageQueueItem> MessageQueue = new ArrayList<MessageQueueItem>(10);
 	private int SendingInterval = 2000;
+	private boolean sendNext = true;
 
 	public DispatcherThread(AvalancheServer refAvl, String inHost) {
 		this.refAvl = refAvl;
@@ -18,16 +21,27 @@ public class DispatcherThread extends Thread {
 
 	public void run() {
 		while (true) {
-			while (!Messages.isEmpty()) {
-				// send the command
+			while (!MessageQueue.isEmpty() && sendNext) {
 				try {
-					refAvl.sendXMPPExtension(TargetHost, Messages.get(0));
+					// send the command
+					MessageQueueItem item = MessageQueue.get(0);
+
+					System.out.println("Sending: " + item);
+
+					// start the timer
+					item.getConfig().startTimer();
+
+					// send the message
+					refAvl.sendXMPPExtension(TargetHost, item.getCmd().composeMessage(item.getConfig()));
+
+					// remove it from the queue
+					MessageQueue.remove(0);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-				// remove it from the queue
-				Messages.remove(0);
+				sendNext = false;
 
 				try {
 					Thread.sleep(SendingInterval);
@@ -45,8 +59,12 @@ public class DispatcherThread extends Thread {
 		}
 	}
 
-	public void queueMessage(XMPPEventExtension inMsg) {
-		Messages.add(inMsg);
+	public void sendNext() {
+		sendNext = true;
+	}
+
+	public void queueMessage(VirtualMachineConfig inCfg, Command inCmd) {
+		MessageQueue.add(new MessageQueueItem(inCmd, inCfg));
 	}
 
 	public int getSendingInterval() {
