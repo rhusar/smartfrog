@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2006 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -51,6 +51,12 @@ public interface Xmpp extends Remote {
      * should presence information be provided. {@value}
      */
     String ATTR_PRESENCE = "presence";
+
+    /**
+     * The presence message to set if presence is true: {@value}
+     */
+    String ATTR_STATUS = "status";
+
     /**
      * should we require an encrypted connection
      * -that is, fail if the connection negotiated is not secured.
@@ -68,4 +74,10 @@ public interface Xmpp extends Remote {
     String ATTR_USE_TLS = "useTLS";
 
 
+    /**
+     * Subscription mode
+     *
+     * @link org.jivesoftware.smack.Roster
+     */
+    String ATTR_SUBSCRIPTION_MODE = "subscriptionMode";
 }

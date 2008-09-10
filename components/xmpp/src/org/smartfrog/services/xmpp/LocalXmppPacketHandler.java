@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,20 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.xmpp;
 
-#include "/org/smartfrog/services/xmpp/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf"
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.PacketListener;
 
-xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
+
+/** Created 14-Aug-2007 13:35:59 */
+
 
 /**
- * this is an example that sends a message using google
+ * Anything that implements this interface is both a packet filter and a packet listener
  */
-sfConfig extends Sequence {
+public interface LocalXmppPacketHandler extends PacketListener {
 
-    debug extends XmppDebugging {
-        sfShouldTerminate true;
-        unsetOnTerminate false;
-    }
-
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
-        login "smartfrog.two";
-        password xmpp.password;
-        message "hello, world";
-    }
+    public PacketFilter getFilter();
 
 }

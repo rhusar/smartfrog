@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,31 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.xmpp.test;
 
-#include "/org/smartfrog/services/xmpp/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf"
-
-xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
- * this is an example that sends a message using google
+ * Created 14-Aug-2007 14:45:25
  */
-sfConfig extends Sequence {
 
-    debug extends XmppDebugging {
-        sfShouldTerminate true;
-        unsetOnTerminate false;
+public class XmppTest extends DeployingTestBase {
+    private static final String FILES = "/org/smartfrog/services/xmpp/test/";
+
+
+    public XmppTest(String name) {
+        super(name);
     }
 
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
-        login "smartfrog.two";
-        password xmpp.password;
-        message "hello, world";
+    public void testXmppWorking() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testGmailXmpp");
     }
 
+    public void testGmailRecipientAbsent() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testGmailRecipientAbsent");
+    }
+
+    public void testGmailRecipientPresent() throws Throwable {
+        expectSuccessfulTestRunOrSkip(FILES, "testGmailRecipientPresent");
+    }
 }

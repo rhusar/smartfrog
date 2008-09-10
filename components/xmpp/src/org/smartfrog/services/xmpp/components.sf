@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2006-2008 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -42,9 +42,6 @@ XmppSchema extends Schema {
     login extends String {
         description "user name for logins, no @domain suffix";
     }
-    useTLS extends Boolean {
-        description "should a (legacy) TLS encrypted channel be used";
-    }
     password extends String {
         description "password for logins";
     }
@@ -62,6 +59,15 @@ XmppSchema extends Schema {
     resource extends String {
         description "resource for the login";
     }
+    status extends String {
+      description "The presence message to set (if not null)";
+    }
+    subscriptionMode extends Integer {
+      description "subscription mode for responding to roster subscription requests";
+    }
+    useTLS extends Boolean {
+        description "should a (legacy) TLS encrypted channel be used";
+    }
 }
 
 XmppComponent extends Prim {
@@ -71,7 +77,30 @@ XmppComponent extends Prim {
     requireEncryption true;
     resource "SmartFrog";
     presence false;
+    status "";
     useTLS false;
+
+
+    /*
+     * Automatically accept all subscription and unsubscription requests.
+     * This is inherently insecure.
+     */
+    SUBSCRIPTION_ACCEPT_ALL 0;
+
+    /*
+     * Automatically reject all subscription requests.
+     */
+    SUBSCRIPTION_REJECT_ALL 1;
+
+    /*
+     * Manual subscription would require a subclass to handle the relevant packets
+     */
+    SUBSCRIPTION_MANUAL 2;
+
+    /**
+     * The default mode rejects all subscription modes
+     */
+    subscriptionMode SUBSCRIPTION_REJECT_ALL;
 }
 
 
@@ -83,8 +112,8 @@ XmppComponent extends Prim {
 XmppListener extends XmppComponent {
 
     xmppListenerSchema extends Schema {
-        filter extends String {
-            description "classname for a filter to process incoming packets";
+        presence extends Boolean {
+            description "should the component register itself as present";
         }
         reconnect extends Boolean;
         offlineMinutesTimeout extends Integer {
@@ -97,8 +126,6 @@ XmppListener extends XmppComponent {
     reconnect true;
     //a lot of servers go down. To be robust you have to retry a lot.
     offlineMinutesTimeout 60;
-    //default filter strips out all but messages
-    filter "org.smartfrog.services.xmpp.MessageFilter";
 }
 
 /**
@@ -192,7 +219,29 @@ XmppDebuggingWorkflow extends XmppDebugging {
  * route messages to users on it.
  */
 HpJabberChatClient extends XmppClient {
-    server "jabber.google.com";
+    server "jabber.hp.com";
     serviceName "hp.com";
     port 5223;
 }
+
+/**
+ * component for handling incoming events.
+ * This must be deployed in the same process as the listener,
+ * as the incoming packets are not serializable. 
+ */
+
+XmppPacketHandler extends Prim {
+  //you must provide a listener
+  sfClass "org.smartfrog.services.xmpp.XmppPacketHandlerImpl";
+  listener TBD;
+}
+
+/**
+ * this component receives messages only (and logs them)
+ */
+XmppMessageHandler extends XmppPacketHandler {
+  sfClass "org.smartfrog.services.xmpp.XmppMessageHandlerImpl";
+}
+
+#include "/org/smartfrog/services/xmpp/handlers/components.sf"
+#include "/org/smartfrog/services/xmpp/presence/components.sf"
