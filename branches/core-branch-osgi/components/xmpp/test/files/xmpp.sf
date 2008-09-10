@@ -21,6 +21,7 @@
 #include "/org/smartfrog/services/xmpp/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components.sf"
 
+xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
 
 /**
  * Not intended to do anything useful, merely
@@ -29,17 +30,16 @@
 
 sfConfig extends Parallel {
 
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
-        login "smartfrog.one";
-        password PROPERTY xmpp.password;
-        message "hello, world";
-    }
 
     listener extends GoogleChatListener {
         login "smartfrog.two";
-        password PROPERTY xmpp.password;
+        password xmpp.password;
     }
 
-
+    post extends GoogleChatClientWorkflow {
+        to "smartfrog.two@gmail.com";
+        login "smartfrog.two";
+        password xmpp.password;
+        message "hello, world";
+    }
 }

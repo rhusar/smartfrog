@@ -19,10 +19,13 @@
  */
 package org.smartfrog.services.xmpp;
 
+import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
@@ -35,31 +38,48 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
     private String server, login, password, resource, serviceName;
     private int port;
     private boolean presence, requireEncryption, useTLS;
+    public static final String ERROR_NO_SECURE_CONNECTION = "Failed to set up a secure connection to ";
+    private String status;
+    private int subscriptionMode;
 
     protected AbstractXmppPrim() throws RemoteException {
     }
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
         server = sfResolve(ATTR_SERVER, server, true);
         serviceName = sfResolve(ATTR_SERVICE_NAME, server, true);
-        login = sfResolve(ATTR_LOGIN, login, true);
-        password = sfResolve(ATTR_PASSWORD, password, true);
+        readLoginAndPassword();
         port = sfResolve(ATTR_PORT, port, true);
         presence = sfResolve(ATTR_PRESENCE, presence, true);
         requireEncryption = sfResolve(ATTR_REQUIRE_ENCRYPTION, requireEncryption, true);
         resource = sfResolve(ATTR_RESOURCE, resource, true);
+        status = sfResolve(ATTR_STATUS, "", true);
+        subscriptionMode = sfResolve(ATTR_SUBSCRIPTION_MODE, 0, true);
         useTLS = sfResolve(ATTR_USE_TLS, useTLS, true);
+    }
+
+    /**
+     * Some classes may override this
+     * @throws SmartFrogException resolution problems
+     * @throws RemoteException network problems
+     */
+    protected void readLoginAndPassword() throws SmartFrogException, RemoteException {
+        if (login == null) {
+            login = sfResolve(ATTR_LOGIN, login, true);
+        }
+        if (password == null) {
+            password = sfResolve(ATTR_PASSWORD, password, true);
+        }
     }
 
 
@@ -116,12 +136,11 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
      * Create a connection to the server with a login, based on our state
      *
      * @return a logged in connection
-     *
      * @throws SmartFrogException if something went wrong
      */
     public XMPPConnection login() throws SmartFrogException {
         XMPPConnection connection = null;
-        String serverInfo= server + ":" + port + " as " + login;
+        String serverInfo = server + ":" + port + " as " + login;
         String connectionInfo = "connecting to " + serverInfo;
         sfLog().debug(connectionInfo);
         try {
@@ -132,14 +151,20 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
             }
             connection.login(login, password, resource, presence);
             //check the encryption status
-            if(requireEncryption && !connection.isSecureConnection()) {
-                throw new SmartFrogException("Failed to set up a secure connection to "+ serverInfo);
+            if (requireEncryption && !connection.isSecureConnection()) {
+                throw new SmartFrogException(ERROR_NO_SECURE_CONNECTION + serverInfo);
+            }
+            configureRoster(connection);
+
+            //set the presence information up
+            if (presence) {
+                Presence presenceMessage = new Presence(Presence.Type.AVAILABLE);
+                presenceMessage.setStatus(status);
+                connection.sendPacket(presenceMessage);
             }
             return connection;
         } catch (XMPPException e) {
-            if (connection != null) {
-                connection.close();
-            }
+            closeConnection(connection);
             throw new SmartFrogException(
                     connectionInfo,
                     e);
@@ -150,5 +175,36 @@ public abstract class AbstractXmppPrim extends PrimImpl implements Xmpp {
         }
     }
 
+    /**
+     * Override point: configure the roster of this connection. The default implementation rejects all requests
+     *
+     * @param connection connection to configure
+     */
+    protected void configureRoster(XMPPConnection connection) {
+        Roster roster = connection.getRoster();
+        roster.setSubscriptionMode(getSubscriptionMode());
+    }
 
+    /**
+     * Shut down a connection. Can take up to 150 mS; the thread sleeps during this time
+     *
+     * @param connection connection to close; can be null
+     */
+    protected static void closeConnection(XMPPConnection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (IllegalStateException ignored) {
+                //ignored
+            }
+        }
+    }
+
+    /**
+     * get the current subscription mode
+     * @return the current subscription mode
+     */
+    public int getSubscriptionMode() {
+        return subscriptionMode;
+    }
 }

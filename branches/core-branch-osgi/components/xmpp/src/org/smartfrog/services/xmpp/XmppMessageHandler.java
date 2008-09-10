@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2007 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,19 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.xmpp;
 
-#include "/org/smartfrog/services/xmpp/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf"
+import java.rmi.Remote;
 
-xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
+/** Created 14-Aug-2007 13:33:01 */
 
-/**
- * this is an example that sends a message using google
- */
-sfConfig extends Sequence {
 
-    debug extends XmppDebugging {
-        sfShouldTerminate true;
-        unsetOnTerminate false;
-    }
+public interface XmppMessageHandler extends Remote {
 
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
-        login "smartfrog.two";
-        password xmpp.password;
-        message "hello, world";
-    }
+    /**
+     * required reference to a listener: {@value}
+     */
+    static String ATTR_LISTENER="listener";
 
+    
 }

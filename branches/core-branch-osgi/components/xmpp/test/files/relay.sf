@@ -19,25 +19,34 @@
  */
 
 #include "/org/smartfrog/services/xmpp/components.sf"
-#include "/org/smartfrog/sfcore/workflow/components.sf"
 
 xmpp.password OPTIONAL("") PROPERTY test.xmpp.password;
 
 /**
- * this is an example that sends a message using google
+ * Not intended to do anything useful, merely
+ * parse correctly
  */
-sfConfig extends Sequence {
 
-    debug extends XmppDebugging {
-        sfShouldTerminate true;
-        unsetOnTerminate false;
-    }
+sfConfig extends Compound {
 
-    post extends GoogleChatClientWorkflow {
-        to "smartfrog.two@gmail.com";
+
+    Listener extends GoogleChatListener {
         login "smartfrog.two";
         password xmpp.password;
-        message "hello, world";
     }
+
+    gmail "@gmail.com";
+
+    relay extends RelayHandler {
+      to ["smartfrog.one"];
+      //use concatenation to reduce spam
+      //to ["steve.loughran" ++ gmail,"julgui"++ gmail];
+      listener LAZY PARENT:Listener;
+    }
+
+    log extends XmppMessageHandler {
+      listener LAZY PARENT:Listener;
+    }
+
 
 }
