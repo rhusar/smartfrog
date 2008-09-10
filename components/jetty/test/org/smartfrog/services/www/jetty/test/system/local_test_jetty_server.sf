@@ -18,30 +18,49 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/services/www/jetty/test/system/ports.sf"
 
 LocalJettyServer extends Compound {
 
-    
-    port 5050;
-    home LAZY PROPERTY java.io.tmpdir;
+    sfSyncTerminate true;
+    port test.jetty.port.1;
+    jettyhome test.jetty.home;
+
+    //integrate logging with smartfrog
+    logging extends IntegrateJettyLogging;
 
    /*
     this is the jetty server itself
     */
-   jettyServer extends CoreJettyServer {
+    server extends CoreJettyServer {
 
-      jettyhome PARENT:home;
+      jettyhome PARENT:jettyhome;
 
       port PARENT:port;
 
     }
 
-
-    listener extends JettyListener {
-        listenerPort port;
-        server LAZY jettyServer;
+    listener extends JettySocketConnector {
+      server LAZY PARENT:server;
+      port PARENT:port;
     }
 
+}
+
+JettyOnNIO extends LocalJettyServer {
+  listener extends JettySelectChannelConnector {
+    server LAZY PARENT:server;
+  }
+}
+
+
+JettyHTTPS extends LocalJettyServer {
+  port test.jetty.port.https;
+
+  listener extends JettySSLSocketConnector {
+    port PARENT:port;
+    server LAZY PARENT:server;
+  };
 }
 

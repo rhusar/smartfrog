@@ -21,16 +21,10 @@
 
 
 sfConfig extends Compound {
+    //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
-
-
-  server2 extends CoreJettyServer {
-      port 8082;
-
-      list2 extends JettyListener {
-            sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
-            listenerPort 8010;
-            server LAZY PARENT;
-      }
+  server extends CoreJettyServer {
+      port test.jetty.port.1 ;
    }
 }

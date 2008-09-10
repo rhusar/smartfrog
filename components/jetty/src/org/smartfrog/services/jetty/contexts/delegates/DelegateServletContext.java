@@ -19,23 +19,29 @@
  */
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpHandler;
-import org.mortbay.http.handler.ResourceHandler;
-import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.MimeTypes;
+import org.mortbay.jetty.handler.ResourceHandler;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.servlet.Context;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyImpl;
+import org.smartfrog.services.jetty.JettyToSFLifecycle;
+import org.smartfrog.services.jetty.internal.ExtendedServletHandler;
+import org.smartfrog.services.jetty.internal.ExtendedSecurityHandler;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.WebApplicationHelper;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Map;
 
@@ -48,72 +54,139 @@ public class DelegateServletContext extends DelegateApplicationContext implement
 
     private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     private Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
-    private Reference classPathRef = new Reference(ATTR_CLASSPATH);
     private String contextPath;
     private String resourceBase;
     private String absolutePath;
+    private Prim owner;
     /**
      * a log
      */
     private Log log;
+    private ResourceHandler resources;
+    private HandlerCollection handlerSet;
+    private JettyToSFLifecycle<HandlerCollection> handlerLifecycle;
+
+
+    /**
+     * Constructor
+     * @param server server that is creating this
+     * @param context the context
+     * @param declaration the servlet declaration
+     */
+    public DelegateServletContext(JettyImpl server, Context context, Prim declaration) {
+        super(server, context);
+        owner = declaration;
+        log = LogFactory.getOwnerLog(declaration);
+    }
 
     /**
      * Get the context cast to a servlet context
+     *
      * @return the servlet context of jetty
      */
-    public final ServletHttpContext getServletContext() {
-        return (ServletHttpContext)getContext();
-    }
-
-    public DelegateServletContext(SFJetty server, HttpContext context) {
-        super(server, context);
-    }
-
-    public DelegateServletContext() {
+    public final Context getServletContext() {
+        return getContext();
     }
 
     /**
      * do all deployment short of starting the thing
-     * @param declaration
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
-    public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
-        log = LogFactory.getOwnerLog(declaration);
-        JettyHelper jettyHelper = new JettyHelper(declaration);
-        ServletHttpContext context = new ServletHttpContext();
-        setContext(context);
+    public void deploy() throws SmartFrogException, RemoteException {
+        super.deploy();
+        JettyHelper jettyHelper = new JettyHelper(owner);
+
         jettyHelper.setServerComponent(getServer());
-        String jettyhome = jettyHelper.findJettyHome();
         //context path attribute
-        contextPath = declaration.sfResolve(contextPathRef, (String)null, true);
-        resourceBase = declaration.sfResolve(resourceBaseRef, (String) null, true);
+        contextPath = owner.sfResolve(contextPathRef, (String)null, true);
         absolutePath = WebApplicationHelper.deregexpPath(contextPath);
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
+        owner.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         //hostnames
         String address = jettyHelper.getIpAddress();
-        declaration.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
+        owner.sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
+    }
 
-        //resource base is absolute or relative to jettyhome
-        if (!new File(resourceBase).exists()) {
-            resourceBase = jettyhome.concat(resourceBase);
-        }
-        //classpath stuff.
-        //REVISIT: what does this bring to the table?
-        String classPath = declaration.sfResolve(classPathRef, (String) null, false);
-        if (classPath != null) {
-            if (!new File(classPath).exists()) {
-                classPath = jettyhome+classPath;
-            }
-            log.info("Jetty classpath="+classPath);
-            context.setClassPath(classPath);
-        }
+
+    /**
+     * start: deploy this context
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    public void start() throws SmartFrogException, RemoteException {
+        super.start();
+        resourceBase = FileSystem.lookupAbsolutePath(owner, resourceBaseRef, null, null, true, null);
+        FileSystem.requireFileToExist(resourceBase, false, 0);
+
+        //to get resources seen before the other bits of the tree, we patch the handlerSet.
+        Context ctx = new Context(
+                null,                           //parent
+                null,                           //sessions
+                new ExtendedSecurityHandler(),  //security; can be null
+                new ExtendedServletHandler(),   //servlets
+                null); //error handler
+        setContext(ctx);
+
+        handlerSet = new HandlerCollection();
+
+        resources = new ResourceHandler();
+        resources.setResourceBase(resourceBase);
+
         //configure the context
-        log.debug("Jetty resource base ="+resourceBase);
-        context.setResourceBase(resourceBase);
-        log.debug("context path =" + contextPath);
-        context.setContextPath(contextPath);
-        context.addHandler(new ResourceHandler());
+        ctx.setContextPath(contextPath);
+        ctx.setResourceBase(resourceBase);
+        log.info("Deploying " + contextPath + " from " + resourceBase);
+
+        //add the resources
+        handlerSet.addHandler(resources);
+        //then patch in the servlet context *afterwards*
+        handlerSet.addHandler(getContext());
+        handlerLifecycle = new JettyToSFLifecycle<HandlerCollection>("handlers", handlerSet);
+
+
+        ContextHandlerCollection contextHandler = getServerContextHandler();
+        if (contextHandler == null) {
+            throw new SmartFrogLifecycleException("Cannot start " + this + " as the server is not yet deployed");
+        }
+        log.info("Starting Jetty servlet context");
+        contextHandler.addHandler(handlerSet);
+        handlerLifecycle.start();
+    }
+
+
+    /**
+     * undeploy a context. If the server is already stopped, this the undeployment is skipped without an error. The
+     * context field is set to null, to tell the system to skip this in future.
+     *
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    public void terminate() throws RemoteException, SmartFrogException {
+        if (handlerLifecycle != null) {
+            try {
+                log.info("Terminating Jetty servlet context");
+                handlerLifecycle.wrappedStop();
+                ContextHandlerCollection handlers = getServerContextHandler();
+                if (handlers != null) {
+                    handlers.removeHandler(handlerSet);
+                } else {
+                    //do nothing, the server is not alive any more
+                }
+//            } catch (IllegalStateException ex) {
+//              throw SmartFrogException.forward(ex);
+            } finally {
+                context = null;
+                handlerSet = null;
+                handlerLifecycle=null;
+            }
+        }
+    }
+
+    public HandlerCollection getHandlers() {
+        return (HandlerCollection) getContext().getHandler();
     }
 
     public String getAbsolutePath() {
@@ -128,15 +201,28 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         return contextPath;
     }
 
+
+    protected HandlerCollection getHandlerSet() {
+        return handlerSet;
+    }
+
+
+    protected ResourceHandler getResources() {
+        return resources;
+    }
+
     /**
      * Add a mime mapping
      *
      * @param extension extension to map (no '.')
      * @param mimeType  mimetype to generate
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
-        getServletContext().setMimeMapping(extension, mimeType);
         log.info("Adding mime mapping "+extension+" maps to "+mimeType);
+        MimeTypes mimes = getServletContext().getMimeTypes();
+        mimes.addMimeMapping(extension,mimeType);
     }
 
     /**
@@ -144,14 +230,18 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param extension extension to unmap
      * @return true if the unmapping was successful
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
 
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
-        Map mimeMap = getServletContext().getMimeMap();
         log.info("removing mime mapping " + extension);
-        return (mimeMap.remove(extension) != null);
+        Map mimeMap = getServletContext().getMimeTypes().getMimeMap();
+        if(mimeMap!=null) {
+            return (mimeMap.remove(extension) != null);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -159,8 +249,8 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      *
      * @param servletDeclaration component declaring the servlet
      * @return the delegate that implements the servlet binding
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException {
         JettyServletDelegate servletDelegate=new JettyServletDelegate(this,(Prim)servletDeclaration);
@@ -172,32 +262,31 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * add a handler to the server
      *
      * @param handler handler
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
-    public void addHandler(HttpHandler handler) throws SmartFrogException,
+    public void addHandler(Handler handler) throws SmartFrogException,
             RemoteException {
-        ServletHttpContext context = getServletContext();
-        context.addHandler(handler);
+        getHandlers().addHandler(handler);
     }
 
     /**
      * remove a handler. The handler should be stopped first, though we do try
      * and do it ourselves
-     * @param handler
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param handler handler
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
-    public void removeHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
-        ServletHttpContext context = getServletContext();
+    public void removeHandler(Handler handler) throws SmartFrogException, RemoteException {
         try {
             if(handler.isStarted()) {
                 handler.stop();
             }
-        } catch (InterruptedException e) {
-            //ignore
+        } catch (Exception ignore) {
+            log.info(ignore);
         }
-        context.removeHandler(handler);
+        //remove the handler
+        getHandlers().removeHandler(handler);
 
     }
 

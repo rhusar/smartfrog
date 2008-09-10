@@ -19,12 +19,14 @@
  */
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpServer;
-import org.smartfrog.services.jetty.SFJetty;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.servlet.Context;
+import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 
 import java.rmi.RemoteException;
 
@@ -36,23 +38,28 @@ public abstract class DelegateApplicationContext
     public static final String ERROR_NULL_CONTEXT = "Null context";
     public static final String ERROR_NOT_RUNNING = "Not started";
 
-    public DelegateApplicationContext(SFJetty server, HttpContext context) {
+    /**
+     *
+     * @param server jetty sever
+     * @param context context
+     */
+    protected DelegateApplicationContext(JettyImpl server, Context context) {
         this.server = server;
         this.context = context;
     }
 
-    public DelegateApplicationContext() {
+    protected DelegateApplicationContext() {
     }
 
     /**
      * the server
      */
-    private SFJetty server;
+    private JettyImpl server;
 
     /**
      * The actual context
      */
-    private HttpContext context;
+    protected Context context;
 
 
     /**
@@ -60,7 +67,7 @@ public abstract class DelegateApplicationContext
      *
      * @return the server
      */
-    public SFJetty getServer() {
+    public JettyImpl getServer() {
         return server;
     }
 
@@ -69,7 +76,7 @@ public abstract class DelegateApplicationContext
      *
      * @return the context; will be null if not running
      */
-    public HttpContext getContext() {
+    public Context getContext() {
         return context;
     }
 
@@ -78,15 +85,15 @@ public abstract class DelegateApplicationContext
      *
      * @param context the jetty context
      */
-    public void setContext(HttpContext context) {
+    public void setContext(Context context) {
         this.context = context;
     }
 
     /**
      * Do nothing in our deploy operation
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public void deploy() throws SmartFrogException, RemoteException {
 
@@ -100,9 +107,13 @@ public abstract class DelegateApplicationContext
      */
     public void start() throws SmartFrogException, RemoteException {
         if (context != null) {
-            getServer().getServer().addContext(getContext());
+            ContextHandlerCollection contextHandler = getServerContextHandler();
+            if(contextHandler==null) {
+                throw new SmartFrogLifecycleException("Cannot start "+this+" as the server is not yet deployed");
+            }
+            contextHandler.addHandler(context);
             try {
-                getContext().start();
+                context.start();
             } catch (RemoteException ex) {
                 throw ex;
             } catch (Exception ex) {
@@ -111,12 +122,25 @@ public abstract class DelegateApplicationContext
         }
     }
 
+    protected Server getJettyServer() {
+        return getServer().getServer();
+    }
+
+    protected ContextHandlerCollection getServerContextHandler() {
+
+        Server httpServer = getJettyServer();
+        if(httpServer==null) {
+            return null;
+        }
+        return (ContextHandlerCollection) httpServer.getChildHandlerByClass(ContextHandlerCollection.class);
+    }
+
     /**
-     * liveness check
-     *
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
-     */
+    * liveness check
+    *
+    * @throws SmartFrogLivenessException In case of liveness failure
+    * @throws RemoteException    In case of network/rmi error
+    */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (context == null) {
             throw new SmartFrogLivenessException(ERROR_NULL_CONTEXT);
@@ -132,16 +156,16 @@ public abstract class DelegateApplicationContext
      * undeployment is skipped without an error. The context field is
      * set to null, to tell the system to skip this in future.
      *
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     * @throws SmartFrogException SmartFrog problems
+     * @throws RemoteException    In case of network/rmi error
      *
      */
     public void terminate() throws RemoteException, SmartFrogException {
         if (context != null) {
             try {
-                HttpServer httpServer = getServer().getServer();
-                if (httpServer != null) {
-                    httpServer.removeContext(context);
+                ContextHandlerCollection handlers= getServerContextHandler();
+                if (handlers != null) {
+                    handlers.removeHandler(context);
                 } else {
                     //do nothing, the server is not alive any more
                 }

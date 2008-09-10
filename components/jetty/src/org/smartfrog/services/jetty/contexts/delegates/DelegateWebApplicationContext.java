@@ -20,17 +20,17 @@
 
 package org.smartfrog.services.jetty.contexts.delegates;
 
-import org.mortbay.http.HttpServer;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.servlet.WebApplicationContext;
+import org.mortbay.jetty.webapp.WebAppContext;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyImpl;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -49,21 +49,22 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
     private boolean requestId = false;
 
 
-    private WebApplicationContext application = new WebApplicationContext();
+    private WebAppContext application;
+    /**
+     * a log
+     */
+    private Log log;
 
-
-    public DelegateWebApplicationContext(SFJetty server, Prim declaration) {
+    public DelegateWebApplicationContext(JettyImpl server, Prim declaration) {
         super(server, null);
-    }
-
-    public DelegateWebApplicationContext() {
+        log = LogFactory.getOwnerLog(declaration);
     }
 
     /**
      * at deploy time, do everything except starting the component
-     * @param declaration
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @param declaration owner
+     * @throws SmartFrogException smartfrog problems
+     * @throws RemoteException network problems
      */
     public void deploy(Prim declaration)
             throws SmartFrogException, RemoteException {
@@ -87,14 +88,26 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext
         contextPath = declaration.sfResolve(contextPathRef,
                 (String) null,
                 true);
-        String absolutePath = contextPath;
-        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
-        application.setContextPath(contextPath);
-        application.setWAR(webApp);
+
+        if(!contextPath.startsWith("/")) {
+            log.warn("Fixing up the context path "+contextPath+" by adding a leading \"/\"");
+            contextPath="/"+contextPath;
+        }
+
+        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, contextPath);
+        application = new WebAppContext(webApp,contextPath);
+        //application.setContextPath(contextPath);
+        //application.setWar(webApp);
+
+        
         ServletHandler servlethandler = application.getServletHandler();
+/*      TODO: turn this on if needed
         AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
+        */
+
+
         setContext(application);
     }
 

@@ -1,5 +1,5 @@
-#include "org/smartfrog/components.sf";
-#include "org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
 
 /** 
  * This is an example of jetty component
@@ -26,10 +26,6 @@ sfConfig extends Compound {
       serverHost "localhost"; //mandatory
       contexts extends JettySampleContexts {
          server LAZY PARENT;
-      }
-      list2 extends ApacheHttpdListener {
-            listenerPort 8010;
-            server LAZY PARENT;
       }
    }
     //out of band instance

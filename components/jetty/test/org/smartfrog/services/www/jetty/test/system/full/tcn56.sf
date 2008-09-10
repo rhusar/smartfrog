@@ -21,15 +21,17 @@
 
 
 sfConfig extends Compound {
+    //integrate logging with smartfrog
+  logging extends IntegrateJettyLogging;
 
    server extends CoreJettyServer {
-      jettyhome LAZY PROPERTY java.io.tmpdir; 
+      jettyhome test.jetty.home ; 
    }
 
-    list1 extends JettyListener {
-       // listenerPort 8012;
-       // serverHost "localhost";
+
+    negativePort extends JettySocketConnector {
         server LAZY PARENT:server;
+        port -43;
     }
 }
 
