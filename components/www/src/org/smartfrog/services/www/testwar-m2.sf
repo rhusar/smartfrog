@@ -33,15 +33,14 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/os/java/components.sf"
 #include "/org/smartfrog/services/os/java/library.sf"
+#include "/org/smartfrog/version.sf"
 
 /**
  * This is here for testing.
- * It is file to pull in the testwar from a local m2 repository. It allows
+ * It is file to pull in the testwar from a local Ivy repository. It allows
  * test deployments to be written which do not contain any hard-coded path dependencies with
  * the www application.
  *
- * with the move to an Ivy based build, this component is of limited use, but we cannot switch to an Ivy
- * policy as we are currently building with both Ivy1 and Ivy2, each of which caches files to a different directrion
  */
 
 testwarLoader extends Compound {
@@ -52,16 +51,18 @@ testwarLoader extends Compound {
         LAZY testwar:absolutePath
         ];
 
-    library extends Maven2Library {
+    library extends IvyLibrary {
     }
 
 
     testwar extends JarArtifact {
         library LAZY PARENT:library;
         project "org.smartfrog";
-        artifact "sf-www-testwar";
+        artifact "sf-www";
+        classifier "testwar"
         extension "war";
-        version "0.1-SNAPSHOT";
+        //pull in our own version
+        version Version:jarVersion;
         //expected to be installed locally; no retrieval
         downloadIfAbsent false;
     }

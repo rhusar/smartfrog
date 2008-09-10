@@ -5,10 +5,10 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 
@@ -22,7 +22,14 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      */
     private ApplicationServerContext delegate;
 
-    public ApplicationServerContextImpl() throws RemoteException {
+    static final Reference SERVER = new Reference(ATTR_SERVER);
+
+
+    /**
+     * constructor
+     * @throws RemoteException from the superclass
+     */
+    protected ApplicationServerContextImpl() throws RemoteException {
     }
 
     /**
@@ -57,14 +64,24 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * Bind to the server, by extracting the value of {@link #ATTR_SERVER} and
      * saving it somewhere that {@link #getContextHandle()} can retrieve it.
      *
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * @throws SmartFrogResolutionException if things do not resolve
+     * @throws RemoteException  In case of network/rmi error
      */
     protected void bindToServer()
             throws SmartFrogResolutionException, RemoteException {
-        server = (JavaWebApplicationServer) sfResolve(ATTR_SERVER,
+        final Prim prim = sfResolve(SERVER,
                 (Prim) null,
                 true);
+        if (prim instanceof JavaWebApplicationServer) {
+            server = (JavaWebApplicationServer) prim;
+        } else {
+            //wrong class type. Throw it with something better than a
+            //class cast exception
+            throw SmartFrogResolutionException.illegalClassType(SERVER,
+                    sfCompleteNameSafe(),
+                    prim, prim.getClass().toString(),
+                    JavaWebApplicationServer.class.toString());
+        }
     }
 
     /**
@@ -80,11 +97,28 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
         bindToServer();
+        validate();
         delegate = deployThisComponent();
         delegate.deploy();
     }
 
+    /**
+     * Override point: validate the component before
+     * calling the delegate.
+     * The base class does nothing.
+     * @throws SmartFrogException error while validating
+     * @throws RemoteException    In case of network/rmi error
+     */
+    protected void validate()
+            throws SmartFrogException, RemoteException {
+        
+    }
 
+    /**
+    * {@inheritDoc}
+    * @throws SmartFrogException error while deploying
+    * @throws RemoteException    In case of network/rmi error
+    */
     public void deploy() throws SmartFrogException, RemoteException {
         if (delegate != null) {
             delegate.deploy();
@@ -105,10 +139,27 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
     }
 
 
+    /**
+     * Start by delegating to the subclass
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
     public void start() throws SmartFrogException, RemoteException {
+        validateDuringStartup();
         if (delegate != null) {
             delegate.start();
         }
+    }
+
+    /**
+     * Override point: validate the component before starting up <p/> The base class does nothing.
+     *
+     * @throws SmartFrogException error while validating
+     * @throws RemoteException In case of network/rmi error
+     */
+    protected void validateDuringStartup()
+            throws SmartFrogException, RemoteException {
+
     }
 
     /**
@@ -116,10 +167,10 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      * The context handle is reset, so
      * we no longer consider ourselves bound
      *
-     * @throws SmartFrogException
-     * @throws RemoteException
+     * @throws SmartFrogException failure while terminating
+     * @throws RemoteException    In case of network/rmi error
      */
-    public void terminate() throws SmartFrogException, RemoteException {
+    public synchronized void terminate() throws SmartFrogException, RemoteException {
         try {
             if (delegate != null) {
                 delegate.terminate();
@@ -135,12 +186,16 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      *
      * @return a new context
      *
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws RemoteException  network trouble
+     * @throws SmartFrogException errors during deployment
      */
     protected abstract ApplicationServerContext deployThisComponent()
             throws RemoteException, SmartFrogException;
 
+    /**
+     * Get the delegate (may be null)
+     * @return a potentially null delegate
+     */
     public ApplicationServerContext getDelegate() {
         return delegate;
     }
@@ -150,9 +205,8 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
      *
      * @param source source of call
      *
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link
-     *                                    org.smartfrog.sfcore.prim.Liveness} interface
+     * @throws SmartFrogLivenessException liveness failure
+     * @throws RemoteException    network trouble
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -181,8 +235,8 @@ public abstract class ApplicationServerContextImpl extends PrimImpl
     /**
      * liveness check
      *
-     * @throws SmartFrogLivenessException
-     * @throws RemoteException
+     * @throws SmartFrogLivenessException failure of the ping
+     * @throws RemoteException network trouble
      */
     public void ping() throws SmartFrogLivenessException, RemoteException {
         if (delegate == null) {

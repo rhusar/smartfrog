@@ -23,40 +23,33 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Vector;
 
 
 /**
- * Initial liveness component. The initial implementation does a liveness check
+ * Component to check the health of a web page.
+ * The initial implementation does a liveness check
  * every sfPing, and only every sfPing(); a revision would run the checks in a
  * separate thread at its own rate and then report errors. That revision could
- * cache information about the GET with remote access, too. created 21-Apr-2004
- * 13:46:23
+ * cache information about the GET with remote access, too.
+ *
+ * Created 21-Apr-2004 13:46:23
  */
-public class LivenessPageComponent extends PrimImpl implements LivenessPage, Condition {
+public class LivenessPageComponent extends AbstractLivenessPageComponent
+        implements LivenessPage, Condition {
 
     /**
      * enabled flag
      */
     private boolean enabled = true;
-
-    /**
-     * the class that contains all the checking code. This is on the side for
-     * reuse in other components.
-     */
-    private LivenessPageChecker livenessPage;
-
     /**
      * how often to check
      */
     private int checkFrequency = 1;
-
+    private boolean checkOnLiveness;
     /**
      * when is the next check
      */
@@ -68,23 +61,17 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     private Log log;
     private ComponentHelper helper;
 
-    private boolean checkOnStartup;
-    private boolean checkOnLiveness;
 
     /**
      * empty constructor
      *
-     * @throws RemoteException
+     * @throws RemoteException In case of network/rmi error
      */
     public LivenessPageComponent() throws RemoteException {
     }
 
     public boolean isEnabled() {
         return enabled;
-    }
-
-    public LivenessPageChecker getLivenessPage() {
-        return livenessPage;
     }
 
     public int getCheckFrequency() {
@@ -99,69 +86,26 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
         return log;
     }
 
-    public ComponentHelper getHelper() {
+    public synchronized ComponentHelper getHelper() {
         return helper;
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Start up by creating the liveness checker
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        livenessPage = new LivenessPageChecker(this);
 
-        String url = sfResolve(ATTR_URL, (String) null, false);
+        buildLivenessChecker();
 
-        if (url != null) {
-            livenessPage.bindToURL(url);
-        } else {
-            livenessPage.setHost(sfResolve(ATTR_HOST,
-                    livenessPage.getHost(),
-                    false));
-            livenessPage.setPort(sfResolve(ATTR_PORT,
-                    livenessPage.getPort(),
-                    false));
-            livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
-                    livenessPage.getProtocol(), false));
-            livenessPage.setPath(sfResolve(ATTR_PATH,
-                livenessPage.getPath(),
-                false));
-            livenessPage.setPage(sfResolve(ATTR_PAGE,
-                    livenessPage.getPage(),
-                    false));
-            Vector queries = sfResolve(ATTR_QUERIES, (Vector) null, false);
-            livenessPage.buildQueryString(queries);
-        }
-
-        Vector mimeTypes = sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
-        livenessPage.setMimeTypes(mimeTypes);
-        livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
-                livenessPage.getMinimumResponseCode(), false));
-        livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
-                livenessPage.getMaximumResponseCode(), false));
-        livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
-                livenessPage.getFollowRedirects(), false));
-        livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
-                livenessPage.getFetchErrorText(), false));
         checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
-        checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
+        boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, true);
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, true, true);
-
         updateEnabledState();
-        //now tell the liveness page it is deployed
-        livenessPage.onStart();
-        if (url == null) {
-            //set the URL if it was not already set
-            URL targetURL = livenessPage.getTargetURL();
-            sfReplaceAttribute(ATTR_URL, targetURL.toString());
-        }
-
         helper = new ComponentHelper(this);
         log = helper.getLogger();
         String description = getDescription() + toString();
@@ -188,6 +132,11 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     }
 
 
+    /**
+     * Turn the enabled state on or off by checking our enabled attribute
+     * @throws SmartFrogResolutionException for a failure to resolve the attribute
+     * @throws RemoteException  for network problems
+     */
     private void updateEnabledState()
             throws SmartFrogResolutionException, RemoteException {
         enabled = sfResolve(ATTR_ENABLED, enabled, false);
@@ -199,8 +148,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
-     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
-     *          component is terminated
+     * @throws RemoteException  for network problems
+     * @throws SmartFrogLivenessException on a failure of the check
      */
     public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
@@ -213,8 +162,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
     /**
      * This is the routine called in sfPing that checks the liveness.
      * Override it if you want different behaviour on liveness
-     * @throws RemoteException
-     * @throws SmartFrogLivenessException
+     * @throws RemoteException  for network problems
+     * @throws SmartFrogLivenessException  on a failure of the check
      */
     protected void livenessPing() throws RemoteException,
         SmartFrogLivenessException {
@@ -239,22 +188,10 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * Check the page, regardless of whether the component is enabled or not.
      * This is the programmatic option.
      *
-     * @throws SmartFrogLivenessException
+     * @throws SmartFrogLivenessException on a failure of the check
      */
     public void checkPage() throws SmartFrogLivenessException {
         livenessPage.checkPage();
-    }
-
-    /**
-     * @return string form for this component
-     */
-    public String toString() {
-        //delegate
-        if (livenessPage != null) {
-            return livenessPage.toString();
-        } else {
-            return "undeployed liveness checker";
-        }
     }
 
 
@@ -262,15 +199,15 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage, Con
      * For liveness we evaluate the page and return true if the page is there
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws RemoteException for network problems
+     * @throws SmartFrogException   for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         try {
             livenessPage.onPing();
             return true;
-        } catch (SmartFrogLivenessException e) {
+        } catch (SmartFrogLivenessException ignored) {
+            sfLog().ignore("Ignoring liveness page error ",ignored);
             return false;
         }
     }

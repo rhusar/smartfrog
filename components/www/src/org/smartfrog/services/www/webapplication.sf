@@ -58,7 +58,7 @@ ApplicationServer extends WebServer {
 ApplicationServerContextSchema extends Schema {
 
     //application server. required.
-    server extends CD;
+    server extends Compulsory;
     //late binding information
     absolutePath extends OptionalString;
 }
@@ -143,7 +143,7 @@ ServletContextComponent extends Prim {
 
     servletContextComponentSchema extends Schema {
         //this is the (LAZY) reference to the component
-        context extends CD;
+        context extends Compulsory;
     }
 
 }
@@ -160,9 +160,9 @@ ServletSchema extends Schema {
     pathSpec extends String;
     //the class that implements the servlet
     className extends String;
-    //mappings.
+    //mappings are a list of strings.
     mappings extends OptionalVector;
-    //initialisation parameters
+    //initialisation parameters as a list of [name,value] pairs
     initParams extends OptionalVector;
     //init order for the servlet;
     //Holders with order<0, are initialized on use.
@@ -181,13 +181,13 @@ Servlet extends ServletContextComponent {
     sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
     //order of initialisation; -1 means on demand.
     initOrder -1;
-
+    initParams [];
 }
 
 
 /**
  A mime is a tuple of name,value. that is bound to a servlet context
- It does not get cleaned up after; you need to terminate the servlet
+ It does not get cleaned up after; you need to terminate the context
  */
 
 MimeType extends ServletContextComponent {

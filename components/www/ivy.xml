@@ -16,17 +16,21 @@
         description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private"
+    <conf name="compile" visibility="private" extends="servletapi"
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,compile"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"
+        extends="httpclient,servletapi"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
-    <conf name="war" description="compile path for the test war" visibility="private"/>
+    <conf name="servletapi" description="the servlet API" />
+    <conf name="httpclient" description="Http Client libraries"/>
+    <conf name="war" description="compile path for the test war" visibility="private"
+        extends="servletapi"/>
     <conf name="testwar"
         description="The war file used for testing WWW support"/>
     <conf name="documentation"
@@ -54,11 +58,26 @@
     <dependency org="javax.servlet"
         name="servlet-api"
         rev="${servletapi.version}"
-        conf="compile,war->master"/>
+        conf="servletapi->master"/>
     <dependency org="org.smartfrog"
         name="sf-testharness"
         changing="true"
         rev="latest.integration"
-        conf="test->default"/>    
+        conf="test->default"/>
+
+    <dependency org="commons-httpclient"
+        name="commons-httpclient"
+        rev="${commons-httpclient.version}"
+        conf="compile->master;httpclient->default">
+      <exclude org="commons-logging"/>
+      <exclude org="junit"/>
+    </dependency>
+
+    <dependency org="commons-codec"
+        name="commons-codec"
+        rev="${commons-codec.version}"
+        conf="httpclient->default"/>
+
+
   </dependencies>
 </ivy-module>

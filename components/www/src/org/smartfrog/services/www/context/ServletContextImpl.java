@@ -33,10 +33,18 @@ import java.rmi.RemoteException;
 public class ServletContextImpl extends ApplicationServerContextImpl implements ServletContextIntf {
 
 
+    /**
+     * Get our servlet cast to a ServletContextIntf
+     * @return the delegate, cast to the right type
+     */
     protected ServletContextIntf getContext() {
         return (ServletContextIntf) getDelegate();
     }
 
+    /**
+     * construct
+     * @throws RemoteException trouble in the superconstructor
+     */
     public ServletContextImpl() throws RemoteException {
     }
 
@@ -46,8 +54,8 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
      * It is called during sfDeploy, after we have bound to a server
      *
      * @return a component
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException error while doing the work
+     * @throws RemoteException In case of network/rmi error
      */
     protected ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException {
         return getServer().deployServletContext(this);
@@ -59,6 +67,8 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
      *
      * @param extension extension to map (no '.')
      * @param mimeType  mimetype to generate
+     * @throws SmartFrogException error while doing the work
+     * @throws RemoteException In case of network/rmi error
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
         getContext().addMimeMapping(extension, mimeType);
@@ -69,6 +79,8 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
      *
      * @param extension extension to unmap
      * @return true if the unmapping was successful
+     * @throws SmartFrogException error while doing the work
+     * @throws RemoteException In case of network/rmi error
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
         return getContext().removeMimeMapping(extension);
@@ -79,10 +91,21 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
      *
      * @param servletDeclaration component declaring the servlet
      * @return the delegate that implements the servlet binding
-     * @throws RemoteException
-     * @throws SmartFrogException
+     * @throws SmartFrogException error while doing the work
+     * @throws RemoteException In case of network/rmi error
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException {
         return getContext().addServlet(servletDeclaration);
     }
+
+    /**
+     * Check the target file exists
+     *
+     * @throws SmartFrogException error while validating
+     * @throws RemoteException In case of network/rmi error
+     */
+    @Override
+    protected void validateDuringStartup()
+            throws SmartFrogException, RemoteException {
+   }
 }

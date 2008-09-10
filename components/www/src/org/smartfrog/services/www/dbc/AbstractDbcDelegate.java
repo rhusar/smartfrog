@@ -21,6 +21,7 @@ package org.smartfrog.services.www.dbc;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.services.www.WebApplicationHelper;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -47,9 +48,9 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
      * @param server owner server
      * @param owner owner as a Prim interface.
      */
-    public AbstractDbcDelegate(DeployByCopyServerImpl server, Prim owner) {
+    protected AbstractDbcDelegate(DeployByCopyServerImpl server, Prim owner) {
         this.server = server;
-        this.declaration = owner;
+        declaration = owner;
     }
 
     public Prim getDeclaration() {
@@ -95,11 +96,9 @@ public abstract class AbstractDbcDelegate implements ApplicationServerContext {
 
         String contextPath = getDeclaration().sfResolve(ATTR_CONTEXT_PATH,
                 filename,
-                true);
-        if (contextPath.startsWith("/")) {
-            contextPath = contextPath.substring(1);
-        }
-        String absolutePath = '/' + contextPath;
+                false);
+        String absolutePath;
+        absolutePath = WebApplicationHelper.concatPaths("/",contextPath);
         getDeclaration().sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
 
         //create the full extension now.

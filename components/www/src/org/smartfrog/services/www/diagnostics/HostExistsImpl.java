@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.www.diagnostics;
 
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 
@@ -40,7 +40,10 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
     private boolean checkOnLiveness;
 
 
-
+    /**
+     * constructor
+     * @throws RemoteException in the superclass
+     */
     public HostExistsImpl() throws RemoteException {
     }
 
@@ -88,9 +91,8 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  failure while starting
-     * @throws java.rmi.RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException for RMI/Networking problems
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -112,8 +114,7 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * Check if this component is still alive.
      * @param source source of call
      *
-     * @throws SmartFrogLivenessException
-     *                                  component is terminated
+     * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException for consistency with the {@link
      *                                  org.smartfrog.sfcore.prim.Liveness}
      *                                  interface
@@ -131,9 +132,8 @@ public class HostExistsImpl extends PrimImpl implements HostExists, Condition {
      * check for the host existing.
      *
      * @return true if it is successful, false if not
-     * @throws java.rmi.RemoteException for network problems
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  for any other problem
+     * @throws SmartFrogException for deployment problems
+     * @throws RemoteException for RMI/Networking problems
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         return hostExists(host);

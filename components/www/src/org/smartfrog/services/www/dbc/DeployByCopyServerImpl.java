@@ -20,14 +20,14 @@
 package org.smartfrog.services.www.dbc;
 
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.www.ApplicationServerContext;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.ChildMinder;
@@ -52,7 +52,7 @@ import java.util.List;
 public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServer,
         ChildMinder {
 
-    private final List/*<QueuedFile>*/ filesToCopy = new ArrayList/*<QueuedFile>*/();
+    private final List<QueuedFile> filesToCopy = new ArrayList<QueuedFile>();
     private File destDir;
     private ComponentDescription startup;
     private ComponentDescription shutdown;
@@ -71,6 +71,10 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * {@value}
      */
     public static final String ERROR_ALREADY_RUNNING = "The servlet is already running!";
+    private static final String ERROR_DURING_SHUTDOWN =
+        "When running the shutdown component";
+    private static final String ERROR_TERMINATING_STARTUP =
+        "When terminating the startup component";
 
     public DeployByCopyServerImpl() throws RemoteException {
     }
@@ -128,8 +132,9 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
 
     /**
      * handle liveness check by throwing any fault received in the worker thread, then
-     * checking the health of the startup component.
-     * @param source
+     * checking the health of the startup component. We also ping the startup component
+     * if it exists.
+     * @param source source of the ping
      * @throws SmartFrogLivenessException ping failure
      * @throws RemoteException network failure
      */
@@ -149,7 +154,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      * then kill the startup prim.
      * If shutdown was not null, it is started and then immediately terminated (so it
      * had better do its work in the start component)
-     * @param status
+     * @param status exit record.
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         //close down the thread
@@ -162,7 +167,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
             try {
                 startupPrim.sfTerminate(status);
             } catch (RemoteException e) {
-                LogFactory.sfGetProcessLog().ignore("When terminating the startup component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_TERMINATING_STARTUP, e);
             }
             startupPrim = null;
         }
@@ -174,9 +179,9 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
                 shutdownPrim.sfStart();
                 shutdownPrim.sfTerminate(status);
             } catch (RemoteException e) {
-                LogFactory.sfGetProcessLog().ignore("When running the shutdown component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_DURING_SHUTDOWN, e);
             } catch (SmartFrogException e) {
-                LogFactory.sfGetProcessLog().ignore("When running the shutdown component", e);
+                LogFactory.sfGetProcessLog().ignore(ERROR_DURING_SHUTDOWN, e);
             }
             shutdownPrim = null;
         }
@@ -270,7 +275,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
      *
      * @throws RemoteException In case of Remote/nework error
      */
-    public Enumeration sfChildren() throws RemoteException {
+    public Enumeration<Liveness> sfChildren() throws RemoteException {
         return childminder.sfChildren();
     }
 
@@ -315,7 +320,7 @@ public class DeployByCopyServerImpl extends PrimImpl implements DeployByCopyServ
                     return EndOfQueue.END_OF_QUEUE;
                 }
             }
-            return (QueuedFile) filesToCopy.remove(0);
+            return filesToCopy.remove(0);
         }
     }
 

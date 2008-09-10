@@ -1,15 +1,16 @@
 package org.smartfrog.services.www.dbc;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
+ * A queued file
  */
 public class QueuedFile {
 
@@ -19,6 +20,11 @@ public class QueuedFile {
     private volatile SmartFrogException fault;
 
 
+    /**
+     * Construct and target
+     * @param source source file
+     * @param dest destination file
+     */
     public QueuedFile(File source, File dest) {
         this.source = source;
         this.dest = dest;
@@ -33,13 +39,17 @@ public class QueuedFile {
         return dest;
     }
 
+    /**
+     * Is the file processed?
+     * @return true if the processing is complete
+     */
     public boolean isProcessed() {
         return processed;
     }
 
     /**
      * set the processed bit.
-     * @param processed
+     * @param processed flag set if the file is processed.
      */
     public synchronized void setProcessed(boolean processed) {
         this.processed = processed;
@@ -80,13 +90,13 @@ public class QueuedFile {
             //do the blocking copy
             FileSystem.fCopy(source, dest);
         } catch (IOException e) {
-            SmartFrogDeploymentException fault =
+            SmartFrogDeploymentException ex =
                     new SmartFrogDeploymentException("Failed: " + this,
                             e,
                             owner,
                             owner.sfContext());
-            setFault(fault);
-            throw fault;
+            setFault(ex);
+            throw ex;
         } finally {
             setProcessed(true);
         }
