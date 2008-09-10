@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/examples/arithnet/netComponents.sf"
 #include "org/smartfrog/services/jmx/mbean/mbean.sf"
 
-ArithmeticManager extends MBean {
+ArithmeticManager extends MBean, PrimMetadata {
   sfClass "org.smartfrog.services.jmx.example.ArithmeticManager";
 
   properties:name "ArithmeticManager";

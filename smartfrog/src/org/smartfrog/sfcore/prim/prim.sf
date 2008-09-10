@@ -52,15 +52,18 @@ PrimSchema extends Schema {
  * are used */
 
 sfCodeBase "default";
-sfMeta extends DATA {    
-}
+sfMeta extends DATA {}; 
 
-//Prim with any schema
-Prim extends NULL {
-    sfPrimSchema extends PrimSchema;
-
+PrimMetadata extends NULL {
     sfCodeBase PARENT:sfCodeBase;
     sfMeta PARENT:sfMeta;
+}
+
+
+//Prim with any schema
+Prim extends PrimMetadata, NULL {
+    sfPrimSchema extends PrimSchema;
+
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
 //  sfExportPort 0; //Use anonymous port for export.
