@@ -61,7 +61,7 @@ public class VastListener implements XMPPPacketHandler {
                         refEnvCon.hostStarted(pe.getHost());
                         break;
                     case MonitoringConstants.VM_MESSAGE:
-                        refEnvCon.handleVMMessages(p, pe);
+                        refEnvCon.handleVMMessages(pe);
                         break;
                     default:
                         refEnvCon.sfLog().info("No matching monitoring constant found.");

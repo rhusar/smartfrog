@@ -10,7 +10,7 @@ import org.jivesoftware.smack.packet.Packet;
 import java.util.ArrayList;
 
 public class CommandController {
-	private ArrayList<Command> Commands = new ArrayList<Command>(9);
+	private ArrayList<Command> Commands = new ArrayList<Command>(10);
 	private ArrayList<VirtualMachineConfig> refVirtualMachines;
 
 	MessageDispatcher msgDisp;
@@ -29,6 +29,7 @@ public class CommandController {
 		WaitForToolsCommand wait = new WaitForToolsCommand(msgDisp, inLog);
 		CopyFileFromHostToGuestCommand copy = new CopyFileFromHostToGuestCommand(msgDisp, inLog);
 		ExecuteInGuestCommand exec = new ExecuteInGuestCommand(msgDisp, inLog);
+		StopVirtualMachineCommand stop = new StopVirtualMachineCommand(msgDisp, inLog);
 
 		// concatenate them
 		revert.setNextOnSuccess(cred);
@@ -41,7 +42,7 @@ public class CommandController {
 		delete.setNextOnFailure(create);
 
 		create.setNextOnSuccess(snapshot);
-		create.setNextOnFailure(create);
+		create.setNextOnFailure(delete);
 
 		snapshot.setNextOnSuccess(start);
 		snapshot.setNextOnFailure(delete);
@@ -50,12 +51,19 @@ public class CommandController {
 		start.setNextOnFailure(revert);
 
 		wait.setNextOnSuccess(copy);
-		wait.setNextOnFailure(start);
+		wait.setNextOnFailure(stop);
 
 		copy.setNextOnSuccess(exec);
 		copy.setNextOnFailure(copy);
 
 		exec.setNextOnFailure(copy);
+
+		// sometimes virtual machines are unpingable, restart them
+		exec.setNextOnSuccess(stop); // this is an exploit!
+
+		stop.setNextOnSuccess(start);
+		stop.setNextOnFailure(delete);
+
 
 		// add them to the list
 		Commands.add(revert);
@@ -67,6 +75,7 @@ public class CommandController {
 		Commands.add(wait);
 		Commands.add(copy);
 		Commands.add(exec);
+		Commands.add(stop);
 	}
 
 	public void executeCommands(ArrayList<VirtualMachineConfig> inVirtualMachines) {
@@ -78,13 +87,17 @@ public class CommandController {
 		}
 	}
 
-	public void handleResponse(Packet inPacket, XMPPEventExtension inExt) {
+	public void handleResponse(XMPPEventExtension inExt) {
 		// get the right virtual machine
 		for (VirtualMachineConfig virt : refVirtualMachines) {
 			if (virt.getAffinity().equals(inExt.getHost()) &&
 				virt.getDisplayName().equals(inExt.getPropertyBag().get(VMWareConstants.VMNAME))) {
+					// send the next message
+					msgDisp.sendNext(virt.getAffinity());
+
+					// queue the next message
 					virt.getCurrentCommand().handlePacket(virt, inExt);
-			}
+				}
 		}
 	}
 }

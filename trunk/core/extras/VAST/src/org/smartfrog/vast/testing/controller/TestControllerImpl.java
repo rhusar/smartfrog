@@ -148,8 +148,24 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 				}
 
 				// check the result
+				boolean failure = false;
 				for (SUTAttribute attr : seq.getResult().getAttributes()) {
-					ProcessCompound pc = SFProcess.sfSelectTargetProcess(attr.getHost(), null);
+					// get the process
+					ProcessCompound pc = SFProcess.sfSelectTargetProcess(attr.getHost(), attr.getProcess());
+
+					// resolve the attribute
+					String value = (String) pc.sfResolve(attr.getName(), false);
+
+					// check the result
+					if (value != null) {
+						failure = (!attr.getValue().equals(value));
+					}
+				}
+				if (failure && !seq.getExpectFailure())
+					throw new SmartFrogException("Unexpected failure in sequence " + seq.getName());
+				else {
+					// sequence passed, TODO: log
+					sfLog().info("Sequence passed: " + seq.getName());
 				}
 			}
 		} catch (Exception e) {
@@ -161,7 +177,7 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 	 * Stop the tests.
 	 */
 	private void stopTests() {
-		
+
 	}
 
 	public PacketFilter getFilter() {

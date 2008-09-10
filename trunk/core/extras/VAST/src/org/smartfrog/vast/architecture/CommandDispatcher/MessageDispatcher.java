@@ -2,6 +2,7 @@ package org.smartfrog.vast.architecture.CommandDispatcher;
 
 import org.smartfrog.avalanche.server.AvalancheServer;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
+import org.smartfrog.vast.architecture.VirtualMachineConfig;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,26 +15,28 @@ public class MessageDispatcher {
 		this.refAvl = refAvl;
 	}
 
-	public synchronized void sendMessage(String inHost, XMPPEventExtension inMsg) {
-		if (dispatcherThreads.containsKey(inHost)) {
+	public synchronized void sendMessage(VirtualMachineConfig inCfg, Command inCmd) {
+		if (dispatcherThreads.containsKey(inCfg.getAffinity())) {
 			// queue message
-			DispatcherThread dt = dispatcherThreads.get(inHost);
-			dt.queueMessage(inMsg);
-			if (!dt.isAlive())
-				dt.start();
+			DispatcherThread dt = dispatcherThreads.get(inCfg.getAffinity());
+			dt.queueMessage(inCfg, inCmd);
 		} else {
 			// create new dispatcher thread
-			DispatcherThread dt = new DispatcherThread(refAvl, inHost);
-			dt.queueMessage(inMsg);
+			DispatcherThread dt = new DispatcherThread(refAvl, inCfg.getAffinity());
+			dt.queueMessage(inCfg, inCmd);
 			dt.start();
 
 			// add it to the hashmap
-			dispatcherThreads.put(inHost, dt);
+			dispatcherThreads.put(inCfg.getAffinity(), dt);
 		}
 	}
 
 	public AvalancheServer getRefAvl() {
 		return refAvl;
+	}
+
+	public void sendNext(String inHost) {
+		dispatcherThreads.get(inHost).sendNext();
 	}
 
 	public void setRefAvl(AvalancheServer refAvl) {

@@ -6,19 +6,24 @@ public class TimerThread implements Runnable {
 	private VirtualMachineConfig refCfg;
 	private long Time;
 	private Command command;
-	private boolean stopTimer = false;
+	private boolean stopTimer = false,
+					running = false;
 
 	public TimerThread(VirtualMachineConfig refCfg) {
 		this.refCfg = refCfg;
 	}
 
 	public void run() {
+		System.out.println(this + " started");
+		running = true;
 		long lastTime = System.currentTimeMillis();
 
 		long tmpTime;
 		while (true) {
 			if (stopTimer) {
 				stopTimer = false;
+				running = false;
+				System.out.println(this + " stopped");
 				return;
 			}
 
@@ -35,6 +40,8 @@ public class TimerThread implements Runnable {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
+				running = false;
+				return;
 			}
 		}
 
@@ -45,7 +52,8 @@ public class TimerThread implements Runnable {
 	 * Stops the timer.
 	 */
 	public void stopTimer() {
-		stopTimer = true;
+		if (running)
+			stopTimer = true;
 	}
 
 	public Command getCommand() {

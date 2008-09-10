@@ -78,9 +78,12 @@ public class ExecuteInGuestCommand extends BaseCommand {
 	}
 
 	public void success(VirtualMachineConfig inCfg) {
+		// stop timer
+		inCfg.stopTimer();
+
 		try {
 			// try to ping the machine for 5 * 22 seconds
-			for (int i = 0; i < 5; ++i) {
+			for (int i = 0; i < 2; ++i) {
 				if (ping(inCfg.getHostAddress())) {
 					 // vast helper executed, now ignite the virtual machines
 					// with the appropriate package (sf + test runner + SUT)
@@ -90,23 +93,22 @@ public class ExecuteInGuestCommand extends BaseCommand {
 					return;
 				} else
 					Log.info("Ping to " + inCfg.getHostAddress() + " failed. Retrying.");
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-
-				}
 			}
 
-			if (inCfg.getNetworkSetupHelperTries() < 5) {
+			if (inCfg.getNetworkSetupHelperTries() < 1) {
 				Log.error("Error: virtual machine " + inCfg.getDisplayName() + " not reachable. Retrying network setup helper.");
 
 				inCfg.setNetworkSetupHelperTries(inCfg.getNetworkSetupHelperTries() + 1);
 				
 				// copy the helper into the vm again
 				failure(inCfg);
+			} else {
+				Log.error("Error: virtual machine " + inCfg.getDisplayName() + " not reachable. Restarting virtual machine.");
+
+				// exploit!
+				inCfg.setCurrentCommand(NextSuccess);
+				NextSuccess.execute(inCfg);
 			}
-			else Log.error("Error: virtual machine " + inCfg.getDisplayName() + " not reachable. Maximum tries reached.");
 		} catch (Exception e) {
 			Log.error(e);
 		}

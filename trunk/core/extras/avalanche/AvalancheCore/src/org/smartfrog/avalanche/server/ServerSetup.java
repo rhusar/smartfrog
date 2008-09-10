@@ -185,9 +185,8 @@ public class ServerSetup {
         // set the command
         ext.getPropertyBag().put("vmcmd", inCmd);
         if (inVMName != null)
-
-        // set the path (used like an identifier)
-        ext.getPropertyBag().put("vmname", inVMName);
+			// set the path (used like an identifier)
+			ext.getPropertyBag().put("vmname", inVMName);
 
         // add the additional parameters
         if (inAdditionalProperties != null) {

@@ -31,6 +31,7 @@ public class SUTAttributeImpl extends PrimImpl implements SUTAttribute {
 	private String Name;
 	private String Host;
 	private String Value;
+	private String Process;
 
 	public SUTAttributeImpl() throws RemoteException {
 	}
@@ -44,6 +45,7 @@ public class SUTAttributeImpl extends PrimImpl implements SUTAttribute {
 		Name = (String) sfResolve(ATTR_NAME, true);
 		Host = (String) sfResolve(ATTR_HOST, true);
 		Value = (String) sfResolve(ATTR_VALUE, true);
+		Process = (String) sfResolve(ATTR_PROCESS, false);
 	}
 
 	public String getHost() throws RemoteException {
@@ -56,5 +58,9 @@ public class SUTAttributeImpl extends PrimImpl implements SUTAttribute {
 
 	public String getValue() throws RemoteException {
 		return Value;
+	}
+
+	public String getProcess() throws RemoteException {
+		return Process;
 	}
 }

@@ -10,11 +10,13 @@ public abstract class BaseCommand implements Command {
 	protected MessageDispatcher refMD = null;
 	protected String Command;
 	protected LogSF Log;
+	protected int TimeOut;
 
 	protected BaseCommand(MessageDispatcher refMD, String inCmd, LogSF inLog) {
 		this.refMD = refMD;
 		this.Command = inCmd;
 		Log = inLog;
+		TimeOut = 120 * 1000;
 	}
 
 	public void handlePacket(VirtualMachineConfig inCfg, XMPPEventExtension inExt) {
@@ -28,20 +30,20 @@ public abstract class BaseCommand implements Command {
 	}
 
 	public void execute(VirtualMachineConfig inCfg) {
-		// send the message
-		refMD.sendMessage(inCfg.getAffinity(), composeMessage(inCfg));
-
 		// stop the old timer
 		inCfg.stopTimer();
 
 		// set the timer
-		inCfg.setTimer();
+		inCfg.setTimer(TimeOut);
 
-		// start the timer
-		inCfg.startTimer();
+		// send the message
+		refMD.sendMessage(inCfg, this);
 	}
 
 	public void failure(VirtualMachineConfig inCfg) {
+		// stop timer
+		inCfg.stopTimer();
+		
 		// go to failure
 		inCfg.setCurrentCommand(NextFailure);
 		NextFailure.execute(inCfg);
@@ -64,13 +66,21 @@ public abstract class BaseCommand implements Command {
 	}
 
 	public void success(VirtualMachineConfig inCfg) {
+		// stop timer
+		inCfg.stopTimer();
+
 		// go to success
 		inCfg.setCurrentCommand(NextSuccess);
 		NextSuccess.execute(inCfg);
 	}
 
 	public void timeOut(VirtualMachineConfig inCfg) {
+		Log.info("timeout " + inCfg.getCurrentCommand());
+
 		// retry
-		this.execute(inCfg);
+		//this.execute(inCfg);
+
+		// goto failure behaviour
+		failure(inCfg);
 	}
 }
