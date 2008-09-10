@@ -87,7 +87,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
     /**
      * Component Log. This log is used to from any component. It can be replaced using sfSetLog()
      */
-    private LogSF sfLog = null;
+    private LogSF sfLog;
 
     /**
      * Static attribute that hold the lifecycle hooks for sfDeploy.
@@ -214,8 +214,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             try {
                 // if sfLog() is called then a new log is created and an upcall is triggered
                 if ((sfLog != null) && sfLog().isTraceEnabled()) {
-                    sfLog().trace("sfResolved HERE '" + name.toString() + "' to '" + result
-                            .toString() + "'");
+                    sfLog().trace("sfResolved HERE '" + name.toString() + "' to '" + result.toString() + "'");
                 }
             } catch (Throwable thr) {
                 thr.printStackTrace();
@@ -224,9 +223,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         } catch (SmartFrogContextException ex) {
             //sfCompleteName() uses sfResolveHere() and therefore it can be a problem here :-)!
             // Using the sfCompleteName cache to provide as much info a it is available.
-            throw SmartFrogResolutionException.notFound(new Reference(name),
-                    sfCompleteName,
-                    ex);
+            throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteName, ex);
 
         }
         return result;
@@ -279,15 +276,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         try {
             if (sfGetTags(name).contains("sfLocal")) {
                 if (mandatory) {
-                    throw new SmartFrogResolutionException(
-                            "Accessing local attribute " + name);
+                    throw new SmartFrogResolutionException("Accessing local attribute " + name);
                 }
                 return null;
             }
         } catch (Exception e) {
             if (mandatory) {
-                throw (SmartFrogResolutionException) SmartFrogResolutionException
-                        .forward("Error accessing attribute tags " + name, e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("Error accessing attribute tags " + name, e);
             }
             return null;
         }
@@ -338,17 +333,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             try {
                 obj = ((SFMarshalledObject) obj).get();
             } catch (IOException e) {
-                throw (SmartFrogResolutionException) SmartFrogResolutionException
-                        .forward(e.getMessage(), e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e.getMessage(), e);
             } catch (ClassNotFoundException e) {
-                throw (SmartFrogResolutionException) SmartFrogResolutionException
-                        .forward(e.getMessage(), e);
+                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(e.getMessage(), e);
             }
         }
         try {
-            if (sfLog().isTraceEnabled()) {
-                sfLog().trace(sfCompleteNameSafe() + " sfResolved '" + rn.toString() + "' to '" + obj
-                        .toString() + "'");
+            if ((sfLog!=null) && sfLog().isTraceEnabled()) {
+                sfLog().trace(sfCompleteNameSafe() + " sfResolved '" + rn.toString() + "' to '" + obj.toString() + "'");
             }
         } catch (Throwable thr) {
             thr.printStackTrace();
@@ -378,8 +370,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         } catch (SmartFrogResolutionException rex) {
             if ((!(rex.containsKey(SmartFrogRuntimeException.SOURCE)))
                     || (rex.get(SmartFrogRuntimeException.SOURCE) == null)) {
-                rex.put(SmartFrogRuntimeException.SOURCE,
-                        sfCompleteNameSafe());
+                rex.put(SmartFrogRuntimeException.SOURCE, sfCompleteNameSafe());
                 rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
             if ((!(rex.containsKey(SmartFrogResolutionException.REFERENCE)))) {
@@ -388,15 +379,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
         } catch (StackOverflowError st) {
-            throw new SmartFrogResolutionException(r,
-                    sfCompleteNameSafe(),
-                    st.toString() + ". Possible cause: cyclic reference",
-                    null,
-                    st,
-                    this);
+            throw new SmartFrogResolutionException(r, sfCompleteNameSafe(), st.toString() + ". Possible cause: cyclic reference", null, st, this);
         } catch (Throwable thr) {
-            throw new SmartFrogResolutionException(r, sfCompleteNameSafe(),
-                    null, null, thr, this);
+            throw new SmartFrogResolutionException(r, sfCompleteNameSafe(), null, null, thr, this);
         }
 
         return obj;
@@ -714,12 +699,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * the component
      * @throws RemoteException In case of network/rmi error
      */
-    public void sfDeployWith(Prim parent, Context cxt) throws
-            SmartFrogDeploymentException, RemoteException {
+    public void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
 
         try {
             sfParent = parent;
             sfContext = cxt;
+
+            sfLog=null;
+            //Init Log
+            sfLog();
 
             sfDeployWithHooks.applyHooks(this, null);
 
@@ -747,8 +735,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             if (es) {
                 //Default value=0 = Anonymous port.
                 int port = 0;
-                Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,
-                        false);
+                Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT, false);
                 Object exportRef = null;
 
                 sfExport(portObj);
@@ -782,8 +769,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
                     sfLog().warn("Failed to get a valid value for " + SmartFrogCoreKeys.SF_HOST + " attribute.", e);
                 }
             }
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS,
-                    sfDeployedProcessName());
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
 
         } catch (Exception sfex) {
             if (sfLog().isErrorEnabled()) {
@@ -1616,8 +1602,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
         sfLog = newlog;
         // add attribute
         try {
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME,
-                    newlog.getLogName());
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME,newlog.getLogName());
         } catch (Exception ex) {
             if (sfLog().isErrorEnabled()) {
                 sfLog().err(ex);
@@ -1658,8 +1643,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
      * @throws SmartFrogException if failed
      * @throws RemoteException In case of Remote/network error
      */
-    public LogSF sfGetApplicationLog()
-            throws SmartFrogException, RemoteException {
+    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
         //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
         String sfLogName = null;
@@ -1680,11 +1664,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             if (sfParent() != null) {
                 try {
                     // Check or sfLog attribute in parent
-                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,
-                            "",
-                            true));
+                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
                 } catch (SmartFrogResolutionException rex) {
-                    sfLogName = sfCompleteName().toString();
+                    sfLogName = this.sfCompleteName().toString();
                 }
             } else {
                 //I am the Root component for this application
