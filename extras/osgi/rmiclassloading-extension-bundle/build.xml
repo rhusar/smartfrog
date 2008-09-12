@@ -31,7 +31,7 @@
         <target name="createjar" depends="generate-versioned-jar">
             <sf-jar destfile="${target.jar}"
                     manifest="./META-INF/MANIFEST.MF">
-                <zipfileset dir="${artifactsCache.dir}/.ivy2/local/org.smartfrog/smartfrog/${smartfrog.version}/jars/">
+                <zipfileset dir="${artifactsCache.dir}/.ivy/cache/org.smartfrog/smartfrog/jars/">
                     <include name="sfRmiSpi.jar"/>
                 </zipfileset>
             </sf-jar>
