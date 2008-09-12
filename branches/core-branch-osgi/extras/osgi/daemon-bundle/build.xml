@@ -21,7 +21,7 @@
     */
     -->
     <description>
-        Build file for the Smartfrog daemon OSGi bundle
+        Build file for the Smartfrog daemon OSGi bundle 
     </description>
 
     <property name="ivy.enabled" value="true"/>
@@ -46,16 +46,15 @@
             depends="common.pre-compile,local-declarations"/>
 
     <target name="local-declarations">
-        <property name="sfcore.jars.ivycache"
-                  value="${ivy2.local.dir}/org.smartfrog/smartfrog/${smartfrog.version}/jars/"/>
+        <property name="sfcore.jars.ivycache" value="${ivy.cache.dir}/org.smartfrog/smartfrog/jars/"/>
         <union id="common.bundle.contents">
             <fileset dir="${smartfrog.dist.dir}/private/" includes="sf.policy"/>
             <fileset dir="${build.dir}" includes="OSGI-INF/**"/>
             <fileset dir="${sfcore.jars.ivycache}">
-                <include name="smartfrog.jar"/>
-                <include name="sfServices.jar"/>
-                <include name="sfExamples.jar"/>
-                <include name="sfOSGi.jar"/>
+                <include name="smartfrog-${smartfrog.version}.jar"/>
+                <include name="sfServices-${smartfrog.version}.jar"/>
+                <include name="sfExamples-${smartfrog.version}.jar"/>
+                <include name="sfOSGi-${smartfrog.version}.jar"/>
             </fileset>
             <file file="../../../smartfrog/private/*.policy"/>
         </union>
