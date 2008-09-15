@@ -38,7 +38,6 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.deployer.PrimFactory;
 
 /**
  *
@@ -47,7 +46,7 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
 
     public static final String CLUSTERCOMPOUNDCLASS =
             "org.smartfrog.services.anubisdeployer.ClusterCompoundImpl";
-    private static String uniqueNameBase;
+    static String uniqueNameBase;
     public static final String ATTR_CLUSTER_NODE_MANAGEMENT = "clusterNodeManagement";
     public static final String ATTR_CLUSTER_STATUS_MONITOR = "clusterStatusMonitor";
 
@@ -57,6 +56,15 @@ public class ClusterDeployerImpl extends PrimProcessDeployerImpl {
         } catch (RemoteException e) {
             uniqueNameBase = "sfClusterReservation.error";
         }
+    }
+
+    /**
+     * Constructs the ClusetrDeployerImpl with ComponentDescription.
+     *
+     * @param descr target to operate on
+     */
+    public ClusterDeployerImpl(ComponentDescription descr) {
+        super(descr);
     }
 
     public Prim deploy(Reference name, Prim parent, Context params)
