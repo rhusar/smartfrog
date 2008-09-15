@@ -47,6 +47,9 @@ import org.smartfrog.avalanche.core.host.DataTransferModeType;
 import org.smartfrog.avalanche.core.host.ArgumentType;
 import org.smartfrog.services.sfinterface.SmartfrogAdapter;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.*;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import javax.swing.*;
 import java.io.File;
@@ -69,6 +72,7 @@ public class SFAdapter {
     private Vector<String> machines = new Vector<String>();
     public static Hashtable allValues = new Hashtable();
     public static final String AVALANCHE_SERVER = "_Avalanche_server";
+	//private LogSF sflog = null;
 
     public SFAdapter(AvalancheFactory factory) {
         super();
@@ -625,6 +629,16 @@ public class SFAdapter {
         	String scpFile = homeDir + File.separator + "smartfrog" + File.separator + "boot" + File.separator + "scp.sf";
         	String logsDir = homeDir + File.separator + "logs";
 		HashMap attrMap = new HashMap();
+		//LogSF sfLog = LogFactory.sfGetProcessLog();
+		//LogImpl	log = new LogImpl("SF-Adapter");
+		System.out.println("Calling LogFactory:");
+		
+		LogSF sfLog = LogFactory.getLog("SFCORE_LOG");
+		ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(sfLog, true,null);
+		Boolean configurationClass = false;
+		if(classComponentDescription!=null)
+			configurationClass = getConfigurationClass(classComponentDescription);
+		System.out.println("Callinged LogFactory:");
 		
 		if (reportPath != null){
 			attrMap.put("sfConfig:SCP:file", username+":"+ password + "@"+ host+ ":" + reportPath + "/*");
@@ -633,9 +647,19 @@ public class SFAdapter {
 		 		outputDir.mkdir();
 			attrMap.put("sfConfig:SCP:localTodir" , logsDir + File.separator + outputFile);
 		}else {
-			attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
+			/*attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
 			
-			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
+			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");*/
+			if(!configurationClass){
+				attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
+				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
+				
+			}else{
+				
+				attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/log/*"+outputFile+"*.log");
+				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
+				
+			}
 		}
 	
 	 // SmartFrogAdapterImpl adapter = new SmartFrogAdapterImpl(sfDistDir, false);
@@ -661,6 +685,38 @@ public class SFAdapter {
             throw new SFSubmitException(e);
         }
 
+    }
+	private boolean getConfigurationClass(ComponentDescription componentDescription) {
+       boolean flag = false;
+        try {
+             Object s =componentDescription.sfResolve("loggerClass", true);
+			 System.out.println("*****Vachinda?"+s);
+			
+			 if(s instanceof String){
+				 String str =  (String)s;
+				 if(str.indexOf("LogToFileImpl")<0)
+					 flag = false;
+				 else {
+					 flag = true;
+				 }
+			 }else  if (s instanceof Vector){
+				for (int i = 0; i<((Vector)s).size(); i++) {
+					String className = (String)((Vector)s).get(i);
+					if(className.indexOf("LogToFileImpl")<0)
+						flag = false;
+					else {
+						flag = true;
+						break;
+					}
+
+				}
+			 }
+
+        } catch (SmartFrogResolutionException ex) {
+            ex.printStackTrace();
+        }
+		System.out.println("********************* "+flag);
+		return flag;
     }
 
     public void startMngConsole(String hostname) {
