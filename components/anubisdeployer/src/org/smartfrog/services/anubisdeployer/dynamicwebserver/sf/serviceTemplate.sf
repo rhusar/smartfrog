@@ -24,7 +24,6 @@ For more information: www.smartfrog.org
 
 
 #include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/thresholder/components.sf"
-#include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
 #include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/sf/webTemplate.sf";
@@ -51,21 +50,13 @@ ServiceTemplate extends Compound {
     max   1500;
     min   0;
 
-
-    logger extends Logger {
-        verbose false;
-    }
-
-
     webThresholder extends Thresholder {
         minInstances 1;
         maxInstances 3;
 
-        logTo LAZY logger;
         balancer        LAZY balancerGroup:balancer;
 
         template extends LAZY WebServerTemplate {
-            //logTo LAZY logger;
         }
 
         polling         PARENT:polling;
@@ -79,7 +70,6 @@ ServiceTemplate extends Compound {
     }
 
     thresholdGraph extends DisplayThresholder {
-        //logTo LAZY ATTRIB logger;
         dataSource LAZY  loadGenerator;
         thresholder LAZY webThresholder;
 
@@ -96,7 +86,6 @@ ServiceTemplate extends Compound {
     }
 
     loadGenerator extends StressTester {
-        //logTo LAZY logger;
         port 80;
 
         page      measurementCgi;
@@ -110,7 +99,6 @@ ServiceTemplate extends Compound {
        sfProcessComponentName "loadBalancer";
 
        balancer extends WebBalancer {
-            //logTo LAZY logger;
             hosts [];
        }
 
