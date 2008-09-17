@@ -196,10 +196,34 @@ These are the meaningful targets for this build file:
     </copy>
   </target>
 
+
+  <target name="build-classpath" depends="initbuild,generateversion">
+    <path id="compile.classpath">
+      <pathelement location="lib/smartfrog-${Version}.jar"/>
+      <pathelement location="lib/sfServices-${Version}.jar"/>
+      <pathelement location="lib/sfExamples-${Version}.jar"/>
+      <pathelement location="lib/eclipse-clp-*.jar"/>
+    </path>
+
+  </target>
+
+  <target name="check-for-eclipse" depends="build-classpath">
+    <available property="eclipse.clp.present"
+        classname="com.parctechnologies.eclipse.Atom"
+        classpathref="compile.classpath"/>
+    <selector id="eclipse.files">
+      <filename name="org/smartfrog/sfcore/languages/sf/constraints/eclipse/*"/>
+    </selector>
+  </target>
+
+  <target name="ready-to-build" depends="copyFiles,check-for-eclipse">
+
+  </target>
+
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="build" depends="copyFiles,initbuild,generateversion" description="Compiles source code">
+  <target name="build" depends="ready-to-build" description="Compiles source code">
     <!-- Compile the java code -->
     <javac compiler="${javac.compiler}"
         srcdir="src"
@@ -212,12 +236,16 @@ These are the meaningful targets for this build file:
         source="${javac.java.version}"
         target="${javac.java.version}"
         memoryMaximumSize="${javac.max.memory}"
+        classpathref="compile.classpath"
         >
-      <classpath>
-        <pathelement location="lib/smartfrog-${Version}.jar"/>
-        <pathelement location="lib/sfServices-${Version}.jar"/>
-        <pathelement location="lib/sfExamples-${Version}.jar"/>
-     </classpath>
+      <selector>
+        <not>
+          <or>
+            <selector refid="eclipse.files" unless="eclipse.clp.present"/>
+          </or>
+        </not>
+      </selector>
+
     </javac>
     
   <!-- RMI compile by looking for all remote classes in the
