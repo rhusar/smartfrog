@@ -33,17 +33,14 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "/org/smartfrog/vast/testing/VastSchema.sf"
 #include "/org/smartfrog/avalanche/client/monitor/xmpp/avalanche.sf"
 #include "/org/smartfrog/services/quartz/monitor/monitor.sf"
-#include "/org/smartfrog/vast/testing/controller/SWFTestSuite.sf"
 
 ControllerNode extends Compound {
 	ctrl extends TestController {
 		avlListener LAZY listener;
 
 		// SUT test suite
-		testSuite LAZY swfTestSuite;
+		testSuite TBD;
 	}
-
-	swfTestSuite extends SWFTestSuite;
 
 	listener extends AvlListener;
 

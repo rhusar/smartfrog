@@ -42,6 +42,8 @@ import java.net.UnknownHostException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class TestControllerImpl extends PrimImpl implements TestController, MessageCallback, LocalXmppPacketHandler {
 	/**
@@ -71,6 +73,11 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 	 * The multicast communicator class.
 	 */
 	private BroadcastCommunicator MCC;
+
+	/**
+	 * The attributes that have been published up till now.
+	 */
+	private HashMap<String, String> PublishedAttributes = new LinkedHashMap<String, String>();
 
 	/**
 	 * The test suite.
@@ -150,17 +157,9 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 				// check the result
 				boolean failure = false;
 				for (SUTAttribute attr : seq.getResult().getAttributes()) {
-					// get the process
-					ProcessCompound pc = SFProcess.sfSelectTargetProcess(attr.getHost(), attr.getProcess());
-
-					// resolve the attribute
-					String value = (String) pc.sfResolve(attr.getName(), false);
-
-					// check the result
-					if (value != null) {
-						failure = (!attr.getValue().equals(value));
-					}
+					failure = (!attr.getValue().equals(PublishedAttributes.get(String.format("%s:%s:%s", attr.getHost(), attr.getProcess(), attr.getName()))));
 				}
+
 				if (failure && !seq.getExpectFailure())
 					throw new SmartFrogException("Unexpected failure in sequence " + seq.getName());
 				else {
@@ -228,11 +227,12 @@ public class TestControllerImpl extends PrimImpl implements TestController, Mess
 		
 	}
 
-	public void OnInvokeFunction(String inFunctionName, Vector inParameters) {
-		
+	public void OnInvokeFunction(String inFunctionName, String inProcessName, Vector inParameters) {
+
 	}
 
 	public void OnPublishedAttribute(InetAddress inHost, String inProcessName, String inKey, String inValue) {
+		PublishedAttributes.put(String.format("%s:%s:%s", inHost, inProcessName, inKey), inValue);
 		sfLog().info(inHost + ", " + inProcessName + " published attribute " + inKey + "=" + inValue);
 	}
 }

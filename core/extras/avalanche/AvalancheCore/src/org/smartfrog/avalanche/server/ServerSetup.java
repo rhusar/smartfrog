@@ -289,7 +289,7 @@ public class ServerSetup {
         }
     }
 
-    /**
+	/**
      * Adds a packet handler to the xmpp listener.
      * @param inHandler
      * @throws org.jivesoftware.smack.XMPPException

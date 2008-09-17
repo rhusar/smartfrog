@@ -292,7 +292,7 @@ public class BootStrap {
             if (!of.exists()) {
                 throw new HostIgnitionException("Template creation failed! File does not exist: " + outputFile);
             }
-            // log.info("SF : " + outputFile);
+            log.info("SF : " + outputFile);
 
 			SmartfrogAdapter adapter;
 

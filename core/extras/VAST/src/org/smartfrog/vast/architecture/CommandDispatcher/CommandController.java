@@ -92,11 +92,11 @@ public class CommandController {
 		for (VirtualMachineConfig virt : refVirtualMachines) {
 			if (virt.getAffinity().equals(inExt.getHost()) &&
 				virt.getDisplayName().equals(inExt.getPropertyBag().get(VMWareConstants.VMNAME))) {
-					// send the next message
-					msgDisp.sendNext(virt.getAffinity());
-
 					// queue the next message
 					virt.getCurrentCommand().handlePacket(virt, inExt);
+
+					// send the next message
+					msgDisp.sendNext(virt.getAffinity());
 				}
 		}
 	}
