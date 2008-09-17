@@ -380,6 +380,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl
             throw rex;
         } catch (StackOverflowError st) {
             throw new SmartFrogResolutionException(r, sfCompleteNameSafe(), st.toString() + ". Possible cause: cyclic reference", null, st, this);
+        } catch (OutOfMemoryError st) {
+            throw new SmartFrogResolutionException(r, sfCompleteNameSafe(), st.toString() + ". Possible cause: cyclic reference", null, st, this);
         } catch (Throwable thr) {
             throw new SmartFrogResolutionException(r, sfCompleteNameSafe(), null, null, thr, this);
         }
