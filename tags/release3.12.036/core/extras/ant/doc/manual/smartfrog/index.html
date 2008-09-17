@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>SmartFrog Ant Tasks</title>
+</head>
+<body>
+<h1>SmartFrog Ant Tasks</h1>
+
+<p>
+These are the Ant tasks to deploy and undeploy applications with SmartFrog
+during a build process.
+</p>
+<h2>Tasks</h2>
+<table border="1">
+<tr>
+ <td><a href="sf-parse.html">&lt;sf-parse&gt;</a></td>
+ <td>Parse a SmartFrog file and pre-validate it before deployment </td>
+</tr>
+<tr>
+ <td><a href="sf-deploy.html">&lt;sf-deploy&gt;</a></td>
+ <td>Deploy applications to a SmartFrog daemon </td>
+<tr>
+</tr>
+ <td><a href="sf-ping.html">&lt;sf-ping&gt;</a></td>
+ <td>Probe an applications to verify it is working as specified</td>
+<tr>
+
+</tr>
+ <td><a href="sf-run.html">&lt;sf-run&gt;</a></td>
+ <td>Run one or more applications in a new process</td>
+<tr>
+</tr>
+ <td><a href="sf-undeploy.html">&lt;sf-undeploy&gt;</a></td>
+ <td> Undeploy an application</td>
+<tr>
+</tr>
+ <td><a href="sf-startdaemon.html">&lt;sf-startdaemon&gt;</a></td>
+ <td> Start a SmartFrog daemon</td>
+<tr>
+</tr>
+ <td><a href="sf-stopdaemon.html">&lt;sf-stopdaemon&gt;</a></td>
+ <td>Stop a SmartFrog daemon </td>
+</tr>
+<tr>
+ <td><a href="sf-sign.html">&lt;sf-sign&gt;</a></td>
+ <td>Sign JAR files with a SmartFrog certificate
+</td>
+</tr>
+<tr>
+ <td><a href="sf-tourl.html">&lt;sf-tourl&gt;</a></td>
+ <td>Convert files and filesets to a list of URLs
+</td>
+  <tr>
+    <td><a href="sf-gui.html">&lt;sf-gui&gt;</a></td>
+    <td>Start the SmartFrog editor application
+    </td>
+  </tr>
+  <tr>
+    <td><a href="sf-managementconsole.html">&lt;sf-managementconsole&gt;</a></td>
+    <td>Start the management GUI, targeted at a named host
+    </td>
+  </tr>
+  <tr>
+    <td><a href="sf-faultingwaitfor.html">&lt;sf-faultingwaitfor&gt;</a></td>
+    <td> A copy of &lt;waitfor&gt; that can be made to fail on timeout.
+    </td>
+  </tr>
+  <tr>
+    <td><a href="sf-functionaltest.html">&lt;sf-functionaltest&gt;</a></td>
+    <td>This is an extension of &lt;junit&gt; that integrates startup, a waitfor
+      condition and a shutdown sequence into the test case.
+    </td>
+  </tr>
+
+</table>
+
+<!-- ======================================================== -->
+<!-- ======================================================== -->
+
+<h2>Common Elements Unique to the SmartFrog Tasks</h2>
+
+<!-- ======================================================== -->
+
+<h3>Application</h3>
+<p>
+The <tt>&lt;application&gt;</tt> element describes an application to deploy.
+</p>
+<table border="1">
+<tr>
+ <td>name</td>
+ <td>Application name. Required.</td>
+<tr>
+<tr>
+ <td>descriptor</td>
+ <td>path to a deployment descriptor in a JAR in the classpath</td>
+<tr>
+<tr>
+ <td>file</td>
+ <td>path to a deployment descriptor in a file</td>
+<tr>
+</table>
+<p>
+A descriptor can also be included inline. When that is done, Ant property expansion
+takes place before the deployment descriptor is sent to the daemon. This is powerful
+but not normally needed as properties can be set and queried more elegantly using the
+<tt>PROPERTY</tt> keyword, combined with the &lt;sysproperty&gt; element and others.
+</p><p>
+Note that when running with security enabled, only signed descriptors inside
+a JAR file will be accepted for deployment.
+</p>
+
+<!-- ======================================================== -->
+<h3>Security</h3>
+<p>
+This element configures security for a daemon.
+</p>
+<p>
+Different tasks may have different requirements of this file. For example,
+tasks that talk to a daemon will need a keystore, policy file and security
+properties file defined; the <tt>&lt;sf-sign&gt;</tt> task does not
+need the policy information.
+</p>
+<!--The empty element <tt>&lt;security&gt;</tt> means 'no security'.-->
+<table border="1">
+<tr>
+ <td>keystore</td>
+ <td>Path to a java keystore</td>
+</tr>
+<tr>
+ <td>policyFile</td>
+ <td>Path to a java security policy</td>
+</tr>
+<tr>
+ <td>SecurityPropertiesFile</td>
+ <td>Name of a file containing SmartFrog security properties</td>
+</tr>
+<tr>
+ <td>SecurityPropertiesResource</td>
+ <td>Path to a resource containing SmartFrog security properties</td>
+</tr>
+<tr>
+ <td>Alias</td>
+ <td>Identity to use when signing</td>
+</tr>
+</table>
+
+<!-- ======================================================== -->
+
+<h3>Codebase</h3>
+<p>
+Any number of <tt>&lt;codebase&gt;</tt> elements can be added to any of the
+tasks that support the element; together they build up the complete
+<tt>sfCodebase</tt> URL list that is used to tell SmartFrog how to
+load component classes and resources.
+</p>
+<p>
+One -and only one- of the possible attributes must be declared.
+</p>
+<table border="1">
+<tr>
+ <td>url</td>
+ <td>A URL of a JAR file to add the the codebase</td>
+</tr>
+<tr>
+ <td>file</td>
+ <td>A file to add to the codebase</td>
+</tr>
+</table>
+
+
+<!-- ======================================================== -->
+
+<h3>PropertyFile</h3>
+<p>
+A declaration of a property file containing name/value assigment
+of JVM properties. A property file can be marked optional, in which
+case it is not an error for the file to be absent.
+</p>
+<table border="1">
+<tr>
+ <td>file</td>
+ <td>A file containing Java property declarations. Required</td>
+</tr>
+<tr>
+ <td>optional</td>
+ <td>A boolean attribute to mark whether a file is required (default="true"). </td>
+</tr>
+</table>
+
+<!-- ======================================================== -->
+<!-- ======================================================== -->
+
+<h2>Other Common Elements</h2>
+<p>
+The following elements are all part of Ant's core datatype set, and are documented
+on the Ant web site.
+</p>
+<table border="1">
+<tr>
+ <td><a href="http://ant.apache.org/manual/CoreTypes/assertions.html">assertions</a></td>
+ <td>Control assertion options of the SmartFrog JVM</td>
+</tr>
+<tr>
+ <td><a href="http://ant.apache.org/manual/CoreTasks/exec.html#env">sysproperty</a></td>
+ <td>JVM System properties</td>
+</tr>
+<tr>
+ <td><a href="http://ant.apache.org/manual/CoreTypes/propertyset.html">syspropertyset</a></td>
+ <td>A set of properties to pass from the Ant JVM to the SmartFrog JVM</td>
+</tr>
+<tr>
+ <td><a href="http://ant.apache.org/manual/using.html#path">classpath</a></td>
+ <td>the classpath for the task</td>
+</tr>
+</table>
+
+</body>
+</html>

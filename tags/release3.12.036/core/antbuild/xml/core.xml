@@ -1,0 +1,402 @@
+<project name="core" 
+  xmlns:core="http://smartfrog.org/build/core">
+
+  <description>
+    This is the core import library.
+    
+    It contains the minimum number of targets
+    -something to name the output dirs
+    -something to create the output dirs
+    -a definition of the xml dir itself
+    -a loading of version info 
+  </description>
+
+  <fail>
+    <condition>
+      <not>
+        <available classname="org.apache.tools.ant.types.resources.FileResourceIterator"/>
+      </not>
+    </condition>
+    This version of Ant is not supported.
+    Please upgrade to Ant1.7 or later and build this project again
+  </fail>
+
+  <dirname property="antbuild.xml.dir" file="${ant.file.core}"/>
+  
+  <!-- ========================================================== -->
+  <!-- this is the core initialsation  -->
+  <!-- ========================================================== -->
+
+  <target name="init-core">
+     <!-- load in the local override -->
+    <property file="build.properties"/>
+    <property file="libraries.properties"/>
+    
+    <dirname property="antbuild.xml.dir" file="${ant.file.core}"/>
+    <property name="antbuild.dir" location="${antbuild.xml.dir}/.."/>
+    <!-- this is the root dir for everything -->
+    <property name="core.dir" location="${antbuild.dir}/.."/>
+    
+    <!-- the common.properties file lets you provide a single declaration of
+    overrides (like the compiler settings) that apply across
+    all projects that use this common file-->
+    <property file="${core.dir}/common.properties"/>
+
+    <!-- now read in environment settings -->
+    <property environment="env" />
+    
+    <!-- read these after the env settings -->
+    <property file="${core.dir}/build.properties"/>
+
+    <!-- now look for any cross-project definitions -->
+    <property file="${user.home}/.ant/ant.properties"/>
+
+    <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
+    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
+    <property name="smartfrog.dist.lib.dir"
+      location="${smartfrog.dist.dir}/lib"/>
+    <property name="smartfrog.components.dir"
+      location="${core.dir}/components"/>
+    
+    <property name="extras.dir"
+      location="${core.dir}/extras"/>
+    <property name="maven.lib.dir"
+      location="${core.dir}/lib"/>
+    <property name="maven.url"
+      value="http://ibiblio.org/maven2/"/>
+      
+      <!-- common directories are relative to the build file loaded-->
+    <property name="src.dir" location="src"/>
+    <property name="bin.dir" location="bin"/>
+    <property name="doc.dir" location="doc"/>
+    <property name="lib.dir" location="lib" />
+    <property name="test.src.dir" location="test" />
+    
+    
+    <!--generated stuff --> 
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.test.dir" location="${build.dir}/test"/>
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${build.test.dir}/classes"/>
+    <property name="test.data.dir" location="${build.test.dir}/data"/>
+    <property name="test.reports.dir" location="${build.test.dir}/reports"/>
+  
+    <property name="dist.dir" location="dist"/>
+    <property name="dist.lib.dir" location="${dist.dir}/lib"/>
+    <property name="dist.doc.dir" location="${dist.dir}/doc"/>
+    <property name="javadocs.directory.prefix" value="jdocs" />
+    <property name="javadocs.zipentry.prefix" value="" />
+    <property name="dist.javadoc.dir" location="${dist.doc.dir}/${javadocs.directory.prefix}"/>
+    <property name="dist.bin.dir" location="${dist.dir}/bin"/>
+    <property name="dist.src.dir" location="${dist.dir}/src"/>      
+      
+    <!-- name of a file for runtime properties 
+      This is optional and allows users to define extra 
+      properties for the smartfrog daemons and other runtimes-->
+    <property name="runtime.properties"
+      location="${core.dir}/runtime.properties"/>
+    <echo level="verbose">Looking at ${runtime.properties} 
+      for optional SmartFrog runtime properties</echo>
+      
+      <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
+    <property name="system.tests" value="true" />
+    <property name="unit.tests" value="true" />
+
+    <condition property="system.tests.enabled">
+      <istrue value="${system.tests}"/>
+    </condition>
+
+    <condition property="unit.tests.enabled">
+      <istrue value="${unit.tests}"/>
+    </condition>
+    
+
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
+    <property name="jar.prefix" value="sf-" />
+    <!-- this is the name of the outer project, not common.xml's name -->
+    <property name="project.name" value="${jar.prefix}${ant.project.name}" />
+
+        <!-- information about the ant tasks -->
+    <property name="smartfrog.tasks.prefix" value="sf-tasks"/>
+    
+  </target>
+  
+
+ <!-- ========================================================== -->
+  <!-- 
+    This target is used to set up the standard output for builds and tests and things
+   --> 
+  <!-- ========================================================== -->
+  <target name="init-standard-output-dirs" depends="init-core">
+
+    <mkdir dir="${build.dir}" />    
+    <mkdir dir="${build.classes.dir}" />    
+    
+    
+    <mkdir dir="${test.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.reports.dir}" />
+    
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.doc.dir}"/>
+    <mkdir dir="${dist.bin.dir}"/>
+    <mkdir dir="${dist.src.dir}"/>
+    <mkdir dir="${dist.javadoc.dir}"/>
+  </target>
+ 
+  <!--
+    Override point: an init target that initially depends only 
+    on init-core and init-standard-output-dirs
+  -->
+  <target name="init" depends="init-core,init-standard-output-dirs"/>
+  
+  
+  <!-- ========================================================== -->
+  <!-- cleanup target -->
+  <!-- This MUST work even if clean has already been run; test -->
+  <!-- changes with ant clean clean -->
+  <!-- ========================================================== -->
+  <target name="clean" description="clean up build and dist"
+      depends="init-core">
+    <delete dir="${build.dir}" />    
+    <delete dir="${dist.dir}"  />  
+  </target>
+
+  
+
+ <!-- ========================================================== -->
+  <!-- 
+    This target loads information about all the versions
+    of all the libraries that we are to work with.
+   --> 
+  <!-- ========================================================== -->
+  
+  <target name="load-library-versions" depends="init-core">
+    <!-- per project, SVN managed override -->
+    <property file="libraries.properties" />
+    <!-- central SVN managed libraries list -->
+    <property file="${smartfrog.components.dir}/libraries.properties" />
+  </target>
+
+ <!-- ========================================================== -->
+  <!-- 
+    This target loads our smartfrog version information.
+    Unlike common.xml, it does not rely on smartfrog on the classpath, because
+    it is trying to bootstrap stuff like loading smartfrog itself.
+    
+    Instead it looks in the source tree for the version config file
+    and derives it from that.
+   --> 
+  <!-- ========================================================== -->
+  
+  <target name="load-version-info" depends="core.load-library-versions" 
+      unless="smartfrog-version">
+    <property name="smartfrog.version.property.resource.name"
+      value="sf-build-version.properties" />
+    <loadproperties srcFile="${smartfrog.home}/${smartfrog.version.property.resource.name}" />
+    <property name="smartfrog.version"
+      value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}" />
+    <echo level="verbose">smartfrog.version =${smartfrog.version}</echo>
+  </target>
+  
+  <!--
+  logic to create a versioned jar name
+  -->
+  <target name="artifact-names" depends="load-version-info">
+    
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
+    <property name="artifact.prefix" value="sf-" />
+    <property name="artifact.extension" value="jar"/>
+    <property name="artifact.name" value="${project.name}" />
+    <property name="artifact.version" value="${smartfrog.version}" />
+    <property name="artifact.suffix" value=""/>    
+    <property name="artifact.stub" 
+      value="${artifact.name}${artifact.suffix}-${artifact.version}" />
+    <property name="artifact.filename" value="${artifact.stub}.${artifact.extension}"/>
+<!--     name JAR files that tests go into. this is for signing all
+    test code (inc deployment descriptors) for deployment onto secure
+    boxes
+ -->
+    <property name="test.jar.name" value="${artifact.name}-test-${artifact.version}.jar"/>
+    <property name="target.jar"
+      location="${dist.lib.dir}/${artifact.filename}"/>    
+    <property name="test.jar" 
+        location="${dist.lib.dir}/${test.jar.name}" />
+
+    <!--name of javadocs zip file-->
+    <property name="javadocs.zip.name"
+              value="${artifact.name}-javadocs-${artifact.version}.zip"/>
+    <property name="javadocs.zip"
+              location="${dist.lib.dir}/${javadocs.zip.name}"/>
+
+    <!--info about the documentation zip-->
+    <property name="documentation.zip.name"
+              value="${artifact.name}-documentation-${artifact.version}.zip"/>
+    <property name="documentation.zip"
+              location="${dist.lib.dir}/${documentation.zip.name}"/>
+
+    <echo level="verbose">
+      target.jar=${target.jar}
+      test.jar=${test.jar}
+      javadocs.zip=${javadocs.zip}
+      documentation.zip=${documentation.zip}
+    </echo>
+  </target>
+    
+  
+  
+  <!-- ========================================================== -->
+  <!-- tasks we use to help build things -->
+  <!-- ========================================================== -->
+  <target name="core-tasks" depends="core.init-core">
+    
+    <property name="core.uri" value="http://smartfrog.org/build/core" />  
+    <!-- Compile options for Smartfrog Release -->
+    <property name="javac.debug.mode" value="true"/> 
+    <property name="javac.deprecation.mode" value="true"/> 
+    <property name="javac.debug.level" value="lines,vars,source" />
+    <!--when available, use the forking compiler-->
+    <available property="rmic.compiler" value="forking"
+               classname="org.apache.tools.ant.taskdefs.rmic.ForkingSunRmic"
+        />
+    <!-- fall back to the sun compiler -->
+    <property name="rmic.compiler" value="sun"/>
+    <property name="rmic.compiler" value="sun" />
+    <property name="rmic.stub.version" value="1.2" />
+    
+    
+    <!-- define a new javac task with new default options -->  
+    <presetdef name="javac" 
+      uri="${core.uri}">
+       <javac debug="${javac.debug.mode}" 
+            nowarn="true"  
+            deprecation="${javac.deprecation.mode}"
+            source="${javac.java.version}"
+            target="${javac.java.version}"
+            includeAntRuntime="false"
+            includes="**/*.java"
+            >
+       </javac>
+    </presetdef>
+    
+    <!-- an extension of the previous javac, this with ant classpath included -->
+    <presetdef name="javac-with-ant" uri="${core.uri}">
+       <core:javac  
+          includeAntRuntime="true" />
+    </presetdef>    
+    
+    
+    <!-- a new version of the java task that always forks, does not include
+    the ant runtime by default, and fails on any error -->
+    <presetdef name="java" uri="${core.uri}">
+      <java 
+        fork="true"
+        failonerror="true"
+        >
+       </java>
+    </presetdef>
+    
+    <!-- junit wrapper;
+      enables forking, turns assertions on in the code, 
+      and enables XML output.
+      Timeout is set to 10 minutes, so we dont ever hang.
+      User is still required to 
+        -specify failure properties 
+        -provide test or batch test patterns
+        -set up the classpath. Dont forget to 
+        include a reference to smartfrog.classpath to get the core stuff
+      --> 
+    <presetdef name="junit" uri="${core.uri}">
+      <junit printsummary="no"
+           fork="true"
+           includeantruntime="true"
+           showoutput="true"
+           timeout="600000"
+           >
+       <jvmarg value="-ea"/>
+       <jvmarg value="-esa"/>
+        <!--copy all proxy settings from the running JVM-->
+        <syspropertyset>
+          <propertyref prefix="http."/>
+          <propertyref prefix="socks."/>
+        </syspropertyset>
+        <!-- all test. properties-->
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+        <!-- #Tests take system property parameters -->
+        <!-- #Formatters for capture and display -->
+        <formatter type="xml"/>
+        <formatter type="brief" usefile="false"/>
+      </junit>
+    </presetdef>
+    
+    <!-- reporting wrapper -->
+    <macrodef name="test-report" uri="${core.uri}">
+      <attribute name="data"/>
+      <attribute name="reports"/>
+      <attribute name="failed" default="a.property.that.had.better.never.be.set"/>
+      <sequential>
+        <junitreport todir="@{data}">
+          <fileset dir="@{data}">
+            <include name="TEST-*.xml"/>
+          </fileset>
+          <report format="frames" todir="@{reports}"/>
+        </junitreport>
+        <fail if="@{failed}">Tests failed see
+@{reports}
+        </fail>
+      </sequential>
+    </macrodef>
+    
+    <!-- 
+    Copy useful files from the source to dest directories. Use this for adding
+    extra stuff to the bin directory. By default it pulls in 
+    **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties; 
+    override the pattern property to set more
+     -->
+    <macrodef name="copy-useful-files" uri="${core.uri}">
+     <attribute name="src"/>
+     <attribute name="dest"/>
+     <attribute name="failonerror" default="false"/>
+     <attribute name="pattern"
+         default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl,**/*.css,**/*.xsl" />
+     <sequential>
+       <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
+       <copy todir="@{dest}" failonerror="@{failonerror}">
+         <fileset dir="@{src}"
+           includes="@{pattern}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+    
+    <!-- rmic configuration -->
+    <presetdef name="rmic" uri="${core.uri}">
+      <rmic 
+        verify="true"
+        stubversion="${rmic.stub.version}" 
+        compiler="${rmic.compiler}"
+        includes="**/*.class"        
+        />
+    </presetdef>
+    
+       <!--
+    JAR files are uncompressed, with duplicate classes preserved, meaning
+    whatever was there first wins.
+    -->
+    <presetdef name="jar" uri="${core.uri}">
+      <jar compress="true"
+        duplicate="preserve"
+        >
+       </jar>
+    </presetdef>
+
+    
+  </target>  
+  
+</project>  

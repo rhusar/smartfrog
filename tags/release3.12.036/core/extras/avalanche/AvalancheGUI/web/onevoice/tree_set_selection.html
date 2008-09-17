@@ -1,0 +1,570 @@
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title> Tree </title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/blue_theme.css">
+<script language="JavaScript" type="text/javascript" src="js/treeManager.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/global.js"></script>
+
+
+
+</head>
+
+<body style="margin:20px;">
+
+<h3>Set-Selection Tree</h3>
+
+
+<h4>Standard Set-Selection Tree</h4>
+
+
+
+<div class="treeMasterCheckbox">
+	<input type="checkbox" mastertreeselector="yes"  id="treeUniqueId8_masterCheckbox">
+</div>
+<div class="buttonSet buttonsAreLeftAligned" style="margin-bottom:0px;">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId8');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId8');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<div class="treeWrapper treeHasOneIconSpacing treeHasCheckboxHighlighting treeHasCheckboxes" style="width:300px;height:400px;" id="treeUniqueId8">
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle">Lorem</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 1</div>
+			</div>
+			
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 2</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 3</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 4</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 5</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 6</div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle">Lorem Child 4, call it ipsem</div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Ipsem child 1</div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Ipsem child 2</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle">Dolor</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 1</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 2</div>
+			</div>
+
+			<div class="treeOpen">
+				<div class="treeControl"><div class="treeDisclosure"></div></div>
+				<div class="treeTitle">Dolor child 3, call it Adipiscing</div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 1</div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 2</div>
+					</div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 3</div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle">Adipiscing child 4, call it Regina</div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Regina atquam</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">volentere potens</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">sed myrmidones conticuerunt</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">lorem ipsem</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">regina infandum</div>
+							</div>
+						</div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle">Adipiscing child 5, call it Atquam</div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam Regina</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam volentere potens</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam conticuerunt</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam ipsem</div>
+							</div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam infandum</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 4</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle">Dolor</div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<br>
+<br>
+<br>
+<br>
+<h4>Set-Selection Tree with Row Dividers</h4>
+
+<div class="treeMasterCheckbox">
+	<input type="checkbox" mastertreeselector="yes" id="treeUniqueId9_masterCheckbox">
+</div>
+<div class="buttonSet buttonsAreLeftAligned" style="margin-bottom:0px;">
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="+ +" onclick="ourTreeManager.openAllTrees('treeUniqueId9');"></div></div>
+	<div class="bWrapperUp"><div><input type="button" class="hpButtonVerySmall" value="– –" onclick="ourTreeManager.closeAllTrees('treeUniqueId9');"></div></div>
+</div>
+<div class="clearFloats"></div>
+
+<div class="treeWrapper treeHasOneIconSpacing treeHasCheckboxes treeHasCheckboxHighlighting" style="width:300px;height:400px;" id="treeUniqueId9">
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		
+		<div class="treeTitle">Lorem</div>
+		<div class="treeBorder"></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 1</div>
+			</div>
+			<div class="treeBorder"></div>
+			
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 2</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 3</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 4</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 5</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem child 6</div>
+			</div>
+			<div class="treeBorder"></div>
+
+			<div class="treeOpen">
+				<div class="treeControl">
+					<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+					<div class="treeDisclosure"></div>
+				</div>
+				<div class="treeTitle">Lorem Child 4, call it ipsem</div>
+				<div class="treeBorder"></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Ipsem child 1</div>
+					</div>
+					<div class="treeBorder"></div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Ipsem child 2</div>
+					</div>
+					<div class="treeBorder"></div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle">Dolor</div>
+		<div class="treeBorder"></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 1</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 2</div>
+			</div>
+			<div class="treeBorder"></div>
+
+			<div class="treeOpen">
+				<div class="treeControl"><div class="treeDisclosure"></div></div>
+				<div class="treeTitle">Dolor child 3, call it Adipiscing</div>
+				<div class="treeBorder"></div>
+				<div class="treeContents">
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 1</div>
+					</div>
+					<div class="treeBorder"></div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 2</div>
+					</div>
+					<div class="treeBorder"></div>
+					<div class="leafWrapper">
+						<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+						<div class="leaf">Adipiscing child 3</div>
+					</div>
+					<div class="treeBorder"></div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle">Adipiscing child 4, call it Regina</div>
+						<div class="treeBorder"></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Regina atquam</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">volentere potens</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">sed myrmidones conticuerunt</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">lorem ipsem</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">regina infandum</div>
+							</div>
+							<div class="treeBorder"></div>
+						</div>
+					</div>
+					<div class="treeOpen">
+						<div class="treeControl"><div class="treeDisclosure"></div></div>
+						<div class="treeTitle">Adipiscing child 5, call it Atquam</div>
+						<div class="treeBorder"></div>
+						<div class="treeContents">
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam Regina</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam volentere potens</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam conticuerunt</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam ipsem</div>
+							</div>
+							<div class="treeBorder"></div>
+							<div class="leafWrapper">
+								<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+								<div class="leaf">Atquam infandum</div>
+							</div>
+							<div class="treeBorder"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Dolor child 4</div>
+			</div>
+			<div class="treeBorder"></div>
+		</div>
+	</div>
+
+	<div class="treeOpen">
+		<div class="treeControl">
+			<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+			<div class="treeDisclosure"></div>
+		</div>
+		<div class="treeTitle">Dolor</div>
+		<div class="treeBorder"></div>
+		<div class="treeContents">
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="treeBorder"></div>
+			<div class="leafWrapper">
+				<div class="treeCheckbox"><input type="checkbox" treeselector="yes"></div>
+				<div class="leaf">Lorem ipsem dolor</div>
+			</div>
+			<div class="treeBorder"></div>
+		</div>
+	</div>
+
+</div>
+
+<br>
+<br>
+<br>
+<br>
+
+<h4>CSS</h4>
+<ul>
+	<li>The CSS uses a great deal of contextual selectors to implement the spacing and interaction behaviours of the various trees, mostly through the presence or absence of certain flags on the outer div of class "TreeWrapper"  
+	<li>One note is that the Tree CSS currently supports only 5 levels of nesting. If applications require more than 5 levels of nesting, some lines will have to be added to your css. 
+	<li>Although further discussion of classnames can be found below in the HTML section, developers wishing to know more about the CSS implementation itself should refer to the css file. 
+	
+</ul>
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<h4>HTML</h4>
+
+<ul>
+	<li>An instance of a tree control consists of	
+		<ul>
+			<li>On the outside, a div of class treeWrapper
+				This div can have additional class selectors in its class attribute, seperated by space characters. The additional class selectors possible are 
+				<ul>
+					<li>treeHasOneIconSpacing
+					<li>treeHasTwoIconSpacing
+					<li>treeHasCheckboxes
+					<li>treeHasCheckboxHighlighting
+				</ul>
+				Notes:
+				<ol>
+					<li>the first two flags are always mutually exclusive
+					<li>Set-selection trees must always have the treeHasCheckboxHighlighting flag.
+				</ol>
+
+			<li>Within the TreeWrapper, each block of expandable or collapsible items is within a div whose class can be either "treeClosed", "treeOpen", "treeClosedSelected" or "treeOpenSelected"
+			<li>Within this div (whether open or closed, selected or not) are three other divs.  
+				<ol>
+					<li>The first div is of class treeControl, 
+						<ul>
+							<li>If the treeHasStatusIcons flag is present, each TreeControl div will contain a div of class "treeStatusIcon" which can either contain a single status icon or be empty. 
+							<li>If the treeHasCheckboxes flag is present, each TreeControl div will then contain a div of class "treeCheckbox", which can either contain a single checkbox or be empty.
+							<li>each TreeControl div always contains an empty div of class "treeDisclosure". 
+						</ul>
+						
+					<li>The second div is of class "treeTitle", and contains the text label for the tree group. In Set-Selection trees this title must not be linked.  Although secondary links such as "edit" or "view" can exist next to the label, in no case should any link be given a "treeSelectableLink" class within a set-selection tree.  
+					<li>The third div is of class "treeContents", and contains the expandable/collapsible contents of the tree. The contents of these divs are described below
+				</ol>
+			<li>Within any div of class "treeContents", each row of the tree can be either 
+				<ul>
+					<li>another div of class "treeOpen", "treeClosed", "treeOpenSelected", "treeClosedSelected", or 
+					<li>a div of class "leafWrapper", whose contents are described below.
+				</ul>
+			<li>Within any div of class "leafWrapper", 
+				<ul>
+					<li>If the treeHasStatusIcons flag is present, each leafWrapper div will also contain a div of class "treeStatusIcon" which can either contain a single status icon or be empty. 
+					<li>If the treeHasCheckboxes flag is present, each leafWrapper div will also contain a div of class "treeCheckbox", which can either contain a single checkbox or be empty.
+					<li>Each "leafWrapper" div will always contain a div of class "leaf", which contains the text label and possibly the link for the tree item
+				</ul>
+		</ul>
+</ul>
+<h4>Javascript</h4>
+<ul>
+	<li>TreeManager.js contains a number of methods to both initialize the trees when loaded and to manage their state at runtime. 
+	<li>Most notably, a large init function whose execution is managed by the reconcileEventHandlers function within global.js, attaches all of the various event handlers	required to power the component. 
+	<li>Developers can refer to comments within the TreeManager code itself for further comments. 
+
+	<li>to run through the init function at a high level, when the page loads, the script picks out the treeClosed and treeOpen divs from the DOM, and attaches onclick handlers to the tree controls that they contain.
+	<li>If the tree has the flag "treeHasCheckboxHighlighting", additional onclick handlers are attached to tie the highlighting to the checkbox state of rows. 
+	<li>Currently there is some javascript to respect other onclick handlers that developers might want to hardcode into the html.  The code in these onclick handlers will be stitched in alongside the tree's own onclick handler (which is used for the expanding and contracting functionality). Combining hardcoded and dynamic event handlers like this seems to be fairly stable and it is likely that other places will be identified in this component and in others where it is a good idea to add this functionality as an extension. 
+	<li>Some methods are also made available for common application needs:
+		<ul>
+			<li>OpenSpecificTreeNode(id) will open all closed Tree Elements which are parents of the specified node. 
+			<li>makeSpecificTreeNodeHighlighted(id) will implement a navigation-type highlight in the given tree element
+			<li>resizeTreeContainerTo(id,w,h) and resizeTreeContainerBy(id,dx,dy) are straightforward methods to modify the size of the tree on the page. 
+			<li>openAllTrees(id) and closeAllTrees(id) will open and close all Tree element children
+			<li>Also, if your tree contains set-selection checkboxes, you can implement 'check all' and 'uncheck all' as follows. 
+				
+				<ol>
+					<li>create a div with class "treeMasterCheckbox" containing a checkbox element.
+					<li>put a "mastertreeselector" attribute with a value of "yes" into the input tag. 
+					<li>Also put a "treeid" attribute into the input tag that matches the unique id of your tree. 
+				</ol>
+			When the page loads,  the TreeManager will see this attach event handlers to it that automatically implement 'check all' and 'uncheck all' functionality. 
+		</ul>
+</ul>
+
+
+
+<iframe name="sampleTargetFrame" style="height:1px;border:0px;visibility:hidden;" src="blank.html"></iframe>
+
+<br><br><br>
+<script language="JavaScript" type="text/javascript">
+	reconcileEventHandlers();
+</script>
+
+</body>
+</html>

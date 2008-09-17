@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hadoop" default="default">
+
+  <!--
+  /** (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+    hadoop with tests on Amazon EC2/S3 support.
+
+    For testing, edit build.properties to add the secret login details for an AWS account
+    test.awsid = id
+    test.awskey = secret key
+    test.ec2.enabled to true for EC2 work
+  </description>
+  <!--we are a component -->
+  <property name="is.component" value="true"/>
+  <property name="ivy.enabled" value="true"/>
+
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="system.tests" value="true"/>
+
+
+
+  <echo
+      message="==================================================================="/>
+  <echo message="= ${ant.project.name}"/>
+
+  <!-- Import common stuff -->
+  <import file="../../common.xml"/>
+
+
+
+  <target name="ready-to-test" depends="common.ready-to-test">
+    <echo level="verbose">
+      test.ec2.enabled=${test.ec2.enabled}
+      test.jetty.home=${test.jetty.home}
+      test.demo.webapp=${test.demo.webapp}
+      test.testwar.war=${test.testwar.war}
+      test.awsid=${test.awsid}
+      test.awskey=${test.awskey}
+      system.tests=${system.tests}
+    </echo>
+  </target>
+
+</project>
