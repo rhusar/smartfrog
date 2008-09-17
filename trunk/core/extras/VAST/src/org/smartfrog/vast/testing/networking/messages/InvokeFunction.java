@@ -4,16 +4,17 @@ import java.net.InetAddress;
 import java.util.Vector;
 
 public class InvokeFunction implements VastMessage {
-	String FunctionName;
+	String FunctionName, ProcessName;
 	Vector Patameters;
 
-	public InvokeFunction(String functionName, Vector patameters) {
-		FunctionName = functionName;
-		Patameters = patameters;
-	}
+	public InvokeFunction(String functionName, String processName, Vector patameters) {
+	FunctionName = functionName;
+	Patameters = patameters;
+	ProcessName = processName;
+}
 
 	public void invoke(InetAddress inFrom, MessageCallback inMessageCallback) {
-		inMessageCallback.OnInvokeFunction(FunctionName, Patameters);
+		inMessageCallback.OnInvokeFunction(FunctionName, ProcessName, Patameters);
 	}
 
 	public String getFunctionName() {
@@ -30,5 +31,13 @@ public class InvokeFunction implements VastMessage {
 
 	public void setPatameters(Vector patameters) {
 		Patameters = patameters;
+	}
+
+	public String getProcessName() {
+		return ProcessName;
+	}
+
+	public void setProcessName(String processName) {
+		ProcessName = processName;
 	}
 }

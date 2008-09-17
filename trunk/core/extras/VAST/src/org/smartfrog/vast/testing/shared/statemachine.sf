@@ -96,6 +96,9 @@ FunctionCallAction extends SUTAction {
 	-- extends Schema {
 		// name of the function to call
 		FunctionName extends String;
+
+		// name of the process where the function can be found
+		ProcessName extends String;
 	}
 
 	Parameters TBD;

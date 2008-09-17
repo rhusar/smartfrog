@@ -30,9 +30,6 @@ public abstract class BaseCommand implements Command {
 	}
 
 	public void execute(VirtualMachineConfig inCfg) {
-		// stop the old timer
-		inCfg.stopTimer();
-
 		// set the timer
 		inCfg.setTimer(TimeOut);
 

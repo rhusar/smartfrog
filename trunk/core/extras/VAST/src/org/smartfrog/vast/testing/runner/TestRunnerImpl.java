@@ -22,6 +22,7 @@ package org.smartfrog.vast.testing.runner;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.vast.archive.TarArchive;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Vector;
+import java.lang.reflect.Method;
 
 public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallback {
 	/**
@@ -91,6 +93,8 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 	private Helper nicHelper;
 
 	private boolean SUTDaemonRunning = false;
+
+	private ProcessCompound SUTDaemon = null;
 
 	public TestRunnerImpl() throws RemoteException {
 
@@ -251,12 +255,11 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 
 				// ping the daemon for 2 minutes
 				// once it's reachable continue
-				ProcessCompound daemon = null;
 				for(int i = 0; i < 120; ++i)
 				{
 					try {
-						daemon = SFProcess.sfSelectTargetProcess(SUTNetAddress, null);
-						daemon.sfPing(this);
+						SUTDaemon = SFProcess.sfSelectTargetProcess(SUTNetAddress, null);
+						SUTDaemon.sfPing(this);
 						break;
 					} catch (Exception e) {
 						try {
@@ -283,7 +286,7 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 				{
 					try {
 						// resolve the touchpoint
-						tp = (TouchPoint) daemon.sfResolve("touchpoint", true);
+						tp = (TouchPoint) SUTDaemon.sfResolve("touchpoint", true);
 
 						// touch the touchpoint so the SUT knows how to send broadcasts
 						tp.touch(this);
@@ -363,8 +366,35 @@ public class TestRunnerImpl extends PrimImpl implements TestRunner, MessageCallb
 		nicHelper.setNetworkAddress(nicNames.get(inIndex), inIP, inMask);
 	}
 
-	public void OnInvokeFunction(String inFunctionName, Vector inParameters) {
-		// TODO: invoke function
+	public void OnInvokeFunction(String inFunctionName, String inProcessName, Vector inParameters) {
+		try {
+			// aquire the process
+			Object process = SUTDaemon.sfResolve(inProcessName, true);
+
+			// find the method
+			Method methods[] = process.getClass().getMethods();
+			for (Method m : methods) {
+				if (m.getName().equals(inFunctionName)) {
+					// name matching, see if this is the correct overloaded one
+					// by matching the parameters
+					boolean bMatching = true;
+					for (int i = 0; i < m.getParameterTypes().length; ++i) {
+						if (!m.getParameterTypes()[i].equals(inParameters.get(i))) {
+							bMatching = false;
+							break;
+						}
+					}
+
+					if (bMatching) {
+						// matching function found, invoke it
+						m.invoke(inFunctionName, inParameters);
+						return;
+					}
+				}
+			}
+		} catch (Exception e) {
+			sfLog().error(e);
+		}
 	}
 
 	public void OnPublishedAttribute(InetAddress inHost, String inProcessName, String inKey, String inValue) {

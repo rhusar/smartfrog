@@ -91,6 +91,9 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
 	 * Sets the timer. Also sets it to the current command.
 	 */
 	public void setTimer(long inTime) {
+		if (curThread != null)
+			stopTimer();
+
 		timerThread.setCommand(currentCommand);
 		timerThread.setTime(inTime);
 	}
@@ -112,6 +115,8 @@ public class VirtualMachineConfig extends PhysicalMachineConfig {
 	public void stopTimer() {
 		if (curThread != null)
 			timerThread.stopTimer();
+
+		curThread = null;
 	}
 
 	public String getHostList() {

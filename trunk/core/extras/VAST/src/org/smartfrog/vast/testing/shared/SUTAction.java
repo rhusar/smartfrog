@@ -29,6 +29,7 @@ public interface SUTAction extends Remote {
 	public static final String ATTR_HOST = "Host";
 	public static final String ATTR_WAIT = "Wait";
 	public static final String ATTR_NAME = "Name";
+	public static final String ATTR_PROCESS_NAME = "ProcessName";
 
 
 	public String getName() throws RemoteException;
@@ -38,4 +39,6 @@ public interface SUTAction extends Remote {
 	public String getHost() throws RemoteException;
 
 	public VastMessage getActionMessage() throws RemoteException;
+
+	public String getProcessName() throws RemoteException;
 }

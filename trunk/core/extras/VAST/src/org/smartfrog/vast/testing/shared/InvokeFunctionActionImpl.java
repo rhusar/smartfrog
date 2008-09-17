@@ -11,7 +11,8 @@ import java.util.Vector;
 public class InvokeFunctionActionImpl extends PrimImpl implements InvokeFunctionAction {
 	String 	Host,
 			Name,
-			FunctionName;
+			FunctionName,
+			ProcessName;
 	int		Wait;
 	Vector Parameters;
 
@@ -23,9 +24,10 @@ public class InvokeFunctionActionImpl extends PrimImpl implements InvokeFunction
 
 		// resolve stuff
 		Host = (String) sfResolve(ATTR_HOST, true);
+		FunctionName = (String) sfResolve(ATTR_FUNCTION_NAME, true);
 		Wait = (Integer) sfResolve(ATTR_WAIT, true);
 		Name = (String) sfResolve(ATTR_NAME);
-		FunctionName = (String) sfResolve(ATTR_FUNCTION_NAME, true);
+		ProcessName = (String) sfResolve(ATTR_PROCESS_NAME, true);
 
 		Parameters = (Vector) sfResolve(ATTR_PARAMETERS, true);
 	}
@@ -35,7 +37,7 @@ public class InvokeFunctionActionImpl extends PrimImpl implements InvokeFunction
 	}
 
 	public VastMessage getActionMessage() throws RemoteException {
-		return new InvokeFunction(FunctionName, Parameters);
+		return new InvokeFunction(FunctionName, ProcessName, Parameters);
 	}
 
 	public String getHost() throws RemoteException {
@@ -48,5 +50,13 @@ public class InvokeFunctionActionImpl extends PrimImpl implements InvokeFunction
 
 	public int getWait() throws RemoteException {
 		return Wait;
+	}
+
+	public String getFunctionName() throws RemoteException {
+		return FunctionName;
+	}
+
+	public String getProcessName() throws RemoteException {
+		return ProcessName;
 	}
 }

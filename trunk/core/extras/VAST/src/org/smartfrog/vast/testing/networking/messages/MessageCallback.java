@@ -69,9 +69,10 @@ public interface MessageCallback {
 	/**
 	 * Invokes a function with the given parameters.
 	 * @param inFunctionName The name of the function.
+	 * @param inProcessName The name of the process where the function can be found.
 	 * @param inParameters The parameters.
 	 */
-	public void OnInvokeFunction(String inFunctionName, Vector inParameters);
+	public void OnInvokeFunction(String inFunctionName, String inProcessName, Vector inParameters);
 
 	/**
 	 * An attribute on a host has been updated.

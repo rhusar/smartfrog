@@ -282,7 +282,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
             HostManager hm = getAvalancheFactory().getHostManager();
 
             HostType ht = hm.getHost(inName);
-            if (ht == null) {
+			if (ht == null) {
                 // host not existing, create a new one
                 try {
                     ht = hm.newHost(inName);
@@ -291,6 +291,7 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                     throw SmartFrogException.forward(e);
                 }
 
+				sfLog().info("Created new HostType for: " + inName);
 				ht.setBindIP(inBindIP);
 
 				// platform settings
@@ -304,7 +305,8 @@ public class AvalancheServerImpl extends PrimImpl implements AvalancheServer {
                 ht.addNewTransferModes();
                 ht.addNewArguments();
             } else {
-                // host existing, update
+				sfLog().info("Loaded HostType of: " + inName);
+				// host existing, update
 				ht.setBindIP(inBindIP);
 
 				// platform settings
