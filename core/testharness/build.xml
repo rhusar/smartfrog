@@ -267,7 +267,7 @@ values as a cue -->
       <echo message=" --------------------------------------------------------"/>
       <echo message=" Class Path= ${line.separator}|   |-- ${echo.tests.run.classpath}"/>	
 	  <echo message=" --------------------------------------------------------"/>      
-    <sf-parse parserTargetsFile="parsertargets.txt"
+    <sf-parse parserTargetsFile="parsertargets.txt" verbose="true"
         classpathref="tests.run.classpath"/>
   </target>
 
