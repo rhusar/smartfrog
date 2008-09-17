@@ -28,6 +28,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+# set the attribute _private_rpm to build a private RPM
+
+# one thing to be aware of is the order that scripts are executed
+# -Run %pre of new package
+# -Install new files
+# -%post of new package
+# -%preun of old package
+# -Delete any old files not overwritten by newer ones
+# -%postun of old package
+# what that means is that your %post code runs before the old version is
+# uninstalled, and before its %postun runs. So you are in trouble if you need
+# to run anything after the old version has uninstalled. 
+
+
+
 # TODO: menu entries
 
 # if menu entries are created, define Summary here, and use it in the summary
@@ -41,7 +56,7 @@
 %define bindir          %{basedir}/bin
 %define binsecurity     %{bindir}/security
 %define libdir          %{basedir}/lib
-%define signedlib        %{basedir}/signedLib
+%define signedlib       %{basedir}/signedLib
 %define docs            %{basedir}/docs
 %define jdocs           ${rpm.javadocs.path} 
 %define srcdir          %{basedir}/src
@@ -50,6 +65,8 @@
 %define rcd             /etc/rc.d
 %define smartfrogd      %{rcd}/init.d/${rpm.daemon.name}
 %define logdir          ${rpm.log.dir}
+%define privatedir      %{basedir}/private
+
 
 #some shortcuts
 %define smartfrog.jar smartfrog-${smartfrog.version}.jar
@@ -543,6 +560,34 @@ rm -rf $RPM_BUILD_ROOT
 %{docs}
 %doc %{basedir}/src.zip
 
+# -----------------------------------------------------------------------------
+# this is the private dir unless the build says otherwise
+%{!?_private_rpm:%{privatedir}}
+
+# -----------------------------------------------------------------------------
+# the security keys file only has content in it when the build property says so
+%files private-security-keys
+%{?_private_rpm:%{privatedir}}
+
+# -----------------------------------------------------------------------------
+# After installing, set up a symlink from signedLib to lib. This is
+# done as a script to deal with upgrade problems. Any existing directory
+# is blown away by this operation, as is a symlink.
+%post
+if [ -x %{signedlib} ] ; then
+rm -rf %{signedlib}
+fi
+ln -s %{libdir} %{signedlib}
+
+
+# the symlink is only deleted if there is none left; this avoids
+# stamping on any newly created links.
+%postun
+if [ "$1" = "0" ] ; then
+  if [ -x %{signedlib} ] ; then
+    rm -rf %{signedlib}
+  fi
+fi
 
 
 %files demo
@@ -587,6 +632,11 @@ if [ "$1" = "0" ] ; then
     rm -f /etc/rc.d/rc?.d/???${rpm.daemon.name}
   fi
 fi
+
+
+
+
+
 
 %files daemon
 #and the etc stuff
@@ -753,55 +803,12 @@ fi
 %{linkdir}/sf-xmpp.jar
 %{linkdir}/smack.jar
 
-%files private-security-keys
-%{basedir}/private
-
-
-#%files 
-#%{libdir}/sf--${smartfrog.version}.jar
-#%{libdir}/-${.version}.jar
-#%{linkdir}/sf-.jar
-#%{linkdir}/.jar
-
-# -----------------------------------------------------------------------------
-# this section declares support for signed artifacts of the different components.
-
-#%package smartfrog-signed
-#Group:         ${rpm.framework}
-#Summary:        Signed SmartFrog artifacts
-#Requires:       %{name} = %{version}-%{release}
-#%description smartfrog-signed
-#Contains JAR files signed by a private CA.
-#%files smartfrog-signed
-##security
-#%{signedlib}/smartfrog-${smartfrog.version}.jar
-#%{signedlib}/sfExamples-${smartfrog.version}.jar
-#%{signedlib}/sfServices-${smartfrog.version}.jar
-#
-#%package anubis-signed
-#Group:         ${rpm.framework}
-#Summary:        Signed Anubis artifacts
-#Requires:       %{name}-anubis = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
-#%description anubis-signed
-#Contains JAR files signed by a private CA.
-#%files anubis-signed
-#%{signedlib}/sf-anubis-${smartfrog.version}.jar
-#
-#%package logging-signed
-#Group:         ${rpm.framework}
-#Summary:       Signed logging artifacts
-#Requires:       %{name}-logging = %{version}-%{release} , smartfrog-signed = %{version}-%{release}
-#%description logging-signed
-#Contains JAR files signed by a private CA.
-#%files logging-signed
-#%{signedlib}/sf-loggingservices-${smartfrog.version}.jar
-#%{signedlib}/commons-logging-${commons-logging.version}.jar
-#%{signedlib}/log4j-${log4j.version}.jar
 
 # -----------------------------------------------------------------------------
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0042-2.el4 changes to the security model so that signedLib is a symlink.
 * Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0027-2.el4
 - add velocity template
 * Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0018-2.el4
