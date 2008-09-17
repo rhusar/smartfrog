@@ -172,7 +172,12 @@ public class SFUnparser implements WriterLanguageUnparser {
                    msg.append("Cause:#<0># ");
                    msg.append(thr.getCause().toString());
                    throw new java.io.IOException(msg.toString());
-            }
+            } catch (java.lang.OutOfMemoryError thr) {
+				StringBuffer msg = new StringBuffer("Failed to pretty print value. Possible cause: cyclic reference.");
+				msg.append("Cause:#<0># ");
+				msg.append(thr.getCause().toString());
+				throw new java.io.IOException(msg.toString());
+			}
         } else {
             writeBasicValueOn(ps, indent, value);
             ps.write(';');

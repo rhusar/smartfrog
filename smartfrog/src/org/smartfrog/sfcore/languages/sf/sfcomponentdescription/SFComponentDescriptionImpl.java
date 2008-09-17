@@ -300,7 +300,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            msg.append(";'");
            if (thr instanceof java.lang.StackOverflowError) {
              msg.append(". Possible cause: cyclic reference.");
+           } else if (thr instanceof OutOfMemoryError) {
+             msg.append(". Possible cause: cyclic reference.");
            }
+
            throw new SmartFrogPlaceResolutionException(msg.toString(), thr, null, sfCompleteName());
          }
       }
@@ -454,6 +457,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            msg.append("'");
            if (thr instanceof java.lang.StackOverflowError) {
               msg.append (". Possible cause: cyclic reference.");
+           } else if (thr instanceof OutOfMemoryError) {
+             msg.append(". Possible cause: cyclic reference.");
            }
            throw new SmartFrogTypeResolutionException(msg.toString(), thr,
                sfCompleteName(), resState.unresolved());
