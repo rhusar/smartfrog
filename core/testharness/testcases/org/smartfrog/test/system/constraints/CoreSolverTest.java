@@ -72,7 +72,7 @@ public class CoreSolverTest extends TestCase {
         CoreSolver instance = getInstance("org.example.not.a.solver.classname");
         assertIsCoreSolver(instance);
         assertInstanceMessageContains(CoreSolver.ERROR_NO_CLASS);
-        assertNotNull(CoreSolver.getInstanceFailureCause());
+        assertFailureExceptionExists();
     }
 
 
@@ -80,7 +80,11 @@ public class CoreSolverTest extends TestCase {
         CoreSolver instance = getInstance("java.lang.String");
         assertIsCoreSolver(instance);
         assertInstanceMessageContains(CoreSolver.ERROR_NOT_A_CORE_SOLVER);
-        assertNotNull(CoreSolver.getInstanceFailureCause());
+    }
+
+    private void assertFailureExceptionExists() {
+        assertNotNull("Expected to get a failure exception, but there is none",
+                CoreSolver.getInstanceFailureCause());
     }
 
     public void testCoreSolverWorks() throws Throwable {
