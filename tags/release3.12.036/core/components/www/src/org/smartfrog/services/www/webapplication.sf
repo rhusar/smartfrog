@@ -1,0 +1,204 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * base webserver declarations
+ */
+#include "/org/smartfrog/services/www/webserver.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
+/**
+ * declare a base Java app server.
+ * This is not instantiable, and must be implemented by an
+ * application server
+ */
+
+
+ApplicationServerSchema extends Schema {
+
+    //attribute that is to be set only if WAR deployment is supported
+    supportsWAR extends Boolean;
+    //attribute true iff servlet contexts are supported
+    supportsServletContext extends Boolean;
+    //attribute true iff EAR deployment is supported
+    supportsEAR extends Boolean;
+    //attribute true iff SAR deployment is supported
+    supportsSAR extends Boolean;
+    }
+
+ApplicationServer extends WebServer {
+    applicationServerSchema extends ApplicationServerSchema;
+    supportsWAR false;
+    supportsServletContext false;
+    supportsEAR false;
+    supportsSAR false;
+}
+
+/**
+ * This schema is required for anything that is deployed
+ * to an app server that is its own 'context'
+ */
+ApplicationServerContextSchema extends Schema {
+
+    //application server. required.
+    server extends Compulsory;
+    //late binding information
+    absolutePath extends OptionalString;
+}
+
+/**
+ * Base application server context. This is not instantiable.
+ */
+ApplicationServerContext extends Compound {
+    applicationServerContextSchema extends ApplicationServerContextSchema;
+}
+
+
+/**
+ * a web application has a context path
+ * and a a path to its home directory
+ */
+WebApplicationSchema extends Schema {
+    //where to deploy under the server
+    contextPath extends String;
+
+    //a File or a string
+    filename extends FilenameType;
+
+}
+
+/**
+ * This is a generic java web application, as defined by a WAR File
+ */
+WebApplication extends ApplicationServerContext {
+    webApplicationSchema extends WebApplicationSchema;
+    sfClass "org.smartfrog.services.www.context.WebApplicationImpl";
+}
+
+
+/**
+ * a jetty web application has a context path
+ * and a a path to its home directory
+ */
+EarApplicationSchema extends WebApplicationSchema {
+
+
+}
+
+/**
+ * This is a generic java web application, as defined by a WAR File
+ */
+EarApplication extends ApplicationServerContext {
+    earApplicationSchema extends EarApplicationSchema;
+    sfClass "org.smartfrog.services.www.context.EarApplicationImpl";
+}
+
+
+
+
+
+/**
+ * a servlet context is where servlets can be deployed.
+ * Any derivative of ServletContextComponent can be bound
+ to this
+ */
+
+ServletContext extends ApplicationServerContext {
+
+    servletContextSchema extends Schema {
+        //location of resources
+        resourceBase extends String;
+        //url path on server
+        contextPath extends String;
+    }
+
+    //implementation class
+    sfClass "org.smartfrog.services.www.context.ServletContextImpl";
+
+}
+
+/**
+ * A servlet context component is something that is deployed in a servlet
+ * context
+ */
+
+ServletContextComponent extends Prim {
+
+    servletContextComponentSchema extends Schema {
+        //this is the (LAZY) reference to the component
+        context extends Compulsory;
+    }
+
+}
+
+
+/**
+ * this servlet declaration defines
+ * the servlet information
+ */
+ServletSchema extends Schema {
+    //name
+    name extends String;
+    //path
+    pathSpec extends String;
+    //the class that implements the servlet
+    className extends String;
+    //mappings.
+    mappings extends OptionalVector;
+    //initialisation parameters as a list of [name,value] pairs
+    initParams extends OptionalVector;
+    //init order for the servlet;
+    //Holders with order<0, are initialized on use.
+    //Those with order>=0 are initialized in increasing order when the handler is started
+    initOrder extends OptionalInteger;
+    //absolute path is declared at runtime
+    absolutePath extends OptionalString;
+}
+
+/**
+ * declare an abstract servlet
+ */
+Servlet extends ServletContextComponent {
+    servletSchema extends ServletSchema;
+    //implementation class
+    sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
+    //order of initialisation; -1 means on demand.
+    initOrder -1;
+    initParams [];
+}
+
+
+/**
+ A mime is a tuple of name,value. that is bound to a servlet context
+ It does not get cleaned up after; you need to terminate the context
+ */
+
+MimeType extends ServletContextComponent {
+    sfClass "org.smartfrog.services.www.context.MimeTypeImpl";
+
+    mimeTypeSchema extends Schema {
+        //extension, e.g. "xsl"
+        extension extends String;
+        //mime type such "as application/xml"
+        type extends String;
+    }
+}
+
+

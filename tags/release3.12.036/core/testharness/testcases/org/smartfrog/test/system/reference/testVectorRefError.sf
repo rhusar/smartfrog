@@ -1,0 +1,21 @@
+#include "org/smartfrog/components.sf" 
+
+sfConfig extends Compound {
+
+  v1 LAZY sfHost;
+  v2 [LAZY MyImaginaryReference, 2, LAZY v4];
+  v3 LAZY v2;
+  v3a LAZY v3;
+  v3b LAZY v3a;
+  v4 10;
+  v6 ["v6->","v4",LAZY v4,"v3", LAZY v3,"v2", LAZY v2];
+  v8 [1,2,LAZY v4,[3, LAZY v2]];
+  com extends Compound {
+     v4 20;
+     v5 LAZY v2; // Results should be equal to v2. if v5[3]=20 then Error
+     v6 ["comV6->","v4", LAZY v4,"v5", LAZY v5];
+     v7 ["comV7->","v6", LAZY v6, "v5", LAZY v5, "ParenV6", LAZY PARENT:ATTRIB v6, LAZY v8];
+     v8 [1,2,LAZY v4,[3, LAZY v2]];
+  }
+
+}

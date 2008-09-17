@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <cdl:configuration xmlns="urn:other">
+
+    <cdl:documentation>
+      This is our web server
+    </cdl:documentation>
+
+    <webapps name="webapp-base">
+      <app>security</app>
+      <app>logging</app>
+    </webapps>
+
+    <webapps2 extends="webapp-base">
+      <app>testing</app>
+    </webapps2>
+
+    <server name="server">
+      <port>8080</port>
+      <security>true</security>
+      <webapps />
+    </server>
+    
+    <server name="tomcat" extends="server">
+      <basedir>
+      </basedir>
+    </server>
+
+ </cdl:configuration>
+  <cdl:system>
+  </cdl:system>
+</cdl:cdl>

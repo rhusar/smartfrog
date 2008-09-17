@@ -1,0 +1,282 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "/org/smartfrog/components.sf"
+
+HadoopConfiguration extends Prim {
+
+  //default filesystem name
+  fs.default.name "file:///";
+  fs.local.block.size ((32 * 1024)* 1024);
+
+
+  //used when fs is ramfs
+  io.bytes.per.checksum 512;
+
+  io.file.buffer.size 4096;
+  io.seqfile.compress.blocksize 10000;
+  io.seqfile.compression.type COMPRESSION_RECORD;
+  io.serializations Classnames:WritableSerialization;
+  //should checksum errors be skipped?
+  //SequenceFile.handleChecksumException()
+  io.skip.checksum.errors false;
+
+  //org.apache.hadoop.io.SequenceFile.Sorter
+  io.sort.mb 100;
+  io.sort.factor 100;
+
+  /** Do not compress records. */
+  COMPRESSION_NONE "NONE";
+  /** Compress values only, each separately. */
+  COMPRESSION_RECORD "RECORD";
+  /** Compress sequences of records together in blocks. */
+  COMPRESSION_BLOCK "BLOCK";
+}
+
+/**
+ * Simple site
+ */
+
+SimpleSite extends HadoopConfiguration{
+ fs.default.name  "localhost:9000"
+ mapred.job.tracker "localhost:9001"
+ dfs.replication 1;
+}
+
+
+TaskStatus extends  NULL {
+  None "NONE";
+  Killed "KILLED";
+  Failed "FAILED";
+  Succeeded "SUCCEEDED";
+  ALL "ALL";
+  }
+
+
+  /**
+  * Used to describe the priority of the running job.
+  *
+  */
+JobPriority  extends  NULL{
+  VeryHigh "VERY_HIGH";
+  High "HIGH";
+  Normal "NORMAL";
+  Low "LOW";
+  VeryLow "VERY_LOW";
+}
+
+
+/**
+ * Job Configuration derived from all the defaults
+ */
+
+JobConfiguration extends HadoopConfiguration  {
+
+
+  /**
+   directories to define
+   */
+   //mapred.working.dir
+   //mapred.local.dir
+   //mapred.output.dir
+
+  //enumeration of task statuses
+
+  jobclient.output.filter TaskStatus:Failed;
+
+
+  keep.failed.task.files false;
+
+  /*a regular expression for task names that should be kept.
+   * The regular expression ".*_m_000123_0" would keep the files
+   * for the first instance of map 123 that ran.
+   */
+
+  keep.task.files.pattern ".*";
+
+
+
+
+  /**
+   * Get the user-defined combiner class used to combine map-outputs
+   * before being sent to the reducers. Typically the combiner is same as the
+   * the Reducer for the job */
+  mapred.combiner.class mapred.reducer.class;
+
+  /**
+  Should output be compressed?
+  */
+  mapred.compress.map.output true;
+
+  mapred.input.format.class Classnames:TextInputFormat;
+  mapred.input.key.class Classnames:LongWritable;
+  mapred.input.value.class Classnames:Text;
+
+  /**
+  * the user-specified job name. This is only used to identify the
+  * job to the user.
+  */
+  mapred.job.name "";
+
+
+
+  /**
+   * the JobPriority for this job.
+   */
+  mapred.job.priority JobPriority:Normal;
+
+
+
+ /*
+  the max number of attempts per map task.
+  */
+  mapred.map.max.attempts 4;
+
+  mapred.mapoutput.key.class NULL;
+  mapred.mapoutput.value.class NULL;
+
+  /**
+   Compression to use on ouput
+   */
+  mapred.map.output.compression.type COMPRESSION_RECORD;
+
+  mapred.mapper.class Classnames:IdentityMapper;
+
+  /**
+   * Class to run the map reduce
+   */
+  mapred.map.runner.class Classnames:MapRunner;
+
+  /**
+   * The number of map tasks for this job.
+   */
+  mapred.map.tasks  1;
+
+  /**
+  Should speculative execution be used for this job for map tasks?
+  */
+  mapred.map.tasks.speculative.execution true;
+
+  /**
+   * the maximum no. of failures of a given job per tasktracker. If the no. of task failures exceeds
+   * <code>noFailures</code>, the tasktracker is <i>blacklisted</i> for this job.
+   */
+
+  mapred.max.tracker.failures 4;
+
+  /**
+  the maximum percentage of map tasks that can fail without
+  the job being aborted.
+  */
+  mapred.max.map.failures.percent 0;
+
+
+  /**
+   * the maximum percentage of reduce tasks that can fail without
+   *  the job being aborted
+   */
+  mapred.max.reduce.failures.percent 0;
+
+
+  mapred.output.key.class Classnames:LongWritable;
+  mapred.output.key.comparator.class NULL;
+  mapred.output.format.class Classnames:TextOutputFormat;
+  mapred.output.value.groupfn.class NULL;
+  mapred.output.value.class Classnames:Text;
+
+
+  /*
+  the Partitioner class used to partition Mapper-outputs to be sent to the Reducers.
+  */
+  mapred.partitioner.class Classnames:HashPartitioner;
+
+  /**
+   the max number of attempts per reduce task.
+   */
+
+  mapred.reduce.max.attempts 4
+  /*
+  the number of reduce tasks for this job.
+  */
+  mapred.reduce.tasks 1;
+
+  /**
+  Should speculative execution be used for this job for reduce tasks?
+  */
+  mapred.reduce.tasks.speculative.execution true;
+
+  /**
+   the Reducer class for the job.
+   */
+  mapred.reducer.class Classnames:IdentityReducer;
+
+  /**
+  Should speculative execution be used for this job?
+  */
+  mapred.speculative.execution true;
+
+  /**
+   * Policy for replicating the job JAR
+   */
+  mapred.submit.replication 10;
+
+  /**
+   * whether the task profiling is enabled.
+   */
+  mapred.task.profile false;
+
+
+ /**
+   * The user-specified session identifier. The default is the empty string.
+   *
+   * The session identifier is used to tag metric data that is reported to some
+   * performance metrics system via the org.apache.hadoop.metrics API.  The
+   * session identifier is intended, in particular, for use by Hadoop-On-Demand
+   * (HOD) which allocates a virtual Hadoop cluster dynamically and transiently.
+   * HOD will set the session identifier by modifying the hadoop-site.xml file
+   * before starting the cluster.
+   *
+   * When not running under HOD, this identifer is expected to remain set to
+   * the empty string.
+   *
+   */
+
+    session.id "";
+    user.name PROPERTY user.name;
+}

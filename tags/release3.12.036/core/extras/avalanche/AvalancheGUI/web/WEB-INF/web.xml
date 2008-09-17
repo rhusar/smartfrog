@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- /**
+(C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+*/
+-->
+
+<web-app>
+	<security-constraint>
+    <web-resource-collection>
+     <web-resource-name>A Protected Page</web-resource-name>
+     <url-pattern>/web/*</url-pattern>
+     <http-method>GET</http-method>
+     <http-method>POST</http-method>
+   </web-resource-collection>
+
+   <auth-constraint>
+     <role-name>admin</role-name>
+   </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+   <auth-method>DIGEST</auth-method>
+    <realm-name>Avalanche Portal</realm-name>
+   <!--auth-method>FORM</auth-method>
+   <form-login-config>
+	   <form-login-page>/login.jsp</form-login-page>
+	   <form-error-page>/error.jsp</form-error-page>
+   </form-login-config-->
+  </login-config>
+
+  <security-role>
+     <role-name>admin</role-name>
+  </security-role>
+
+	<!-- General description of your web application -->
+	<display-name>Avalanche </display-name>
+	<description>Avalanche GUI</description>
+	<context-param>
+		<param-name>avalancheHome</param-name>
+		<param-value>C:\\sf\\2008\\apr04\\svn\\extras\\avalanche\\server</param-value>
+		<description>Path to Avalanche Home.</description>
+	</context-param>
+	<context-param>
+		<param-name>avalancheServerName</param-name>
+		<param-value>AvalancheGUI</param-value>
+		<description>Name of the WebApp used</description>
+	</context-param>
+	<context-param>
+		<param-name>securityOn</param-name>
+		<param-value>false</param-value>
+		<description>Default is false</description>
+	</context-param>
+	<context-param>
+		<param-name>xmppServer</param-name>
+		<param-value>16.181.41.84</param-value>
+		<description>XMPP Server Address</description>
+	</context-param>
+	<context-param>
+		<param-name>xmppServerPort</param-name>
+		<param-value>5223</param-value>
+		<description>XMPP Server Port</description>
+	</context-param>
+	<context-param>
+		<param-name>useSSLForXMPP</param-name>
+		<param-value>true</param-value>
+		<description>Default is true</description>
+	</context-param>
+	<context-param>
+		<param-name>xmppServerAdminUsername</param-name>
+		<param-value>admin</param-value>
+		<description>XMPP server Admin username</description>
+	</context-param>
+	<context-param>
+		<param-name>xmppServerAdminPassword</param-name>
+		<param-value>admin</param-value>
+		<description>XMPP server Admin password</description>
+	</context-param>
+
+	<listener>
+		<listener-class>
+			org.smartfrog.avalanche.server.AvalancheContextListener
+		</listener-class>
+	</listener>
+		<servlet>
+		<servlet-name>RequestHandler</servlet-name>
+		<servlet-class>org.smartfrog.services.rest.servlets.RequestHandler</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>RequestHandler</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+		<!-- 30 minutes -->
+	</session-config>
+</web-app>
