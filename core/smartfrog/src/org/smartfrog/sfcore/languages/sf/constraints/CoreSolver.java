@@ -60,6 +60,8 @@ public class CoreSolver {
 
     private static String solverClassname;
     private static String instanceMessage;
+    private static Throwable instanceFailureCause;
+
     /**
      * Solver class property: {@value}
      */
@@ -99,8 +101,6 @@ public class CoreSolver {
      */
     public static synchronized CoreSolver getInstance() {
         if (solver == null) {
-
-
             //fallback state
             solver = new CoreSolver();
             //now determine the classname
@@ -122,14 +122,14 @@ public class CoreSolver {
                         solver = (CoreSolver) instance;
                     }
                 } catch (ClassNotFoundException e) {
-                    instanceMessage =  ERROR_NO_CLASS + solverClassname + " : "+ e.toString();
+                    failToInstantiate(ERROR_NO_CLASS,e);
                 } catch (InstantiationException e) {
-                    instanceMessage = ERROR_COULD_NOT_INSTANTIATE_SOLVER + solverClassname + " : " + e.toString();
+                    failToInstantiate(ERROR_COULD_NOT_INSTANTIATE_SOLVER, e);
                 } catch (IllegalAccessException e) {
-                    instanceMessage = ERROR_COULD_NOT_INSTANTIATE_SOLVER + solverClassname + " : " + e.toString();
+                    failToInstantiate(ERROR_COULD_NOT_INSTANTIATE_SOLVER, e);
                 } catch (Throwable thrown) {
-                    //very unexpaced
-                    instanceMessage = ERROR_COULD_NOT_INSTANTIATE_SOLVER + solverClassname + " : " + thrown.toString();
+                    //very unexpected
+                    failToInstantiate(ERROR_COULD_NOT_INSTANTIATE_SOLVER, thrown);
                 }
             } else {
                 instanceMessage = "No solver defined : using default solver";
@@ -139,12 +139,24 @@ public class CoreSolver {
     }
 
     /**
+     * Fail to instantiate with both an error message and a thrown exception
+     * @param error the error text
+     * @param thrown what was thrown (required)
+     */
+    private static void failToInstantiate(String error, Throwable thrown) {
+        instanceMessage = error + solverClassname + " : " + thrown.toString();
+        instanceFailureCause = thrown;
+    }
+
+    /**
      * Entry point for testharness: reset the internal solver instance variables
      */
     public static synchronized void resetSolverInstance() {
         solverClass = null ;
         solverClassname = null;
         solver = null;
+        instanceMessage = null;
+        instanceFailureCause = null;
     }
 
     /**
@@ -157,10 +169,18 @@ public class CoreSolver {
 
     /**
      * Gives an error message on the last attempt to create an instance of the solver.
-     * @return
+     * @return the message or null
      */
     public static String getInstanceMessage() {
         return instanceMessage;
+    }
+
+    /**
+     * Get the exception that was the cause of the last failure to create an instance
+     * @return an exception or null
+     */
+    public static Throwable getInstanceFailureCause() {
+        return instanceFailureCause;
     }
 
     /**
