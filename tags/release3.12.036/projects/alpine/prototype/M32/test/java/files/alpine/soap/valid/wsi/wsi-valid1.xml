@@ -1,9 +1,0 @@
-<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'>
-  <soap:Body>
-    <p:Process xmlns:p='http://example.org/Operations'>
-      <m:Data xmlns:m='http://example.org/information'>
-  Here is some data with the message
-      </m:Data>
-    </p:Process>
-  </soap:Body>
-</soap:Envelope>

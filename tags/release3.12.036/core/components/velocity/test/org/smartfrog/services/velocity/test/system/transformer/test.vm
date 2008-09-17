@@ -1,5 +1,0 @@
-##this is a velocity template
-template=velocity
-#if ($property.p1)
-p1=p1isSet
-#end
