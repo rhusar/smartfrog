@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.sfcore.languages.sf.constraints;
+package org.smartfrog.sfcore.languages.sf.constraints.eclipse;
 
 /**
  * Interface for Component Description browsers used to display sfComfig hierarchy for the purpose of setting user variables

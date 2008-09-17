@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,13 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.sfcore.languages.sf.constraints;
-
-import java.util.Collection;
-import java.util.Iterator;
+package org.smartfrog.sfcore.languages.sf.constraints.eclipse;
 
 import com.parctechnologies.eclipse.Atom;
 import com.parctechnologies.eclipse.CompoundTermImpl;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Records information for a single attribute, used in EclipseSolver's sfConfig browser for user variables
@@ -35,27 +35,27 @@ class EclipseCDAttr {
 	/**
 	 * Name of attribute
 	 */
-	private String m_name;
+	private String name;
 	
 	/**
 	 * Value of attribute
 	 */
-	private Object m_val;
+	private Object val;
 	
 	/**
 	 * Range of attribute
 	 */
-	private Object m_range;
+	private Object range;
 	
 	/**
 	 * Whether set
 	 */
-	private boolean m_set;
+	private boolean set;
 	
 	/**
 	 * Eclipse Solver
 	 */
-	private EclipseSolver m_solver;
+	private EclipseSolver solver;
 	
 	/**
 	 * Constructor,
@@ -64,9 +64,9 @@ class EclipseCDAttr {
 	 * @param val Value of attribute
 	 */
 	EclipseCDAttr(EclipseSolver solver, String name, Object val){
-		m_solver = solver;
-		m_name = name;
-		m_val = val;
+		this.solver = solver;
+		this.name = name;
+		this.val = val;
 	}
 	
 	/**
@@ -74,7 +74,7 @@ class EclipseCDAttr {
 	 * @return Is value set?
 	 */
 	boolean isSet(){
-		return m_set;
+		return set;
 	}
 	
 	/**
@@ -82,7 +82,7 @@ class EclipseCDAttr {
 	 * @param set Is set?
 	 */
 	void set(boolean set){
-		m_set=set;
+		this.set =set;
 	}
 	
 	/**
@@ -90,7 +90,7 @@ class EclipseCDAttr {
 	 * @param range 
 	 */
 	void setRange(Object range){
-		m_range=range;
+		this.range =range;
 	}
 	
 	/**
@@ -98,7 +98,7 @@ class EclipseCDAttr {
 	 * @param val
 	 */
 	void setValue(Object val){
-		m_val=val;
+		this.val =val;
 	}
 	
 	/**
@@ -107,13 +107,13 @@ class EclipseCDAttr {
 	 * @return Whether processing is successful
 	 */
 	boolean process_sel(String entry){
-		m_solver.setEclipseCDAttr(this);
-		Collection c = (Collection) m_range;
+		solver.setEclipseCDAttr(this);
+		Collection c = (Collection) range;
 	    Iterator iter = c.iterator();
 		while (iter.hasNext()){
 			String el = iter.next().toString();
 			if (el.equals(entry)){			
-				m_solver.javaToEclipse(new CompoundTermImpl("set", new Atom(m_name), new Atom(entry)));  	
+				solver.javaToEclipse(new CompoundTermImpl("set", new Atom(name), new Atom(entry)));
 				return true;
 			} 
 		}
@@ -125,7 +125,7 @@ class EclipseCDAttr {
 	 * @return range as string
 	 */
     public String getRangeAsString(){
-		return m_range.toString();
+		return range.toString();
 	}
     
     /**
@@ -133,14 +133,14 @@ class EclipseCDAttr {
      * @return attribute name
      */
 	public String getAttrName(){
-		return m_name;
+		return name;
 	}
 	
 	public String toString(){
-		if (m_set){
-			return m_name+" has value: "+m_val;
+		if (set){
+			return name +" has value: "+ val;
 		} else {
-			return m_name+" ranges over: "+m_range;
+			return name +" ranges over: "+ range;
 		}
 	}
 }
