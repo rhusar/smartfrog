@@ -53,6 +53,14 @@ public class ConstraintResolutionState {
     private Context backtrackedTo = null;
 
     /**
+     * Constructs ConstraintResolutionState, allocating a link history record
+     */
+    public ConstraintResolutionState() {
+        currentLHRecord = new LinkHistoryRecord();
+        linkHistory.add(currentLHRecord);
+    }
+
+    /**
      * Gets whether backtracking has occurred recently
      * @return backtracking flag
      */
@@ -79,14 +87,6 @@ public class ConstraintResolutionState {
         constraintsShouldUndo = shouldUndo;
     }
 
-    /**
-     * Constructs ConstraintResolutionState, allocating a link history record
-     *
-     */
-    ConstraintResolutionState() {
-        currentLHRecord = new LinkHistoryRecord();
-        linkHistory.add(currentLHRecord);
-    }
 
     /**
      * Maintains a record pertaining to a single constraint evaluation
