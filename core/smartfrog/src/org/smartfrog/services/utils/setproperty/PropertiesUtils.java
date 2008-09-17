@@ -48,7 +48,7 @@ public class PropertiesUtils {
      */
     public static Properties build(ComponentDescription cd) throws SmartFrogResolutionException {
         Properties props = new Properties();
-        Iterator<?> attrs = cd.sfAttributes();
+        Iterator<Object> attrs = cd.sfAttributes();
         while (attrs.hasNext()) {
             Object attr = attrs.next();
             String key = attr.toString();

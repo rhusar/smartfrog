@@ -31,8 +31,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.Vector;
-import java.util.Arrays;
 
 /**
  * This is conceptually similar to an Ant FileSet, but architecturally very
@@ -50,23 +48,13 @@ public class Fileset implements Serializable {
     /**
      * list of files
      */
-    private File[] files;
+    private File[] files= EMPTY_FILES;
 
     /**
      * Filter -may be null.
      */
     private FilenamePatternFilter filter;
-
-    /**
-     * string for information on the source of the files; used for
-     * diagnostics
-     */
-    private String source;
-
-    /**
-     * An empty set of files
-     */
-    private static final File[] EMPTY_FILES = {};
+    private static final File[] EMPTY_FILES = null;
 
     /**
      * Simple constructor
@@ -82,7 +70,6 @@ public class Fileset implements Serializable {
     public Fileset(File baseDir, FilenamePatternFilter filter) {
         this.baseDir = baseDir;
         this.filter = filter;
-        source = "Fileset from " + baseDir.getAbsolutePath() + " and a filter " + filter;
     }
 
     /**
@@ -93,7 +80,6 @@ public class Fileset implements Serializable {
     public Fileset(File baseDir, File[] files) {
         this.baseDir = baseDir;
         setFiles(files);
-        source = "Fileset from " + baseDir.getAbsolutePath() + " and a list of " + files.length + " files";
     }
 
     /**
@@ -103,12 +89,13 @@ public class Fileset implements Serializable {
      * @throws SmartFrogException if something else went wrong
      */
     public Fileset(Files files) throws SmartFrogException, RemoteException {
-        this(files.getBaseDir(), files.listFiles());
+        baseDir=files.getBaseDir();
+        setFiles(files.listFiles());
     }
 
     /**
      * Set the files attribute and declare us as built.
-     * @param files files
+     * @param files
      */
     private void setFiles(File[] files) {
         this.files = files;
@@ -120,15 +107,6 @@ public class Fileset implements Serializable {
 
     public FilenamePatternFilter getFilter() {
         return filter;
-    }
-
-
-    /**
-     * Get a diagnostics message
-     * @return the diagnostics string
-     */
-    public String getSource() {
-        return source;
     }
 
     /**
@@ -148,11 +126,13 @@ public class Fileset implements Serializable {
         }
 
         //no value? Maybe we should build it
-        if (filter != null) {
+        if(filter!=null) {
             recalculate();
+            return files;
+        } else {
+            //now way to bind a file list, so say there is nothing
+            return EMPTY_FILES;
         }
-
-        return files != null ? files : EMPTY_FILES;
     }
 
     /**
@@ -219,8 +199,7 @@ public class Fileset implements Serializable {
                                         Reference hiddenAttribute)
             throws SmartFrogException, RemoteException {
 
-        Fileset result;
-        Files files;
+        Files files = null;
         ComponentDescription cd=null;
         Prim prim=null;
         if (component instanceof Prim) {
@@ -236,7 +215,7 @@ public class Fileset implements Serializable {
 
 
         if (files != null) {
-            result = new Fileset(files);
+            return new Fileset(files);
         } else {
             File baseDir = FileSystem.lookupAbsoluteFile(component, dirAttribute, null, null, true, null);
             //no files, so resolve everything else
@@ -254,9 +233,8 @@ public class Fileset implements Serializable {
             }
 
             FilenamePatternFilter filter = new FilenamePatternFilter(pattern, includeHiddenFiles, caseSensitive);
-            result = new Fileset(baseDir, filter);
+            return new Fileset(baseDir, filter);
         }
-        return result;
     }
 
     
@@ -266,14 +244,12 @@ public class Fileset implements Serializable {
      * @return String list of files separated by the platform's path separator.
      */
     public String toString() {
-          String fileSetString = Arrays.toString(listFiles());
+          String fileSetString = java.util.Arrays.toString(listFiles());
           fileSetString = fileSetString.substring(1,fileSetString.length()-1);
           fileSetString = fileSetString.replace(", ",System.getProperty("path.separator"));
           return (fileSetString);
     }
 
 
-    public Vector<File> toVector() {
-        return new Vector<File>(Arrays.asList(listFiles()));
-    }
+
 }

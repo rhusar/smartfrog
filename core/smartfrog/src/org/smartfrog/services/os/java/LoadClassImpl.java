@@ -25,13 +25,15 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.List;
 
 /**
@@ -64,8 +66,6 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
 
     private boolean retain = true;
 
-    private String message;
-
     /**
      * a log
      */
@@ -85,7 +85,6 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
         classes = ListUtils.resolveStringList(this, REF_CLASSES, true);
         create = sfResolve(ATTR_CREATE, create, true);
         retain = sfResolve(ATTR_RETAIN, retain, true);
-        message = sfResolve(ATTR_MESSAGE,"",true);
         int size = classes.size();
         classInstances = new Class[size];
         int instanceSize = size;
@@ -93,12 +92,11 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
             instanceSize = 0;
         }
         objectInstances = new Object[instanceSize];
-        ComponentHelper helper = new ComponentHelper(this);
 
         int count = 0;
         for (String classname : classes) {
             log.debug("Loading class " + classname);
-            Class clazz = helper.loadClass(classname,message);
+            Class clazz = loadClass(this, classname);
             classInstances[count] = clazz;
             count++;
         }
@@ -156,7 +154,6 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
         System.gc();
     }
 
-
     /**
      * Create an instance of a class using the empty constructor
      *
@@ -166,29 +163,16 @@ public class LoadClassImpl extends PrimImpl implements LoadClass {
      * @throws RemoteException    for network trouble
      */
     public static Object createInstance(Class clazz) throws SmartFrogException, RemoteException {
-        return createInstance(clazz,null);
-    }
-    /**
-     * Create an instance of a class using the empty constructor
-     *
-     * @param clazz class to load
-     * @param message extra diagnostics message
-     * @return an instance
-     * @throws SmartFrogException if something went wrong
-     * @throws RemoteException    for network trouble
-     */
-    public static Object createInstance(Class clazz, String message) throws SmartFrogException, RemoteException {
         Object instance;
-        String suffix = message != null && message.length() > 0 ? '\n' + message : "";
         Class params[] = new Class[0];
         Constructor defaultConstructor;
         try {
             defaultConstructor = clazz.getConstructor(params);
         } catch (NoSuchMethodException e) {
-            throw new SmartFrogException(ERROR_NO_PUBLIC_CONSTRUCTOR + clazz.getName() + suffix);
+            throw new SmartFrogException(ERROR_NO_PUBLIC_CONSTRUCTOR + clazz.getName());
         }
         Object params2[] = new Object[0];
-        String details = MESSAGE_CREATING_AN_INSTANCE + clazz.getName() + suffix;
+        String details = MESSAGE_CREATING_AN_INSTANCE + clazz.getName();
         try {
             instance = defaultConstructor.newInstance(params2);
         } catch (InstantiationException e) {

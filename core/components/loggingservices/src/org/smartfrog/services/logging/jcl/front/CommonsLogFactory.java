@@ -32,9 +32,6 @@ import org.smartfrog.sfcore.common.SmartFrogLogException;
 
 public class CommonsLogFactory extends LogFactoryImpl {
 
-    public CommonsLogFactory() {
-    }
-
     /**
      * To get the sfCore logger
      *

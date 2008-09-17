@@ -17,7 +17,6 @@ import org.smartfrog.avalanche.server.modules.ModuleCreationException;
 import org.smartfrog.avalanche.core.activeHostProfile.*;
 import org.smartfrog.services.xmpp.MonitoringEvent;
 import org.smartfrog.services.xmpp.XMPPEventExtension;
-import org.smartfrog.services.vmware.VMWareConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlString;
@@ -138,46 +137,32 @@ public class ActiveProfileUpdater {
             while (type.getMessagesHistoryArray().length > XMPP_HISTORY_LIMIT)
                 type.removeMessagesHistory(0);
 
-            String strCommand = ext.getPropertyBag().get(VMWareConstants.VMCMD);
-            String strResponse = ext.getPropertyBag().get(VMWareConstants.VMRESPONSE);
-            String strVMName = ext.getPropertyBag().get(VMWareConstants.VMNAME);
+            String strCommand = ext.getPropertyBag().get("vmcmd");
+            String strResponse = ext.getPropertyBag().get("vmresponse");
+            String strVMPath = ext.getPropertyBag().get("vmpath");
 
             if (strCommand != null) {
-                if (strCommand.equals(VMWareConstants.VM_CMD_CREATE)) {
+                if (strCommand.equals("create")) {
                     if (strResponse.equals("success")) {
                         // create a new type
                         VmStateType vst = type.addNewVmState();
-                        vst.setVmName(strVMName);
                         vst.setVmLastCmd(strCommand);
+                        vst.setVmPath(strVMPath);
                         vst.setVmResponse(strResponse);
                     }
-                } else if (strCommand.equals(VMWareConstants.VM_CMD_RENAME)) {
-                    if (strResponse.equals("success")) {
-                        // set the new name
-                        String strOldName = ext.getPropertyBag().get(VMWareConstants.VM_RENAME_OLD_NAME);
-                        for (VmStateType vst : type.getVmStateArray()) {
-                            if (vst.getVmName().equals(strOldName)) {
-                                vst.setVmName(strVMName);
-                            }
-                        }
-                    }
-                } else if (strCommand.equals(VMWareConstants.VM_CMD_GETMASTERS)) {
+                } else if (strCommand.equals("getmasters")) {
                     // delete the old masters list
                     while (type.getVmMasterCopyArray().length > 0)
                         type.removeVmMasterCopy(0);
 
                     // add the new ones
-                    try {
-                        String[] strMasters = strResponse.split("\n");
-                        for (String s : strMasters)
-                        {
-                            XmlString str = type.insertNewVmMasterCopy(0);
-                            str.setStringValue(s);
-                        }
-                    } catch (Exception e) {
-                        log.error(e);
+                    String[] strMasters = strResponse.split("\n");
+                    for (String s : strMasters)
+                    {
+                        XmlString str = type.insertNewVmMasterCopy(0);
+                        str.setStringValue(s);
                     }
-                } else if (strCommand.equals(VMWareConstants.VM_CMD_LIST)) {
+                } else if (strCommand.equals("list")) {
                     // a list command has been sent and responded to
                     // the response contains the list of running
                     // machines divided by '\n'
@@ -187,31 +172,30 @@ public class ActiveProfileUpdater {
                         type.removeVmState(0);
 
                     // add the new data
-                    try {
-                        int iCount = Integer.parseInt(ext.getPropertyBag().get(VMWareConstants.VM_LIST_COUNT));
-                        for(int i = 0; i < iCount; ++i) {
-                            VmStateType newType = type.addNewVmState();
-                            newType.setVmLastCmd(VMWareConstants.VM_CMD_LIST);
-                            newType.setVmResponse("State: " + ext.getPropertyBag().get(String.format("list_%d_vmstate", i)));
-                            newType.setVmName(ext.getPropertyBag().get(String.format("list_%d_vmname", i)));
-                        }
-                    } catch (NumberFormatException e) {
-                        log.error(e);
+                    String[] strMachines = strResponse.split("\n");
+                    for (String s : strMachines) {
+                        if (s.equals(""))
+                                continue;
+
+                        VmStateType newType = type.addNewVmState();
+                        newType.setVmPath(s);
+                        newType.setVmLastCmd("list");
+                        newType.setVmResponse("success");
                     }
-                } else if (strCommand.equals(VMWareConstants.VM_CMD_DELETE)) {
+                } else if (strCommand.equals("delete")) {
                     // find the entry
                     for (int i = 0; i < type.getVmStateArray().length; i++) {
                         VmStateType t = type.getVmStateArray()[i];
-                        if (t.getVmName().equals(strVMName)) {
+                        if (t.getVmPath().equals(strVMPath)) {
                             type.removeVmState(i);
                             break;
                         }
                     }
-                } else if (strVMName != null) {
+                } else if (strVMPath != null) {
                     // find the appropriate type
                     boolean bFound = false;
                     for (VmStateType t : type.getVmStateArray()) {
-                        if (t.getVmName().equals(strVMName))
+                        if (t.getVmPath().equals(strVMPath))
                         {
                             bFound = true;
                             t.setVmLastCmd(strCommand);
@@ -224,14 +208,14 @@ public class ActiveProfileUpdater {
                         VmStateType newType = type.addNewVmState();
                         newType.setVmLastCmd(strCommand);
                         newType.setVmResponse(strResponse);
-                        newType.setVmName(strVMName);
+                        newType.setVmPath(strVMPath);
                     }
                 }
 
                 // add a new message
                 MessageType newMsg = type.addNewMessagesHistory();
                 newMsg.setTime(ext.getTimestamp());
-                newMsg.setMsg("VM Name: " + strVMName +
+                newMsg.setMsg("VM Path: " + strVMPath +
                                 ", Command: " + strCommand +
                                 ", Response: " + strResponse);
             }

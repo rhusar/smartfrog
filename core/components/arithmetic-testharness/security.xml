@@ -38,9 +38,8 @@
 <import file="build.xml"/>
 
 <property name="private" value="private"/>
-<property name="dist.signedLib.dir" value="${dist}/signedLib"/>
   <!-- Include here the security-related ant file -->
-  <!-- &security;-->
+  &security;
   <!-- End of security-related ant file -->
 <target name="signExtraJars">
 	 <antcall target="signjarbuild">

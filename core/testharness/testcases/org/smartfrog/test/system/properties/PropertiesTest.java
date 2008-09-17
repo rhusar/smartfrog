@@ -35,26 +35,14 @@ public class PropertiesTest extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testSetOnDeploy() throws Throwable {
         expectSuccessfulTestRun(FILES,"testSetOnDeploy");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testSetOnSequence() throws Throwable {
         expectSuccessfulTestRun(FILES, "testSetOnSequence");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testUnsetOnSequence() throws Throwable {
         expectSuccessfulTestRun(FILES, "testUnsetOnSequence");
     }

@@ -182,7 +182,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    @Override
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
@@ -228,7 +227,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param status termination status of sender
      * @param comp sender of termination
      */
-    @Override
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         boolean terminate;
         if (isWorkflowTerminating()) {
@@ -250,24 +248,12 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
                 }
             } catch (Exception e) {
                 sfLog().error("Exception ",e);
-                terminate = true;
+                terminate =true;
             }
         }
         if (terminate) {
-            scheduleTermination(status);
+            sfTerminate(status);
         }
-    }
-
-    /**
-     *
-     * Override point: schedule a termination triggered from
-     * {@link #sfTerminatedWith(TerminationRecord, Prim)}.
-     * At this point, it has already been decided that termination can/should be
-     * scheduled, so it is. The base class
-     * @param status
-     */
-    protected void scheduleTermination(TerminationRecord status) {
-        sfTerminate(status);
     }
 
     /**
@@ -332,7 +318,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     *
     * @param status Termination  Record
     */
-    @Override
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         registrar.deregisterFromReceivingAll();

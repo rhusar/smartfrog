@@ -45,9 +45,6 @@ EmailerSchema extends Schema {
 	runAsWorkFlowComponent extends Boolean;
 	sendOnStartup extends OptionalBoolean;
 	sendOnShutdown extends OptionalBoolean;
-	smtpHostUser extends OptionalString;
-	smtpHostUserPassword extends OptionalString;
-	smtpPort extends OptionalString;
   attachments extends OptionalVector;
 }
  

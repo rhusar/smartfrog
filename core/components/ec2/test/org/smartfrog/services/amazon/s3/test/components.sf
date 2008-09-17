@@ -62,7 +62,6 @@ DeleteBucket extends TestBucket {
 IndexHtml extends S3File {
   sfShouldTerminate true;
   name "index.html";
-  mimeType ["text/html"];
   bucket ROOT:bucket;
   username ROOT:login;
   password ROOT:password;
@@ -145,9 +144,9 @@ BucketTest extends ExpectDeployOnAWS {
     }
 
     //html data
-    htmldata extends HtmlTextDataSource {
+    htmldata extends TextDataSource {
      //add no regexp magic characters here, or you break the tests
-      text "<html><body><h1><blink>hello, Julio</blink></h1></body></html>";
+      text "<html><body><h1><blink>hello, world</blink></h1></body></html>";
       regexp text;
     }
 

@@ -7,7 +7,7 @@ export PATH=$SFHOME/bin:$PATH
 #cd $DEST/testbed/core/smartfrog/dist/bin
 for x in $@;
  do 
-    sfStopDaemon $x -p 3805
+    sfStopDaemon $x
  done
 
 

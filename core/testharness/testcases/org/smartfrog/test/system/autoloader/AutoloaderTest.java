@@ -41,26 +41,14 @@ public class AutoloaderTest extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testTest1Loads() throws Throwable {
         deploy("autoloadTest1");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testTest2Loads() throws Throwable {
         deploy("autoloadTest2");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testAutoloader() throws Throwable {
         deploy("testAutoloader");
         Prim example = (Prim) application.sfResolve("example");
@@ -68,10 +56,6 @@ public class AutoloaderTest extends DeployingTestBase {
         assertTrue(text.contains(TEXT1));
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testAutoloaderTest2() throws Throwable {
         deploy("testAutoloaderTest2");
         Prim example = (Prim) application.sfResolve("example");
@@ -79,10 +63,6 @@ public class AutoloaderTest extends DeployingTestBase {
         assertTrue(text.contains(TEXT2));
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testMissingReference() throws Throwable {
         Prim autoloader = deployAutoloader("testMissingReference");
         try {
@@ -93,31 +73,15 @@ public class AutoloaderTest extends DeployingTestBase {
         }
     }
 
-    /**
-     * Deploy the application and resolve the autoloader reference
-     * @param s applicatin to deploy
-     * @return the value of application:autoloader
-     * @throws Throwable on failure
-     */
     private Prim deployAutoloader(String s) throws Throwable {
         deploy(s);
         Prim autoloader = (Prim) application.sfResolve("autoloader");
         return autoloader;
     }
 
-    /**
-     * Deploy a file; prepending the FILES package
-     * @param filename file to deploy (and name to give it)
-     * @throws Throwable on failure
-     */
-    private void deploy(String filename) throws Throwable {
-        application = deployExpectingSuccess(FILES + filename +".sf", filename);
+    private void deploy(String s) throws Throwable {
+        application = deployExpectingSuccess(FILES + s +".sf", s);
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testBadName() throws Throwable {
         Prim autoloader = deployAutoloader("testMissingReference");
@@ -129,20 +93,10 @@ public class AutoloaderTest extends DeployingTestBase {
         }
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testValidLoadsLoads() throws Throwable {
         Prim autoloader = deployAutoloader("testValidLoads");
         Prim example = (Prim) autoloader.sfResolve("autoloadTest2");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testValidLoadsBlocks() throws Throwable {
         Prim autoloader =deployAutoloader("testValidLoads");

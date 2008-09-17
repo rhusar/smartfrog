@@ -35,20 +35,12 @@ public class DataReadersTest
     public DataReadersTest(String s) {
         super(s);
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
+    
     public void testCaseTCP31() throws Throwable {
         application = deployExpectingSuccess(FILES+"dataProvider.sf", "provider");
         assertNotNull(application);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testCaseTCP32() throws Throwable {
         application = deployExpectingSuccess(FILES + "dataConsumer.sf", "consumer");
         assertNotNull(application);
@@ -58,8 +50,8 @@ public class DataReadersTest
         String message = event.sfResolve("message", (String) null, true);
         String message2 = event2.sfResolve("message", (String) null, true);
         String message3 = event3.sfResolve("message", (String) null, true);
-        assertEquals("hello world! (data attribute)", message);
-        assertEquals("PRIM hello world! (component attribute)", message2);
-        assertEquals("PRIM2 hello World!", message3);
+        assertEquals(message, "hello world! (data attribute)");
+        assertEquals(message2, "PRIM hello world! (component attribute)");
+        assertEquals(message3, "PRIM2 hello World!");
     }
 }

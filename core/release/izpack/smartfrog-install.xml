@@ -638,34 +638,6 @@ SmartFrog to deploy complex systems.
     </pack>
 
 
-    <pack name="Velocity" required="no" preselected="no">
-      <description>
-        This package provides the Apache Velocity template engine
-        JAR, and a component that can transform a file through it
-        during deployment. Velocity can be used to generate
-        text, HTML or XML files on the fly.
-
-        This package includes velocity-${velocity.version}.jar,
-        velocity-dep-${velocity.version}.jar,
-        commons-collections-${commons-collections.version}.jar
-        commons-lang-${commons-lang.version}.jar
-      </description>
-      <file src="ivy/lib/package-velocity/sf-velocity-${smartfrog.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-velocity/sf-velocity-javadocs-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>
-      <file src="ivy/lib/package-velocity/sf-velocity-documentation-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>
-
-      <file src="ivy/lib/package-velocity/velocity-${velocity.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-    </pack>
-
-
     <pack name="WWW" required="no" preselected="no">
       <description>WWW support.
         This package contains components to deploy web applications on different

@@ -90,11 +90,11 @@ function updateHostList() {
                                     // Cell: Hostname
                                     var hostNameCell = row.insertCell(1);
                                     hostNameCell.className = "sorted";
-                                    //var consoleLink = document.createElement("a");
-				    //consoleLink.href = "http://16.181.41.84:8081/AvalancheGUI/rest/"+hosts[i].getAttribute("name")+"/3800/?responseType=HTML";
-				    //consoleLink.appendChild(document.createTextNode(hosts[i].getAttribute("name")));
-				    hostNameCell.appendChild(document.createTextNode(hosts[i].getAttribute("name")));
-				    //hostNameCell.appendChild(consoleLink);
+                                    var consoleLink = document.createElement("a");
+				    consoleLink.href = "http://16.181.41.84:8081/AvalancheGUI/rest/"+hosts[i].getAttribute("name")+"/3800/?responseType=HTML";
+				    consoleLink.appendChild(document.createTextNode(hosts[i].getAttribute("name")));
+				    //hostNameCell.appendChild(document.createTextNode(hosts[i].getAttribute("name")));
+				    hostNameCell.appendChild(consoleLink);
 
 
                                     // Cell: Manage

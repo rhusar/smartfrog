@@ -8,15 +8,11 @@ import org.smartfrog.test.DeployingTestBase;
 public class FailingConditionTest extends DeployingTestBase {
 
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
+    private static final String WAITFOR_FAILED = "waitfor failed";
 
     public FailingConditionTest(String s) {
         super(s);
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testFailingWaitFor() throws Throwable {
         expectSuccessfulTestRun(FILES, "testFailingWaitFor");

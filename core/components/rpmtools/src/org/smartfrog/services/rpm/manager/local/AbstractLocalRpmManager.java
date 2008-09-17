@@ -30,6 +30,8 @@ import java.rmi.RemoteException;
  */
 public abstract class AbstractLocalRpmManager extends AbstractRpmManager implements RpmManager {
 
-    protected AbstractLocalRpmManager() throws RemoteException {
+    public AbstractLocalRpmManager() throws RemoteException {
     }
+
+
 }

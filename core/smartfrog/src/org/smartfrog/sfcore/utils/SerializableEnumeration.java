@@ -39,7 +39,7 @@ public class SerializableEnumeration<T> implements Enumeration<T>, Serializable 
     }
 
     public SerializableEnumeration(List<T> source) {
-        iterator = new SerializableIterator<T>(source);
+        iterator=new SerializableIterator<T>(source);
     }
 
     public SerializableEnumeration(T[] source) {

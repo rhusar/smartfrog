@@ -16,7 +16,7 @@ sfConfig extends Parallel {
 	    commands ["cd ${sharedDir}/daemons/$daemon.host",
 			     "export SFHOME=${installDir}/dist",
                              "export PATH=$SFHOME/bin:$PATH",
-		             "nohup sfDaemon -p 3805 &"];
+		             "nohup sfDaemon &"];
 	    #elseif ($daemon.isWindows())
             commands ["cd ${sharedDir}",
 	                	 ("start_sfdaemon.bat ${daemon.javahome} ${installDir}\\" ++"dist server"), 

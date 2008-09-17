@@ -146,37 +146,3 @@ testAttributeBinding extends FilesTest {
     fileCount 1;
   }
 }
-
-testRuntimeAddedAttributes extends FilesTest {
-    action extends Compound {
-        dirs extends BuildTestDirs;
-
-        txtFiles extends Files {
-            dir LAZY dirs:mkdir1;
-            pattern ".*\\.txt";
-        }
-
-        checkFileList0 extends Assert {
-            reference LAZY txtFiles;
-            attribute "fileList";
-            attributeVectorValue "1.txt";
-            attributeVectorIndex 0;
-        }
-
-        checkFileList1 extends Assert {
-            reference LAZY txtFiles;
-            attribute "fileList";
-            attributeVectorValue "2.txt";
-            attributeVectorIndex 1;
-        }
-
-        checkFileSetString extends Assert {
-            ps PROPERTY path.separator;
-
-            reference LAZY txtFiles;
-            value ("1.txt" ++ ps ++ "2.txt");
-        }
-
-        // TODO: check fileSet too
-    }
-}

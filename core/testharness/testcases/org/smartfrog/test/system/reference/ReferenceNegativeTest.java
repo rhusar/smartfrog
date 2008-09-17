@@ -36,11 +36,8 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
     }
 
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN39() throws Throwable {
+
+    public void testCaseTCN39() throws Exception {
         deployExpectingException(FILES + "tcn39.sf",
                 "tcn39",
                 EXCEPTION_LIFECYCLE,
@@ -49,11 +46,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Illegal ClassType");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN40() throws Throwable {
+    public void testCaseTCN40() throws Exception {
         deployExpectingException(FILES + "tcn40.sf",
                 "tcn40",
                 EXCEPTION_LIFECYCLE,
@@ -62,11 +55,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Illegal ClassType");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN41() throws Throwable {
+    public void testCaseTCN41() throws Exception {
         deployExpectingException(FILES + "tcn41.sf",
                 "tcn41",
                 EXCEPTION_LIFECYCLE,
@@ -75,11 +64,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Error: sfResolved int '10' < '12'(minValue)");
     }
 
-    public void testCaseTCN42() throws Throwable {
-        /**
-         * test case
-         * @throws Throwable on failure
-         */
+    public void testCaseTCN42() throws Exception {
         deployExpectingException(FILES + "tcn42.sf",
                 "tcn42",
                 EXCEPTION_LIFECYCLE,
@@ -88,11 +73,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Error: sfResolved int '15' > '9'(maxValue)");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN59() throws Throwable {
+    public void testCaseTCN59() throws Exception {
         deployExpectingException(FILES + "tcn59.sf",
                 "tcn59",
                 EXCEPTION_DEPLOYMENT,
@@ -101,11 +82,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "error in schema: wrong class found for attribute 'limit', expected: java.lang.Integer, found: java.lang.String");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN60() throws Throwable {
+    public void testCaseTCN60() throws Exception {
         deployExpectingException(FILES + "tcn60.sf",
                 "tcn60",
                 EXCEPTION_LIFECYCLE,
@@ -114,11 +91,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Unresolved Reference: HERE limit");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN61() throws Throwable {
+    public void testCaseTCN61() throws Exception {
         deployExpectingException(FILES + "tcn61.sf",
                 "tcn61",
                 EXCEPTION_LIFECYCLE,
@@ -127,11 +100,7 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Error: sfResolved int '5' > '0'(maxValue)");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN62() throws Throwable {
+    public void testCaseTCN62() throws Exception {
         deployExpectingException(FILES + "tcn62.sf",
                 "tcn62",
                 EXCEPTION_LIFECYCLE,
@@ -140,17 +109,13 @@ public class ReferenceNegativeTest extends SmartFrogTestBase {
                 "Unresolved Reference: HERE integer1");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN63() throws Throwable {
+    public void testCaseTCN63() throws Exception {
         deployExpectingException(FILES + "tcn63.sf",
                 "tcn63",
                 EXCEPTION_LIFECYCLE,
                 "sfDeploy",
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference: HERE name1");
+                "Unresolved Reference: HERE name1");//@Todo check for "Reference not found";
     }
 
 

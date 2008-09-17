@@ -20,21 +20,18 @@
 
 package org.smartfrog.services.ant;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +43,9 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Vector;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 /*
  * Some code derived from article by Pankaj Kumar (pankaj_kumar at hp.com):

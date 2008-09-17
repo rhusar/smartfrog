@@ -14,7 +14,7 @@ import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFAssertReference;
 import org.smartfrog.sfcore.languages.sf.sfreference.SFTBDReference;
-import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+
 import org.smartfrog.sfcore.languages.sf.IncludeHandler;
 
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -43,7 +43,7 @@ import java.util.HashSet;
 
 public class DefaultParser {
   protected IncludeHandler includeHandler;
-  public static int nextId = 0;
+  static int nextId = 0;
 
   static final String appendOp = "org.smartfrog.sfcore.languages.sf.functions.Append";
   static final String concatOp = "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
@@ -276,7 +276,7 @@ TOKEN : /* reserved words */
  | <FI: "FI">
  | <SWITCH: "SWITCH">
  | <ENDSWITCH: "ENDSWITCH">
- | <VAR: "VAR">
+
 }
 
 TOKEN :
@@ -563,23 +563,8 @@ Object Value() :
 }
 
 
-Object Var() :
-{
-   Object ran = null;
-   Object val = null;
-}
-{ 
-    <VAR> 
-    (
-      (
-        (ran = ReferenceNoEOF() | ran = String())
-        |
-        (<LBRACE> (ran = ReferenceNoEOF() | ran = String()) <COMMA> (val = String() | val = Number()) <RBRACE>)
-      ) {return new FreeVar(ran, val);}
-	|
-	  {return new FreeVar();}
-	)
-}
+
+
 
 Object SimpleValue() :
 {
@@ -777,8 +762,7 @@ void DataComponent(SFComponentDescription comp) :
 void BaseComponent(SFComponentDescription comp) :
 {
 }
-{ 
-  (
+{ (
     (<NULL> [BaseComponentRest(comp)])
   | (BaseComponentLinkType(comp) [BaseComponentRest(comp)])
   | (BaseComponentAttributesType(comp) [BaseComponentRest(comp)])
@@ -792,6 +776,7 @@ void BaseComponent(SFComponentDescription comp) :
                SFComponentDescription cdType = (SFComponentDescription) type;
                Context cxt = cdType.sfContext();
                comp.setContext(cxt);
+
                // re-parent any descriptions in super sfContext
                for (Enumeration e = cxt.keys(); e.hasMoreElements(); ) {
                    Object key = e.nextElement();
@@ -947,7 +932,6 @@ Object Primitive() :
       <VECTOREND>)
    | <DATA> res = BaseReference() {((SFReference)res).setData(true);}
    | <TBD> {res = new SFTBDReference();}
-   | res=Var()
   ) { return res; }
 }
 

@@ -64,8 +64,6 @@
         description="scripting components"/>
     <conf name="package-testing"
         description="testing components"/>
-    <conf name="package-velocity"
-        description="velocity components"/>
     <conf name="package-www"
         description="www components"/>
     <conf name="package-xml"
@@ -201,6 +199,13 @@
     -->
 
 
+    <!-- XML -->
+    <dependency org="org.smartfrog"
+        name="sf-xml"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-xml->master,redist,documentation"/>
+
 
 
     <!-- testing-->
@@ -214,15 +219,6 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-testing->master,redist,documentation"/>
-
-
-    <!-- Velocity-->
-    <dependency org="org.smartfrog"
-        name="sf-velocity"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-velocity->master,redist,documentation"/>
-
 
     <!--web stuff-->
     <dependency org="org.smartfrog"
@@ -247,16 +243,6 @@
             rev="${ivy.smartfrog.version}"
             conf="package-www->master,redist/>
     -->
-
-
-    <!-- XML -->
-    <dependency org="org.smartfrog"
-        name="sf-xml"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-xml->master,redist,documentation"/>
-
-
     <!--XMPP-->
     <dependency org="org.smartfrog"
         name="sf-xmpp"

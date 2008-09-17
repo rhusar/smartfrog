@@ -7,9 +7,11 @@
   xmlns:mc='http://smartfrog.org/avalanche/core/Module'
   xmlns:mg='http://smartfrog.org/avalanche/core/ModuleGroup'>
 
-  <xs:import namespace="http://smartfrog.org/avalanche/core/Module" schemaLocation="ModuleConfiguration.xsd"/>
+  <xs:import namespace="http://smartfrog.org/avalanche/core/Module"
+    schemaLocation="ModuleConfiguration.xsd"/>
     
-  <xs:import namespace="http://smartfrog.org/avalanche/core/ModuleGroup" schemaLocation="ModuleGroup.xsd"/>
+  <xs:import namespace="http://smartfrog.org/avalanche/core/ModuleGroup"
+    schemaLocation="ModuleGroup.xsd"/>
 
   <xs:element name="ActiveProfile" type="this:ActiveProfileType"/>
 
@@ -47,9 +49,9 @@
 
   <xs:complexType name="vmStateType">
     <xs:sequence>
+      <xs:element name="vmPath" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmLastCmd" type="xs:string" minOccurs="1" maxOccurs="1" />
       <xs:element name="vmResponse" type="xs:string" minOccurs="1" maxOccurs="1" />
-      <xs:element name="vmName" type="xs:string" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 </xs:schema>

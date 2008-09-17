@@ -19,11 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.assertions.lifecycle;
 
+import org.smartfrog.sfcore.workflow.conditional.ConditionCompound;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.assertions.TestBlockImpl;
@@ -33,11 +35,11 @@ import java.rmi.RemoteException;
 
 /**
  *
- * This component tests the lifecycle of other components by calling some of their methods out of cycle
+ * Created 09-Oct-2007 13:56:57
  *
  */
 
-public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, LifecycleTester {
+public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock,LifecycleTester {
 
 
 
@@ -59,8 +61,7 @@ public class LifecycleTesterImpl extends TestBlockImpl implements TestBlock, Lif
 
 
     /**
-     * Starts the component.
-     * This will walk the action through its lifecycle, terminating it before it is expected
+     * Starts the component. <p/> This will walk the action through its lifecycle, terminating it before it is expected
      *
      * A TestStartedEvent will always be sent.
      *

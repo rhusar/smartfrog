@@ -21,7 +21,6 @@ import org.smartfrog.avalanche.server.ServerSetup;
 import org.smartfrog.avalanche.server.engines.sf.BootStrap;
 
 import java.net.InetAddress;
-import java.util.regex.Pattern;
 
 public class BootStrapTest extends TestCase {
 
@@ -59,7 +58,7 @@ public class BootStrapTest extends TestCase {
 			HostType host = null ; 
 			try{
 				host = hm.newHost(hostId) ;
-            }catch(Exception e){
+			}catch(Exception e){
 				host = hm.getHost(hostId);
 			}
 			host.setUser(user) ;

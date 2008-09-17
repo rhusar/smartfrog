@@ -1,17 +1,17 @@
 package org.smartfrog.services.dependencies.statemodel.state;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
 
  */
-public interface NotificationLock  {
-   public void lock();
-   public void unlock(boolean notify);
+public interface NotificationLock extends Remote {
+   public void lock() throws RemoteException;
+   public void unlock(boolean notify) throws RemoteException;
    
-   public void notifyStateChange();
+   public void notifyStateChange() throws RemoteException;
 
-   public void threadStarted();
-   public void threadStopped();
-   
-   
+   public void threadStarted() throws RemoteException;
+   public void threadStopped() throws RemoteException;
 }

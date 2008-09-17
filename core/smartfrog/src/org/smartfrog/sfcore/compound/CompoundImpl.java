@@ -473,9 +473,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return enumeration over children
      */
-    @SuppressWarnings("unchecked")
-    public Enumeration<Liveness> sfChildren() {
-        return new SerializableEnumeration<Liveness>((List) sfChildren);
+    public Enumeration sfChildren() {
+        return new SerializableEnumeration<Prim>(sfChildren);
     }
 
     /**
@@ -487,7 +486,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @since SmartFrog 3.13.003
      * @return a cloned list of all deployed children
      */
-    @SuppressWarnings("unchecked")
     public List<Prim> sfChildList() {
     	return (List<Prim>)sfChildren.clone();
     }
@@ -773,9 +771,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         // call sfDumpState in every child.
         // remote childrens are called in a separate thread
         for (Prim elem:sfChildList()) {
-            if( elem.equals(this) ) {
-                continue;
-            } else if (ComponentHelper.isRemote(elem)) {
+            if (ComponentHelper.isRemote(elem)) {
               new DumpCall(elem, target).start();
             } else {
                 String name="unnamed";

@@ -22,7 +22,6 @@ package org.smartfrog.services.assertions.lifecycle;
 import java.rmi.Remote;
 
 /**
- * * This component tests the lifecycle of other components by calling some of their methods out of cycle
  * Created 09-Oct-2007 14:09:27
  */
 

@@ -20,115 +20,29 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 #include "/org/smartfrog/services/hadoop/examples/hplb.sf"
 
-
-IsHPLBEnabled extends IsPropertyTrue {
-    property "test.hplb.enabled";
-}
-
 HPLBJobSubmitter extends JobSubmitter {
   terminateJob true;
-  terminateWhenJobFinishes true;
-  sfShouldTerminate true;
-}
-
-
-Status extends HplbClusterStatus {
-   sfShouldTerminate true;
-   supportedFileSystem false;
 }
 
 /**
  * this job has no jar file; it is not needed
  */
-HplbJobNoJAR extends HplbJob  {
-  fileRequired false;
-}
-
-/**
- * this job has no jar file; it is not needed
- */
-SimpleJob extends HplbJobNoJAR  {
-  name "dbpedia";
-  mapred.input.dir "/datasets/dbpedia";
-  mapred.output.dir "/playground/dbpedia";
-}
-
-/**
-  wordnet identity Job
- */
-WordnetJob extends HplbJobNoJAR  {
-  name "wordnet";
-  mapred.input.dir "/datasets/wordnet";
-  mapred.output.dir "/playground/wordnet";
+SimpleJob extends HplbJob  {
+  fileRequired false; 
 }
 
 SubmissionCompound extends Compound {
   job extends SimpleJob;
   submitter extends HPLBJobSubmitter {
     job LAZY PARENT:job;
-    sfShouldTerminate true;
-    //deleteOutputDirOnStartup true;
   }
 }
 
 
-ExpectDeployHPLB extends ExpectDeploy {
-  condition IsHPLBEnabled;
-}
-
-
-ExpectTerminateHPLB extends ExpectTerminate {
-  condition IsHPLBEnabled;
-}
-
-
-ExpectDeployFailureHPLB extends ExpectDeployFailure {
-  condition IsHPLBEnabled;
-}
-
-testJobSubmission extends ExpectDeployHPLB {
+testJobSubmission extends ExpectDeploy {
   action extends SubmissionCompound ;
 }
 
-testJobSubmissionBroken extends ExpectDeployFailureHPLB {
-  action extends SubmissionCompound ;
-  exitText "Failed to submit job";
-  exceptions [
-  ["","Failed to submit job"],
-  ["java.io.IOException","Job failed!"]
-  ];
-}
+sfConfig extends Compound {
 
-testWordnetJob extends ExpectDeployHPLB {
-  action extends WordnetJob ;
-}
-
-
-testClusterLive extends ExpectTerminateHPLB {
-  exitText "status checked";
-  action extends Status;
-}
-
-testClusterLiveFileSystemSupported extends testClusterLive {
-  action:supportedFileSystem true;
-}
-
-testBadTrackerPort extends ExpectDeployFailureHPLB {
-  exitText LAZY CONSTANT "org.smartfrog.services.hadoop.components.cluster.ClusterStatusCheckerImpl.ERROR_CANNOT_CONNECT";
-  action extends Status  {
-   host HplbCluster:jobTrackerHost;
-   port "2020";
-   mapred.job.tracker (host ++ ":" ++ port );
-   sfShouldTerminate true;
- }
-}
-
-testBadTrackerHost extends testBadTrackerPort {
- action:host "unknown.example.org";
-}
-
-
-testClusterMaximumSupportedValues extends testClusterLive {
-  action:maxSupportedMapTasks HplbCluster:maxSupportedMapTasks;
-  action:maxSupportedReduceTasks HplbCluster:maxSupportedReduceTasks ;
 }

@@ -34,34 +34,18 @@ public class ConditionsTest extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testEqualWorks() throws Throwable {
         expectSuccessfulTestRun(FILES, "testEqualWorks");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testNotEqualWorks() throws Throwable {
         expectSuccessfulTestRun(FILES, "testNotEqualWorks");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testAssertIsEmpty() throws Throwable {
         expectSuccessfulTestRun(FILES, "testAssertIsEmpty");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testConditionEvaluated() throws Throwable {
         expectSuccessfulTestRun(FILES, "testConditionEvaluated");
     }

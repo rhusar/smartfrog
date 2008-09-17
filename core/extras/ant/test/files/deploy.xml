@@ -1,142 +1,138 @@
 <?xml version="1.0"?>
-<project name="deploy" default="teardown">
+<project name="parse" default="teardown">
 
-  <description>
-    Tests for the parse.
+<description>
+ Tests for the parse. 
+ 
+ command line invocation
+ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f  deploy.xml testResource
 
-    command line invocation
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f deploy.xml testNoParams
 
-ant -lib dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHOME/lib/sfServices-3.*.jar -lib $SFHOME/lib/sfExamples-3.*.jar  -f test/files/deploy.xml testDeployResource 
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f deploy.xml testResource
+</description>
 
-  </description>
+    <import file="test-common.xml" />
 
-  <import file="test-common.xml"/>
+    <!-- at the end of every execution, we force a cleanup -->
+    <target name="teardown">
+      <sf-stopdaemon failonerror="false" />
+    </target>
+    
+    <target name="testNoParams">
+      <sf-deploy />
+    </target>
+    
+    <target name="testNoFailure">
+      <sf-deploy failonerror="false"/>
+    </target>
+    
+    <target name="testEmptyApplication">
+      <sf-deploy >
+        <application />
+      </sf-deploy>
+    </target>    
 
-  <property name="port" value="8080"/>
+    <target name="testAnonApplication">
+      <sf-deploy >
+        <application descriptor="${resource.sf}" />
+      </sf-deploy>
+    </target>    
 
+    <target name="testDatalessApplication">
+      <sf-deploy >
+        <application name="app" />
+      </sf-deploy>
+    </target> 
 
+    
+    <target name="testBadFile">
+      <sf-deploy >
+        <application name="app" file="missing-file.sf"/>
+      </sf-deploy>
+    </target>  
 
-  <!-- at the end of every execution, we force a cleanup -->
-  <target name="teardown">
-  </target>
+    
+    <target name="testBadHost">
+      <sf-deploy host="no-such-hostname" logStackTraces="true">
+        <application name="app" descriptor="${resource.sf}"/>
+      </sf-deploy>
+    </target>
 
-  <target name="testNoParams">
-    <sf-deploy/>
-  </target>
+    <target name="testConnectionRefused">
+      <sf-deploy host="www.google.com" logStackTraces="true">
+        <application name="app" descriptor="${resource.sf}"/>
+      </sf-deploy>
+    </target>
+    
+    <target name="testResource">
+      <sf-deploy >
+        <application name="app" descriptor="${resource.sf}"/>
+      </sf-deploy>
+    </target> 
 
-  <target name="testNoFailure">
-    <sf-deploy failonerror="false"/>
-  </target>
+    <target name="testStackTrace">
+      <sf-deploy logStackTraces="true">
+        <application name="app" file="invalid.sf"/>
+      </sf-deploy>
+    </target> 
+    
+    <target name="testRunFile">
+      <sf-deploy >
+        <application name="app" file="valid.sf"/>
+      </sf-deploy>
+    </target>
+    
+    <target name="testDeployFile">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+        </sf-startdaemon>
+        <sequential>
+          <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
+          <antcall target="testRunFile" />
+        </sequential>
+      </parallel>
+    </target>    
 
-  <target name="testEmptyApplication">
-    <sf-deploy>
-      <application/>
-    </sf-deploy>
-  </target>
+    <target name="testDeployResource">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+        </sf-startdaemon>
+        <sequential>
+          <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
+          <antcall target="testResource" />
+       <!--    <sf-stopdaemon failonerror="false" /> -->
+        </sequential>
+      </parallel>
+    </target>    
+    
+    <target name="testDeployInline">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+        </sf-startdaemon>
+        <sequential>
+          <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
+          <antcall target="testInline" />
+        </sequential>
+      </parallel>
+    </target>   
+    
+    <target name="testInline">
+    <property name="port" value="8080"/>
+      <sf-deploy >
+        <application name="app">
+#include "org/smartfrog/components.sf"
 
-  <target name="testAnonApplication">
-    <sf-deploy>
-      <application descriptor="${resource.sf}"/>
-    </sf-deploy>
-  </target>
+Server extends Prim {
+	port ${port};
+}
 
-  <target name="testDatalessApplication">
-    <sf-deploy>
-      <application name="app"/>
-    </sf-deploy>
-  </target>
-
-
-  <target name="testBadFile">
-    <sf-deploy>
-      <application name="app" file="missing-file.sf"/>
-    </sf-deploy>
-  </target>
-
-
-  <target name="testBadHost">
-    <sf-deploy host="no-such-hostname" logStackTraces="true">
-      <application name="app" descriptor="${resource.sf}"/>
-    </sf-deploy>
-  </target>
-
-  <target name="testConnectionRefused">
-    <sf-deploy host="www.google.com" logStackTraces="true">
-      <application name="app" descriptor="${resource.sf}"/>
-    </sf-deploy>
-  </target>
-
-  <target name="testResource">
-    <sf-deploy>
-      <application name="app" descriptor="${resource.sf}"/>
-    </sf-deploy>
-  </target>
-
-  <target name="testStackTrace">
-    <sf-deploy logStackTraces="true">
-      <application name="app" file="invalid.sf"/>
-    </sf-deploy>
-  </target>
-
-  <target name="testRunFile">
-    <sf-deploy>
-      <application name="app" file="${valid.sf}"/>
-    </sf-deploy>
-  </target>
-
-  <target name="testDeployFile">
-    <sf-system-test>
-      <test>
-        <sf-deploy>
-          <application name="testDeployFile" file="${valid.sf}"/>
-        </sf-deploy>
-      </test>
-    </sf-system-test>
-  </target>
-
-  <target name="testDeployResource">
-    <sf-system-test>
-      <test>
-        <sf-deploy>
-          <application name="testDeployResource" descriptor="${resource.sf}"/>
-        </sf-deploy>
-      </test>
-    </sf-system-test>
-  </target>
-
-
-  <target name="testDeployInline">
-    <sf-system-test>
-      <test>
-        <sf-deploy>
-          <application name="inline">
-            #include "/org/smartfrog/components.sf"
-
-            Server extends Compound {
-            port ${port};
-            }
-
-            sfConfig extends Server{
-            }
-          </application>
-        </sf-deploy>
-      </test>
-    </sf-system-test>
-  </target>
-
-
-  <target name="testInline">
-    <sf-deploy>
-      <application name="inline">
-        #include "/org/smartfrog/components.sf"
-
-        Server extends Compound {
-        port ${port};
-        }
-
-        sfConfig extends Server{
-        }
-      </application>
-    </sf-deploy>
-  </target>
+sfConfig extends Server{
+}        
+        </application>
+      </sf-deploy>
+    </target>    
 </project>      

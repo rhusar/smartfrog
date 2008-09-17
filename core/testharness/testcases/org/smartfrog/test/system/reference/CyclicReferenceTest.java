@@ -38,77 +38,49 @@ public class CyclicReferenceTest extends SmartFrogTestBase {
         super(s);
     }
 
-    public void testCaseDummy()  {
-	;
-    }
-
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
-    public void testCaseTCN96() throws Throwable {
+    public void testCaseTCN96() throws Exception {
         deployExpectingException(FILES + "tcn96.sf",
                 "tcn96",
                 EXCEPTION_DEPLOYMENT,
                 "Failed to resolve 'link link'.",
                 EXCEPTION_LINKRESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
-		}
+    }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN97() throws Throwable {
+    public void testCaseTCN97() throws Exception {
         deployExpectingException(FILES + "tcn97.sf",
                 "tcn97",
                 EXCEPTION_DEPLOYMENT,
                 "Failed to resolve 'link PARENT:sfConfig:link'.",
                 EXCEPTION_LINKRESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
-		}
+    }
 
-    //Tests 98 and 99 -- no longer applicable since new link resolution...
-    //That is, new link resolution will not cause a stack overflow, rather will run out of heap space... 
-    ///**
-    // * test case
-    // * @throws Throwable on failure
-    // */
-    /*public void testCaseTCN98() throws Throwable {
+    public void testCaseTCN98() throws Exception {
         deployExpectingException(FILES + "tcn98.sf",
                 "tcn98",
                 EXCEPTION_DEPLOYMENT,
                 "[unprintable cyclic value]",
                 EXCEPTION_LINKRESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
-		}
-    */
-    ///**
-    // * test case
-    // * @throws Throwable on failure
-    // */
-    /*public void testCaseTCN99() throws Throwable {
+    }
+
+    public void testCaseTCN99() throws Exception {
         deployExpectingException(FILES + "tcn99.sf",
                 "tcn99",
                 EXCEPTION_DEPLOYMENT,
                 "",
                 EXCEPTION_TYPERESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
-		}
-    */
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN19() throws Throwable {
+    }
+    
+    
+    public void testCaseTCN19() throws Exception {
         deployExpectingException("org/smartfrog/test/system/reference/" + "tcn19.sf",
                 "tcn19",
                 EXCEPTION_DEPLOYMENT,
                 "Failed to resolve 'attr ",
                 EXCEPTION_LINKRESOLUTION,
                 POSSIBLE_CAUSE_CYCLIC_REFERENCE);
-		}
+    }
 }

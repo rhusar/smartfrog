@@ -1,6 +1,0 @@
-#!/bin/sh
-cd cudd-2.4.1.0
-make clean
-cd ../nusmv
-make clean
-cd ..

@@ -49,18 +49,13 @@ public class ArithnetTest
         assertTrue(max > min);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testCaseTCP28() throws Throwable {
         application = deployExpectingSuccess(FILES + "example2.sf", "example2");
         assertNotNull(application);
         Prim example = (Prim) application.sfResolveHere("example");
         Prim printerRemote = (Prim) example.sfResolveHere("printerRemote");
         String host = printerRemote.sfResolve("sfProcessHost", (String) null, true);
-        assertEquals("localhost", host);
+        assertEquals(host, "localhost");
         Prim dup = (Prim) example.sfResolveHere("dup");
         Prim outputs = (Prim) dup.sfResolveHere("outputs");
         Prim copy1 = (Prim) outputs.sfResolveHere("copy1");
@@ -71,10 +66,6 @@ public class ArithnetTest
         assertNotNull(to2);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testCaseTCP29() throws Throwable {
         application = deployExpectingSuccess(FILES + "example3.sf", "example3");
         assertNotNull(application);
@@ -85,8 +76,8 @@ public class ArithnetTest
         Prim hostB = (Prim) example.sfResolveHere("hostB");
         Prim five = (Prim) hostB.sfResolveHere("five");
         int constant2 = five.sfResolve("constant", 0, true);
-        assertEquals(6, constant1);
-        assertEquals(5, constant2);
+        assertEquals(constant1, 6);
+        assertEquals(constant2, 5);
     }
 
     public void testCaseTCP30() throws Throwable {
@@ -94,11 +85,11 @@ public class ArithnetTest
         assertNotNull(application);
         Prim example = (Prim) application.sfResolveHere("example");
         String classtype = example.sfResolve("sfClass", (String) null, true);
-        assertEquals("org.smartfrog.sfcore.workflow.combinators.Sequence", classtype);
+        assertEquals(classtype, "org.smartfrog.sfcore.workflow.combinators.Sequence");
         Prim case1 = (Prim) example.sfResolveHere("case1");
         String hostG_case1 = case1.sfResolve("hostG", (String) null, true);
         String hostP_case1 = case1.sfResolve("hostP", (String) null, true);
-        assertEquals("localhost", hostG_case1);
-        assertEquals("localhost", hostP_case1);
+        assertEquals(hostG_case1, "localhost");
+        assertEquals(hostP_case1, "localhost");
     }
 }

@@ -24,28 +24,39 @@ public class RxQueueWorker extends Thread {
 
     private RxQueue rxQueue = null;
 
+
     /**
      * worker thread taking rx objects off the queue and
      * delivering that object to anubis code
      */
     public RxQueueWorker(RxQueue rxQueue){
-        this.rxQueue = rxQueue;
+	this.rxQueue = rxQueue;
     }
 
-    public void run() {
-        
-        RxJob rxJob = null;
-        
-        while( rxQueue.isOpen() ){
-            
-            rxJob = (RxJob)rxQueue.next();
+    public void run(){
+	RxJob rxJob = null;
+	while(true){
+	    synchronized(rxQueue){
+		while(rxQueue.isEmpty()){
+		    // wait for queue to have object in it
+		    try{
+			rxQueue.wait();
+		    }
+		    catch(InterruptedException ie){
+			// ie.printStackTrace();
+		    }
+		}
 
-            if (rxJob != null){
-                // got an object from the queue - deliver the object within to the appropriate mnh
-                MessageNioHandler mnh = rxJob.getHandler();
-                mnh.deliverObject(rxJob.getDeliverable());
-            }
-        }
+		rxJob = (RxJob)rxQueue.next();
+
+	    }
+
+	    if (rxJob != null){
+		// got an object from the queue - deliver the object within to the appropriate mnh
+		MessageNioHandler mnh = rxJob.getHandler();
+		mnh.deliverObject(rxJob.getDeliverable());
+	    }
+	}
     }
 
 }

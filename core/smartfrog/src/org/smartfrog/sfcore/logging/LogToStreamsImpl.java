@@ -137,7 +137,7 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     /**
      * Depth in StackTrace it will depend on how this Log is used and connected to LogImpl
      */
-    protected int callDepth = 9;
+    protected int callDepth = 8;
 
     /**
      * buffer size

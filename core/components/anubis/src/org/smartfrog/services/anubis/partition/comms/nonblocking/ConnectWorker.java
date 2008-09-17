@@ -29,25 +29,32 @@ public class ConnectWorker extends Thread {
      * worker thread
      */
     public ConnectWorker(RxQueue rxQueue){
-        this.rxQueue = rxQueue;
+	this.rxQueue = rxQueue;
     }
 
-    /**
-     * 
-     */
-    public void run() {
+    public void run(){
+	MessageNioHandler mnh = null;
+	while(true){
+	    synchronized(rxQueue){
+		while(rxQueue.isEmpty()){
+		    // wait for queue to have object in it
+		    try{
+			rxQueue.wait();
+		    }
+		    catch(InterruptedException ie){
+			// ie.printStackTrace();
+		    }
+		}
 
-        MessageNioHandler mnh = null;
+		mnh = (MessageNioHandler)rxQueue.next();
 
-        while(rxQueue.isOpen()) {
+	    }
 
-            mnh = (MessageNioHandler)rxQueue.next();
-
-            if (mnh != null){
-                // got an object from the queue - do what needs to be done
-                mnh.getMCI().finishNioConnect(mnh);
-            }
-        }
+	    if (mnh != null){
+		// got an object from the queue - do what needs to be done
+		mnh.getMCI().finishNioConnect(mnh);
+	    }
+	}
     }
 
 }

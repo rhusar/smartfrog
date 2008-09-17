@@ -155,7 +155,7 @@ public class LocalRegisterImpl {
      * Starts the local register server
      */
     public void start() {
-        server.setName("Anubis: Local Register Request Server (node " + me.id + ")");
+        server.setName("Anubis: Node " + me + " Local Register RequestServer");
         server.start();
         updateDebugFrame();
      }

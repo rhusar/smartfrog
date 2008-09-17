@@ -32,11 +32,6 @@ public class RetryTest extends DeployingTestBase {
         super(s);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testNegativeRetry() throws Throwable {
         deployExpectingException(FILES + "testNegativeRetry.sf",
                 "testNegativeRetry",
@@ -45,19 +40,9 @@ public class RetryTest extends DeployingTestBase {
                 Retry.ERROR_NEGATIVE_COUNT);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testNormalFailedRetry() throws Throwable {
         expectAbnormalTestRun(FILES, "testNormalFailedRetry", true, "failure inside retry");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testWorkingRetry() throws Throwable {
         application = deployExpectingSuccess(FILES + "testWorkingRetry.sf",

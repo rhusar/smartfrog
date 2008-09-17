@@ -1,12 +1,13 @@
 package org.smartfrog.tools.ant.test.system;
 
+import org.smartfrog.tools.ant.test.TaskTestBase;
 import org.smartfrog.tools.ant.PingTask;
 import org.smartfrog.tools.ant.SmartFrogTask;
-import org.smartfrog.tools.ant.test.TaskTestBase;
+import org.smartfrog.sfcore.common.ActionPing;
 
 /**
  */
-public class PingTest extends TaskTestBase {
+public class PingTest extends TaskTestBase{
 
     public PingTest(String s) {
         super(s);
@@ -31,7 +32,9 @@ public class PingTest extends TaskTestBase {
     }
 
     /**
-     * testNoParams: <p/> defaults to localhost &c, so fails if there is no daemon
+     * testNoParams:
+     * <p/>
+     * defaults to localhost &c, so fails if there is no daemon
      */
     public void testNoParams() {
         expectBuildExceptionContaining("testNoParams", "testNoParams",
@@ -39,7 +42,8 @@ public class PingTest extends TaskTestBase {
     }
 
     /**
-     * failonerror is not deemed to affect the no apps configuration, as that is a fundamental configuration error
+     * failonerror is not deemed to affect the no apps configuration, as that is
+     * a fundamental configuration error
      */
     public void testNoFailure() {
         executeTarget("testNoFailure");
@@ -58,25 +62,14 @@ public class PingTest extends TaskTestBase {
 
     }
 
+
     public void testRootProcess() {
         executeTarget("testRootProcess");
         assertPropertySet("pinged");
     }
 
-
-    public void testDifferentPort() {
-        executeTarget("testDifferentPort");
-        assertPropertySet("pinged");
-    }
-
     public void testUnknownComponent() {
         executeTarget("testUnknownComponent");
-        assertPropertyUnset("pinged");
-    }
-
-    public void testUnknownComponentFailing() {
-        expectBuildExceptionContaining("testUnknownComponentFailing", "unknown application",
-                PingTask.ERROR_FAILED_TO_PING+"undeployedApp");
         assertPropertyUnset("pinged");
     }
 

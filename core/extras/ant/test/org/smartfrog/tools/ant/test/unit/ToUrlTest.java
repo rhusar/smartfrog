@@ -22,12 +22,12 @@ package org.smartfrog.tools.ant.test.unit;
 import org.smartfrog.tools.ant.ToUrlTask;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
- * created 07-Apr-2004 16:28:40
+ *         created 07-Apr-2004 16:28:40
  */
 
 public class ToUrlTest extends TaskTestBase {
@@ -46,7 +46,7 @@ public class ToUrlTest extends TaskTestBase {
     }
 
     public void testEmpty() {
-        expectBuildExceptionContaining("testEmpty", "missing property", "property");
+        expectBuildExceptionContaining("testEmpty","missing property","property");
     }
 
     public void testNoProperty() {
@@ -56,14 +56,13 @@ public class ToUrlTest extends TaskTestBase {
     public void testNoFile() {
         expectBuildExceptionContaining("testNoFile", "missing file", "file");
     }
-
     public void testValidation() {
         expectBuildExceptionContaining("testValidation", ToUrlTask.ERROR_MISSING_FILE, "file");
     }
 
     public void testWorks() {
         executeTarget("testWorks");
-        assertPropertyContains("testWorks", "file:");
+        assertPropertyContains("testWorks","file:");
         assertPropertyContains("testWorks", "/foo");
     }
 
@@ -75,15 +74,14 @@ public class ToUrlTest extends TaskTestBase {
 
     /**
      * test that we can round trip by opening a url that exists
-     *
      * @throws IOException
      */
     public void testRoundTrip() throws IOException {
         executeTarget("testRoundTrip");
         assertPropertyContains("testRoundTrip", "file:");
-        String property = getProperty("testRoundTrip");
-        URL url = new URL(property);
-        InputStream instream = url.openStream();
+        String property=getProperty("testRoundTrip");
+        URL url=new URL(property);
+        InputStream instream=url.openStream();
         instream.close();
     }
 
@@ -113,9 +111,8 @@ public class ToUrlTest extends TaskTestBase {
 
     /**
      * assert that a property ends with a value
-     *
      * @param property property name
-     * @param ending   ending
+     * @param ending ending
      */
     private void assertPropertyEndsWith(String property, String ending) {
         String result = getProperty(property);

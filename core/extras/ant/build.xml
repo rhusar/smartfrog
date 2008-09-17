@@ -21,20 +21,19 @@ For more information: www.smartfrog.org
 
 */
 -->
-  <description>
-    Build file for Ant tasks for Smartfrog
+<description>
+  Build file for Ant tasks for Smartfrog
 
-    To build and run the tests, you need ant-testutil.jar, which Ivy will retrieve
-
-  </description>
+  To build and run the tests, you need ant-testutil.jar, which Ivy will retrieve
+  
+</description>
 
   <property name="root.dir" location="../.."/>
-  <property name="system.tests" value="true"/>
   <property name="ivy.enabled" value="true"/>
   <property name="javac.include.ant" value="true"/>
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
-  <!--  <import file="${root.dir}/common.xml"/>-->
+<!--  <import file="${root.dir}/common.xml"/>-->
 
 
   <!-- ========================================================== -->
@@ -47,42 +46,43 @@ For more information: www.smartfrog.org
       />
 
   <target name="zip" depends="prepare-for-dist"
-      description="Create a zip file distribution">
+      description="Create a zip file distribution" >
   </target>
 
   <target name="tar" depends="prepare-for-dist"
-      description="Create a tar file distribution">
+      description="Create a tar file distribution" >
   </target>
 
   <target name="installed" depends="common.installed,update-core"
       description="Place the system in a state in which the components are installed for reuse"/>
 
 
-  <!-- this is done so that the jarfile generated is bound to our project name with
-no -components suffix-->
-  <property name="jarfile.suffix" value=""/>
 
-  <target name="init"
-      depends="init-common,init-standard-output-dirs">
+  <!-- this is done so that the jarfile generated is bound to our project name with
+    no -components suffix-->
+  <property name="jarfile.suffix" value=""/>
+    
+  <target name="init" 
+    depends="init-common,init-standard-output-dirs">
     <property name="src.dir" location="src"/>
     <property name="target.name" value="${smartfrog.tasks.name}"/>
-    <property name="target.jar" location="${smartfrog.tasks.jar}"/>
+    <property name="target.jar" location="${smartfrog.tasks.jar}" />
     <echo>building ${target.jar}</echo>
-    <property name="dist.tar"
-        location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.tar"/>
-    <property name="dist.zip"
-        location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.zip"/>
-
+    <property name="dist.tar" 
+      location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.tar" />
+    <property name="dist.zip" 
+      location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.zip" />
+    <property name="system.tests" value="true" />
     <echo level="verbose">system.tests=${system.tests}</echo>
     <condition property="system.tests.enabled">
       <istrue value="${system.tests}"/>
-    </condition>
-
+    </condition>   
+    
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
 
     <condition property="jar.name.correct">
       <equals arg1="${jar.prefix}${ant.project.name}"
-          arg2="${smartfrog.tasks.prefix}">
+        arg2="${smartfrog.tasks.prefix}">
       </equals>
     </condition>
     <fail unless="jar.name.correct">
@@ -93,12 +93,12 @@ no -components suffix-->
 
     <!-- purge any existing task file, assuming it is not in use-->
     <delete file="${smartfrog.dist.lib.dir}/${smartfrog.tasks.name}"
-        failonerror="false"/>
+      failonerror="false" />
   </target>
 
   <target name="javadoc"
-      depends="ready-to-javadoc"
-      unless="javadoc.disabled"
+          depends="ready-to-javadoc"
+          unless="javadoc.disabled"
       >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
@@ -114,9 +114,9 @@ no -components suffix-->
       <tag name="ant.task" enabled="false"/>
       <tag name="ant.type" enabled="false"/>
       <tag name="todo" enabled="false"/>
-      <classpath>
-        <path refid="compile.classpath"/>
-        <path path="${java.class.path}"/>
+      <classpath >
+        <path refid="compile.classpath" />
+        <path path="${java.class.path}" />
       </classpath>
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
     </sf-javadoc>
@@ -128,65 +128,65 @@ no -components suffix-->
   <!-- existing version -->
   <!-- ========================================================== -->
   <target name="use-smartfrog-tasks" depends="package"
-      description="declare the classpath and imports for the smartfrog tasks">
+    description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
       <path refid="smartfrog.core.classpath"/>
       <pathelement location="${build.classes.dir}"/>
     </path>
-    <typedef
-        resource="org/smartfrog/tools/ant/tasks.properties"
-        classpathref="smartfrog.tasks.classpath"
-        />
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
+      classpathref="smartfrog.tasks.classpath"
+      />
   </target>
-
+  
 
   <target name="stopdaemon" depends="package,use-smartfrog-tasks">
-    <sf-stopdaemon port="${smartfrog.daemon.port}"
-        classpathref="smartfrog.tasks.classpath"/>
+    <sf-stopdaemon 
+      classpathref="smartfrog.tasks.classpath"/>
   </target>
-
+  
   <target name="default" depends="package,published"/>
 
   <!--find the test util JAR -->
   <target name="find-testutil" depends="declare-classpaths">
-
+    
     <available property="testutil.found"
-        classname="org.apache.tools.ant.BuildFileTest"
-        classpathref="tests.compile.classpath"
-        ignoresystemclasses="false"/>
+      classname="org.apache.tools.ant.BuildFileTest" 
+      classpathref="tests.compile.classpath"
+      ignoresystemclasses="false"/>
   </target>
 
   <target name="require-testutil" depends="find-testutil">
-    <fail unless="testutil.found">Could not find ${testutil.jar}</fail>
+    <fail unless="testutil.found" >Could not find ${testutil.jar}</fail>
   </target>
 
-
+  
   <target name="want-testutil" unless="testutil.found" depends="find-testutil">
     <echo level="error">
-      Ant testutil classes not found in ${tests.compile.classpath}
-      or ${testutil.jar}
-      The dependent stages of this build will be skipped.
-      To build this file, run "ant test-jar" in
-      ant's source directory,
-      Alternatively, retrieve it from Gump:
-      http://gump.covalent.net/jars/latest/ant/
-      Note that the version of ant-testutil.jar should
-      match the version of ant used.
+    Ant testutil classes not found in ${tests.compile.classpath}
+    or ${testutil.jar}
+    The dependent stages of this build will be skipped.
+    To build this file, run "ant test-jar" in 
+    ant's source directory,
+    Alternatively, retrieve it from Gump: 
+    http://gump.covalent.net/jars/latest/ant/
+    Note that the version of ant-testutil.jar should
+    match the version of ant used. 
     </echo>
   </target>
 
-  <target name="compile-tests"
+  <target name="compile-tests" 
       depends="init,package,use-smartfrog-tasks">
-
-    <sf-javac-with-ant
-        srcdir="${test.src.dir}"
-        destdir="${test.classes.dir}"
-        classpathref="tests.compile.classpath"
-        >
+    
+    <sf-javac-with-ant 
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      classpathref="tests.compile.classpath"
+      >
     </sf-javac-with-ant>
     <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
-
+  
   <!-- 
     run the tests
     note that StartTest and any other tests that rely on
@@ -196,123 +196,121 @@ no -components suffix-->
   -->
   <target name="run-tests" depends="package-tests">
     <property name="filter.trace" value="true"/>
-    <property name="junit.timeout" value="60000"/>
-    <sf-junit
-        errorProperty="test.failed"
-        failureProperty="test.failed"
-        includeantruntime="true"
-        filtertrace="${filter.trace}"
-        timeout="300000"
-        >
-      <classpath
+    <property name="junit.timeout" value="60000" />
+    <sf-junit 
+           errorProperty="test.failed"
+           failureProperty="test.failed" 
+           includeantruntime="true"
+           filtertrace="${filter.trace}"
+           timeout="300000"
+           >
+       <classpath
           refid="tests.run.classpath"/>
-      <sysproperty key="test.files.dir"
-          value="${test.src.dir}/files"/>
-      <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
-      <batchtest todir="${test.data.dir}" unless="testcase">
+        <sysproperty key="test.files.dir"
+            value="${test.src.dir}/files" />
+      <batchtest todir="${test.data.dir}" >
         <fileset dir="${test.classes.dir}">
-          <include name="**/unit/*Test.class"/>
+          <include name="**/unit/*Test.class" />
           <include name="**/system/*Test.class" if="system.tests.enabled"/>
-        </fileset>
+       </fileset>
       </batchtest>
     </sf-junit>
-  </target>
+  </target>  
 
   <target name="test" depends="run-tests"
-      description="run unit tests">
-    <echo>Test reports generated:
-      ${test.reports.dir}/index.html
-    </echo>
+    description="run unit tests">
+    
     <!-- generate the reports-->
     <sf-test-report data="${test.data.dir}"
-        reports="${test.reports.dir}"
-        failed="test.failed"/>
+      reports="${test.reports.dir}"
+      failed="test.failed"/>
 
-  </target>
+  </target>  
 
-  <!-- ==================================================================== -->
-  <!-- this little section hacks into Ant's own SVN tree to hand off document
- generation. It is nasty because the automated docgen is not quite production
- ready -->
-
+<!-- ==================================================================== -->
+<!-- this little section hacks into Ant's own SVN tree to hand off document
+  generation. It is nasty because the automated docgen is not quite production
+  ready -->
+  
 
   <!-- this target does the extra xdocs initialisation -->
-  <target name="init-xdocs" depends="init">
+  <target name="init-xdocs" depends="init">    
     <property name="build.antdocs.dir" location="${build.dir}/xdocs"/>
     <property name="gen.dir" location="${build.antdocs.dir}/gen"/>
     <property name="gen.dir" location="${build.antdocs.dir}/gen"/>
     <property name="build.docs.dir" location="${build.antdocs.dir}/docs"/>
-    <property name="build.xdocs.dir" location="${build.antdocs.dir}/xdocs"/>
-    <property name="xdocs.dir" location="${env.ANT_HOME}/proposal/xdocs"/>
-    <property name="src.package" value="org/smartfrog/tools/ant/"/>
+    <property name="build.xdocs.dir" location="${build.antdocs.dir}/xdocs"/>    
+    <property name="xdocs.dir" location="${env.ANT_HOME}/proposal/xdocs" />
+    <property name="src.package" value="org/smartfrog/tools/ant/" />
     <path id="xdoclet.extra.classpath">
       <path refid="smartfrog.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
     <property name="xdoclet.extra.classpath.asprop"
-        refid="xdoclet.extra.classpath"/>
-  </target>
+      refid="xdoclet.extra.classpath"/>    
+  </target>  
 
-  <!-- probe for xdocs, which is only in SVN, not redist packages -->
-  <target name="probe-xdocs" depends="init-xdocs">
-    <available property="xdocs.found" file="${xdocs.dir}/build.xml"/>
-  </target>
+<!-- probe for xdocs, which is only in SVN, not redist packages --> 
+<target name="probe-xdocs" depends="init-xdocs" >
+  <available property="xdocs.found" file="${xdocs.dir}/build.xml"/>
+</target>
 
-  <target name="want-xdocs" depends="probe-xdocs">
-    <fail unless="xdocs.found">
-      We need the proposal/xdocs source tree from Ant in ${env.ANT_HOME}/proposal/xdocs
-    </fail>
-  </target>
+<target name="want-xdocs" depends="probe-xdocs">
+  <fail unless="xdocs.found">
+    We need the proposal/xdocs source tree from Ant in ${env.ANT_HOME}/proposal/xdocs
+   </fail>
+</target>
 
 
-  <target name="xdocs" depends="want-xdocs,package"
-      description="Run xdoclet over the ant tasks to create doc pages"
-      if="xdocs.found">
-    <echo>
-      running xdocs with classpath=${xdoclet.extra.classpath.asprop}
-    </echo>
 
-    <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}"
-        target="gen-and-prepare-for-docs">
-      <property name="src.dir" location="${src.package}"/>
-      <property name="src.root" location="src"/>
-      <property name="xdoclet.extra.classpath"
-          value="${xdoclet.extra.classpath.asprop}"/>
-      <property name="gen.dir" location="${gen.dir}"/>
-      <property name="xdocs.dir" location="${build.xdocs.dir}"/>
-      <property name="build.docs.dir" location="${build.docs.dir}"/>
-    </ant>
-  </target>
+<target name="xdocs" depends="want-xdocs,package"
+  description="Run xdoclet over the ant tasks to create doc pages"
+  if="xdocs.found">
+  <echo>
+    running xdocs with classpath=${xdoclet.extra.classpath.asprop}
+  </echo>  
 
-  <target name="dvsl" depends="xdocs"
-      description="use velocity to generate the docs">
-    <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}/dvsl">
-      <property name="src.dir" location="src/org/smartfrog/tools/ant/"/>
-      <property name="build.dir" location="${build.antdocs.dir}"/>
-      <property name="taskdocs.src" location="${gen.dir}"/>
-      <property name="xdocs.dir" location="${build.xdocs.dir}"/>
-      <property name="docs.dest" location="${build.docs.dir}"/>
-    </ant>
-  </target>
-  <!-- ==================================================================== -->
-  <!-- end xdocs support -->
-  <!-- ==================================================================== -->
+  <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}" 
+      target="gen-and-prepare-for-docs">
+    <property name="src.dir" location="${src.package}"/>
+    <property name="src.root" location="src"/>
+    <property name="xdoclet.extra.classpath" 
+      value="${xdoclet.extra.classpath.asprop}"/>
+    <property name="gen.dir" location="${gen.dir}"/>
+    <property name="xdocs.dir" location="${build.xdocs.dir}"/>
+    <property name="build.docs.dir" location="${build.docs.dir}"/>
+  </ant>
+</target>
+
+<target name="dvsl" depends="xdocs"
+  description="use velocity to generate the docs"> 
+  <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}/dvsl">
+    <property name="src.dir" location="src/org/smartfrog/tools/ant/"/>
+    <property name="build.dir" location="${build.antdocs.dir}"/>
+    <property name="taskdocs.src" location="${gen.dir}"/>
+    <property name="xdocs.dir" location="${build.xdocs.dir}"/>
+    <property name="docs.dest" location="${build.docs.dir}"/>
+  </ant>  
+</target>  
+<!-- ==================================================================== -->
+<!-- end xdocs support -->
+<!-- ==================================================================== -->
 
 
   <!-- do all prework -->
-  <target name="prepare-for-dist" depends="package">
-    <copy todir="${dist.doc.dir}">
-      <fileset dir="${doc.dir}">
-        <include name="**/*.sxw"/>
-        <include name="**/*.sxi"/>
-        <include name="**/*.html"/>
-      </fileset>
-    </copy>
+<target name="prepare-for-dist" depends="package">
+  <copy todir="${dist.doc.dir}">
+    <fileset dir="${doc.dir}">
+      <include name="**/*.sxw"/>
+      <include name="**/*.sxi"/>
+      <include name="**/*.html"/>
+    </fileset>
+  </copy>
+  
+</target>
 
-  </target>
 
-
-  <!--patch the new ant tasks into the core-->
+    <!--patch the new ant tasks into the core-->
   <target name="update-core" depends="package">
     <delete>
       <fileset dir="${root.dir}/smartfrog/lib"
@@ -322,4 +320,5 @@ no -components suffix-->
   </target>
 
 
+  
 </project>

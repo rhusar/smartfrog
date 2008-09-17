@@ -54,7 +54,7 @@ public class NetworkFailure extends PrimImpl implements Prim {
      *
      *@exception  Exception  Description of the Exception
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         // ask use to remove network cord to induce n/w failure
         BufferedReader br=null;
@@ -86,10 +86,9 @@ public class NetworkFailure extends PrimImpl implements Prim {
     /**
      *  sfStart: starts counter thread
      *
-     * @throws SmartFrogException SF problems
-     * @throws RemoteException network problems
+     *@exception  Exception  Description of the Exception
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         sfLog().info("In sfStart");
         try {

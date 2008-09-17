@@ -57,11 +57,8 @@ public class SFParse implements MessageKeys {
 
     private static Vector phases;
 
-    private static Vector errorReport = null;
-    
-    private static ComponentDescription cd = null;
-    
-    private SFParse(){
+    private static Vector errorReport = new Vector();
+                                 private SFParse(){
     }
 
     /**
@@ -86,30 +83,6 @@ public class SFParse implements MessageKeys {
         }
     }
 
-    /**
-     * Ascertains whether a file is parseable
-     * @param fileUrl the fileurl to be parsed
-     * @return success or not
-     */
-    public static boolean fileParses(String fileUrl) { 
-    	if (opts==null) opts = new ParseOptionSet(new String[]{"sfParse"});
-    	errorReport= new Vector();
-    	parseFile(fileUrl);
-    	return (errorReport.size()==0);
-    }
-    
-    /**
-     * Attempts to parse given file, returning resultant component description
-     * @param fileUrl the fileurl to be parsed
-     * @return ComponentDescription resulting from parse, if file successfully parses, else null
-     */
-
-    public static ComponentDescription parseFileToDescription(String fileUrl) { 
-    	boolean parses = fileParses(fileUrl);
-    	if (parses) return cd;
-    	else return null;
-    }
-    
     /**
      * Parses a file.
      *
@@ -175,7 +148,7 @@ public class SFParse implements MessageKeys {
                 }
             }
 
-            cd = top.sfAsComponentDescription();
+            ComponentDescription cd = top.sfAsComponentDescription();
 
             if ((opts.description) || (opts.verbose && !opts.quiet)) {
                 printPhase("sfAsComponentDescription", cd.toString());
@@ -303,7 +276,6 @@ public class SFParse implements MessageKeys {
 
             showVersionInfo();
             opts = new ParseOptionSet(args);
-            errorReport = new Vector();
             //SFSystem.SFSystem.sfLog().out(opts.toString());
 
             showDiagnostics(opts);
@@ -449,10 +421,6 @@ public class SFParse implements MessageKeys {
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         SFSystem.sfLog().out(report.toString());
       }
-    }
-    
-    public static boolean isVerboseOptSet(){
-    	return opts.verbose;
     }
 
 }

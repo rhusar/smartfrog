@@ -18,25 +18,11 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/test/system/java/testBase.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
 
-
-
-
-sfConfig extends ExpectDeploy {
-
-  action extends JavaPackage {
+sfConfig extends JavaPackage {
 
     useCodebase true;
+    //we require ourselves
     requiredResources ["/org/smartfrog/Version.class"];
 
-  }
-
-  tests extends Sequence {
-
-  }
-
 }
-
-
-

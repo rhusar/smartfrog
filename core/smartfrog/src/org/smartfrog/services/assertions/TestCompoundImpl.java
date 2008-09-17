@@ -107,7 +107,7 @@ public class TestCompoundImpl extends ConditionCompound
     /**
      * {@value}
      */
-    public static final String ERROR_NO_EXCEPTIONS_FOUND = "No exceptions were in the termination record; expected: ";
+    public static final String ERROR_NO_EXCEPTIONS_FOUND = "No exceptions were in the termination record, expected: ";
     /**
      * {@value}
      */
@@ -293,7 +293,7 @@ public class TestCompoundImpl extends ConditionCompound
                 throw SmartFrogException.forward(UNEXPECTED_STARTUP_EXCEPTION
                         + "expected: '" + exitText + "'\n"
                         + "found   : '" + message + "'\n"
-                        + (exceptionCheck != null ? exceptionCheck : ""),
+                        + exceptionCheck != null ? exceptionCheck : "",
                         thrown);
             } else {
                 //valid exit. Save the results

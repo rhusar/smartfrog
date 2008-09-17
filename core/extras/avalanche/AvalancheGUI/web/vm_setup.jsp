@@ -1,6 +1,5 @@
 <%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater" %>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType" %>
-<%@ page import="org.smartfrog.avalanche.core.activeHostProfile.VmStateType" %>
 <%-- /*
 (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
 
@@ -45,60 +44,54 @@ For more information: www.smartfrog.org
     String strVM = request.getParameter("vm");
     String strTarget = "";
     String strCaption = "";
+    if (strVM == null) {
+        // create a new virtual machine on submit
+        strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=create&host=" + strHost + "'; document.addVMFrm.submit();";
 
-    // get the active host profile
-    ActiveProfileUpdater updater = new ActiveProfileUpdater();
-    ActiveProfileType type = updater.getActiveProfile(strHost);
-    if (type != null) {
-        if (strVM == null) {
-            // create a new virtual machine on submit
-            strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=create&host=" + strHost + "'; document.addVMFrm.submit();";
+        strCaption = "Create VM";
 
-            strCaption = "Create VM";
+        // get the active host profile
+        ActiveProfileUpdater updater = new ActiveProfileUpdater();
+        ActiveProfileType type = updater.getActiveProfile(strHost);
+        if (type != null) {
+        %>
+<tr>
+    <td class="medium" align="right">Master images:</td>
+    <td class="medium">
+        <select name="vmmasterpath">
+            <%
+                for (String s : type.getVmMasterCopyArray()) {
+                    %>
+                        <option><%=s%></option>
+                    <%
+                }
             %>
-                <tr>
-                    <td class="medium" align="right">Master images:</td>
-                    <td class="medium">
-                        <select name="vmmasterpath">
-                            <%
-                                for (String s : type.getVmMasterCopyArray()) {
-                                    %>
-                                        <option><%=s%></option>
-                                    <%
-                                }
-                            %>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="medium" align="right">Name for the VM:</td>
-                    <td class="medium">
-                        <input type="text" name="selectedVM" id="host" class="default" />
-                    </td>
-                </tr>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td class="medium" align="right">Name for the VM:</td>
+    <td class="medium">
+        <input type="text" name="selectedVM" id="host" class="default" />
+    </td>
+</tr>
 
         <%
-        } else {
-            strCaption = "Save Changes";
-            strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=save&host=" + strHost + "&oldname=" + strVM + "'; document.addVMFrm.submit();";
-
-            %>
-                <tr>
-                    <td class="medium" align="right">Path to the VM:</td>
-                    <td class="medium">
-                        <input type="text" name="vmpath" size="30" id="host" value="<%= strVM %>" class="default" />
-                    </td>
-                </tr>
-                <tr>
-                    <td class="medium" align="right">Name of the VM:</td>
-                    <td class="medium">
-                        <input type="text" name="vmname" id="host" value="<%= strVM %>" class="default" />
-                    </td>
-                </tr>
+            }
+    } else {
+        strCaption = "Save Changes";
+        strTarget = "javascript:document.addVMFrm.action='vm_actions.jsp?action=save&host=" + strHost + "'; document.addVMFrm.submit();";
+        %>
+    <tr>
+	    <td class="medium" align="right">Path to the VM:</td>
+	    <td class="medium">
+            <input type="text" name="vmpath" size="30" id="host" disabled="true" value="<%= strVM %>" class="default" />
+        </td>
+    </tr>
     <%  // add further information here
         // like login, password, hostname
         }
-    }
+
     %>
     </tbody>
 </table>

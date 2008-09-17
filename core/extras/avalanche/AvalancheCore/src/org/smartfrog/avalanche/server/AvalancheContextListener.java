@@ -61,7 +61,7 @@ public class AvalancheContextListener implements ServletContextListener {
             }
             String useSSL = evt.getServletContext().getInitParameter("useSSLForXMPP");
             if (null != useSSL) {
-                setup.setUseSSLForXMPP(Boolean.parseBoolean(useSSL));
+                setup.setUseSSLForXMPP(useSSL);
             }
             
 			String xmppAdmin = evt.getServletContext().getInitParameter("xmppServerAdminUsername");

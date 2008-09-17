@@ -14,33 +14,28 @@ import java.rmi.RemoteException;
  */
 public class Model extends Composite implements Compound {
 
-	   private final Object updateLock = new Object();
-	   private final Object notifyLock = new Object();
+	   final Object updateLock = new Object();
+	   final Object notifyLock = new Object();
 
 	   //at most one of the following conditions may be true at any time:
 	   //  stateLockCount > 0,
 	   //  notificationInProgress,
 	   //  updateInProgress
-	   private int stateLockCount = 0;
-	   private boolean notificationInProgress = false;
-	   private boolean updateInProgress = false;
+	   int stateLockCount = 0;
+	   boolean notificationInProgress = false;
+	   boolean updateInProgress = false;
 
-	   // indicator that a notification is required at a specific moment
-	   private boolean notificationRequired = false;
-	   private boolean updateRequired = false;
+	   // indicator that an notification is required at a specific moment
+	   boolean notificationRequired = false;
+	   boolean updateRequired = false;
 
-	   // Propagate notifications?
-	   private boolean running = true;
-	   
-	   //Maintains a count of threads outstanding on which it bases quiesence
-	   private int threadCount = 0;
+	   boolean running = true;
 
-	   //Threads on tap...
-	   private ThreadPool threadpool;
+	   int threadCount = 0;
 
-	   private Thread notificationThread = null;
-	   private Object notifier = null;  
-	   
+	   ThreadPool threadpool;
+
+
 	   public Model() throws RemoteException {
 	   }
 
@@ -72,8 +67,8 @@ public class Model extends Composite implements Compound {
 	   }
 
 
+	   Object notifier = null;
 	   public void notifyStateChange() {
-		   if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.notifyStateChange()");
 	      synchronized (notifyLock) {
 	         if (stateLockCount == 0 && running) {
 	            threadStarted();
@@ -84,7 +79,6 @@ public class Model extends Composite implements Compound {
 	            notificationRequired = true;
 	         }
 	      }
-	      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.notifyStateChange()");
 	   }
 
 
@@ -92,36 +86,28 @@ public class Model extends Composite implements Compound {
 	   // the state saves set the locks (counted), whereas the notify thread simply checks the count is zero and holds the
 	   // notifyLock until finished.
 	   public void lock() {
-		  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.lock()");
-		  if (Thread.currentThread()!=notificationThread){
-		      synchronized (notifyLock) {
-		         if (threadpool.removeFromQueue(notifier)) {
-		            //System.out.println("notifier killed");
-		         }
-		         if (sfLog().isDebugEnabled()) sfLog().debug("locking " + stateLockCount);
-		         stateLockCount++;
-		      }
-		  }
-	      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.lock()");
+	      synchronized (notifyLock) {
+	         if (threadpool.removeFromQueue(notifier)) {
+	            //System.out.println("notifier killed");
+	         }
+	         if (sfLog().isDebugEnabled()) sfLog().debug("locking " + stateLockCount);
+	         stateLockCount++;
+	      }
 	   }
 
 	   public void unlock(boolean notify) {
-		  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.unlock(...)"+notify);  
-		  if (Thread.currentThread()!=notificationThread){
-		      synchronized (notifyLock) {
-		         if (sfLog().isDebugEnabled()) sfLog().debug("unlocking " + stateLockCount + " " + notify);
-		         if (--stateLockCount == 0) {
-		            if (sfLog().isTraceEnabled()) sfLog().trace("unlocking no more locks");
-		            if (notificationRequired || notify) {
-		               if (sfLog().isTraceEnabled()) sfLog().trace("unlocking starting notify");
-		               notifyStateChange();
-		            }
-		         } else {
-		            notificationRequired = notificationRequired || notify;
-		         }
-		      }
-		  }
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.unlock(...)");    
+	      synchronized (notifyLock) {
+	         if (sfLog().isDebugEnabled()) sfLog().debug("unlocking " + stateLockCount + " " + notify);
+	         if (--stateLockCount == 0) {
+	            if (sfLog().isTraceEnabled()) sfLog().trace("unlocking no more locks");
+	            if (notificationRequired || notify) {
+	               if (sfLog().isTraceEnabled()) sfLog().trace("unlocking starting notify");
+	               notifyStateChange();
+	            }
+	         } else {
+	            notificationRequired = notificationRequired || notify;
+	         }
+	      }
 	   }
 
 
@@ -130,8 +116,7 @@ public class Model extends Composite implements Compound {
 
 	   // do started before submitting thread, do stopped at the end of the thread
 	   public void threadStarted() {
-		   if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.threadStarted()");    
-		   synchronized (updateLock) {
+	      synchronized (updateLock) {
 	         if (sfLog().isDebugEnabled()) sfLog().debug("thread started " + threadCount + " " + Thread.currentThread());
 	         if (updateInProgress) {
 	            try {
@@ -145,12 +130,10 @@ public class Model extends Composite implements Compound {
 	         }
 	         threadCount++;
 	      }
-		  if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.threadStarted()");     
 	   }
 
 	   public void threadStopped() {
-		   if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.threadStopped()");    
-		   synchronized (updateLock) {
+	      synchronized (updateLock) {
 	         threadCount--;
 	         if (isQuiescent()) {
 	            if (updateRequired) {
@@ -162,7 +145,6 @@ public class Model extends Composite implements Compound {
 	         if (sfLog().isDebugEnabled())
 	            sfLog().debug("thread stopped - quiescent: " + isQuiescent() + " " + threadCount + " " + Thread.currentThread());
 	      }
-		   if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.threadStopped()");    
 	   }
 
 
@@ -171,7 +153,6 @@ public class Model extends Composite implements Compound {
 	   */
 	   protected class Notifier implements Runnable {
 	      public void run() {
-	    	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.Notifier.run()");    
 	         //System.out.println("notifier running");
 	         try {
 	            if (running) {
@@ -183,9 +164,7 @@ public class Model extends Composite implements Compound {
 	                     notificationRequired = true;
 	                  } else {
 	                    try {
-	                    	Model.this.notificationThread = Thread.currentThread();
 	                        handleStateChange();
-	                        Model.this.notificationThread = null;
 	                        if (sfLog().isTraceEnabled()) sfLog().trace("notify notified");
 	                     } finally {
 	                        notificationInProgress = false;
@@ -200,15 +179,13 @@ public class Model extends Composite implements Compound {
 	            threadStopped();
 	            //System.out.println("notifier finished");
 	         }
-	         if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.Notifier.run()");    
 	      }
 	   }
 
 	   public boolean isQuiescent() {
 	      // there are no state threads still running or commited to running
 	      // there is no sweep happening or scheduled to happen
-		   if (sfLog().isDebugEnabled())  sfLog().debug("IN/OUT: Model.isQuiescent()");    
-		   synchronized (updateLock) {
+	      synchronized (updateLock) {
 	         return (threadCount == 0);
 	      }
 	   }
@@ -256,6 +233,7 @@ public class Model extends Composite implements Compound {
 
 	      if (sfLog().isDebugEnabled())
 	         sfLog().debug("update fininshed, triggering state change and allowing actions through");
+	      //updateLock.notifyAll();
 	      notifyStateChange();
 	   }
 	}

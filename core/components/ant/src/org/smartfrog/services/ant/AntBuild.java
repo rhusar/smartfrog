@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.ant;
 
+import java.rmi.Remote;
+
 /**
  *
  * interface for an ant build

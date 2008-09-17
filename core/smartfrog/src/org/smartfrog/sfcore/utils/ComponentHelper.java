@@ -414,6 +414,7 @@ public class ComponentHelper {
         return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
     }
 
+
     /**
      * Load a class in the classloader, using the SmartFrog classloader.
      * {@link SFClassLoader#forName(String, String, boolean)}
@@ -423,27 +424,12 @@ public class ComponentHelper {
      * @throws RemoteException for network problems
      */
     public Class loadClass(String classname) throws SmartFrogResolutionException, RemoteException {
-        return loadClass(classname,"");
-    }
-
-    /**
-     * Load a class in the classloader, using the SmartFrog classloader.
-     * {@link SFClassLoader#forName(String, String, boolean)}
-     * @param classname class to load
-     * @param message extra message to include in exception
-     * @return loaded class
-     * @throws SmartFrogResolutionException if the class could not be found
-     * @throws RemoteException for network problems
-     */
-    public Class loadClass(String classname, String message) throws SmartFrogResolutionException, RemoteException {
         String targetCodeBase = getCodebase();
 
         try {
             return SFClassLoader.forName(classname, targetCodeBase, true);
-        } catch (ClassNotFoundException cnfe) {
-            throw new SmartFrogResolutionException("Class not found: " + classname + " in " + targetCodeBase
-                    + (message != null && message.length() > 0 ? ('\n' + message) : ""),
-                    cnfe, owner);
+        } catch (ClassNotFoundException ignored) {
+            throw new SmartFrogResolutionException("Not found: " + classname + " in " + targetCodeBase);
         }
     }
 

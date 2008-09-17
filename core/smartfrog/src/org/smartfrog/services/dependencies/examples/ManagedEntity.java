@@ -20,18 +20,58 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.dependencies.examples;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 import org.smartfrog.services.dependencies.statemodel.state.ThreadedState;
+import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.prim.Prim;
 
 public class ManagedEntity extends ThreadedState implements Prim {
-			
+	
 	public ManagedEntity() throws RemoteException {super();}  
 	
-	public boolean requireThread(){ return true; }  
+	public boolean requireThread(HashMap data){ return true; }  
 	
-	public boolean threadBody(){
-		selectSingleAndGo();  //ignore return value...
-		return true;
+	public HashMap threadBody(HashMap data){
+		
+		HashMap save = new HashMap();
+		
+		boolean created = ((Boolean) data.get("created")).booleanValue();
+		boolean sink = ((Boolean) data.get("sink")).booleanValue();
+		String name = (String) data.get("name");
+		
+		//For test...
+		String cur_output="";
+		Context parent=null;
+		try { 
+			parent = sfParent().sfContext();
+			cur_output = (String) parent.get("output"); 
+		} catch(Exception e){} 		
+		//
+		
+		if (!created) {
+			System.out.println(name+" setting created to true");
+			save.put("created", true);
+			
+			//For test
+			cur_output+=(name+"c");
+			//
+		} 
+		
+		if (created || sink) {
+			System.out.println(name+" setting removed to true");
+			save.put("removed", true);
+			
+			//For test
+			cur_output+=(name+"r");
+			//
+		} 
+		
+		//For test
+		parent.put("output",cur_output); 
+		//
+		
+		return save;
 	}
+
 }

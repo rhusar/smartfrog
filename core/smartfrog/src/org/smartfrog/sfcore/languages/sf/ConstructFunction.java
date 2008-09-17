@@ -1,19 +1,17 @@
 package org.smartfrog.sfcore.languages.sf;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Stack;
-
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.reference.Reference;
+
+import java.util.Stack;
+import java.util.Iterator;
 
 /**
  * Construct the function apply reference object, and replace self with this
@@ -42,13 +40,9 @@ public class ConstructFunction implements PhaseAction {
         for (Iterator i = cd.sfAttributes(); i.hasNext();) {
             Object key = i.next();
             Object value = null;
-            Set tags = null;
             try {
                 value = cd.sfResolveHere(key);
-                tags = cd.sfGetTags(key);
             } catch (SmartFrogResolutionException e) {
-                //shouldn't happen
-            } catch (SmartFrogContextException e) {
                 //shouldn't happen
             }
             if ((key.toString()).equals(functionPhase)) {
@@ -56,7 +50,6 @@ public class ConstructFunction implements PhaseAction {
             } else {
                 try {
                     comp.sfAddAttribute(key, value);
-                    if (tags!=null) comp.sfSetTags(key, tags);
                 } catch (SmartFrogRuntimeException e) {
                     //shouldn't happen
                 }

@@ -22,22 +22,24 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Probe the health of a deployed application. This task will trigger a liveness check against the application, which
- * causes the application to assess its own health and return successfully or raise an exception. The build file will
- * stop on failure (default), or the task can be set to ignore the failure, and instead set a property on success,
- * leaving it blank on failure.
- *
+ * Probe the health of a deployed application.
+ * This task will trigger a liveness check against the application, which
+ * causes the application to assess its own health and return successfully
+ * or raise an exception.
+ * The build file will stop on failure (default), or the task can be set
+ * to ignore the failure, and instead set a property on success, leaving it
+ * blank on failure. 
  * @ant.task category="SmartFrog" name="sf-ping"
  */
 public class PingTask extends SmartFrogTask {
     /**
      * name of an app
      */
-    protected String application = SmartFrogJVMProperties.ROOT_PROCESS;
+    protected String application= SmartFrogJVMProperties.ROOT_PROCESS ;
 
     protected String successProperty;
 
-    public static final String ERROR_FAILED_TO_PING = "Failed to ping ";
+    public static final String ERROR_FAILED_TO_PING = "failed to ping";
 
     public void init() throws BuildException {
         super.init();
@@ -60,8 +62,8 @@ public class PingTask extends SmartFrogTask {
     }
 
     /**
-     * the name of a property to set on a successful ping. Only useful if failonerror is set to false
-     *
+     * the name of a property to set on a successful ping.
+     * Only useful if failonerror is set to false
      * @param successProperty true on success
      */
     public void setSuccessProperty(String successProperty) {
@@ -77,17 +79,17 @@ public class PingTask extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyApplicationName(application);
-        String command = application + ':'    //NAME
-                + "PING" + ':'
-                + "" + ':'            //URL
-                + "" + ':'            // sfConfig or empty
-                + getHost() + ':'          // host
+        String command = application + ":"    //NAME
+                + "PING" + ":"
+                + "" + ":"            //URL
+                + "" + ":"            // sfConfig or empty
+                + getHost() + ":"          // host
                 + "";              // subprocess
         addApplicationCommand("-a", command);
         addExitFlag();
-        if (execSmartFrog(ERROR_FAILED_TO_PING + getApplication())) {
-            if (successProperty != null) {
-                getProject().setNewProperty(successProperty, "true");
+        if(execSmartFrog(ERROR_FAILED_TO_PING + getApplication())){
+            if(successProperty!=null) {
+                getProject().setNewProperty(successProperty,"true");
             }
         }
 

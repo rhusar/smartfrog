@@ -1,22 +1,18 @@
 package org.smartfrog.sfcore.languages.sf.sfreference;
 
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.parser.ReferencePhases;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.parser.ReferencePhases;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLazyResolutionException;
 
 /**
  * Representation of reference for hte SF language
  */
 public class SFReference extends Reference implements ReferencePhases {
-	/**Force Eagerness*/
-	public static boolean resolutionForceEager=false;
-	
-	public Reference sfAsReference() throws SmartFrogCompilationException {
+    public Reference sfAsReference() throws SmartFrogCompilationException {
         Reference r = new Reference();
         r.addElements(this);
         r.setEager(getEager());
@@ -40,7 +36,7 @@ public class SFReference extends Reference implements ReferencePhases {
      */
     public Object resolve(ReferenceResolver rr, int index)
         throws SmartFrogResolutionException {
-        if (index == 0 && !getEager() && !resolutionForceEager) throw new SmartFrogLazyResolutionException("lazy reference resolved");
+        if (index == 0 && !getEager()) throw new SmartFrogLazyResolutionException("lazy reference resolved");
         return super.resolve(rr, index);
     }
 

@@ -28,7 +28,8 @@ import org.apache.tools.ant.types.Reference;
 /**
  * This is a condition that tests for things being deployed.
  *
- * TODO:implement this created 14-May-2004 11:28:52
+ * TODO:implement this
+ * created 14-May-2004 11:28:52
  */
 
 public class IsDeployed extends ProjectComponent implements Condition {
@@ -50,14 +51,15 @@ public class IsDeployed extends ProjectComponent implements Condition {
     private String application;
 
     /**
-     * SmartFrog daemon connection port. org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
+     * SmartFrog daemon connection port.
+     * org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
      */
     protected Integer port;
 
 
     private void validate() throws BuildException {
         if (application == null) {
-            throw new BuildException("Application is undefined");
+            throw new BuildException("application is undefined");
         }
     }
 
@@ -96,7 +98,8 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * set the hostname to deploy to (optional, defaults to localhost) Some tasks do not allow this to be set at all.
+     * set the hostname to deploy to (optional, defaults to localhost)
+     * Some tasks do not allow this to be set at all.
      *
      * @param host hostname
      */
@@ -106,7 +109,8 @@ public class IsDeployed extends ProjectComponent implements Condition {
     }
 
     /**
-     * port of daemon; optional -default is 3800 Some tasks do not allow this to be set at all.
+     * port of daemon; optional -default is 3800
+     * Some tasks do not allow this to be set at all.
      *
      * @param port port to use
      */

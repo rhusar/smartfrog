@@ -62,11 +62,6 @@ public class TempDirTest extends SmartFrogTestBase {
         assertFalse("Dir Not deleted " + dir,dir.exists());
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testTempDirBadPrefix() throws Throwable {
         deployExpectingException(FILES + "tempDirBadPrefix.sf",
                 "tempDirBadPrefix",
@@ -78,7 +73,7 @@ public class TempDirTest extends SmartFrogTestBase {
     /**
      * test that we are working
      *
-     * @throws Throwable on failure
+     * @throws Throwable
      */
     public void testTempDirEmptySuffix() throws Throwable {
         application = deployExpectingSuccess(FILES + "tempDirTestEmptySuffix.sf", "tempDirTestEmptySuffix");
@@ -95,56 +90,33 @@ public class TempDirTest extends SmartFrogTestBase {
         assertFalse("Not deleted " + dir, dir.exists());
     }
 
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCreateFileTempDir() throws Throwable {
+    public void testCreateFileTempDir() throws Exception {
         File tempFile = FileSystem.createTempFile("abcd", ".e", null);
         assertTrue(tempFile.exists());
         tempFile.delete();
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCreateFileInDir() throws Throwable {
+    public void testCreateFileInDir() throws Exception {
         File tempFile = FileSystem.createTempFile("abcd", ".e", System.getProperty("java.io.tmpdir"));
         assertTrue(tempFile.exists());
         tempFile.delete();
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCreateTempDir() throws Throwable {
+    public void testCreateTempDir() throws Exception {
         File tempFile = FileSystem.createTempDir("abcd", ".e", null);
         assertTrue(tempFile.isDirectory());
         tempFile.delete();
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCreateTempDirInDir() throws Throwable {
+    public void testCreateTempDirInDir() throws Exception {
         File tempFile = FileSystem.createTempDir("abcd", ".e", System.getProperty("java.io.tmpdir"));
         assertTrue(tempFile.isDirectory());
         tempFile.delete();
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testBadPrefix() throws Throwable {
+    public void testBadPrefix() throws Exception {
         try {
             File tempFile = FileSystem.createTempFile("", ".txt", null);
-            //should not be reached, but just in case
-            tempFile.delete();
         } catch (SmartFrogException e) {
             //expected
         }

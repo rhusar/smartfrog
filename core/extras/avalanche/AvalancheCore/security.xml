@@ -52,10 +52,7 @@
             <param name="jarname" value="${avalanche.dir}/sf-vmware.jar"/>
             <param name="signedjarname" value="${dist.signedLib.dir}/sf-vmware.jar"/>
         </antcall>
-	<antcall target="signjarbuild">
-            <param name="jarname" value="${avalanche.dir}/sf-emailer.jar"/>
-            <param name="signedjarname" value="${dist.signedLib.dir}/sf-emailer.jar"/>
-        </antcall>
+	
 	<antcall target="signjarbuild">
             <param name="jarname" value="${avalanche.dir}/sf-xmpp.jar "/>
             <param name="signedjarname" value="${dist.signedLib.dir}/sf-xmpp.jar "/>
@@ -107,11 +104,6 @@
     	</antcall>
 
     	<antcall target="signjarbuild">
-            <param name="jarname" value="${avalanche.dir}/sf-rest.jar "/>
-            <param name="signedjarname" value="${dist.signedLib.dir}/sf-rest.jar "/>
-    	</antcall>
-
-    	<antcall target="signjarbuild">
             <param name="jarname" value="${avalanche.dir}/avalanche.jar "/>
             <param name="signedjarname" value="${dist.signedLib.dir}/avalanche.jar "/>
     	</antcall>
@@ -129,10 +121,6 @@
     	<antcall target="signjarbuild">
             <param name="jarname" value="${avalanche.dir}/quartz.jar "/>
             <param name="signedjarname" value="${dist.signedLib.dir}/quartz.jar "/>
-    	</antcall>
-		<antcall target="signjarbuild">
-            <param name="jarname" value="${avalanche.dir}/mail.jar "/>
-            <param name="signedjarname" value="${dist.signedLib.dir}/mail.jar "/>
     	</antcall>
 	
 	<antcall target="signjarbuild">

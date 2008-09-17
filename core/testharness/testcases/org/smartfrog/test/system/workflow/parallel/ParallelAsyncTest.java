@@ -49,43 +49,23 @@ public class ParallelAsyncTest extends DeployingTestBase {
     }
 
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testStartFailingParallelNoTerminateAsync() throws Throwable {
         expectSuccessfulTestRun(FILES, "testStartFailingParallelNoTerminateAsync");
         expectValueToggled();
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testStartFailingParallelAsync() throws Throwable {
         expectAbnormalTestRun(FILES, "testStartFailingParallelAsync", true, null);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testStartFailingParallelAsyncNoChild() throws Throwable {
         expectAbnormalTestRun(FILES, "testStartFailingParallelAsyncNoChild", true, null);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFailingParallelAsync() throws Throwable {
         expectAbnormalTestRun(FILES, "testFailingParallelAsync", true, null);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFailingParallelAsyncNoChild() throws Throwable {
         expectSuccessfulTestRun(FILES, "testFailingParallelAsyncNoChild");
         expectValueToggled();

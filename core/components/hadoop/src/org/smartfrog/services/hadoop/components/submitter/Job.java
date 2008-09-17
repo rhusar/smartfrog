@@ -24,18 +24,12 @@ import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 
 /**
- * Attributs of a job
+ * Created 17-Apr-2008 14:39:45
  */
 
 
 public interface Job extends HadoopConfiguration, FileUsingComponent {
 
-    /**
-     *  Is the file required
-     */
-    String ATTR_FILE_REQUIRED ="fileRequired";
-    String ATTR_INPUT_DIR = "input.dir";
-    String ATTR_OUTPUT_DIR = "output.dir";
-    String ATTR_WORKING_DIR = "working.dir";
-    String ATTR_LOCAL_DIR = "local.dir";
+    String ATTR_FILEREQUIRED="fileRequired"; 
+
 }

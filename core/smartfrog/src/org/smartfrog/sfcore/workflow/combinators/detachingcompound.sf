@@ -30,11 +30,8 @@ For more information: www.smartfrog.org
 
 DetachingCompound extends Compound {
   sfClass "org.smartfrog.sfcore.workflow.combinators.DetachingCompoundImpl";
-  // set to true if you want the compound to detach its children on start
-  detachDownwards true;
-  // set to true if you want the compound to detach itself on start
-  detachUpwards true;
-  // set to true if you want the compound to terminate at the end of the start phase
-  autoDestruct true;
+  detachDownwards true; // set to true if you want the compound to detach its children on start
+  detachUpwards true;   // set to true if you want the compound to detach itself on start
+  autoDestruct true;    // set to true if you want the compound to terminate at the end of the start phase
 }
 

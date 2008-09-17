@@ -51,11 +51,7 @@ LibraryTest extends ExpectDeploy {
   action extends Compound {
   }
 
-  tests extends Sequence {
-
-  }
-
-//  undeployAfter 500;
+  undeployAfter 500;
 
 }
   
@@ -69,6 +65,7 @@ testLocalSmartFrog extends LibraryTest {
         smartfrog.jar extends SmartFrogJar {
             library LAZY PARENT:library;
         }
+        
     }
 }
  

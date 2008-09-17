@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="release" default="default"
-    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     xmlns:iz="http://www.izforge.com/">
   <!--
     /** (C) Copyright 2007-2008 Hewlett-Packard Development Company, LP
@@ -21,13 +21,13 @@
   <description>
     This build file aggregates artifacts from other projects to cut a release.
 
-    In a normal distribution, the RPM smartfrog-private-security-keys contains nothing sensitive.
   </description>
 
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <!--no javadocs until we have source-->
   <!--<property name="javadoc.disabled" value="true" />-->
+  <!--we disable Ivy to let us use a copy of izpack in the lib dir-->
 
   <!-- override point -->
   <property file="build.properties"/>
@@ -46,12 +46,9 @@
       value="[conf]/[artifact]-[revision].[ext]"/>
 
   <!-- override this to get a different release, such as a hard coded version.
+  Doing that
   -->
   <property name="ivy.smartfrog.version" value="latest.integration"/>
-
-  <echo
-      message="==================================================================="/>
-  <echo message="= ${ant.project.name}"/>
 
   <!-- Import common stuff -->
   <import file="../common.xml"/>
@@ -232,6 +229,25 @@
 
   <!-- ============================================================================================= -->
 
+
+  <!--
+    Building an RPM is tricky. Here are some links that are useful
+      http://www.rpm.org/
+      http://www.rpm.org/max-rpm/
+      http://www-128.ibm.com/developerworks/linux/library/l-rpm3.html?dwzone=linux
+      http://www.ibm.com/developerworks/library/l-rpm1/
+      http://www.ibm.com/developerworks/library/l-rpm2/
+
+    JPackage and layout rules:
+      http://www.jpackage.org/develdocs.php
+      http://www.pathname.com/fhs/  rules for app/dir layout
+
+    Presentations:
+    http://www-uxsup.csx.cam.ac.uk/talks/rpmbuild/rpmbuild.pdf
+    http://www.gurulabs.com/GURULABS-RPM-LAB/GURULABS-RPM-GUIDE-v1.0.PDF
+
+  -->
+
   <target name="check-rpm" depends="init">
     <condition property="has.rpm.tools">
       <and>
@@ -279,6 +295,8 @@
 
     <newdir name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
 
+    <newdir name="build.rpm.metadata.dir"
+        location="${build.rpm.dir}/metadata"/>
     <newdir name="rpm.image.dir"
         location="${build.rpm.dir}/rpm"/>
     <newdir name="rpm.SOURCES"
@@ -297,7 +315,7 @@
         location="${rpm.root.dir}/${rpm.install.dir}"/>
     <newdir name="rpm.lib.dir"
         location="${core.install.dir}/lib"/>
-    <property name="rpm.signed.lib.dir"
+    <newdir name="rpm.signed.lib.dir"
         location="${core.install.dir}/signedLib"/>
 
     <property name="smartfrog.rpmfiles.tar"
@@ -326,13 +344,6 @@
         location="${dist.rpm.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar"/>
     <property name="rpms.signed.tar.gz"
         location="${upload.dir}/smartfrog-signed-rpm-bundle-${smartfrog.version}.tar.gz"/>
-    <property name="private-rpm-package.tar"
-        location="${upload.dir}/smartfrog-private-rpms-${smartfrog.version}.tar"/>
-    <property name="private-rpm-package.tar.gz"
-        location="${private-rpm-package.tar}.gz"/>
-
-
-
     <property name="remote-smartfrogd" value="/etc/init.d/${rpm.daemon.name}"/>
 
     <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
@@ -372,13 +383,13 @@
   </target>
 
 
-  <target name="ready-to-rpm" depends="prepare-private-rpm,prepare-binary-rpm"/>
+  <target name="ready-to-rpm" depends="prepare-binary-rpm"/>
 
   <target name="release-rpm" description="release the rpm" depends="rpm"/>
 
   <target name="rpm" depends="gzip-rpm" description="create the gzipped RPM"/>
 
-  <target name="build-rpm" depends="package-private-rpm,ready-to-rpm"
+  <target name="build-rpm" depends="ready-to-rpm"
       if="has.rpm.tools"
       description="create an RPM file of the core smartfrog libraries">
     <rpm
@@ -395,7 +406,7 @@
 
   <target name="copy-scripts" depends="init-rpm">
     <expandingcopy todir="${rpm.root.dir}">
-      <fileset dir="scripts" includes="etc/**/*"/>
+      <fileset dir="scripts" includes="**/*"/>
     </expandingcopy>
     <property name="profile.d" location="${rpm.root.dir}/etc/profile.d"/>
     <property name="init.d" location="${rpm.root.dir}/etc/init.d"/>
@@ -519,14 +530,6 @@
     <ln artifact="sf-junit" version="${smartfrog.version}"/>
     <ln artifact="junit" version="${junit.version}"/>
 
-
-    <rpmpackage package="velocity"/>
-    <ln artifact="sf-velocity" version="${smartfrog.version}"/>
-    <ln artifact="velocity" version="${velocity.version}"/>
-    <ln artifact="velocity-dep" version="${velocity.version}"/>
-    <ln artifact="commons-collections" version="${commons-collections.version}"/>
-    <ln artifact="commons-lang" version="${commons-lang.version}"/>
-
     <!-- WWW -->
     <rpmpackage package="www"/>
     <ln artifact="sf-www" version="${smartfrog.version}"/>
@@ -555,22 +558,36 @@
 
   <target name="ready-to-sign-rpm-jars"
       depends="copy-rpm-specs,create-link-dir,init-security">
+
   </target>
 
-  <!--For the RPMs, we create symbolic links instead of a separate directory-->
-  <target name="symlink-signed-lib" depends="ready-to-sign-rpm-jars"
-          if="has.rpm.tools"
-      >
-    <delete dir="${rpm.signed.lib.dir}" />
-    <exec executable="ln" failonerror="true">
-      <arg value="-sf"/>
-      <arg value="${rpm.install.dir}/lib"/>
-      <arg value="${rpm.signed.lib.dir}"/>
-    </exec>
-  </target>
-
-  <target name="maybe-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security,symlink-signed-lib"
+  <!--we always copy the signed JARs-->
+  <target name="maybe-sign-rpm-jars" depends="ready-to-sign-rpm-jars"
       xmlns:sec="http://security.smartfrog.org/">
+    <copy todir="${rpm.signed.lib.dir}">
+      <fileset dir="${rpm.lib.dir}">
+        <include name="smartfrog-*.jar"/>
+        <include name="sfServices-*.jar"/>
+        <include name="sfExamples-*.jar"/>
+        <include name="sf-loggingservices-*.jar"/>
+        <include name="sf-anubis-*.jar"/>
+        <include name="commons-logging-*.jar"/>
+        <include name="log4j-*.jar"/>
+        <!--<include name="sf- -*.jar" />-->
+      </fileset>
+    </copy>
+    <sf-conditional if="security.enabled">
+      <echo>Signing the JAR files</echo>
+      <sec:signjar2>
+        <fileset dir="${rpm.signed.lib.dir}"/>
+      </sec:signjar2>
+    </sf-conditional>
+    <sf-conditional unless="security.enabled">
+      <echo level="warn">The signedLib JAR files are not being signed.
+        Do not use the -signed RPMs being created.
+      </echo>
+    </sf-conditional>
+
   </target>
 
 
@@ -581,19 +598,16 @@
     </expandingcopy>
   </target>
 
-  <target name="prepare-other-root-dirs" depends="create-link-dir,symlink-signed-lib,create-link-dir,copy-and-patch-rpm-scripts,rpm-components">
-    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
-  </target>
-
-
   <target name="ready-to-prepare-binary-rpm"
-      depends="prepare-other-root-dirs,rpm-javadocs,copy-rpm-specs,init-security">
+      depends="copy-and-patch-rpm-scripts,rpm-components,create-link-dir,rpm-javadocs,maybe-sign-rpm-jars">
+
   </target>
 
 
   <target name="prepare-binary-rpm"
       if="has.rpm.tools"
       depends="ready-to-prepare-binary-rpm">
+    <mkdir dir="${build.rpm.dir}/root${rpm.log.dir}"/>
     <exec executable="tar" failonerror="true"
         dir="${build.rpm.dir}/root/">
       <arg value="cvvf"/>
@@ -603,6 +617,11 @@
       <arg value="var"/>
       <arg value="usr"/>
     </exec>
+    <!--
+       <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
+         <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
+       </sf-tar>
+    -->
     <!-- now we have a sanity check -->
     <loadresource property="homepage">
       <tarentry archive="${smartfrog.rpmfiles.tar}"
@@ -619,6 +638,7 @@
     <copy todir="${dist.rpm.dir}">
       <fileset dir="${rpm.noarch}">
         <include name="*.rpm"/>
+        <exclude name="*-signed*.rpm" unless="security.enabled"/>
       </fileset>
     </copy>
     <copy todir="${upload.dir}" flatten="true">
@@ -640,74 +660,32 @@
     </echo>
   </target>
 
+  <target name="gzip-rpm" depends="gzip-unsigned-rpm-files,gzip-signed-rpms"/>
 
-  <target name="gzip-rpm"
+  <target name="gzip-unsigned-rpm-files"
       depends="ready-to-gzip-rpm"
       if="has.rpm.tools"
-      description="create a gzip file containing the RPM files">
+      description="create a gzip file containing the unsigned rpms">
     <tar destfile="${rpms.tar}">
       <fileset dir="${dist.rpm.dir}">
         <include name="*.rpm"/>
+        <exclude name="*-signed*.rpm"/>
       </fileset>
     </tar>
     <gzip destfile="${rpms.tar.gz}" src="${rpms.tar}"/>
   </target>
 
-  <target name="ready-to-run-private-rpm"
-      depends="ready-to-prepare-binary-rpm,prepare-private-rpm" >
+  <target name="gzip-signed-rpms"
+      depends="ready-to-gzip-rpm"
+      if="can.create.signed.rpms"
+      description="create a gzip file containing the signed rpms">
+    <tar destfile="${rpms.signed.tar}">
+      <fileset dir="${dist.rpm.dir}">
+        <include name="*-signed*.rpm"/>
+      </fileset>
+    </tar>
+    <gzip destfile="${rpms.signed.tar.gz}" src="${rpms.signed.tar}"/>
 
-  </target>
-
-  <!--this is not currently how we release artifacts, but it is a way we allow
-  third parties to issue their own JAR files, containing their own signed JARs-->
-  <target name="private-rpm-ant" depends="ready-to-run-private-rpm"
-    description="run a private RPM build for third party signing"
-      if="has.rpm.tools">
-    <property name="private-target" value="default" />
-    <ant antfile="${build.rpm.dir}/build.xml"
-      target="${private-target}"
-      inheritAll="false" inheritrefs="false"/>
-  </target>
-
-
-  <!--This prepares a custom build.xml file ready for signing and RPM
- creation -->
-  <target name="prepare-private-rpm" depends="ready-to-prepare-binary-rpm"
-      if="has.rpm.tools">
-    <copy todir="${build.rpm.dir}" file="src/ant/build.xml" />
-    <!--propagate state down through a series of files-->
-    <copy file="${rpm.metadata.dir}/rpm.properties" todir="${build.rpm.dir}"/>
-    <propertyfile file="${build.rpm.dir}/rpmbuild.properties">
-      <entry key="rpm.release.version" value="${rpm.release.version}"/>
-      <entry key="rpm-version" value="${rpm.release.version}"/>
-      <entry key="smartfrog.version" value="${smartfrog.version}"/>
-    </propertyfile>
-  </target>
-
-  <target name="package-private-rpm" depends="ready-to-run-private-rpm"
-      if="has.rpm.tools">
-    <exec executable="tar" failonerror="true"
-      dir="${build.rpm.dir}/">
-      <arg value="cvvf"/>
-      <arg file="${private-rpm-package.tar}"/>
-      <arg value="root"/>
-      <arg value="rpm"/>
-      <arg value="rpmbuild.properties"/>
-      <arg value="rpm.properties"/>
-      <arg value="build.xml"/>
-    </exec>
-    <!-- now we have a sanity check -->
-    <loadresource property="rpmbuildfile">
-      <tarentry archive="${private-rpm-package.tar}"
-        name="build.xml"/>
-    </loadresource>
-    <loadresource property="smartfrog-file">
-      <tarentry archive="${private-rpm-package.tar}"
-        name="root/etc/sysconfig/smartfrog"/>
-    </loadresource>
-    <gzip src="${private-rpm-package.tar}"
-      destfile="${private-rpm-package.tar.gz}"/>
-    <echo>Created ${private-rpm-package.tar.gz} for private RPMs</echo>
   </target>
 
 
@@ -767,7 +745,6 @@
     <property name="maven.zip.sha1" location="${maven.zip}.sha1"/>
   </target>
 
-  <!--Build up a zip file containing all the maven artifacts-->
   <target name="package-maven-artifacts"
       depends="ready-to-package-maven-artifacts">
     <zip destfile="${maven.zip}" duplicate="fail">
@@ -794,9 +771,7 @@
         <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-scripting/${smartfrog.version}/*"/>
         <include name="sf-ssh/${smartfrog.version}/*"/>
-        <include name="sf-velocity/${smartfrog.version}/*"/>
         <include name="sf-xml/${smartfrog.version}/*"/>
-        <include name="sf-xmpp/${smartfrog.version}/*"/>
         <!--testing-->
         <include name="sf-xunit/${smartfrog.version}/*"/>
         <include name="sf-junit/${smartfrog.version}/*"/>
@@ -804,6 +779,7 @@
         <include name="sf-www/${smartfrog.version}/*"/>
         <include name="sf-tomcat/${smartfrog.version}/*"/>
         <include name="sf-jetty/${smartfrog.version}/*"/>
+        <include name="sf-xmpp/${smartfrog.version}/*"/>
       </zipfileset>
 
     </zip>
@@ -985,24 +961,6 @@
     </ftp>
   </target>
 
-
-  <target name="sftp-upload" depends="upload-init" if="sftp.enabled">
-    <property name="sftp.server" value="frs.sourceforge.net"/>
-    <property name="sftp.user" value="${ssh.user}"/>
-    <property name="sftp.dir" value="uploads"/>
-    <property name="sftp.path"
-        value="${sftp.user}@${sftp.server}:${sftp.dir}"/>
-    <echo>SFTP target is ${sftp.server}</echo>
-    <scp remoteToDir="${sftp.path}"
-        sftp="true"
-        password="${sftp.password}"
-        trust="${ssh.trust}"
-        verbose="${sftp.verbose}">
-      <fileset refid="upload.fileset"/>
-    </scp>
-
-  </target>
-
   <target name="can-upload"
       depends="load-server-settings,check-ftp,check-scp"/>
 
@@ -1012,7 +970,7 @@
   <target name="upload" depends="upload-no-rebuild"
       description="upload; set server property to choose the destination"/>
 
-  <target name="upload-no-rebuild" depends="can-upload,sftp-upload,upload-maven-artifacts"
+  <target name="upload-no-rebuild" depends="can-upload,upload-maven-artifacts,ftp-upload"
       description="upload the existing artifacts"/>
 
   <target name="checksums" depends="ready-to-upload-rpms">
@@ -1087,9 +1045,10 @@
     <!--list of rpms-->
 
     <property name="rpms.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity smartfrog-private-keys"/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit"/>
     <!--here are all the signed RPMs that are generated-->
-
+    <property name="rpms.signed.list"
+        value="smartfrog-signed smartfrog-anubis-signed smartfrog-logging-signed"/>
 
     <!-- add any other rpms that  you depend on here. We will uninstall these before upgrading SmartFrog-->
     <property name="rpms.dependent.list" value=""/>
@@ -1169,7 +1128,7 @@
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
     <rootssh
-        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.dependent.list}"
+        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.signed.list} ${rpms.dependent.list}"
         failonerror="false"/>
   </target>
 
@@ -1251,12 +1210,13 @@ rpm -qf ${rpm.install.dir}/bin/security ;
 rpm -qf ${rpm.install.dir}/bin/metadata ;
 rpm -qf ${rpm.log.dir} ;
 rpm -qf ${rpm.etc.dir} ;
-rpm -qf ${rpm.install.dir}/private;
-rpm -qf ${rpm.install.dir}/signedLib;
-rpm -qf /etc/profile.d/smartfrog.sh;
-rpm -qf /etc/profile.d/smartfrog.csh;
-rpm -qf ${rpm.install.dir}/docs;
-rpm -qf ${rpm.install.dir}/src;
+rpm -qf ${rpm.install.dir}/testCA ;
+rpm -qf ${rpm.install.dir}/private ;
+rpm -qf ${rpm.install.dir}/signedLib ;
+rpm -qf /etc/profile.d/smartfrog.sh ;
+rpm -qf /etc/profile.d/smartfrog.csh ;
+rpm -qf ${rpm.install.dir}/docs ;
+rpm -qf ${rpm.install.dir}/src ;
 rpm -qf ${rpm.install.dir}/src.zip ;
 rpm -qf ${rpm.install.dir}/lib/sf-ant-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/lib/ant-${apache.ant.version}.jar;

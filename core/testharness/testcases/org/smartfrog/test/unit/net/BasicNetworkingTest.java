@@ -56,7 +56,7 @@ public class BasicNetworkingTest extends TestCase {
 
     /**
      * may fail if DNS is badly set up or absent
-     * @throws UnknownHostException network problems
+     * @throws UnknownHostException
      */
     public void testLocalhost() throws UnknownHostException {
         InetAddress addr;
@@ -64,9 +64,6 @@ public class BasicNetworkingTest extends TestCase {
         logAddr("localhost", addr);
     }
 
-    /**
-     * @throws UnknownHostException network problems
-     */
     public void testLoopback() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName(null);
@@ -74,9 +71,6 @@ public class BasicNetworkingTest extends TestCase {
         assertTrue(addr.isLoopbackAddress());
     }
 
-    /**
-     * @throws UnknownHostException network problems
-     */
     public void test127dot0dot0dot1() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName("127.0.0.1");
@@ -87,7 +81,7 @@ public class BasicNetworkingTest extends TestCase {
 
     /**
      * this only valid in an IPv6 context
-     * @throws UnknownHostException network problems
+     * @throws UnknownHostException
      */
     public void testIPv6() throws UnknownHostException {
         InetAddress addr;
@@ -96,37 +90,22 @@ public class BasicNetworkingTest extends TestCase {
         assertTrue(addr.isLoopbackAddress());
     }
 
-    /**
-     * @throws UnknownHostException network problems
-     */
     public void testReverseDNSWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname=addr.getHostName();
         logHostname(hostname);
     }
 
-    /**
-     * @throws UnknownHostException network problems
-     */
     public void testReverseDNSFullyWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname = addr.getCanonicalHostName();
         logHostname(hostname);
     }
 
-    /**
-     * Log the hostname
-     * @param hostname hostname
-     */
     private void logHostname(String hostname) {
         log.info("hostname =" + hostname);
     }
 
-    /**
-     * Log the address
-     * @param type address type
-     * @param addr address value
-     */
     private void logAddr(String type, InetAddress addr) {
         log.info(type + ": " + addr.toString());
     }

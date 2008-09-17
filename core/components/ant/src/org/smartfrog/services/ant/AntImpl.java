@@ -20,8 +20,8 @@
 
 package org.smartfrog.services.ant;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -33,10 +33,10 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
-import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Hashtable;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  */
@@ -80,9 +80,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     private void executeNestedAntTasks() throws RemoteException, SmartFrogException {
         Object attribute = null;
         Object value = null;
-        Iterator<Object> a = sfAttributes();
+        Iterator a = sfAttributes();
         try {
-            for (Iterator<Object> i = sfValues(); i.hasNext() && !exitAntNow;) {
+            for (Iterator i = sfValues(); i.hasNext() && !exitAntNow;) {
                 attribute = a.next();
                 value = i.next();
                 String attributeName = attribute.toString();
@@ -213,35 +213,24 @@ public class AntImpl extends PrimImpl implements Prim, Ant, Runnable {
     /**
      * Executes Ant Tasks and triggers the detach and/or termination of a component
      * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
-     * and 'sfShouldTerminateQuietly', or if the job failed.
+     * and 'sfShouldTerminateQuietly'
      */
     private void exec() {
         try {
             executeNestedAntTasks();
         } catch (RemoteException e) {
-            caughtException = SmartFrogException.forward(e);
+            caughtException=SmartFrogException.forward(e);
         } catch (SmartFrogException e) {
-            caughtException = e;
+            caughtException=e;
         }
+        //cleanup time
         ComponentHelper helper = new ComponentHelper(this);
-        if (caughtException == null) {
-            //cleanup time
-            helper.sfSelfDetachAndOrTerminate(
-                    null,
-                    "end of ant tasks",
-                    null,
-                    null
-            );
-        } else {
-            //something went wrong, always fail here
-            TerminationRecord tr = new TerminationRecord(
-                    TerminationRecord.ABNORMAL,
-                    caughtException.toString(),
-                    sfCompleteName,
-                    caughtException);
-            //put up for termination
-            helper.targetForTermination(tr, false, false, false);
-        }
+        helper.sfSelfDetachAndOrTerminate(
+                null,
+                "end of ant tasks",
+                null,
+                caughtException
+        );
     }
 
     /**

@@ -23,10 +23,7 @@ import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
-/**
- *  A test has completed
- *  There's no reference here,
- */
+/** created 10-Jul-2007 17:12:59 */
 
 public class TestCompletedEvent extends LifecycleEvent {
 
@@ -47,9 +44,6 @@ public class TestCompletedEvent extends LifecycleEvent {
                               TerminationRecord status,
                               String description) {
         super(component,status);
-        //forget about the component value so there are no
-        //serialization problems
-        resetComponent();
         this.succeeded = succeeded;
         this.forcedTimeout = forcedTimeout;
         this.skipped = skipped;
@@ -88,10 +82,9 @@ public class TestCompletedEvent extends LifecycleEvent {
      * {@inheritDoc}
      */
     public String toString() {
-        StringBuilder buffer = new StringBuilder(super.toString());
-        if (description != null && description.length() > 0) {
-            buffer.append('\n');
-            buffer.append(description);
+        StringBuilder buffer=new StringBuilder(super.toString());
+        if(description!=null && description.length()>0) {
+            buffer.append('\n').append(description);
             buffer.append('\n');
         }
         buffer.append("\nsucceeded:").append(succeeded);

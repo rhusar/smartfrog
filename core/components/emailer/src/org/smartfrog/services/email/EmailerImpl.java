@@ -33,11 +33,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.Authenticator;
 import java.util.Properties;
 import java.util.Date;
-import java.util.List;
-import javax.mail.PasswordAuthentication;
+import java.util.Vector;
 
 import java.rmi.RemoteException;
 
@@ -48,8 +46,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * Email component for smartfrog.
@@ -77,22 +73,19 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     private String from;
     private String host;     // SMTP host
     private String subject;
-    private List<String> attachmentList = null; // attachments file name
+    private Vector attachmentList = null; // attachments file name
     private boolean runAsWorkFlowComponent = true; // by default
     private Session session = null;
     private String message = "SmartFrog Message";
-    private boolean sendOnStartup = false;
+    private boolean sendOnStartup=false;
     private boolean sendOnShutdown = false;
-    private String port = null;
-    private String user = null;
-    private String password = null;
+
     private static final String PROP_HOST_NAME = "mail.smtp.host";
 
     /**
      * our log
      */
     private Log log;
-    private static final Reference REF__ATTACHMENTS = new Reference(ATTACHMENTS);
 
     /**
      * Constructs Emailer object.
@@ -117,19 +110,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         readSFAttributes();
         Properties props = new Properties();
         props.put(PROP_HOST_NAME, host);
-		Authenticator auth = null;
-
-        if (user != null && password != null) {
-            SecurityManager security = System.getSecurityManager();
-            props.put("mail.smtp.user", user);
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.password", password);
-            auth = new SMTPAuthenticator();
-        }
-        if (port != null) {
-            props.put("mail.smtp.port", port);
-        }
-        session = Session.getInstance(props, auth);
+        session = Session.getInstance(props, null);
         //then parent
         super.sfDeploy();
     }
@@ -150,7 +131,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         if(runAsWorkFlowComponent || sendOnStartup ) {
             sendConfiguredMessage();
         }
-        if(runAsWorkFlowComponent) {
+        if(runAsWorkFlowComponent  ) {
             TerminationRecord termR = TerminationRecord.normal(
                 "Emailer finished: ",sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this,termR);
@@ -208,14 +189,10 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         ccList = sfResolve(CC, ccList, false); 
         from = sfResolve(FROM, from, false); 
         subject =  sfResolve(SUBJECT, subject, false);
-        message = sfResolve(MESSAGE, message, false);
-        attachmentList = ListUtils.resolveStringList(this, REF__ATTACHMENTS, false);
-        sendOnStartup = sfResolve(SEND_ON_STARTUP, sendOnStartup, false);
-        sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);
-        port = sfResolve(SMTP_PORT, port, false);
-        user = sfResolve(SMTP_USER, user, false);
-        password = sfResolve(SMTP_PASSWORD, password, false);
-    }
+        message =  sfResolve(MESSAGE, message, false);
+        attachmentList = sfResolve(ATTACHMENTS, attachmentList,false);
+        sendOnStartup= sfResolve(SEND_ON_STARTUP, sendOnStartup,false);
+        sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);    }
 
     // Utility methods to send Emails used when Emailer is to be used multiple
     // times by other components.
@@ -261,20 +238,16 @@ public class EmailerImpl extends PrimImpl implements Emailer {
                         String messageFrom, String messageSubject, String text)
             throws SmartFrogException, RemoteException {
         try {
-            logEmailSending(to, cc, messageFrom, messageSubject, text);
+            if ( log.isInfoEnabled() ) {
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + messageFrom);
+                log.info("Subject :" + messageSubject);
+                log.info("Message:" + text);
+            }
             Message emailMsg = constructSinglepartMessage(to, cc, messageFrom, messageSubject, text);
             sendMessage(emailMsg);
         } catch (MessagingException mex) {
             log.error("failed to send message", mex);
             throw new SmartFrogException(mex);
-        }
-    }
-
-    private void logEmailSending(String to, String cc, String messageFrom, String messageSubject, String text) {
-        if ( log.isInfoEnabled() ) {
-            log.info("Sending email to " + to + " cc: +" + cc + " from: " + messageFrom);
-            log.info("Subject :" + messageSubject);
-            log.info("Message:" + text);
         }
     }
 
@@ -339,18 +312,21 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws SmartFrogException if unable to send email
      */
     public void sendEmailWithAttachments(String to, String cc, String messageFrom,
-                String messageSubject, String text, List<String> attachments)
+                String messageSubject, String text, Vector attachments)
                     throws SmartFrogException {
         try {
-            logEmailSending(to, cc, messageFrom, messageSubject, text);
+            if ( log.isInfoEnabled() ) {
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + messageFrom);
+                log.info("Subject :" + messageSubject);
+                log.info("Message:" + text);
+            }
 
             Message emailMsg = constructMultipartMessage(to, cc, messageFrom, messageSubject,
                     text, attachments);
             sendMessage(emailMsg);
         }catch (MessagingException mex) {
-            String errorText = "Failed to send message to "+to+ " via "+ host;
-            log.error(errorText, mex);
-            throw new SmartFrogException(errorText+": "+mex,mex);
+            log.error("failed to send message", mex);
+            throw new SmartFrogException(mex);
         }
     }
     
@@ -366,7 +342,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws MessagingException
      */
     private Message constructMultipartMessage(String to, String cc, 
-            String messageFrom, String messageSubject, String text, List<String> attachments)
+            String messageFrom, String messageSubject, String text, Vector attachments)
                                                 throws MessagingException{
         validateHeaders(to, messageFrom);
 	    Message msg = new MimeMessage(session);
@@ -393,12 +369,13 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         mp.addBodyPart(mbp1);
         
         // create and add MIME body parts for all the attachments
-        for (String attachment : attachments) {
-
+        for (int i = 0; i < attachments.size() ; i ++ ) {
+            String fileName = (String) attachments.get(i);
+            
             MimeBodyPart mbp = new MimeBodyPart();
 
             // attach the file to the message
-            FileDataSource fds = new FileDataSource(attachment);
+            FileDataSource fds = new FileDataSource(fileName);
             mbp.setDataHandler(new DataHandler(fds));
             mbp.setFileName(fds.getName());
             mp.addBodyPart(mbp);
@@ -407,13 +384,4 @@ public class EmailerImpl extends PrimImpl implements Emailer {
 	    msg.setContent(mp);
         return msg;
     }
-
-    /**
-     * SMTP authentication using the EmailerImpl's user and password attributes
-     */
-    private class SMTPAuthenticator extends Authenticator {
-		public PasswordAuthentication getPasswordAuthentication() {
-			return new PasswordAuthentication(user,password);
-		}
-	}
 }

@@ -34,11 +34,7 @@ public class AntBuildTest
     }
 
     public void testBuildFile() throws Throwable {
-        expectSuccessfulTestRun(FILES, "testBuildFile");
-    }
-    
-    public void testEcho() throws Throwable {
-        expectSuccessfulTestRun(FILES,"testEcho");
+        expectSuccessfulTestRun(FILES,"testBuildFile");
     }
 
     public void testProperties() throws Throwable {

@@ -32,26 +32,14 @@ public class RunningForTest extends DeployingTestBase {
         super(s);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testWaitForRunning() throws Throwable {
         expectSuccessfulTestRun(FILES, "testWaitForRunning");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRunningForFail() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRunningForFail");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRunningForPass() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRunningForPass");
     }

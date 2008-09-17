@@ -38,11 +38,6 @@ public class TempFileTest extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testEmpty() throws Throwable {
         deployExpectingException(FILES + "tempFileTestEmpty.sf",
                 "tempFileTestEmpty",
@@ -53,7 +48,7 @@ public class TempFileTest extends SmartFrogTestBase {
 
     /**
      * test that we are working
-     * @throws Throwable on failure
+     * @throws Throwable
      */
     public void testWorking() throws Throwable {
         application=deployExpectingSuccess(FILES + "tempFileTestWorking.sf", "tempFileTestWorking");

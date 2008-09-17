@@ -21,8 +21,8 @@ package org.smartfrog.services.ant;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 
 import java.rmi.RemoteException;
@@ -81,7 +81,7 @@ public class AntRuntime extends PrimImpl implements RemoteReferenceResolver {
      * @throws SmartFrogRuntimeException on failure to replace an attribute
      * @throws RemoteException network problems
      */
-    public static void propagateAntProperties(Prim component, Hashtable<String, String> properties)
+    public static void propagateAntProperties(Prim component,Hashtable<String, String> properties)
             throws SmartFrogRuntimeException, RemoteException {
         Hashtable<String, String> props=properties;
         for(String property: props.keySet()) {

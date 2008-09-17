@@ -22,8 +22,9 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Undeploy any smartfrog application from a running daemon. By default this target raises an error when the application
- * cannot be stopped, and has a timeout set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
+ * Undeploy any smartfrog application from a running daemon.
+ * By default this target raises an error when the application cannot be stopped, and has a timeout
+ * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
  *
  * @ant.task category="SmartFrog" name="sf-undeploy"
  */
@@ -33,7 +34,7 @@ public class StopApplication extends SmartFrogTask {
      * name of an app
      */
     protected String application;
-    public static final String ERROR_FAILED_TO_TERMINATE = "Failed to terminate ";
+    public static final String ERROR_FAILED_TO_TERMINATE = "failed to terminate ";
 
     public StopApplication() {
     }
@@ -61,8 +62,8 @@ public class StopApplication extends SmartFrogTask {
     /**
      * stop the application
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          on trouble
+     * @throws org.apache.tools.ant.BuildException on trouble
+     *
      */
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
@@ -78,6 +79,7 @@ public class StopApplication extends SmartFrogTask {
         addExitFlag();
         execSmartFrog(ERROR_FAILED_TO_TERMINATE + getApplication());
     }
+
 
 
 }

@@ -18,7 +18,7 @@
   <conf name="default" extends="master,runtime"/>
   <conf name="build" visibility="private"
       description="artifacts needed to build the application"/>
-  <conf name="compile" visibility="private" extends="runtime"
+  <conf name="compile" visibility="private" 
       description="artifacts needed to compile the application"/>
   <conf name="daemon" visibility="private"
       description="the classpath needed to run smartfrog daemons"/>
@@ -49,10 +49,9 @@
         changing="true"
         rev="latest.integration"
         conf="build->default"/>
-    <dependency org="org.smartfrog"
-        name="sf-velocity"
-        changing="true"
-        rev="latest.integration"
-        conf="redist->redist;runtime->default"/>
+    <dependency org="velocity"
+        name="velocity"
+        rev="${velocity.version}"
+        conf="compile,redist->default"/>
   </dependencies>
 </ivy-module>

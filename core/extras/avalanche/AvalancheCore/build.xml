@@ -77,7 +77,7 @@
 
   <target name="declare-xmlbean" depends="ivy-resolve,init">
     <ivy:cachepath pathid="xbean.class.path" conf="xbean"
-        xmlns:ivy="antlib:org.apache.ivy.ant"/>
+        xmlns:ivy="antlib:fr.jayasoft.ivy.ant"/>
     <taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean"
         classpathref="xbean.class.path"/>
   </target>

@@ -16,49 +16,25 @@ rem JVMARGS are declared using -J token
 rem e.g. -J "-Djava.library.path=/libs -Xmx400M"
 rem e.g. -J "-Djava.library.path=/libs" -J -Xmx400M
 rem (JVMARGS are appended to SFCMDPARAMETERS)
-SET CLASSARGS=
-:start
-IF /I "%1"=="-J" GOTO readJARG 
-IF (%1) == (-p) goto check
-SET CLASSARGS=%CLASSARGS% %1
-GOTO test
+rem SET CLASSARGS=
+rem :start
+rem IF /I "%1"=="-J" GOTO readJARG 
+rem SET CLASSARGS=%CLASSARGS% %1
+rem GOTO test
 
-:readJARG
-if (%2) == () goto usage2
-SHIFT
-SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
-goto test
+rem :readJARG
+rem SHIFT
+rem SET SFCMDPARAMETERS=%SFCMDPARAMETERS% %1
 
-:check
-if (%2) == () goto usage
-SET CLASSARGS=%CLASSARGS% %1
+rem :test
+rem SHIFT
 
-:test
-SHIFT
-IF NOT "%1"=="" GOTO start
-:end
-@echo off
+rem IF NOT "%1"==" GOTO start
 
-rem for JMX remote agent add: -Dcom.sun.management.jmxremote 
-echo %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %CLASSARGS%
-%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %CLASSARGS%
-goto finish
+rem  :end
 
-:usage2
-echo smarfrog shell script error: -J second arg missing
-echo JVMARGS are declared using -J token 
-echo e.g. -J "-Djava.library.path=/libs -Xmx400M"
-echo e.g. -J "-Djava.library.path=/libs" -J -Xmx400M
-goto finish
+rem  %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %CLASSARGS%
 
-:usage
-echo " "
-echo Usage: smartfrog -?
-%SFJVM% org.smartfrog.SFSystem -?
-echo " "
-echo %1 %2 %3 %4 %5 %6 %7 %8 %9
-echo sfcmd %SFCMDPARAMETERS%
-echo classargs %CLASSARGS%
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
 
-:finish
 endlocal

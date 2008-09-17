@@ -48,13 +48,7 @@ public class BootStrap {
 
     private static Log log = LogFactory.getLog(BootStrap.class);
 
-	/**
-	 * Path to the package with should be used for the host ignition.
-	 */
-	private String IgnitionPackage = null;
-	private String IgnitionTemplate = null;
-
-	public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
+    public static final String sfReleaseFileUnix = "smartfrog.tar.gz";
     public static final String sfReleaseFileWindows = "smartfrog.zip";
 
     public static final String sfReleaseName = "smartfrog";
@@ -73,55 +67,17 @@ public class BootStrap {
     public BootStrap(AvalancheFactory f) {
         // additional separator needed for velocity
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            log.info("Avalanche Server is running on Windows.");
+           log.info("Avalanche Server is running on Windows.");
             this.strOptSeparator = File.separator;
+        }
 
-		}
-
-		this.factory = f;
+        this.factory = f;
         this.avalancheHome = f.getAvalancheHome();
         this.sfDirectory = this.avalancheHome + File.separator + this.strOptSeparator + "smartfrog";
         this.sfBootDirectory = this.sfDirectory + File.separator + this.strOptSeparator + "boot";
+    }
 
-	}
-
-	public String getIgnitionPackage() {
-		return IgnitionPackage;
-	}
-
-	public void setIgnitionPackage(String ignitionPackage) {
-		IgnitionPackage = ignitionPackage;
-	}
-
-	public String getIgnitionTemplate() {
-		return IgnitionTemplate;
-	}
-
-	public void setIgnitionTemplate(String ignitionTemplate) {
-		IgnitionTemplate = ignitionTemplate;
-	}
-
-	/**
-     * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
-     * picks up host properties and access details from Avalanche database and uses that information
-     * to ignite the hosts.
-     *
-     * @param hosts is the list of hosts to be ignited
-	 * @param inPackage The package which should be used for the ignition. Will only be used for this ignition. If you want to set a default package use <code>setIgnitionPackage()</code>.
-	 * @param inTemplate The template which should be used for the ignition. Will only be used for this ignition. If you want to set a default package use <code>setIgnitionTemplate()</code>.
-     * @throws HostIgnitionException if ignition failed
-     */
-	public void ignite(String[] hosts, String inPackage, String inTemplate) throws HostIgnitionException {
-		String oldPack = IgnitionPackage;
-		String oldTempl = IgnitionTemplate;
-		IgnitionPackage = inPackage;
-		IgnitionTemplate = inTemplate;
-		ignite(hosts);
-		IgnitionPackage = oldPack;
-		IgnitionTemplate = oldTempl;
-	}
-
-	/**
+    /**
      * Ignites a list of hosts. These hosts should exist in Avalanche database, this method
      * picks up host properties and access details from Avalanche database and uses that information
      * to ignite the hosts.
@@ -132,16 +88,10 @@ public class BootStrap {
     public void ignite(String[] hosts) throws HostIgnitionException {
         try {
             HostManager hostManager = factory.getHostManager();
-            String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
-            String securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
-			
-			String templateFile;
-			if (IgnitionTemplate == null)
-				templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
-			else
-				templateFile = IgnitionTemplate;
-
-			String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
+	    String xmppServer = factory.getAttribute(AvalancheFactory.XMPP_SERVER_NAME);
+	    String securityOn = factory.getAttribute(AvalancheFactory.SECURITY_ON);
+            String templateFile = sfBootDirectory + File.separator + this.strOptSeparator + sfTemplate;
+            String outDir = sfBootDirectory + File.separator + this.strOptSeparator + sfWorkDir;
             String outputFile = outDir + File.separator + this.strOptSeparator + "hostIgnition" + getDateTime() + ".sf";
 
             ArrayList<Daemon> listDaemons = new ArrayList<Daemon>();
@@ -153,10 +103,7 @@ public class BootStrap {
                 String username = h.getUser();
                 String password = h.getPassword();
 
-				// bind ip
-				String bindIP = h.getBindIP();
-
-				// Setting the AccessMode
+                // Setting the AccessMode
                 HostType.AccessModes am = h.getAccessModes();
                 String accessType = "ssh";
                 if (am != null) {
@@ -208,14 +155,7 @@ public class BootStrap {
 
                 String os = h.getPlatformSelector().getOs();
 
-				// decide about the filename, depending on the target os
-				String strLocalfile1;
-				if (IgnitionPackage == null)
-					strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
-				else
-					strLocalfile1 = IgnitionPackage;
-
-				// if the install location hasn't been set use the default locations
+                // if the install location hasn't been set use the default locations
                 if (avalancheInstallationDirectory == null)
                     avalancheInstallationDirectory = (os.equals("windows") ? sfInstallLocationWindows : sfInstallLocationUnix);
 
@@ -229,56 +169,57 @@ public class BootStrap {
                         "\n\nJAVA_HOME: " + javaHomeDirectory +
                         "\nAVALANCHE_HOME:" + avalancheInstallationDirectory);
 
-                if (securityOn.equals("true")) {
-                    Daemon d = new Daemon("n" + host,                // name
-                            os,                     // os
-                            host,               // host
-                            transferType,           // transfer type
-                            accessType,             // access type
-                            username,               // username
-                            password,               // password
-                            strLocalfile1,          // localfile1
-                            null,                   // localfile2
-                            null,                   // localfile3
-                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "mykeys.st",                   // keyfile
-                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "SFSecurity.properties",                   // secproperties
-                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "smartfrog.jar",                   // smartfrogjar
-                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfServices.jar",                   // servicesjar
-                            sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfExamples.jar",                   // examplesjar
-                            sfReleaseName,          // releasename
-                            javaHomeDirectory,              // javahome
-                            avalancheInstallationDirectory,          // installdir
-                            DEFAULT_EMAILTO,        // emailto
-                            DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER,
-							bindIP);
-                    listDaemons.add(d);
+                // decide about the filename, depending on the target os
+                String strLocalfile1 = sfBootDirectory + File.separator + strOptSeparator + (os.equals("windows") ? sfReleaseFileWindows : sfReleaseFileUnix);
 
-                } else {
-                    Daemon d = new Daemon("n" + host,                // name
-                            os,                     // os
-                            host,               // host
-                            transferType,           // transfer type
-                            accessType,             // access type
-                            username,               // username
-                            password,               // password
-                            strLocalfile1,          // localfile1
-                            null,                   // localfile2
-                            null,                   // localfile3
-                            null,                   // keyfile
-                            null,                   // secproperties
-                            null,                   // smartfrogjar
-                            null,                   // servicesjar
-                            null,                   // examplesjar
-                            sfReleaseName,          // releasename
-                            javaHomeDirectory,              // javahome
-                            avalancheInstallationDirectory,          // installdir
-                            DEFAULT_EMAILTO,        // emailto
-                            DEFAULT_EMAILFROM,      // emailfrom
-                            DEFAULT_EMAILSERVER,
-							bindIP);
-                    listDaemons.add(d);
-                }
+		if (securityOn.equals("true")) {
+		  	Daemon d = new Daemon(host,                // name
+                        os,                     // os
+                        host,               // host
+                        transferType,           // transfer type
+                        accessType,             // access type
+                        username,               // username
+                        password,               // password
+                        strLocalfile1,          // localfile1
+                        null,                   // localfile2
+                        null,                   // localfile3
+                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "mykeys.st",                   // keyfile
+                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "private" + File.separator + strOptSeparator + "host1" + File.separator + strOptSeparator + "SFSecurity.properties",                   // secproperties
+                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "smartfrog.jar",                   // smartfrogjar
+                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfServices.jar",                   // servicesjar
+                        sfDirectory + File.separator + strOptSeparator + "dist" + File.separator + strOptSeparator + "signedLib" + File.separator + strOptSeparator + "sfExamples.jar",                   // examplesjar
+                        sfReleaseName,          // releasename
+                        javaHomeDirectory,              // javahome
+                        avalancheInstallationDirectory,          // installdir
+                        DEFAULT_EMAILTO,        // emailto
+                        DEFAULT_EMAILFROM,      // emailfrom
+                        DEFAULT_EMAILSERVER);   // emailserver
+                listDaemons.add(d);
+
+		} else {
+		 Daemon d = new Daemon(host,                // name
+                        os,                     // os
+                        host,               // host
+                        transferType,           // transfer type
+                        accessType,             // access type
+                        username,               // username
+                        password,               // password
+                        strLocalfile1,          // localfile1
+                        null,                   // localfile2
+                        null,                   // localfile3
+                        null,                   // keyfile
+                        null,                   // secproperties
+                        null,                   // smartfrogjar
+                        null,                   // servicesjar
+                        null,                   // examplesjar
+                        sfReleaseName,          // releasename
+                        javaHomeDirectory,              // javahome
+                        avalancheInstallationDirectory,          // installdir
+                        DEFAULT_EMAILTO,        // emailto
+                        DEFAULT_EMAILFROM,      // emailfrom
+                        DEFAULT_EMAILSERVER);   // emailserver
+                listDaemons.add(d);
+		}
 
             }
 
@@ -286,23 +227,32 @@ public class BootStrap {
 
             // to read from listDaemons and write to data. all and then create a description
             log.info("TemplateGen Map : " + listDaemons);
-            TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, securityOn.equals("true"), false, null, logFileDir, xmppServer);
+	    if (securityOn.equals("true")) {
+            TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, true, false, null, logFileDir, xmppServer);
+	    } else {
+	    	TemplateGen.createHostIgnitionTemplate(listDaemons, templateFile, outputFile, false, false, null, logFileDir, xmppServer);
+	    }
+		    
 
             File of = new File(outputFile);
             if (!of.exists()) {
                 throw new HostIgnitionException("Template creation failed! File does not exist: " + outputFile);
             }
-            // log.info("SF : " + outputFile);
+            log.info("SF : " + outputFile);
 
-			SmartfrogAdapter adapter;
-
-            adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", securityOn.equals("true"));
-
-            SmartFrogAdapterImpl.setLogFilePath(logFileDir);
+	   SmartfrogAdapter adapter = null;
+	    
+		if (securityOn.equals("true")) {
+            		 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", true);
+		} else {
+			 adapter = new SmartFrogAdapterImpl(sfDirectory + File.separator + this.strOptSeparator + "dist", false);
+	}
+           SmartFrogAdapterImpl.setLogFilePath(logFileDir);
 
             HashMap attrMap = new HashMap();
-
             // run the description on local host for remote deployments.
+
+
             adapter.submit(outputFile, attrMap, new String[]{"localhost"});
         } catch (Exception e) {
             log.error(e);

@@ -22,9 +22,6 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.core.module.*"%>
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.settings.sfConfig.*"%>
-<%@ page import="org.smartfrog.avalanche.shared.ActiveProfileUpdater"%>
-<%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
-<%@ page import="java.util.ArrayList"%>
 <%@ include file="header.inc.jsp"%>
 <%
     String errMsg = null; 
@@ -55,21 +52,8 @@ For more information: www.smartfrog.org
     ActionType action = null;
     SfDescriptionType sfDesc = null; 
 
-    String []hostlist = hostManager.listHosts();
-	String []hosts= new String[0];
-	ArrayList listHolder = new ArrayList();
-	ActiveProfileUpdater updater = new ActiveProfileUpdater();
-	 ActiveProfileType type = null;
-	for(int p=0;p<hostlist.length;p++){
-		boolean active = false;
-		int q =0;
-		 type = updater.getActiveProfile(hostlist[p]);
-		 active = type.getHostState().equals("Available");
-		// if(active)
-			listHolder.add(hostlist[p]);
-	}
-    hosts = (String[])listHolder.toArray(hosts);
-
+    String []hosts = hostManager.listHosts();
+    
     VersionType[] versions = module.getVersionArray();
     for( int i=0;i<versions.length;i++){
 	if( version.equals(versions[i].getNumber()) ){
@@ -116,7 +100,6 @@ For more information: www.smartfrog.org
 <script language="JavaScript" type="text/javascript">
 
 function submit(target){
-	
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
@@ -165,7 +148,7 @@ function copy(src, dest)
     }
     for (var i = 0; i < src.options.length; i++){
 	    var opt = document.createElement('option');
-		opt.appendChild(document.createTextNode(src.options[i].text));
+	    opt.appendChild(document.createTextNode(src.options[i].text));
 	    dest.appendChild(opt);
     }
     selectAll(dest);
@@ -251,9 +234,7 @@ setNextSubtitle("Select Host Page");
 </div>
 
 <%@ include file="message.inc.jsp" %>
-<% if (hosts.length==0){%>
-	<p><b><font size="3">No Active nodes available.</font></b></p>
-	<%}%>
+
 <!-- Actual Body starts here -->
 <table  border="0" cellpadding="0" cellspacing="0" class="dataTable" id="moduleTable">
   <caption>Action Information</caption>
@@ -498,9 +479,8 @@ setNextSubtitle("Select Host Page");
 </form >
 
 <form method="post"  id="hostTransferList"
-	action="module_distro_action_schedule_U.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
+	action="module_distro_action_schedule.jsp?title=<%=actionTitle%>&&engine=<%=action.getEngine()%>&&moduleId=<%=moduleId%>&&version=<%=version%>&&distroId=<%=distroId%>"
 	onsubmit="javascript:copy(document.getElementById('selectedHosts'), document.getElementById('selectedHosts2'))">
-	
       <select style="display:none" size="0" id='selectedHosts2' 
 	name="selectedHosts2" 
 	multiple>
@@ -512,7 +492,7 @@ setNextSubtitle("Select Host Page");
     <input class="hpButton"type="submit" name="submit" 
 	value="Using Scheduler Execute this action on target nodes from the selected target nodes"></input>
   </div></div></div>
-    
+    Number of target nodes: <input type="text" name="number" size="10" id="hostId" />
 </div>
 </div>
 </form>

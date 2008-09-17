@@ -29,34 +29,25 @@ public class ChmodTest extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
+//    public void testChmodFails() throws Throwable {
+//        expectSuccessfulTestRun(FILES, "testChmodFails");
+//    }
+//
+//    public void testChmodFailsRecursively() throws Throwable {
+//        expectSuccessfulTestRun(FILES, "testChmodFailsRecursively");
+//    }
+    
     public void testRemoveAllRights() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testRemoveAllRights");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRestoreReadPermissions() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testRestoreReadPermissions");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRestoreWritePermissions() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testRestoreWritePermissions");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRestoreRWPermissions() throws Throwable {
         expectSuccessfulTestRunOrSkip(FILES, "testRestoreRWPermissions");
     }

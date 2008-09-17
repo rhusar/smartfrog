@@ -49,11 +49,11 @@ fi
 
 
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" $SFCODEBASE $SFLIBRARYPATH org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" $SFSECURITY $SFLIBRARYPATH org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" $SFCODEBASE $SFLIBRARYPATH $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
 else
-        java "$SFDEFAULTINI" $SFDEFAULTSECURITY $SFLIBRARYPATH org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a \"$APPNAME\":DEPLOY:\"$3\"::$1: $OPTION -e
 fi

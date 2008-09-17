@@ -19,7 +19,4 @@ AvlXmppListener extends XmppListener {
     //a lot of servers go down. To be robust you have to retry a lot.
     offlineMinutesTimeout 60; 
     subscriptionMode SUBSCRIPTION_ACCEPT_ALL;
-
-    // the address which avalanche used to ignite this host
-    hostAddress (ENVPROPERTY AVALANCHE_HOST_ADDRESS);
 }

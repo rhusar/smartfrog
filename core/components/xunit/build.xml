@@ -35,7 +35,7 @@
   <!--we are a component -->
   <property name="is.component" value="true"/>
   <property name="ivy.enabled" value="true"/>
-  <!--<property name="system.tests" value="true"/>-->
+  <property name="system.tests" value="false"/>
   <!-- override point -->
   <property file="build.properties"/>
 

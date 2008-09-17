@@ -38,17 +38,17 @@ public class TouchFileTest  extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
+    public void testEmpty() {
+
+    }
+
     public void testWorking() throws Throwable {
         application=deployExpectingSuccess(FILES + "testTouchWorking.sf", "testTouchWorking");
     }
 
     /**
      * set the time then verify that the timestamp was clocked back.
-     * @throws Throwable on failure
+     * @throws Throwable
      */
     public void testTouchSetTime() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -68,7 +68,7 @@ public class TouchFileTest  extends DeployingTestBase {
     /**
      * test that we are working
      *
-     * @throws Throwable on failure
+     * @throws Throwable
      */
     public void testTouchSubdirs() throws Throwable {
         application = deployExpectingSuccess(FILES +

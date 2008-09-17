@@ -23,7 +23,6 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.core.module.*" %>
 <%@ page import="org.smartfrog.avalanche.server.*" %>
 <%@ page import="org.smartfrog.avalanche.core.host.*" %>
-<%@ page import="java.util.regex.Pattern" %>
 <h1>Saving host data...</h1>
 <%@ include file="footer.inc.jsp" %>
 
@@ -63,7 +62,6 @@ For more information: www.smartfrog.org
                     if (host == null) {
                         // Create new entry in database and a new XMPP account
                         host = manager.newHost(hostId);
-
                         // Save data to the database
                         pst = host.addNewPlatformSelector();
                     } else {

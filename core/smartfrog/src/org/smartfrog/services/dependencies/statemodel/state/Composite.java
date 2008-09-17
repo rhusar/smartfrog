@@ -5,7 +5,6 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogUpdateException;
-import org.smartfrog.sfcore.prim.Liveness;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -17,7 +16,6 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
    NotificationLock parentLocking;
 
    public Composite() throws RemoteException {
-	   super();
    }
 
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -35,30 +33,33 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 
    //child down to State, where it is handled
    public void handleStateChange() {
-      for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
+      for (Enumeration e = sfChildren(); e.hasMoreElements(); ) {
          Object c = e.nextElement();
-         if (c instanceof StateChangeNotification) 
+         if (c instanceof StateChangeNotification) try {
             ((StateChangeNotification)c).handleStateChange();
+         } catch (RemoteException e1) {
+            //??
+         }
       }
    }
 
-   public void lock() {
+   public void lock() throws RemoteException {
       ((NotificationLock)parentLocking).lock();
    }
 
-   public void unlock(boolean notify) {
+   public void unlock(boolean notify) throws RemoteException {
       ((NotificationLock)parentLocking).unlock(notify);
    }
 
-   public void notifyStateChange() {
+   public void notifyStateChange() throws RemoteException {
       ((NotificationLock)parentLocking).notifyStateChange();
    }
 
-   public void threadStarted() {
+   public void threadStarted() throws RemoteException {
       ((NotificationLock)parentLocking).threadStarted();
    }
 
-   public void threadStopped() {
+   public void threadStopped() throws RemoteException {
       ((NotificationLock)parentLocking).threadStopped();
    }
 
@@ -69,6 +70,13 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
          throw new SmartFrogUpdateException("Composite may not (currently) be updated with terminations " +
                             sfCompleteNameSafe());
       }
+      /*
+      if (childrenToCreate.size() > 0) {
+         throw new SmartFrogUpdateException("Composite may not (currently) be updated with creations " +
+                            sfCompleteNameSafe());
+      }
+      */
+
       return result;
    }
 }

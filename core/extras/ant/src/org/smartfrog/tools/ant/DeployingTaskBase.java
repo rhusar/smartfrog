@@ -30,12 +30,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class is used as an extended base for those tasks that do deployment, as it supports declaring of applications
- * as nested elements. created 27-Feb-2004 15:27:47
+ * This class is used as an extended base for those tasks that do deployment, as it supports
+ * declaring of applications as nested elements.
+ * created 27-Feb-2004 15:27:47
  */
 
 public abstract class DeployingTaskBase extends SmartFrogTask {
@@ -57,7 +59,6 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * add a new application to the list.
-     *
      * @return the created application
      */
     public Application createApplication() {
@@ -96,7 +97,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     }
 
     /**
-     * deploy the applications listed by creating a -a app descriptor list on the command line
+     * deploy the applications listed by creating a -a app descriptor list
+     * on the command line
      */
     public void deployApplications() {
         verifyHostDefined();
@@ -107,11 +109,11 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             String path = makePath(application);
             String subprocess = getSubprocess();
 
-            addArg(application.getName() + ':' //NAME
-                    + ACTION_DEPLOY + ':'      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+            addArg(application.getName() + ":" //NAME
+                    + ACTION_DEPLOY + ":"      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
                     + path                     //URL
-                    + "" + ':'                 // sfConfig or empty
-                    + getHost() + ':'          // host
+                    + "" + ":"                 // sfConfig or empty
+                    + getHost() + ":"          // host
                     + subprocess);             // subprocess
 
         }
@@ -119,7 +121,6 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * Create a path from an application
-     *
      * @param application application
      * @return a path from its descriptor
      */
@@ -135,9 +136,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 //    }
 
     /**
-     * Get the subprocess we are deploying to. The default is {@link #DEFAULT_SUBPROCESS}, though subclasses may
-     * override this
-     *
+     * Get the subprocess we are deploying to.
+     * The default is {@link #DEFAULT_SUBPROCESS}, though subclasses may override
+     * this
      * @return the name of the subprocess to deployto
      */
     protected String getSubprocess() {
@@ -145,7 +146,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     }
 
     /**
-     * Add a new codebase element to the current set. The URLs of the codebase will be visible to the deploying app.
+     * Add a new codebase element to the current set. The URLs of the codebase
+     * will be visible to the deploying app.
      *
      * @param codebaseEntry a new codebase entry
      */
@@ -158,7 +160,6 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * set up the codebase params on the command line, if needed
-     *
      * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
      */
     private void setupCodebase() {
@@ -171,7 +172,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     }
 
     /**
-     * the name and url of an application. Interpretation of descriptor is by smartfrog; it includes resources as well
+     * the name and url of an application.
+     * Interpretation of descriptor is by smartfrog; it includes resources as well
      * as codebase urls
      */
     public static class Application {
@@ -180,15 +182,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * owner task
          */
         private TaskBase owner;
-        public static final String ERROR_NO_APPLICATION_NAME = "No application name";
-        public static final String ERROR_NO_APPLICATION_DESCRIPTOR = "No descriptor provided for ";
+        public static final String ERROR_NO_APPLICATION_NAME = "no application name";
+        public static final String ERROR_NO_APPLICATION_DESCRIPTOR = "no descriptor provided for ";
         public static final String ERROR_FILE_NOT_FOUND = "File does not exist: ";
-        public static final String ERROR_NO_WRITE = "Could not write to: ";
+        public static final String ERROR_NO_WRITE = "could not write to: ";
         public static final String APPLICATION_ENCODING = "UTF-8";
 
         /**
          * Create a bound application
-         *
          * @param owner owning task
          */
         public Application(TaskBase owner) {
@@ -229,13 +230,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         }
 
         /**
-         * set the file of the app. This is the same as the descriptor, except that it must exist
+         * set the file of the app. This is the same as the descriptor, except
+         * that it must exist
          *
          * @param file descriptor filename
          */
         public void setFile(File file) {
             if (!file.exists()) {
-                throw new BuildException(ERROR_FILE_NOT_FOUND + file);
+                throw new BuildException(ERROR_FILE_NOT_FOUND+file);
             }
             descriptor = file.toString();
         }
@@ -269,19 +271,20 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          */
         public void addText(String unexpandedText) {
             //convert properties
-            text = owner.getProject().replaceProperties(unexpandedText);
+            unexpandedText = owner.getProject().replaceProperties(unexpandedText);
+            this.text=unexpandedText;
             //create a temp file
             File tempfile = FileUtils.getFileUtils().createTempFile("deploy",
                     ".sf", null);
             //mark for cleanup later
-            if (owner.isDebug()) {
-                owner.log("Application temporary files is " + tempfile);
+            if(owner.isDebug()) {
+                owner.log("Application temporary files is "+tempfile);
                 owner.log("This is not deleted in debug mode");
             } else {
                 //no debugging, kill the file after we exit ant.
                 tempfile.deleteOnExit();
             }
-            owner.log("Saving to temporary file " + tempfile, Project.MSG_VERBOSE);
+            owner.log("Saving to temporary file "+tempfile,Project.MSG_VERBOSE);
             owner.log(unexpandedText, Project.MSG_VERBOSE);
             OutputStream out = null;
             OutputStreamWriter writer = null;
@@ -290,7 +293,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 out = new BufferedOutputStream(new FileOutputStream(tempfile));
                 writer = new OutputStreamWriter(out, APPLICATION_ENCODING);
                 printer = new PrintWriter(writer);
-                printer.write(text);
+                printer.write(this.text);
                 printer.flush();
                 //remember our name
                 setFile(tempfile);

@@ -69,10 +69,6 @@
         name="ant-nodeps"
         rev="${apache.ant.version}"
 	conf="runtime->default"/>
-	<dependency org="javax.mail"
-        name="mail"
-        rev="${mail.version}"
-	conf="runtime->default"/>
 <dependency org="org.apache.ant"
         name="ant-junit"
         rev="${apache.ant.version}"
@@ -123,10 +119,6 @@
         conf="compile,runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-vmware"
-        rev="latest.integration"
-        conf="compile,runtime->default" />
-	<dependency org="org.smartfrog"
-        name="sf-emailer"
         rev="latest.integration"
         conf="compile,runtime->default" />
     <!--include XML parser and related services-->
@@ -195,12 +187,7 @@
     <dependency org="xmldb"
         name="xmldb-xupdate"
         rev="${xmldb-xupdate.version}"
-	conf="compile,redist->default"/>
-	<!--adds rest component-->
-    <dependency org="org.smartfrog"
-        name="sf-rest"
-        rev="latest.integration"
-	conf="runtime->default"/>
+        conf="compile,redist->default"/>
 <!--
     <dependency org="kizoom"
         name="lift"

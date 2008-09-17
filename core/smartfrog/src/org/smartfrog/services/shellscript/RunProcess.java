@@ -29,11 +29,6 @@ import java.io.OutputStream;
  */
 public interface RunProcess {
 
-    /**
-     * The value that implies we have no exit code yet: {@value}
-     */
-    int NOT_YET_EXITED = -9999;
-
     public int getProcessState();
     public boolean ready();
     public void run();
@@ -81,9 +76,4 @@ public interface RunProcess {
      */
     public OutputStream getOutputStream();
 
-    /**
-     * The exit code from the execution, or {@link #NOT_YET_EXITED} if there is no real value
-     * @return the exit code.
-     */
-    int getExitValue();
 }

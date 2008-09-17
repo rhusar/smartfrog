@@ -24,14 +24,11 @@ package org.smartfrog.services.hadoop.conf;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,28 +40,24 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import java.net.URL;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.rmi.Remote;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information
  */
-public class ManagedConfiguration extends JobConf implements PrimSource,
-        ConfigurationAttributes {
+public class ManagedConfiguration extends JobConf implements PrimSource, ConfigurationAttributes {
 
     private Prim source;
     private ComponentHelper helper;
 
     /**
-     * Some attributes that are not listed in the component
-     * (so they can be picked up from parents) but which should be
+     * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
      * discovered.
      */
     private static final String[] REQUIRED_ATTRIBUTES = {
@@ -164,11 +157,9 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     public String get(String name, String defaultValue) {
         try {
             Object result = source.sfResolve(name, false);
-            if (result == null || result instanceof SFNull) {
-                return defaultValue;
-            } else {
-                return result.toString();
-            }
+            return result != null ?
+                    result.toString()
+                    : defaultValue;
         } catch (SmartFrogResolutionException e) {
             throw new SFHadoopRuntimeException(e);
         } catch (RemoteException e) {
@@ -226,6 +217,9 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * Add a configuration resource.
      *
+     * The properties of this resource will override properties of previously added resources, unless they were marked
+     * <a href="#Final">final</a>.
+     *
      * @param url url of the resource to be added, the local filesystem is examined directly to find the resource,
      *            without referring to the classpath.
      * @throws SFHadoopRuntimeException always
@@ -277,15 +271,13 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException for resolution problems
      */
-    private SortedMap<String, String> getState() throws RemoteException, SmartFrogResolutionException {
-        SortedMap<String, String> map = new TreeMap<String, String>();
+    private Map<String, String> getState() throws RemoteException, SmartFrogResolutionException {
+        Map<String, String> map = new HashMap<String, String>();
         Iterator<Object> objectIterator = source.sfAttributes();
         while (objectIterator.hasNext()) {
             Object key = objectIterator.next();
             Object value = source.sfResolveHere(key);
-            if (!(value instanceof Remote)
-                    && !(value instanceof ComponentDescription)
-                    && !(value instanceof SFNull)) {
+            if (!(value instanceof Remote)) {
                 map.put(key.toString(), value.toString());
             }
         }
@@ -305,7 +297,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * Get an {@link Iterator} to go through the list of <code>String</code> key-value pairs in the configuration.
      *
      * @return an iterator over the entries.
-     * @throws SFHadoopRuntimeException for resolution problems
+     * @throws SmartFrogResolutionException for resolution problems
      */
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
@@ -365,61 +357,6 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("SmartFrog Managed Configuration bound to ");
-        builder.append(helper.completeNameSafe().toString());
-        return builder.toString();
+        return "SmartFrog Managed Configuration bound to " + helper.completeNameSafe().toString();
     }
-
-    /**
-     * Dump our state to a string; triggers a full resolution.
-     *
-     * @return a complete dump of name "value"; pairs, in order
-     * @throws SmartFrogResolutionException problems resolving attributes
-     * @throws RemoteException              network trouble
-     */
-    public String dump() throws SmartFrogResolutionException, RemoteException {
-        StringBuilder builder = new StringBuilder();
-        SortedMap<String, String> map = getState();
-        for (String key : map.keySet()) {
-            builder.append(key);
-            builder.append(" \"");
-            builder.append(map.get(key));
-            builder.append("\";\n");
-        }
-        return builder.toString();
-    }
-
-    /**
-     * dump quietly; exceptions are turned into strings
-     *
-     * @return the dump of name value pairs or an error message
-     */
-    public String dumpQuietly() {
-        try {
-            return dump();
-        } catch (SmartFrogResolutionException e) {
-            return '(' + e.toString() + ')';
-        } catch (RemoteException e) {
-            return '(' + e.toString() + ')';
-        }
-    }
-
-    /**
-     * Bind to a network address; something like  "0.0.0.0:50030" is expected.
-     * @param addressName the property for the address
-     * @param bindAddressName old style hostname
-     * @param bindAddressPort old style host port
-     * @return the host/port binding
-     * @throws IllegalArgumentException if the arguments are bad
-     */
-  public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {
-      String infoAddr =
-              NetUtils.getServerAddress(this,
-                      bindAddressName,
-                      bindAddressPort,
-                      addressName);
-      InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
-      return socketAddress;
-  }
 }

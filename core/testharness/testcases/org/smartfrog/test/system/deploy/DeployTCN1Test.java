@@ -32,11 +32,7 @@ public class DeployTCN1Test extends SmartFrogTestBase {
         super(s);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN1() throws Throwable {
+    public void testCaseTCN1() throws Exception {
         deployExpectingException(FILES+"tcn1.sf",
                 "tcn1",
                 "SmartFrogLifecycleException",
@@ -46,11 +42,7 @@ public class DeployTCN1Test extends SmartFrogTestBase {
     }
 
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN1b() throws Throwable {
+    public void testCaseTCN1b() throws Exception {
         deployExpectingException(FILES + "tcn1b.sf",
                 "tcn1b",
                 "SmartFrogLifecycleException",
@@ -59,11 +51,7 @@ public class DeployTCN1Test extends SmartFrogTestBase {
                 "Reference not found");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN1c() throws Throwable {
+    public void testCaseTCN1c() throws Exception {
         deployExpectingException(FILES + "tcn1c.sf",
                 "tcn1c",
                 "SmartFrogLifecycleException",

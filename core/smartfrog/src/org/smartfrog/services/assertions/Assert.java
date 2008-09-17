@@ -47,14 +47,9 @@ public interface Assert extends Remote {
      */
     public String ATTR_EVALUATES_FALSE = "evaluatesFalse";
     /**
-     * check when we start up {@value}
+     * {@value}
      */
     public String ATTR_CHECK_ON_STARTUP = "checkOnStartup";
-    /**
-     * check on a ping {@value}
-     */
-    public String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
-
     /**
      * {@value}
      */
@@ -83,6 +78,10 @@ public interface Assert extends Remote {
      */
     public String ATTR_EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
 
+    /**
+     * check when we start up {@value}
+     */
+    public String ATTR_CHECK_ON_LIVENESS = "checkOnLiveness";
 
     /**
      * {@value}

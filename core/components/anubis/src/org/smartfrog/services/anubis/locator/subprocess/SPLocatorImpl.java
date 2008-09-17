@@ -106,7 +106,7 @@ public class SPLocatorImpl
             liveness = new Liveness(timeout);
             pinger   = new Pinger(period);
             livenessChecker = new LivenessChecker(period);
-            timers          = new ActiveTimeQueue("Anubis: subprocess locator timers");
+            timers          = new ActiveTimeQueue();
             timers.start();
             maxTransDelay = period * timeout;
 

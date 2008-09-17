@@ -13,16 +13,31 @@ import java.util.Iterator;
 
 /**
  */
- public class AndConnector extends Connector {
+ public class AndConnector extends PrimImpl implements Prim, DependencyValidation, StateDependencies {
+   protected HashSet dependencies = new HashSet();
 
-   public AndConnector() throws RemoteException {
-	   super();
+   public AndConnector() throws SmartFrogException, RemoteException {
    }
 
+
    public boolean isEnabled() {
-      for (Iterator d = dependencies.iterator(); d.hasNext();){ 
-            if (!((DependencyValidation) d.next()).isEnabled()) return false;
+      for (Iterator d = dependencies.iterator(); d.hasNext();) {
+         try {
+            if (!((DependencyValidation) d.next()).isEnabled()) {
+               return false;
+            }
+         } catch (RemoteException e) {
+            //??
+         }
       }
       return true;
+   }
+
+   public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
+      dependencies.add(d);
+   }
+
+   public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException {
+      dependencies.remove(d);
    }
 }

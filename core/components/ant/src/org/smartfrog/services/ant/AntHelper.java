@@ -19,18 +19,19 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ant;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.Project;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ListUtils;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.BuildLogger;
 
-import java.util.Properties;
 import java.util.Vector;
+import java.util.Properties;
 
 /**
  *

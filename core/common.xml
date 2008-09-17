@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="common" basedir="."
-     xmlns:ivy="antlib:org.apache.ivy.ant"
+     xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
     >
   <!--
   /** (C) Copyright Hewlett-Packard Development Company, LP
@@ -365,7 +365,7 @@ java.class.path=
             includeAntRuntime="${javac.include.ant}"
             memoryMaximumSize="${javac.max.memory}"
             includes="**/*.java"
-            >	   
+            >
        </javac>
     </presetdef>
 
@@ -421,14 +421,9 @@ java.class.path=
         -set up the classpath. Dont forget to
         include a reference to smartfrog.classpath to get the core stuff
       -->
-    <!-- set to withOutAndErr for more details-->
-    <property name="junit.printsummary" value="off" />
-    <property name="junit.showoutput" value="true" />
-    <!-- set to brief for brief, plain for more -->
-    <property name="junit.printformatter" value="plain" />
     <presetdef name="sf-junit">
-      <junit printsummary="${junit.printsummary}"
-          fork="true"
+      <junit printsummary="no"
+           fork="true"
            forkmode="once"
            includeantruntime="true"
            showoutput="true"
@@ -445,7 +440,7 @@ java.class.path=
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
-        <formatter type="${junit.printformatter}" usefile="false"/>
+        <formatter type="brief" usefile="false"/>
       </junit>
     </presetdef>
 
@@ -1186,8 +1181,7 @@ java.class.path=
       <echo message=" --------------------------------------------------------"/>
 	    <echo message=" Project: ${ant.project.name}"/>
 	    <echo message=" Ant file: ${ant.file}"/>
-		<echo message=" Java: ${java.version} ${java.vendor} / Javac: ${javac.java.version}"/>
-        <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
+      <echo message=" Compile Class Path= ${line.separator}|   |-- ${echo.compile.classpath}"/>	
 	    <echo message=" --------------------------------------------------------"/>
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
@@ -1491,10 +1485,9 @@ java.class.path=
           <sf-startdaemon-debug failonerror="false"
               spawn="false"
               classpathref="tests.run.classpath">
-            <!--all properties beginning with test. or run.-->
+            <!--all properties beginning with test-->
             <syspropertyset>
               <propertyref prefix="test."/>
-              <propertyref prefix="run."/>
             </syspropertyset>
           </sf-startdaemon-debug>
           </sf-conditional>
@@ -1537,8 +1530,8 @@ java.class.path=
     <!-- define the system test post processor-->
     <presetdef name="sf-system-test-validate">
       <fail if="system.test.failed" unless="tests.skip.failing">
-System Tests for ${ant.project.name} failed - see
-${test.reports.dir}/index.html
+        System Tests for ${ant.project.name} failed - see
+        ${test.reports.dir}
       </fail>
     </presetdef>
 
@@ -1910,10 +1903,9 @@ Exist.
   <!-- ========================================================== -->
   <!-- this is not  normally for overriding -->
   <!-- install the jar, to the local maven2 repository -->
-  <!-- This is used when we release artifacts-->
   <!-- ========================================================== -->
   <target name="m2-install" depends="checksum-target-jar,m2-pom"
-      description="copy the JAR file to the local maven repository">
+      description="copy the JAR file local maven repository">
 
     <mkdir dir="${m2.subdir}"/>
     <copy file="${target.jar}" todir="${m2.subdir}"/>
@@ -1979,7 +1971,7 @@ Exist.
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
-      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
     </condition>
 
   </target>
@@ -1987,8 +1979,8 @@ Exist.
   <target name="maybe-declare-ivy" if="ivy.enabled"
       unless="ivy.tasks.loaded"
       depends="ivy-properties">
-    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
-        loaderRef="ivyLoader">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
+             >
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
@@ -2001,14 +1993,14 @@ Exist.
   -->
   <target name="probe-for-ivy-tasks" depends="maybe-declare-ivy">
     <condition property="ivy.tasks.loaded2" >
-      <typefound name="retrieve" uri="antlib:org.apache.ivy.ant"/>
+      <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
     </condition>
   </target>
 
   <target name="declare-ivy" unless="ivy.tasks.loaded2"
           depends="probe-for-ivy-tasks"
           >
-    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail" loaderRef="ivyLoader">
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail">
       <classpath>
         <pathelement location="${ivy.jar}"/>
       </classpath>
@@ -2018,7 +2010,7 @@ Exist.
     <fail>
     <condition>
       <not>
-       <typefound name="settings" uri="antlib:org.apache.ivy.ant"/>
+       <typefound name="configure" uri="antlib:fr.jayasoft.ivy.ant"/>
       </not>
     </condition>
     No Ivy found in ${ivy.jar}
@@ -2028,7 +2020,7 @@ Exist.
   <target name="maybe-ivy-init"
           depends="declare-ivy"
           if="ivy.enabled" >
-    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
+    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
   </target>
 
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
@@ -2085,7 +2077,7 @@ Exist.
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
+    <ivy:configure file="${core.dir}/antbuild/ivy/ivyconf.xml"/>
   </target>
 
   <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"
@@ -2111,7 +2103,7 @@ ${ivy.reports.dir}
 
   <!--publish master artifacts-->
   <target name="ivy-publish" depends="ready-to-publish"
-      xmlns:ivy="antlib:org.apache.ivy.ant">
+      xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
         overwrite="true"
           conf="master"
@@ -2127,14 +2119,14 @@ ${ivy.reports.dir}
 
   <!--publish everything, rather than just artifacts in the master config-->
   <target name="ivy-publish-all" depends="ready-to-publish-all"
-          xmlns:ivy="antlib:org.apache.ivy.ant">
+          xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
     <ivy:publish resolver="local" pubrevision="${Version}"
        overwrite="true"
        haltonmissing="false"
        artifactspattern="${dist.lib.dir}/[artifact]-[revision].[ext]" />
   </target>
 
-  <target name="published" depends="ivy-publish-all,m2-install"
+  <target name="published" depends="ivy-publish-all"
       description="Publish artifacts to the local repositories"
       />
 

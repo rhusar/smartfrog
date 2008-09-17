@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
-#include "/org/smartfrog/services/email/components.sf"
+#include "org/smartfrog/services/email/emailer.sf"
 
 Example extends Compound {
     mailer extends Emailer {

@@ -22,4 +22,3 @@
 #include "/org/smartfrog/services/rpm/manager/rpmpackage.sf"
 #include "/org/smartfrog/services/rpm/manager/rpmmanager.sf"
 #include "/org/smartfrog/services/rpm/manager/local/components.sf"
-#include "/org/smartfrog/services/rpm/manager/remote/components.sf"

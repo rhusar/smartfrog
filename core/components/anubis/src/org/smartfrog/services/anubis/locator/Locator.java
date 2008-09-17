@@ -90,7 +90,7 @@ public class Locator
             long hbtimeout    = sfResolve("heartbeatTimeout", (long)0, true);
             long hbinterval   = sfResolve("heartbeatInterval", (long)0, true);
             maxTransDelay     = hbtimeout * hbinterval;
-            timers            = new ActiveTimeQueue("Anubis: Locator timers (node " + me + ")");
+            timers            = new ActiveTimeQueue();
             global            = new GlobalRegisterImpl(myId, this);
             local             = new LocalRegisterImpl(myId, this);
             random            = new Random(System.currentTimeMillis() + 1966*me.longValue());

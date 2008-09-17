@@ -44,12 +44,10 @@ import org.smartfrog.Version;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFSecurity;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -188,8 +186,6 @@ public final class Diagnostics {
 
         header(out, "Locale information");
         doReportLocale(out);
-
-        doReportLoggers (out);        
     }
 
 
@@ -257,7 +253,7 @@ public final class Diagnostics {
          * @param cd  Component Description
          *
          */
-        public static void doReportCD(StringBuffer out, ComponentDescription cd) {
+        private static void doReportCD(StringBuffer out, ComponentDescription cd) {
             if (cd!=null) {
               try {
                 Diagnostics.header(out, "sfCompleteName");
@@ -317,7 +313,7 @@ public final class Diagnostics {
      * @param out StringBuffer
      * @param prim Compound
      */
-    public static void doReportPrim(StringBuffer out, Prim prim) {
+    private static void doReportPrim(StringBuffer out, Prim prim) {
         if (prim!=null) {
           try {
             Diagnostics.header(out, "sfCompleteName");
@@ -365,7 +361,7 @@ public final class Diagnostics {
       * Report specific information to local process compound.
      * @param out StringBuffer
      */
-    public static void doReportProcessCompound(StringBuffer out) {
+    private static void doReportProcessCompound(StringBuffer out) {
       try {
         ProcessCompound pc = SFProcess.getProcessCompound();
         StringBuffer reportPC = new StringBuffer();
@@ -384,8 +380,8 @@ public final class Diagnostics {
      * @param out StringBuffer
      * @param compound Compound
      */
-    public static void doReportCompound(StringBuffer out, Compound compound) {
-      Enumeration<Liveness> enu = null;
+    private static void doReportCompound(StringBuffer out, Compound compound) {
+      Enumeration enu = null;
       StringBuilder childrenInfo = new StringBuilder();
       Prim child = null;
       try {
@@ -444,7 +440,7 @@ public final class Diagnostics {
      * Report a listing of system properties existing in the current vm.
      * @param out the stream to print the properties to.
      */
-    public static void doReportSystemProperties(StringBuffer out) {
+    private static void doReportSystemProperties(StringBuffer out) {
         Properties sysprops = null;
         try {
         	sysprops = System.getProperties();
@@ -476,7 +472,7 @@ public final class Diagnostics {
      * Report a listing of system environment properties existing in the current vm.
      * @param out the stream to print the properties to.
      */
-    public static void doReportSystemEnvProperties(StringBuffer out) {
+    private static void doReportSystemEnvProperties(StringBuffer out) {
         Map sysenvprops = null;
         try {
            sysenvprops = System.getenv();
@@ -506,7 +502,7 @@ public final class Diagnostics {
       * Report specific information to local process compound.
      * @param out StringBuffer
      */
-    public static void doReportThreadDump(StringBuffer out) {
+    private static void doReportThreadDump(StringBuffer out) {
       try {
         ThreadDump td = new ThreadDump();
         StringBuffer reportTD = new StringBuffer();
@@ -535,7 +531,7 @@ public final class Diagnostics {
      * Report a summary of system properties.
      * @param out the stream to print the properties to.
      */
-    public static void doReportSummary(StringBuffer out) {
+    private static void doReportSummary(StringBuffer out) {
 
       out.append("* Java Version:    ");out.append( System.getProperty("java.version"));out.append("\n");
       out.append("* Java Home:       ");out.append(System.getProperty("java.home"));out.append("\n");
@@ -641,7 +637,7 @@ public final class Diagnostics {
      * @param out the stream to print the report to.
      * @param listURI list of URIs for a host to reach
      */
-    public static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
+    private static void doReportRemoteNetwork(StringBuffer out, String[] listURI) {
         for (int i = listURI.length; i > 0; i--) {
             doReportRemoteNetwork(out, listURI[i - 1]);
         }
@@ -715,7 +711,7 @@ public final class Diagnostics {
      * Report a listing of codebase used in the current vm.
      * @param out the stream to print the properties to.
      */
-    public static void doReportCodeBase(StringBuffer out) {
+    private static void doReportCodeBase(StringBuffer out) {
 
       String codebaseString = System.getProperty(org.smartfrog.sfcore.security.SFClassLoader.SF_CODEBASE_PROPERTY);
       if (codebaseString!=null) {
@@ -730,7 +726,7 @@ public final class Diagnostics {
      * @param multiPath String
      * @param out StringBuffer
      */
-    public static void multiPathReport(String multiPath,StringBuffer out) {
+    private static void multiPathReport(String multiPath,StringBuffer out) {
       String[] array = System.getProperty(multiPath).split(System.getProperty("path.separator"));
       Arrays.sort(array, new StringComparator());
       for (int i = array.length-1 ; i >= 0; i--) {
@@ -748,7 +744,7 @@ public final class Diagnostics {
      * @param libs array of libraries (can be null)
      * @param out String Buffer
      */
-    public static void printLibraries(File[] libs, StringBuffer out) {
+    private static void printLibraries(File[] libs, StringBuffer out) {
         if (libs == null) {
             out.append("No such directory.\n");
             return;
@@ -768,7 +764,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    public static void doReportTempDir(StringBuffer out) {
+    private static void doReportTempDir(StringBuffer out) {
         String tempdir=System.getProperty("java.io.tmpdir");
         if( tempdir == null ) {
             out.append("Warning: java.io.tmpdir is undefined");out.append("\n");
@@ -826,7 +822,7 @@ public final class Diagnostics {
      * Derived from Ant Diagnostics class
      * @param out String Buffer
      */
-    public static void doReportLocale(StringBuffer out) {
+    private static void doReportLocale(StringBuffer out) {
         //calendar stuff.
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
@@ -846,7 +842,7 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-   public static void doReportClassPathRepeats(StringBuffer out) {
+   private static void doReportClassPathRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       String classpath[] = (System.getProperty("java.class.path")).split(System.getProperty("path.separator"));
       StringBuffer message = Logger.getRepeatsMessage(words, classpath);
@@ -858,7 +854,7 @@ public final class Diagnostics {
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties report to.
      */
-   public static void doReportCodeBaseRepeats(StringBuffer out) {
+   private static void doReportCodeBaseRepeats(StringBuffer out) {
       String[] words = Logger.testJarRepeat;
       StringBuffer message = null;
       String codebaseproperty = System.getProperty(SFClassLoader.SF_CODEBASE_PROPERTY);
@@ -870,16 +866,5 @@ public final class Diagnostics {
       out.append("\n");
    }
 
-
-   /**
-     * Report list of Logger registered in LogFactory
-     * @param out StringBuffer
-     */
-    public static void doReportLoggers(StringBuffer out) {
-        header(out, "Loggers registered in process compound");
-        LogFactory.doReportLoggers(out);
-        out.append(out);
-        out.append("\n");
-    }
 
 }

@@ -63,7 +63,7 @@ public class FilesImpl extends PrimImpl implements Files {
         //CreateRuntime Attributes
         sfReplaceAttribute(ATTR_FILE_SET, fileset);
         sfReplaceAttribute(ATTR_FILE_SET_STRING, fileset.toString());
-        sfReplaceAttribute(ATTR_FILELIST, fileset.toVector());
+        sfReplaceAttribute(ATTR_FILELIST, fileset.toString());
     }
 
     /**
@@ -128,63 +128,16 @@ public class FilesImpl extends PrimImpl implements Files {
         int minFilecount = component.sfResolve(ATTR_MINFILECOUNT, -1, false);
         int maxFilecount = component.sfResolve(ATTR_MAXFILECOUNT, -1, false);
 
-        if (filecount >= 0 && length != filecount) {
-            throw exceptionBadFileCount(component, fileset, length, filecount, " exactly ");
-        }
-        if (minFilecount >= 0 && length < minFilecount) {
-            throw exceptionBadFileCount(component, fileset, length, minFilecount, " a minimum of ");
-        }
-        if (maxFilecount >= 0 && length > maxFilecount) {
-            throw exceptionBadFileCount(component, fileset, length, maxFilecount, " a maximum of ");
+        if ((filecount >= 0 && length != filecount)
+                || (minFilecount >= 0 && length < minFilecount)
+                || (maxFilecount >= 0 && length > maxFilecount)) {
+            throw new SmartFrogDeploymentException(
+                    ERROR_FILE_COUNT_MISMATCH + filecount + " but found " + length + " files "
+                            + "in the list [" + fileset.toString()+ ']', component);
         }
 
         if (filecount < 0) {
-            component.sfReplaceAttribute(ATTR_FILECOUNT, length);
+            component.sfReplaceAttribute(ATTR_FILECOUNT, new Integer(length));
         }
-    }
-
-    /**
-     * Report the wrong file count in a fileset
-     * @param component owning component
-     * @param fileset fileset
-     * @param length actual length
-     * @param filecount expected length
-     * @param prefix text to include in the error message, such as " exactly ". Include spaces at the front
-     * and end if non empty
-     * @return an exception to throw
-     */
-    private static SmartFrogDeploymentException exceptionBadFileCount(Prim component,
-                                                                   Fileset fileset,
-                                                                   int length,
-                                                                   int filecount, String prefix) {
-
-        StringBuilder builder=new StringBuilder();
-        builder.append(ERROR_FILE_COUNT_MISMATCH)
-                .append(prefix)
-                .append(filecount)
-                .append(" but found ")
-                .append(length)
-                .append(" files in the list [")
-                .append(fileset == null ? "(null)" : fileset)
-                .append(']' + " from ")
-                .append(fileset.getSource());
-        builder.append('\n');
-        File dir = fileset.getBaseDir();
-        if(!dir.exists()) {
-            builder.append("Base directory ")
-                    .append(dir)
-                    .append(" does not exist");
-        } else {
-            File[] files = dir.listFiles();
-            builder.append("Base directory ")
-                    .append(dir)
-                    .append(" contains ")
-                    .append(files.length)
-                    .append(" files");
-        }
-
-        return new SmartFrogDeploymentException(
-                builder.toString(),
-                component);
     }
 }

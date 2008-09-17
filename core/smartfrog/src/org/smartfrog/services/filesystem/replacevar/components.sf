@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 SFReplaceFileVarTemplate extends Prim {
    sfClass "org.smartfrog.services.filesystem.replacevar.SFReplaceFileVar";
    fileName "fileToParse.txt";
-   //newFileName "fileToParse.bat"; // it is optional if no defined then modifitions directly in "fileName".
+   //newFileName "fileToParse.bat"; // it is optinal if no defined then modifitions directly in "fileName".
 
    //varToReplace ["key","value"]; // Every attribute name should start with var...
    //varToReplace ["$hola","$hello"]; //Example

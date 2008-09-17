@@ -21,7 +21,6 @@ package org.smartfrog.test.system.assertions.testcompounds;
 
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
@@ -36,50 +35,30 @@ public class TestCompoundsTest extends DeployingTestBase {
         super(name);
     }
 
-    /**
-     * deploy and run to termination
-     * @param test test to run
-     * @return the Termination record
-     * @throws Throwable on failure
-     */
-    private TerminationRecord deployToNormalTermination(String test) throws Throwable {
-        TestCompletedEvent event = expectSuccessfulTestRun(TestCompoundsTest.FILES, test);
-        return event.getStatus();
-    }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testEmptySequence() throws Throwable {
-        deployToNormalTermination("testEmptySequence");
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + "testEmptySequence.sf", "testEmptySequence");
+        expectSuccessfulTermination((TestBlock) application);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFailure() throws Throwable {
         TerminationRecord record = deployToNormalTermination("testFailure");
         assertTerminationRecordContains(record, "failure message",null,null);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testFailureWrongMessageNested() throws Throwable {
-        expectSuccessfulTestRun(TestCompoundsTest.FILES, "testFailureWrongMessageNested");
+     private TerminationRecord deployToNormalTermination(String test) throws Throwable {
+        application = deployExpectingSuccess(TestCompoundsTest.FILES + test + ".sf", test);
+        TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
+        return record;
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
+    public void NotestFailureWrongMessageNested() throws Throwable {
+        application =deployExpectingSuccess(TestCompoundsTest.FILES + "testFailureWrongMessageNested.sf",
+                "testFailureWrongMessageNested");
+        TerminationRecord record = expectSuccessfulTermination((TestBlock) application);
+    }
+
     public void testSmartFrogException() throws Throwable {
-        TerminationRecord record;
-        record = deployToNormalTermination("testSmartFrogException");
+        TerminationRecord record = deployToNormalTermination("testSmartFrogException");
         assertTerminationRecordContains(record, null, "org.smartfrog.sfcore.common.SmartFrogException", "SFE");
     }
 }

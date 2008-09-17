@@ -48,7 +48,7 @@ public class IntervalExec extends Thread {
     private LogSF          log           = new LogImplAsyncWrapper( LogFactory.getLog(this.getClass().toString()) );
 
     public IntervalExec(Identity id, ConnectionSet cs, long i) throws Exception {
-        super("Anubis: Interval Executive (node " + id.id + ")");
+        super("Anubis: Interval Executive");
         me            = id;
         connectionSet = cs;
         interval      = i;
@@ -235,10 +235,8 @@ public class IntervalExec extends Thread {
      * and ending the current wait period.
      */
     public void terminate() {
-        synchronized(connectionSet) {
-            running = false;
-            connectionSet.notify();
-        }
+        running = false;
+        connectionSet.notify();
     }
 
     public void setInterval(long interval) {

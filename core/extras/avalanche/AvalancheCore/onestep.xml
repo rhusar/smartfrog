@@ -1,45 +1,39 @@
 <?xml version="1.0"?>
 
-<project name="onestep" default="createBundle">
+<project name="onestep" default="cleanSetup">
 
-    <description>
-        One-step target for lazy ones.
-    </description>
+  <description>
+    One-step target for lazy ones.
+  </description>
 
-    <property name="onestep.build.file" value="build.xml"/>
-    <property name="onestep.setup.file" value="setup.xml"/>
+  <property name="onestep.build.file" value="build.xml"/>
+  <property name="onestep.setup.file" value="setup.xml"/>
 
-    <!-- one step setup -->
-    <target name="csClean" unless="onestep.build.noclean">
-        <subant target="cleanAll">
-            <fileset dir="." includes="${onestep.setup.file}"/>
-        </subant>
-        <subant target="clean">
-            <fileset dir="." includes="${onestep.build.file}"/>
-        </subant>
-    </target>
+  <!-- one step setup -->
+  <target name="csClean" unless="onestep.build.noclean">
+    <subant target="cleanAll">
+      <fileset dir="." includes="${onestep.setup.file}"/>
+    </subant>
+    <subant target="clean">
+      <fileset dir="." includes="${onestep.build.file}"/>
+    </subant>
+  </target>
 
-    <target name="csAllJars" depends="csClean">
-        <subant target="allJars">
-            <fileset dir="." includes="${onestep.build.file}"/>
-        </subant>
-    </target>
+  <target name="csAllJars" depends="csClean">
+    <subant target="allJars">
+      <fileset dir="." includes="${onestep.build.file}"/>
+    </subant>
+  </target>
 
-    <target name="cleanSetup" depends="csAllJars" description="Cleans and builds avalanche and avalanche-gui.">
-        <subant target="setup">
-            <fileset dir="." includes="${onestep.setup.file}"/>
-        </subant>
-    </target>
+  <target name="cleanSetup" depends="csAllJars" description="Cleans and builds avalanche and avalanche-gui.">
+    <subant target="setup">
+      <fileset dir="." includes="${onestep.setup.file}"/>
+    </subant>
+  </target>
 
-    <target name="createBundle" depends="cleanSetup" description="Creates the redistributable bundle of Avalanche.">
-        <subant target="createbundle">
-            <fileset dir="." includes="${onestep.setup.file}"/>
-        </subant>
-    </target>
-
-    <target name="noclean" description="Builds avalanche and avalanche-gui without cleaning.">
-        <property name="onestep.build.noclean" value="true"/>
-        <antcall target="createBundle" inheritall="true"/>
-    </target>
-    <!-- one step setup end -->
+  <target name="noclean" description="Builds avalanche and avalanche-gui without cleaning.">
+    <property name="onestep.build.noclean" value="true"/>
+    <antcall target="cleanSetup" inheritall="true" />
+  </target>
+  <!-- one step setup end -->
 </project>

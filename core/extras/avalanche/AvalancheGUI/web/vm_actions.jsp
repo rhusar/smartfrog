@@ -24,7 +24,6 @@ For more information: www.smartfrog.org
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType"%>
 <%@ page import="org.smartfrog.avalanche.core.activeHostProfile.VmStateType"%>
 <%@ page import="org.smartfrog.avalanche.server.ServerSetup"%>
-<%@ page import="java.util.HashMap" %>
 
 <%
     String strAction = request.getParameter("action");
@@ -32,64 +31,53 @@ For more information: www.smartfrog.org
         // Be able to query ActiveProfile
         ActiveProfileUpdater updater = new ActiveProfileUpdater();
         String strHost = request.getParameter("host");
-        String[] strVMNames = request.getParameterValues("selectedVM");
-        //out.write(strHost + "\n");
+        String[] strVMPathes = request.getParameterValues("selectedVM");
 
         try {
             // get the active profile of this machine
             ActiveProfileType type = updater.getActiveProfile(strHost);
             if (type != null) {
                 if (strAction.equals("save")) {
-                    String strVMName = request.getParameter("vmname");
-                    String strOldName = request.getParameter("oldname");
-                    //out.write(strVMName + "\n");
+                    // get the vmware's profile
+                    for (VmStateType vst : type.getVmStateArray()) {
+                        if (vst.getVmPath().equals(strVMPathes[0])) {
+                            // do changes here
 
-                    if (!strVMName.equals(strOldName)) {
-                        // get the vmware's profile
-                        for (int i = 0; i < type.getVmStateArray().length; ++i) {
-                            if (type.getVmStateArray(i).getVmName().equals(strOldName)) {
-                                // send the rename command to the vm
-                                HashMap<String, String> map = new HashMap<String, String>();
-                                map.put("rename_name", strVMName);
-                                ServerSetup.sendVMCommand(strHost, strOldName, "rename", map);
-                                break;
-                            }
+                            // store the type
+                            updater.storeActiveProfile(type);
+                            break;
                         }
                     }
+                    // optimization possible here..
                 } else if (strAction.equals("create")) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("create_master", request.getParameter("vmmasterpath"));
-                    map.put("create_name", strVMNames[0]);
-                    ServerSetup.sendVMCommand(strHost, null, "create", map);
+                    ServerSetup.sendVMCommand(strHost, strVMPathes[0], request.getParameter("vmmasterpath"), "create");
                 } else if (strAction.equals("delete")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "delete");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "delete");
                 } else if (strAction.equals("stop")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "stop");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "stop");
                 } else if (strAction.equals("start")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "start");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "start");
                 } else if (strAction.equals("suspend")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "suspend");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "suspend");
                 } else if (strAction.equals("list")) {
-                    ServerSetup.sendVMCommand(strHost, null, "list");
-                    ServerSetup.sendVMCommand(strHost, null, "getmasters");
+                    ServerSetup.sendVMCommand(strHost, null, null, "list");
+                    ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
                 } else if (strAction.equals("getmasters")) {
-                    ServerSetup.sendVMCommand(strHost, null, "getmasters");
+                    ServerSetup.sendVMCommand(strHost, null, null, "getmasters");
                 } else if (strAction.equals("getstate")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "powerstate");
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "powerstate");
                 } else if (strAction.equals("gettoolsstate")) {
-                    for (String str : strVMNames)
-                        ServerSetup.sendVMCommand(strHost, str, "toolsstate");
-                } 
+                    for (String str : strVMPathes)
+                        ServerSetup.sendVMCommand(strHost, str, null, "toolsstate");
+                }
             }
-
-            updater.storeActiveProfile(type);
         } catch (Exception e) {
-            throw e;
+
         }
 
         out.write("WTF");

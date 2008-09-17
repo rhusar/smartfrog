@@ -1,1 +1,1 @@
-Include in this directory the external JAR files needed by the smartfrog distribution.
+Include in this directory the external jar files needed by the smartfrog distribution.

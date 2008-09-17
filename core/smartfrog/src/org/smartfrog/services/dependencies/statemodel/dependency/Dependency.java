@@ -17,7 +17,6 @@ import java.rmi.RemoteException;
  * On creation will add the dependency, or termination will remove it.
  */
 public class Dependency extends PrimImpl implements Prim, DependencyValidation, StateChangeNotification {
-   String transition = null;
    StateDependencies by = null;
    Prim on = null;
 
@@ -30,11 +29,6 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
 
    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      
-      Object transition_obj = sfResolve("transition", false);
-      if (transition_obj!=null && transition_obj instanceof String){
-    	  transition = (String) transition_obj;
-      } 
       by = (StateDependencies) sfResolve("by", true);
       on = (Prim) sfResolve("on", true);
    }
@@ -69,11 +63,7 @@ public class Dependency extends PrimImpl implements Prim, DependencyValidation, 
    }
 
    public void notifyStateChange() {
-      //TODO deal with this better or split StateChangeNotification interface
+      //@TODO deal with this better or split StateChangeNotification interface
       //not needed on dependency
-   }  
-
-   public String getTransition(){
-	   return transition;
    }
 }

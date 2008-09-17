@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 /**
  */
-public interface StateChangeNotification{
+public interface StateChangeNotification extends Remote {
    //child down to State, where it is handled
-   public void handleStateChange();
+   public void handleStateChange()  throws RemoteException;
 }

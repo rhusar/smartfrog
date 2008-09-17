@@ -19,9 +19,6 @@ public class IsPropertySet extends PrimImpl implements Condition {
     public IsPropertySet() throws RemoteException {
     }
 
-    public String getProperty() {
-        return property;
-    }
 
     /**
      * Can be called to start components. Subclasses should override to provide
@@ -43,16 +40,6 @@ public class IsPropertySet extends PrimImpl implements Condition {
      * @return true if it is successful, false if not
      */
     public boolean evaluate() {
-        return resolveProperty() !=null;
-    }
-
-    protected String resolveProperty() {
-        try {
-            return System.getProperty(property);
-        } catch (SecurityException e) {
-            //security prevents access to that property. So imply it is null
-            sfLog().debug("Security exception when evaluating "+property,e);
-            return null;
-        }
+        return System.getProperty(property)!=null;
     }
 }

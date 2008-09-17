@@ -54,10 +54,12 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
 
 
     /**
-     * start the filestore
+     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+     * but spawn off any main loops!
      *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  failure while starting
+     * @throws java.rmi.RemoteException In case of network/rmi error
      */
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
@@ -70,7 +72,8 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
     }
 
     /**
-     * delete the filestore on termination
+     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
+     * compound (if ever registered)
      *
      * @param status termination status
      */
@@ -115,8 +118,9 @@ public class LocalFilestoreImpl extends FileUsingComponentImpl
      * @param content  the actual content of the file content
      * @param metadata any metadata
      * @return a file entry describing both the file and the URL
-     * @throws SmartFrogException error while creating file
-     * @throws RemoteException In case of network/rmi error
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while creating file
+     * @throws java.rmi.RemoteException In case of network/rmi error
      */
 
     public FileEntry uploadNewFile(String prefix,

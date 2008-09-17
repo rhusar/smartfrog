@@ -15,7 +15,7 @@
   For more information: www.smartfrog.org
   */
 -->
-<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kernel" default="all" basedir="." xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
   <description>
     Introduction
     ============
@@ -23,7 +23,7 @@
     It requires
       -Java1.5 or later. 
       -Ant 1.7 or later
-      -Ivy 2.0 beta 2 or later from ant.apache.org
+      -Ivy 2.0alpha2 or later from apache.org
 
     A copy of JavaCC is needed if the language itself is changed.
 
@@ -58,7 +58,6 @@
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
-	<echo message="      Build dir: ${basedir} "/>
     <echo message=" --------------------------------------------------------"/>
     <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
@@ -118,7 +117,6 @@
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
-	<pathelement path="./lib/eclipse-clp-5.10.jar"/>
     <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
   <!-- to get the classpath in a printable form -->
@@ -173,7 +171,6 @@
   <property name="dist.private.dir" location="${dist.dir}/${private}"/>
   <property name="dist.signedLib.dir" location="${dist.dir}/${signedLib}"/>
   <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
-  <property name="NuSMV.dir" location="../extras/modelchecker/nusmv/lib"/>
   <property name="dist.jdocs.dir" location="${dist.docs.dir}/jdocs"/>
   <property name="dist.SFjdocs.dir" location="${dist.docs.dir}/SFjdocs"/>
   <!--property name="redist" value="redist"/ -->
@@ -246,17 +243,18 @@
       <entry key="sf.minorRelease" value="${sf.minorRelease}"/>
       <entry key="sf.build" value="${sf.build}"/>
       <entry key="sf.status" value="${sf.status}"/>
-      <entry key="sf.build.java.version" value="${java.version}"/>
-      <entry key="sf.build.java.vendor" value="${java.vendor}"/>
-      <entry key="sf.build.os.name" value="${os.name}"/>
-      <entry key="sf.build.os.version" value="${os.version}"/>
-      <entry key="sf.build.os.architecture" value="${os.arch}"/>
-      <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
-      <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
+	  
+	  <entry key="sf.build.java.version" value="${java.version}"/>
+	  <entry key="sf.build.java.vendor" value="${java.vendor}"/>
+	  <entry key="sf.build.os.name" value="${os.name}"/>
+	  <entry key="sf.build.os.version" value="${os.version}"/>
+	  <entry key="sf.build.os.architecture" value="${os.arch}"/>
+	  
+	  <entry key="sf.svn.lastchangeddate" value="${sf.svn.lastchangeddate}"/>
+	  <entry key="sf.svn.revision" value="${sf.svn.revision}"/>
+	  	  
     </propertyfile>
-
     <property file="${sf.version.file}"/>
-
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
 
     <copy file="${sf.version.file}" todir="${dist.dir}" />
@@ -265,19 +263,22 @@
     <copy file="${src}/org/smartfrog/version.sf.build"
           tofile="${src}/org/smartfrog/version.sf" overwrite="true" />
     <replace file="${src}/org/smartfrog/version.sf">
-      <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
-      <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
-      <replacefilter token="@build@" value="${sf.build}"/>
-      <replacefilter token="@status@" value="${sf.status}"/>
-      <replacefilter token="@buildDate@" value="${sf.build.date}"/>
-      <replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
-      <replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
-      <replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
-      <replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
-      <replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
-      <replacefilter token="@copyright@" value="${Name.Company}"/>
-      <replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
-      <replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
+        <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
+        <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
+        <replacefilter token="@build@" value="${sf.build}"/>
+        <replacefilter token="@status@" value="${sf.status}"/>
+        <replacefilter token="@buildDate@" value="${sf.build.date}"/>
+		
+		<replacefilter token="@buildJavaVersion@" value="${sf.build.java.version}"/>
+		<replacefilter token="@buildJavaVendor@" value="${sf.build.java.vendor}"/>
+		<replacefilter token="@buildOSName@" value="${sf.build.os.name}"/>
+		<replacefilter token="@buildOSVersion@" value="${sf.build.os.version}"/>
+		<replacefilter token="@buildOSArch@" value="${sf.build.os.architecture}"/>
+		<replacefilter token="@copyright@" value="${Name.Company}"/>
+		
+		<replacefilter token="@svnRevision@" value="${sf.svn.revision}"/>
+		<replacefilter token="@svnLastChangedDate@" value="${sf.svn.lastchangeddate}"/>
+		
     </replace>
 
     <echo level="verbose">version=${sfversion}</echo>
@@ -346,11 +347,12 @@
   </target>
 
   <!-- =================================================================== -->
-  <!--     Javacc the parser files                                                                 -->
+  <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="createParser" depends="init"> 
-    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"
-        javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <!-- Javacc the parser files - both sf and csf -->
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}" jdkversion="${javac.java.version}" cachetokens="true"/>
   </target>
 
   <!-- =================================================================== -->
@@ -467,8 +469,7 @@
   <target name="copyGif" depends="initbuild">
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
-        <include name="**/*.ico"/>
-		<include name="**/*.gif"/>
+        <include name="**/*.gif"/>
       </fileset>
     </copy>
   </target>
@@ -512,7 +513,6 @@
   <target name="init.scripts.pattern" depends="init">
     <patternset id="shellscripts">
       <include name="smartfrog"/>
-      <include name="set*Properties"/>
       <include name="sf*"/>
       <include name="*.pl"/>
       <include name="*.py"/>
@@ -559,6 +559,11 @@
         <include name="**/*"/>
       </fileset>
     </copy>
+    <copy todir="${dist.docs.dir}" failonerror="false">
+      <fileset dir="../extras/sfgui/${docs}">
+        <include name="**/*.pdf"/>
+      </fileset>  
+    </copy>  
   </target>
   <!-- =================================================================== -->
   <!--                                                                     -->
@@ -778,6 +783,15 @@
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/ParseException.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/Token.java" failonerror="false"/>
 	<delete file="${src.dir}/org/smartfrog/sfcore/languages/sf/TokenMgrError.java" failonerror="false"/>
+	 <!-- csf parser source files -->
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserConstants.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParserTokenManager.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/JavaCharStream.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/ParseException.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/Token.java" failonerror="false"/>
+	<delete file="${src.dir}/org/smartfrog/sfcore/languages/csf/TokenMgrError.java" failonerror="false"/>
+	
   </target>
 
   <!-- =================================================================== -->
@@ -800,7 +814,6 @@
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
       <arg value="-f"/>
-	  <arg value="-D"/>
       <arg file="parsertargets"/>
     </java>
   </target>
@@ -827,7 +840,7 @@
 
     <macrodef name="sha1">
       <attribute name="file"/>
-	    <attribute name="todir"/>
+	  <attribute name="todir"/>
       <sequential>
         <checksum file="@{file}" algorithm="md5"  todir="@{todir}"/>
         <checksum file="@{file}" algorithm="sha1" todir="@{todir}"/>
@@ -995,7 +1008,7 @@
   </target>
 
   <target name="ivy-init" depends="ivy-warn-no-ivy" if="ivy.jar.found" unless="ivy.resource.found">
-    <typedef uri="antlib:org.apache.ivy.ant" onerror="fail"
+    <typedef uri="antlib:fr.jayasoft.ivy.ant" onerror="fail"
              resource="${ivy.resource}">
       <classpath>
         <pathelement location="${antbuild.dir}/ivy/lib/ivy-${ivy.version}.jar"/>
@@ -1039,6 +1052,8 @@ ${ivy.reports.dir}
         artifactspattern="${artifacts.dir}/[artifact]-[revision].[ext]" />
   </target>
 
+
+   
   
   <target name="published" depends="ivy-publish,m2-install"
       description="Publish artifacts to the local repositories"
@@ -1074,9 +1089,6 @@ ${ivy.reports.dir}
         <!--this can be turned on/off-->
         <exclude name="docs/jdocs" unless="install.includes.javadocs"/>
         <exclude name="lib/*" />
-        <!--this strips out any internal CA-->
-        <exclude name="private/*-internal-ca/" />
-        <exclude name="private/*-internal-ca/**" />
         <exclude name="bin/sfGui*" />
       </zipfileset>
       <zipfileset dir="${dist.dir}/lib" prefix="lib">
@@ -1142,7 +1154,6 @@ ${ivy.reports.dir}
   <patternset id="unix.bin">
     <include name="smartfrog"/>
     <include name="sf*"/>
-    <include name="set*Properties"/>
     <include name="*.pl"/>
     <include name="*.py"/>
     <exclude name="*.bat"/>
@@ -1156,7 +1167,6 @@ ${ivy.reports.dir}
     <include name="metadata/*"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
-    <exclude name="set*Properties"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <patternset refid="excluded.cruft"/>
@@ -1256,39 +1266,7 @@ ${ivy.reports.dir}
       description="Prepares distribution package,and publishes it the local repository ready for clover code coverage">
   </target>
   <!-- CLOVER  end-->
-
-  <!--some extra targets to test the distribution works-->
-
-  <target name="ready-to-run-dist" depends="dist">
-    <presetdef name="dist">
-      <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" />
-    </presetdef>
-  </target>
-
-  <target name="dist.test" depends="dist.build,dist.initCA,dist.newDaemon,dist.sfParseTest,dist.jdocs">
-  </target>
-
-  <target name="dist.build" depends="ready-to-run-dist">
-    <dist target="build" />
-  </target>
-
-  <target name="dist.initCA" depends="dist">
-    <dist target="initCA" />
-    <ant inheritall="false" inheritrefs="false" dir="${dist.dir}" target="initCA" />
-  </target>
-
-  <target name="dist.newDaemon" depends="dist">
-    <dist target="newDaemon" />
-  </target>
-
-  <target name="dist.sfParseTest" depends="dist">
-    <dist target="sfParseTest" />
-  </target>
-
-  <target name="dist.jdocs" depends="dist">
-    <dist target="jdocs" />
-  </target>
-
+  
 </project>
 
 <!-- End of file -->

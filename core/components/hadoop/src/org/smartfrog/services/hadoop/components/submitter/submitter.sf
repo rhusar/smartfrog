@@ -18,13 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
+/*
+ * the comments come from the Apache source
+ */
+
+
 
 /**
  * A component that takes a job and submits it.
  */
-JobSubmitter extends JobTrackingWorkflowComponent  {
-  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
+JobSubmitter extends WorkflowPrim  {
 
+  /**
+   reference to a job tracker; can always be in a parent.
+  jobTracker TBD;
+  */
 
   job TBD;
   /**
@@ -41,9 +49,5 @@ JobSubmitter extends JobTrackingWorkflowComponent  {
    */
   terminateWhenJobFinishes false;
 
-  /**
-   * should we delete the output directory on startup?
-   */
-  deleteOutputDirOnStartup true;
-
+  sfClass "org.smartfrog.services.hadoop.components.submitter.SubmitterImpl";
 }

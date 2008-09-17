@@ -70,7 +70,9 @@ public class SFParser implements StringParser, StreamParser, ReaderParser, Resou
      * when getParser is called. Default is "org.smartfrog.sfcore.languages"
      * defined in "SmartFrogCoreProperty.parserPackages".
      */
-    public String languagesPrefix = SFSystem.getProperty(SmartFrogCoreProperty.languagesPackagePrefix,SmartFrogCoreProperty.parserCorePackages);
+    public String languagesPrefix = SFSystem.getProperty(
+                            SmartFrogCoreProperty.languagesPackagePrefix,
+                            SmartFrogCoreProperty.parserCorePackages);
 
     //
     // Parser

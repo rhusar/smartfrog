@@ -23,16 +23,25 @@ package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.SignJar;
+import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * @ant.task category="SmartFrog" name="sf-sign" Sign JAR files using the SmartFrog security configuration. This task is
- * essentially a thin wrapper around Ant's <tt>signjar</tt> task, with integration with the SmartFrog security
- * properties file, that being where the passphrase to unlock the keystore is extracted.
+ *
+ * @ant.task category="SmartFrog" name="sf-sign"
+ * Sign JAR files using the SmartFrog security configuration.
+ * This task is essentially a thin wrapper around Ant's <tt>signjar</tt> task,
+ * with integration with the SmartFrog security properties file, that being
+ * where the passphrase to unlock the keystore is extracted.
+ *
  */
 public class SmartFrogSign extends SignJar {
+
 
 
     /**
@@ -41,7 +50,7 @@ public class SmartFrogSign extends SignJar {
     private SecurityHolder securityHolder = new SecurityHolder();
     public static final String ERROR_NO_SECURITY_SETTINGS = "No security settings provided";
     public static final String ERROR_COULD_NOT_APPLY_SETTINGS = "Could not apply security settings with ";
-    public static final String MESSAGE_NO_SECURITY = "Security empty or disabled: signing skipped";
+    public static final String MESSAGE_NO_SECURITY = "security empty or disabled: signing skipped";
 
 
     /**
@@ -63,10 +72,13 @@ public class SmartFrogSign extends SignJar {
     }
 
 
+
     /**
-     * Called by the project to let the task do its work. This method may be called more than once, if the task is
-     * invoked more than once. For example, if target1 and target2 both depend on target3, then running "ant target1
-     * target2" will run all tasks in target3 twice.
+     * Called by the project to let the task do its work. This method may be
+     * called more than once, if the task is invoked more than once.
+     * For example,
+     * if target1 and target2 both depend on target3, then running
+     * "ant target1 target2" will run all tasks in target3 twice.
      *
      * @throws org.apache.tools.ant.BuildException
      *          if something goes wrong with the build
@@ -76,7 +88,7 @@ public class SmartFrogSign extends SignJar {
         if (sec == null) {
             throw new BuildException(ERROR_NO_SECURITY_SETTINGS);
         }
-        if (!sec.isEnabled() || sec.isEmpty()) {
+        if(!sec.isEnabled() || sec.isEmpty()) {
             log(MESSAGE_NO_SECURITY);
             return;
         }
@@ -84,7 +96,7 @@ public class SmartFrogSign extends SignJar {
             sec.applySecuritySettings(this);
         } catch (IOException e) {
             throw new BuildException(ERROR_COULD_NOT_APPLY_SETTINGS
-                    + sec.toString(), e);
+                    +sec.toString(),e);
         }
         super.execute();
     }

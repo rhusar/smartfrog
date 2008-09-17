@@ -37,11 +37,6 @@ public class SpawnExampleTest
         super(s);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testCaseSE01() throws Throwable {
 
         application = deployExpectingSuccess(FILES + "example.sf", "tcSE01");

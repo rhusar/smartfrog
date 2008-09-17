@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.ant;
 
-import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.BuildEvent;
 
 import java.io.PrintStream;
 
@@ -80,7 +80,7 @@ public class InterruptibleLogger implements BuildLogger {
     private synchronized void checkForHalt() throws BuildInterruptedException {
         if (halt && !halted) {
             halted = true;
-            throw new BuildInterruptedException("Build Interrupted");
+            throw new BuildInterruptedException();
         }
     }
 

@@ -31,17 +31,12 @@ For more information: www.smartfrog.org
     String version = request.getParameter("version");
     
     String actionTitle =  request.getParameter("title");
+    //System.out.println("Scheduler TEST : " + moduleId + " " + version + " " + actionTitle); 
     String engine = request.getParameter("engine");
     String distroId = request.getParameter("distroId");
     String number = request.getParameter("number");
-	 String jobname = request.getParameter("jobName");
-	 String groupName = request.getParameter("groupName");
-	  String sch = request.getParameter("sch");
-	  String date = request.getParameter("date1");
-	  String type = request.getParameter("type");
-	  String repeatcount = request.getParameter("repeat");
-
-   
+    //System.out.println("TEST : " + number); 
+  //  System.out.println("Scheduler===" + scheduler.getSchedulerName());
     SFAdapter adapter = new SFAdapter(factory, scheduler);
     String setupcacommandsArr[] = {"mkdir -p /etc/grid-security/certificates",
 				"mv /tmp/grid-security.conf.3c9073d6 /etc/grid-security/certificates/",
@@ -69,15 +64,11 @@ For more information: www.smartfrog.org
 
     boolean hostReq = false;
     String hostNameHostReq = null;
-	String host = request.getParameter("hostsList");
-	
-	
-
     if( null != actionTitle && null != engine ){
 	// generate smartfrog command
 	
 	// get hosts
-	String []hosts = host.split(",");//request.getParameterValues("selectedHosts2");
+	String []hosts = request.getParameterValues("selectedHosts2");
 	
 	// get attribute map from GUI, to overwrite 
 	java.util.Map attrMap = new java.util.HashMap();
@@ -92,7 +83,7 @@ For more information: www.smartfrog.org
 
 		String attrName = request.getParameter(p);
 		String attrValue = request.getParameter(valKey);
-		
+		System.out.println(attrName + " = " + attrValue);
 		Vector attrVec = null;
 		boolean vec = false;
 		if ((attrValue.startsWith("[")) && (attrValue.endsWith("]"))) {
@@ -184,27 +175,25 @@ For more information: www.smartfrog.org
 	// add name of local server 
 	String avalancheServer = request.getServerName();
 	int  avalanchePort = request.getServerPort();
+	
+System.out.println("Setting _Avalanche_server to " + avalancheServer + ":" + avalanchePort);
+System.out.println("Selected hosts " + hosts.length);
 	attrMap.put(SFAdapter.AVALANCHE_SERVER, avalancheServer + ":" 
 		+ avalanchePort);
 	
 	boolean submitStatus = true;
-	
-		try{
-			String instanceName = actionTitle + "test";
-			adapter.submitTOScheduler(moduleId, version, instanceName, actionTitle,
-				 attrMap, hosts, type,date,repeatcount,jobname,groupName);//, new Integer(number).intValue());
-			//Map retCodes = adapter.submit(moduleId, version, instanceName, actionTitle,
-		//	     attrMap, hosts);
-		
-			submitStatus = true ;
-			
-		}catch(Exception t){ 
-			submitStatus = false ;
-			t.printStackTrace();
-			session.setAttribute("message", "Sumbit failed : " +
-				 t.getMessage());
-		}
-
+	try{
+	    String instanceName = actionTitle + "test";
+	    adapter.submitTOScheduler(moduleId, version, instanceName, actionTitle,
+		     attrMap, hosts, new Integer(number).intValue());
+	    //Map retCodes = adapter.submit(moduleId, version, instanceName, actionTitle,
+	//	     attrMap, hosts);
+	}catch(Exception t){ 
+	    submitStatus = false ;
+	    t.printStackTrace();
+	    session.setAttribute("message", "Sumbit failed : " +
+		     t.getMessage());
+	}
 	
 	// if ! submitStatus .. failed on the server itself. 
 	
@@ -214,7 +203,6 @@ For more information: www.smartfrog.org
 		    request.getRequestDispatcher("host_select.jsp?moduleId="
 			+ moduleId + "&&version=" + version + "&&distroId=" 
 			+ distroId + "&&action=" + actionTitle);
-		
 		dispatcher.forward(request, response);
 	}else{
 	    javax.servlet.RequestDispatcher dispatcher =

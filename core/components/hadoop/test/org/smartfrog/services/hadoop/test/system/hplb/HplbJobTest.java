@@ -34,12 +34,7 @@ public class HplbJobTest extends DeployingTestBase {
         super(name);
     }
 
-    public void testWordnetJob() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testWordnetJob");
-    }
-
     public void testJobSubmission() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testJobSubmission");
+        expectSuccessfulTestRun(PACKAGE,"testJobSubmission");
     }
-    
 }

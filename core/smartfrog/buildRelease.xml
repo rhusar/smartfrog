@@ -189,7 +189,6 @@
   <!--Shell scripts from the bin/ directories-->
   <patternset id="unix.bin">
     <include name="smartfrog"/>
-    <include name="set*Properties"/>
     <include name="sf*"/>
     <include name="*.pl"/>
     <include name="*.py"/>
@@ -213,7 +212,6 @@
     <include name="sfGui.bat"/>
     <exclude name="smartfrog"/>
     <exclude name="sf*"/>
-    <exclude name="set*Properties"/>
     <exclude name="*.pl"/>
     <exclude name="*.py"/>
     <exclude name="*.bat"/>
@@ -239,8 +237,6 @@
   <!--directories that security needs -->
   <patternset id="security.pattern">
     <include name="private/**"/>
-    <!--this strips out any internal CA that may have been created-->
-    <exclude name="private/*-internal-ca" />
     <include name="testCA/**"/>
     <patternset refid="excluded.cruft"/>
   </patternset>

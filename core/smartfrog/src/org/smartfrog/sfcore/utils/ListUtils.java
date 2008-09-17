@@ -62,7 +62,7 @@ public final class ListUtils {
      * @return a merged array or null if an empty list came in.
      * @throws SmartFrogInitException if a list is the wrong width, type or missing
      */
-    public static Vector<String> join(List<?> source, String prefix, String joiner, String suffix,
+    public static Vector<String> join(List source, String prefix, String joiner, String suffix,
         boolean skipEmptyElements) throws SmartFrogInitException {
         if (source == null) {
             return null;
@@ -81,7 +81,7 @@ public final class ListUtils {
             if (!(element instanceof List)) {
                 throw new SmartFrogInitException(ERROR_NOT_A_LIST + element);
             }
-            List<?> subvector = (List<?>) element;
+            List subvector = (List) element;
             int subsize = subvector.size();
             if (subsize == 0) {
                 if(skipEmptyElements) {
@@ -171,7 +171,7 @@ public final class ListUtils {
 
     /**
      * Convert a property list into a Java properties class
-     * @param tupleList a list of tuples (can be null)
+     * @param tupleList a list of tuples (must not be null)
      * @return a properties object containing name,value pairs.
      * @throws SmartFrogResolutionException if one of the list entries is not a tuple
      */
@@ -183,28 +183,6 @@ public final class ListUtils {
                     throw new SmartFrogResolutionException(ERROR_NOT_A_LIST + element);
                 }
                 Vector<?> entry = (Vector<?>) element;
-                if (entry.size() != 2) {
-                    throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
-                }
-                String name = entry.get(0).toString();
-                String value = entry.get(1).toString();
-                properties.setProperty(name, value);
-            }
-        }
-        return properties;
-    }
-
-    /**
-     * Convert a property list into a Java properties class
-     *
-     * @param tupleList a list of tuples (Can be null)
-     * @return a properties object containing name,value pairs.
-     * @throws SmartFrogResolutionException if one of the list entries is not a tuple
-     */
-    public static Properties convertToProperties(Vector<Vector<?>> tupleList) throws SmartFrogResolutionException {
-        Properties properties = new Properties();
-        if (tupleList != null) {
-            for (Vector<?> entry: tupleList) {
                 if (entry.size() != 2) {
                     throw new SmartFrogResolutionException(ERROR_WRONG_SIZE + entry);
                 }
@@ -257,8 +235,7 @@ public final class ListUtils {
      * otherwise fails.
      * @throws RemoteException network problems
      */
-    @SuppressWarnings("unchecked")
-    public static Vector<Vector<?>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
+    public static Vector<Vector<Object>> resolveNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
         Vector tupleList = null;
         tupleList = component.sfResolve(ref, tupleList, required);
@@ -275,7 +252,7 @@ public final class ListUtils {
                         null,
                         component);
             }
-            Vector<?> entry = (Vector<?>) element;
+            Vector entry = (Vector) element;
             if (width>=0 && entry.size() != width) {
                 throw new SmartFrogResolutionException(
                         ref, null,
@@ -305,12 +282,12 @@ public final class ListUtils {
      */
     public static Vector<Vector<String>> resolveStringNTupleList(Prim component, Reference ref, int width, boolean required)
             throws SmartFrogResolutionException, RemoteException {
-        Vector<Vector<?>> tupleList = resolveNTupleList(component, ref, width, required);
+        Vector<Vector<Object>> tupleList = resolveNTupleList(component, ref, width, required);
         if (tupleList == null) {
             return null;
         }
         Vector<Vector<String>> result = new Vector<Vector<String>>(tupleList.size());
-        for (Vector<?> tuple : tupleList) {
+        for (Vector<Object> tuple : tupleList) {
             Vector<String> row=new Vector<String>(tuple.size());
             for(Object field:tuple) {
                 row.add(field.toString());
@@ -384,7 +361,6 @@ public final class ListUtils {
      * @param properties the properties to work on
      * @return the properties as a list of [name,value] tuples, sorted on name
      */
-    @SuppressWarnings("unchecked")
     public static Vector<Vector<String>> propertiesToTuples(Properties properties) {
         Vector<Vector<String>> propertyTupleList = new Vector<Vector<String>>(properties.size());
         List keyList = new ArrayList(properties.keySet());
@@ -428,7 +404,7 @@ public final class ListUtils {
      * @return a flatter list
      * @throws SmartFrogInitException if there is an element that is not of the right type
      */
-    public static List<String> flattenStringList(List<?> src, String listName)
+    public static List<String> flattenStringList(List src, String listName)
             throws SmartFrogInitException {
         if (src == null) {
             return new ArrayList<String>(0);
@@ -436,7 +412,7 @@ public final class ListUtils {
         List<String> dest = new ArrayList<String>(src.size());
         for(Object element:src) {
             if (element instanceof List) {
-                List<String> l2 = flattenStringList((List<?>) element, listName);
+                List<String> l2 = flattenStringList((List) element, listName);
                 for (String s:l2) {
                     dest.add(s);
                 }

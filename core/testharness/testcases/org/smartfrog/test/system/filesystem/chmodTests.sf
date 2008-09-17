@@ -49,44 +49,44 @@ createTestEnv extends Compound {
       sfShouldTerminate true;
     }
 
-testChmodFails extends ExpectDeployFailure {
-    condition IsUnix;
-
-    description "removes read flag from a testfile and tries to read it";
-    expectTerminate false;
-
-    action extends createTestEnv {
-
-    }
-
-    tests extends Sequence {
-        rmReadRights extends Chmod {
-            file LAZY PARENT:PARENT:action:testFile1;
-            userPermissions "-r";
-            groupPermissions "-r";
-            otherPermissions "-r";
-        }
-
-        loadFile extends LoadPropertyFile {
-            resource LAZY PARENT:PARENT:action:testFile1;
-        }
-    }
-}
-
-testChmodFailsRecursively extends testChmodFails {
-    description "removes read flags from files recursively and tries to read a file";
-
-    tests extends Sequence {
-        rmReadRights extends Chmod {
-            file LAZY PARENT:PARENT:action:testDir;
-            recursively true;
-        }
-
-        loadFile extends LoadPropertyFile {
-            resource LAZY PARENT:PARENT:action:testFile2;
-        }
-    }
-}
+//testChmodFails extends ExpectDeployFailure {
+//    condition IsUnix;
+//
+//    description "removes read flag from a testfile and tries to read it";
+//    expectTerminate false;
+//
+//    action extends createTestEnv {
+//
+//    }
+//
+//    tests extends Sequence {
+//        rmReadRights extends Chmod {
+//            file LAZY PARENT:PARENT:action:testFile1;
+//            userPermissions "-r";
+//            groupPermissions "-r";
+//            otherPermissions "-r";
+//        }
+//
+//        loadFile extends LoadPropertyFile {
+//            resource LAZY PARENT:PARENT:action:testFile1;
+//        }
+//    }
+//}
+//
+//testChmodFailsRecursively extends testChmodFails {
+//    description "removes read flags from files recursively and tries to read a file";
+//
+//    tests extends Sequence {
+//        rmReadRights extends Chmod {
+//            file LAZY PARENT:PARENT:action:testDir;
+//            recursively true;
+//        }
+//
+//        loadFile extends LoadPropertyFile {
+//            resource LAZY PARENT:PARENT:action:testFile2;
+//        }
+//    }
+//}
 
 testRemoveAllRights extends ExpectDeploy {
     condition IsUnix;

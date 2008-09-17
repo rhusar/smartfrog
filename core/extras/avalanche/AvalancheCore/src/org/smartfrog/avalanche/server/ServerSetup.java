@@ -17,7 +17,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.smartfrog.avalanche.server.monitor.handlers.*;
 import org.smartfrog.avalanche.server.monitor.xmpp.XMPPAdapter;
 import org.smartfrog.avalanche.shared.ActiveProfileUpdater;
-import org.smartfrog.avalanche.shared.handlers.XMPPPacketHandler;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -28,7 +27,6 @@ import org.smartfrog.SFSystem;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 
 /**
  * Wrapper class for Avalanche server initialization and shutdown. This can be used independently 
@@ -76,7 +74,7 @@ public class ServerSetup {
                                                   
     private String xmppServerAdminUser ;
 	private String xmppServerAdminPassword ; 
-	private boolean useSSLForXMPP ;
+	private String useSSLForXMPP ;
 
     private String avalancheHome ;
 	
@@ -106,12 +104,12 @@ public class ServerSetup {
 	}
 
 
-	public boolean getUseSSLForXMPP() {
+	public String getUseSSLForXMPP() {
 		return useSSLForXMPP;
 	}
 
 
-	public void setUseSSLForXMPP(boolean useSSLForXMPP) {
+	public void setUseSSLForXMPP(String useSSLForXMPP) {
 		this.useSSLForXMPP = useSSLForXMPP;
 	}
 
@@ -156,23 +154,12 @@ public class ServerSetup {
 
     /**
      * Used by the website to send commands to a host.
-     * @param inTargetMachine The host of the virtual machine.
-     * @param inVMPath The path to the .vmx file.
-     * @param inCmd The command to execute.
+     * @param inTargetMachine
+     * @param inVMPath
+     * @param inCmd
      */
-    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inCmd)
+    public static void sendVMCommand(String inTargetMachine, String inVMPath, String inMasterVM, String inCmd)
     {
-        sendVMCommand(inTargetMachine, inVMPath, inCmd, null);
-    }
-
-    /**
-     * Used by the website to send commands to a host.
-     * @param inTargetMachine The host of the virtual machine.
-     * @param inVMName Name of the virtual machine.
-     * @param inCmd The command to execute.
-     * @param inAdditionalProperties Additional attributes required for the command.
-     */
-    public static void sendVMCommand(String inTargetMachine, String inVMName, String inCmd, HashMap<String, String> inAdditionalProperties) {
         XMPPEventExtension ext = new XMPPEventExtension();
 
         try {
@@ -181,32 +168,20 @@ public class ServerSetup {
             ext.setHost("");
         }
         ext.setMessageType(MonitoringConstants.VM_MESSAGE);
-
-        // set the command
         ext.getPropertyBag().put("vmcmd", inCmd);
-        if (inVMName != null)
-			// set the path (used like an identifier)
-			ext.getPropertyBag().put("vmname", inVMName);
+        if (inVMPath != null)
+            ext.getPropertyBag().put("vmpath", inVMPath);
+        if (inMasterVM != null)
+            ext.getPropertyBag().put("vmmasterpath", inMasterVM);
 
-        // add the additional parameters
-        if (inAdditionalProperties != null) {
-            for (String key : inAdditionalProperties.keySet()) {
-                ext.getPropertyBag().put(key, inAdditionalProperties.get(key));
-            }
-        }
-
-        sendExtension(inTargetMachine, ext);
-    }
-
-	public static void sendExtension(String inTargetMachine, XMPPEventExtension inExt) {
-		try {
-            listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, inExt);
+        try {
+            listenerAdapter.sendEvent(inTargetMachine + '@' + xmppServer, ext);
         } catch (XMPPException e) {
             log.error(e.getMessage());
         }
-	}
+    }
 
-	/**
+    /**
 	 * Starts up Avalanche server. Avalanche server must be installed and @see setAvalancheHome(String)
 	 * should be set properly before calling this method. 
 	 * @throws Exception
@@ -217,6 +192,8 @@ public class ServerSetup {
 
         //factory.init(avalancheHome, avalancheServerOS);
         factory.init(avalancheHome);
+
+        boolean useXMPPoverSSL = Boolean.parseBoolean(useSSLForXMPP);
 
         // set up Avalanche XMPP adapters, this assumes XMPP server is already up
         // running
@@ -229,7 +206,7 @@ public class ServerSetup {
                 adminAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            adminAdapter.setUseSSL(useSSLForXMPP);
+            adminAdapter.setUseSSL(useXMPPoverSSL);
 
             // Setting username and password
             adminAdapter.setXmppUserName(xmppServerAdminUser);
@@ -254,7 +231,7 @@ public class ServerSetup {
                 listenerAdapter.setXmppServerPort(xmppServerPort);
 
             // Setting SSL mode
-            listenerAdapter.setUseSSL(useSSLForXMPP);
+            listenerAdapter.setUseSSL(useXMPPoverSSL);
 
             // Setting username and password
             listenerAdapter.setXmppUserName(eventListenerUser);
@@ -272,7 +249,7 @@ public class ServerSetup {
 
             // TODO: Should be streamlined in the future!
             // Adding MessageHandlers to the handler chain for events coming from client nodes
-            listenerAdapter.addHandler(new ActiveProfileUpdateHandler());
+            listenerAdapter.addHandler(new ActiveProfileUpdateHandler(listenerAdapter));
             // Register the added Handlers as well as the built-in handlers
             listenerAdapter.registerListeners();
 
@@ -287,15 +264,6 @@ public class ServerSetup {
         } catch (XMPPException e) {
             log.fatal("Avalanche Initialization failed : ", e);
         }
-    }
-
-    /**
-     * Adds a packet handler to the xmpp listener.
-     * @param inHandler
-     * @throws org.jivesoftware.smack.XMPPException
-     */
-    public void addXmppPacketHandler(XMPPPacketHandler inHandler) throws XMPPException {
-        listenerAdapter.addHandler(inHandler);
     }
 
     /**

@@ -55,9 +55,6 @@
   </li>
   <li> Testing: Distributed JUnit and component testing with SFUnit.
   </li>
-   <li>
-    Velocity: generation/transformation of text files during deployment
-  </li>
   <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
     is provided for all application servers that support, and a tomcat-specific
     component can communicate with Apache Tomcat. The Jetty component can
@@ -76,22 +73,15 @@
   This release is available as:
 </p>
 <ol>
-  <li>
-    RPM files inside a .tar.gz file.
+  <li> RPM files inside a .tar.gz file.
   </li>
-  <li>
-    A JAR installer.
+  <li> a JAR installer.
   </li>
-  <li>
-    A .tar.gz file containing everything needed to create a private set of RPM files
-    containing JAR files signed by a private Certification Authority.
-  </li>
-  <li>
-    The original smartfrog distribution as .zip and .tar.gz (deprecated)
+  <li>the original core smartfrog distribution as .zip and .tar.gz (deprecated)
   </li>
 </ol>
-
 <p>
+
   The RPM installation is for RPM-based Linux systems. It comprises the following RPMs:
 </p>
 
@@ -151,10 +141,6 @@
     <td>Scripted components</td>
   </tr>
   <tr>
-    <td><code>smartfrog-velocity</code></td>
-    <td>Velocity template processing</td>
-  </tr>
-  <tr>
     <td><code>smartfrog-www</code></td>
     <td>Web support: Deployment and liveness pages</td>
   </tr>
@@ -188,17 +174,14 @@
 <h3>Security warning</h3>
 
 <p>
+
   Unless SmartFrog is configured with security, a running daemon
   will listen on its configured port for incoming deployment requests, and deploy
   the applications with the rights of the user running the daemon. When the
   smartfrog-daemon RPM is installed, that means that a process running as root
-  will be listening on an open port for incoming deployment requests.
-  Do not deploy SmartFrog this way on any untrusted
-  network, not without turning security on.
-</p>
-<p>
-  There is a special distribution .tar.gz file that can be used to generate
-  a private set of secure RPM files.
+  will be listening on an open port for incoming deployment requests. Do not
+  deploy SmartFrog this way on any untrusted network, not without turning security
+  on and, ideally, recreating the RPMs with signed JAR files.
 </p>
 
 <h3>Building SmartFrog</h3>

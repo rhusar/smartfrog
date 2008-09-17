@@ -21,11 +21,12 @@ For more information: www.smartfrog.org
 <%@	page import="org.smartfrog.avalanche.server.*"%>
 <%@	page import="org.smartfrog.avalanche.core.activeHostProfile.*"%>
 <%@ include file="header.inc.jsp"%>
-<%! String pageAction1 = "" ; %>
+
 <%
   	String errMsg = null; 
 
   	ActiveProfileManager apm = factory.getActiveProfileManager();
+  	
   	if( null == apm ){
   		errMsg = "Error connecting to active profiles database" ;
   		throw new Exception ( "Error connecting to active profiles database" );
@@ -35,21 +36,15 @@ For more information: www.smartfrog.org
 	String []targetHosts = new String[0];
 
   	if( null == pageAction ){
-		pageAction1= "pageAction1="+"viewAll";
   	  	targetHosts = apm.listProfiles() ;
   	}else if( pageAction.equals("viewAll")){
-		pageAction1= "pageAction1="+pageAction;
   	  	targetHosts = apm.listProfiles() ;
   	}else if ( pageAction.equals("viewSelected")){
   	  	targetHosts = request.getParameterValues("hostId");
-		
-		
   	  	if( null == targetHosts){
   	  	  		targetHosts = new String[0];
   	  	}
-		pageAction1= "pageAction1="+pageAction+"&"+"targetHosts="+targetHosts[0];
   	}
-	
 %>
 
 <script language="javascript" type="text/javascript">
@@ -59,38 +54,6 @@ function submit(target){
 	document.moduleListFrm.action = target ;
 	document.moduleListFrm.submit();
 }
-function deleteModule() {
-        var selectors = document.getElementsByName("selectedModule");
-        var selectedModules = new Array();
-
-        for (var i = 0; i < selectors.length; i++)
-        {
-            if (selectors[i].checked)
-                selectedModules.push(selectors[i]);
-        }
-
-        var count = selectedModules.length;
-        if (count == 0)
-        {
-            alert("You must select one or more modules for this action.");
-            return;
-        }
-
-        var alertMsg = "This action will delete ";
-        if (count == 1)
-            alertMsg += "one modules."
-        else
-            alertMsg += count + " modules."
-
-        alertMsg += " Are you sure you want to continue?";
-
-        if (confirm(alertMsg)) {
-			
-			document.moduleListFrm.action = "log_save.jsp?pageAction=dellog"+"&"+"<%=pageAction1%>";
-            document.moduleListFrm.submit();
-        }
-		
-    }
 
 setNextSubtitle("Active View Page");
     -->
@@ -101,7 +64,7 @@ setNextSubtitle("Active View Page");
 
 <div align="center">
 <center>
-<form id="moduleListFrm" name="moduleListFrm" method="post" action="log_save.jsp">
+
 <div align="center" style="width: 95%;">
   <script language="javascript" type="text/javascript">
       <!--
@@ -121,7 +84,6 @@ setNextSubtitle("Active View Page");
 	    <th>Last Action</th>
 	    <th>Current State</th>
 	    <th>Last Updated</th>
-		<th>     </th>
 	</tr>
     </thead>
     <tbody>
@@ -136,7 +98,6 @@ setNextSubtitle("Active View Page");
 	    <td class="data"></td>
 	    <td class="data"></td>
 	    <td class="data"></td>
-		<td class="data"></td>
 	</tr>
 
 <% 
@@ -179,11 +140,6 @@ setNextSubtitle("Active View Page");
 		}
 %>
 	    <td><%=moduleStates[j].getLastUpdated() %></td>
-		<td class="checkboxCell">
-                <input type="checkbox" rowselector="yes"
-                       name="selectedModule" value="<%=targetHosts[i]%>,<%=moduleStates[j].getId()%>,<%=moduleStates[j].getLastUpdated() %>">
-                </input>
-            </td>
 </tr>
 <%
 	    }
@@ -192,20 +148,7 @@ setNextSubtitle("Active View Page");
 %>  		
     </tbody>
 </table>
- <br/>
-
-            <div align="center" style="width: 95%;">
-                <script type="text/javascript" language="JavaScript">
-                    oneVoiceWritePageMenu("ModulesList", "footer",
-                            "Delete selected modules",
-                            "javascript:deleteModule()"
-                            );
-                </script>
-
-            </div>
-	</form>
 </center>
-
 </div>
 
 <%@ include file="footer.inc.jsp"%>

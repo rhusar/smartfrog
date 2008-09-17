@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="www" default="default"
-    xmlns:ivy="antlib:org.apache.ivy.ant">
+    xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP

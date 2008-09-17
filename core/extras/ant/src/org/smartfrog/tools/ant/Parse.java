@@ -172,19 +172,18 @@ public class Parse extends TaskBase implements SysPropertyAdder {
     public void execute() throws BuildException {
         File tempFile=null;
         File targetFile;
-        String fullCommandLine;
         int err;
         try {
 
             tempFile = FileUtils.getFileUtils().createTempFile("parse",
-                    ".txt", null);
+                ".txt", null);
             int filesCount = buildParserTargetsFile(tempFile);
 
-            if (parserTargetsFile != null) {
-                if (filesCount > 0) {
+            if(parserTargetsFile!=null) {
+                if(filesCount>0) {
                     throw new BuildException(ERROR_TOO_MANY_FILES);
                 } else {
-                    targetFile = parserTargetsFile;
+                    targetFile=parserTargetsFile;
                 }
             } else {
                 targetFile = tempFile;
@@ -212,8 +211,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             parser.createArg().setValue(
                     SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
             parser.createArg().setFile(targetFile);
-            fullCommandLine = parser.getCommandLine().toString();
-            log(fullCommandLine,Project.MSG_VERBOSE);
+
             //run it
             err = parser.executeJava();
         } finally {
@@ -233,8 +231,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
                 throw new BuildException("parse failure");
             default:
                 //something else
-                throw new BuildException("Parse exited with error code " + err
-                +"\nJava Command: " + fullCommandLine);
+                throw new BuildException("Java application error code " + err);
         }
 
     }

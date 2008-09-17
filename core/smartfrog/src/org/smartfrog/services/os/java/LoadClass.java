@@ -39,9 +39,4 @@ public interface LoadClass extends Remote {
      * @value
      */
     String ATTR_RETAIN = "retain";
-
-    /**
-     * @value
-     */
-    String ATTR_MESSAGE = "message";
 }

@@ -19,6 +19,7 @@
  */
 package org.smartfrog.tools.ant.test.unit;
 
+import org.smartfrog.tools.ant.SmartFrogSign;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
@@ -32,7 +33,8 @@ public class ConditionalSequenceTest extends TaskTestBase {
 
 
     /**
-     * Tears down the fixture, for example, close a network connection. This method is called after a test is executed.
+     * Tears down the fixture, for example, close a network connection. This
+     * method is called after a test is executed.
      */
     public void tearDown() throws Exception {
         executeTarget("teardown");

@@ -82,24 +82,24 @@ function updateVmList(inHost) {
                                 } else {
                                     checkBox.setAttribute("onclick", "selectRow(this.parentNode.parentNode, false)");
                                 }
-                                //checkBox.value = vms[i].childNodes[0].firstChild.data;
+                                checkBox.value = vms[i].childNodes[0].firstChild.data;
                                 checkBoxCell.appendChild(checkBox);
 
                                 // Cell: vmname
                                 var hostNameCell = row.insertCell(1);
                                 hostNameCell.className = "sorted";
-                                hostNameCell.appendChild(document.createTextNode(vms[i].childNodes[2].firstChild.data));
+                                hostNameCell.appendChild(document.createTextNode(vms[i].childNodes[0].firstChild.data));
 
                                 // Cell: Manage
                                 var managementCell = row.insertCell(2);
                                 var setupLink = document.createElement("a");
-                                setupLink.href = "vm_setup.jsp?&host=" + inHost + "&vm=" + vms[i].childNodes[2].firstChild.data;
+                                setupLink.href = "vm_setup.jsp?&host=" + inHost + "&vm=" + vms[i].childNodes[0].firstChild.data;
                                 setupLink.appendChild(document.createTextNode("[ Setup ]"));
                                 managementCell.appendChild(setupLink);
 
                                 // Cell: Last Command
                                 var lastCommandCell = row.insertCell(3);
-                                lastCommandCell.appendChild(document.createTextNode(vms[i].childNodes[0].firstChild.data));
+                                lastCommandCell.appendChild(document.createTextNode(vms[i].childNodes[1].firstChild.data));
 
                                 // Cell: Response
                                 var statusCell = row.insertCell(4);
@@ -107,7 +107,7 @@ function updateVmList(inHost) {
                                 statusMessage.setAttribute("style", "float:left;");
                                 statusMessage.style.styleFloat = "left";
                                 statusMessage.style.display = "block";
-                                statusMessage.appendChild(document.createTextNode(vms[i].childNodes[1].firstChild.data));
+                                statusMessage.appendChild(document.createTextNode(vms[i].childNodes[2].firstChild.data));
                                 statusCell.appendChild(statusMessage);
                             }
                             select(allSelectedVMs);

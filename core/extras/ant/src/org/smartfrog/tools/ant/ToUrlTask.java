@@ -20,27 +20,28 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 /**
- * This task takes a file and turns it into a URL, which it then assigns to a property. This is a way of getting file:
- * URLs into an inline SmartFrog deployment descriptor.
+ * This task takes a file and turns it into a URL, which it then assigns
+ * to a property. This is a way of getting file: URLs into an inline
+ * SmartFrog deployment descriptor.
  *
- * nested filesets are supported; if present, these are turned into the url with the given separator between them
- * (default = " ").
- *
- * This file is deprecated in Ant1.7, because we donated our code and tests to them -it is now built in.
- *
+ * nested filesets are supported; if present, these are turned into the
+ * url with the given separator between them (default = " ").
+ * 
+ * This file is deprecated in Ant1.7, because we donated our code and tests 
+ * to them -it is now built in.
  * @ant.task category="SmartFrog" name="sf-tourl"
  */
 
@@ -59,7 +60,7 @@ public class ToUrlTask extends Task {
     /**
      * separator char
      */
-    private String separator = " ";
+    private String separator=" ";
 
     /**
      * filesets of nested files to add to this url
@@ -74,7 +75,7 @@ public class ToUrlTask extends Task {
     /**
      * validation flag
      */
-    private boolean validate = true;
+    private boolean validate=true;
 
     /**
      * error message
@@ -102,7 +103,8 @@ public class ToUrlTask extends Task {
     }
 
     /**
-     * a fileset of jar files to include in the URL, each separated by the separator
+     * a fileset of jar files to include in the URL, each
+     * separated by the separator
      *
      * @param fileset files to add
      */
@@ -112,7 +114,6 @@ public class ToUrlTask extends Task {
 
     /**
      * set the separator for the multi-url option.
-     *
      * @param separator separator between urls
      */
     public void setSeparator(String separator) {
@@ -120,8 +121,8 @@ public class ToUrlTask extends Task {
     }
 
     /**
-     * set this flag to trigger validation that every named file exists. Optional: default=true
-     *
+     * set this flag to trigger validation that every named file exists.
+     * Optional: default=true
      * @param validate flat to trigger check for files
      */
     public void setValidate(boolean validate) {
@@ -129,8 +130,8 @@ public class ToUrlTask extends Task {
     }
 
     /**
-     * add a path to the URL. All elements in the path will be converted to individual URL entries
-     *
+     * add a path to the URL. All elements in the path
+     * will be converted to individual URL entries 
      * @param path path to convert to urls
      */
     public void addPath(Path path) {
@@ -139,18 +140,17 @@ public class ToUrlTask extends Task {
 
     /**
      * convert the filesets to urls.
-     *
      * @return null for no files
      */
     private String filesetsToURL() {
-        if (filesets.isEmpty()) {
+        if(filesets.isEmpty()) {
             return "";
         }
-        int count = 0;
-        StringBuffer urls = new StringBuffer();
-        for (FileSet set : filesets) {
+        int count=0;
+        StringBuffer urls=new StringBuffer();
+        for(FileSet set:filesets) {
             DirectoryScanner scanner = set.getDirectoryScanner(getProject());
-            String[] files = scanner.getIncludedFiles();
+            String[] files=scanner.getIncludedFiles();
             for (String file1 : files) {
                 File f = new File(scanner.getBasedir(), file1);
                 validateFile(f);
@@ -166,16 +166,16 @@ public class ToUrlTask extends Task {
     }
 
     /**
-     * convert the string buffer to a string, potentially stripping out any trailing separator
-     *
-     * @param urls  URL buffer
+     * convert the string buffer to a string, potentially stripping
+     * out any trailing separator
+     * @param urls URL buffer
      * @param count number of URL entries
      * @return trimmed string, or empty string
      */
     private String stripTrailingSeparator(StringBuffer urls,
-                                          int count) {
-        if (count > 0) {
-            urls.delete(urls.length() - separator.length(), urls.length());
+            int count) {
+        if(count>0) {
+            urls.delete(urls.length()-separator.length(),urls.length());
             return new String(urls);
         } else {
             return "";
@@ -185,19 +185,18 @@ public class ToUrlTask extends Task {
 
     /**
      * convert all paths to URLs
-     *
      * @return the paths as a separated list of URLs
      */
     private String pathsToURL() {
-        if (paths.isEmpty()) {
+        if(paths.isEmpty()) {
             return "";
         }
         int count = 0;
         StringBuffer urls = new StringBuffer();
-        ListIterator<?> list = paths.listIterator();
+        ListIterator list = paths.listIterator();
         while (list.hasNext()) {
-            Path path = (Path) list.next();
-            String[] elements = path.list();
+            Path path= (Path) list.next();
+            String[] elements=path.list();
             for (String element : elements) {
                 File f = new File(element);
                 validateFile(f);
@@ -214,13 +213,12 @@ public class ToUrlTask extends Task {
 
     /**
      * verify that the file exists, if {@link #validate} is set
-     *
      * @param fileToCheck file that may need to exist
      * @throws BuildException with text beginning {@link #ERROR_MISSING_FILE}
      */
     private void validateFile(File fileToCheck) {
-        if (validate && !fileToCheck.exists()) {
-            throw new BuildException(ERROR_MISSING_FILE + fileToCheck.toString());
+        if(validate && !fileToCheck.exists()) {
+            throw new BuildException(ERROR_MISSING_FILE+fileToCheck.toString());
         }
     }
 
@@ -237,24 +235,24 @@ public class ToUrlTask extends Task {
             return;
         }
         String url;
-        String filesetURL = filesetsToURL();
-        if (file != null) {
+        String filesetURL= filesetsToURL();
+        if(file!=null) {
             validateFile(file);
             url = toURL(file);
             //and add any files if also defined
-            if (filesetURL.length() > 0) {
-                url = url + separator + filesetURL;
+            if(filesetURL.length()>0) {
+                url=url+separator+filesetURL;
             }
         } else {
-            url = filesetURL;
+            url=filesetURL;
         }
         //add path URLs
-        String pathURL = pathsToURL();
-        if (pathURL.length() > 0) {
-            if (url.length() > 0) {
-                url = url + separator + pathURL;
+        String pathURL=pathsToURL();
+        if(pathURL.length()>0) {
+            if(url.length()>0) {
+                url=url+separator+pathURL;
             } else {
-                url = pathURL;
+                url=pathURL;
             }
         }
         log("Setting " + property + " to URL " + url, Project.MSG_VERBOSE);
@@ -273,10 +271,9 @@ public class ToUrlTask extends Task {
 
     /**
      * convert a file to a URL;
-     *
+     * @throws BuildException if the file would not convert
      * @param fileToConvert file to turn to a URL
      * @return the file converted to a URL
-     * @throws BuildException if the file would not convert
      */
     private String toURL(File fileToConvert) {
         String url;

@@ -19,8 +19,6 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerUtils;
-import org.quartz.Trigger;
-import org.quartz.CronTrigger;
 import org.smartfrog.avalanche.core.activeHostProfile.ActiveProfileType;
 import org.smartfrog.avalanche.core.activeHostProfile.ModuleStateType;
 import org.smartfrog.avalanche.core.host.ArgumentType.Argument;
@@ -47,18 +45,27 @@ import org.smartfrog.avalanche.core.host.DataTransferModeType;
 import org.smartfrog.avalanche.core.host.ArgumentType;
 import org.smartfrog.services.sfinterface.SmartfrogAdapter;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.*;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.text.*; 
-import java.util.*; 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 /**
  * @author sanjay, Jul 29, 2005
  *         This class connects Avalanche Server to Smartfrog for deployments. It adds Avalanche
@@ -72,7 +79,6 @@ public class SFAdapter {
     private Vector<String> machines = new Vector<String>();
     public static Hashtable allValues = new Hashtable();
     public static final String AVALANCHE_SERVER = "_Avalanche_server";
-	//private LogSF sflog = null;
 
     public SFAdapter(AvalancheFactory factory) {
         super();
@@ -101,23 +107,7 @@ public class SFAdapter {
      */
     public Map submit(String moduleId, String version, String instanceName,
                       String title, Map<String, String> attrMap, String[] hosts) throws SFSubmitException {
-	
-		SmartFrogAdapterImpl adapter = null;
-		 String homeDir = this.avalancheFactory.getAvalancheHome();
-		String sfDistDir = homeDir + File.separator + "smartfrog" + File.separator + "dist";
-		try{
-			if (securityOn.equals("true")) {
-				adapter = new SmartFrogAdapterImpl(sfDistDir, true);
-			} else {
-				 adapter = new SmartFrogAdapterImpl(sfDistDir, false);
-			} 
-		} catch (Exception e) {
-            throw new SFSubmitException(e);
-        }
-		HashMap<String, String> emailMap = new HashMap<String, String>();
-		String s = new String();
-		s ="Status of \n Module : " +  moduleId + "\n Version: " + version ;
-		String updTime = getDateTime();
+
         ActiveProfileManager apm = null;
         try {
             apm = avalancheFactory.getActiveProfileManager();
@@ -138,7 +128,6 @@ public class SFAdapter {
             }
 
             String actionId = sfDesc.getAction();
-			s = s+ " \n Action : " + actionId +" \n\n Hosts and their Status as follows :\n" ;
             for (String host : hosts) {
                 ActiveProfileType profile = apm.getProfile(host);
                 if (null == profile) {
@@ -147,7 +136,7 @@ public class SFAdapter {
 
                 ModuleStateType[] states = profile.getModuleStateArray();
                 ModuleStateType currentState = null;
-               /* for (ModuleStateType state : states) {
+                for (ModuleStateType state : states) {
                     String mId = state.getId();
                     String ver = state.getVersion();
                     String ins = state.getInstanceName();
@@ -155,7 +144,7 @@ public class SFAdapter {
                         currentState = state;
                         break;
                     }
-                }*/
+                }
 
                 if (null == currentState) {
                     currentState = profile.addNewModuleState();
@@ -166,7 +155,7 @@ public class SFAdapter {
                 currentState.setState("Initializing");
                 currentState.setLastAction(actionId);
                 currentState.setMsg("Submitting deployment command to remote node");
-                updTime = getDateTime();
+                String updTime = getDateTime();
                 currentState.setLastUpdated(updTime);
 
                 apm.setProfile(profile);
@@ -186,7 +175,6 @@ public class SFAdapter {
             Iterator itor = runningHosts.iterator();
             while (itor.hasNext()) {
                 String h = (String) itor.next();
-				s= s+ " " + h +" : ";
                 ActiveProfileType ap = apm.getProfile(h);
                 if (ap != null) {
 
@@ -197,8 +185,7 @@ public class SFAdapter {
                         String mId = state.getId();
                         String ver = state.getVersion();
                         String ins = state.getInstanceName();
-						String t = state.getLastUpdated();
-                        if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins) && updTime.equals(t)) {
+                        if (moduleId.equals(mId) && version.equals(ver) && instanceName.equals(ins)) {
                             currentState = state;
                             break;
                         }
@@ -210,7 +197,6 @@ public class SFAdapter {
 
                         Map m = (Map) retCodes.get(h);
                         String status = (String) m.get("STATUS");
-						s = s+ status + "\n";
                         String appName = (String) m.get("APP_NAME");
                         ComponentDescription cd = (ComponentDescription) m.get("CD");
 			String reportPath = null;
@@ -225,24 +211,13 @@ public class SFAdapter {
                     apm.setProfile(ap);
                 }
             }
-			System.out.println("sending mail exception---------------1");
-			emailMap.put("sfConfig:Comp:mail:message",s);
-			adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
             return retCodes;
         } catch (Exception e) {
             // set profile for this module to failed
-
-			
-           
+            try {
                 if (null != apm) {
                     for (String host : hosts) {
-						s= s+ "" + host +" :  ";
-                        ActiveProfileType ap =null;
-						try{
-							ap = apm.getProfile(host);
-						}catch(DatabaseAccessException e2){
-							e2.printStackTrace();
-						}
+                        ActiveProfileType ap = apm.getProfile(host);
                         if (ap != null) {
                             // first get hold of the module configuration on this host.
                             ModuleStateType[] states = ap.getModuleStateArray();
@@ -250,8 +225,7 @@ public class SFAdapter {
                             for (ModuleStateType state : states) {
                                 String mId = state.getId();
                                 String ver = state.getVersion();
-								String t = state.getLastUpdated();
-                                if (moduleId.equals(mId) && version.equals(ver)&& updTime.equals(t)) {
+                                if (moduleId.equals(mId) && version.equals(ver)) {
                                     currentState = state;
                                     break;
                                 }
@@ -262,26 +236,15 @@ public class SFAdapter {
 
                                 currentState.setLastUpdated(getDateTime());
                                 currentState.setMsg("Failed on Server : " + e.getMessage());
-								s= s + "Failed on Server : " + e.getMessage()+"\n";
                             }
-							try{
-								apm.setProfile(ap);
-							}catch(DatabaseAccessException e3){
-								e3.printStackTrace();
-							}
+                            apm.setProfile(ap);
                         }
                     }
                 }
-				System.out.println("sending mail exception");
-				emailMap.put("sfConfig:Comp:mail:message",s);
-				try{
-				adapter.submit("org/smartfrog/avalanche/server/modules/emailer/emailer.sf",emailMap);
-				}catch(Exception e1){
-					e1.printStackTrace();
-				}
-				//throw new SFSubmitException(e);
-           System.out.println("throwing exception");
-           throw new SFSubmitException(e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            throw new SFSubmitException(e);
         }
     }
 
@@ -351,7 +314,7 @@ public class SFAdapter {
 
             SfDescriptionType.Argument[] args = sfDesc.getArgumentArray();
             HashMap<String, String> finalMap = new HashMap<String, String>();
-			
+
             for (SfDescriptionType.Argument arg : args) {
                 String name = arg.getName();
                 String value = arg.getValue();
@@ -426,7 +389,7 @@ public class SFAdapter {
 
             // pass finalMap which contains attrMap now. validate if it exists.
             ret = adapter.submit(configURL, finalMap, hosts);
-			
+
         } catch (ModuleCreationException e) {
             throw new SFSubmitException(e);
         } catch (DatabaseAccessException e) {
@@ -482,13 +445,13 @@ public class SFAdapter {
     }
 
     public void submitTOScheduler(String moduleId, String version, String instanceName,
-                                  String title, Map attrMap, String[] hosts,String type, String date, String repeatcount,String jobName,String groupName) throws Exception {
+                                  String title, Map attrMap, String[] hosts) throws Exception {
 
         // computer a time that is on the next round minute
         Date runTime = TriggerUtils.getEvenMinuteDate(new Date());
 
         // define the job and tie it to our HelloJob class
-        JobDetail job = new JobDetail(jobName, groupName, ScheduleJob.class);
+        JobDetail job = new JobDetail("job1", "group1", ScheduleJob.class);
 
         job.getJobDataMap().put("adapter", this);
         job.getJobDataMap().put("moduleId", moduleId);
@@ -496,21 +459,11 @@ public class SFAdapter {
         job.getJobDataMap().put("instanceName", instanceName);
         job.getJobDataMap().put("title", title);
         job.getJobDataMap().put("attrMap", attrMap);
-		job.getJobDataMap().put("repeatcount", repeatcount);
 
         // find hostname from Collector
-		String hostString = "";
+
         System.out.println("Number of machines to collect data from are=======" + hosts.length);
-        for (String host : hosts){
-			machines.add(host);
-			if(hostString.equals(""))
-			{
-				hostString+=host;
-			}else{
-				hostString+=","+host;
-			}
-			
-		}
+        for (String host : hosts) machines.add(host);
         setTargetInstances(machines.size());
         //Sort the array based on the values in allValues and then schedule on the first element.
         allValues.put("test", new Integer(200));
@@ -528,33 +481,19 @@ public class SFAdapter {
             key = keys.nextElement();
             value = allValues.get(key);
             if (value == list.get(0)) {
-				
                 break;
             }
-		}
-			System.out.println("Element in sorted list===========" + key);
-		
-        job.getJobDataMap().put("hostname", hostString);
-		
-		Trigger t = null;
-		if(type.equalsIgnoreCase("Job")){
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"); 
-			Date convertedDate = null;
-			try {
-				convertedDate = dateFormat.parse(date);
-			} catch (ParseException e) {
-			// TODO Auto-generated catch block
-				throw new SmartFrogException(e);
-			} 
-				t = new SimpleTrigger(jobName+"Trigger", groupName,convertedDate);
-			}
-		else
-			t = new CronTrigger(jobName+"Trigger", groupName,date);
-		//else
+        }
+
+        System.out.println("Final machine for scheduling is===========" + key.toString());
+
+        //  job.getJobDataMap().put("hostname", "localhost");
+
+        job.getJobDataMap().put("hostname", key.toString());
+
         // Tell quartz to schedule the job using our trigger
-        sched.scheduleJob(job,t );
-        System.out.println(job.getFullName() + " will run at + convertedDate");
-		
+        sched.scheduleJob(job, new SimpleTrigger("trigger1", "group1"));
+        System.out.println(job.getFullName() + " will run now");
     }
 
     // these are internal methods that should not be used directly
@@ -629,16 +568,6 @@ public class SFAdapter {
         	String scpFile = homeDir + File.separator + "smartfrog" + File.separator + "boot" + File.separator + "scp.sf";
         	String logsDir = homeDir + File.separator + "logs";
 		HashMap attrMap = new HashMap();
-		//LogSF sfLog = LogFactory.sfGetProcessLog();
-		//LogImpl	log = new LogImpl("SF-Adapter");
-		System.out.println("Calling LogFactory:");
-		
-		LogSF sfLog = LogFactory.getLog("SFCORE_LOG");
-		ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(sfLog, true,null);
-		Boolean configurationClass = false;
-		if(classComponentDescription!=null)
-			configurationClass = getConfigurationClass(classComponentDescription);
-		System.out.println("Callinged LogFactory:");
 		
 		if (reportPath != null){
 			attrMap.put("sfConfig:SCP:file", username+":"+ password + "@"+ host+ ":" + reportPath + "/*");
@@ -647,19 +576,9 @@ public class SFAdapter {
 		 		outputDir.mkdir();
 			attrMap.put("sfConfig:SCP:localTodir" , logsDir + File.separator + outputFile);
 		}else {
-			/*attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
+			attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
 			
-			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");*/
-			if(!configurationClass){
-				attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/nohup.out");
-				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
-				
-			}else{
-				
-				attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/log/*"+outputFile+"*.log");
-				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
-				
-			}
+			attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
 		}
 	
 	 // SmartFrogAdapterImpl adapter = new SmartFrogAdapterImpl(sfDistDir, false);
@@ -676,7 +595,6 @@ public class SFAdapter {
             	// run the description on local host for remote deployments.
           
             	adapter.submit(scpFile, attrMap, new String[]{"localhost"});
-				
 	} catch (SFParseException e) {
             throw new SFSubmitException(e);
         } catch (SFMultiHostSubmitException e) {
@@ -685,38 +603,6 @@ public class SFAdapter {
             throw new SFSubmitException(e);
         }
 
-    }
-	private boolean getConfigurationClass(ComponentDescription componentDescription) {
-       boolean flag = false;
-        try {
-             Object s =componentDescription.sfResolve("loggerClass", true);
-			 System.out.println("*****Vachinda?"+s);
-			
-			 if(s instanceof String){
-				 String str =  (String)s;
-				 if(str.indexOf("LogToFileImpl")<0)
-					 flag = false;
-				 else {
-					 flag = true;
-				 }
-			 }else  if (s instanceof Vector){
-				for (int i = 0; i<((Vector)s).size(); i++) {
-					String className = (String)((Vector)s).get(i);
-					if(className.indexOf("LogToFileImpl")<0)
-						flag = false;
-					else {
-						flag = true;
-						break;
-					}
-
-				}
-			 }
-
-        } catch (SmartFrogResolutionException ex) {
-            ex.printStackTrace();
-        }
-		System.out.println("********************* "+flag);
-		return flag;
     }
 
     public void startMngConsole(String hostname) {

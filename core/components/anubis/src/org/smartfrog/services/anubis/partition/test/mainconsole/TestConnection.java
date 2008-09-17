@@ -39,7 +39,7 @@ public class TestConnection
     private LogSF      log = LogFactory.getLog(this.getClass().toString());
 
     public TestConnection(ConnectionAddress address, NodeData nodeData, Identity id, Controller controller) {
-        super("Anubis: Partition Manager Test Console - connection (remote node " + id.id + ")", address);
+        super("Anubis PMConsole: " + id + " connection", address);
         this.nodeData = nodeData;
         this.controller = controller;
     }

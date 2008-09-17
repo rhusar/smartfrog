@@ -18,39 +18,11 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/test/system/java/testBase.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/assertions/exceptions.sf"
 
+sfConfig extends JavaPackage {
 
-/**
-   public void testMissingResource() throws Throwable {
-        deployExpectingException(FILES +
-                "testMissingResource.sf",
-                "testMissingResource",
-                EXCEPTION_LIFECYCLE,
-                null,
-                EXCEPTION_LIVENESS,
-                null);
-    }
-    */
-
-
-
-
-
-
-sfConfig extends ExpectDeployFailure {
-  resourceName "/no/such/resource"
-  exitText ("could not find " ++ resourceName ++" in default");
-  
-  action extends JavaPackage {
-    useCodebase true;
-    requiredResources [resourceName];
-
-  }
-
-  exceptions [
-    [SmartFrogExceptionNames:EXCEPTION_LIVENESS,""]
-  ];
+    useCodebase false;
+    //we require ourselves
+    requiredResources ["/no/such/resource"];
 
 }

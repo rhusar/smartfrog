@@ -39,19 +39,11 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testLoadProperty() throws Throwable {
         application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
                 "testLoadProperty.sf", "testLoadProperty");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testLoadPropertyVector() throws Throwable {
         application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
                 "testLoadProperty.sf", "testLoadProperty");
@@ -65,13 +57,6 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
         assertTupleEquals(list, "prop.three", "prop3");
         assertTupleEquals(list, "4", "prop4");
     }
-
-    /**
-     * Make some assertions about tuples
-     * @param list a list of tuple as a list
-     * @param name the name of the tuple to find in the list
-     * @param expected the expected value of that tuple
-     */
 
     private void assertTupleEquals(List list,String name,String expected) {
         for (Object aList : list) {

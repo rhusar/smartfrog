@@ -62,7 +62,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     </target> 
 
     <target name="testStackTrace">
-      <sf-run logStackTraces="true" diagnostics="true">
+      <sf-run logStackTraces="true">
         <application name="app" file="invalid.sf"/>
       </sf-run>
     </target> 

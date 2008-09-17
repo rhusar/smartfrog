@@ -31,40 +31,21 @@ public class ClasspathTest extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testDirectoryClasspath() throws Throwable {
         application = deployExpectingSuccess(FILES +
                 "testDirectoryClasspath.sf", "testDirectoryClasspath");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testEarlyClasspath() throws Throwable {
         application = deployExpectingSuccess(FILES +
                 "testEarlyClasspath.sf", "testEarlyClasspath");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testEarlyRecursiveClasspath() throws Throwable {
         application = deployExpectingSuccess(FILES +
                 "testEarlyRecursiveClasspath.sf", "testEarlyRecursiveClasspath");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
 
     public void testRecursiveClasspath() throws Throwable {
         application = deployExpectingSuccess(FILES +

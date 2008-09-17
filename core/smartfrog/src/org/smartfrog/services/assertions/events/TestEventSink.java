@@ -23,17 +23,13 @@ import org.smartfrog.services.assertions.TestFailureException;
 import org.smartfrog.services.assertions.TestTimeoutException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
 import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
 import org.smartfrog.sfcore.workflow.events.StartedEvent;
 import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
@@ -289,7 +285,7 @@ public class TestEventSink implements EventSink {
      *
      * @param clazz   classname
      * @param timeout time to wait between incoming events
-     * @return the event or null for a timeout 
+     * @return the event or null for a timeout or interruption
      * @throws InterruptedException if the thread waiting was interrupted, or a TestInterruptedEvent was encountered
      */
     public synchronized LifecycleEvent waitForEvent(Class clazz, long timeout) throws InterruptedException {
@@ -319,7 +315,7 @@ public class TestEventSink implements EventSink {
      */
     public void event(Object event) throws RemoteException {
         if (!(event instanceof LifecycleEvent)) {
-            throw new RemoteException("Only instances of LifecycleEvent are supported");
+            throw new RemoteException("Only instances of  LifecycleEvent are supported");
         }
         synchronized (this) {
             incoming.add((LifecycleEvent) event);
@@ -357,7 +353,7 @@ public class TestEventSink implements EventSink {
 
     /**
      * Start the application and block until the component reports itself as started. If the component terminates during
-     * this time. If the application is not yet deployed, that is done too.
+     * this time,
      *
      * @param timeout time in ms to wait
      * @return the startup event or null if it didn't start
@@ -369,33 +365,8 @@ public class TestEventSink implements EventSink {
      */
     public StartedEvent startApplication(long timeout)
             throws SmartFrogException, RemoteException, InterruptedException {
-        Prim app = getApplication();
-        Reference appNameRef = app.sfCompleteName();
-        if (!app.sfIsDeployed()) {
-            invokeDeploy();
-        }
-        try {
-            invokeStart();
-        } catch (SmartFrogLifecycleException e) {
-            Object termRec;
-            TerminationRecord status=null;
-            try {
-                termRec = app.sfResolveHere("sfTerminateWith", false);
-                if (termRec != null && termRec instanceof TerminationRecord) {
-                    status = (TerminationRecord) termRec;
-                } else {
-                    status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
-                }
-            } catch (Exception e1) {
-                status = TerminationRecord.abnormal("Failure during startup", appNameRef, e);
-            }
-            TerminatedEvent te=new TerminatedEvent(app,status);
-            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,te);
-        } catch (RemoteException e) {
-            throw new TestFailureException(ERROR_PREMATURE_TERMINATION,
-                    new TerminatedEvent(app,
-                        TerminationRecord.abnormal("termination during startup", appNameRef, e)));
-        }
+        invokeDeploy();
+        invokeStart();
         TimeoutTracker timedout = new TimeoutTracker(timeout);
         LifecycleEvent event;
         do {
@@ -423,30 +394,13 @@ public class TestEventSink implements EventSink {
      */
     public LifecycleEvent runTestsToCompletion(long startupTimeout, long executeTimeout)
             throws SmartFrogException, InterruptedException, RemoteException {
-        if(getApplication().sfIsTerminated()) {
-            //we are (somehow) already terminated, so report this as a problem
-            LifecycleEvent termEvent=new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component has already terminated",getApplication().sfCompleteName()));
-            return termEvent;
-        }
-        try {
-            StartedEvent started = startApplication(startupTimeout);
-        } catch (SmartFrogLifecycleException e) {
-            //this is caused by a failure to start the application, which invariably triggers
-            //termination of one kind or another
-            LifecycleEvent termEvent = new TerminatedEvent(getApplication(),
-                    TerminationRecord.abnormal("Test component terminated during startup", getApplication().sfCompleteName()));
-            return termEvent;
-        } catch (TestFailureException tfe) {
-            //startup faied and was intercepted during startup
-            return tfe.getEvent();
-        }
+        startApplication(startupTimeout);
         LifecycleEvent event;
         TimeoutTracker timedout = new TimeoutTracker(executeTimeout);
         do {
             event = waitForEvent(LifecycleEvent.class, executeTimeout);
             if (event == null) {
-                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + '\n' + dumpHistory(), executeTimeout);
+                throw new TestTimeoutException(ERROR_TEST_RUN_TIMEOUT + "\n" + dumpHistory(), executeTimeout);
             }
         } while (!(event instanceof TerminatedEvent) && !(event instanceof TestCompletedEvent)
                 && !timedout.isTimedOut());

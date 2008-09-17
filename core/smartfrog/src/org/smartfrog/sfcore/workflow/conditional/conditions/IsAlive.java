@@ -38,8 +38,9 @@ public class IsAlive extends AbstractTargetedCondition implements TargetedCondit
      * Ping the target. return true if the operation did not fail for any reason
      *
      * @return true if it is successful, false if not
-     * @throws RemoteException for network problems
-     * @throws SmartFrogException for any other problem
+     * @throws java.rmi.RemoteException for network problems
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  for any other problem
      */
     public boolean evaluate() throws RemoteException, SmartFrogException {
         Throwable thrown;

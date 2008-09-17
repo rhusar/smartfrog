@@ -1,11 +1,11 @@
 #include "org/smartfrog/components.sf"
-#include "/org/smartfrog/services/email/components.sf"
+#include "org/smartfrog/services/email/emailer.sf"
 
 sfConfig extends Emailer {
-    runAsWorkFlowComponent true;
-    to "ritu@india.hp.com";
-    from "smartfrog@india.hp.com";
-    message "This is a test message \n thanks";
-    subject "SF Emailer Test";
-    smtpHost "no-such-hostname";     // SMTP host name
+                runAsWorkFlowComponent true; 
+                to "ritu@india.hp.com";
+		from "smartfrog@india.hp.com";
+                message "This is a test message \n thanks";
+                subject "SF Emailer Test";
+                smtpHost "no-such-hostname";     // SMTP host name
 }

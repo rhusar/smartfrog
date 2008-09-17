@@ -25,6 +25,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import java.net.InetAddress;
 import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
@@ -42,15 +44,14 @@ public class SFSecurity {
     private static boolean alreadyInit = false;
 
     /** A flag that states whether SF security checks are active. */
-    private static volatile boolean securityOn = false;
+    private static boolean securityOn = false;
 
     /** A flag that states whether SF security checks for resources are active. */
-    private static volatile boolean secureResourcesOff = false;
+    private static boolean secureResourcesOff = false;
 
     /** A security environment shared by all the local SF components */
     private static SFSecurityEnvironment securityEnv;
-
-    /** A RMIServerSocketFactory used when security is off */
+    /** A RMIServerSocketFactory used when security is ff */
     private static SFServerSocketFactory nonSecServerSocketFactory;
 
 
@@ -63,7 +64,7 @@ public class SFSecurity {
     synchronized public static void initSecurity()
         throws SFGeneralSecurityException {
         try {
-            if (!alreadyInit) {
+            if (alreadyInit == false) {
                 // Add the new RMIClassLoaderSpi
                 System.setProperty("java.rmi.server.RMIClassLoaderSpi", "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
 
@@ -73,6 +74,11 @@ public class SFSecurity {
                     // Activate the real security manager.
                     System.setSecurityManager(new SecurityManager());
 
+                    // Add JSSE sun provider. Need to make this more sun independent..
+                    /* Already included in JDK1.4
+                       Security.addProvider(
+                                       new com.sun.net.ssl.internal.ssl.Provider());
+                     */
                     securityEnv = new SFSecurityEnvironmentImpl(null);
 
                     /*Make sure that we restrict downloading of stubs/RMIClientFactory
@@ -117,7 +123,7 @@ public class SFSecurity {
                     // if a java.security.policy is set then we initialize standard java security
                     // This is necessary for dynamic classloading to work.
                     String secPro = System.getProperty("java.security.policy");
-                    if  (secPro != null) {
+                    if  (secPro!=null ) {
                         System.setSecurityManager(new SecurityManager());
                     }
 
@@ -127,7 +133,7 @@ public class SFSecurity {
             }
         } catch (IOException e) {
             // Problems setting up RMI.
-            throw (SFGeneralSecurityException)new SFGeneralSecurityException(e.getMessage()).initCause(e);
+            throw new SFGeneralSecurityException(e.getMessage());
         }
     }
 
@@ -159,7 +165,7 @@ public class SFSecurity {
      *
      * @return whether the SF security is active.
      */
-    public static boolean isSecurityOn() {
+    synchronized public static boolean isSecurityOn() {
         return securityOn;
     }
 
@@ -169,7 +175,7 @@ public class SFSecurity {
      *
      * @return whether the SF security is active.
      */
-    public static boolean isSecureResourcesOff (){
+    synchronized public static boolean isSecureResourcesOff (){
         return secureResourcesOff;
     }
 
@@ -178,7 +184,7 @@ public class SFSecurity {
      * accepts requests on the specified <code>port</code>.
      *
      * @param port the port on which the registry accepts requests
-     * @param bindAddr The address to bind on
+     *
      * @return the registry
      *
      * @throws RemoteException if the registry could not be exported
@@ -192,7 +198,7 @@ public class SFSecurity {
                 securityEnv.getRMIServerSocketFactory());
         } else {
             nonSecServerSocketFactory = new SFServerSocketFactory(bindAddr);
-            return LocateRegistry.createRegistry(port, null, nonSecServerSocketFactory);
+            return LocateRegistry.createRegistry(port,null,nonSecServerSocketFactory);
         }
     }
 

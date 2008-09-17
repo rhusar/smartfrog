@@ -36,11 +36,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
     }
 
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN43() throws Throwable {
+    public void testCaseTCN43() throws Exception {
         deployExpectingException(FILES+"tcn43.sf",
                 "tcn43",
                 EXCEPTION_DEPLOYMENT,
@@ -48,12 +44,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_LINKRESOLUTION,
 		"in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN44() throws Throwable {
+    public void testCaseTCN44() throws Exception {
         deployExpectingException(FILES+"tcn44.sf",
                 "tcn44",
                 EXCEPTION_DEPLOYMENT,
@@ -61,12 +52,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_LINKRESOLUTION,
                 "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: non-reference value found for lazy attribute 'a'");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN45() throws Throwable {
+    public void testCaseTCN45() throws Exception {
         deployExpectingException(FILES+"tcn45.sf",
                 "tcn45",
                 EXCEPTION_DEPLOYMENT,
@@ -74,12 +60,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 EXCEPTION_LINKRESOLUTION,
                 " non-optional attribute 'y (string attribute to test types and presence)' is missing");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-    public void testCaseTCN46() throws Throwable {
+    public void testCaseTCN46() throws Exception {
         deployExpectingException(FILES+"tcn46.sf",
                 "tcn46",
                 EXCEPTION_DEPLOYMENT,

@@ -24,7 +24,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.utils.ListUtils;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Implement our JVM manipulator
@@ -46,8 +47,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private boolean setOnDeploy = false;
     private boolean setOnEarlyDeploy = false;
     private boolean unsetOnTerminate = true;
-    private boolean ignoreSecurityExceptions = false;
-    private LogSF log;
+    private Log log;
     private static final Reference REF_PROPERTIES = new Reference(ATTR_PROPERTIES);
 
     /**
@@ -72,7 +72,6 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             sfContext = cxt;
             log = sfGetApplicationLog();
             setOnEarlyDeploy = resolveBool(cxt, ATTR_SETONEARLYDEPLOY);
-            ignoreSecurityExceptions = resolveBool(cxt, ATTR_IGNORESECURITYEXCEPTIONS);
             if (setOnEarlyDeploy) {
                 loadAndSetProperties();
             }
@@ -207,25 +206,10 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
         String action = "setting " + name + " to " + value;
         try {
             sfLog().info(action);
-            innerSetProperty(name, value);
+            System.setProperty(name, value);
         } catch (SecurityException e) {
-            if(!ignoreSecurityExceptions) {
-                throw SmartFrogException.forward(action, e);
-            } else {
-                log.ignore(action,e);
-            }
+            throw SmartFrogException.forward(action, e);
         }
-    }
-
-    /**
-     * Override point, set a single property.
-     * @param name property name
-     * @param value value
-     * @throws SmartFrogException for smartfrog problems
-     * @throws SecurityException if need be
-     */
-    protected void innerSetProperty(String name, String value) throws SmartFrogException {
-        System.setProperty(name, value);
     }
 
     /**
@@ -236,26 +220,10 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      */
     public void unsetProperty(String name)
             throws SmartFrogException {
-        String action = "clearing " + name;
-        sfLog().debug(action);
         try {
-            innerUnsetProperty(name);
+            System.clearProperty(name);
         } catch (SecurityException e) {
-            if (!ignoreSecurityExceptions) {
-                throw SmartFrogException.forward("Failed to clear" + name, e);
-            } else {
-                log.ignore(action, e);
-            }
+            throw SmartFrogException.forward("Failed to clear property " + name, e);
         }
-    }
-
-    /**
-     * Unset a property
-     * @param name property name
-     * @throws SmartFrogException for smartfrog problems
-     * @throws SecurityException if need be
-     */
-    protected void innerUnsetProperty(String name) throws SmartFrogException {
-        System.clearProperty(name);
     }
 }

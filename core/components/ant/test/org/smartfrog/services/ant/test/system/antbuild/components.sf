@@ -19,10 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/ant/test/system/components.sf"
 
-
-DELIBERATE_FAILURE "deliberate failure";
-BAD_TASK "Problem: failed to create task or type netrexxc";
-
 TestBuildFile extends TempBuildFile {
 
   text ##
@@ -38,33 +34,16 @@ TestBuildFile extends TempBuildFile {
       <property name="inner" value="true" />
     </target>
 
-    <target name="echo" depends="inner">
-      <echo> Echoing
-      inner=${inner}
-      </echo>
-    </target>
-
     <target name="fail">
       <property name="failure.message" value="deliberate failure" />
-      <echo> about to fail</echo>
-      <fail status="-1"
+      <property name="failure.status" value="-1" />
+      <fail status="${failure.status}"
         message="${failure.message}"/>
-      <echo>We must never get here</echo>
     </target>
 
     <target name="sleep">
       <property name="sleep.milliseconds" value="100" />
       <sleep seconds="sleep.milliseconds" />
-    </target>
-
-    <!-- this is expected to fail -->
-    <target name="testBadTask">
-      <echo> about to fail</echo>
-      <netrexxc srcDir="."
-        includes="*"
-        destDir="build/test/netrexx"
-        />
-      <echo>We must never get here</echo>
     </target>
    </project>
   #;
@@ -79,12 +58,9 @@ BuildFileTest extends TestCompound {
 
   action extends Compound {
     build extends TestBuildFile;
-
-
     results extends Compound {
 
     }
-
   }
 
   tests extends Sequence {
@@ -103,13 +79,7 @@ BuildFileTest extends TestCompound {
 
 }
 
-
 testBuildFile extends BuildFileTest ;
-
-
-testEcho extends BuildFileTest  {
-  tests:antbuild:targets ["echo"];
-}
 
 testProperties extends BuildFileTest {
 
@@ -175,51 +145,4 @@ testSkipUnimplementedTargets extends BuildFileTest {
     }
 
   }
-}
-
-
-
-
-BuildFileFailingTest extends BuildFileTest {
-  expectTerminate true;
-  //exitType EXIT_TYPE_ABNORMAL;
-  action:targets [];
-
-  //inject a new compound
-  action:antbuild extends Sequence {
-   Sleep extends Delay {
-    time 2000;
-  }
-
-   antbuild extends AntBuild {
-    propertyTarget LAZY action:results;
-    antfile LAZY action:build;
-    targets action:targets;
-    logLevel LOG_DEBUG;
-    //basedir ".";
-   }
-  }
-
-  tests extends Sequence {
-  
-}
-
-}
-
-testFail extends BuildFileFailingTest {
-  description "test that the fail target fails";
-  exitText DELIBERATE_FAILURE;
-  action:targets
-  //tests:antbuild:targets
-    ["fail"];
-}
-
-
-
-
-testBadTask extends BuildFileFailingTest {
-  description "test that the bad task target fails";
-  exitText BAD_TASK;
-  action:targets
-    ["testBadTask"];
 }

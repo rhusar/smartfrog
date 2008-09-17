@@ -40,7 +40,7 @@ public interface UriIntf extends Remote {
      * get the URI of this file
      *
      * @return URI
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException @throws RemoteException In case of network/rmi error
      */
     URI getURI() throws RemoteException;
 }

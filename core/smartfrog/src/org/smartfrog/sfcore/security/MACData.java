@@ -42,20 +42,20 @@ public class MACData {
       try {
          defaultMAC = Mac.getInstance(macType);
       } catch (NoSuchAlgorithmException e) {
-          throw (SmartFrogException)SmartFrogException.forward("Failed to get algorithm " + macType + " for MACData object", e);
+         e.printStackTrace();  //shouldn't ever happen...
       }
       if (SFSecurity.isSecurityOn()) {
          try {
             Key k = ((KeyStore.SecretKeyEntry)(((SFSecurityEnvironmentImpl) SFSecurity.getSecurityEnvironment()).getEntry(keyAlias))).getSecretKey();
             defaultMAC.init(k);
          } catch (Exception e) {
-            throw new SmartFrogException("Error in setting up security of MACData service (with SmartFrog in secure mode)", e);
+            throw new SmartFrogException("Error in setting up security of MACData service", e);
          }
       } else {
          try {
             defaultMAC.init(defaultKey);
          } catch (InvalidKeyException e) {
-             throw (SmartFrogException)SmartFrogException.forward("Error in setting up security of MACData service (with SmartFrog in insecure mode)", e);
+            e.printStackTrace();  //shouldn't happen as key known to be valid
          }
       }
    }

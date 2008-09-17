@@ -35,11 +35,6 @@ public class MkdirTest  extends SmartFrogTestBase {
         super(name);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testWorking() throws Throwable {
         application = deployExpectingSuccess(FILES + "mkdirTestWorking.sf", "mkdirFileTestWorking");
         File file = null;
@@ -49,49 +44,15 @@ public class MkdirTest  extends SmartFrogTestBase {
                     true);
             file = new File(filename);
             //now verify we clean up
-            assertIsDirectory(file, filename);
+            assertTrue("Directory not found: "+filename,file.exists());
+            assertTrue("Not a directory: " + filename,file.isDirectory());
             
         } finally {
             //cleanup
-            if (file!=null) {
+            if(file!=null) {
                 file.delete();
-                assertFalse("Should be able to clean up after test. Directory remaining: " + file,
-                        file.exists());
+                assertFalse(file.exists());
             }
-        }
-    }
-
-    private void assertIsDirectory(File file, String filename) {
-        assertTrue("Directory should exist: " + filename, file.exists());
-        assertTrue("Should be a directory: " + filename, file.isDirectory());
-    }
-
-    public void testCleanOnStartup() throws Throwable {
-        String dirname = System.getProperty("java.io.tmpdir")
-                + System.getProperty("file.separator") + "directory-to-be-cleaned";
-        File dir = new File(dirname);
-
-        try {
-            assertFalse("Temp directory should not exist yet", dir.exists());
-            assertTrue("Should be able to create a new temporary directory: " + dirname,
-                    dir.mkdir());
-            File dirInsideDir = new File(dir, "testDir");
-            assertTrue("Should be able to create a new directory: " + dirInsideDir,
-                    dirInsideDir.mkdir());
-            File fileInsideDir = new File(dir, "testFile.txt");
-            assertTrue("Should be able to create a new file inside directory: " + fileInsideDir,
-                    fileInsideDir.createNewFile());
-
-            application = deployExpectingSuccess
-                    (FILES + "mkdirCleanOnStartup.sf", "mkdirCleanOnStartupTest");
-
-            assertIsDirectory(dir, dirname);
-            assertEquals("The directory should be cleaned up and not contain anything",
-                    0, dir.listFiles().length);
-        } finally {
-            dir.delete();
-            assertFalse("Should be able to clean up after test. Directory remaining: " + dir,
-                    dir.exists());
         }
     }
 }

@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.shellscript;
 
 import java.util.Vector;
-import java.util.Arrays;
 import java.io.File;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -135,6 +134,7 @@ import java.io.Serializable;
           } catch (Exception ex) {
               throw SmartFrogException.forward("Failed to create CMD", ex);
           }
+          //System.out.println(" INFO CMD: "+this.toString());
      }
 
      public Cmd(String cmdarray[], String envp[], File dir) {
@@ -210,13 +210,13 @@ import java.io.Serializable;
          return this;
      }
 
-     public Cmd setPassPositives(boolean passPositives) {
+     public Cmd setPassPosistives(boolean passPositives) {
          this.passPositives = passPositives;
          return this;
      }
 
-     public Cmd setDetach(boolean detach) {
-         this.shouldDetach = detach;
+     public Cmd setDetatch(boolean detatch) {
+         this.shouldDetach = detatch;
          return this;
      }
 
@@ -284,48 +284,48 @@ import java.io.Serializable;
      public String toString(){
          StringBuffer str = new StringBuffer();
          str.append("Cmd: ");
-         Vector<String> v = new Vector<String>(Arrays.asList(getCmdArray()));
+         Vector v = new Vector(java.util.Arrays.asList(getCmdArray()));
          str.append(v.toString());
          if (envp !=null){
              str.append(", envp: ");
-             str.append(getEnvp().toString());
+             str.append(this.getEnvp().toString());
          }
 
          if (dir !=null){
              str.append(", dir: ");
-             str.append(getFile().toString());
+             str.append(this.getFile().toString());
          }
 
          if (filtersOut !=null){
              str.append(", filtersOutputStream: ");
-             v = new Vector<String>(Arrays.asList(getFiltersOut()));
+             v = new Vector(java.util.Arrays.asList(getFiltersOut()));
              str.append(v.toString());
          }
 
          if (filtersErr !=null){
              str.append(", filtersErrorStream: ");
-             v = new Vector<String>(Arrays.asList(getFiltersErr()));
+             v = new Vector(java.util.Arrays.asList(getFiltersErr()));
              str.append(v.toString());
          }
 
          if (echoCommand !=null){
              str.append(", echoCommand: ");
-             str.append(echoCommand);
+             str.append(this.echoCommand);
          }
 
          if (exitErrorCommand !=null){
              str.append(", exitErrorCommand: ");
-             str.append(exitErrorCommand);
+             str.append(this.exitErrorCommand);
          }
 
          str.append(", detach: ");
-         str.append(detach());
+         str.append(this.detach());
          str.append(", terminate: ");
-         str.append(terminate());
+         str.append(this.terminate());
          str.append(", restart: ");
-         str.append(restart());
+         str.append(this.restart());
          str.append(", passPositives: ");
-         str.append(passPositives());
+         str.append(this.passPositives());
 
          return str.toString();
      }

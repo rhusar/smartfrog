@@ -13,16 +13,31 @@ import java.rmi.RemoteException;
 
 /**
  */
- public class OrConnector extends Connector {
+ public class OrConnector extends PrimImpl implements Prim, DependencyValidation, StateDependencies {
+   protected HashSet dependencies = new HashSet();
 
-   public OrConnector() throws RemoteException {
-	   super();
+   public OrConnector() throws SmartFrogException, RemoteException {
    }
+
 
    public boolean isEnabled() {
       for (Iterator d = dependencies.iterator(); d.hasNext();) {
-            if (((DependencyValidation) d.next()).isEnabled()) return true;
+         try {
+            if (((DependencyValidation) d.next()).isEnabled()) {
+               return true;
+            }
+         } catch (RemoteException e) {
+            //??
+         }
       }
       return false;
+   }
+
+   public void register(DependencyValidation d) throws SmartFrogStateLifecycleException {
+      dependencies.add(d);
+   }
+
+   public void deregister(DependencyValidation d) throws SmartFrogStateLifecycleException {
+      dependencies.remove(d);
    }
 }

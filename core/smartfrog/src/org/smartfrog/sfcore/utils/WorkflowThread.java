@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
 
@@ -40,10 +39,6 @@ public class WorkflowThread extends SmartFrogThread {
      * termination message: {@value}
      */
     public static final String WORKER_THREAD_COMPLETED = "Worker thread completed";
-    /**
-     * abnormal termination message: {@value}
-     */
-    public static final String WORKER_THREAD_FAILED = "Worker thread failed";
 
     /**
      * Allocates a new <code>SmartFrogThread</code> object.
@@ -55,29 +50,8 @@ public class WorkflowThread extends SmartFrogThread {
      */
     public WorkflowThread(Prim owner, boolean workflowTermination,Object notifyObject) {
         super(notifyObject);
-        bind(owner, workflowTermination);
-    }
-
-    public Prim getOwner() {
-        return owner;
-    }
-
-    public Reference getOwnerID() {
-        return ownerID;
-    }
-
-    public boolean isWorkflowTermination() {
-        return workflowTermination;
-    }
-
-    /**
-     * Bind to the owner
-     * @param owner owner prim
-     * @param workflowTermination workflow policy
-     */
-    private void bind(Prim owner, boolean workflowTermination) {
         this.owner = owner;
-        this.workflowTermination = workflowTermination;
+        this.workflowTermination=workflowTermination;
         try {
             ownerID = owner.sfCompleteName();
         } catch (RemoteException e) {
@@ -96,18 +70,6 @@ public class WorkflowThread extends SmartFrogThread {
     }
 
     /**
-     * Create a basic thread bound to a runnable
-     *
-     * @param owner owner prim
-     * @param target the object whose <code>run</code> method is called.
-     * @param workflowTermination workflow policy
-     */
-    public WorkflowThread(Prim owner, Executable target, boolean workflowTermination) {
-        super(target);
-        bind(owner, workflowTermination);
-    }
-
-    /**
      * Runs the {@link #execute()} method, catching any exception it throws and storing it away for safe keeping After
      * the run, the notify object is notified, and we trigger a workflow termination
      */
@@ -115,13 +77,13 @@ public class WorkflowThread extends SmartFrogThread {
     public void run() {
         //do the work and catch the result
         super.run();
-        processRunResults();
-    }
-
-    protected void processRunResults() {
         //now analyse the result, create a term record and maybe terminate the owner
         boolean isNormal = getThrown() == null;
-        TerminationRecord tr = createTerminationRecord();
+        TerminationRecord tr = new TerminationRecord(
+                isNormal ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
+                getTerminationMessage(),
+                ownerID,
+                getThrown());
         aboutToTerminate(tr);
         ComponentHelper helper = new ComponentHelper(owner);
         if (workflowTermination && isNormal) {
@@ -135,21 +97,6 @@ public class WorkflowThread extends SmartFrogThread {
     }
 
     /**
-     * Create a TR from the termination message of {@link #getTerminationMessage()}
-     * and any exception thrown -the latter determines whether or not the TR
-     * is considered normal or not
-     * @return a termination record
-     */
-    protected TerminationRecord createTerminationRecord() {
-        TerminationRecord tr = new TerminationRecord(
-                getThrown() == null ? TerminationRecord.NORMAL : TerminationRecord.ABNORMAL,
-                getTerminationMessage(),
-                ownerID,
-                getThrown());
-        return tr;
-    }
-
-    /**
      * this is an override point. The TR is passed in for examination and
      * editing. The base implementation does nothing.
      * @param tr the termination record about to be passed up
@@ -160,10 +107,9 @@ public class WorkflowThread extends SmartFrogThread {
 
     /**
      * Override point: the termination message
-     * @return {@link #WORKER_THREAD_COMPLETED} or {@link #WORKER_THREAD_FAILED} depending on the outcome
+     * @return {@link #WORKER_THREAD_COMPLETED}
      */
     protected String getTerminationMessage() {
-        return getThrown() == null ? WORKER_THREAD_COMPLETED : WORKER_THREAD_FAILED;
+        return WORKER_THREAD_COMPLETED;
     }
-    
 }

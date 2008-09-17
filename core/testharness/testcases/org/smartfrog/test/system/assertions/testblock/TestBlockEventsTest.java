@@ -39,35 +39,19 @@ public class TestBlockEventsTest extends DeployingTestBase {
     }
 
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testEmptySequence() throws Throwable {
         runTestsToCompletion(FILES, "testSequence");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testRun() throws Throwable {
         runTestsToCompletion(FILES, "testRun");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFailure() throws Throwable {
         LifecycleEvent event=runTestDeployment(FILES, "testFailure");
         assertTestRunFailed(event, true,"failure message");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testSmartFrogException() throws Throwable {
         LifecycleEvent event = runTestDeployment(FILES, "testSmartFrogException");
         assertTestRunFailed(event,true,TestBlockImpl.ERROR_STARTUP_FAILURE);

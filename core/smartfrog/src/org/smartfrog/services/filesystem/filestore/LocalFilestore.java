@@ -48,9 +48,9 @@ public interface LocalFilestore extends FileUsingComponent {
      * @param prefix prefix
      * @param suffix suffix
      * @return a file entry describing both the file and the URL
-     * @throws SmartFrogException error in creating file
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error in creating file
      *
-     * @throws RemoteException In case of network/rmi error
+     * @throws java.rmi.RemoteException In case of network/rmi error
      */
     FileEntry createNewFile(String prefix, String suffix)
             throws SmartFrogException, RemoteException;
@@ -60,9 +60,9 @@ public interface LocalFilestore extends FileUsingComponent {
      *
      * @param uri uri of entry
      * @return true if deletion worked
-     * @throws SmartFrogException error in deleting
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error in deleting
      *
-     * @throws RemoteException  In case of network/rmi error
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      */
     boolean delete(URI uri)
             throws SmartFrogException, RemoteException;
@@ -72,9 +72,9 @@ public interface LocalFilestore extends FileUsingComponent {
      *
      * @param uri  uri
      * @return FileEntry
-     * @throws SmartFrogException error in lookup
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error in lookup
      *
-     * @throws RemoteException  In case of network/rmi error
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      */
     FileEntry lookup(URI uri) throws SmartFrogException, RemoteException;
 
@@ -86,9 +86,9 @@ public interface LocalFilestore extends FileUsingComponent {
      * @param content  the actual content of the file content
      * @param metadata any metadata
      * @return a file entry describing both the file and the URL
-     * @throws SmartFrogException error in creating file
+     * @throws org.smartfrog.sfcore.common.SmartFrogException error in creating file
      *
-     * @throws RemoteException  In case of network/rmi error
+     * @throws java.rmi.RemoteException  In case of network/rmi error
      */
 
     FileEntry uploadNewFile(String prefix,

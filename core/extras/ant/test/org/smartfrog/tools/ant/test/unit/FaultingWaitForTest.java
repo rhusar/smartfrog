@@ -19,8 +19,8 @@
  */
 package org.smartfrog.tools.ant.test.unit;
 
-import org.smartfrog.tools.ant.FaultingWaitForTask;
 import org.smartfrog.tools.ant.test.TaskTestBase;
+import org.smartfrog.tools.ant.FaultingWaitForTask;
 
 /**
  */

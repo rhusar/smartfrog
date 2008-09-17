@@ -42,9 +42,6 @@ public interface Emailer extends Prim {
     public static String RUNASWFCOMPONENT = "runAsWorkFlowComponent";
     public static String SEND_ON_STARTUP = "sendOnStartup";
     public static String SEND_ON_SHUTDOWN = "sendOnShutdown";
-	public static String SMTP_USER = "smtpHostUser";
-	public static String SMTP_PASSWORD = "smtpHostUserPassword";
-	public static String SMTP_PORT = "smtpPort";
 
      /**
      * Sends a single part message using to, from subject attributes defined in

@@ -38,17 +38,9 @@ sfConfig extends Compound {
                 user "ritu";
                 passwordFile "D:\\cvs\\forge\\passwd.txt";
                 localLibLocation "D:\\cvs\\forge\\oct_06\\core\\smartfrog\\dist\\lib\\";
-		            remoteLibLocation "/tmp/";
-                ftpLocalFiles ["D:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
-                  (ATTRIB localLibLocation ++ "sfExamples.jar"),
-                  (ATTRIB localLibLocation ++ "smartfrog.jar"),
-                  (ATTRIB localLibLocation ++ "utils-components.jar"),
-                  (ATTRIB localLibLocation ++ "sfServices.jar")];
-                ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
-                  (ATTRIB remoteLibLocation ++ "sfExamples.jar"),
-                  (ATTRIB remoteLibLocation ++ "smartfrog.jar"),
-                  (ATTRIB remotLibLocation ++ "utils-components.jar"),
-                  (ATTRIB  remotLibLocation ++ "sfServices.jar")];
+		remotLibLocation "/tmp/";
+                ftpLocalFiles ["D:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz", (ATTRIB localLibLocation ++ "sfExamples.jar"), (ATTRIB localLibLocation ++ "smartfrog.jar"), (ATTRIB localLibLocation ++ "utils-components.jar"), (ATTRIB localLibLocation ++ "sfServices.jar")];
+                ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz", (ATTRIB remotLibLocation ++ "sfExamples.jar"), (ATTRIB remotLibLocation ++ "smartfrog.jar"), (ATTRIB remotLibLocation ++ "utils-components.jar"), (ATTRIB  remotLibLocation ++ "sfServices.jar")];
 
                 telnetLogfile "SFNode1.log";
                 telnetCommands ["cd cvs",

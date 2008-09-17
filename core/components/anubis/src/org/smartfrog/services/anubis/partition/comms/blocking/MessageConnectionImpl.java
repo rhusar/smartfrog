@@ -58,7 +58,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     private boolean                 ignoring          = false;
 
     public MessageConnectionImpl(Identity id, ConnectionSet cs, ConnectionAddress address, MessageConnection mc, WireSecurity sec) {
-        super("Anubis: Connection Comms (node " + id.id + ", remote node " + mc.getSender().id + ")", address);
+        super("Anubis: node " + mc.getSender().id + " Connection Comms", address);
         me = id;
         connectionSet = cs;
         messageConnection = mc;
@@ -67,7 +67,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
     }
 
     public MessageConnectionImpl(Identity id, SocketChannel channel, MessageConnectionServer mcs, ConnectionSet cs, WireSecurity sec) {
-        super("Anubis: " + id + " Connection Comms (node " + id.id + ")", channel);
+        super("Anubis: new Connection Comms", channel);
         me = id;
         server = mcs;
         connectionSet = cs;
@@ -184,7 +184,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
         if( con instanceof MessageConnection ) {
             if( ((MessageConnection)con).assignImpl(this) ) {
                 messageConnection = (MessageConnection)con;
-                setName("Anubis: Connection Comms (node " + me.id + ", remote node " + con.getSender().id + ")");
+                setName("Anubis: node " + con.getSender().id + " Connection Comms");
                 messageConnection.deliver(bytes); 
             } else {
                 if( log.isErrorEnabled() )
@@ -264,7 +264,7 @@ public class MessageConnectionImpl extends ConnectionComms implements IOConnecti
             shutdown();
             return;
         }
-        setName("Anubis: Connection Comms (node " + me.id + ", remote node " + messageConnection.getSender().id + ")");
+        setName("Anubis: node " + messageConnection.getSender().id + " Connection Comms");
     }
 
 

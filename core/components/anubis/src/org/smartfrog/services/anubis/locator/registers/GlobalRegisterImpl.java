@@ -89,7 +89,7 @@ public class GlobalRegisterImpl {
      * Starts the global register server
      */
     public void start() {
-        server.setName("Anubis: Global Register Request Server (node " + me + ")");
+        server.setName("Anubis: Node " + me + " Global Register RequestServer");
         server.start();
         updateDebugFrame();
      }

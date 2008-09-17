@@ -51,7 +51,6 @@ public class FilenamePatternFilterTest extends TestCase {
 
     /**
      * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
-     * @throws Exception on any problems
      */
     protected void setUp() throws Exception {
         super.setUp();
@@ -67,7 +66,6 @@ public class FilenamePatternFilterTest extends TestCase {
 
     /**
      * Tears down the fixture, for example, close a network connection. This method is called after a test is executed.
-     * @throws Exception on any problems
      */
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -79,12 +77,6 @@ public class FilenamePatternFilterTest extends TestCase {
         tempdir.delete();
     }
 
-    /**
-     * Create a temp file on the temp dir
-     * @param name filename
-     * @return the new file
-     * @throws IOException for creation failures
-     */
     private File tmpfile(String name) throws IOException {
         File f = new File(tempdir, name);
         if (f.exists()) {
@@ -94,59 +86,30 @@ public class FilenamePatternFilterTest extends TestCase {
         return f;
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
-
     public void testStarDotTxt() throws Throwable {
         assertMatches(3, "\\w*.txt", true, false);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testQueryDotQueryTxt() throws Throwable {
         assertMatches(4, "\\w{2}.\\w{3}", true, false);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testCaseSensitive() throws Throwable {
         assertMatches(2, cipattern, true, false);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testCaseInsensitive() throws Throwable {
         assertMatches(3, cipattern, false, false);
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testHidden() throws Throwable {
         assertMatches(1, ".\\w+.hidden", false, true);
     }
 
 
-    /**
-     * Assert that a pattern matches a given number of files
-     * @param count expected count
-     * @param pattern pattern
-     * @param caseSensitive case sensitive match?
-     * @param hidden include hidden files?
-     * @throws SmartFrogDeploymentException any problems with the mask
-     */
-    private void assertMatches(int count, String pattern, boolean caseSensitive, boolean hidden)
+    private void assertMatches(int count, String mask, boolean caseSensitive, boolean hidden)
             throws SmartFrogDeploymentException {
-        FilenamePatternFilter filter = new FilenamePatternFilter(pattern, hidden, caseSensitive);
+        FilenamePatternFilter filter = new FilenamePatternFilter(mask, hidden, caseSensitive);
         File[] files = tempdir.listFiles(filter);
         int filesize = files.length;
         if (filesize != count) {

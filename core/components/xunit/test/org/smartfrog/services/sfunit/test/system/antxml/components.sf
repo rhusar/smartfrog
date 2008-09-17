@@ -22,12 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/xunit/listeners/antxml/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/ant/components.sf"
 
-
-test.data.dir (PROPERTY test.data.dir ++ "/sfdata");
-
-test.reports.dir (PROPERTY test.data.dir ++ "/reports");
 
 //these are components we run underneath
 SimpleTestCompound extends ExpectTerminate {
@@ -43,27 +38,7 @@ FailingTestCompound extends TestCompound {
 
 
 antxml extends AntXmlTestListener {
-  outputDirectory test.data.dir; 
-}
-
-
-antreport extends AntWorkflowRun {
-  md extends mkdir {
-    dir test.reports.dir;
-  }
-
-  reports extends junitreport {
-      todir test.reports.dir;
-      myFileSet extends fileset {
-        dir PROPERTY test.data.dir;
-        includes "*.xml";
-      }
-  }
-
-}
-
-AssertFileExists extends FileMustExist {
-    sfShouldTerminate true;
+  outputDirectory PROPERTY test.reports.dir;
 }
 
 
@@ -72,53 +47,36 @@ testRunnerAntXml extends TestRunner {
 
   sfShouldTerminate true;
 
-  listener extends antxml {
-    outputDirectory test.data.dir;
+  listener extends ChainListener {
+    console extends ConsoleListener;
+
+    dataDir extends Mkdir {
+      parentDir PROPERTY test.data.dir;
+      dir "sfdata";
+    }
+
+    ant extends antxml {
+      outputDirectory LAZY dataDir;
+    }
   }
 
   tests1 extends SFUnitTestSuite {
     name "tests1";
     description "run some basic tests";
     one extends SimpleTestCompound;
-    //two extends FailingTestCompound;
+    two extends FailingTestCompound;
     sfShouldTerminate true;
 
   }
-}
-testSFUnitAntXml extends testRunnerAntXml {
 }
 
 testSFUnitAntXmlNested extends ExpectTerminate {
   action extends testRunnerAntXml {
-    sfShouldTerminate true;
   }
 }
 
-
-testAntXmlThroughJunit extends ExpectDeploy {
-  action extends Compound {
-  }
-
-  tests extends Sequence {
-
-    testrun testRunnerAntXml;
-
-    assertDataGenerated extends AssertFileExists {
-      dir test.data.dir;
-      filename "tests1.xml"
-    }
-
-    reports antreport;
-
-    assertReportIndexGenerated extends AssertFileExists {
-      dir test.reports.dir;
-      filename "index.html"
-    }
-  }
-
+testSFUnitAntXml extends testRunnerAntXml {
 }
-
-
 
 
 

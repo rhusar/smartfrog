@@ -363,9 +363,7 @@ public class VMWareImageModule {
         // shut down the vm if it's not powered off or suspended
         if (iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_POWERED_OFF &&
             iPowerState != VMWareVixLibrary.VixPowerState.VIX_POWERSTATE_SUSPENDED) {
-            if (!vmComm.convertPowerState(iPowerState).equals("Could not retrieve power state.")) {
-                shutDown();
-            }
+            shutDown();
         }
 
         // unregister the vm
@@ -391,29 +389,23 @@ public class VMWareImageModule {
             // files contain a little amount of configuration information additionally
             // to the data
 
-            File vmxFile = new File(imagePath);
-            File vmFolder = vmxFile.getParentFile();
-
-            String newVMPath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
-
-            // check if there is already a VM existing with that name
-            if (vmComm.getImageModule(newVMPath) != null)
-                throw new SmartFrogException("A VM with the desired name \"" + inNewName + "\" is already existing");
-
             // set the display name
             setAttribute("displayName", inNewName);
+
+            File vmxFile = new File(imagePath);
+            File vmFolder = vmxFile.getParentFile();
 
             // set the execution rights
             vmxFile.setExecutable(true, false);
 
             // rename the .vmx file
-            vmxFile.renameTo(new File(newVMPath));
+            vmxFile.renameTo(new File(vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx"));
 
             // rename the folder
             vmFolder.renameTo(new File(vmFolder.getParent() + File.separator + inNewName));
 
             // refresh the path to this vm
-            imagePath = vmFolder.getParent() + File.separator + inNewName + File.separator + inNewName + ".vmx";
+            imagePath = vmFolder.getAbsolutePath() + File.separator + inNewName + ".vmx";
 
             // register the vm again
             registerVM();
@@ -430,113 +422,10 @@ public class VMWareImageModule {
      * @throws SmartFrogException
      */
     public void copyFileFromHostToGuestOS(String inSourceFile, String inTargetFile) throws SmartFrogException {
+        if (guestOSUser.length() == 0) {
+            throw new SmartFrogException(imagePath + ": Username required for copying files from host to guest OS.");
+        }
+
         vmComm.copyFileFromHostToGuestOS(this, inSourceFile, inTargetFile);
     }
-
-    /**
-     * Executes a command in the guest os.
-     * @param inCommand
-     * @param inParameters
-     * @param inNoWait
-     * @throws SmartFrogException
-     */
-    public void executeInGuestOS(String inCommand, String inParameters, boolean inNoWait) throws SmartFrogException {
-        vmComm.executeInGuestOS(this, inCommand, inParameters, inNoWait);
-    }
-
-    /**
-     * Takes a snapshot of a virtual machine.
-     * @param inDesc A descriptino for the snapshot.
-     * @param inName The name for the snapshot.
-     * @param inIncludeMemory Also include the whole memory?
-     * @throws SmartFrogException
-     */
-    public void takeSnapshot(String inName, String inDesc, boolean inIncludeMemory) throws SmartFrogException {
-        vmComm.takeSnapshot(this, inName, inDesc, inIncludeMemory);
-    }
-
-    /**
-     * Deletes a named snapshot of a virtual machine.
-     * @param inName The name of the snapshot.
-     * @param inRemoveChildren Remove the children of this snashot, too?
-     * @throws SmartFrogException
-     */
-    public void deleteSnapshot(String inName, boolean inRemoveChildren) throws SmartFrogException {
-        vmComm.deleteSnapshot(this, inName, inRemoveChildren);
-    }
-
-    /**
-     * Deletes a named snapshot of a virtual machine.
-     * @param inRemoveChildren Remove the children of this snashot, too?
-     * @throws SmartFrogException
-     */
-    public void deleteSnapshot(boolean inRemoveChildren) throws SmartFrogException {
-        vmComm.deleteSnapshot(this, inRemoveChildren);
-    }
-
-    /**
-     * Reverts a virtual machine to the snapshot with the given name.
-     * @param inName The name of the snapshot.
-     * @throws SmartFrogException
-     */
-    public void revertToSnapshot(String inName) throws SmartFrogException {
-        vmComm.revertToSnapshot(this, inName);
-    }
-
-    /**
-     * Reverts a virtual machine to its current snapshot.
-     * @throws SmartFrogException
-     */
-    public void revertToSnapshot() throws SmartFrogException {
-        vmComm.revertToSnapshot(this);
-    }
-
-    /**
-     * Waits for the tools in the guest OS to come up.
-     * @param inTimeout The timeout in seconds. 0 means there is not timeout.
-     * @throws SmartFrogException
-     */
-    public void waitForTools(int inTimeout) throws SmartFrogException {
-        vmComm.waitForTools(this, inTimeout);
-    }
-
-//    /**
-//     * Writes an environment variable within the guest operating system.
-//     * @param inName The name of the environment variable.
-//     * @param inValue The value of the environment variable.
-//     */
-//    public void writeGuestEnvVar(String inName, String inValue) throws SmartFrogException {
-//        vmComm.writeGuestEnvVar(this, inName, inValue);
-//    }
-//
-//    /**
-//     * Reads a environment variable of the guest os.
-//     * @param inName The name of the environment variable.
-//     * @return The content of the variable.
-//     * @throws SmartFrogException
-//     */
-//    public String readGuestEnvVar(String inName) throws SmartFrogException {
-//        return vmComm.readGuestEnvVar(this, inName);
-//    }
-
-	// apparently not supported by VMware server
-//	/**
-//	 * Creates a directory in the guest os of this vm.
-//	 * @param inDir The path of the directory.
-//	 * @throws SmartFrogException
-//	 */
-//	public void mkdirInGuest(String inDir) throws SmartFrogException {
-//		vmComm.mkdirInGuest(this, inDir);
-//	}
-
-	// apparently not supported by VMware server
-//	/**
-//	 * Checks if a directory exists in the guest operating system of this vm.
-//	 * @param inDir The directory.
-//	 * @return <code>true</code> or <code>false</code>.
-//	 * @throws SmartFrogException
-//	 */
-//	public boolean existsDirInGuest(String inDir) throws SmartFrogException {
-//		return vmComm.existsDirInGuest(this, inDir);
-//	}
 }

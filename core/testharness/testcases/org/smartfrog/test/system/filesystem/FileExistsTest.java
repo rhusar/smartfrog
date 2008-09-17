@@ -32,26 +32,14 @@ public class FileExistsTest extends SmartFrogTestBase {
 
     private static final String FILES = TouchFileTest.FILES;
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFileExistsEmptyFile() throws Throwable {
         application = deployExpectingSuccess(FILES + "testFileExistsEmptyFile.sf", "testFileExistsEmptyFile");
     }
 
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
     public void testFileExistsTooSmall() throws Throwable {
         application = deployExpectingSuccess(FILES + "testFileExistsTooSmall.sf", "testFileExistsTooSmall");
     }
-
-    /**
-     * test case
-     * @throws Throwable on failure
-     */
+    
     public void testFileDoesNotExist() throws Throwable {
         application = deployExpectingSuccess(FILES + "testFileDoesNotExist.sf", "testFileDoesNotExist");
     }

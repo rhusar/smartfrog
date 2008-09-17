@@ -16,7 +16,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 For more information: www.smartfrog.org
 
- */
+*/
 package org.smartfrog.services.anubis.partition.comms.nonblocking;
 
 
@@ -55,7 +55,7 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
     private LogSF         asyncLog      = new LogImplAsyncWrapper( syncLog );
 
     private ConnectionAddress connAdd = null;
-    volatile private boolean open = false;
+    private boolean open = false;
 
     private Selector selector = null;
     private ServerSocketChannel server = null;
@@ -77,87 +77,82 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
      */
     public MessageNioServer(ConnectionAddress address, Identity id, ConnectionSet cs, WireSecurity sec) throws Exception {
 
-        if( debug && asyncLog.isTraceEnabled() )
-            asyncLog.trace("MNS: constructing a new server");
+	if( debug && asyncLog.isTraceEnabled() )
+	    asyncLog.trace("MNS: constructing a new server");
 
-        me = id;
-        connectionSet = cs;
-        wireSecurity = sec;
+	me = id;
+	connectionSet = cs;
+    wireSecurity = sec;
 
-        // create a server
-        try{
-            server = ServerSocketChannel.open();
-            server.configureBlocking(false);
+	// create a server
+	try{
+	    server = ServerSocketChannel.open();
+	    server.configureBlocking(false);
             server.socket().bind(new InetSocketAddress(address.ipaddress, address.port));
             connAdd = new ConnectionAddress(server.socket().getInetAddress(), server.socket().getLocalPort());
             if( debug && asyncLog.isTraceEnabled() )
                 asyncLog.trace("MNS: server bound to: "+connAdd.ipaddress.getHostName()+" - "+connAdd.port);
-            selector = Selector.open();
-            server.register(selector, SelectionKey.OP_ACCEPT);
-        }
-        catch(Exception e){
+	    selector = Selector.open();
+	    server.register(selector, SelectionKey.OP_ACCEPT);
+	}
+	catch(Exception e){
             if( asyncLog.isWarnEnabled() )
                 asyncLog.warn(e);
         }
-        this.setName("Anubis: Nio Message Server (node " + me.id + ")");
-        this.setPriority(MAX_PRIORITY);
-        pendingNewChannels = new Hashtable();
-        deadKeys = new Vector();
-        writePendingKeys = new Vector();
-        open = true;
+	this.setName("Anubis: MessageNioServer");
+	this.setPriority(MAX_PRIORITY);
+	pendingNewChannels = new Hashtable();
+	deadKeys = new Vector();
+	writePendingKeys = new Vector();
+	open = true;
 
-        // create as many queues as needed
-        int workerNumber = RX_WORKERS;
-        RxQueueWorker[] queueWorker = new RxQueueWorker[workerNumber];
-        rxQueue = new RxQueue[workerNumber];
-        for (int i=0; i<workerNumber; ++i){
-            rxQueue[i] = new RxQueue();
-            queueWorker[i] = new RxQueueWorker(rxQueue[i]);
-            queueWorker[i].setName("Anubis: Nio RxQueueWorker #" + i + " (node " + me.id + ")");
-            queueWorker[i].setPriority(MAX_PRIORITY);
-            queueWorker[i].setDaemon(true);
-            queueWorker[i].start();
-        }
+	// create as many queues as needed
+	int workerNumber = RX_WORKERS;
+	RxQueueWorker[] queueWorker = new RxQueueWorker[workerNumber];
+	rxQueue = new RxQueue[workerNumber];
+	for (int i=0; i<workerNumber; ++i){
+	    rxQueue[i] = new RxQueue();
+	    queueWorker[i] = new RxQueueWorker(rxQueue[i]);
+	    queueWorker[i].setName("AnubisNio: decoupling RxQueueWorker nbr:"+i);
+	    queueWorker[i].setPriority(MAX_PRIORITY);
+	    queueWorker[i].setDaemon(true);
+	    queueWorker[i].start();
+	}
 
-        // create a a thread to finish the connection of pending connections
-        // new queue, RxQueue turns out to be a generic queue not specific to rxJobs...
-        connectQueue = new RxQueue();
-        ConnectWorker connectWorker = new ConnectWorker(connectQueue);
-        connectWorker.setName("Anubis: Nio Connection Assign (node " + me.id + ")");
-        connectWorker.setDaemon(true);
-        connectWorker.start();
+	// create a a thread to finish the connection of pending connections
+	// new queue, RxQueue turns out to be a generic queue not specific to rxJobs...
+	connectQueue = new RxQueue();
+	ConnectWorker connectWorker = new ConnectWorker(connectQueue);
+	connectWorker.setName("AnubisNio: decoupling connection assign thread");
+	connectWorker.setDaemon(true);
+	connectWorker.start();
     }
 
 
-    public void terminate() {
-        
-        if( debug && asyncLog.isTraceEnabled() )
-            asyncLog.trace("MNS: terminate is called");
-        // do what shutdown does - i.e. wrap that thread up
-        open = false;
-        selector.wakeup();
-        connectQueue.shutdown();
-        for(int i=0; i<RX_WORKERS; i++) {
-            rxQueue[i].shutdown();
-        }
+    public void terminate(){
+	if( debug && asyncLog.isTraceEnabled() )
+	    asyncLog.trace("MNS: terminate is called");
+	// do what shutdown does - i.e. wrap that thread up
+	open = false;
+	selector.wakeup();
     }
 
 
     public void startConnection(ConnectionAddress conAd, Identity me, ConnectionSet cs, MessageConnection con, NonBlockingConnectionInitiator mci){
-        if( debug && asyncLog.isTraceEnabled() )
-            asyncLog.trace("MNS: startConnection is called: "+conAd.ipaddress.getHostName()+" - "+conAd.port);
-        MessageNioHandler mnh = null;
-        try{
-            SocketChannel sendingChannel = SocketChannel.open();
-            sendingChannel.configureBlocking(false);
-            mnh = new MessageNioHandler(selector, sendingChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
-            mnh.init(me, cs, con, mci);
-            sendingChannel.connect(new InetSocketAddress(conAd.ipaddress, conAd.port));
-            if( debug && asyncLog.isTraceEnabled() )
-                asyncLog.trace("MNS: Trying to register a new channel");
-            pendingNewChannels.put(sendingChannel, mnh);
-            selector.wakeup();
-        }
+	if( debug && asyncLog.isTraceEnabled() )
+	    asyncLog.trace("MNS: startConnection is called: "+conAd.ipaddress.getHostName()+" - "+conAd.port);
+	MessageNioHandler mnh = null;
+	try{
+	    SocketChannel sendingChannel = SocketChannel.open();
+	    sendingChannel.configureBlocking(false);
+	    mnh = new MessageNioHandler(selector, sendingChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
+	    mnh.init(me, cs, con, mci);
+	    sendingChannel.connect(new InetSocketAddress(conAd.ipaddress, conAd.port));
+	    if( debug && asyncLog.isTraceEnabled() )
+		asyncLog.trace("MNS: Trying to register a new channel");
+	    pendingNewChannels.put(sendingChannel, mnh);
+	    selector.wakeup();
+	}
         catch(Exception e){
             if( asyncLog.isWarnEnabled() )
                 asyncLog.warn(e);
@@ -190,133 +185,133 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
     // this is the selector thread - only woken up when there is activity on a registered socketChannel
     private void runLoop(){
 
-        Set keys = null;
-        Iterator iter = null;
-        SelectionKey key = null;
-        int selectNbr = -1;
+	Set keys = null;
+	Iterator iter = null;
+	SelectionKey key = null;
+	int selectNbr = -1;
 
-        while(open){
-            if( debug && asyncLog.isTraceEnabled() )
-                asyncLog.trace(this.getName()+": Calling select and presumably, block...");
-            try{
-                selectNbr = selector.select();
-            }
+	while(open){
+	    if( debug && asyncLog.isTraceEnabled() )
+		asyncLog.trace(this.getName()+": Calling select and presumably, block...");
+	    try{
+		selectNbr = selector.select();
+	    }
             catch(Exception e){
                 if( asyncLog.isWarnEnabled() )
                     asyncLog.warn(e);
             }
 
 
-            // finally registering pending channels
-            synchronized(pendingNewChannels){
-                if(!pendingNewChannels.isEmpty()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace("MNS: Registering pending channels: "+pendingNewChannels.size());
-                    SocketChannel sc = null;
-                    MessageNioHandler mnh = null;
-                    for(Enumeration en = pendingNewChannels.keys(); en.hasMoreElements();){
-                        sc = (SocketChannel)en.nextElement();
-                        if (sc != null){
-                            mnh = (MessageNioHandler)pendingNewChannels.remove(sc);
-                            try{
-                                synchronized(selector){
-                                    // sc.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ, mnh);
+	    // finally registering pending channels
+	    synchronized(pendingNewChannels){
+		if(!pendingNewChannels.isEmpty()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace("MNS: Registering pending channels: "+pendingNewChannels.size());
+		    SocketChannel sc = null;
+		    MessageNioHandler mnh = null;
+		    for(Enumeration en = pendingNewChannels.keys(); en.hasMoreElements();){
+			sc = (SocketChannel)en.nextElement();
+			if (sc != null){
+			    mnh = (MessageNioHandler)pendingNewChannels.remove(sc);
+			    try{
+				synchronized(selector){
+				    // sc.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ, mnh);
                                     sc.register(selector, SelectionKey.OP_CONNECT, mnh);
-                                }
-                            }
+				}
+			    }
                             catch(Exception e){
                                 if( asyncLog.isWarnEnabled() )
                                     asyncLog.warn(e);
                             }
 
-                        }
-                    }
-                }
-            }
+			}
+		    }
+		}
+	    }
 
 
-            // blocking is over - process keys
-            synchronized(selector){
-                keys = selector.selectedKeys();
-                iter = keys.iterator();
-            }
+	    // blocking is over - process keys
+	    synchronized(selector){
+		keys = selector.selectedKeys();
+		iter = keys.iterator();
+	    }
 
-            while(iter.hasNext()){
-                if( debug && asyncLog.isTraceEnabled() )
-                    asyncLog.trace(this.getName()+": going through the key iterator");
-                key = (SelectionKey)iter.next();
+	    while(iter.hasNext()){
+		if( debug && asyncLog.isTraceEnabled() )
+		    asyncLog.trace(this.getName()+": going through the key iterator");
+		key = (SelectionKey)iter.next();
 
-                if (key.isAcceptable()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace(this.getName()+": isAcceptable() returned true");
-                    try{
-                        SocketChannel clientChannel = server.accept();
-                        clientChannel.configureBlocking(false);
-                        MessageNioHandler conHandler = new MessageNioHandler(selector, clientChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
-                        conHandler.init(me, connectionSet);
-                        // only register for read - write is still enabled by default
-                        clientChannel.register(selector, SelectionKey.OP_READ, conHandler);
-                        conHandler.readyForWriting();
-                        conHandler.setConnected(true);
-                    }
+		if (key.isAcceptable()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace(this.getName()+": isAcceptable() returned true");
+		    try{
+			SocketChannel clientChannel = server.accept();
+			clientChannel.configureBlocking(false);
+			MessageNioHandler conHandler = new MessageNioHandler(selector, clientChannel, deadKeys, writePendingKeys, assignRxQueue(), wireSecurity);
+			conHandler.init(me, connectionSet);
+			// only register for read - write is still enabled by default
+			clientChannel.register(selector, SelectionKey.OP_READ, conHandler);
+			conHandler.readyForWriting();
+			conHandler.setConnected(true);
+		    }
                     catch(Exception e){
                         if( asyncLog.isWarnEnabled() )
                             asyncLog.warn(e);
                     }
 
-                }
+		}
 
-                if (key.isReadable()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace(this.getName()+": isReadable() returned true");
-                    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
-                    ByteBuffer readFullBuffer = mnh.newDataToRead(key);
-                    if (readFullBuffer != null){
-                        // create a container for the deserialized job and put on decoupling queue
-                        RxJob rxJob = new RxJob(mnh, readFullBuffer);
-                        mnh.getRxQueue().add(rxJob);
-                    }
-                }
+		if (key.isReadable()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace(this.getName()+": isReadable() returned true");
+		    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
+		    ByteBuffer readFullBuffer = mnh.newDataToRead(key);
+		    if (readFullBuffer != null){
+			// create a container for the deserialized job and put on decoupling queue
+			RxJob rxJob = new RxJob(mnh, readFullBuffer);
+			mnh.getRxQueue().add(rxJob);
+		    }
+		}
 
-                if (key.isWritable()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace(this.getName()+": isWritable() returned true");
-                    key.interestOps(key.interestOps() &(~SelectionKey.OP_WRITE));
-                    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
-                    if(mnh.isWritePending()){
-                        if( debug && asyncLog.isTraceEnabled() )
-                            asyncLog.trace("MNS: PENDING WRITE - SELECTOR WOKE UP ON OP_WRITE");
-                        mnh.writeData();
-                    }
-                    else{
-                        if( debug && asyncLog.isTraceEnabled() )
-                            asyncLog.trace("MNS: setting channel readyForWriting");
-                        mnh.readyForWriting();
-                    }
-                }
+		if (key.isWritable()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace(this.getName()+": isWritable() returned true");
+		    key.interestOps(key.interestOps() &(~SelectionKey.OP_WRITE));
+		    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
+		    if(mnh.isWritePending()){
+			if( debug && asyncLog.isTraceEnabled() )
+			    asyncLog.trace("MNS: PENDING WRITE - SELECTOR WOKE UP ON OP_WRITE");
+			mnh.writeData();
+		    }
+		    else{
+			if( debug && asyncLog.isTraceEnabled() )
+			    asyncLog.trace("MNS: setting channel readyForWriting");
+			mnh.readyForWriting();
+		    }
+		}
 
-                if (key.isConnectable()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace(this.getName()+": isConnectable() returned true");
-                    key.interestOps(key.interestOps() &(~SelectionKey.OP_CONNECT));
-                    SocketChannel clientChannel = (SocketChannel)key.channel();
-                    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
-                    if (clientChannel.isConnectionPending()){
-                        try{
-                            clientChannel.finishConnect();
-                        }
+		if (key.isConnectable()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace(this.getName()+": isConnectable() returned true");
+		    key.interestOps(key.interestOps() &(~SelectionKey.OP_CONNECT));
+		    SocketChannel clientChannel = (SocketChannel)key.channel();
+		    MessageNioHandler mnh = (MessageNioHandler)key.attachment();
+		    if (clientChannel.isConnectionPending()){
+			try{
+			    clientChannel.finishConnect();
+			}
                         catch(IOException ioe){
                             if (asyncLog.isWarnEnabled())
                                 asyncLog.warn(ioe);
                         }
-                    }
-                    // merge both calls?
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace("MNS: setting mnh to right booleans in connectable switch test");
-                    mnh.readyForWriting();
-                    mnh.setConnected(true);
-                    // do here what was being done in MessageConnectionInitiator before - send to a decoupling queue...
-                    connectQueue.add(mnh);
+		    }
+		    // merge both calls?
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace("MNS: setting mnh to right booleans in connectable switch test");
+		    mnh.readyForWriting();
+		    mnh.setConnected(true);
+		    // do here what was being done in MessageConnectionInitiator before - send to a decoupling queue...
+		    connectQueue.add(mnh);
                     try {
                         clientChannel.register(selector, SelectionKey.OP_READ, mnh);
                     }
@@ -324,70 +319,70 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
                         if (asyncLog.isWarnEnabled())
                             asyncLog.warn(ex);
                     }
-                }
+		}
 
-                iter.remove();
+		iter.remove();
 
-            }
+	    }
 
-            // killing of dead Keys
-            synchronized(deadKeys){
-                if(!deadKeys.isEmpty()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace("MNS: Killing of at least one key/channel: "+deadKeys.size());
-                    SelectionKey deadKey = null;
-                    SocketChannel deadChannel = null;
-                    int deadKeyNumber = deadKeys.size();
-                    for (int i=0; i<deadKeyNumber; ++i){
-                        deadKey = (SelectionKey)deadKeys.remove(0);
-                        if( debug && asyncLog.isTraceEnabled() )
-                            asyncLog.trace("MNS: *** Cleanup starting ***"+i);
-                        if (deadKey != null){
-                            deadChannel = (SocketChannel)deadKey.channel();
-                            deadKey.cancel();
-                            try{
-                                if( debug && asyncLog.isTraceEnabled() )
-                                    asyncLog.trace("MNS: Calling deadChannel.close()");
-                                deadChannel.close();
-                            }
+	    // killing of dead Keys
+	    synchronized(deadKeys){
+		if(!deadKeys.isEmpty()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace("MNS: Killing of at least one key/channel: "+deadKeys.size());
+		    SelectionKey deadKey = null;
+		    SocketChannel deadChannel = null;
+		    int deadKeyNumber = deadKeys.size();
+		    for (int i=0; i<deadKeyNumber; ++i){
+			deadKey = (SelectionKey)deadKeys.remove(0);
+			if( debug && asyncLog.isTraceEnabled() )
+			    asyncLog.trace("MNS: *** Cleanup starting ***"+i);
+			if (deadKey != null){
+			    deadChannel = (SocketChannel)deadKey.channel();
+			    deadKey.cancel();
+			    try{
+				if( debug && asyncLog.isTraceEnabled() )
+				    asyncLog.trace("MNS: Calling deadChannel.close()");
+				deadChannel.close();
+			    }
                             catch(Exception e){
                                 if (asyncLog.isWarnEnabled())
                                     asyncLog.warn(e);
                             }
-                        }
-                    }
-                }
-            }
+			}
+		    }
+		}
+	    }
 
 
-            // registration of write interest for pending writes
-            synchronized(writePendingKeys){
-                if( debug && asyncLog.isTraceEnabled() )
-                    asyncLog.trace("MNS: Examining the content of writePendingKeys");
-                if (!writePendingKeys.isEmpty()){
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace("MNS: Registering interest for write "+writePendingKeys.size());
-                    SelectionKey pendingKey = null;
-                    int pendingNumber = writePendingKeys.size();
-                    if( debug && asyncLog.isTraceEnabled() )
-                        asyncLog.trace("MNS: pending write NUmber: "+pendingNumber);
-                    for(int i=0; i<pendingNumber; ++i){
-                        pendingKey = (SelectionKey)writePendingKeys.remove(0);
-                        pendingKey.interestOps(pendingKey.interestOps() | SelectionKey.OP_WRITE);
-                    }
-                }
-            }
+	    // registration of write interest for pending writes
+	    synchronized(writePendingKeys){
+		if( debug && asyncLog.isTraceEnabled() )
+		    asyncLog.trace("MNS: Examining the content of writePendingKeys");
+		if (!writePendingKeys.isEmpty()){
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace("MNS: Registering interest for write "+writePendingKeys.size());
+		    SelectionKey pendingKey = null;
+		    int pendingNumber = writePendingKeys.size();
+		    if( debug && asyncLog.isTraceEnabled() )
+			asyncLog.trace("MNS: pending write NUmber: "+pendingNumber);
+		    for(int i=0; i<pendingNumber; ++i){
+			pendingKey = (SelectionKey)writePendingKeys.remove(0);
+			pendingKey.interestOps(pendingKey.interestOps() | SelectionKey.OP_WRITE);
+		    }
+		}
+	    }
 
 
-        } // while open
+	} // while open
 
-        // thread is being killed - close down gracefully
-        if( debug && asyncLog.isTraceEnabled() )
-            asyncLog.trace("MNS: server thread is EXITING... Why?");
-        try{
-            selector.close();
-            server.close();
-        }
+	// thread is being killed - close down gracefully
+	if( debug && asyncLog.isTraceEnabled() )
+	    asyncLog.trace("MNS: server thread is EXITING... Why?");
+	try{
+	    selector.close();
+	    server.close();
+	}
         catch(IOException ioe){
             if( asyncLog.isWarnEnabled() )
                 asyncLog.warn(ioe);
@@ -396,9 +391,9 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
     }
 
     public ConnectionAddress getAddress(){
-        if( debug && asyncLog.isTraceEnabled() )
-            asyncLog.trace("MNS: getAddress is called");
-        return connAdd;
+	if( debug && asyncLog.isTraceEnabled() )
+	    asyncLog.trace("MNS: getAddress is called");
+	return connAdd;
     }
 
     public String getThreadStatusString() {
@@ -406,19 +401,19 @@ public class MessageNioServer extends Thread implements IOConnectionServer {
         buffer.append(super.getName()).append(" ............................ ").setLength(30);
         buffer.append(super.isAlive() ? ".. is Alive " : ".. is Dead ");
         buffer.append(open ? ".. running ....." : ".. terminated ..");
-        if (connAdd != null)
-            buffer.append( " address = " ).append(connAdd.ipaddress.getHostName()).append(":").append(connAdd.port);
+	if (connAdd != null)
+	    buffer.append( " address = " ).append(connAdd.ipaddress.getHostName()).append(":").append(connAdd.port);
         return buffer.toString();
     }
 
 
 
     private RxQueue assignRxQueue(){
-        RxQueue retQueue = rxQueue[rxQueueCounter];
-        ++rxQueueCounter;
-        if (rxQueueCounter == RX_WORKERS)
-            rxQueueCounter = 0;
-        return retQueue;
+	RxQueue retQueue = rxQueue[rxQueueCounter];
+	++rxQueueCounter;
+	if (rxQueueCounter == RX_WORKERS)
+	    rxQueueCounter = 0;
+	return retQueue;
     }
 
 

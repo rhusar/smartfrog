@@ -17,8 +17,11 @@ import org.smartfrog.services.xmpp.XMPPEventExtension;
 import org.smartfrog.services.xmpp.MonitoringConstants;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 
 public class AvlXMPPListener extends XmppListenerImpl {
@@ -54,13 +57,22 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setModuleId("None");
         ext.setModuleState("None");
 
-        sfLog().info("Sending host presence: " + ext);
-
         if (!sendMessage("avl@" + getServer(), "None", "AE", ext))
             sfLog().error("Error sending packet.");
-	}
+    }
 
-	/**
+    /**
+     * Determine the local hostname. If there is more than one port,
+     * we use the network card that RMI is running on
+     * @throws SmartFrogException failure to determine our hostname
+     */
+    private void determineHostname() throws SmartFrogException {
+        InetAddress localhost = SFProcess.sfDeployedHost();
+        hostname = localhost.getHostName();
+    }
+
+
+    /**
      * Some classes may override this
      *
      * @throws SmartFrogException resolution problems
@@ -84,11 +96,10 @@ public class AvlXMPPListener extends XmppListenerImpl {
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-		sfLog().info("AvlXMPPListener deploying.");
-		super.sfDeploy();
-        hostname = (String) sfResolve("hostAddress", true);
+        super.sfDeploy();
 
         sfLog().info("AvlXMPPListener deployed.");
+        determineHostname();
     }
 
     /**
@@ -101,7 +112,7 @@ public class AvlXMPPListener extends XmppListenerImpl {
         ext.setHost(hostname);
         ext.setInstanceName("None");
         ext.setLastAction("None");
-        ext.setMessageType(MonitoringConstants.HOST_SHUTTING_DOWN);
+        ext.setMessageType(MonitoringConstants.HOST_STARTED);
         ext.setTimestamp(String.format("%d", Calendar.getInstance().getTimeInMillis()));
         ext.setMsg("Host going down.");
         ext.setModuleId("None");

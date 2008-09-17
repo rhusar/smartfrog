@@ -38,8 +38,6 @@ import org.smartfrog.services.anubis.partition.test.msg.PartitionMsg;
 import org.smartfrog.services.anubis.partition.test.msg.ThreadsMsg;
 import org.smartfrog.services.anubis.partition.test.msg.TimingMsg;
 import org.smartfrog.services.anubis.partition.test.stats.StatsManager;
-import org.smartfrog.services.anubis.partition.util.Config;
-import org.smartfrog.services.anubis.partition.util.Identity;
 import org.smartfrog.services.anubis.partition.views.View;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
@@ -59,10 +57,9 @@ public class TestMgr extends CompoundImpl implements Compound {
     private long              lastStats         = 0;
     private boolean           testable          = true;
 
-    public TestMgr(String host, int port, PartitionManager partitionManager, int id) throws IOException, Exception {
+    public TestMgr(String host, int port, PartitionManager partitionManager) throws IOException, Exception {
         this.partitionManager = partitionManager;
-        String threadName = "Anubis: Partition Manager Test Node (node " + id + ") - connection server";
-        connectionServer = new TestServer(this, host, port, threadName);
+        connectionServer = new TestServer(this, host, port);
     }
 
 
@@ -80,10 +77,8 @@ public class TestMgr extends CompoundImpl implements Compound {
         
         try {
             ConnectionAddress ca = ((ConnectionAddressData)sfResolve("contactAddress")).getConnectionAddress();
+            connectionServer = new TestServer(this, ca.ipaddress.getHostName(), ca.port);
             partitionManager = (PartitionManager) sfResolveWithParser("partitionManager");
-            Identity id = Config.getIdentity(this, "identity");
-            String threadName = "Anubis: Partition Manager Test Node (node " + id.id + ") - connection server";
-            connectionServer = new TestServer(this, ca.ipaddress.getHostName(), ca.port, threadName);
         }
         catch (Exception ex) {
             throw new SmartFrogException(ex);
@@ -97,6 +92,7 @@ public class TestMgr extends CompoundImpl implements Compound {
             sfDetachAndTerminate(TerminationRecord.normal(sfCompleteNameSafe()));
             return;
         }
+        
         connectionSet = (ConnectionSet)sfResolveWithParser("ATTRIB connectionSet");
         connectionSet.registerTestManager(this);
         start();
@@ -124,8 +120,7 @@ public class TestMgr extends CompoundImpl implements Compound {
     }
 
     public void newConnection(SocketChannel channel) {
-        String threadName = "Anubis: Partition Manager Test Node (node " + partitionManager.getId() + ") - connection";
-        TestConnection connection = new TestConnection(channel, this, threadName);
+        TestConnection connection = new TestConnection(channel, this);
         if( connection.connected() ) {
             synchronized(connections) {
                 connections.add(connection);

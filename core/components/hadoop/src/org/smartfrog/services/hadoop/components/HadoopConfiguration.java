@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components;
 
+import org.apache.hadoop.fs.Path;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 
 import java.rmi.Remote;
@@ -30,5 +31,4 @@ import java.rmi.Remote;
 
 
 public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
-
 }

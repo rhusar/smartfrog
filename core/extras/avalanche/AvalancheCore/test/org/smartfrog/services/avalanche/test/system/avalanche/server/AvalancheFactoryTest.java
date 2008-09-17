@@ -25,8 +25,6 @@ import org.smartfrog.avalanche.core.moduleGroup.ModuleGroupType.Modules;
 import org.smartfrog.avalanche.server.*;
 import org.smartfrog.avalanche.settings.xdefault.SettingsType;
 
-import java.util.regex.Pattern;
-
 public class AvalancheFactoryTest extends TestCase {
 
 	/*
@@ -98,8 +96,8 @@ public class AvalancheFactoryTest extends TestCase {
 			HostType host = hm.newHost(hostId) ;
 			host.setUser(user) ;
 			host.setPassword(passwd) ;
-
-            PlatformSelectorType plaf = host.addNewPlatformSelector();
+			
+			PlatformSelectorType plaf = host.addNewPlatformSelector();
 			plaf.setOs("Linux");
 			plaf.setArch("x86");
 			plaf.setPlatform("intel");

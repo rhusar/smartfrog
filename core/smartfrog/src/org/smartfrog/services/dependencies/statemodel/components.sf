@@ -1,18 +1,12 @@
-phaseList [|"type", "place", "function", "sfConfig", "link", "modelcheck"|];
 
 Dependency extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.dependency.Dependency";
      sfUpdatable true;
-     on TBD; 
-     by TBD;
-     sfIsDependency;
 }
 
 State extends Prim {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.State";
      sfUpdatable true;
-     sfUniqueComponentID;
-	 [sfFinal] asAndConnector false;
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
      model LAZY ROOT;
@@ -43,22 +37,17 @@ NWayComposite extends Composite {
 
 Model extends Composite {
      sfClass "org.smartfrog.services.dependencies.statemodel.state.Model";
-	 phase.modelcheck "org.smartfrog.services.dependencies.modelcheck.ModelCheck";
 
      threadpool LAZY PROCESS:threadpool; // default place for the threadpool
      run true; // set to false if you do not want the model to generate new notification sweeps, true if do
 }
 
-CompositeTerminator extends State {
-    sfClass "org.smartfrog.services.dependencies.statemodel.termination.CompositeTermination";
+ModelTerminator extends State {
+    sfClass "org.smartfrog.services.dependencies.statemodel.modeltermination.ModelTermination";
+
     toTerminate LAZY ROOT;
     detachFirst false;
-    terminateCond TBD;
-    -- extends Transition {
-       dependency terminateCond;
-       statefunction extends {}
-    }
-    sfUniqueComponentID false;  //not a component for model checking purposes
+    [stateListen, stateData] required TBD;
 }
 
 AndConnector extends Prim {
@@ -79,27 +68,5 @@ NorConnector extends Prim {
 NandConnector extends Prim {
     sfClass "org.smartfrog.services.dependencies.statemodel.connector.NandConnector";
     sfUpdatable true;
-}
-
-XorConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.XorConnector";
-    sfUpdatable true;
-}
-
-NXorConnector extends Prim {
-    sfClass "org.smartfrog.services.dependencies.statemodel.connector.NXorConnector";
-    sfUpdatable true;
-}
-
-Transition extends {
-    sfIsStateComponentTransition;
-    dependency true;
-    statefunction TBD;
-}
-
-VerificationRecord extends {
-    sfIsVerificationRecord;
-    proposition TBD;
-    ltl false;
 }
 
