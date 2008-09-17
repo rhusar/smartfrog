@@ -26,93 +26,93 @@ import java.util.Vector;
 import org.smartfrog.SFParse;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.constraints.EclipseSolver;
 import org.smartfrog.test.DeployingTestBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ConstraintsTest extends DeployingTestBase {
 
     private static final String FILES = "org/smartfrog/test/system/constraints/";
     private boolean succ=false;
     private boolean first=true;
-    
+    private static Log log= LogFactory.getLog(ConstraintsTest.class);
+
     public ConstraintsTest(String name) {
         super(name);
     }
-    
-    private boolean failedSolver(){    	
-    	//This is a temporary guard on running this test or degeneratively skipping it until we have the 
+
+    private boolean failedSolver(){
+    	//This is a temporary guard on running this test or degeneratively skipping it until we have the
     	//issue of including Eclipse in the release sorted out.  For now, only ADHF runs the constraints tests
     	//and whether they run or not is simply determined by the presence of the ECLIPSEDIRECTORY env variable.
     	//This whole method will go eventually.
     	if (first){
     		first=false;
-    		succ=(System.getenv("ECLIPSEDIRECTORY")!=null);    		
+    		succ=(System.getenv("ECLIPSEDIRECTORY")!=null);
     	}
-    	
+
     	if (!succ) {
-    		System.out.println("No Constraint Solver Present.  Aborting test with (degenerative) success");
+    		log.warn("No Constraint Solver Present.  Aborting test with (degenerative) success");
         	return true;
     	} else return false;
     }
-    
+
     /**
      * test case CTN1
      * @throws Throwable on failure
      */
     public void testCaseCTN1() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn1.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	assertEquals(cd.sfContext().size(), 2);
-    	
+        Context cxt = parseToContext("ctn1.sf");
+    	assertEquals(cxt.size(), 2);
+
     	Object foo1 = cxt.get("foo1"); assertNotNull(foo1);
     		assertTrue(foo1 instanceof ComponentDescription);
-    	
+
     	Object foo2 = cxt.get("foo2"); assertNotNull(foo2);
     		assertTrue(foo2 instanceof ComponentDescription);
-    	
+
     	Context f1c = ((ComponentDescription) foo1).sfContext();
     	Context f2c = ((ComponentDescription) foo2).sfContext();
-    	
-    	Object f1x = f1c.get("x"); assertNotNull(f1x); assertTrue(f1x instanceof Integer);
-    		assertEquals(((Integer)f1x).intValue(), 1);
-    	Object f1y = f1c.get("y"); assertNotNull(f1y); assertTrue(f1y instanceof Integer);
-    		assertEquals(((Integer)f1y).intValue(), 2);
-    	Object f1z = f1c.get("z"); assertNotNull(f1z); assertTrue(f1z instanceof Integer);
-    		assertEquals(((Integer)f1z).intValue(), 2);
-    	Object f2x = f2c.get("x"); assertNotNull(f2x); assertTrue(f2x instanceof Integer);
-    		assertEquals(((Integer)f2x).intValue(), 1);	
+        assertContextResolves(f1c, "x", 1);
+        assertContextResolves(f1c, "y", 2);
+        assertContextResolves(f1c, "z", 2);
+        assertContextResolves(f2c, "x", 1);
     }
-    
+
+    private void assertContextResolves(Context ctx, String key, int value) {
+        Object result = ctx.get("key");
+        assertNotNull("No value for key "+key,result);
+        assertTrue("Not an integer: "+result, result instanceof Integer);
+        assertEquals(value,((Integer) result).intValue());
+    }
+
+    private void assertContextResolves(Context ctx, String key, boolean value) {
+        Object result = ctx.get("key");
+        assertNotNull("No value for key " + key, result);
+        assertTrue("Not a Boolean: " + result, result instanceof Boolean);
+        assertEquals(value,((Boolean) result).booleanValue());
+    }
+
+    private void assertContextResolves(Context ctx, String key, String value) {
+        Object result = ctx.get("key");
+        assertNotNull("No value for key " + key, result);
+        assertTrue("Not a String: " + result, result instanceof String);
+        assertEquals(value,(String) result);
+    }
+
     /**
      * test case CTN2
      * @throws Throwable on failure
      */
     public void testCaseCTN2() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn2.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	
-    	Object elements = cxt.get("elements"); assertNotNull(elements);
-    		assertTrue(elements instanceof ComponentDescription);
-    	
-    	Context elc = ((ComponentDescription) elements).sfContext();
-    	
-    	Object x = elc.get("x"); assertNotNull(x); assertTrue(x instanceof String);
-    		assertEquals((String)x, "one");
-    	Object y = elc.get("y"); assertNotNull(y); assertTrue(y instanceof String);
-    		assertEquals((String)y, "two");
-    	Object z = elc.get("z"); assertNotNull(z); assertTrue(z instanceof String);
-    		assertEquals((String)z, "three");
+        Context cxt = parseToContext("ctn2.sf");
+        Context elc = resolveCD(cxt, "elements");
+
+        assertContextResolves(elc, "x", "one");
+        assertContextResolves(elc, "y", "two");
+        assertContextResolves(elc, "x", "three");
     }
 
     /**
@@ -121,189 +121,151 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN3() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn3.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo = cxt.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	Object fool = fooc.get("theList"); assertNotNull(fool); assertTrue(fool instanceof Vector); Vector foov = (Vector)fool;
-    	assertEquals(((Integer) foov.get(0)).intValue(), 1); assertEquals(((Integer) foov.get(1)).intValue(), 2); assertEquals(((Integer) foov.get(2)).intValue(), 3);
+        Context cxt = parseToContext("ctn3.sf");
 
-    	Object foo2 = cxt.get("foo2"); assertNotNull(foo2); assertTrue(foo2 instanceof ComponentDescription);
-    	Context foo2c = ((ComponentDescription)foo2).sfContext();
-    	Object foo2l = foo2c.get("theList"); assertNotNull(foo2l); assertTrue(foo2l instanceof Vector); Vector foo2v = (Vector)foo2l;
-    	assertEquals(((Integer) foo2v.get(0)).intValue(), 1); assertEquals(((Integer) foo2v.get(1)).intValue(), 2); assertEquals(((Integer) foo2v.get(2)).intValue(), 3);	
-    	
-    	Object foo3 = cxt.get("foo3"); assertNotNull(foo3); assertTrue(foo3 instanceof ComponentDescription);
-    	Context foo3c = ((ComponentDescription)foo3).sfContext();
-    	Object foo3l = foo3c.get("theList"); assertNotNull(foo3l); assertTrue(foo3l instanceof Vector); Vector foo3v = (Vector)foo3l;
-    	assertEquals(((Integer) foo3v.get(0)).intValue(), 1); assertEquals(((Integer) foo3v.get(1)).intValue(), 2); assertEquals(((Integer) foo3v.get(2)).intValue(), 3);
+        Context fooc = resolveCD(cxt, "foo");
+        Vector foov = resolveVector(fooc, "theList");
+        assertEquals(((Integer) foov.get(0)).intValue(), 1);
+        assertEquals(((Integer) foov.get(1)).intValue(), 2);
+        assertEquals(((Integer) foov.get(2)).intValue(), 3);
 
-    	
-    }  
-    
+        Context foo2c = resolveCD(cxt, "foo2");
+        Vector foo2v = resolveVector(foo2c, "theList");
+        assertEquals(((Integer) foo2v.get(0)).intValue(), 1);
+        assertEquals(((Integer) foo2v.get(1)).intValue(), 2);
+        assertEquals(((Integer) foo2v.get(2)).intValue(), 3);
+
+        Context foo3c = resolveCD(cxt, "foo3");
+        Vector foo3v = resolveVector(foo3c, "theList");
+        assertEquals(((Integer) foo3v.get(0)).intValue(), 1);
+        assertEquals(((Integer) foo3v.get(1)).intValue(), 2);
+        assertEquals(((Integer) foo3v.get(2)).intValue(), 3);
+
+
+    }
+
     /**
      * test case CTN4
      * @throws Throwable on failure
      */
     public void testCaseCTN4() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn4.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo1 = cxt.get("foo1"); assertNotNull(foo1); assertTrue(foo1 instanceof ComponentDescription);
-    	Context foo1c = ((ComponentDescription)foo1).sfContext();
-    	
-    	Object foo = foo1c.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	
-    	Object bar = fooc.get("bar"); assertNotNull(bar); assertTrue(bar instanceof String); assertEquals((String)bar, "32");
-    	Object bar2 = fooc.get("bar2"); assertNotNull(bar2); assertTrue(bar2 instanceof String); assertEquals((String)bar2, "48");
-    	Object bar3 = fooc.get("bar3"); assertNotNull(bar3); assertTrue(bar3 instanceof String); assertEquals((String)bar3, "51");
-    	
-    }    
+        Context cxt = parseToContext("ctn4.sf");
 
-    
+        Context foo1c = resolveCD(cxt, "foo1");
+
+        Context fooc = resolveCD(foo1c, "foo");
+
+        assertContextResolves(fooc, "bar", "32");
+        assertContextResolves(fooc, "bar2", "48");
+        assertContextResolves(fooc, "bar3", "51");
+
+    }
+
+    private Context resolveCD(Context foo1c, String key) {
+        Object foo = foo1c.get(key);
+        assertNotNull(foo);
+        assertTrue(foo instanceof ComponentDescription);
+        Context fooc = ((ComponentDescription)foo).sfContext();
+        return fooc;
+    }
+
+
     /**
      * test case CTN5
      * @throws Throwable on failure
      */
     public void testCaseCTN5() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn5.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo1 = cxt.get("foo1"); assertNotNull(foo1); assertTrue(foo1 instanceof ComponentDescription);
-    	Context foo1c = ((ComponentDescription)foo1).sfContext();
-    	
-    	Object foo = foo1c.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	
-    	Object bar = fooc.get("bar4"); assertNotNull(bar); assertTrue(bar instanceof String); assertEquals((String)bar, "73");
-    	
-    }    
+
+        Context cxt = parseToContext("ctn5.sf");
+        Context foo1c = resolveCD(cxt, "foo1");
+        Context fooc = resolveCD(foo1c, "foo");
+    	assertContextResolves(fooc,"bar4","73");
+    }
 
 
-    
+
     /**
      * test case CTN6
      * @throws Throwable on failure
      */
     public void testCaseCTN6() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn6.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo1 = cxt.get("foo1"); assertNotNull(foo1); assertTrue(foo1 instanceof ComponentDescription);
-    	Context foo1c = ((ComponentDescription)foo1).sfContext();
-    	
-    	Object foo = foo1c.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	
-    	Object bar = fooc.get("bar"); assertNotNull(bar); assertTrue(bar instanceof String); assertEquals((String)bar, "32");
-    	Object bar2 = fooc.get("bar2"); assertNotNull(bar2); assertTrue(bar2 instanceof String); assertEquals((String)bar2, "48");
-    	Object bar3 = fooc.get("bar3"); assertNotNull(bar3); assertTrue(bar3 instanceof String); assertEquals((String)bar3, "51");
-    	
-    }    
 
-    
+        Context cxt = parseToContext("ctn6.sf");
+
+        Context foo1c = resolveCD(cxt, "foo1");
+
+        Context fooc = resolveCD(foo1c, "foo");
+
+        assertContextResolves(fooc, "bar", "32");
+        assertContextResolves(fooc, "bar2", "48");
+        assertContextResolves(fooc, "bar3", "51");
+    }
+
+    private Context parseToContext(String filename) {
+        ComponentDescription cd = SFParse.parseFileToDescription(FILES+ filename);
+        assertNotNull(cd);
+        //It parses...
+
+        Context cxt = cd.sfContext();
+        return cxt;
+    }
+
+
     /**
      * test case CTN7
      * @throws Throwable on failure
      */
     public void testCaseCTN7() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn7.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo1 = cxt.get("foo1"); assertNotNull(foo1); assertTrue(foo1 instanceof ComponentDescription);
-    	Context foo1c = ((ComponentDescription)foo1).sfContext();
-    	
-    	Object y = foo1c.get("y"); assertNotNull(y); assertTrue(y instanceof String); assertEquals((String)y, "one");
-    	
-    }    
+        Context cxt = parseToContext("ctn7.sf");
 
-    
+        Context foo1c = resolveCD(cxt, "foo1");
+        assertContextResolves(foo1c, "y", "one");
+    }
+
+
     /**
      * test case CTN9
      * @throws Throwable on failure
      */
     public void testCaseCTN9() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn9.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object baz = cxt.get("baz"); assertNotNull(baz); assertTrue(baz instanceof ComponentDescription);
-    	Context bazc = ((ComponentDescription)baz).sfContext();
-    	
-    	Object foof = bazc.get("foofred"); assertNotNull(foof); assertTrue(foof instanceof ComponentDescription); 
-    	Context foofc = ((ComponentDescription)foof).sfContext();
-    	
-    	Object barf = foofc.get("bar"); assertNotNull(barf); assertTrue(barf instanceof String); assertEquals((String)barf, "hello world");
-    	Object aif = foofc.get("sfArrayIndex"); assertNotNull(aif); assertTrue(aif instanceof String); assertEquals((String)aif, "fred");
-    	Object atf = foofc.get("sfArrayTag"); assertNotNull(atf); assertTrue(atf instanceof String); assertEquals((String)atf, "foofred");
-    	
-    	Object fooc = bazc.get("fooclive"); assertNotNull(fooc); assertTrue(fooc instanceof ComponentDescription); 
-    	Context foocc = ((ComponentDescription)fooc).sfContext();
-    	
-    	Object barc = foocc.get("bar"); assertNotNull(barc); assertTrue(barc instanceof String); assertEquals((String)barc, "hello world");
-    	Object aic = foocc.get("sfArrayIndex"); assertNotNull(aic); assertTrue(aic instanceof String); assertEquals((String)aic, "clive");
-    	Object atc = foocc.get("sfArrayTag"); assertNotNull(atc); assertTrue(atc instanceof String); assertEquals((String)atc, "fooclive");
-    	
-    	Object fooj = bazc.get("foojoe"); assertNotNull(fooj); assertTrue(fooj instanceof ComponentDescription); 
-    	Context foojc = ((ComponentDescription)fooj).sfContext();
-    	
-    	Object barj = foojc.get("bar"); assertNotNull(barj); assertTrue(barj instanceof String); assertEquals((String)barj, "hello world");
-    	Object aij = foojc.get("sfArrayIndex"); assertNotNull(aij); assertTrue(aij instanceof String); assertEquals((String)aij, "joe");
-    	Object atj = foojc.get("sfArrayTag"); assertNotNull(atj); assertTrue(atj instanceof String); assertEquals((String)atj, "foojoe");
-    	
-    }    
+        Context cxt = parseToContext("ctn9.sf");
+        Context bazc = resolveCD(cxt, "baz");
+
+        Context foofc = resolveCD(bazc, "foofred");
+
+        assertContextResolves(foofc, "bar", "hello world");
+        assertContextResolves(foofc, "sfArrayIndex", "fred");
+        assertContextResolves(foofc, "sfArrayTag", "foofred");
+        Context foocc = resolveCD(bazc, "fooclive");
+
+        assertContextResolves(foocc, "bar", "hello world");
+        assertContextResolves(foocc, "sfArrayIndex", "clive");
+        assertContextResolves(foocc, "sfArrayTag", "fooclive");
+
+        Context foojc = resolveCD(bazc, "foojoe");
+        assertContextResolves(foojc, "bar", "hello world");
+        assertContextResolves(foojc, "sfArrayIndex", "joe");
+        assertContextResolves(foojc, "sfArrayTag", "foojoe");
+    }
 
 
-    
+
+
     /**
      * test case CTN10
      * @throws Throwable on failure
      */
     public void testCaseCTN10() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn10.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo2 = cxt.get("foo2"); assertNotNull(foo2); assertTrue(foo2 instanceof ComponentDescription);
-    	Context foo2c = ((ComponentDescription)foo2).sfContext();
-    	
-    	Object foo3 = foo2c.get("foo3"); assertNotNull(foo3); assertTrue(foo3 instanceof String); assertEquals((String)foo3, "011");
-    	
-    }    
+        Context cxt = parseToContext("ctn10.sf");
+        Context foo2c = resolveCD(cxt, "foo2");
+        assertContextResolves(foo2c, "foo3", "011");
+    }
 
     /**
      * test case CTN11
@@ -311,19 +273,10 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN11() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn11.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo2 = cxt.get("foo2"); assertNotNull(foo2); assertTrue(foo2 instanceof ComponentDescription);
-    	Context foo2c = ((ComponentDescription)foo2).sfContext();
-    	
-    	Object foo3 = foo2c.get("foo3"); assertNotNull(foo3); assertTrue(foo3 instanceof Boolean); assertEquals(((Boolean)foo3).booleanValue(), false);
-    	
-    }    
+        Context cxt = parseToContext("ctn11.sf");
+        Context foo2c = resolveCD(cxt, "foo2");
+        assertContextResolves(foo2c, "foo3",false);
+    }
 
     /**
      * test case CTN12
@@ -331,19 +284,10 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN12() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn12.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo2 = cxt.get("foo2"); assertNotNull(foo2); assertTrue(foo2 instanceof ComponentDescription);
-    	Context foo2c = ((ComponentDescription)foo2).sfContext();
-    	
-    	Object foo3 = foo2c.get("foo3"); assertNotNull(foo3); assertTrue(foo3 instanceof Integer); assertEquals(((Integer)foo3).intValue(), 512);
-    	
-    }    
+        Context cxt = parseToContext("ctn12.sf");
+        Context foo2c = resolveCD(cxt, "foo2");
+        assertContextResolves(foo2c, "foo3", 512);
+    }
 
     /**
      * test case CTN13
@@ -351,18 +295,9 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN13() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn13.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo = cxt.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	
-    	Object bar = fooc.get("bar"); assertNotNull(bar); assertTrue(bar instanceof Integer); assertEquals(((Integer)bar).intValue(), 3);
-    	
+        Context cxt = parseToContext("ctn13.sf");
+        Context fooc = resolveCD(cxt, "foo");
+        assertContextResolves(fooc, "bar", 3);
     }
 
     /**
@@ -371,37 +306,31 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN14() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn14.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();
-    	   	
-    	Object foo2 = cxt.get("foo2"); assertNotNull(foo2); assertTrue(foo2 instanceof ComponentDescription);
-    	Context foo2c = ((ComponentDescription)foo2).sfContext();
-    	
-    	Object foo3 = foo2c.get("foo3"); assertNotNull(foo3); assertTrue(foo3 instanceof String); assertEquals((String)foo3, "011");
-    	
+        Context cxt = parseToContext("ctn14.sf");
+        Context foo2c = resolveCD(cxt, "foo2");
+        assertContextResolves(foo2c, "foo3", "011");
     }
 
-    
+
     /**
      * test case CTN15
      * @throws Throwable on failure
      */
     public void testCaseCTN15() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn15.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();   	
-    	Object alloc = cxt.get("allocation"); assertNotNull(alloc); assertTrue(alloc instanceof Vector); Vector allocv = (Vector)alloc;
-    	
-    	assertEquals((String) allocv.get(0), "host0"); assertEquals((String) allocv.get(1), "host0"); 
-    	assertEquals((String) allocv.get(2), "host1"); assertEquals((String) allocv.get(3), "host2"); 
+
+        Context cxt = parseToContext("ctn15.sf");
+        Vector allocv = resolveVector(cxt, "allocation");
+        assertElementEquals(allocv, 0, "host0");
+        assertElementEquals(allocv, 1, "host0");
+        assertElementEquals(allocv, 2, "host1");
+        assertElementEquals(allocv, 3, "host2");
+    }
+
+    private void assertElementEquals(Vector allocv, int index, String value) {
+        assertTrue("Vector has no element " + index, allocv.size() >= index);
+        assertEquals("Vector element "+index,
+                value, (String) allocv.get(index));
     }
 
 
@@ -411,20 +340,26 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN16() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn16.sf");
-    	assertNotNull(cd);
-    	//It parses...
 
-    	Context cxt = cd.sfContext();
-	   	
-    	Object foo = cxt.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	   	
-    	Object alloc = fooc.get("allocation"); assertNotNull(alloc); assertTrue(alloc instanceof Vector); Vector allocv = (Vector)alloc;
-    	
-    	assertEquals((String) allocv.get(0), "host0"); assertEquals((String) allocv.get(1), "host0"); 
-    	assertEquals((String) allocv.get(2), "host1"); assertEquals((String) allocv.get(3), "host2"); 
+        Context cxt = parseToContext("ctn16.sf");
+
+        Context fooc = resolveCD(cxt, "foo");
+
+        Vector allocv = resolveVector(fooc, "allocation");
+
+        assertElementEquals(allocv, 0, "host0");
+        assertElementEquals(allocv, 1, "host0");
+        assertElementEquals(allocv, 2, "host1");
+        assertElementEquals(allocv, 3, "host2");
+    }
+
+
+    private Vector resolveVector(Context fooc, String key) {
+        Object alloc = fooc.get(key);
+        assertNotNull(alloc);
+        assertTrue(alloc instanceof Vector);
+        Vector allocv = (Vector)alloc;
+        return allocv;
     }
 
 
@@ -434,37 +369,28 @@ public class ConstraintsTest extends DeployingTestBase {
      */
     public void testCaseCTN17() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn17.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();  
-    	Object foo = cxt.get("foo"); assertNotNull(foo); assertTrue(foo instanceof ComponentDescription);
-    	Context fooc = ((ComponentDescription)foo).sfContext();
-    	
-    	Object test = fooc.get("test"); assertNotNull(test); assertTrue(test instanceof String); assertEquals((String)test, "the the");
-    	
+
+        Context cxt = parseToContext("ctn17.sf");
+        Context fooc = resolveCD(cxt, "foo");
+
+    	assertContextResolves(fooc, "test","the the");
     }
 
-    
+
     /**
      * test case CTN19
      * @throws Throwable on failure
      */
     public void testCaseCTN19() throws Throwable {
     	if (failedSolver()) return;
-    	
-        ComponentDescription cd = SFParse.parseFileToDescription(FILES+"ctn19.sf");
-    	assertNotNull(cd);
-    	//It parses...
-    	
-    	Context cxt = cd.sfContext();   	
-    	Object diff = cxt.get("diff"); assertNotNull(diff); assertTrue(diff instanceof ComponentDescription); 
-    	Context diffc = ((ComponentDescription)diff).sfContext();
-    	
-    	Object elvals = diffc.get("element_vals"); assertNotNull(elvals); assertTrue(elvals instanceof Vector); Vector elvalsv = (Vector)elvals;
-    	assertEquals((String) elvalsv.get(0), "one"); assertEquals((String) elvalsv.get(1), "two"); assertEquals((String) elvalsv.get(2), "three"); 
+
+        Context cxt = parseToContext("ctn19.sf");
+        Context diffc = resolveCD(cxt, "diff");
+
+        Vector elvalsv = resolveVector(diffc, "element_vals");
+        assertElementEquals(elvalsv, 0, "one");
+        assertElementEquals(elvalsv, 1, "two");
+        assertElementEquals(elvalsv, 2, "three");
     }
 
 
