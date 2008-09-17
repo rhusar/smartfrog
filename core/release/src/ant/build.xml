@@ -42,6 +42,8 @@
 
   <!--Load the properties files, fail if missing-->
   <loadproperties srcFile="rpmbuild.properties" />
+
+  <!--these are the RPM properties -->
   <loadproperties srcFile="rpm.properties"/>
 
   <property environment="env" />
@@ -70,7 +72,6 @@
     <mkdir dir="${dist.rpm.dir}" />
     <mkdir dir="${dist.signed.rpm.dir}" />
     <mkdir dir="${upload.dir}" />
-
 
     <!--the root of the filesystem-->
     <property name="rpm.root.dir" location="${build.rpm.dir}/root/"/>
@@ -149,6 +150,7 @@
       specFile="smartfrog.spec"
       topDir="${rpm.image.dir}"
       cleanBuildDir="true"
+      command="-bb --with=_private_rpm"
       failOnError="true"/>
   </target>
 
