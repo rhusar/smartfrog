@@ -44,6 +44,8 @@
     <genClasses ecoreClass="Smartfrog.ecore#//Nand"/>
     <genClasses ecoreClass="Smartfrog.ecore#//Component">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Component/Extends"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Component/IsAbstract"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Smartfrog.ecore#//Component/Component_Class"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Component_Attribute_Container"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Child_Components"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Smartfrog.ecore#//Component/Model_Member_Components"/>

@@ -77,6 +77,10 @@
  <eClassifiers xsi:type="ecore:EClass" name="Component" eSuperTypes="#//ModelObject">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="Extends" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsAbstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Component_Class" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="null"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Component_Attribute_Container" upperBound="2000"
         eType="#//Attribute" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Child_Components" upperBound="1"
