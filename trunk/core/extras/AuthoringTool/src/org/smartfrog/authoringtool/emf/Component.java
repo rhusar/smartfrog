@@ -17,6 +17,8 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.smartfrog.authoringtool.emf.Component#getExtends <em>Extends</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.Component#isIsAbstract <em>Is Abstract</em>}</li>
+ *   <li>{@link org.smartfrog.authoringtool.emf.Component#getComponent_Class <em>Component Class</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.Component#getComponent_Attribute_Container <em>Component Attribute Container</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.Component#getChild_Components <em>Child Components</em>}</li>
  *   <li>{@link org.smartfrog.authoringtool.emf.Component#getModel_Member_Components <em>Model Member Components</em>}</li>
@@ -59,6 +61,60 @@ public interface Component extends ModelObject
    * @generated
    */
   void setExtends(String value);
+
+  /**
+   * Returns the value of the '<em><b>Is Abstract</b></em>' attribute.
+   * The default value is <code>"true"</code>.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Is Abstract</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Is Abstract</em>' attribute.
+   * @see #setIsAbstract(boolean)
+   * @see org.smartfrog.authoringtool.emf.SmartfrogPackage#getComponent_IsAbstract()
+   * @model default="true"
+   * @generated
+   */
+  boolean isIsAbstract();
+
+  /**
+   * Sets the value of the '{@link org.smartfrog.authoringtool.emf.Component#isIsAbstract <em>Is Abstract</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Is Abstract</em>' attribute.
+   * @see #isIsAbstract()
+   * @generated
+   */
+  void setIsAbstract(boolean value);
+
+  /**
+   * Returns the value of the '<em><b>Component Class</b></em>' attribute.
+   * The default value is <code>"null"</code>.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Component Class</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Component Class</em>' attribute.
+   * @see #setComponent_Class(String)
+   * @see org.smartfrog.authoringtool.emf.SmartfrogPackage#getComponent_Component_Class()
+   * @model default="null"
+   * @generated
+   */
+  String getComponent_Class();
+
+  /**
+   * Sets the value of the '{@link org.smartfrog.authoringtool.emf.Component#getComponent_Class <em>Component Class</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Component Class</em>' attribute.
+   * @see #getComponent_Class()
+   * @generated
+   */
+  void setComponent_Class(String value);
 
   /**
    * Returns the value of the '<em><b>Component Attribute Container</b></em>' containment reference list.
@@ -161,30 +217,20 @@ public interface Component extends ModelObject
   EList getComponent_Dependent_Source();
 
   /**
-   * Returns the value of the '<em><b>Simple Depend On</b></em>' reference.
+   * Returns the value of the '<em><b>Simple Depend On</b></em>' reference list.
+   * The list contents are of type {@link org.smartfrog.authoringtool.emf.SimpleDependencyConnection}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Simple Depend On</em>' reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Simple Depend On</em>' reference.
-   * @see #setSimple_Depend_On(SimpleDependencyConnection)
+   * @return the value of the '<em>Simple Depend On</em>' reference list.
    * @see org.smartfrog.authoringtool.emf.SmartfrogPackage#getComponent_Simple_Depend_On()
-   * @model required="true"
+   * @model type="org.smartfrog.authoringtool.emf.SimpleDependencyConnection" upper="2147483647"
    * @generated
    */
-  SimpleDependencyConnection getSimple_Depend_On();
-
-  /**
-   * Sets the value of the '{@link org.smartfrog.authoringtool.emf.Component#getSimple_Depend_On <em>Simple Depend On</em>}' reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Simple Depend On</em>' reference.
-   * @see #getSimple_Depend_On()
-   * @generated
-   */
-  void setSimple_Depend_On(SimpleDependencyConnection value);
+  EList getSimple_Depend_On();
 
   /**
    * Returns the value of the '<em><b>Connector Depend On Component</b></em>' reference list.
