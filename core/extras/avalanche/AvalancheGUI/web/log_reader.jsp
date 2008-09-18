@@ -33,27 +33,81 @@ For more information: www.smartfrog.org
   	// use only if startLine is null;
   	String maxLinesStr = request.getParameter("maxLines");
 	SFAdapter adapter = new SFAdapter(factory);
-	adapter.getHostReport(host, fileName, reportPath);
-
+	String sysLogs = request.getParameter("sysLogs");
+	if(sysLogs !=null)
+		adapter.getHostReport(host, fileName, reportPath,true);
+	else
+		adapter.getHostReport(host, fileName, reportPath,false);
 	String homeDir = factory.getAvalancheHome();
         String logsDir = homeDir + File.separator + "logs";
 	String filePath = logsDir + File.separator + fileName;
- 	if(reportPath == null) {	
-		File file = new File(filePath+".out");
-	
+	if(reportPath == null) {	
+		File file = null;
+		if(null != sysLogs){
+			file = new File(filePath+".out.out");
+		}
+		else{
+			file = new File(filePath+".out");
+		}
+	long fileSize = 0;
 	if( !file.exists() ){
-		errMsg = "Error! log file doesn't exist: " + filePath;
+		if(null != sysLogs){
+			errMsg = "System logs file doesn't exist " ;
+		} else {
+			errMsg = "Log file doesn't exist " ;
+		}
+		
 	}else if( !file.canRead() ){
-		errMsg = "Error! No read permission for log file: " + filePath ;
+		errMsg = " No read permission for log file "  ;
+	}else{
+		fileSize = file.length();
 	}
-	long fileSize = file.length();
+	
+	
+%>
+<form id='readerform' name='readerform' method='post'>
+<script language="JavaScript" type="text/javascript">
+
+    function submit(formId, target) {
+        var form = document.getElementById(formId);
+        form.action = target;
+        form.submit();
+    }
+	function sub(target) {
+        document.readerform.action = target;
+        document.readerform.submit();
+    }
+
+    setNextSubtitle("Log Reader Page");
+    oneVoiceWritePageMenu("LogReader", "",
+           "Refresh","javascript:sub('<%= myURI%>')",
+		"Whole File (<%=fileSize %> bytes)", "javascript:sub('log_reader.jsp?fileName=<%=fileName%>&host=<%=host%>&readAll')",
+		"Max 200 lines", "javascript:sub('log_reader.jsp?fileName=<%=fileName%>&host=<%=host%>&maxLines=200')",
+		"System Logs", "javascript:sub('log_reader.jsp?fileName=<%=fileName%>&host=<%=host%>&sysLogs')"
+ );
+</script>
+<%
+	if( null != errMsg ){
+%>
+
+<font color="red" size=5>
+	<%=errMsg%>
+</font><br>
+<%
+} else { 
+%>
+	
+<%
+	
 	String readAll = request.getParameter("readAll");
 	StringBuffer buf = null;
 	
 	if( null != readAll) {
 		buf = DiskUtils.readFile(file);
-	}else{
-	
+		
+	}else if(null != sysLogs){
+			buf = DiskUtils.readFile(file);
+	}else {	
 		int maxLines = 1000; // default value
 		
 		if( maxLinesStr != null ){
@@ -65,29 +119,12 @@ For more information: www.smartfrog.org
 		}
 		
 		buf = DiskUtils.tail(file, maxLines);
-	}
-	
+	} 
 %>
-
-<script language="JavaScript" type="text/javascript">
-
-    function submit(formId, target) {
-        var form = document.getElementById(formId);
-        form.action = target;
-        form.submit();
-    }
-
-    setNextSubtitle("Log Reader Page");
-    oneVoiceWritePageMenu("LogReader", "footer",
-            "Refresh", "<%= myURI%>",
-            "Whole File (<%=fileSize %> bytes)", "log_reader.jsp?filePath=<%=filePath%>&readAll",
-            "Max 200 lines", "log_reader.jsp?filePath=<%=filePath%>&maxLines=200"
-     );
-</script>
-
 <br/>
 
 <textarea readonly cols="auto" rows="10" style="width:100%;height:100%"><%=buf.toString()%></textarea>
+<%}%>
 <%
 }else {
 	String reportFile = filePath + File.separator + "index.html";
@@ -96,4 +133,5 @@ For more information: www.smartfrog.org
 <%
 	}
 %>
+</form>
 <%@ include file="footer.inc.jsp" %>
