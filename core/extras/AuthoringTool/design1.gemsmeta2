@@ -17,8 +17,10 @@
       <Attribute Name="Output_Dependency_Name" Id="ffffffffc0a80121_514"/>
     </Connection>
     <Connection Name="AttributeLink" Id="f9e3cc1_797" X="936" Y="351" LineColor="(120,140,60)" LineStyle="dash" ConnectionTarget="//@ConnectionTargetConnection.3" ConnectionSource="//@ConnectionSourceConnection.3"/>
-    <Entity Name="Component" Id="ffffffffc0a80121_270" X="180" Y="225" Width="63" Height="52" ExpandedWidth="55" ExpandedHeight="69" Expanded="true" ParentEntity="//@ContainmentConnectionConnection.2 //@ContainmentConnectionConnection.5" SourceConnectionDeclarations="//@ConnectionSourceConnection.0 //@ConnectionSourceConnection.1" ConnectionTargets="//@ConnectionTargetConnection.0 //@ConnectionTargetConnection.2" ChildEntities="//@ContainmentConnectionConnection.3">
+    <Entity Name="Component" Id="ffffffffc0a80121_270" X="180" Y="225" Width="63" Height="52" ExpandedWidth="131" ExpandedHeight="154" Expanded="true" ParentEntity="//@ContainmentConnectionConnection.2 //@ContainmentConnectionConnection.5" SourceConnectionDeclarations="//@ConnectionSourceConnection.0 //@ConnectionSourceConnection.1" ConnectionTargets="//@ConnectionTargetConnection.0 //@ConnectionTargetConnection.2" ChildEntities="//@ContainmentConnectionConnection.3">
       <Attribute Name="Extends" Id="ffffffffc0a80121_515" AttributeType="String"/>
+      <Attribute Name="IsAbstract" Id="ffffffffc0a89601_279" AttributeType="Boolean" DefaultValue="true"/>
+      <Attribute Name="Component_Class" Id="ffffffffc0a89601_393" DefaultValue="null"/>
     </Entity>
     <Entity Name="Composite" Id="ffffffffc0a80121_352" X="572" Y="30" Width="73" Height="72" ExpandedWidth="50" ExpandedHeight="35" ParentEntity="//@ContainmentConnectionConnection.0 //@ContainmentConnectionConnection.1" ChildEntities="//@ContainmentConnectionConnection.0 //@ContainmentConnectionConnection.2 //@ContainmentConnectionConnection.4 //@ContainmentConnectionConnection.6"/>
     <Entity Name="DependencyModel" Id="ffffffffc0a80121_353" X="25" Y="40" Width="98" Height="58" ExpandedWidth="97" ExpandedHeight="108" IsRoot="true" ChildEntities="//@ContainmentConnectionConnection.1 //@ContainmentConnectionConnection.5 //@ContainmentConnectionConnection.7">
