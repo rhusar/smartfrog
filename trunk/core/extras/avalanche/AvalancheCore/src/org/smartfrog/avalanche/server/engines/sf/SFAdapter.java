@@ -587,7 +587,7 @@ public class SFAdapter {
         }
     }
 
-    public void getHostReport(String host, String outputFile, String reportPath) throws SFSubmitException{
+    public void getHostReport(String host, String outputFile, String reportPath,boolean systemLogs) throws SFSubmitException{
 	    try {
 	    HostManager hm = avalancheFactory.getHostManager();
 	    // Retrieving host information
@@ -630,14 +630,12 @@ public class SFAdapter {
         	String logsDir = homeDir + File.separator + "logs";
 		HashMap attrMap = new HashMap();
 		
-		
 		LogSF sfLog = LogFactory.getLog("SFCORE_LOG");
 		ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(sfLog, true,null);
 		Boolean configurationClass = false;
 		if(classComponentDescription!=null)
 			configurationClass = getConfigurationClass(classComponentDescription);
-		
-		
+				
 		if (reportPath != null){
 			attrMap.put("sfConfig:SCP:file", username+":"+ password + "@"+ host+ ":" + reportPath + "/*");
 		 	File outputDir = new File(logsDir + File.separator + outputFile);
@@ -653,9 +651,14 @@ public class SFAdapter {
 				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
 				
 			}else{
-				
-				attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/log/*"+outputFile+"*.log");
-				attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
+				if(systemLogs){
+					attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/log/*"+outputFile+"*.log.out");
+					attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out.out");
+				}
+				else{
+					attrMap.put("sfConfig:SCP:file",username+":"+ password + "@"+ host+ ":" + avalancheInstallationDirectory + "/smartfrog/log/*"+outputFile+"*.log");
+					attrMap.put("sfConfig:SCP:localTofile" , logsDir + File.separator + outputFile +".out");
+				}
 				
 			}
 		}
@@ -688,7 +691,6 @@ public class SFAdapter {
        boolean flag = false;
         try {
              Object s =componentDescription.sfResolve("loggerClass", true);
-			 			
 			 if(s instanceof String){
 				 String str =  (String)s;
 				 if(str.indexOf("LogToFileImpl")<0)
