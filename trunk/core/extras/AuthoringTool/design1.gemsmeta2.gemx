@@ -25,8 +25,10 @@
     <ConnectionTarget href="design1.gemsmeta2#//@ConnectionTargetConnection.3"/>
     <ConnectionSource href="design1.gemsmeta2#//@ConnectionSourceConnection.3"/>
   </Connection>
-  <Entity Name="Component" Id="ffffffffc0a80121_270" X="180" Y="225" Width="63" Height="52" ExpandedWidth="55" ExpandedHeight="69" Expanded="true">
+  <Entity Name="Component" Id="ffffffffc0a80121_270" X="180" Y="225" Width="63" Height="52" ExpandedWidth="131" ExpandedHeight="154" Expanded="true">
     <Attribute Name="Extends" Id="ffffffffc0a80121_515" AttributeType="String"/>
+    <Attribute Name="IsAbstract" Id="ffffffffc0a89601_279" AttributeType="Boolean" DefaultValue="true"/>
+    <Attribute Name="Component_Class" Id="ffffffffc0a89601_393" DefaultValue="null"/>
     <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.2"/>
     <ParentEntity href="design1.gemsmeta2#//@ContainmentConnectionConnection.5"/>
     <SourceConnectionDeclarations href="design1.gemsmeta2#//@ConnectionSourceConnection.0"/>
