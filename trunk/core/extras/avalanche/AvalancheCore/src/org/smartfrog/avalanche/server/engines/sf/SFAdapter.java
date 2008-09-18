@@ -629,16 +629,14 @@ public class SFAdapter {
         	String scpFile = homeDir + File.separator + "smartfrog" + File.separator + "boot" + File.separator + "scp.sf";
         	String logsDir = homeDir + File.separator + "logs";
 		HashMap attrMap = new HashMap();
-		//LogSF sfLog = LogFactory.sfGetProcessLog();
-		//LogImpl	log = new LogImpl("SF-Adapter");
-		System.out.println("Calling LogFactory:");
+		
 		
 		LogSF sfLog = LogFactory.getLog("SFCORE_LOG");
 		ComponentDescription classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(sfLog, true,null);
 		Boolean configurationClass = false;
 		if(classComponentDescription!=null)
 			configurationClass = getConfigurationClass(classComponentDescription);
-		System.out.println("Callinged LogFactory:");
+		
 		
 		if (reportPath != null){
 			attrMap.put("sfConfig:SCP:file", username+":"+ password + "@"+ host+ ":" + reportPath + "/*");
@@ -690,8 +688,7 @@ public class SFAdapter {
        boolean flag = false;
         try {
              Object s =componentDescription.sfResolve("loggerClass", true);
-			 System.out.println("*****Vachinda?"+s);
-			
+			 			
 			 if(s instanceof String){
 				 String str =  (String)s;
 				 if(str.indexOf("LogToFileImpl")<0)
@@ -715,7 +712,6 @@ public class SFAdapter {
         } catch (SmartFrogResolutionException ex) {
             ex.printStackTrace();
         }
-		System.out.println("********************* "+flag);
 		return flag;
     }
 
