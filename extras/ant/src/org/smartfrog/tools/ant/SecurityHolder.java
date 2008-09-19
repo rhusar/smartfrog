@@ -91,6 +91,14 @@ public class SecurityHolder {
     }
 
     /**
+     * Test for the security holder having content
+     * @return true if we have some security settings
+     */
+    public boolean isDefined() {
+        return security!=null || securityRef!=null;
+    }
+
+    /**
      * apply whatever security settings are needed
      * @param task task to configure
      * @return true if security settings were present and enabled

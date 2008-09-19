@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 
-server extends {
+server extends Compound {
 	port 8080;
 }
 

@@ -20,15 +20,27 @@
 package org.smartfrog.tools.ant.test;
 
 import org.apache.tools.ant.BuildFileTest;
+import org.smartfrog.tools.ant.DeployingTaskBase;
+import org.smartfrog.tools.ant.SmartFrogTask;
+import org.smartfrog.tools.ant.StartApplication;
+import org.smartfrog.tools.ant.StartDaemon;
 
 /**
- * this is a base class for the smartfrog ant tasks.
- * Each test case instantiates an ant file and runs targets.
- * All the core logic to do that is in the Ant-testutils.jar contained
- * parent classes.
- * This base class just extracts a helper directory
+ * this is a base class for the smartfrog ant tasks. Each test case instantiates an ant file and runs targets. All the
+ * core logic to do that is in the Ant-testutils.jar contained parent classes. This base class just extracts a helper
+ * directory
  */
 public abstract class TaskTestBase extends BuildFileTest {
+    public static final String ERROR_NO_APPLICATION_NAME
+            = DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME;
+    public static final String ERROR_FILE_NOT_FOUND = DeployingTaskBase.Application.ERROR_FILE_NOT_FOUND;
+    public static final String ERROR_NO_APPLICATION_DESCRIPTOR
+            = DeployingTaskBase.Application.ERROR_NO_APPLICATION_DESCRIPTOR;
+    public static final String ERROR_HOST_NOT_SETTABLE = SmartFrogTask.ERROR_HOST_NOT_SETTABLE;
+    public static final String ERROR_NO_APPLICATIONS_DECLARED = DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED;
+    public static final String ERROR_COULD_NOT_DEPLOY = StartApplication.ERROR_COULD_NOT_DEPLOY;
+    public static final String ERROR_FAILED_TO_START_DAEMON = StartDaemon.ERROR_FAILED_TO_START_DAEMON;
+    protected static final String CONNECTION_REFUSED = "Connection refused to host";
 
     public TaskTestBase(String s) {
         super(s);
@@ -63,9 +75,25 @@ public abstract class TaskTestBase extends BuildFileTest {
         configureProject(basedir + "/" + filename);
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
+
+    /**
+     * assert that a property is null.
+     *
+     * @param property property name
+     */
+    @Override
+    public void assertPropertyUnset(String property) {
+        String result = project.getProperty(property);
+        if (result != null) {
+            fail("Expected property " + property
+                    + " to be unset, but it is set to the value: " + result);
+        }
+    }
+
 
     /**
      * assert that some text is not in the log
@@ -132,19 +160,19 @@ public abstract class TaskTestBase extends BuildFileTest {
         //assertProcessInLog("rootProcess");
     }
 
-    protected void expectDeployed(String target,String appname) {
+    protected void expectDeployed(String target, String appname) {
         executeTarget(target);
         assertProcessInLog(appname);
     }
 
     private void assertProcessInLog(String appname) {
-        assertInLog(":sfRunProcess:"+appname);
+        assertInLog(":sfRunProcess:" + appname);
     }
 
     /**
-     * this test is used by both run and deploy tests, where the failure
-     * strings are slightly different, "Could not run" vs "Could not deploy".
-     * So when testing, we only check a bit of the string
+     * this test is used by both run and deploy tests, where the failure strings are slightly different, "Could not run"
+     * vs "Could not deploy". So when testing, we only check a bit of the string
+     *
      * @param target
      */
     protected void assertDeployFailsWithUnresolvedReference(String target) {
@@ -154,20 +182,21 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     /**
      * assert that a property contains a string
+     *
      * @param property name of property to look for
      * @param contains what to search for in the string
      */
-    protected void assertPropertyContains(String property,String contains) {
+    protected void assertPropertyContains(String property, String contains) {
         String result = project.getProperty(property);
-
-        assertTrue("expected "+contains+" in "+result,
-                result!=null && result.indexOf(contains)>=0);
+        assertTrue("expected " + contains + " in " + result,
+                result != null && result.contains(contains));
     }
 
     /**
      * get a property from the project
-     * @param property
-     * @return
+     *
+     * @param property ant property
+     * @return the property value (may be null)
      */
     protected String getProperty(String property) {
         return project.getProperty(property);

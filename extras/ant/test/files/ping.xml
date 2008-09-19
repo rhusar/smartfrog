@@ -2,21 +2,23 @@
 <project name="parse" default="teardown">
 
   <description>
- Tests for the parse.
+    Tests for the parse.
 
- command line invocation
- ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f  undeploy.xml testResource
+    command line invocation
+    ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib
+    ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f undeploy.xml testResource
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f undeploy.xml testNoParams
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f undeploy.xml
+    testNoParams
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f undeploy.xml testResource
+    ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib
+    ../../../../smartfrog/dist/lib/sfExamples.jar -f undeploy.xml testResource
   </description>
 
   <import file="test-common.xml"/>
 
   <!-- at the end of every execution, we force a cleanup -->
   <target name="teardown">
-    <sf-stopdaemon failonerror="false"/>
   </target>
 
   <target name="testNoParams">
@@ -38,31 +40,41 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
 
 
   <target name="testRootProcess">
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}" failonerror="true">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block/>
-        <fail if="block.timeout">No daemon started</fail>
-        <sf-ping application="rootProcess" timeout="${medium.timeout}"
-          failonerror="false" successProperty="pinged"/>
-        <sf-stopdaemon/>
-      </sequential>
-    </parallel>
+    <sf-system-test>
+      <test>
+        <sf-ping application="rootProcess" timeout="${short.timeout}"
+            failonerror="true" diagnostics="true" successProperty="pinged"/>
+      </test>
+    </sf-system-test>
+  </target>
+
+
+  <target name="testDifferentPort">
+    <sf-system-test2>
+      <test>
+        <sf-ping application="rootProcess" timeout="${short.timeout}"
+            failonerror="true" diagnostics="true" port="${new.port}"
+            successProperty="pinged"/>
+      </test>
+    </sf-system-test2>
   </target>
 
   <target name="testUnknownComponent">
-    <parallel>
-      <sf-startdaemon timeout="${long.timeout}" failonerror="true">
-      </sf-startdaemon>
-      <sequential>
-        <sf-block/>
-        <fail if="block.timeout">No daemon started</fail>
-        <sf-ping application="undeployedApp" timeout="${medium.timeout}"
-          failonerror="false" successProperty="pinged"/>
-        <sf-stopdaemon/>
-      </sequential>
-    </parallel>
+    <sf-system-test>
+      <test>
+        <sf-ping application="undeployedApp" timeout="${short.timeout}"
+            failonerror="false" diagnostics="true"
+            successProperty="pinged"/>
+      </test>
+    </sf-system-test>
   </target>
 
+  <target name="testUnknownComponentFailing">
+    <sf-system-test>
+      <test>
+        <sf-ping application="undeployedApp" timeout="${short.timeout}"
+            failonerror="true" diagnostics="true"/>
+      </test>
+    </sf-system-test>
+  </target>
 </project>
