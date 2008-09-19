@@ -22,6 +22,7 @@ package org.smartfrog.test.system.nwfailure;
 
 import java.rmi.RemoteException;
 import java.io.*;
+import java.util.Locale;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -35,6 +36,8 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 public class NetworkFailure extends PrimImpl implements Prim {
     
     private String attr = "NetworkFailure";
+    private static final String MESSAGE = "Please disconnect the n/w cord from your machine "+
+            "and type yes after done:";
 
     /**
      * Default Constructor 
@@ -51,34 +54,42 @@ public class NetworkFailure extends PrimImpl implements Prim {
      *
      *@exception  Exception  Description of the Exception
      */
-    public void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         // ask use to remove network cord to induce n/w failure
-        BufferedReader br;
-        sfLog().warn("Please disconnet the n/w cord from your machine "+
-                "and type yes after done:");
+        BufferedReader br=null;
+        sfLog().warn(MESSAGE);
         String ln = null;
         try {
             do {
                 br = new BufferedReader(new
                         InputStreamReader(System.in));
-                sfLog().warn("Please disconnect the n/w cord from your "+
-                        "machine and type yes after done:");
+                sfLog().warn(MESSAGE);
                 ln = br.readLine();
+                ln=ln.toLowerCase(Locale.getDefault());
             }
-            while (!ln.equalsIgnoreCase("yes"));
+            while (!"yes".equals(ln));
             sfLog().info("Deployed");
         }catch (IOException ioex) {
             throw new SmartFrogDeploymentException(ioex);
+        } finally {
+            if(br!=null) {
+                try {
+                    br.close();
+                } catch (IOException ignored) {
+
+                }
+            }
         }
     }
 
     /**
      *  sfStart: starts counter thread
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException SF problems
+     * @throws RemoteException network problems
      */
-    public void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         sfLog().info("In sfStart");
         try {

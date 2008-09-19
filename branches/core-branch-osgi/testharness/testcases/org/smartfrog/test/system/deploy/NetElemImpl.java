@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
@@ -39,17 +38,17 @@ import org.smartfrog.sfcore.reference.Reference;
 // make the class abstract as the evaluate() method must be completed correctly before use
 public abstract class NetElemImpl extends CompoundImpl implements Compound,
     NetElem, Remote {
-    Context outputs;
-    Reference nameRef;
-    String name;
-    Vector currentValues = new Vector();
+    protected Context outputs;
+    protected Reference nameRef;
+    protected String name;
+    protected Vector currentValues = new Vector();
 
     // need a thread to decouple incoming RPC thread in from the RPCs out
     // otherwise the RPCs will block until the entire NetElem tree has been traversed
-    Thread outputer = null;
+    protected Thread outputer = null;
 
     // standard constructor
-    public NetElemImpl() throws RemoteException {
+    protected NetElemImpl() throws RemoteException {
         super();
     }
 
@@ -130,7 +129,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             System.out.println(name + " deployed");
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfDeployFailure", this.sfContext);
+            sfex.put("sfDeployFailure", sfContext);
 
             // trigger termination of component
             try {
@@ -161,7 +160,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                // any exception causes termination
                Reference componentName = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                                  componentName));
+                                  componentName,
+                       ex));
          }
     }
 
@@ -170,10 +170,10 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             if (outputer != null) {
                 outputer.stop();
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
-        System.out.println(name + " has terminated with " + tr.toString());
+        sfLog().info(name + " has terminated with " + tr.toString());
         super.sfTerminateWith(tr);
     }
 
@@ -185,7 +185,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                 try {
                     System.out.println(sfCompleteName() +
                         " Thread terminated ");
-                } catch (Exception e) {
+                } catch (Exception ignored) {
+                    //ignored
                 }
             }
         }

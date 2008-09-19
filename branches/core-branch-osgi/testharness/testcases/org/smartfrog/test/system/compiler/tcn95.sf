@@ -21,10 +21,8 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 
-/* using #from to load the included sf files from a pre-deployed ParseTimeResourceFactory
-   (but this is a failure test so the factory is not actually there)
-*/
-#from PROCESS:testResource #include "test.sf"
+/* using codebase to load the included sf files */
+#codebase "http://localhost:8080/test.jar" #include "test.sf"
 
 sfConfig extends Test {
 	name "test";

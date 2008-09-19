@@ -30,11 +30,10 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 
 
 public class OutputImpl extends PrimImpl implements Prim, Output, Remote {
-    Input to;
+    private Input to;
 
     // standard constructor
     public OutputImpl() throws RemoteException {
-        super();
     }
 
     // public component methods
@@ -43,7 +42,8 @@ public class OutputImpl extends PrimImpl implements Prim, Output, Remote {
     }
 
     // lifecycle methods
-    public void sfDeploy() throws SmartFrogException {
+    public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
         try {
             // get the binding to forward to, if non-existant fail
             to = (Input) sfResolve("to");

@@ -20,7 +20,6 @@
 package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -63,7 +62,7 @@ public class FileTest extends SmartFrogTestBase {
     /**
      * test a missing file with a parent of another file
      *
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testMissingFile() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -89,7 +88,7 @@ public class FileTest extends SmartFrogTestBase {
     /**
      * test a missing file with a parent of another file
      *
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testUndeployedFile() throws Throwable {
         deployExpectingException(FILES +

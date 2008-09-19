@@ -21,8 +21,6 @@ package org.smartfrog.test.system.workflow.parallel;
 
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
 
 /**
  * @author Ashish Awasthi
@@ -30,7 +28,6 @@ import org.smartfrog.sfcore.workflow.combinators.DelayedTerminator;
  */
 public class ParallelTest extends DeployingTestBase {
     protected static final String FILES = "org/smartfrog/test/system/workflow/parallel/";
-    private TestBlock block;
 
     public ParallelTest(String s) {
         super(s);

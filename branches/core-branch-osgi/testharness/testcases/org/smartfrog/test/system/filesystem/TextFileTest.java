@@ -20,7 +20,6 @@
 package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 
 import java.io.File;
@@ -40,7 +39,7 @@ public class TextFileTest extends SmartFrogTestBase {
 
     /**
      * test a temp file with some stuff.
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testBasic() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -64,6 +63,10 @@ public class TextFileTest extends SmartFrogTestBase {
         }
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testEncoded() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -76,6 +79,10 @@ public class TextFileTest extends SmartFrogTestBase {
         assertEquals(12,file.length());
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testTextFileDirTest() throws Throwable {
         application = deployExpectingSuccess(FILES +
@@ -89,9 +96,9 @@ public class TextFileTest extends SmartFrogTestBase {
             assertTrue(file.exists());
             assertTrue(file.length() > 10);
             String PARENT_DIR_NAME = "textFileDirTestSubdir";
-            assertTrue(filename,file.getParentFile().getName().indexOf(PARENT_DIR_NAME)>=0);
+            assertTrue(filename, file.getParentFile().getName().contains(PARENT_DIR_NAME));
             String expected = File.separator+PARENT_DIR_NAME;
-            assertTrue(filename+"does not contain "+expected,filename.indexOf(expected)>=0);
+            assertTrue(filename+"does not contain "+expected, filename.contains(expected));
         } finally {
             //cleanup
             if (file != null) {

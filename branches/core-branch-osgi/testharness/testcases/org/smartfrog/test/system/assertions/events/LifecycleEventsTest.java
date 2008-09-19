@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.test.system.assertions.events;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
 
 /**
  *
@@ -38,10 +36,13 @@ public class LifecycleEventsTest extends DeployingTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testExpectDeployFailure() throws Throwable {
-        TestCompletedEvent event = expectAbnormalTestRun(FILES,
-                "testExpectDeployFailure",
-                false,
-                null);
+        expectSuccessfulTestRun(FILES,
+                "testExpectDeployFailure");
     }
 }

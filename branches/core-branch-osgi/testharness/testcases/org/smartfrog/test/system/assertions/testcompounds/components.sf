@@ -26,6 +26,14 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/sfcore/workflow/components/doNothing.sf"
 
+
+Errors extends DATA {
+  //Termination message mismatch:
+  TERMINATION_MESSAGE_MISMATCH CONSTANT "org.smartfrog.services.assertions.TestCompoundImpl.TERMINATION_MESSAGE_MISMATCH";
+  EXPECTED_EXIT_TEXT CONSTANT "org.smartfrog.services.assertions.TestCompoundImpl.EXPECTED_EXIT_TEXT";
+  UNEXPECTED_TERMINATION CONSTANT "org.smartfrog.services.assertions.TestCompoundImpl.UNEXPECTED_TERMINATION";
+}
+
   Noop extends DoNothing {
     time 0;
   }
@@ -84,13 +92,18 @@ For more information: www.smartfrog.org
 
   testFailureWrongMessageNested extends ExpectDeployFailure {
 
-      description "the outer test looks for the covering message";
+      description ##
+        the outer test looks for the covering message that the test compound raises when it gets the wrong
+        exit text from a failing deployment#;
 
       action extends testFailureWrongMessage {
       }
 
-      exitText "Expected action to terminate";
+      exitText Errors:TERMINATION_MESSAGE_MISMATCH;
   }
+
+
+
 
   testRun extends ExpectTerminate {
     action extends Sequence {

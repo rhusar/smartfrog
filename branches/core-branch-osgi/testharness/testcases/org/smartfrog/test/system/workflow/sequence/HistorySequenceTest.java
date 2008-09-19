@@ -36,6 +36,10 @@ public class HistorySequenceTest extends DeployingTestBase {
     }
 
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testHistorySequence() throws Throwable {
         runTestsToCompletion(FILES, "testHistorySequence");

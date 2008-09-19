@@ -22,8 +22,6 @@
 package org.smartfrog.test.system.workflow.sequence;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * @author Ashish Awasthi
@@ -35,19 +33,36 @@ public class SequenceTest extends DeployingTestBase {
     public SequenceTest(String s) {
         super(s);
     }
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testSequence() throws Throwable {
         expectSuccessfulTestRun(FILES, "testSequence");
         assertAttributeEquals(application, "value", true);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testEmptySequence() throws Throwable {
         expectSuccessfulTestRun(FILES, "testEmptySequence");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testFailingSequence() throws Throwable {
         expectAbnormalTestRun(FILES, "testFailingSequence2", true, "mid-sequence");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testFailingSequence2() throws Throwable {
         expectAbnormalTestRun(FILES, "testFailingSequence2", true, "mid-sequence");
         assertAttributeEquals(application, "value", true);

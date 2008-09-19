@@ -20,7 +20,6 @@
 
 package org.smartfrog.test.system.workflow.delay;
 
-import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.test.DeployingTestBase;
 
 
@@ -33,14 +32,29 @@ public class DelayTest extends DeployingTestBase {
     public DelayTest(String s) {
         super(s);
     }
+
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testDelayNormal() throws Throwable {
         expectSuccessfulTestRun(FILES , "testDelayNormal");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testDelayAbnormalFailure() throws Throwable {
         expectAbnormalTestRun(FILES, "testDelayAbnormalFailure",true,null);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testDelayNoAction() throws Throwable {
         expectSuccessfulTestRun(FILES, "testDelayNoAction");
     }

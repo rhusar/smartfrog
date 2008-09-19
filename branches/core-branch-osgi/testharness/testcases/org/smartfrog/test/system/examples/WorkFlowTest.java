@@ -38,6 +38,11 @@ public class WorkFlowTest
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
     public void testCaseTCP27() throws Throwable {
 
         application = deployExpectingSuccess(FILES+"system.sf", "system");
@@ -48,10 +53,10 @@ public class WorkFlowTest
           assertNotNull(application);
           applicationName = application.sfCompleteName().toString();
 
-          diag = (((Prim)application).sfDiagnosticsReport()).toString();
+          diag = ((application).sfDiagnosticsReport()).toString();
           h1 = (Prim)application.sfResolveHere("h1");
         } catch (Exception ex) {
-            throw new SmartFrogResolutionException ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);
+            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward ("Failed TCP27. Could not find H1 in "+applicationName +"\n "+diag,ex);
         }
         ComponentDescription cd = null;
         cd = h1.sfResolve("nodeAction", cd, true);

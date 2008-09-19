@@ -25,20 +25,18 @@ import java.rmi.RemoteException;
 import java.util.Random;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
 
 public class Generator extends NetElemImpl implements Remote {
-    int seed;
-    int delay;
-    int diff;
-    int min;
-    Thread generator;
+    private int seed;
+    private int delay;
+    private int diff;
+    private int min;
+    private Thread generator;
 
-    public Generator() throws java.rmi.RemoteException {
-        super();
+    public Generator() throws RemoteException {
     }
 
     public void sfStart() throws SmartFrogException, RemoteException {
@@ -54,7 +52,8 @@ public class Generator extends NetElemImpl implements Remote {
                // any exception causes termination
                Reference componentName = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                                  componentName));
+                                  componentName,
+                                    ex));
          }
     }
 
@@ -63,7 +62,7 @@ public class Generator extends NetElemImpl implements Remote {
             if (generator != null) {
                 generator.stop();
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         super.sfTerminateWith(tr);
@@ -80,7 +79,7 @@ public class Generator extends NetElemImpl implements Remote {
 
                 try {
                     sleep(delay * 1000);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
