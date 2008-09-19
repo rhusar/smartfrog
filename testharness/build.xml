@@ -205,9 +205,9 @@ values as a cue -->
       <!-- SFOS-565 cyclic reference test tcn19.sf is now spinning instead of detecting a cyclic reference 
        (this is a JRockit problem)
       -->
-      <exclude name="${systemtests}/reference/CyclicReferenceTest.*"
+      <exclude name="${systemtests}/reference/CyclicReferenceTest.*" unless="run.failing.tests"/>
           <!-- if="jrockit.jvm" -->
-          unless="run.failing.tests"/>
+          
     </patternset>
 
     <ivy:cachepath pathid="testhelpers.classpath" conf="test-helpers"
