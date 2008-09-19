@@ -20,26 +20,22 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.test.system.reference;
 
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+
+import java.rmi.RemoteException;
 
 
 /**
- *  Basic example component
+ * a component that resolves one attribute
  */
-public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
-    String attr1 = "TEST2"; 
-    /*  Constructor for the Counter object
+public class CyclicImpl extends PrimImpl implements Prim, Cyclic {
+    private String attr1 = "TEST2";
+    /**  Constructor
      *
-     *@exception  RemoteException  Description of the Exception
+     * @throws RemoteException network trouble
      */
     public CyclicImpl() throws RemoteException {
     }
@@ -47,9 +43,10 @@ public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
     // LifeCycle methods
 
     /**
-     *  sfDeploy: reads Counter attributes and configures counter thread.
+     *  sfDeploy:
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException startup trouble
+     * @throws RemoteException network trouble
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
             super.sfDeploy();
@@ -57,9 +54,10 @@ public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
     }
 
     /**
-     *  sfStart: starts counter thread
+     *  sfStart:
      *
-     *@exception  Exception  Description of the Exception
+     * @throws SmartFrogException startup trouble
+     * @throws RemoteException network trouble
      */
     public void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -71,7 +69,7 @@ public class CyclicImpl extends PrimImpl implements Prim,Cyclic {
     /**
      * sfTerminate
      *
-     * @param t Description of the Parameter
+     * @param t termination record
      */
     public void sfTerminateWith(TerminationRecord t) {
         sfLog().info("TERMINATED");
