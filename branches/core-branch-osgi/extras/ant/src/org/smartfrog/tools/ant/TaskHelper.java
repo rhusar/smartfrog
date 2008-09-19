@@ -3,6 +3,7 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.Task;
 
 /**
+ * something to help with tasks
  */
 public class TaskHelper {
 
@@ -22,12 +23,15 @@ public class TaskHelper {
      */
     public void bindTask(Task task) {
         assert task != owner;
+        //For Ant1.7+ tasks, we could use task.bindToOwner(owner); instead of these
         task.setProject(owner.getProject());
         task.setOwningTarget(owner.getOwningTarget());
         task.setTaskName(owner.getTaskName());
         task.setDescription(owner.getDescription());
         task.setLocation(owner.getLocation());
         task.setTaskType(owner.getTaskType());
+
+        //this is not in Task.bindToOwner, so it must remain.
         task.init();
     }
 

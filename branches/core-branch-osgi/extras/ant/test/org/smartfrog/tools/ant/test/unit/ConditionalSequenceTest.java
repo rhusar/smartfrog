@@ -1,4 +1,4 @@
-/** (C) Copyright 2006 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,23 @@
  */
 package org.smartfrog.tools.ant.test.unit;
 
-import org.smartfrog.tools.ant.FaultingWaitForTask;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
+ * created Nov 2, 2004 2:20:45 PM
  */
-public class FaultingWaitForTest extends TaskTestBase {
 
-    public FaultingWaitForTest(String s) {
+public class ConditionalSequenceTest extends TaskTestBase {
+    public ConditionalSequenceTest(String s) {
         super(s);
+    }
+
+
+    /**
+     * Tears down the fixture, for example, close a network connection. This method is called after a test is executed.
+     */
+    public void tearDown() throws Exception {
+        executeTarget("teardown");
     }
 
     /**
@@ -36,22 +44,26 @@ public class FaultingWaitForTest extends TaskTestBase {
      * @return the path (from the test files base dir) to the build file
      */
     protected String getBuildFile() {
-        return "faultingwaitfor.xml";
+        return "conditional.xml";
     }
 
-    public void testSuccess() {
-        executeTarget("testSuccess");
+    public void testNoProperty() {
+        executeTarget("testNoProperty");
     }
 
-    public void testTimeout() {
-        expectBuildExceptionContaining("testTimeout",
-                "not found",
-                FaultingWaitForTask.ERROR_TIMEOUT);
+    public void testIfSet() {
+        executeTarget("testIfSet");
     }
 
-    public void testTimeoutMessage() {
-        expectBuildExceptionContaining("testTimeoutMessage",
-                "not found",
-                "equality failed");
+    public void testIfUnset() {
+        executeTarget("testIfUnset");
+    }
+
+    public void testUnlessSet() {
+        executeTarget("testUnlessSet");
+    }
+
+    public void testUnlessUnset() {
+        executeTarget("testUnlessUnset");
     }
 }

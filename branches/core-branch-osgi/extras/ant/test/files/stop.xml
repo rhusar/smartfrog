@@ -17,7 +17,11 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     <target name="testNoParams">
       <sf-stopdaemon />
     </target>
-    
+
+    <target name="testDiagnostics">
+      <sf-stopdaemon diagnostics="true"/>
+    </target>
+
     <target name="testFailure">
       <sf-stopdaemon failonerror="true"/>
     </target>

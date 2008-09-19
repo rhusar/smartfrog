@@ -128,8 +128,7 @@ public class FaultingWaitForTask extends Task {
      * example, if target1 and target2 both depend on target3, then running "ant
      * target1 target2" will run all tasks in target3 twice.
      *
-     * @throws org.apache.tools.ant.BuildException
-     *          if something goes wrong with the build.
+     * @throws BuildException if something goes wrong with the build.
      */
     public void execute() throws BuildException {
         String property = helper.createUniquePropertyName();

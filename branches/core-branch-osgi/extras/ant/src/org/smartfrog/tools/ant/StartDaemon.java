@@ -20,33 +20,23 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 
 /**
- * Start a daemon. There is some fun here, as this can be spawning or non-spawning.
- * if it spawns, it outlives ant (which doesnt block), but output gets lost.
- * This task only works on Ant1.6 or later, as that was when spawning was added to the
- * system.
- * <p/>
- * This task starts a daemon which is only terminated by external request, and which
- * blocks the calling thread until it terminates
- * This means the build file calling this routine must either
- * <ol>
- * <li>execute it in a separate thread (using parallel/sequential containers),
- * and call &lt;sf-stopdaemon&gt; in a separate thread to end it
- * <li>set the standalone property to true to run it in a new process.
- * <li>set the timeout to enforce a death time on the process.
- * </ol>
- * Timeout killing of a process is somewhat brutal; we do not (yet) cleanly shut
- * down the localhost, though that is a distinctly possible option in future.
+ * Start a daemon. There is some fun here, as this can be spawning or non-spawning. if it spawns, it outlives ant (which
+ * doesnt block), but output gets lost. This task only works on Ant1.6 or later, as that was when spawning was added to
+ * the system. <p/> This task starts a daemon which is only terminated by external request, and which blocks the calling
+ * thread until it terminates This means the build file calling this routine must either <ol> <li>execute it in a
+ * separate thread (using parallel/sequential containers), and call &lt;sf-stopdaemon&gt; in a separate thread to end it
+ * <li>set the standalone property to true to run it in a new process. <li>set the timeout to enforce a death time on
+ * the process. </ol> Timeout killing of a process is somewhat brutal; we do not (yet) cleanly shut down the localhost,
+ * though that is a distinctly possible option in future.
  *
- * @author steve loughran
- *         created 16-Feb-2004 16:37:26
+ * @author steve loughran created 16-Feb-2004 16:37:26
  * @ant.task category="SmartFrog" name="sf-startdaemon"
  */
 
 public class StartDaemon extends DeployingTaskBase {
-    public static final String ERROR_FAILED_TO_START_DAEMON = "failed to start the smartfrog daemon";
+    public static final String ERROR_FAILED_TO_START_DAEMON = "Failed to start the smartfrog daemon";
 
     public StartDaemon() {
         setFailOnError(true);
@@ -54,8 +44,9 @@ public class StartDaemon extends DeployingTaskBase {
 
     /**
      * Set the entry point of the daemon. This defaults to that of the command line
+     *
      * @param method method to run
-     */ 
+     */
     public void setEntrypoint(String method) {
         getBaseJavaTask().setClassname(method);
     }

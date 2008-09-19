@@ -19,16 +19,14 @@
  */
 package org.smartfrog.tools.ant.test.system;
 
-import org.smartfrog.tools.ant.DeployingTaskBase;
-import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
- * @author steve loughran
- *         created 27-Feb-2004 16:37:55
+ * @author steve loughran created 27-Feb-2004 16:37:55
  */
 
 public class StartTest extends TaskTestBase {
+    private static final String BAD_VALUE = "Incompatible Value";
 
     public StartTest(String s) {
         super(s);
@@ -43,33 +41,84 @@ public class StartTest extends TaskTestBase {
         return "start.xml";
     }
 
-   public void testIncompatiblePort() {
-        expectBuildExceptionContaining("testIncompatiblePort", "Incompatible Value",
-                "failed to start the smartfrog daemon");
+    public void testIncompatiblePort() {
+        expectBuildExceptionContaining("testIncompatiblePort", BAD_VALUE,
+                ERROR_FAILED_TO_START_DAEMON);
     }
 
-    /*
     public void testIncompatibleLivenessDelay() {
-        expectBuildExceptionContaining("testIncompatibleLivenessDelay", "Incompatible Value",
-                "failed to start the smartfrog daemon");
-    }
-     public void testIncompatibleLivenessFactor() {
-        expectBuildExceptionContaining("testIncompatibleLivenessFactor", "Incompatible Value",
-                "failed to start the smartfrog daemon");
-    }
-     public void testIncompatibleProcessAllow() {
-        expectBuildExceptionContaining("testIncompatibleProcessAllow", "Incompatible Value",
-                "failed to start the smartfrog daemon");
+        expectBuildExceptionContaining("testIncompatibleLivenessDelay", BAD_VALUE,
+                ERROR_FAILED_TO_START_DAEMON);
     }
 
-    public void testIncompatibleProcessTimeOut() {
-           expectBuildExceptionContaining("testIncompatibleProcessTimeOut", "Incompatible Value",
-                   "failed to start the smartfrog daemon");
-       }
-    public void testIncompatibleLogLevel() {
-              expectBuildExceptionContaining("testIncompatibleLogLevel", "Incompatible Value",
-                      "failed to start the smartfrog daemon");
-          }
+    public void testIncompatibleLivenessFactor() {
+        expectBuildExceptionContaining("testIncompatibleLivenessFactor", BAD_VALUE,
+                ERROR_FAILED_TO_START_DAEMON);
+    }
 
-      */
+    public void testIncompatibleProcessAllow() {
+        expectLogContaining("testIncompatibleProcessAllow", "Not allowed to create process");
+    }
+
+    public void NotestIncompatibleProcessTimeOut() {
+        executeTarget("testIncompatibleProcessTimeOut");
+        expectLogContaining("Not allowed to create process", "Not allowed to create process");
+    }
+
+    public void NotestIncompatibleLogLevel() {
+        expectBuildExceptionContaining("testIncompatibleLogLevel", BAD_VALUE,
+                ERROR_FAILED_TO_START_DAEMON);
+    }
+
+    public void testNoFailure() throws Throwable {
+        executeTarget("testNoFailure");
+    }
+
+    public void testEmptyApplication() throws Throwable {
+        expectBuildExceptionContaining("testEmptyApplication", "Empty application",
+                ERROR_NO_APPLICATION_NAME);
+    }
+
+    public void testAnonApplication() throws Throwable {
+        expectBuildExceptionContaining("testAnonApplication", "Anonymous application",
+                ERROR_NO_APPLICATION_NAME);
+    }
+
+    public void testDatalessApplication() throws Throwable {
+        expectBuildExceptionContaining("testDatalessApplication", "Application with no data",
+                ERROR_NO_APPLICATION_DESCRIPTOR);
+    }
+
+    public void testBadFile() throws Throwable {
+        expectBuildExceptionContaining("testBadFile", "deploy a nonexistent file",
+                ERROR_FILE_NOT_FOUND);
+    }
+
+    public void testBadHost() throws Throwable {
+        expectBuildExceptionContaining("testBadHost",
+                "Set a host on a task that doesn't allow it",
+                ERROR_HOST_NOT_SETTABLE);
+    }
+
+    public void testRunFile() throws Throwable {
+        executeTarget("testRunFile");
+    }
+
+    public void testResource() throws Throwable {
+        executeTarget("testResource");
+    }
+
+
+    public void testDifferentPort() {
+        executeTarget("testDifferentPort");
+    }
+
+    public void testDifferentPortDeploy() {
+        executeTarget("testDifferentPortDeploy");
+    }
+
+    public void testDifferentPortDeployUndeploy() {
+        executeTarget("testDifferentPortDeployUndeploy");
+    }
+
 }

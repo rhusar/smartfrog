@@ -18,12 +18,12 @@
 
  */
 
-#include "org/smartfrog/components.sf"
+#include "/org/smartfrog/components.sf"
 
 /**
  * Include the Counter component.
  */
-#include "org/smartfrog/examples/counter/components.sf"
+//#include "/org/smartfrog/examples/counter/components.sf"
 
 /**
  * Counter example 1 creates a component that generates a counter between 1 and  * 20.
@@ -34,7 +34,7 @@
  * sfConfig is the special attribute that is deployed by SFSystem.
  * Here it is defined to implement the Counter component.
  */
-sfConfig extends Counter {
+sfConfig extends Compound {
          /**
           * Mandatory attribute "limit" is defined.
           */
