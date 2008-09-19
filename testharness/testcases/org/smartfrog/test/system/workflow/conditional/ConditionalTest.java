@@ -20,9 +20,6 @@
 package org.smartfrog.test.system.workflow.conditional;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.services.assertions.events.TestCompletedEvent;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * test delays
@@ -30,33 +27,49 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public class ConditionalTest extends DeployingTestBase {
 
     protected static final String FILES = "org/smartfrog/test/system/workflow/conditional/";
-    private static final String WAITFOR_FAILED = "waitfor failed";
 
     public ConditionalTest(String s) {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testParseConditionFile() throws Throwable {
         runTestsToCompletion(FILES,"testParseConditionFile");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testPassingIf() throws Throwable {
         expectSuccessfulTestRun(FILES, "testPassingIf");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testPassingWaitFor() throws Throwable {
         expectSuccessfulTestRun(FILES, "testPassingWaitFor");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testOneWaitFor() throws Throwable {
         expectSuccessfulTestRun(FILES, "testOneWaitFor");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testOneIf() throws Throwable {
         expectSuccessfulTestRun(FILES, "testOneIf");
     }
 
-    public void testFailingWaitFor() throws Throwable {
-        expectAbnormalTestRun(FILES, "testFailingWaitFor", false, WAITFOR_FAILED);
-    }
 }

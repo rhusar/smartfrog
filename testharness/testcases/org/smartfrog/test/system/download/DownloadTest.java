@@ -20,10 +20,6 @@
 package org.smartfrog.test.system.download;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.services.filesystem.TempFileImpl;
-import org.smartfrog.services.os.download.DownloadImpl;
-
-import java.net.UnknownHostException;
 
 /**
  * created 15-Apr-2005 14:16:30
@@ -39,11 +35,16 @@ public class DownloadTest extends SmartFrogTestBase {
         super(name);
     }
 
-    public void testNoSuchHostname() throws Exception {
-        Throwable t=deployExpectingException(FILES + "testNoSuchHostname.sf",
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+
+    public void testNoSuchHostname() throws Throwable {
+        Throwable t = deployExpectingException(FILES + "testNoSuchHostname.sf",
                 "testNoSuchHostname",
                 EXCEPTION_LIFECYCLE, null,
-                null,null);
+                null, null);
         /*
         Throwable innermost=t.getCause().getCause();
         assertFaultCauseAndTextContains(innermost,

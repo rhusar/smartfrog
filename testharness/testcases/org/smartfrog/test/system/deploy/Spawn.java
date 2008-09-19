@@ -72,13 +72,13 @@ public class Spawn extends CompoundImpl implements Prim{
           offspringName = (String) sfResolve(refOffspringName);
           //} catch (SmartFrogResolutionException ex) {}
 
-          String str = null;
-          System.out.println(str.toString()); // -> To Fail
           try {
               destination = (Compound) sfResolve(refDestination);
           } catch (SmartFrogResolutionException rex) {
               destination = this;
           }
+          //force a failure
+          throw new NullPointerException("Manually raised NPE");
       } catch (SmartFrogException sfex) {
           // add the context in case of failure
           sfex.put("sfStartFailure", sfContext);

@@ -20,11 +20,8 @@
 package org.smartfrog.test.system.assertions.testblock;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.test.system.assertions.testcompounds.TestCompoundsTest;
-import org.smartfrog.services.assertions.TestCompoundImpl;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.TestBlockImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -46,6 +43,10 @@ public class TestBlockTest extends DeployingTestBase {
     }
 
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testEmptySequence() throws Throwable {
         application =deployExpectingSuccess(FILES + "testSequence.sf", "testSequence");
         TestBlock testBlock = (TestBlock) application;
@@ -53,6 +54,12 @@ public class TestBlockTest extends DeployingTestBase {
         assertSuccessful(testBlock);
     }
 
+    /**
+     * Assert that the test block finished successfully
+     * @param testBlock test block
+     * @throws RemoteException network problems
+     * @throws SmartFrogException SmartFrog problems
+     */
     private void assertSuccessful(TestBlock testBlock) throws RemoteException, SmartFrogException {
         assertTrue(testBlock.isFinished());
         assertFalse(testBlock.isFailed());
@@ -61,6 +68,10 @@ public class TestBlockTest extends DeployingTestBase {
         assertTrue(status.isNormal());
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
 
     public void testRun() throws Throwable {
         application = deployExpectingSuccess(FILES + "testRun.sf", "testRun");
@@ -69,18 +80,31 @@ public class TestBlockTest extends DeployingTestBase {
         assertSuccessful(testBlock);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testFailure() throws Throwable {
         application =deployExpectingSuccess(FILES + "testFailure.sf", "testFailure");
         String error = "failure message";
         expectFailure(error);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testSmartFrogException() throws Throwable {
         application =deployExpectingSuccess(FILES + "testSmartFrogException.sf", "testSmartFrogException");
         String error = TestBlockImpl.ERROR_STARTUP_FAILURE;
         expectFailure(error);
     }
 
+    /**
+     * Expect the application to fail
+     * @param error error string to look for in the status
+     * @throws Throwable on failure
+     */
     private void expectFailure(String error) throws Throwable {
         TestBlock testBlock = (TestBlock) application;
         expectAbnormalTermination(testBlock);

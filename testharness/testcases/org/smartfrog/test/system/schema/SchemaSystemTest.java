@@ -22,7 +22,6 @@
 package org.smartfrog.test.system.schema;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
@@ -37,36 +36,55 @@ public class SchemaSystemTest extends SmartFrogTestBase {
     }
 
 
-    public void testCaseTCN43() throws Exception {
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN43() throws Throwable {
         deployExpectingException(FILES+"tcn43.sf",
                 "tcn43",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
 		"in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String");
     }
-    public void testCaseTCN44() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN44() throws Throwable {
         deployExpectingException(FILES+"tcn44.sf",
                 "tcn44",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: non-reference value found for lazy attribute 'a'");
     }
-    public void testCaseTCN45() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN45() throws Throwable {
         deployExpectingException(FILES+"tcn45.sf",
                 "tcn45",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 " non-optional attribute 'y (string attribute to test types and presence)' is missing");
     }
-    public void testCaseTCN46() throws Exception {
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
+    public void testCaseTCN46() throws Throwable {
         deployExpectingException(FILES+"tcn46.sf",
                 "tcn46",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_RESOLUTION,
+                EXCEPTION_LINKRESOLUTION,
                 "in: HERE sfConfig:bar:myFoo attribute: schema cause: error in schema: wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String");
     }
 }

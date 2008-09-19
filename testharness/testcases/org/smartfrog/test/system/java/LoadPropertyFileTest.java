@@ -21,7 +21,6 @@ package org.smartfrog.test.system.java;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.services.os.java.JavaPackage;
 import org.smartfrog.services.os.java.LoadPropertyFile;
 
 import java.util.Vector;
@@ -40,17 +39,26 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
         super(name);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testLoadProperty() throws Throwable {
         application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
                 "testLoadProperty.sf", "testLoadProperty");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testLoadPropertyVector() throws Throwable {
         application = deployExpectingSuccess(LoadPropertyFileTest.FILES +
                 "testLoadProperty.sf", "testLoadProperty");
         LoadPropertyFile instance = (LoadPropertyFile) application.sfResolve("test1", true);
         Vector list = null;
-        list = (Vector) ((Prim) instance).sfResolve(LoadPropertyFile.ATTR_PROPERTIES, true);
+        Prim prim = (Prim) instance;
+        list = prim.sfResolve(LoadPropertyFile.ATTR_PROPERTIES, (Vector)null,true);
         assertEquals(4, list.size());
         assertTupleEquals(list, "prop1", "prop1");
         assertTupleEquals(list, "prop2", "prop2");
@@ -58,11 +66,17 @@ public class LoadPropertyFileTest extends SmartFrogTestBase {
         assertTupleEquals(list, "4", "prop4");
     }
 
+    /**
+     * Make some assertions about tuples
+     * @param list a list of tuple as a list
+     * @param name the name of the tuple to find in the list
+     * @param expected the expected value of that tuple
+     */
+
     private void assertTupleEquals(List list,String name,String expected) {
-        Iterator it=list.iterator();
-        while (it.hasNext()) {
-            List tuple = (List) it.next();
-            if(name.equals(tuple.get(0))) {
+        for (Object aList : list) {
+            List tuple = (List) aList;
+            if (name.equals(tuple.get(0))) {
                 assertEquals(expected, tuple.get(1));
                 return;
             }

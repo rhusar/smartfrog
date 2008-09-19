@@ -22,6 +22,8 @@
 package org.smartfrog.test.system.examples;
 
 import org.smartfrog.test.DeployingTestBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -29,6 +31,7 @@ import org.smartfrog.test.DeployingTestBase;
  *  */
 
 public class FunctionExampleTest extends DeployingTestBase {
+    private static final Log log = LogFactory.getLog(FunctionExampleTest.class);
 
     private static final String FILES = "org/smartfrog/examples/functions/";
 
@@ -36,11 +39,15 @@ public class FunctionExampleTest extends DeployingTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testCaseFE01() throws Throwable {
         application = deployExpectingSuccess(FILES + "function.sf", "tcFE01");
         assertNotNull(application);
         String actual = (String) (application.sfResolve("message"));
-        System.out.println(actual);
+        log.debug(actual);
         String expected = "hello - here is a constructed message\n" + "value is " + "99" + "\n" + "goodbye\n" +
                 "[[elementA, elementB]" + ", " + "Message from outerVector" + ", " + "[value is " + ", " + "99" + "]]";
         assertContains(actual, expected);

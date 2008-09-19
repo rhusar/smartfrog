@@ -20,8 +20,6 @@
 package org.smartfrog.test.system.workflow.conditional;
 
 import org.smartfrog.test.DeployingTestBase;
-import org.smartfrog.services.assertions.TestBlock;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
  * tests the RunningFor condition that checks that a componet has been running for a given period of time
@@ -34,14 +32,26 @@ public class RunningForTest extends DeployingTestBase {
         super(s);
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testWaitForRunning() throws Throwable {
         expectSuccessfulTestRun(FILES, "testWaitForRunning");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testRunningForFail() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRunningForFail");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testRunningForPass() throws Throwable {
         expectSuccessfulTestRun(FILES, "testRunningForPass");
     }

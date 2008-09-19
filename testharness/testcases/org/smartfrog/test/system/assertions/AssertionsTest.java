@@ -21,10 +21,8 @@
 
 package org.smartfrog.test.system.assertions;
 
-import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * Date: 30-Apr-2004
@@ -56,7 +54,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      //Todo: turn on once we have a way of expecting liveness faults.
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void NotestFalseIsLazyTrue() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testFalseIsLazyTrue.sf", "testFalseIsLazyTrue");
@@ -64,7 +62,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * probably not doing what we think
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testEvaluatesTrue() throws Throwable {
         application =deployExpectingSuccess(FILES + "testEvaluatesTrue.sf", "testEvaluatesTrue");
@@ -74,7 +72,7 @@ public class AssertionsTest extends DeployingTestBase {
     /**
      * probably not doing what we think
      *
-     * @throws Throwable
+     * @throws Throwable on failure
      */
     public void testEvaluatesTrueToFalse() throws Throwable {
         application = deployExpectingSuccess(FILES + "testEvaluatesTrueToFalse.sf", "testEvaluatesTrueToFalse");
@@ -83,7 +81,8 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test that no method results in a meaningful failure
-     * @throws Throwable
+     *
+     * @throws Throwable on failure
      */
     public void testEvaluatesNoSuchMethod() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testEvaluatesNoSuchMethod.sf", "testEvaluatesNoSuchMethod");
@@ -91,32 +90,59 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test that values are resolved.
+     *
+     * @throws Throwable on failure
      */
     public void testEvaluatesThrowsSFException() throws Throwable {
         application = deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf", "testEvaluatesThrowsSFException");
     }
 
+  /**
+   * test case
+   * @throws Throwable on failure
+   */
     public void testEvaluatesThrowsRuntimeException() throws Throwable {
         application = deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAttributeFound() throws Throwable {
         application = deployExpectingSuccess(FILES + "testAttributeFound.sf", "testAttributeFound");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAttributeNotFound() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testAttributeNotFound.sf", "testAttributeNotFound");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAssertVectorEval() throws Throwable {
         application = deployExpectingSuccess(FILES + "testAssertVectorEval.sf",
                 "testAssertVectorEval");
     }
+
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAssertVectorSize() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testAssertVectorSize.sf",
                 "testAssertVectorSize");
     }
 
+    /**
+     * test case
+     * @throws Throwable on failure
+     */
     public void testAssertVectorEvalFail() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testAssertVectorEvalFail.sf",
                 "testAssertVectorEvalFail");

@@ -23,7 +23,6 @@ package org.smartfrog.test.system.deploy;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;

@@ -156,6 +156,20 @@ System extends Compound {
            limit 7;
         }
      }
+	 
+	 myFoo extends Compound {
+       myFoo extends Compound {
+        sfProcessName "first";
+        myFoo extends Compound {
+           sfProcessName "test";
+           myFoo extends Compound {
+              sfProcessName "test2";
+              myFoo extends Compound {
+              }
+           }
+        }
+       }
+     }
 }
 
 DeployMgnt extends DeployDisplay{
