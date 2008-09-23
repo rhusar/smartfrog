@@ -20,6 +20,14 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+/**
+ * Delay is a modified compound which differs in that it delays for
+ * a specified period of time -given by the "time" attribute and measured
+ * in milliseconds, before starting the component.
+ *
+ * If there is no child, the component will terminate itself after the
+ * specified time.
+ */
 Delay extends OptionalActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Delay";
     delaySchema extends Schema {

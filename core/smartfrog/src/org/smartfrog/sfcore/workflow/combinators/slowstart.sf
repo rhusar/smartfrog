@@ -19,6 +19,13 @@ For more information: www.smartfrog.org
 */
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+/**
+ * A component that starts its child on deployment, but gives it a certain amount of time for it to start being live,
+ * before liveness failures of the child are propagated up.
+ *
+ * Once the child succeeds its liveness once, the compound considers itself 'live' and from then on liveness tests are
+ * relayed.
+ */
 SlowStart extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.SlowStart";
     slowstartSchema extends Schema {

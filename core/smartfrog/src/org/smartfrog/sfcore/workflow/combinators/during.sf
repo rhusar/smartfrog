@@ -19,6 +19,17 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+/**
+ * During is a modified compound which differs in that the single sub-component
+ * is given a certain amount of time to terminate and if it has not, the
+ * timeout combinator terminates it and itself normally. The sub-component
+ * may, of course, be a further combinator such as a Sequence. The during
+ * combinator creates its sub-componentent during the sfStart phase The During
+ * combinator waits for its sub-components to terminate normally at which
+ * point it too terminates normally. If an error occurs at any point, or a
+ * sub-component terminates abnormall the During combinator terminates
+ * abnormally.
+ */
 During extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.During";
     duringSchema extends Schema {

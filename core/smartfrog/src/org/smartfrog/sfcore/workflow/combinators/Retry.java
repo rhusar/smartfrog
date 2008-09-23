@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * waits for its sub-component to terminate normally at which point it too
  * terminates normally. If an error occurs at any point, or a sub-component is
  * retried unless a limit is reached in which case it too terminates
- * abnormall.
+ * abnormally.
  *
  * <p>
  * The file retry.sf contains the SmartFrog configuration file for the base

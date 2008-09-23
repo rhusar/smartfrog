@@ -19,6 +19,18 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+/**
+ * Repeat is a modified compound which differs in that its single sub-component
+ * is created and should it terminate normally, is recreated. This is repeated
+ * a number of times or indefinitely unless the sub-component terminates
+ * abnormally . A Repeat combinator creates no subcomponents until it's
+ * sfStart phase at which point the subcomponent is created in the normal way.
+ * The Repeat combinator terminates normally if the sub-component has
+ * terminated normally a given number of times, and abnormally whenever the
+ * component terminates abnormally. The file repeat.sf contains the SmartFrog
+ * configuration file for the base Repeat combinator. This file conatins the
+ * details of the attributes which may be passed to Repeat.
+ */
 Repeat extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Repeat";
     repeatSchema extends Schema {

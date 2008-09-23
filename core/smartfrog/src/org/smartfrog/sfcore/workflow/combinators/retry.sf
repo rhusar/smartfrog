@@ -19,6 +19,17 @@ For more information: www.smartfrog.org
 */
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+/**
+ * Retry is a modified compound which differs in that its single sub-component
+ * is created and should it terminate abnormally, is recreated. This is
+ * repeated a number of times or until the sub-component suceeds. A Retry
+ * combinator creates no subcomponents until it's sfStart phase at which point
+ * all the subcomponent is created in the normal way. The Retry combinator
+ * waits for its sub-component to terminate normally at which point it too
+ * terminates normally. If an error occurs at any point, or a sub-component is
+ * retried unless a limit is reached in which case it too terminates
+ * abnormally.
+ */
 Retry extends ActionCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Retry";
     retrySchema extends Schema {
