@@ -202,7 +202,7 @@ public class CSVFileReadImpl extends FileImpl implements CSVFileRead {
             sfLog().info("Reading CSV file " + csvfile);
             reader = new CSVReader(new FileReader(csvfile), separator, quote, headerLines);
             count = 0;
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException ignored) {
             throw new SmartFrogDeploymentException(ERROR_NO_FILE + csvfile.getAbsolutePath());
         }
 

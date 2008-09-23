@@ -113,7 +113,7 @@ public class TupleReaderThread extends WorkflowThread {
     }
 
     /**
-         * Handle termination requested; after this call
+     * Handle termination requested; after this call
      * the component will return
      *
      * @throws SmartFrogException SmartFrog problems
