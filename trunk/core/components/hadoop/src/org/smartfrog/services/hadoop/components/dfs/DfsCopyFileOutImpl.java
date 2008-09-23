@@ -23,6 +23,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
@@ -70,7 +71,8 @@ public class DfsCopyFileOutImpl extends DfsOperationImpl implements DfsCopyOpera
         try {
             fileSystem.copyToLocalFile(source, destPath);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(FAILED_TO_COPY + source + " to " + dest, e, this);
+            throw new SmartFrogRuntimeException(
+                    DfsUtils.FAILED_TO_COPY + source + " to " + dest, e, this);
         }
     }
 }

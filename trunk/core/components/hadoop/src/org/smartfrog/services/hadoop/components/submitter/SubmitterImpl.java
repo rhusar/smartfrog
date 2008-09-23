@@ -27,14 +27,18 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -73,13 +77,16 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
-            terminateWhenJobFinishes = sfResolve(ATTR_TERMINATEWHENJOBFINISHES, true, true);
+            terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
         }
         ManagedConfiguration conf = new ManagedConfiguration(jobPrim);
-        String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
-        if (filePath != null) {
-            if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
-            conf.setJar(filePath);
+        boolean fileRequired = sfResolve(Job.ATTR_FILE_REQUIRED, true, true);
+        if (fileRequired) {
+            String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
+            if (filePath != null) {
+                if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
+                conf.setJar(filePath);
+            }
         }
 
         validateOrResolve(ConfigurationAttributes.MAPRED_INPUT_DIR, Job.ATTR_INPUT_DIR);
@@ -91,7 +98,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             DfsUtils.deleteDFSDirectory(conf, outputDir, true);
         }
 
-        String jobTracker = jobPrim.sfResolve(MAPRED_JOB_TRACKER, "", true);
+        String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER)); 
         try {
             //TODO: move this to a separate thread
             sfLog().info("Submitting to " + jobTracker);
@@ -105,7 +112,12 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
             sfReplaceAttribute(ATTR_JOBURL, jobURL);
             sfLog().info("Job ID: "+ jobID +" URL: "+jobURL);
         } catch (IOException e) {
-            throw SmartFrogLifecycleException.forward(ERROR_FAILED_TO_START_JOB + jobTracker, e, this);
+            SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
+                    +": "+e.getMessage(),
+                    e, this);
+            fault.addConfiguration(conf);
+            throw fault;
+
         }
         //set up to log events
         events = new TaskCompletionEventLogger(runningJob, sfLog());
@@ -190,5 +202,30 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                 throw (SmartFrogLivenessException) SmartFrogLifecycleException.forward(e);
             }
         }
+    }
+
+    /**
+     * Resolve a job tracker reference
+     * @param prim
+     * @param ref
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public static String resolveJobTracker(Prim prim, Reference ref)
+            throws SmartFrogResolutionException, RemoteException {
+        Object target = prim.sfResolve(ref, true);
+        if (target instanceof Prim) {
+            Prim jobTracker = (Prim) target;
+            return jobTracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
+        }
+        if (target instanceof ComponentDescription) {
+            ComponentDescription jobTracker = (ComponentDescription) target;
+            return jobTracker.sfResolve(MAPRED_JOB_TRACKER, "", true);
+        }
+        //neither of those? resolve to a string and let the runtime handle errors
+        return prim.sfResolve(ref, "", true);
+
+
     }
 }

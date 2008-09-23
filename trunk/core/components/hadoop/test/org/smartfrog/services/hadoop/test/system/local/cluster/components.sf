@@ -32,7 +32,7 @@ testLocalCluster extends ExpectDeploy {
     tracker "localhost:8014";
     mapred.job.tracker tracker;
     jobTracker:mapred.job.tracker tracker;
-    jobTracker:mapred.job.tracker.http.address  "localhost:50032";
+    //jobTracker:mapred.job.tracker.http.address  "localhost:50032";
   }
 
 
@@ -53,6 +53,6 @@ testLocalClusterForked extends testLocalCluster {
   action:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
   action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
   action:jobTracker:mapred.job.tracker  "localhost:8016";
-  action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50033";
+  //action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50033";
 }
 

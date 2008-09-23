@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
-import org.smartfrog.services.hadoop.components.dfs.DfsOperationImpl;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -55,8 +54,12 @@ public class DfsUtils {
     public static final String ERROR_NO_DIRECTORY_COPY = "Directory copy is not supported for ";
     public static final String ERROR_NO_STAT = "Unable to stat ";
     public static final String ERROR_CANNOT_COPY = "Cannot copy ";
+  /**
+     * Error string {@value}
+   */
+  public static final String FAILED_TO_COPY = "Failed to copy ";
 
-    private DfsUtils() {
+  private DfsUtils() {
     }
 
     /**
@@ -291,7 +294,8 @@ public class DfsUtils {
         try {
             fileSystem.copyFromLocalFile(false, overwrite, localSource, dest);
         } catch (IOException e) {
-            throw new SmartFrogRuntimeException(DfsOperationImpl.FAILED_TO_COPY + source + " to " + dest, e);
+            throw new SmartFrogRuntimeException(
+                    FAILED_TO_COPY + source + " to " + dest, e);
         }
     }
 

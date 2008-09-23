@@ -25,6 +25,7 @@ import org.apache.hadoop.mapred.JobTracker;
 import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -34,6 +35,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -78,7 +80,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        jobTracker = sfResolve(MAPRED_JOB_TRACKER, "", true);
+        jobTracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
         supportedFileSystem = sfResolve(ATTR_SUPPORTEDFILESYSTEM, false, true);
         jobTrackerLive = sfResolve(ATTR_JOBTRACKERLIVE, false, true);
         minActiveMapTasks = sfResolve(ATTR_MIN_ACTIVE_MAP_TASKS, 0, true);

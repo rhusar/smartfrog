@@ -47,3 +47,13 @@ JobSubmitter extends JobTrackingWorkflowComponent  {
   deleteOutputDirOnStartup true;
 
 }
+
+/**
+ this job submitter blocks until the job is complete
+ */
+BlockingJobSubmitter extends JobSubmitter {
+  terminateJob true;
+  terminateWhenJobFinishes true;
+  //this disables an auto terminate after submitting
+  sfShouldTerminate true;
+}

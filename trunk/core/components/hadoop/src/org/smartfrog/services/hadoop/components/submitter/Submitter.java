@@ -47,7 +47,7 @@ public interface Submitter extends HadoopConfiguration, HadoopCluster {
     /**
      only relevant when pingJob==true ; should we terminate when the job has finished?
      */
-    String ATTR_TERMINATEWHENJOBFINISHES = "terminateWhenJobFinishes";
+    String ATTR_TERMINATE_WHEN_JOB_FINISHES = "terminateWhenJobFinishes";
 
     /**
      * should we delete the output directory on startup?

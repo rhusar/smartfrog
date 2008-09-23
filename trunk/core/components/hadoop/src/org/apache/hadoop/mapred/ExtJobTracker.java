@@ -53,4 +53,17 @@ public class ExtJobTracker extends JobTracker {
         super.onStateChange(oldState, newState);
         LOG.info("State change: JobTracker is now " + newState);
     }
+
+  /**
+   * This service terminates itself by stopping the {@link JobEndNotifier} and
+   * then closing down the job tracker
+   *
+   * @throws IOException exceptions which will be logged
+   */
+  @Override
+  protected void innerTerminate() throws IOException {
+    super.innerTerminate();
+    //also: shut down the filesystem
+    closeTheFilesystemQuietly();
+  }
 }
