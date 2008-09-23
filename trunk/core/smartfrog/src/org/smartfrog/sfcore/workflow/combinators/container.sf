@@ -19,6 +19,16 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
+
+/**
+ * Container is a modified Parallel which differs in that when any the sub-components terminates
+ * or fails it simply removes the child and continues to run.
+ * <p>
+ * The file parallel.sf contains the SmartFrog configuration file for the base
+ * Parallel combinator. This file conatins the details of the attributes which
+ * may be passed to Parallel.
+ * </p>
+ */
 Container extends EventCompound, Parallel {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Container";
     //actions extends LAZY {}

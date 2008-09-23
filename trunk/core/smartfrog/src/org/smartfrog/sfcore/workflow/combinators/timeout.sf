@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
+
 /*
  * Timeout is a modified compound which differs in that the single
  * sub-component is given a certain amount of time to terminate and if it has

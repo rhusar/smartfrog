@@ -31,21 +31,12 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 /**
- * Delay is a modified compound which differs in that the single sub-component
- * is given a certain amount of time to terminate and if it has not, the
- * timeout combinator terminates it and itself abnormally. The sub-component
- * may, of course, be a further combinator such as a Sequence. The timeout
- * combinator creates its sub-componentent during the sfStart phase The Delay
- * combinator waits for its sub-components to terminate normally at which
- * point it too terminates normally. If an error occurs at any point, or a
- * sub-component terminates abnormally, or the timeout fires before its
- * sub-component terminates, the Delay combinator terminates abnormally.
+ * Delay is a modified compound which differs in that it delays for
+ * a specified period of time -given by the "time" attribute and measured
+ * in milliseconds, before starting the component.
  *
- * <p>
- * The file timeout.sf contains the SmartFrog configuration file for the base
- * Delay combinator. This file conatins the details of the attributes which
- * may be passed to Delay.
- * </p>
+ * If there is no child, the component will terminate itself after the
+ * specified time.
  */
 public class Delay extends EventCompoundImpl implements Compound, Runnable {
     protected static final String ATTR_TIME = "time";
