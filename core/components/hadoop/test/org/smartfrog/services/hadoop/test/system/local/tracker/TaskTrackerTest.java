@@ -37,7 +37,7 @@ public class TaskTrackerTest extends DeployingTestBase  {
     public void testLocalTaskTracker() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTracker");
     }
-    public void testLocalTaskTrackerForked() throws Throwable {
+    public void NotestLocalTaskTrackerForked() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTrackerForked");
     }
 }

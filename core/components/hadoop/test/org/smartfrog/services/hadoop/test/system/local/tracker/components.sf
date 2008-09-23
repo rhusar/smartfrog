@@ -30,10 +30,6 @@ testLocalJobTracker extends ExpectDeploy {
   action extends LocalJobTrackerCompound {
   }
 
-  tests extends Sequence {
-    //TODO: some tests
-  }
-
 }
 
 
@@ -49,12 +45,16 @@ testLocalJobTrackerForked extends testLocalJobTracker {
 testLocalTaskTracker extends ExpectDeploy {
   description "bring up a Task Tracker";
 
-  action extends LocalTaskTrackerCompound {
+
+
+  action extends LocalClusterCompound {
   }
 
-  tests extends Sequence {
-    //TODO: some tests
+  tests extends MapReduceTestSequence {
+    jobTracker LAZY action:jobTracker;
+    cluster PARENT:action:cluster;
   }
+
 
 }
 

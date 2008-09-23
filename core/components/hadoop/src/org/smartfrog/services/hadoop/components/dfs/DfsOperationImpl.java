@@ -40,31 +40,15 @@ import java.rmi.RemoteException;
  * Base class for DFS operations does nothing useful at all other than resolve the cluster settings and fail if they are
  * absent. It also has support for a worker thread (which get terminated during shutdown, if set)
  */
-public abstract class DfsOperationImpl extends PrimImpl implements DfsOperation {
+public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
 
-    private Prim cluster;
-    private WorkflowThread worker;
-    /**
-     * Error string {@value}
-     */
-    public static final String FAILED_TO_COPY = "Failed to copy ";
+  private WorkflowThread worker;
 
 
-    protected DfsOperationImpl() throws RemoteException {
+  protected DfsOperationImpl() throws RemoteException {
     }
 
-    /**
-     * start up, bind to the cluster
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        cluster = sfResolve(ATTR_CLUSTER, cluster, true);
-    }
-
-    /**
+  /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
      *
@@ -94,56 +78,7 @@ public abstract class DfsOperationImpl extends PrimImpl implements DfsOperation 
     }
 
 
-    /**
-     * Resolve an attribute to a DFS path
-     * @param attribute name of the attribute
-     * @return the path
-     * @throws SmartFrogException resolution problems
-     * @throws SmartFrogLifecycleException for a failure to create the path
-     * @throws RemoteException network problems
-     */
-    protected Path resolveDfsPath(String attribute) throws SmartFrogException, RemoteException {
-        String pathName = sfResolve(attribute, "", true);
-        try {
-            return new Path(pathName);
-        } catch (IllegalArgumentException e) {
-            throw new SmartFrogLifecycleException("Failed to create the path defined by attribute "+ attribute
-                    +" with value "+pathName
-                    +" : "+ e.getMessage(), e, this);
-        }
-    }
-
-    /**
-    * Get the cluster binding
-    *
-    * @return the cluster
-    */
-    public Prim getCluster() {
-        return cluster;
-    }
-
-    /**
-     * Create a managed configuration
-     *
-     * @return a new SF-managed configuration
-     */
-    public ManagedConfiguration createConfiguration() {
-        return new ManagedConfiguration(cluster);
-    }
-
-    /**
-     * Create a filesystem from our configuration
-     *
-     * @return a new file system
-     * @throws SmartFrogRuntimeException for any problem creating the FS.
-     */
-    protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException {
-        ManagedConfiguration conf = createConfiguration();
-        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
-        return fileSystem;
-    }
-
-    /**
+  /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
      *
      * @param fileSystem the filesystem; this is closed afterwards
