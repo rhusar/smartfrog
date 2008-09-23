@@ -96,6 +96,13 @@
       rev="latest.integration"
       conf="test->default"/>
 
+
+    <dependency org="org.smartfrog"
+        name="sf-csvfiles"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+
     <dependency org="org.apache.hadoop"
       name="hadoop-core"
       rev="${hadoop.version}"
