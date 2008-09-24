@@ -2,7 +2,7 @@ package org.smartfrog.sfcore.common;
 
 /**
  * An exception that respresents the attempt to resolve a LAZY reference at static resolution (compile) time.
- * This never occurs at runtime since teh concept of LAZY does not exist.
+ * This never occurs at runtime since the concept of LAZY does not exist.
  */
 public class SmartFrogLazyResolutionException extends SmartFrogResolutionException {
     /**
