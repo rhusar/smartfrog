@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.common.DfsUtils;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 
@@ -96,7 +97,7 @@ public class DfsClusterBoundImpl extends PrimImpl {
    * @return a new file system
    * @throws SmartFrogRuntimeException for any problem creating the FS.
    */
-  protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException {
+  protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException, SFHadoopException {
       ManagedConfiguration conf = createConfiguration();
       DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
       return fileSystem;

@@ -76,6 +76,7 @@ public interface ConfigurationAttributes {
     String MAPRED_INPUT_FORMAT_CLASS = "mapred.input.format.class";
     String MAPRED_INPUT_KEY_CLASS = "mapred.input.key.class";
     String MAPRED_INPUT_VALUE_CLASS = "mapred.input.value.class";
+    String MAPRED_JOB_SPLIT_FILE = "mapred.job.split.file";
     String MAPRED_MAPPER_CLASS = "mapred.mapper.class";
 
     String MAPRED_MAP_OUTPUT_COMPRESSION_TYPE = "mapred.map.output.compression.type";

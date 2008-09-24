@@ -284,7 +284,7 @@ FileSystemTestSequence extends Sequence {
 
   }
 
-  FileCreationParallel extends Parallel  {
+  FileCreation extends Compound  {
     cluster TBD;
     dest TBD;
 
@@ -350,13 +350,11 @@ MapReduceTestSequence extends Sequence {
   testDir "/tests/mrtestsequence";
   testDirIn  (testDir ++ "/in");
   testDirOut (testDir ++ "/out");
+  testDirWorking (testDir ++ "/working");
   testFile (testDirIn ++ "/test.csv");
 
   jobTracker TBD;
   cluster TBD;
-  name "testsubmission";
-  mapred.input.dir testDirIn;
-  mapred.output.dir testDirOut;
 
   waitForCluster extends WaitForWorkersLive {
    service LAZY PARENT:cluster;
@@ -367,17 +365,41 @@ MapReduceTestSequence extends Sequence {
     jobTracker LAZY PARENT:jobTracker;
   }
 
-  files extends FileCreationParallel {
+  files extends FileCreation {
     cluster LAZY PARENT:cluster;
     dest testFile;
   }
 
+  MRCompound extends Compound {
+    job extends TestJob  {
+          //this is the job information
+      jobTracker LAZY PARENT:PARENT:jobTracker;
+      cluster LAZY PARENT:PARENT:cluster;
+      name "testsubmission";
+      mapred.input.dir testDirIn;
+      mapred.output.dir testDirOut;
+      mapred.working.dir testDirWorking;
+      mapred.local.dir (testDir ++ "/local");
+      mapred.job.split.file (testDir ++ "/split");
+      mapred.job.tracker jobTracker:mapred.job.tracker;
+      keep.failed.task.files true;
+      filename "";
 
 
-  submission extends BlockingJobSubmitter {
-    //get our settings from ourselves.
-    job LAZY PARENT;
-    cluster LAZY PARENT:cluster4;
+      fs.default.name cluster:fs.default.name;
+    }
+
+    submission extends BlockingJobSubmitter {
+      //get our settings from ourselves.
+      job LAZY PARENT:job;
+      cluster LAZY PARENT:PARENT:cluster;
+      fileRequired false;
+    }
+
+    sleep extends Delay {
+    //cleanup delay
+      time 10000;
+    }
 
   }
 

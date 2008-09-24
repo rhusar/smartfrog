@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -100,8 +101,15 @@ public class DfsUtils {
      * @return a new DFS
      * @throws SmartFrogRuntimeException if anything goes wrong
      */
-    public static DistributedFileSystem createFileSystem(ManagedConfiguration conf) throws SmartFrogRuntimeException {
+    public static DistributedFileSystem createFileSystem(ManagedConfiguration conf)
+            throws SmartFrogRuntimeException, SFHadoopException {
         String filesystemURL = conf.get(HadoopConfiguration.FS_DEFAULT_NAME);
+        if(filesystemURL == null) {
+            SFHadoopException hadoopException = new SFHadoopException(
+                    "No filesystem URL " + HadoopConfiguration.FS_DEFAULT_NAME);
+            hadoopException.addConfiguration(conf);
+            throw hadoopException;
+        }
         URI uri = null;
         try {
             uri = new URI(filesystemURL);
@@ -130,7 +138,7 @@ public class DfsUtils {
      * @throws SmartFrogRuntimeException if anything goes wrong
      */
     public static void deleteDFSDirectory(ManagedConfiguration conf, String dir, boolean recursive)
-            throws SmartFrogRuntimeException {
+            throws SmartFrogRuntimeException, SFHadoopException {
         DistributedFileSystem dfs = createFileSystem(conf);
         deleteDFSDirectory(dfs, dir, recursive);
     }
