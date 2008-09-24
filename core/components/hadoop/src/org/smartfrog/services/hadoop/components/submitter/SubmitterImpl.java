@@ -36,6 +36,9 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.Executable;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -53,12 +56,13 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     private boolean terminateWhenJobFinishes;
     private boolean pingJob;
     private boolean deleteOutputDirOnStartup;
-    private Job job;
     private TaskCompletionEventLogger events;
     public static final String ERROR_FAILED_TO_START_JOB = "Failed to submit job to ";
     private Prim jobPrim;
     private String jobURL;
     private JobID jobID;
+    private ManagedConfiguration jobConf;
+    private JobSubmitThread worker;
 
     public SubmitterImpl() throws RemoteException {
     }
@@ -72,20 +76,19 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         jobPrim = sfResolve(ATTR_JOB, (Prim) null, true);
-        job = (Job) jobPrim;
         terminateJob = sfResolve(ATTR_TERMINATEJOB, true, true);
         deleteOutputDirOnStartup = sfResolve(ATTR_DELETE_OUTPUT_DIR_ON_STARTUP, true, true);
         pingJob = sfResolve(ATTR_PINGJOB, true, true);
         if (pingJob) {
             terminateWhenJobFinishes = sfResolve(ATTR_TERMINATE_WHEN_JOB_FINISHES, true, true);
         }
-        ManagedConfiguration conf = new ManagedConfiguration(jobPrim);
+        jobConf = new ManagedConfiguration(jobPrim);
         boolean fileRequired = sfResolve(Job.ATTR_FILE_REQUIRED, true, true);
         if (fileRequired) {
             String filePath = jobPrim.sfResolve(Job.ATTR_ABSOLUTE_PATH, (String) null, false);
             if (filePath != null) {
                 if (sfLog().isDebugEnabled()) sfLog().debug("Job is using JAR " + filePath);
-                conf.setJar(filePath);
+                jobConf.setJar(filePath);
             }
         }
 
@@ -93,38 +96,16 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         String outputDir = validateOrResolve(ConfigurationAttributes.MAPRED_OUTPUT_DIR, Job.ATTR_OUTPUT_DIR);
         validateOrResolve(ConfigurationAttributes.MAPRED_WORKING_DIR, Job.ATTR_WORKING_DIR);
         validateOrResolve(ConfigurationAttributes.MAPRED_LOCAL_DIR, Job.ATTR_LOCAL_DIR);
+        validateOrResolve(ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE, ConfigurationAttributes.MAPRED_JOB_SPLIT_FILE);
+
 
         if (deleteOutputDirOnStartup) {
-            DfsUtils.deleteDFSDirectory(conf, outputDir, true);
+            DfsUtils.deleteDFSDirectory(jobConf, outputDir, true);
         }
 
-        String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER)); 
-        try {
-            //TODO: move this to a separate thread
-            sfLog().info("Submitting to " + jobTracker);
-            JobClient jc = new JobClient(conf);
-            runningJob = jc.submitJob(conf);
-
-            //JobClient.runJob(conf);
-            jobID = runningJob.getID();
-            sfReplaceAttribute(ATTR_JOBID, jobID);
-            jobURL = runningJob.getTrackingURL();
-            sfReplaceAttribute(ATTR_JOBURL, jobURL);
-            sfLog().info("Job ID: "+ jobID +" URL: "+jobURL);
-        } catch (IOException e) {
-            SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
-                    +": "+e.getMessage(),
-                    e, this);
-            fault.addConfiguration(conf);
-            throw fault;
-
-        }
-        //set up to log events
-        events = new TaskCompletionEventLogger(runningJob, sfLog());
-        new ComponentHelper(this)
-                .sfSelfDetachAndOrTerminate(TerminationRecord.NORMAL, "Submitted job "+jobID+" and URL "+jobURL , null, null);
+        worker = new JobSubmitThread();
+        worker.start();
     }
-
 
     String validateOrResolve(String hadoopAttr, String sourceAttr) throws SmartFrogRuntimeException, RemoteException {
         String directory = jobPrim.sfResolve(hadoopAttr, "", false);
@@ -141,6 +122,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         return directory;
     }
 
+
     /**
      * Handle notifications of termination
      *
@@ -149,21 +131,75 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
      */
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         super.sfTerminatedWith(status, comp);
+        try {
+            SmartFrogThread.requestThreadTermination(worker);
+        } finally {
+            worker = null;
+        }
         if (terminateJob) {
             try {
                 terminateJob();
             } catch (IOException e) {
-                sfLog().ignore(e);
+                sfLog().info(e);
             }
         }
     }
 
     public synchronized void terminateJob() throws IOException {
         if (runningJob != null) {
-            RunningJob rjob;
-            rjob = runningJob;
-            runningJob = null;
-            rjob.killJob();
+            try {
+                runningJob.killJob();
+            } finally {
+                runningJob = null;
+            }
+        }
+    }
+
+    private class JobSubmitThread extends WorkflowThread {
+        /**
+         * Create a basic thread. Notification is bound to a local notification object.
+         *
+         */
+        private JobSubmitThread( ) {
+            super(SubmitterImpl.this, true);
+        }
+
+        /**
+         * submit the job
+         * @throws Throwable if anything went wrong
+         */
+        public void execute() throws Throwable {
+            String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER));
+            try {
+                //TODO: move this to a separate thread
+                sfLog().info("Submitting to " + jobTracker);
+                JobClient jc = new JobClient(jobConf);
+                runningJob = jc.submitJob(jobConf);
+
+                //JobClient.runJob(conf);
+                jobID = runningJob.getID();
+                sfReplaceAttribute(ATTR_JOBID, jobID);
+                jobURL = runningJob.getTrackingURL();
+                sfReplaceAttribute(ATTR_JOBURL, jobURL);
+                sfLog().info("Job ID: " + jobID + " URL: " + jobURL);
+                //set up to log events
+                events = new TaskCompletionEventLogger(runningJob, sfLog());
+            } catch (IOException e) {
+                SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
+                        + ": " + e.getMessage(),
+                        e, SubmitterImpl.this);
+                fault.addConfiguration(jobConf);
+                throw fault;
+            }
+        }
+
+        /**
+         * Override point: the termination message
+         *
+         * @return {@link #WORKER_THREAD_COMPLETED} or {@link #WORKER_THREAD_FAILED} depending on the outcome
+         */
+        protected String getTerminationMessage() {
+            return "Submitted job " + jobID + " and URL " + jobURL;
         }
     }
 

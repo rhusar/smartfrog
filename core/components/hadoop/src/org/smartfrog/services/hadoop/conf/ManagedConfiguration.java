@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -96,11 +97,11 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * Bind to our owner
      *
-     * @param source source component
+     * @param src source component
      */
-    private void bind(Prim source) {
-        this.source = source;
-        helper = new ComponentHelper(source);
+    private void bind(Prim src) {
+        this.source = src;
+        helper = new ComponentHelper(src);
     }
 
 
@@ -163,14 +164,16 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     @Override
     public String get(String name, String defaultValue) {
         try {
-            Object result = source.sfResolve(name, false);
+            Object result = source.sfResolve(name, true);
             if (result == null || result instanceof SFNull) {
                 return defaultValue;
-            } else {
-                return result.toString();
             }
-        } catch (SmartFrogResolutionException e) {
-            throw new SFHadoopRuntimeException(e);
+ /*           if (result instanceof Reference) {
+                result = source.sfResolve(name, true);
+            }*/
+            return result.toString();
+        } catch (SmartFrogResolutionException ignored) {
+            return defaultValue;
         } catch (RemoteException e) {
             throw new SFHadoopRuntimeException(e);
         }
@@ -282,7 +285,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
         Iterator<Object> objectIterator = source.sfAttributes();
         while (objectIterator.hasNext()) {
             Object key = objectIterator.next();
-            Object value = source.sfResolveHere(key);
+            Object value = source.sfResolve(new Reference(key));
             if (!(value instanceof Remote)
                     && !(value instanceof ComponentDescription)
                     && !(value instanceof SFNull)) {
