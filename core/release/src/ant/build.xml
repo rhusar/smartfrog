@@ -29,7 +29,7 @@
 
     See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installations
 
-
+    To use it. you must have
 
   </description>
 
@@ -39,9 +39,10 @@
   <!--this is our parent directory-->
   <property name="parent.project.dir" location="../.."/>
   <property file="${parent.project.dir}/build.properties"/>
+  <property name="rpmbuild.properties.file" location="rpmbuild.properties" />
 
   <!--Load the properties files, fail if missing-->
-  <loadproperties srcFile="rpmbuild.properties" />
+  <loadproperties srcfile="${rpmbuild.properties.file}" />
 
   <!--these are the RPM properties -->
   <loadproperties srcFile="rpm.properties"/>
@@ -141,8 +142,7 @@
 
 
   <target name="ready-to-prepare-binary-rpm"
-    depends="rpmmacros,signjars"/>
-
+    depends="rpmmacros,signjars,symlink-signed-lib"/>
 
   <target name="build-rpm" depends="ready-to-rpm"
       description="create an RPM file of the core smartfrog libraries">
@@ -150,8 +150,10 @@
       specFile="smartfrog.spec"
       topDir="${rpm.image.dir}"
       cleanBuildDir="true"
-      command="-bb --with=_private_rpm"
-      failOnError="true"/>
+      command='-bb --define "_private_rpm _private_rpm"'
+      failOnError="true">
+<!--       <define key="_private_rpm" value="_private_rpm" /> -->
+      </rpm>
   </target>
 
   <target name="prepare-binary-rpm"
@@ -292,7 +294,7 @@ See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installati
     </dist>
   </target>
 
-  <target name="ready-to-sign" depends="init,init-security" if="sign.jars"/>
+  <target name="ready-to-sign" depends="init,init-security" />
 
 
   <target name="signjars" depends="ready-to-sign">
@@ -312,4 +314,15 @@ ${security.code.keystore}
     </sec:signjar2>
   </target>
 
+  <!--For the secure RPMs, we create symbolic links instead of a separate directory-->
+  <target name="symlink-signed-lib" depends="ready-to-sign"
+      >
+    <delete dir="${rpm.signed.lib.dir}" />
+    <exec executable="ln" failonerror="true">
+      <arg value="-sf"/>
+      <arg value="${rpm.install.dir}/lib"/>
+      <arg value="${rpm.signed.lib.dir}"/>
+    </exec>
+  </target>
+  
 </project>

@@ -73,6 +73,17 @@
 %define sfExamples.jar sfExamples-${smartfrog.version}.jar
 %define sfServices.jar sfServices-${smartfrog.version}.jar
 
+#choose the package name based on the operational mode
+%{!?_private_rpm:%define package_name smartfrog}
+%{?_private_rpm:%define package_name smartfrog-secure}
+%{!?_private_rpm:%define security_text This is an unsigned distribution}
+%{?_private_rpm:%define security_text This is a signed distribution with private information in the smartfrog-private rpm}
+
+%{?_private_rpm:%{error: this is a private rpm}}
+%{!?_private_rpm:%{error: this is not a private rpm}}
+
+
+
 # -----------------------------------------------------------------------------
 
 Summary:        SmartFrog Deployment Framework
@@ -87,11 +98,9 @@ Vendor:         ${rpm.vendor}
 Packager:       ${rpm.packager}
 BuildArch:      noarch
 #%{name}-%{version}.tar.gz in the SOURCES dir
-Source0: %{name}-%{version}.tar.gz 
-# add patches, if any, here
+Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
-#BuildRoot:      %{basedir}
-Prefix: ${rpm.prefix}
+Prefix:         ${rpm.prefix}
 #Provides: SmartFrog
 #Icon: docs/images/frog.gif
 # build and runtime requirements here
@@ -107,7 +116,9 @@ component configuration parameters, and a runtime environment which
 activates and manages the components to deliver and maintain running systems.
 SmartFrog and its components are implemented in Java.
 
-This RPM installs smartfrog into 
+%{security_text}
+
+The RPM installs smartfrog into
  %{basedir} 
 It also adds scripts to /etc/profile.d and /etc/sysconfig 
 so that SmartFrog is available on the command line.
@@ -271,7 +282,7 @@ oro-${oro.version}.jar
 %package quartz
 Group:         ${rpm.framework}
 Summary:        Work scheduling with Quartz
-Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging
 #
 %description quartz
 Work scheduling. These components can be used to schedule work to a pool of machines,
@@ -295,7 +306,7 @@ Includes BeanShell bsh-${bsh.version}.jar
 %package xunit
 Group:         ${rpm.framework}
 Summary:       Testing under SmartFrog
-Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+Requires:       %{name} = %{version}-%{release} , %{name}-logging
 #
 %description xunit
 The base testing components. This contains the sfunit test components
@@ -306,7 +317,7 @@ for testing deployments, and the listeners/reporters for running tests.
 %package junit
 Group:         ${rpm.framework}
 Summary:        JUnit testing
-Requires:       %{name} = %{version}-%{release}  , smartfrog-xunit
+Requires:       %{name} = %{version}-%{release}  , %{name}-xunit
 #
 %description junit
 This contains the components for running JUnit ${junit.version} tests, and the
@@ -317,7 +328,7 @@ Prerequisite packages: xunit, Logging.
 %package velocity
 Group:         ${rpm.framework}
 Summary:        Velocity template engine
-Requires:       %{name} = %{version}-%{release}  , smartfrog-logging
+Requires:       %{name} = %{version}-%{release}  , %{name}-logging
 #
 %description velocity
 
@@ -337,7 +348,7 @@ Prerequisite packages: Logging.
 %package www
 Group:         ${rpm.framework}
 Summary:        WWW components
-Requires:       %{name} = %{version}-%{release} , smartfrog-logging
+Requires:       %{name} = %{version}-%{release} , %{name}-logging
 #
 %description www
 This package contains components to deploy web applications on different
@@ -394,7 +405,7 @@ authority trust each other.
 Do not install a private keys package except within your own organisation; do not
 make a privately generated key package publicly available.
 
-
+%{security_text}
 
 # -----------------------------------------------------------------------------
 
@@ -541,9 +552,7 @@ rm -rf $RPM_BUILD_ROOT
 %{basedir}/testCA
 
 
-#the signedLib which used to be a directory, but which in the RPMs is a symbolic link 
-#%dir %{basedir}/signedLib
-%{basedir}/signedLib
+
 
 #the log output directory
 #this is no longer world writeable, as the logging can fall back gracefully now 
@@ -559,6 +568,18 @@ rm -rf $RPM_BUILD_ROOT
 %docdir %{docs}
 %{docs}
 %doc %{basedir}/src.zip
+# -----------------------------------------------------------------------------
+# RPM Security section.
+# When secure RPMs are created. then signedLib is a symlink and not a directory
+# -----------------------------------------------------------------------------
+
+#the signedLib which used to be a directory, but which in the RPMs is a symbolic link
+#
+%{basedir}/signedLib
+
+# some switches; still experimenting with those
+#%{!?_private_rpm:%dir %{signedlib}}
+#%{?_private_rpm:%{signedlib}}
 
 # -----------------------------------------------------------------------------
 # this is the private dir unless the build says otherwise
@@ -574,20 +595,20 @@ rm -rf $RPM_BUILD_ROOT
 # done as a script to deal with upgrade problems. Any existing directory
 # is blown away by this operation, as is a symlink.
 %post
-if [ -x %{signedlib} ] ; then
-rm -rf %{signedlib}
-fi
-ln -s %{libdir} %{signedlib}
+#if [ -x %{signedlib} ] ; then
+#rm -rf %{signedlib}
+#fi
+#ln -s %{libdir} %{signedlib}
 
 
 # the symlink is only deleted if there is none left; this avoids
 # stamping on any newly created links.
 %postun
-if [ "$1" = "0" ] ; then
-  if [ -x %{signedlib} ] ; then
-    rm -rf %{signedlib}
-  fi
-fi
+#if [ "$1" = "0" ] ; then
+#  if [ -x %{signedlib} ] ; then
+#    rm -rf %{signedlib}
+#  fi
+#fi
 
 
 %files demo
@@ -642,7 +663,7 @@ fi
 #and the etc stuff
 %defattr(0644,root,root,0755)
 %attr(755, root,root) /etc/rc.d/init.d/${rpm.daemon.name}
-%(0644,root,root) /etc/sysconfig/smartfrog
+%attr(0644,root,root) /etc/sysconfig/smartfrog
 
 
 %files ant
@@ -808,15 +829,16 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
-* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0042-2.el4 changes to the security model so that signedLib is a symlink.
-* Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0027-2.el4
+* Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4 changes to the security model so that signedLib is a symlink.
+* Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4 changes to the security model so that signedLib is a symlink.
+* Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.027-2.el4
 - add velocity template
-* Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0018-2.el4
+* Thu Jan 24 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.018-2.el4
 - add ability to generate signed RPM files
-* Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0013-1.el4
+* Mon Dec 03 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.013-1.el4
 - add the javadocs RPM
 - remove og-w permissions from the log directory 
-* Wed Nov 21 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.0011-1.el4
+* Wed Nov 21 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.011-1.el4
 - add the ant, database, jmx, junit,networking, quartz, scrpting, www, xml, xmpp,
   xunit RPMs.
 * Wed Oct 24 2007 Steve Loughran <smartfrog@hpl.hp.com> 3.12.008-1.el4

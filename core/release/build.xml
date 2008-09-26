@@ -569,7 +569,8 @@
     </exec>
   </target>
 
-  <target name="maybe-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security,symlink-signed-lib"
+  <!--we've cut ,symlink-signed-lib from the depends list here-->
+  <target name="maybe-sign-rpm-jars" depends="copy-rpm-specs,create-link-dir,init-security"
       xmlns:sec="http://security.smartfrog.org/">
   </target>
 
@@ -1226,6 +1227,11 @@
         todir="${build.dir}"/>
     <!--commandResource="${build.dir}/rpm-queries.txt"-->
 
+    <!-- this sets a property to the query string to check the signedlib if the
+    security.enabled flag is set.
+    Checking this has been disabled while we experiment with not setting the symlink
+    up except in custom signed RPMs.
+    -->
     <condition property="secureLibs"
         value="rpm -qf ${rpm.install.dir}/signedLib/smartfrog-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/signedLib/sfServices-${smartfrog.version}.jar;
@@ -1266,9 +1272,9 @@ rpm -qf ${rpm.install.dir}/links/ant.jar;
 rpm -qf ${rpm.install.dir}/lib/sf-csvfiles-${smartfrog.version}.jar;
 rpm -qf ${rpm.install.dir}/lib/opencsv-${opencsv.version}.jar;
 rpm -qf ${rpm.install.dir}/links/sf-csvfiles.jar;
-rpm -qf ${rpm.install.dir}/links/opencsv.jar;
-${secureLibs}"
+rpm -qf ${rpm.install.dir}/links/opencsv.jar;"
         outputProperty="rpm.queries.results"/>
+    <!--${secureLibs}"-->
 
     <fail>
       <condition>
