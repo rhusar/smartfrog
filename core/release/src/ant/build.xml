@@ -102,11 +102,15 @@
       location="${core.install.dir}/lib"/>
     <property name="rpm.signed.lib.dir"
       location="${core.install.dir}/signedLib"/>
+    <property name="rpm.private.dir"
+        location="${core.install.dir}/private"/>
 
     <!--and now some file names-->
 
     <property name="smartfrog.rpmfiles.tar"
       location="${rpm.SOURCES}/smartfrog-${smartfrog.version}.tar"/>
+    <property name="smartfrog.rpmfiles.tar.gz"
+        location="${smartfrog.rpmfiles.tar}.gz"/>    
     <property name="rpm.suffix"
       value="${smartfrog.version}-${rpm.release.version}.noarch.rpm"/>
     <property name="target.rpm.shortname"
@@ -142,7 +146,7 @@
 
 
   <target name="ready-to-prepare-binary-rpm"
-    depends="rpmmacros,signjars,symlink-signed-lib"/>
+    depends="rpmmacros,signjars,symlink-signed-lib,copy-host-directories"/>
 
   <target name="build-rpm" depends="ready-to-rpm"
       description="create an RPM file of the core smartfrog libraries">
@@ -168,16 +172,13 @@
       <arg value="var"/>
       <arg value="usr"/>
     </exec>
-    <!--
-       <sf-tar destfile="${smartfrog.rpmfiles.tar}" >
-         <fileset dir="${build.rpm.dir}/root/" includes="**/*" />
-       </sf-tar>
-    -->
     <!-- now we have a sanity check -->
     <loadresource property="homepage">
       <tarentry archive="${smartfrog.rpmfiles.tar}"
           name="etc/sysconfig/smartfrog"/>
     </loadresource>
+    <gzip src="${smartfrog.rpmfiles.tar}"
+        destfile="${smartfrog.rpmfiles.tar.gz}"/>
   </target>
 
 
@@ -290,7 +291,7 @@ See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installati
       description="Create a new set of daemon host keys ">
     <dist target="newDaemon">
       <property name="host.dir.suffix" value="" />
-      <property name="CA.dir" location="security.ca.dir" />
+      <property name="CA.dir" location="${security.ca.dir}" />
     </dist>
   </target>
 
@@ -324,5 +325,22 @@ ${security.code.keystore}
       <arg value="${rpm.signed.lib.dir}"/>
     </exec>
   </target>
-  
+
+
+  <!--
+  This target copies the host key information from the CA dir; all hosts get copied over
+  The source directory is defined as host.directories.basedir (defaults to ${security.private.dir})
+  And the pattern, host*, is set in host.dir.pattern. Accordingly, this target can
+  be set to copy over directories from a different location than that of the CA
+  -->
+  <target name="copy-host-directories" depends="ready-to-sign"
+      unless="copy.host.directories.disabled">
+    <property name="host.directories.basedir" location="${security.private.dir}" />
+    <property name="host.dir.pattern" value="host*/*" />
+    <copy todir="${rpm.private.dir}">
+      <fileset dir="${host.directories.basedir}" includes="${host.dir.pattern}" />
+    </copy>
+  </target>
+
+
 </project>

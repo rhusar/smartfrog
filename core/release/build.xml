@@ -1087,8 +1087,13 @@
         value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
     <!--list of rpms-->
 
+    <property name="rpms.core.list"
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
+    <property name="rpms.private.list"
+        value=" smartfrog-private-security-keys"/>
     <property name="rpms.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity smartfrog-private-keys"/>
+        value="${rpms.core.list} ${smartfrog-private-keys}"/>
+
     <!--here are all the signed RPMs that are generated-->
 
 
@@ -1170,7 +1175,10 @@
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
       description="A forced uninstall of the RPMs, no dependency checking">
     <rootssh
-        command="rpm --erase --nodeps ${rpm.verbosity} ${rpms.list} ${rpms.dependent.list}"
+        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.private.list} ${rpms.dependent.list}"
+        failonerror="false"/>
+    <rootssh
+        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.core.list}"
         failonerror="false"/>
   </target>
 

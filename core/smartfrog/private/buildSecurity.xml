@@ -108,6 +108,15 @@
     </fail>
   </target>
 
+  <target name="echo-CA-setup" depends="ready-to-create-CA">
+    <echo>
+      host.dir.suffix = "${host.dir.suffix}"
+      host.subdir     = "${host.subdir}"
+      CA.dir          = "${CA.dir}"
+      CAsubdir        = "${CAsubdir}"
+    </echo>
+  </target>
+
   <!--
    Override point: do everything needed to create a CA
   -->

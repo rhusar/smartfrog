@@ -589,26 +589,18 @@ rm -rf $RPM_BUILD_ROOT
 # the security keys file only has content in it when the build property says so
 %files private-security-keys
 %{?_private_rpm:%{privatedir}}
-
-# -----------------------------------------------------------------------------
-# After installing, set up a symlink from signedLib to lib. This is
-# done as a script to deal with upgrade problems. Any existing directory
-# is blown away by this operation, as is a symlink.
-%post
-#if [ -x %{signedlib} ] ; then
-#rm -rf %{signedlib}
-#fi
-#ln -s %{libdir} %{signedlib}
+#uncomment this to force in a host. It is here more as a development utility than
+#anything anyone should need
+#%{?_private_rpm:%{privatedir}/host1}
 
 
-# the symlink is only deleted if there is none left; this avoids
-# stamping on any newly created links.
-%postun
-#if [ "$1" = "0" ] ; then
-#  if [ -x %{signedlib} ] ; then
-#    rm -rf %{signedlib}
-#  fi
-#fi
+
+%post  private-security-keys
+#on a private installation, we crank back the security rights to be restricted to the user for which the RPM
+#is targeted, with permissions as set at built time, ideally to something restrictive
+%{?_private_rpm:chmod ${rpm.private.hosts.permissions} %{privatedir}/host*}
+%{?_private_rpm:chown ${rpm.username} %{privatedir}/host*}
+
 
 
 %files demo
