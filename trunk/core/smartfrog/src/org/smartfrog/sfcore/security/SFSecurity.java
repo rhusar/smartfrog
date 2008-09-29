@@ -26,6 +26,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
 import java.net.InetAddress;
+import java.security.AccessControlException;
+
 import org.smartfrog.sfcore.processcompound.SFServerSocketFactory;
 
 
@@ -65,7 +67,18 @@ public class SFSecurity {
         try {
             if (!alreadyInit) {
                 // Add the new RMIClassLoaderSpi
-                System.setProperty("java.rmi.server.RMIClassLoaderSpi", "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
+                try {
+                    System.setProperty("java.rmi.server.RMIClassLoaderSpi",
+                            "org.smartfrog.sfcore.security." + "SFRMIClassLoaderSpi");
+                } catch (AccessControlException e) {
+                    throw (SFGeneralSecurityException) new SFGeneralSecurityException(
+                            ("Java Security Access control exception - "
+                                    + "SmartFrog is configured to run with security on, but the smartfrog JAR is not "
+                                    + "signed by a trusted CA: "
+                                    + e.getMessage()))
+                            .initCause(e);
+
+                }
 
                 SFSecurityProperties.readSecurityProperties();
 
