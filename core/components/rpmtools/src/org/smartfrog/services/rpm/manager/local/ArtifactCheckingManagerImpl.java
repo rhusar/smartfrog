@@ -37,49 +37,10 @@ import java.util.List;
  * Created 14-Apr-2008 17:11:58
  */
 
-public class ArtifactCheckingManagerImpl extends AbstractRpmManager implements RpmManager {
+public class ArtifactCheckingManagerImpl extends AbstractLocalRpmManager implements RpmManager {
 
     public ArtifactCheckingManagerImpl() throws RemoteException {
     }
 
 
-    /**
-     * start up may trigger a shutdown
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    @Override
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
-    /**
-     * Override point: probe the file
-     *
-     * @param rpm the file to probe
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for network problems
-     */
-    @Override
-    protected void probe(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
-        try {
-            rpm.verifyAllManagedFilesExist();
-        } catch (FileNotFoundException e) {
-            throw new SmartFrogLivenessException(e);
-        }
-    }
-
-    /**
-     * Liveness call in to check if this component is still alive.
-     *
-     * @param source source of call
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
-     */
-    @Override
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
-
-    }
 }

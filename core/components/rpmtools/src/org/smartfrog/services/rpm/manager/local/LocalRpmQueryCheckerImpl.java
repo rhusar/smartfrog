@@ -21,6 +21,7 @@ package org.smartfrog.services.rpm.manager.local;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.utils.ListUtils;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.utils.Executable;
@@ -41,19 +42,10 @@ import java.util.ArrayList;
 import java.io.FileNotFoundException;
 
 /**
- * this checker 
- * Created 10-Jun-2008 17:13:23
- *
+ * this checker Created 10-Jun-2008 17:13:23
  */
 
-public class LocalRpmQueryCheckerImpl extends AbstractLocalRpmManager implements RpmManager,Executable {
-
-    protected String executable;
-    protected List<String> arguments;
-    List<RpmManagedFile> files;
-
-    protected WorkflowThread worker;
-    private String command;
+public class LocalRpmQueryCheckerImpl extends AbstractLocalRpmExecutor implements RpmManager {
 
     public LocalRpmQueryCheckerImpl() throws RemoteException {
     }
@@ -63,71 +55,33 @@ public class LocalRpmQueryCheckerImpl extends AbstractLocalRpmManager implements
      * start up may trigger a shutdown
      *
      * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        executable = sfResolve(ATTR_EXECUTABLE, "", true);
-        command = sfResolve(ATTR_COMMAND, "", true);
-        arguments = ListUtils.resolveStringList(this, new Reference(ATTR_ARGUMENTS), true);
+        readSettings();
     }
 
     /**
      * build the list of files
+     *
      * @throws SmartFrogLivenessException problems
-     * @throws RemoteException    In case of network/rmi error
+     * @throws RemoteException In case of network/rmi error
      */
     protected void probeAllFiles() throws SmartFrogLivenessException, RemoteException {
         files = new ArrayList<RpmManagedFile>();
         for (RpmFile rpm : this) {
             List<String> rpmfiles = rpm.getManagedFiles();
-            for(String f:rpmfiles) {
-                files.add(new RpmManagedFile(f,rpm));
+            for (String f : rpmfiles) {
+                files.add(new RpmManagedFile(f, rpm));
             }
         }
-        new WorkflowThread(this, this, true);
-    }
-
-    /**
-     * Override point: probe the file
-     *
-     * @param rpm the file to probe
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for network problems
-     */
-    @Override
-    protected void probe(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
-        try {
-            rpm.verifyAllManagedFilesExist();
-        } catch (FileNotFoundException e) {
-            throw new SmartFrogLivenessException(e);
-        }
-    }
-
-    /**
-     * Liveness call in to check if this component is still alive.
-     *
-     * @param source source of call
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
-     */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
-        SmartFrogThread.ping(worker);
-    }
-
-    /**
-     * Deregisters from all current registrations.
-     *
-     * @param status Record having termination details of the component
-     */
-    public synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        SmartFrogThread.requestThreadTermination(worker);
+        worker = new WorkflowThread(this, this, true);
     }
 
     /**
      * Entry point for worker thread; this runs through the list of files and validates them
+     *
      * @throws Throwable
      */
     public void execute() throws Throwable {
@@ -140,17 +94,20 @@ public class LocalRpmQueryCheckerImpl extends AbstractLocalRpmManager implements
 
     /**
      * run a query against one file
+     *
      * @param managedFile the file to look at
+     *
      * @throws SmartFrogException trouble
      */
     private void queryOneFile(RpmManagedFile managedFile) throws SmartFrogException {
-        String filename=managedFile.getFilename();
+        String filename = managedFile.getFilename();
         String packageName = managedFile.getRpm().getRpmPackageName();
-        List<String> commands=new ArrayList<String>(arguments.size()+2);
+        List<String> commands = new ArrayList<String>(arguments.size() + 2);
+        commands.add(executable);
         commands.add(command);
         commands.addAll(arguments);
         commands.add(filename);
-        Cmd rpmcommand=new Cmd();
+        Cmd rpmcommand = new Cmd();
         rpmcommand.setTerminate(false);
         rpmcommand.setDetach(false);
         rpmcommand.setCmdArray((String[]) commands.toArray());

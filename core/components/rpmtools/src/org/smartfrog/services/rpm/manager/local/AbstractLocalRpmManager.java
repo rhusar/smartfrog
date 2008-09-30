@@ -21,8 +21,11 @@ package org.smartfrog.services.rpm.manager.local;
 
 import org.smartfrog.services.rpm.manager.AbstractRpmManager;
 import org.smartfrog.services.rpm.manager.RpmManager;
+import org.smartfrog.services.rpm.manager.RpmFile;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.rmi.RemoteException;
+import java.io.FileNotFoundException;
 
 /**
  * <p/>
@@ -31,5 +34,30 @@ import java.rmi.RemoteException;
 public abstract class AbstractLocalRpmManager extends AbstractRpmManager implements RpmManager {
 
     protected AbstractLocalRpmManager() throws RemoteException {
+    }
+
+    /**
+     * Check the files in the RPM exist, throw a LivenessException if not
+     * @param rpm rpm to check
+     * @throws SmartFrogLivenessException missing file.
+     */
+    protected void verifyFiles(RpmFile rpm) throws SmartFrogLivenessException {
+        try {
+            rpm.verifyAllManagedFilesExist();
+        } catch (FileNotFoundException e) {
+            throw new SmartFrogLivenessException(e);
+        }
+    }
+
+    /**
+     * Override point: probe the file
+     *
+     * @param rpm the file to probe
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException            for network problems
+     */
+    @Override
+    protected void probe(RpmFile rpm) throws SmartFrogLivenessException, RemoteException {
+        verifyFiles(rpm);
     }
 }
