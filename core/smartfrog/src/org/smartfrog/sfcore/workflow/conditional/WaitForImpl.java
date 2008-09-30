@@ -109,11 +109,11 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
                     test = evaluate();
                     now = System.currentTimeMillis();
                 }
-                long interval = now - start;
+                long wait = now - start;
                 if (sfLog().isDebugEnabled()) {
                     sfLog().debug("WaitFor "
                             + (test ? "succeeded" : "timed out")
-                            + " after " + interval + " milliseconds");
+                            + " after " + wait + " milliseconds");
                 }
                 //handle the completion
                 boolean toFinish = onWaitForComplete(test);
