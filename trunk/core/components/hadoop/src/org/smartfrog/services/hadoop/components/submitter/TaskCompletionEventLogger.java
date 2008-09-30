@@ -38,8 +38,8 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
 
     private RunningJob job;
     private LogSF log;
-    private List<TaskCompletionEvent> events=new ArrayList<TaskCompletionEvent>();
-    private int eventCount =0;
+    private List<TaskCompletionEvent> events = new ArrayList<TaskCompletionEvent>();
+    private int eventCount = 0;
 
     public TaskCompletionEventLogger(RunningJob job, LogSF log) {
         this.job = job;
@@ -53,10 +53,8 @@ public class TaskCompletionEventLogger implements Iterable<TaskCompletionEvent> 
      */
     public TaskCompletionEvent[] pollForNewEvents() throws IOException {
         TaskCompletionEvent[] taskCompletionEvents = job.getTaskCompletionEvents(eventCount);
-        int result = -1;
         if (taskCompletionEvents.length > 0) {
             synchronized (this) {
-                result=events.size();
                 for (TaskCompletionEvent event : taskCompletionEvents) {
                     log.info(event);
                     events.add(event);
