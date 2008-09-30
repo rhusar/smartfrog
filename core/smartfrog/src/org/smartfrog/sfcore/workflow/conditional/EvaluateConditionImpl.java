@@ -28,7 +28,6 @@ import java.rmi.RemoteException;
  */
 
 public class EvaluateConditionImpl extends ConditionCompound implements EvaluateCondition {
-    private String message;
     private boolean failOnFalse;
 
 
@@ -44,7 +43,6 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        message =sfResolve(ATTR_MESSAGE, "",true);
         failOnFalse = sfResolve(ATTR_FAIL_ON_FALSE, false, true);
         startupTest();
     }
@@ -69,8 +67,12 @@ public class EvaluateConditionImpl extends ConditionCompound implements Evaluate
      */
     protected void testCondition() throws SmartFrogException, RemoteException {
         boolean result = evaluate();
-        sfReplaceAttribute(ATTR_RESULT,Boolean.valueOf(result));
+        sfReplaceAttribute(ATTR_RESULT, Boolean.valueOf(result));
         if(!result && failOnFalse) {
+            String message = sfResolve(ATTR_MESSAGE, "", true);
+            if (sfLog().isInfoEnabled()) {
+                sfLog().info("message: " + message);
+            }
             throw new SmartFrogException(message);
         }
     }
