@@ -251,7 +251,7 @@ public class AntProject {
                     }
                     // May need for type conversion
                     if (!ptypes[0].equals(value.getClass())) {
-                        value = convType((String) value, ptypes[0]);
+                        value = convType(value.toString(), ptypes[0]);
                     }
                     ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
                     method.invoke(task, value);
