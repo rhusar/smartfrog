@@ -20,14 +20,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
-import org.apache.hadoop.util.Service;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 
 import java.io.File;
 import java.io.IOException;

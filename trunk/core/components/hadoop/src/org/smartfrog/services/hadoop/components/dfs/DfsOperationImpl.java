@@ -21,15 +21,9 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;

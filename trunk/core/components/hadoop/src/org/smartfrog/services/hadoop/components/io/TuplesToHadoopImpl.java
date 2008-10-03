@@ -26,7 +26,6 @@ import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.services.filesystem.TupleReaderThread;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.components.dfs.DfsClusterBoundImpl;
-import org.smartfrog.services.hadoop.components.dfs.DfsPathOperation;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;

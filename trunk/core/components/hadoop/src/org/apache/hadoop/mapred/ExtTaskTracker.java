@@ -21,6 +21,8 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 
 import java.io.IOException;
 
@@ -31,10 +33,17 @@ import java.io.IOException;
 public class ExtTaskTracker extends TaskTracker {
 
     private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
+    private ServiceStateChangeNotifier notifier;
 
     public ExtTaskTracker(JobConf conf) throws IOException {
-        super(conf, false);
+        this(null, conf);
     }
+
+    public ExtTaskTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException {
+        super(conf, false);
+        notifier = new ServiceStateChangeNotifier(this, owner);
+    }
+
 
     /**
      * Override point - aethod called whenever there is a state change.
@@ -48,5 +57,6 @@ public class ExtTaskTracker extends TaskTracker {
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: TaskTracker is now " + newState);
+        notifier.onStateChange(oldState, newState);
     }
 }

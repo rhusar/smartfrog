@@ -22,6 +22,7 @@
 package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
@@ -40,11 +41,13 @@ public class ExtDataNode extends DataNode {
     private volatile boolean stopped;
     private ExtDataNodeThread worker;
     private Prim owner;
+    private ServiceStateChangeNotifier notifier;
 
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
         this.owner = owner;
+        notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
 

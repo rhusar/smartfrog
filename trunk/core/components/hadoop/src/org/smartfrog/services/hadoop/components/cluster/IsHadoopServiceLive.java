@@ -19,10 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.workflow.conditional.Condition;
 
 import java.rmi.RemoteException;
 

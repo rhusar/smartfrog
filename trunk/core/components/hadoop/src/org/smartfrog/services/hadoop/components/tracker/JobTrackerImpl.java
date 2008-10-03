@@ -22,16 +22,15 @@ package org.smartfrog.services.hadoop.components.tracker;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
+import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
@@ -41,7 +40,8 @@ import java.rmi.RemoteException;
  * Created 19-May-2008 13:55:33
  */
 
-public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ClusterManager {
+public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ClusterManager,
+        ServiceStateChangeHandler {
 
     //private TrackerThread worker;
     private static final String NAME = "JobTracker";
@@ -80,8 +80,8 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
                 System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
             }
             ManagedConfiguration configuration = createConfiguration();
-            tracker = new ExtJobTracker(configuration);
-            deployService(tracker,configuration);
+            tracker = new ExtJobTracker(this, configuration);
+            deployService(tracker, configuration);
             //now start the worker thread that offers the service
 /*            worker = new TrackerThread(tracker);
             worker.start();*/
@@ -219,5 +219,12 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
                 interrupt();
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void onStateChange(Service service, Service.ServiceState oldState, Service.ServiceState newState) {
+
     }
 }

@@ -21,9 +21,9 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.io.IOException;
 
 /**
  * Created 08-Jul-2008 13:28:24

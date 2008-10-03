@@ -20,15 +20,15 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.WorkflowThread;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -159,15 +159,15 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                 //as SF has stricter service state rules
                 Service.ServiceState state = serviceStatus.getState();
                 switch(state) {
-                    case UNDEFINED:
-                    case CREATED:
-                    case INITIALIZED:
-                    case FAILED:
-                    case TERMINATED:
-                        throw new SmartFrogLivenessException("Service is not live: "+serviceStatus, this);
-                    case STARTED:
-                    case LIVE:
-                        break;
+                  case STARTED:
+                  case LIVE:
+                    break;
+                  case UNDEFINED:
+                  case CREATED:
+                  case FAILED:
+                  case TERMINATED:
+                  default:
+                    throw new SmartFrogLivenessException("Service is not live: "+serviceStatus, this);
                 }
             } else if (requireNonNullServiceInPing()) {
                 throw new SmartFrogLivenessException("No running " + getName(), this);
@@ -243,7 +243,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     public Service.ServiceStatus pingService() throws IOException {
         Service hadoop = service;
-        if(hadoop ==null) {
+        if (hadoop == null) {
             return null;
         } else {
             return hadoop.ping();
@@ -290,7 +290,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     private void innerDeploy(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         try {
             setServiceOnce(hadoopService);
-            hadoopService.init();
+            //hadoopService.init();
             hadoopService.start();
             onServiceDeploymentComplete();
         } catch (IOException e) {

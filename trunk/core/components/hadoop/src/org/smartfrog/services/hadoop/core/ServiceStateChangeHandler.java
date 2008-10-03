@@ -17,18 +17,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.common;
+package org.smartfrog.services.hadoop.core;
+
+import org.apache.hadoop.util.Service;
 
 /**
- *
- * Created 28-May-2008 15:22:20
- *
+ * Created 01-Oct-2008 17:32:23
  */
 
-public class HadoopUtils {
 
-  private HadoopUtils() {
-  }
+public interface ServiceStateChangeHandler {
 
-
+    /**
+     * Called on the state change.
+     * @see Service#onStateChange(Service.ServiceState, Service.ServiceState)
+     * @param service
+     * @param oldState
+     * @param newState
+     */
+    void onStateChange(Service service, Service.ServiceState oldState, Service.ServiceState newState);
 }

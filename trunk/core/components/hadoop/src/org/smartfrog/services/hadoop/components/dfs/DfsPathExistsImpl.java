@@ -29,8 +29,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.net.URI;
+import java.rmi.RemoteException;
 
 /**
  * Created 27-May-2008 15:42:48

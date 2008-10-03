@@ -21,7 +21,8 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 
 import java.io.IOException;
 
@@ -34,10 +35,15 @@ import java.io.IOException;
 public class ExtJobTracker extends JobTracker {
 
     private static final Log LOG= LogFactory.getLog(ExtJobTracker.class);
+    private ServiceStateChangeNotifier notifier;
 
     public ExtJobTracker(JobConf conf) throws IOException, InterruptedException {
-        super(conf);
+        this(null, conf);
+    }
 
+    public ExtJobTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException, InterruptedException {
+        super(conf);
+        notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
     /**
@@ -52,6 +58,7 @@ public class ExtJobTracker extends JobTracker {
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: JobTracker is now " + newState);
+        notifier.onStateChange(oldState, newState);
     }
 
   /**
