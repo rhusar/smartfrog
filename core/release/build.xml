@@ -1092,7 +1092,7 @@
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
     <property name="rpms.list"
-        value="${rpms.core.list} ${rpms.private.list}"/>
+        value="${rpms.core.list} ${smartfrog-private-keys}"/>
 
     <!--here are all the signed RPMs that are generated-->
 
@@ -1169,7 +1169,7 @@
   </target>
 
   <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init">
-    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.core.list}"/>
+    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"/>
   </target>
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
