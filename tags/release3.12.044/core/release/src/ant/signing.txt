@@ -1,0 +1,4 @@
+This is a build file that is designed to be redistributed as part of a tar file,
+then executed to create a new RPM with signed artifacts.
+
+See http://wiki.smartfrog.org/wiki/display/sf/Signing+RPMs+for+secure+installations

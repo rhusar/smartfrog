@@ -1,0 +1,19 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array {
+     sfArrayGenerator extends {
+        help extends {
+            help2 8; 
+        }
+     }
+     sfArrayPrefix "zoo";
+     sfArrayExtent 3;
+  }
+  
+  foo2 extends Aggregator {
+	sfAggregatorArraySource foo1;
+        sfAggregatorAttributePath "help:help2";
+        foo3 extends nproduct;
+  }
+}

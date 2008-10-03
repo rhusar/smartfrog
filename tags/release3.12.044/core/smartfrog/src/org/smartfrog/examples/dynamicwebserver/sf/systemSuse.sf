@@ -1,0 +1,47 @@
+#include "/org/smartfrog/examples/dynamicwebserver/sf/system.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+
+// the host on which the load generators will run
+stressTestHost     "16.25.169.35";
+
+// the host on which the thresholder, measuring component, etc will run
+serviceManagerHost "16.25.169.35";
+
+// the host on which the load balancer will run
+balancerHost       "16.25.169.35";
+
+// a vector of all of the hosts to be used for the Apache web server
+// they must all be x86, linux
+serverHosts ["16.25.166.109"];
+
+sfConfig extends Compound {
+    // Deploy an instance of the service
+    service extends ServiceTemplate{
+            
+    	webThresholder:template:server:server:server:baseConfigLocation extends concat {
+    	    -- "/";
+    	    filepath "etc/apache2/";
+    	}
+
+    	webThresholder:template:server:server:server:configLocation extends concat {
+    		-- "/";
+    		filepath "etc/apache2/";
+    	}
+
+    	webThresholder:template:server:server:server:apachectlLocation extends concat {
+        	-- "/";
+        	filepath "usr/sbin/apache2ctl";
+    	}
+
+    	webThresholder:template:server:server:server:envVars ["ACTIVATOR_CFG_FILE=/etc/apache2/httpd.conf",
+             "ACTIVATOR_TMP_FILE=/etc/apache2/httpd.tmp", 
+             "ACTIVATOR_APACHE_CTL_CMD=/usr/sbin/apache2ctl"];
+             
+        webThresholder:template:server:install:workflow:filename "/etc/apache2";
+    }   	
+
+    // Deploy a set of load generators
+    loadGenerators extends LoadGeneratorTemplate;
+    
+}

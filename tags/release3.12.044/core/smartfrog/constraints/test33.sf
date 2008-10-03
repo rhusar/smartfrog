@@ -1,0 +1,37 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+   theList genList:theList; 
+
+   elements extends Array {
+      sfArrayPrefix "foo";
+      sfArrayExtent 3;
+      sfArrayGenerator extends ArrayGenerator {
+
+         element extends Constraint{
+            val VAR theList;
+         }
+
+         [sfTemp] -- diff;
+
+         -- extends Constraint {
+            list theList;
+            el element:val;
+            [sfConstraint] -- "member(el, list)"; 
+         }
+
+     }
+   }
+
+   diff extends Constraint {
+     [sfAggregatedConstraintSource] -- ["elements", "element:val", "element_vals"];	 
+     [sfConstraint] -- "alldifferent(element_vals)";
+   }
+
+   genList extends Constraint {
+      theList ["one", VAR, "three", VAR];
+      aList [VAR, "two", VAR, "four"];       
+
+      [sfConstraint] -- "theList = aList"; 
+   }
+}

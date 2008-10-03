@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<def:Settings xmlns:def="http://smartfrog.org/avalanche/settings/Default">
+	<os>windows</os>
+	<os>linux</os>
+	<platform>Intel</platform>
+	<arch>x86</arch>
+	<arch>IA64</arch>
+
+	<accessMode>
+		<name>ssh</name>
+	</accessMode>
+	<dataTransferMode>
+		<name>scp</name>
+	</dataTransferMode>
+
+	<systemProperty>JAVA_HOME</systemProperty>
+	<systemProperty>AVALANCHE_HOME</systemProperty>
+	<deploymentEngine>
+		<name>SmartFrog</name>
+		<class>org.smartfrog.adapter</class>
+	</deploymentEngine>
+	
+	<action>
+		<name>INSTALL</name>
+	</action>
+	<action>
+		<name>UNINSTALL</name>
+	</action>
+	<action>
+		<name>START</name>
+	</action>
+	<action>
+		<name>STOP</name>
+	</action>
+</def:Settings>
+

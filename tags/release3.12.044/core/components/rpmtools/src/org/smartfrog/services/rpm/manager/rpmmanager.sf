@@ -1,0 +1,119 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+
+ 
+/**
+ * This defines the abstract RPM manager
+ */
+AbstractRpmManager extends WorkflowPrim {
+
+
+  /**
+  * Install the RPMs on startup
+  */
+  install true;
+
+  /**
+  * uninstall the RPMs on termination?
+  */
+  uninstallOnTermination true;
+
+  /**
+  * uninstall the RPMs on termination?
+  */
+  uninstallOnStartup false;
+
+  /**
+  * Ping for managed files during a liveness check?
+  */
+  probeOnLiveness true;
+
+  /**
+  * Ping for managed files during a liveness check?
+  */
+  probeOnStartup false;
+
+  /**
+  * Should we apply in bulk? That is, group apply everything in one go?
+  */
+  bulkOperation true;
+
+  /**
+  * How to handle a failure to install
+  */
+  failOnInstallError true;
+
+  /**
+  * How to handle a failure to uninstall. Only relevent in a startup uninstall
+  */
+  failOnUninstallError true;
+
+  /**
+  * Should scripts be skipped during installation?
+  */
+  installSkipScripts false;
+
+  /**
+  * Should scripts be skipped during uninstallation?
+  */
+  uninstallSkipScripts false;
+
+  /**
+  * Should dependencies be ignored during uninstallation?
+  */
+  uninstallIgnoreDependencies false;
+
+}
+
+
+AbstractExecutableRpmManager extends AbstractRpmManager {
+
+  /**
+  Executable to run
+  */
+  executable "rpm";
+
+  command TBD;
+
+  /**
+   * A list of arguments for this operation
+   */
+  arguments [];
+
+  /**
+   * These are some strings that we look for for to generate different messages.
+   * Only change them if you are running on systems that generate different response messages
+   */
+
+  DEBIAN_SYSTEM "To install rpm packages on Debian systems, use alien."
+
+  /**
+   * This error string implies the RPM database is missing.
+   * It could be a debian system; it could be something else
+   */
+  MISSING_DATABASE "cannot open Packages";
+
+  /**
+   * This is the string we look for to see if a file is unowned
+   */
+  IS_NOT_OWNED "is not owned by any package";
+
+
+}

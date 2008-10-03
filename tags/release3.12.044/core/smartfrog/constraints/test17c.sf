@@ -1,0 +1,26 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array {
+     sfArrayGenerator extends {
+         baz extends Constraint {
+            bar VAR "[0,1]";
+            index sfArrayIndex;
+            [sfConstraint] -- "(index==0 -> bar=0; bar=1)"; 
+         }
+     }
+  }  
+  
+  foo2 extends Aggregator {
+        sfAggregatorPath "foo1:sfArrayIndex";
+        foo3 extends forall {
+           sfAEOperator extends EQ;
+           sfAELeftArg 1;
+        }
+  }
+
+  foo4 extends Constraint {
+     result foo2:foo3;
+     [sfConstraint] -- "result==true";
+  }
+}
