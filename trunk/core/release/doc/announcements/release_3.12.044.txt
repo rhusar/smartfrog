@@ -131,6 +131,60 @@ The SmartFrog Team        http://smartfrog.org/
 Changes since last release
 ==========================
 
+** Bug
+    * [SFOS-849] - Cannot start http server in junit outside the IDE
+    * [SFOS-872] - Hudson fails during Ivy Tests
+    * [SFOS-881] - redistributable RPM file copies the artifacts into 
+       release/dist/rpm, so confusing signed and unsigned artifacts
+    * [SFOS-910] - the private RPMs .gz doesnt include the .gz that it needs
+    * [SFOS-922] - Merge constraints logic from core-branch-constraints branch
+    * [SFOS-928] - The fileList attribute of the Files component is a 
+      String, not a Vector as the documentation says
+    * [SFOS-929] - NPE in FilesImpl
+    * [SFOS-932] - SSH Bulk upload tests are failing
+    * [SFOS-956] - some subclasses of ChildMinder don't have a fully 
+      typed Enumeration<> on their sfChildren() method
+    * [SFOS-959] - make WaitForImpl easier to subclass
+    * [SFOS-980] - testharness failing in parse
+    * [SFOS-988] - security exception when starting RPM installation 
+      with security turned on
+
+
+** Improvement
+    * [SFOS-562] - provide better error messages when CONSTANT fails; 
+      add tests
+    * [SFOS-840] - add commons-logging.properties file (with a priority)
+      to automatically switch logging apps to SmartFrog logging
+    * [SFOS-933] - Improve fileset diagnostics
+    * [SFOS-936] - The AntWorkflowRun component doesn't report errors or
+      fail as it should
+    * [SFOS-937] - ListUtils tuple methods shoud use <?> as a type 
+      instead of <Object>
+    * [SFOS-965] - need to set timeout values for java.net.URL connections
+      in system properties.
+    * [SFOS-990] - in EvaluateConditionImpl, resolve the message only 
+      when about to fail
+
+** New Feature
+    * [SFOS-744] - Add component to deploy/terminate EC2 VMs
+    * [SFOS-852] - Write a redistributable build file to sign the JARs 
+      and create custom RPMs with these signed artifacts
+    * [SFOS-957] - add a PingTarget component
+    * [SFOS-963] - add a SecurityProperties component to set JVM 
+      security properties
+    * [SFOS-985] - Add an inline CSV/tuple source
+
+
+** Task
+    * [SFOS-977] - Move all classes with a dependency on eclipse jar to
+      their own package
+
+** Sub-task
+    * [SFOS-851] - write component to check disk space in java6+ JVM
+    * [SFOS-981] - move eclipse classes to their own package
+    * [SFOS-983] - Add tests that try and create solvers, triggering 
+      different failure modes
+
 
 
   
