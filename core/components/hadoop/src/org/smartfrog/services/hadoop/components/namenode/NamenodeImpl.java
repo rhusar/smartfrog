@@ -20,11 +20,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.namenode;
 
 import org.apache.hadoop.hdfs.server.namenode.ExtNameNode;
-import org.mortbay.util.MultiException;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
-import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;

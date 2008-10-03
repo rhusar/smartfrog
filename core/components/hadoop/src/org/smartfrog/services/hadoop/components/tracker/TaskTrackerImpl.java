@@ -22,14 +22,13 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.mapred.ExtTaskTracker;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -38,7 +37,7 @@ import java.rmi.RemoteException;
  * Created 23-May-2008 14:20:41
  */
 
-public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
+public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ServiceStateChangeHandler {
 
     private static final String NAME = "TaskTracker";
     public static final String ERROR_NO_START = "Failed to start the " + NAME;
@@ -68,7 +67,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         ManagedConfiguration configuration;
         configuration = createConfiguration();
         try {
-            ExtTaskTracker tracker = new ExtTaskTracker(configuration);
+            ExtTaskTracker tracker = new ExtTaskTracker(this, configuration);
             deployService(tracker, configuration);
         } catch (IOException e) {
             throw SFHadoopException.forward(ERROR_NO_START,
@@ -78,6 +77,10 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void onStateChange(Service service, Service.ServiceState oldState, Service.ServiceState newState) {
 
-
+    }
 }

@@ -19,10 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
-import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
@@ -33,9 +33,9 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
-import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 import java.rmi.RemoteException;

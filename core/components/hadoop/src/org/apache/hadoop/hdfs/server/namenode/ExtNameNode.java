@@ -24,6 +24,8 @@ package org.apache.hadoop.hdfs.server.namenode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -44,6 +46,7 @@ public class ExtNameNode extends NameNode {
     private final Reference completeName;
     private static final String NAME_NODE_HAS_HALTED = "Name node has halted";
     private int minWorkerCount;
+    private ServiceStateChangeNotifier notifier;
 
     /**
      * Create a new name node and deploy it.
@@ -91,6 +94,7 @@ public class ExtNameNode extends NameNode {
         expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
         completeName = owner.sfCompleteName();
         minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT,0);
+        notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
     /**
@@ -163,5 +167,10 @@ public class ExtNameNode extends NameNode {
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: NameNode is now "+ newState);
+        notifier.onStateChange(oldState, newState);
+    }
+
+    public void setNotifier(ServiceStateChangeNotifier notifier) {
+        this.notifier = notifier;
     }
 }

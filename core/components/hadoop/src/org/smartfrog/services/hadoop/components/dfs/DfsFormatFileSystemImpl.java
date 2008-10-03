@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;

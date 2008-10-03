@@ -19,23 +19,23 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.common;
 
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.apache.hadoop.io.IOUtils;
 import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.logging.LogFactory;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
