@@ -88,7 +88,7 @@ public class MkdirTest extends SmartFrogTestBase {
 
     public void testCleanOnStartup() throws Throwable {
         String dirname = System.getProperty("java.io.tmpdir")
-                + System.getProperty("file.separator") + "mkdirtest-directory-to-be-cleaned";
+                + System.getProperty("file.separator") + "directory-to-be-cleaned";
         File dir = new File(dirname);
 
         try {
@@ -114,6 +114,7 @@ public class MkdirTest extends SmartFrogTestBase {
                     + childFiles,
                     0, dir.listFiles().length);
         } finally {
+            FileSystem.recursiveDelete(dir);
             assertFalse("Should be able to clean up after test. Directory remaining: " + dir,
                     dir.exists());
         }
