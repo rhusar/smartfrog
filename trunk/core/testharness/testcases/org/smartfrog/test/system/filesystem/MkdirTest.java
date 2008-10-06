@@ -20,6 +20,7 @@
 package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.io.File;
 
@@ -27,7 +28,7 @@ import java.io.File;
  * created 21-Jun-2004 17:25:24
  */
 
-public class MkdirTest  extends SmartFrogTestBase {
+public class MkdirTest extends SmartFrogTestBase {
 
     private static final String FILES = TouchFileTest.FILES;
 
@@ -37,6 +38,7 @@ public class MkdirTest  extends SmartFrogTestBase {
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
 
@@ -50,15 +52,33 @@ public class MkdirTest  extends SmartFrogTestBase {
             file = new File(filename);
             //now verify we clean up
             assertIsDirectory(file, filename);
-            
         } finally {
             //cleanup
-            if (file!=null) {
-                file.delete();
-                assertFalse("Should be able to clean up after test. Directory remaining: " + file,
+            if (file != null && file.exists()) {
+                String childFiles = listChildFiles(file, "\n");
+                if (childFiles.length() > 0) {
+                    childFiles = "\nChild files: \n" + childFiles;
+                }
+                FileSystem.recursiveDelete(file);
+                assertFalse("Should be able to clean up after test. Directory remaining: " + file + childFiles,
                         file.exists());
             }
         }
+    }
+
+    private String listChildFiles(File dir, String separator) {
+        if (dir == null) {
+            return "";
+        }
+        if (!dir.isDirectory()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        for (File file : dir.listFiles()) {
+            result.append(file);
+            result.append(separator);
+        }
+        return result.toString();
     }
 
     private void assertIsDirectory(File file, String filename) {
@@ -86,10 +106,12 @@ public class MkdirTest  extends SmartFrogTestBase {
                     (FILES + "mkdirCleanOnStartup.sf", "mkdirCleanOnStartupTest");
 
             assertIsDirectory(dir, dirname);
-            assertEquals("The directory should be cleaned up and not contain anything",
+            String childFiles = listChildFiles(dir, "\n");
+            assertEquals("The directory " + dir + " should be cleaned up and not contain anything, but contains "
+                    + childFiles,
                     0, dir.listFiles().length);
         } finally {
-            dir.delete();
+            FileSystem.recursiveDelete(dir);
             assertFalse("Should be able to clean up after test. Directory remaining: " + dir,
                     dir.exists());
         }
