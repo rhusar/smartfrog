@@ -26,7 +26,6 @@ import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -40,13 +39,10 @@ import java.rmi.RemoteException;
  * Created 19-May-2008 13:55:33
  */
 
-public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ClusterManager,
-        ServiceStateChangeHandler {
+public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, ClusterManager {
 
     //private TrackerThread worker;
     private static final String NAME = "JobTracker";
-    public static final String ERROR_NO_START = "Failed to start the " + NAME;
-    private ExtJobTracker tracker;
 
     public JobTrackerImpl() throws RemoteException {
     }
@@ -62,8 +58,15 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
 
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Get the underlying job tracker
+     * @return the job tracker or null
+     */
+    public ExtJobTracker getJobTracker() {
+        return (ExtJobTracker) getService();
+    }
+
+    /**
+     * Start the service deployment in a new thread
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
@@ -71,24 +74,24 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        try {
 
-            //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
-            //to an empty string if it is not set
-            //see https://issues.apache.org/jira/browse/HADOOP-3438
-            if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
-                System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
-            }
-            ManagedConfiguration configuration = createConfiguration();
-            tracker = new ExtJobTracker(this, configuration);
-            deployService(tracker, configuration);
-            //now start the worker thread that offers the service
-/*            worker = new TrackerThread(tracker);
-            worker.start();*/
-        } catch (IOException e) {
-            throw new SmartFrogLifecycleException(ERROR_NO_START + e.getMessage(), e, this);
+        //to work around a bug, HADOOP-3438, we set the system property "hadoop.log.dir"
+        //to an empty string if it is not set
+        //see https://issues.apache.org/jira/browse/HADOOP-3438
+        if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
+            System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
+        }
+
+        createAndDeployService();
+    }
+
+    /** {@inheritDoc} */
+    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+        try {
+            Service service = new ExtJobTracker(this, configuration);
+            return service;
         } catch (InterruptedException e) {
-            throw new SmartFrogLifecycleException(ERROR_NO_START + e.getMessage(), e, this);
+            throw new SmartFrogLifecycleException(ERROR_NO_START + getName() + ": " + e, e, this);
         }
     }
 
@@ -137,7 +140,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * @throws RemoteException for network problems
      */
     public int getLiveWorkerCount() throws RemoteException {
-        return tracker.getNumResolvedTaskTrackers();
+        return getJobTracker().getNumResolvedTaskTrackers();
     }
 
     /**
@@ -166,11 +169,11 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
         super.onServiceDeploymentComplete();
         //check that the tracker is now bound to a filesystem
-        String dir = tracker.getSystemDir();
+        String dir = getJobTracker().getSystemDir();
         sfLog().info("System dir is " + dir);
-        tracker.getFilesystemName();
+        getJobTracker().getFilesystemName();
         try {
-            tracker.offerService();
+            getJobTracker().offerService();
         } catch (InterruptedException e) {
             //this is ok, it is time to terminate
             sfLog().ignore("tracker was interrupted",e);
@@ -221,10 +224,4 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void onStateChange(Service service, Service.ServiceState oldState, Service.ServiceState newState) {
-
-    }
 }

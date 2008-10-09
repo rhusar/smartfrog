@@ -23,9 +23,9 @@ package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
+import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.AbstractList;
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode {
+public class ExtDataNode extends DataNode implements ServiceInfo {
 
     private volatile boolean stopped;
     private ExtDataNodeThread worker;
@@ -59,7 +59,6 @@ public class ExtDataNode extends DataNode {
     @Override
     public void innerStart() throws IOException {
         super.innerStart();
-        //verifyServiceState(ServiceState.LIVE);
         register();
         startWorkerThread();
     }
@@ -68,9 +67,9 @@ public class ExtDataNode extends DataNode {
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
     @Override
-    public synchronized void innerTerminate() throws IOException {
+    public synchronized void innerClose() throws IOException {
         LOG.info("Terminating ExtDataNode");
-        super.innerTerminate();
+        super.innerClose();
 /*
         if (!isStopped()) {
             stopped();
@@ -98,6 +97,35 @@ public class ExtDataNode extends DataNode {
     }
 
     /**
+     * Get the port used for IPC communications
+     *
+     * @return the port number; not valid if the service is not LIVE
+     */
+    public int getIPCPort() {
+        return getSelfAddr().getPort();
+    }
+
+    /**
+     * Get the port used for HTTP communications
+     *
+     * @return the port number; not valid if the service is not LIVE
+     */
+    public int getWebPort() {
+        //return this.infoServer.getPort();
+        return ServiceInfo.PORT_UNDEFINED;
+    }
+
+    /**
+     * Get the current number of workers
+     *
+     * @return the worker count
+     */
+
+    public int getLiveWorkerCount() {
+        return 0;
+    }
+
+    /**
      * Override point - aethod called whenever there is a state change.
      *
      * The base class logs the event.
@@ -105,11 +133,11 @@ public class ExtDataNode extends DataNode {
      * @param oldState existing state
      * @param newState new state.
      */
-    @Override
+/*    @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: DataNode is now " + newState);
-    }
+    }*/
 
     /**
      * Override the normal run and note that we got stopped

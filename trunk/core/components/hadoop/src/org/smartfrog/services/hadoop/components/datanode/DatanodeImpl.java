@@ -20,11 +20,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.File;
@@ -56,24 +56,24 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        createAndDeployService();
+    }
+
+
+    /**
+     * Create the specific service
+     *
+     * @param configuration configuration to use
+     * @return the
+     * @throws IOException
+     * @throws SmartFrogException
+     */
+    @Override
+    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         //get the list of data directories
         Vector<String> dataDirs = createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
         //convert them to a list of files
         Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
-        //get the rest of the configuration
-        ManagedConfiguration conf = createConfiguration();
-        //create a data node from the configuration
-        ExtDataNode dataNode;
-        try {
-            dataNode = new ExtDataNode(this, conf, dataDirFiles);
-        } catch (IOException e) {
-            throw SFHadoopException.forward(ERROR_FAILED_TO_START_DATANODE,
-                    e,
-                    this,
-                    conf);
-        }
-        deployService(dataNode,conf);
+        return new ExtDataNode(this, configuration, dataDirFiles);
     }
-
-
 }

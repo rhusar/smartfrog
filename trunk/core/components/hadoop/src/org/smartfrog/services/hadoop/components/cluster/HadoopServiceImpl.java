@@ -22,11 +22,13 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
@@ -39,13 +41,36 @@ import java.util.List;
  */
 
 public abstract class HadoopServiceImpl extends HadoopComponentImpl
-        implements HadoopService {
+        implements HadoopService, ServiceStateChangeHandler {
 
     private Service service;
     private ServiceDeployerThread deployerThread;
     private static final int SHUTDOWN_DELAY = 1000;
+    public static final String NO_FILESYSTEM = "Filesystem is not running";
+    private boolean expectNodeTermination;
+    private volatile boolean terminationInitiated;
+    private Reference completeName;
+    private static final String SERVICE_HAS_HALTED = "Service has halted";
+    public static final String ERROR_NO_START = "Failed to start the ";
+
 
     protected HadoopServiceImpl() throws RemoteException {
+    }
+
+
+    /**
+     * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
+     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
+     * Attributees that require injection are handled during sfDeploy().
+     *
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    @Override
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        expectNodeTermination = true; //conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
+        completeName = sfCompleteName();
     }
 
     /**
@@ -56,6 +81,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        terminationInitiated = true;
         terminateHadoopService();
         terminateDeployerThread();
     }
@@ -135,6 +161,26 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
+     * When the namenode is terminated, and we are not shutting down ourself, then we notify
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStateChange(Service service, Service.ServiceState oldState,
+                              Service.ServiceState newState) {
+        if (newState == Service.ServiceState.TERMINATED && !terminationInitiated) {
+            TerminationRecord tr;
+            if (expectNodeTermination) {
+                tr = TerminationRecord.normal(SERVICE_HAS_HALTED, completeName);
+            } else {
+                tr = TerminationRecord.abnormal(SERVICE_HAS_HALTED, completeName);
+            }
+            ComponentHelper helper = new ComponentHelper(this);
+            helper.targetForWorkflowTermination(
+                    tr);
+        }
+    }
+
+    /**
      * Ping the hadoop service.
      *
      * @throws SmartFrogLivenessException on a ping failure, or a null service and non-null services are forbidden
@@ -185,8 +231,12 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     protected synchronized void terminateHadoopService() {
         if (service != null) {
-            sfLog().debug("Terminating hadoop service");
-            Service.terminate(service);
+            sfLog().debug("Terminating hadoop service " + service.getServiceName());
+            try {
+                service.close();
+            } catch (IOException e) {
+                sfLog().warn("When closing the service : "+ e, e);
+            }
             service = null;
         }
     }
@@ -271,7 +321,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param hadoopService the service
      * @throws SmartFrogDeploymentException if a service is already deployed 
      */
-    private synchronized void setServiceOnce(Service hadoopService) throws SmartFrogDeploymentException {
+    private synchronized void bindToService(Service hadoopService) throws SmartFrogDeploymentException {
         if (service != null) {
             throw new SmartFrogDeploymentException("Cannot bind to a new service (" + hadoopService + ")"
                     + " when an existing service is in use: "
@@ -289,24 +339,18 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     private void innerDeploy(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         try {
-            setServiceOnce(hadoopService);
-            //hadoopService.init();
+            bindToService(hadoopService);
+            //start the service
             hadoopService.start();
             onServiceDeploymentComplete();
-        } catch (IOException e) {
-            //mark as failed
-            //we assume that the service really does know how to terminate
-            hadoopService.terminate();
-            throw SFHadoopException.forward("Failed to deploy " + hadoopService,
-                    e,
-                    this,
-                    conf);
         } catch (SmartFrogException e) {
-            hadoopService.terminate();
+            sfLog().warn("Unable to deploy " + hadoopService, e);
+            terminateHadoopService();
             throw e;
         } catch (Throwable e) {
+            sfLog().warn("Unable to deploy " + hadoopService, e);
+            terminateHadoopService();
             //convert illegal argument exceptions
-            hadoopService.terminate();
             throw SFHadoopException.forward("Failed to deploy " + hadoopService,
                     e,
                     this,
@@ -321,9 +365,44 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws SmartFrogException smartfrog problems
      */
     protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
-        sfLog().info(getName() + " deployment complete: service is now " +getService().getServiceState());
+        Service s = getService();
+        if(s !=null) {
+            sfLog().info(getName() + " deployment complete: service is now " + s.getServiceState());
+        } else {
+            sfLog().warn(getName() + " deployment complete: but service==null");
+        }
     }
 
+    /**
+     * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)}
+     * to create the service, then {@link #deployService(Service, ManagedConfiguration)}.
+     * @throws SmartFrogException wrapping any other exception thrown
+     */
+    protected void createAndDeployService() throws SmartFrogException {
+        ManagedConfiguration configuration;
+        configuration = createConfiguration();
+        try {
+            Service service = createTheService(configuration);
+            deployService(service, configuration);
+        } catch (Throwable thrown) {
+            throw SFHadoopException.forward(ERROR_NO_START + getName(),
+                    thrown,
+                    this,
+                    configuration);
+        }
+    }
+
+    /**
+     * Create the specific service
+     *
+     * @param configuration configuration to use
+     * @return the
+     * @throws IOException
+     * @throws SmartFrogException
+     */
+    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+        return null;
+    }
     /**
      * This is the thread that starts the deployment
      */

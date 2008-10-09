@@ -398,7 +398,7 @@ MapReduceTestSequence extends Sequence {
 
     sleep extends Delay {
     //cleanup delay
-      time 10000;
+      time 1000;
     }
 
   }
