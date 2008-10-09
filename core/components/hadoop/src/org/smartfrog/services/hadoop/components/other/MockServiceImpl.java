@@ -17,11 +17,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.components.other;
 
-
-package org.smartfrog.services.hadoop.components.tracker;
-
-import org.apache.hadoop.mapred.ExtTaskTracker;
+import org.apache.hadoop.util.MockService;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
@@ -32,15 +30,18 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- * Created 23-May-2008 14:20:41
+ * Created 09-Oct-2008 16:54:36
  */
 
-public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster {
+public class MockServiceImpl extends HadoopServiceImpl implements HadoopCluster {
 
-    private static final String NAME = "TaskTracker";
+    public static final String ATTR_FAIL_ON_START = "failOnStart";
+    public static final String ATTR_FAIL_ON_PING = "failOnPing";
+    public static final String ATTR_FAIL_ON_CLOSE = "failOnClose";
 
-    public TaskTrackerImpl() throws RemoteException {
+    public MockServiceImpl() throws RemoteException {
     }
+
 
     /**
      * {@inheritDoc}
@@ -49,25 +50,44 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
      */
     @Override
     protected String getName() {
-        return NAME;
+        return "MockService";
+    }
+
+
+    /**
+     * Get the underlying job tracker
+     *
+     * @return the job tracker or null
+     */
+    public MockService getMockService() {
+        return (MockService) getService();
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
+     * Create the specific service
+     *
+     * @param configuration configuration to use
+     * @return the
+     * @throws IOException
+     * @throws SmartFrogException
+     */
+    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+        MockService service = new MockService();
+        service.setFailOnStart(configuration.getBoolean(ATTR_FAIL_ON_START,false));
+        service.setFailOnPing(configuration.getBoolean(ATTR_FAIL_ON_PING, false));
+        service.setFailOnClose(configuration.getBoolean(ATTR_FAIL_ON_CLOSE, false));
+        return service;
+    }
+
+    /**
+     * Start the service deployment in a new thread
      *
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         createAndDeployService();
     }
-
-    /** {@inheritDoc} */
-    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
-        ExtTaskTracker tracker = new ExtTaskTracker(this, configuration);
-        return tracker;
-    }
-
 }

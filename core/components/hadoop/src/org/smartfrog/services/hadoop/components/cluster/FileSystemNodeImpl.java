@@ -30,7 +30,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 /**
- * This is a base class for any component that is bounded to the filesystem throu
+ * This is a base class for any component that is bonded to a Hadoop filesystem
  */
 public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemNode {
 

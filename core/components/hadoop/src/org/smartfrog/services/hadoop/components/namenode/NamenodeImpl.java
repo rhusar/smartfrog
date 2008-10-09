@@ -20,12 +20,12 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.namenode;
 
 import org.apache.hadoop.hdfs.server.namenode.ExtNameNode;
+import org.apache.hadoop.util.Service;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.File;
@@ -40,7 +40,6 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         FileSystemNode, ClusterManager {
     private static final String NAME = "NameNode";
     public static final String ERROR_NO_START = "Failed to start "+ NAME;
-    private ExtNameNode nameNode;
 
 
     public NamenodeImpl() throws RemoteException {
@@ -54,6 +53,14 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
     @Override
     protected String getName() {
         return NAME;
+    }
+
+    /**
+     * Get at the underlying name node
+     * @return the name node; may be null
+     */
+    public ExtNameNode getNameNode() {
+        return (ExtNameNode) getService();
     }
 
     /**
@@ -72,21 +79,14 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
                 ATTR_LOG_DIR, null, null, true, null);
         logDir.mkdirs();
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
-        ManagedConfiguration conf = createConfiguration();
-        try {
-            nameNode = ExtNameNode.create(this, conf);
-        } catch (IOException e) {
-            throw SFHadoopException.forward(ERROR_NO_START,
-                    e,
-                    this,
-                    conf);
-        } catch (IllegalArgumentException e) {
-            throw SFHadoopException.forward(ERROR_NO_START,
-                    e,
-                    this,
-                    conf);
-        }
-        deployService(nameNode, conf);
+        createAndDeployService();
+    }
+
+
+    /** {@inheritDoc} */
+    protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
+        ExtNameNode nameNode = ExtNameNode.create(this, configuration);
+        return nameNode;
     }
 
     /**
@@ -99,6 +99,6 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         if (!isServiceLive()) {
             return 0;
         }
-        return nameNode.getLiveWorkerCount();
+        return getNameNode().getLiveWorkerCount();
     }
 }

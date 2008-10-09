@@ -53,6 +53,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Properties;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information
@@ -62,10 +63,10 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
 
     private Prim source;
     private ComponentHelper helper;
+    private SortedMap<String, String> attributeMap = null;
 
     /**
-     * Some attributes that are not listed in the component
-     * (so they can be picked up from parents) but which should be
+     * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
      * discovered.
      */
     private static final String[] REQUIRED_ATTRIBUTES = {
@@ -104,6 +105,46 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
         helper = new ComponentHelper(src);
     }
 
+
+    /**
+     * Override something to build the properties array
+     */
+    @Override
+    protected synchronized Properties getProps() {
+        buildAttributeMapQuietly();
+        Properties props = new Properties();
+        for (String key : attributeMap.keySet()) {
+            String value = attributeMap.get(key);
+            props.put(key, value);
+        }
+        return props;
+    }
+
+    /**
+     * Build the attribute map from the current set of attributes; turn all exceptions into a runtime exception
+     *
+     * @throws SFHadoopRuntimeException on any resolution/remoting problem
+     */
+    private void buildAttributeMapQuietly() {
+        if (attributeMap == null) {
+            try {
+                attributeMap = getState();
+            } catch (RemoteException e) {
+                throw new SFHadoopRuntimeException(e);
+            } catch (SmartFrogResolutionException e) {
+                throw new SFHadoopRuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public synchronized void reloadConfiguration() {
+        super.reloadConfiguration();
+        attributeMap = null;
+    }
 
     /**
      * A new configuration with the same settings cloned from another.
@@ -168,7 +209,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
             if (result == null || result instanceof SFNull) {
                 return defaultValue;
             }
- /*           if (result instanceof Reference) {
+            /*           if (result instanceof Reference) {
                 result = source.sfResolve(name, true);
             }*/
             return result.toString();
@@ -260,7 +301,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws SFHadoopRuntimeException if things go wrong
      */
     @Override
-    public void write(OutputStream out) throws IOException {
+    public void writeXml(OutputStream out) throws IOException {
         try {
             Map<String, String> map = getState();
             writeState(map, out);
@@ -310,7 +351,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @return an iterator over the entries.
      * @throws SFHadoopRuntimeException for resolution problems
      */
-    @Override
+/*    @Override
     public Iterator<Map.Entry<String, String>> iterator() {
         try {
             Map<String, String> map = getState();
@@ -320,7 +361,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
         } catch (SmartFrogResolutionException e) {
             throw new SFHadoopRuntimeException(e);
         }
-    }
+    }*/
 
     /**
      * Write the current state to a file
@@ -410,19 +451,20 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Bind to a network address; something like  "0.0.0.0:50030" is expected.
-     * @param addressName the property for the address
+     *
+     * @param addressName     the property for the address
      * @param bindAddressName old style hostname
      * @param bindAddressPort old style host port
      * @return the host/port binding
      * @throws IllegalArgumentException if the arguments are bad
      */
-  public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {
-      String infoAddr =
-              NetUtils.getServerAddress(this,
-                      bindAddressName,
-                      bindAddressPort,
-                      addressName);
-      InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
-      return socketAddress;
+    public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {
+        String infoAddr =
+                NetUtils.getServerAddress(this,
+                        bindAddressName,
+                        bindAddressPort,
+                        addressName);
+        InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
+        return socketAddress;
   }
 }
