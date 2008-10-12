@@ -70,12 +70,18 @@ Components {
   Composite:Composite;
   Composite-desc:Adds a Composite to the model;
   Composite-image:resources/icons/Composite_s.gif;
+  DependencyModel:DependencyModel;
+  DependencyModel-desc:Adds a DependencyModel to the model;
+  DependencyModel-image:resources/icons/DependencyModel_s.gif;
   Attribute:Attribute;
   Attribute-desc:Adds a Attribute to the model;
   Attribute-image:resources/icons/Attribute_s.gif;
   And:And;
   And-desc:Adds a And to the model;
   And-image:resources/icons/And_s.gif;
+  Connectors:Connectors;
+  Connectors-desc:Adds a Connectors to the model;
+  Connectors-image:resources/icons/Connectors_s.gif;
   Or:Or;
   Or-desc:Adds a Or to the model;
   Or-image:resources/icons/Or_s.gif;
@@ -85,4 +91,34 @@ Components {
   Nand:Nand;
   Nand-desc:Adds a Nand to the model;
   Nand-image:resources/icons/Nand_s.gif;
+  
 }
+
+Predicate Composer {
+  modelid:{http://www.smartfrog.org/sfml};
+  UnaryOperator:UnaryOperator;
+  UnaryOperator-desc:Adds a UnaryOperator to the model;
+  UnaryOperator-image:resources/icons/UnaryOperator_s.gif;
+  PredicateResult:PredicateResult;
+  PredicateResult-desc:Adds a PredicateResult to the model;
+  PredicateResult-image:resources/icons/PredicateResult_s.gif;
+  NOT:NOT;
+  NOT-desc:Adds a NOT to the model;
+  NOT-image:resources/icons/NOT_s.gif;
+  BinaryOperator:BinaryOperator;
+  BinaryOperator-desc:Adds a BinaryOperator to the model;
+  BinaryOperator-image:resources/icons/BinaryOperator_s.gif;
+  Plus:Plus;
+  Plus-desc:Adds a Plus to the model;
+  Plus-image:resources/icons/Plus_s.gif;
+  Minus:Minus;
+  Minus-desc:Adds a Minus to the model;
+  Minus-image:resources/icons/Minus_s.gif;
+  Multiplication:Multiplication;
+  Multiplication-desc:Adds a Multiplication to the model;
+  Multiplication-image:resources/icons/Multiplication_s.gif;
+  Division:Division;
+  Division-desc:Adds a Division to the model;
+  Division-image:resources/icons/Division_s.gif;
+  
+  }
