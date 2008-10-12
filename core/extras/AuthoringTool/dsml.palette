@@ -102,9 +102,9 @@ Predicate Composer {
   PredicateResult:PredicateResult;
   PredicateResult-desc:Adds a PredicateResult to the model;
   PredicateResult-image:resources/icons/PredicateResult_s.gif;
-  NOT:NOT;
-  NOT-desc:Adds a NOT to the model;
-  NOT-image:resources/icons/NOT_s.gif;
+  Not:Not;
+  Not-desc:Adds a Not to the model;
+  Not-image:resources/icons/Not_s.gif;
   BinaryOperator:BinaryOperator;
   BinaryOperator-desc:Adds a BinaryOperator to the model;
   BinaryOperator-image:resources/icons/BinaryOperator_s.gif;
