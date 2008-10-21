@@ -24,12 +24,9 @@ package org.apache.hadoop.hdfs.server.namenode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
 

@@ -49,6 +49,7 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();

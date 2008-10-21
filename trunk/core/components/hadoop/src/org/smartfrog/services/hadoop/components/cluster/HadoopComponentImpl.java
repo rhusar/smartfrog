@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -58,7 +59,7 @@ public class HadoopComponentImpl extends PrimImpl {
      * @return the new configuration
      */
     public ManagedConfiguration createConfiguration() {
-        return new ManagedConfiguration(this);
+        return createConfiguration(this);
     }
 
     /**
@@ -142,5 +143,39 @@ public class HadoopComponentImpl extends PrimImpl {
                                                           String replaceAttribute)
             throws RemoteException, SmartFrogException {
         return createDirectoryListAttribute(this, sourceRef, replaceAttribute);
+    }
+
+    /**
+     * Resolve an attribute that names the address attribute to use
+     * @param configuration
+     * @param addressAttr
+     * @return
+     * @throws SmartFrogResolutionException for resolution problems
+     * @throws RemoteException network problems
+     */
+    protected InetSocketAddress resolveAddressIndirectly(ManagedConfiguration configuration, String addressAttr)
+            throws SmartFrogResolutionException, RemoteException {
+        String addressAttribute = sfResolve(addressAttr, "", true);
+        if (addressAttr == null) {
+            throw new SmartFrogResolutionException("Null attribute " + addressAttr);
+        }
+
+        return resolveAddress(configuration, addressAttribute);
+    }
+
+    /**
+     * Given an a conf and an attribute, resolve it and build the address
+     * @param configuration configuration
+     * @param addressAttribute attribute to look up
+     * @return a bound address
+     * @throws SmartFrogResolutionException for resolution problems
+     * @throws RemoteException network problems
+     */
+    protected InetSocketAddress resolveAddress(ManagedConfiguration configuration, String addressAttribute)
+            throws SmartFrogResolutionException, RemoteException {
+        InetSocketAddress socketAddress = configuration.bindToNetwork(addressAttribute,
+                "stubOldAddressNameShouldNotResolve",
+                "stubOldAddressPortShouldNotResolve");
+        return socketAddress;
     }
 }

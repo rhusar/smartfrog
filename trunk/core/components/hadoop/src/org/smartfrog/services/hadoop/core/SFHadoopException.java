@@ -113,10 +113,10 @@ public class SFHadoopException extends SmartFrogException {
      */
     public SFHadoopException(Service.ServiceStatus status, Prim owner) {
       super(status.toString(), owner);
-      List<Throwable> causes = status.getThrowables();
-      if(!causes.isEmpty()) {
-          initCause(causes.get(0));
-      }
+        List<Throwable> causes = status.getThrowables();
+        if (!causes.isEmpty()) {
+            initCause(causes.get(0));
+        }
     }
 
     /**

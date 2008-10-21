@@ -29,11 +29,15 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created 19-May-2008 13:55:33
@@ -85,6 +89,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         createAndDeployService();
     }
 
+
     /** {@inheritDoc} */
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         try {
@@ -93,6 +98,26 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         } catch (InterruptedException e) {
             throw new SmartFrogLifecycleException(ERROR_NO_START + getName() + ": " + e, e, this);
         }
+    }
+
+    /**
+     * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
+     * cached.
+     *
+     * @param conf the configuration to use
+     * @return null or a list of ports
+     */
+    @Override
+    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+            throws SmartFrogResolutionException, RemoteException {
+        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
+        //add the job tracker IPC port if it is not set to "local"
+        String mrJobTracker = conf.get(ConfigurationAttributes.MAPRED_JOB_TRACKER);
+        if(!ConfigurationAttributes.MAPRED_JOB_TRACKER_LOCAL.equals(mrJobTracker)) {
+            ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER));
+        }
+        ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER_HTTP_ADDRESS));
+        return ports;
     }
 
     /**
@@ -176,7 +201,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             getJobTracker().offerService();
         } catch (InterruptedException e) {
             //this is ok, it is time to terminate
-            sfLog().ignore("tracker was interrupted",e);
+            sfLog().ignore("Job tracker was interrupted",e);
         }
     }
 

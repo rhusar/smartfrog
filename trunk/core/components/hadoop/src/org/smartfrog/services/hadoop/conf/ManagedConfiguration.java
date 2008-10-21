@@ -51,9 +51,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Properties;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information
@@ -458,12 +458,16 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @return the host/port binding
      * @throws IllegalArgumentException if the arguments are bad
      */
-    public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort) {
+    public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort)
+            throws SmartFrogResolutionException {
         String infoAddr =
                 NetUtils.getServerAddress(this,
                         bindAddressName,
                         bindAddressPort,
                         addressName);
+        if(infoAddr == null) {
+            throw new SmartFrogResolutionException("Failed to resolve "+addressName);
+        }
         InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
         return socketAddress;
   }

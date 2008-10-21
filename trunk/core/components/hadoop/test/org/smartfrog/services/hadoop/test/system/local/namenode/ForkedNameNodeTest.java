@@ -19,31 +19,21 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.datanode;
-
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+package org.smartfrog.services.hadoop.test.system.local.namenode;
 
 /**
  *
  */
-public class FileSystemOperationsTest extends HadoopTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
+public class ForkedNameNodeTest extends HadoopTestBase {
+    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
 
-    public FileSystemOperationsTest(String name) {
+    public ForkedNameNodeTest(String name) {
         super(name);
+    }
+
+    public void testNameNodeForked() throws Throwable {
         enablePortCheck();
-    }
-
-    public void testClusterShutDownCleanly() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-    }
-    
-    public void testFileSystemOperations() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemOperations");
-    }
-
-    public void testClusterShutDownCleanly2() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeForked");
     }
 
 }

@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
  * and other aspects of cluster failure. It is very much a test component
  */
  
-MockService extends ClusterNode
+MockService extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.other.MockServiceImpl";
   failOnStart false;
   failOnPing false;

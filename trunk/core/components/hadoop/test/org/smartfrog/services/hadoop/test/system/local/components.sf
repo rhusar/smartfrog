@@ -22,6 +22,9 @@
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 
 DUMP_CONF false;
+NameNodeIpcPort "8020";
+NameNodeHttpPort "8021";
+DataNodeHttpsPort "0";
 
 LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
@@ -58,9 +61,11 @@ LightweightDataNode extends DataNode {
 }
 
 LocalHadoopCompound extends Compound {
-  fs.default.name "hdfs://localhost:8020/";
-  nameNodeURL     "http://localhost:8021";
-  dataNodeURL     "http://localhost:0";
+  //ordered startup/shutdown of child components
+  sfSyncTerminate true;
+  fs.default.name  ("hdfs://localhost:" ++ NameNodeIpcPort ++ "/");
+  nameNodeURL      ("http://localhost:" ++ NameNodeHttpPort ++ "/");
+  dataNodeURL      ("http://localhost:" ++ DataNodeHttpsPort ++ "/");
 
   logDir extends TempDirWithCleanup {
 
@@ -83,8 +88,11 @@ LocalNameNodeCompound extends LocalHadoopCompound {
 
   namenode extends LightweightNameNode {
     fs.default.name PARENT:fs.default.name;
-    dataDirectories [LAZY dataDir];
-    nameDirectories [LAZY nameDir];
+    dataDir LAZY PARENT:dataDir;
+    dataDirectories [dataDir];
+    //dataDirectories [LAZY PARENT:dataDir];
+    nameDir LAZY PARENT:nameDir;
+    nameDirectories [nameDir];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup ACTION_FORMAT;
     dfs.http.address nameNodeURL;
@@ -120,7 +128,7 @@ TwoDataNodeCluster extends LocalDataNodeCompound {
 
   datanode2 extends datanode {
     dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.address "https://localhost:0";
+    dfs.datanode.https.address localhost_any;
   }
 }
 
@@ -133,12 +141,17 @@ LocalFileSystemCompound extends LocalDataNodeCompound {
 }
 
 
+
+
+
 LocalJobTrackerCompound extends LocalHadoopCompound {
   description "A job tracker";
 
   jobTracker extends LightweightJobTracker {
-    dataDirectories [LAZY dataDir];
-    nameDirectories [LAZY nameDir];
+    dataDir LAZY PARENT:dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:nameDir;
+    nameDirectories [nameDir];
     logDir LAZY PARENT:logDir;
   }
 }
@@ -159,8 +172,10 @@ LocalClusterCompound extends LocalDataNodeCompound {
   description "a full cluster";
 
   jobTracker extends LightweightJobTracker {
-    dataDirectories [LAZY dataDir];
-    nameDirectories [LAZY nameDir];
+    dataDir LAZY PARENT:dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:nameDir;
+    nameDirectories [nameDir];
     logDir LAZY PARENT:logDir;
   }
 
@@ -226,7 +241,7 @@ WaitForWorkersLive extends WaitForHadoopLive  {
 WaitForPortFree extends FailingWaitFor {
   interval CLUSTER_POLL_INTERVAL;
   timeout CLUSTER_SHUTDOWN_TIMEOUT;
-  port "8020";
+  port NameNodeIpcPort;
   address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
   condition extends Not {
     condition extends CheckPortCondition {
@@ -235,7 +250,44 @@ WaitForPortFree extends FailingWaitFor {
   }
 }
 
+AssertLocalPortClosed extends CheckPortCondition {
+  sfShouldTerminate true;
+  port TBD;
+  checkPortOpen false;
+  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
+}
 
+AssertNameNodeIPCClosed extends AssertLocalPortClosed {
+  port NameNodeIpcPort;
+}
+
+AssertNameNodeHttpClosed extends AssertLocalPortClosed {
+  port NameNodeHttpPort;
+}
+
+
+
+/**
+Test sequence that checks that when a namenode is shut down, it goes away
+*/
+NamenodeShutdownSequence extends Sequence {
+  namenode TBD;
+
+  namenodeLive extends CheckNameNodePort {
+    cluster LAZY PARENT:namenode;
+  }
+
+
+  //detach and terminate
+  terminateNameNode extends Terminator {
+    kill LAZY PARENT:namenode;
+    detachFirst true;
+  }
+
+  //now assert that it is dead
+  assertIPCClosed extends AssertNameNodeIPCClosed;
+  assertHttpClosed extends AssertNameNodeHttpClosed;
+}
 
 /**
  * A sequence of operations on a cluster */

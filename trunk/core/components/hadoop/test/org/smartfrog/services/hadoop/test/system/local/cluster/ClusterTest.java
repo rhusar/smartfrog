@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.test.system.local.cluster;
 
-import org.smartfrog.test.DeployingTestBase;
+import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.smartfrog.test.DeployingTestBase;
  *
  */
 
-public class ClusterTest extends DeployingTestBase  {
+public class ClusterTest extends HadoopTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/cluster/";
 
     public ClusterTest(String name) {
@@ -35,7 +35,9 @@ public class ClusterTest extends DeployingTestBase  {
     }
 
     public void testLocalCluster() throws Throwable {
+        enablePortCheck();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalCluster");
+        enableFailOnPortCheck();
     }
 
 }

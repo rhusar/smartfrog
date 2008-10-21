@@ -25,12 +25,17 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created 06-May-2008 16:31:49
@@ -82,8 +87,24 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         createAndDeployService();
     }
 
+    /**
+     * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
+     * cached.
+     *
+     * @param conf the configuration to use
+     * @return null or a list of ports
+     */
+    @Override
+    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+            throws SmartFrogResolutionException, RemoteException {
+        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
+        ports.add(resolveAddress(conf, ConfigurationAttributes.FS_DEFAULT_NAME));
+        ports.add(resolveAddress(conf, ConfigurationAttributes.DFS_HTTP_ADDRESS));
+        return ports;
+    }
 
     /** {@inheritDoc} */
+    @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         ExtNameNode nameNode = ExtNameNode.create(this, configuration);
         return nameNode;
@@ -95,6 +116,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      * @return 0 if not live, or the count of active workers
      * @throws RemoteException for network problems
      */
+    @Override
     public int getLiveWorkerCount() throws RemoteException {
         if (!isServiceLive()) {
             return 0;

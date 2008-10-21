@@ -25,11 +25,16 @@ import org.apache.hadoop.mapred.ExtTaskTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created 23-May-2008 14:20:41
@@ -69,5 +74,21 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         ExtTaskTracker tracker = new ExtTaskTracker(this, configuration);
         return tracker;
     }
+
+    /**
+     * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
+     * cached.
+     *
+     * @param conf the configuration to use
+     * @return null or a list of ports
+     */
+    @Override
+    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+            throws SmartFrogResolutionException, RemoteException {
+        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
+        ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_TASK_TRACKER_HTTP_ADDRESS));
+        return ports;
+    }
+
 
 }

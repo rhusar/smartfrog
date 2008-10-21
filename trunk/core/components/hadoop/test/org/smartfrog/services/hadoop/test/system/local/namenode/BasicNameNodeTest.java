@@ -19,31 +19,38 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.datanode;
+package org.smartfrog.services.hadoop.test.system.local.namenode;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
  *
  */
-public class FileSystemOperationsTest extends HadoopTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
+public class BasicNameNodeTest extends HadoopTestBase {
+    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
 
-    public FileSystemOperationsTest(String name) {
+    public BasicNameNodeTest(String name) {
         super(name);
+    }
+
+    /**
+     * Sets up the fixture,by extracting the hostname and classes dir
+     */
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        enableFailOnPortCheck();
+    }
+
+    public void testNoNameNode() {
         enablePortCheck();
     }
-
-    public void testClusterShutDownCleanly() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
-    }
     
-    public void testFileSystemOperations() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testFileSystemOperations");
+    public void testLocalNameNodeCompoundTerminates() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalNameNodeCompoundTerminates");
     }
 
-    public void testClusterShutDownCleanly2() throws Throwable {
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+    public void testLocalNameNodeCompoundIsOffline() {
+        enablePortCheck();
     }
 
 }

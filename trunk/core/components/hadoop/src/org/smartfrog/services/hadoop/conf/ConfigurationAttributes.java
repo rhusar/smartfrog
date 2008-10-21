@@ -157,6 +157,16 @@ public interface ConfigurationAttributes {
      * the job tracker URL
      */
     String MAPRED_JOB_TRACKER = "mapred.job.tracker";
+    /**
+     * the string that means the job tracker is local
+     */
+    String MAPRED_JOB_TRACKER_LOCAL = "local";
+
+    /**
+     * The job tracker HTTP URL
+     */
+    String MAPRED_JOB_TRACKER_HTTP_ADDRESS = "mapred.job.tracker.http.address";
+
 
     /**
      * the maximum no. of failures of a given job per tasktracker. If the no. of task failures exceeds
@@ -180,6 +190,8 @@ public interface ConfigurationAttributes {
      */
     String MAPRED_TASK_PROFILE = "mapred.task.profile";
 
+
+    String MAPRED_TASK_TRACKER_HTTP_ADDRESS = "mapred.task.tracker.http.address";
 
     /**
      * debug Script for the mapred job for failed map tasks.
@@ -206,5 +218,7 @@ public interface ConfigurationAttributes {
     String DFS_DATA_DIR = "dfs.data.dir";
     String DFS_NAME_DIR = "dfs.name.dir";
     String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
+    String DFS_HTTP_ADDRESS = "dfs.http.address";
     String HADOOP_LOG_DIR = "hadoop.log.dir";
+    String DFS_DATANODE_HTTPS_ADDRESS = "dfs.datanode.https.address";
 }
