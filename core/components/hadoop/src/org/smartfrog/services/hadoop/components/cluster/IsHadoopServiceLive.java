@@ -34,7 +34,7 @@ import java.rmi.RemoteException;
 
 public class IsHadoopServiceLive extends PrimImpl implements Condition {
 
-    public static final String ATTR_SERVICE="service";
+    public static final String ATTR_SERVICE = "service";
 
     private HadoopService service;
 
@@ -58,6 +58,7 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         return service.isServiceLive();
     }

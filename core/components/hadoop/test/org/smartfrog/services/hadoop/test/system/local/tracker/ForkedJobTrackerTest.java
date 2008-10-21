@@ -27,15 +27,15 @@ import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
  *
  */
 
-public class JobTrackerTest extends HadoopTestBase {
+public class ForkedJobTrackerTest extends HadoopTestBase {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
-    public JobTrackerTest(String name) {
+    public ForkedJobTrackerTest(String name) {
         super(name);
     }
 
-    public void testLocalJobTracker() throws Throwable {
+    public void testLocalJobTrackerForked() throws Throwable {
         enablePortCheck();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTrackerForked");
     }
 }

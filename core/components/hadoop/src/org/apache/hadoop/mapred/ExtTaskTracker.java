@@ -21,9 +21,9 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
+import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 
 import java.io.IOException;
 

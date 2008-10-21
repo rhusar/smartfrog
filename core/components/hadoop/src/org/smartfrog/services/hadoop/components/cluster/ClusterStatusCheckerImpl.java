@@ -78,6 +78,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         jobTracker = SubmitterImpl.resolveJobTracker(this, new Reference(MAPRED_JOB_TRACKER));
@@ -129,6 +130,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (checkOnLiveness) {
@@ -215,6 +217,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
+    @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         try {
             checkClusterStatus();

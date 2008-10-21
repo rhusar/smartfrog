@@ -21,9 +21,6 @@
 
 #include "/org/smartfrog/services/hadoop/test/system/local/components.sf"
 
-
-
-
 /**
  * Test the local name node
  */
@@ -41,18 +38,45 @@ testLocalNameNodeCompound extends ExpectDeploy {
 
 }
 
+
+/**
+ * Test the local name node
+ */
+testLocalNameNodeCompoundTerminates extends ExpectDeploy {
+  action extends LocalNameNodeCompound {
+  }
+
+  Notests extends NamenodeShutdownSequence {
+     namenode PARENT:action:cluster;
+  }
+
+  tests extends Sequence {
+
+    namenode LAZY PARENT:action:namenode;
+
+    namenodeLive extends CheckNameNodePort {
+      cluster LAZY PARENT:namenode;
+    }
+
+
+    //detach and terminate
+    terminateNameNode extends Terminator {
+      kill LAZY PARENT:namenode;
+      detachFirst true;
+    }
+
+    //now assert that it is dead
+    assertIPCClosed extends AssertNameNodeIPCClosed;
+    assertHttpClosed extends AssertNameNodeHttpClosed;
+  }
+
+
+}
+
 testNameNodeForked extends testLocalNameNodeCompound {
   action:sfProcessName "testNameNodeForkedProcess";
 }
 
-
-
-/**
- * Format is a workflow so the test should terminate things
- */
-testLocalFormat extends ExpectTerminate {
-  action LocalFormat;
-}
 
 
 /**

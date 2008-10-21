@@ -19,22 +19,10 @@
  */
 
 
-package org.smartfrog.services.hadoop.test.system.local.namenode;
+#include "/org/smartfrog/services/hadoop/test/system/local/namenode/components.sf"
+
 
 /**
- *
+ * Test the local name node
  */
-public class NameNodeTest extends HadoopTestBase {
-    public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
-
-    public NameNodeTest(String name) {
-        super(name);
-    }
-
-    public void testNameNodeHasNoWorkers() throws Throwable {
-        enablePortCheck();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeHasNoWorkers");
-    }
-
-
-}
+sfConfig testLocalNameNodeCompoundTerminates ;

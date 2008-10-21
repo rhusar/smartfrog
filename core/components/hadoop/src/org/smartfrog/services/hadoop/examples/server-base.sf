@@ -17,25 +17,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-package org.smartfrog.services.hadoop.test.system.local.tracker;
+#include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+#include "/org/smartfrog/services/logging/jcl/components.sf"
 
-/**
- *
- * Created 20-May-2008 17:35:13
- *
- */
-
-public class JobTrackerTest extends HadoopTestBase {
-    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
-
-    public JobTrackerTest(String name) {
-        super(name);
-    }
-
-    public void testLocalJobTracker() throws Throwable {
-        enablePortCheck();
-        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTracker");
-    }
+sfConfig extends Compound {
+  //logging extends BindCommonsLogging;
 }

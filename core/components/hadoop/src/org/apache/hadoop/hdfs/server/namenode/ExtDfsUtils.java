@@ -23,8 +23,8 @@ import org.apache.hadoop.conf.Configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Utility methods that need to be in the right package

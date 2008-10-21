@@ -222,8 +222,8 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                             + " has " + (succeeded ? " succeeded" : "failed");
                     sfLog().info(message);
                     if (terminateWhenJobFinishes) {
-                        TerminationRecord record = succeeded ? TerminationRecord.normal(message, name) :
-                                TerminationRecord.abnormal(message, name);
+                        TerminationRecord record = succeeded ? TerminationRecord.normal(message, getName()) :
+                                TerminationRecord.abnormal(message, getName());
                         new ComponentHelper(this).targetForTermination(record, false, false);
                     }
                 }
