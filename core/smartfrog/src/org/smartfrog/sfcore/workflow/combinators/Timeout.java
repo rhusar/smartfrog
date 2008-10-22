@@ -58,10 +58,9 @@ public class Timeout extends EventCompoundImpl implements Compound {
     /**
      * Constructs Timeout.
      *
-     * @throws java.rmi.RemoteException In case of RMI or network failure.
+     * @throws RemoteException In case of RMI or network failure.
      */
-    public Timeout() throws java.rmi.RemoteException {
-        super();
+    public Timeout() throws RemoteException {
     }
 
     /**
@@ -98,13 +97,14 @@ public class Timeout extends EventCompoundImpl implements Compound {
                     } catch (Exception e) {
                     }
 
-                    if (!terminated)
-                        sfTerminate(TerminationRecord.abnormal("timeout occurred", name));
+                    if (!terminated) {
+                        sfTerminate(TerminationRecord.abnormal("timeout occurred", getName()));
+                    }
                 }
             }
         });
         timer.start();
-        sfCreateNewChild(name+"_timeoutActionRunning", action, null);
+        sfCreateNewChild(getName()+"_timeoutActionRunning", action, null);
     }
 
     /**

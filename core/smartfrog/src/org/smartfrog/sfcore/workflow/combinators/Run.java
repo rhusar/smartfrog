@@ -152,18 +152,20 @@ public class Run extends EventCompoundImpl implements Compound {
                 } catch (Exception ignored) { }
                 try {
                     String compNameStr = "";
-                    if (compName != null) compNameStr = compName.toString();
+                    if (compName != null) {
+                        compNameStr = compName.toString();
+                    }
                     comp.sfTerminate(TerminationRecord.abnormal( "failed to deploy and start correctly "+ compNameStr,
-                            name,e));
+                            getName(),e));
                 } catch (Exception ignored) {}
             }
             //terminateComponent(this.parent,e,null);
             //terminateComponent(this,e,null);
-            sfTerminate(TerminationRecord.abnormal( "failed to deploy child ", this.sfCompleteNameSafe(),e));
+            sfTerminate(TerminationRecord.abnormal( "failed to deploy child ", sfCompleteNameSafe(),e));
 
             throw SmartFrogException.forward(e);
         }
-        TerminatorThread terminator = new TerminatorThread(this,TerminationRecord.normal(name));
+        TerminatorThread terminator = new TerminatorThread(this,TerminationRecord.normal(getName()));
         terminator.start();
 
     }
