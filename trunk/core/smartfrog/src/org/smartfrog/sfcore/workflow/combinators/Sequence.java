@@ -59,19 +59,6 @@ public class Sequence extends EventCompoundImpl implements Compound {
      * @throws RemoteException In case of RMI or network failure.
      */
     public Sequence() throws RemoteException {
-        super();
-    }
-
-    /**
-     * Reads the basic configuration of the component and deploys it.
-     *
-     * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
-     *         deploying the component
-     */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -134,7 +121,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     componentName = (String) actionKeys.nextElement();
                     if (sfLog().isDebugEnabled()) {
                         sfLog().debug(
-                                "starting next component '" + componentName + "' in sequence " + name.toString());
+                                "starting next component '" + componentName + "' in sequence " + getName());
                     }
                     ComponentDescription act = (ComponentDescription) actions.get(componentName);
                     sfCreateNewChild(componentName, act, null);
@@ -147,10 +134,10 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     }
                     String text= ERROR_STARTING_NEXT_CHILD + componentName;
                     if (sfLog().isErrorEnabled()) {
-                        sfLog().error(name + " - "+ text, e);
+                        sfLog().error(getName() + " - "+ text, e);
                     }
                     TerminationRecord tr = TerminationRecord
-                            .abnormal(text +": exception " + e.getMessage(), name, e);
+                            .abnormal(text +": exception " + e, getName(), e);
                     sfTerminate(tr);
                     //we've triggered an abnormal shutdown, so no forwarding of the earlier event
                     //as that would use the (normal) terminator used.
@@ -161,7 +148,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                 // Sequence terminates if there are no more sub-components
                 //log message
                 if (sfLog().isDebugEnabled()) {
-                    sfLog().debug("no more components for sequence " + name.toString());
+                    sfLog().debug("no more components for sequence " + getName());
                 }
                 terminate = true;
             }
@@ -169,7 +156,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
             //abnormal terminations
             if (sfLog().isErrorEnabled()) {
                 StringBuilder text=new StringBuilder();
-                text.append(name);
+                text.append(getName());
                 text.append("- error in child component\n");
                 text.append(status.toString());
                 text.append("\n");

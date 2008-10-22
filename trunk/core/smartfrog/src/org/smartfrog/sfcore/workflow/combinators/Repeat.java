@@ -52,10 +52,9 @@ public class Repeat extends EventCompoundImpl implements Compound {
     /**
      * Constructs Repeat.
      *
-     * @throws java.rmi.RemoteException In case of network or RMI error.
+     * @throws RemoteException In case of network or RMI error.
      */
-    public Repeat() throws java.rmi.RemoteException {
-        super();
+    public Repeat() throws RemoteException {
     }
 
     /**
@@ -79,8 +78,8 @@ public class Repeat extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfCreateNewChild(name+"_RepeatActionRunning",
-             (ComponentDescription) action.copy(), null);
+        sfCreateNewChild(getName() + "_RepeatActionRunning",
+                (ComponentDescription) action.copy(), null);
     }
 
 
@@ -99,14 +98,14 @@ public class Repeat extends EventCompoundImpl implements Compound {
                 sfRemoveChild(comp);
                 if (status.isNormal()) {
                     if (currentRepeats++ < repeat) {
-                        sfCreateNewChild(name + "_actionRunning" + currentRepeats,
+                        sfCreateNewChild(getName() + "_actionRunning" + currentRepeats,
                                 (ComponentDescription) action.copy(), null);
                         forward = false;
                     }
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                        "error in restarting next component", name, e));
+                        "error in restarting next component", getName(), e));
                 forward = false;
             }
             return forward;

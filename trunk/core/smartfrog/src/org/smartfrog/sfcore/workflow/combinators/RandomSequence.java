@@ -117,7 +117,6 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
         seed = sfResolve(ATTR_SEED,0,true);
         random = new Random(seed);
         initActionKeys();
-        name = sfCompleteNameSafe(); // returns null if any error
     }
 
     /**
@@ -161,7 +160,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
                 sfTerminate(TerminationRecord.abnormal(
-                        "error in starting next random component", name, e));
+                        "error in starting next random component", getName(), e));
                 forward=false;
             }
         }

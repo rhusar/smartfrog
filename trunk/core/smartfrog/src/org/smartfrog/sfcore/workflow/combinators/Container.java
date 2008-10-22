@@ -44,9 +44,9 @@ public class Container extends Parallel implements Compound {
     /**
      * Constructs Container.
      *
-     * @throws java.rmi.RemoteException In case of network or RMI failure.
+     * @throws RemoteException In case of network or RMI failure.
      */
-    public Container() throws java.rmi.RemoteException {
+    public Container() throws RemoteException {
     }
 
 
@@ -73,7 +73,7 @@ public class Container extends Parallel implements Compound {
             sfRemoveChild(comp);
         } catch (Exception e) {
             if (sfLog().isErrorEnabled()) {
-                sfLog().error(this.sfCompleteNameSafe() + " - error handling child termination ", e);
+                sfLog().error(sfCompleteNameSafe() + " - error handling child termination ", e);
             }
         }
         return false;
@@ -96,7 +96,7 @@ public class Container extends Parallel implements Compound {
         } else {
             try {
                 ((Prim)target).sfTerminate(TerminationRecord.abnormal("liveness error", sfCompleteNameSafe(), failure));
-            } catch (Exception e) { // expected since it is supposedly dead
+            } catch (Exception ignored) { // expected since it is supposedly dead
             }
             try {
                 sfRemoveChild((Prim)target);

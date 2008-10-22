@@ -67,11 +67,10 @@ public class During extends EventCompoundImpl implements Compound {
     /**
      * Constructs During.
      *
-     * @throws java.rmi.RemoteException The required exception in case of
+     * @throws RemoteException The required exception in case of
      *            comms failure
      */
-    public During() throws java.rmi.RemoteException {
-        super();
+    public During() throws RemoteException {
     }
 
     /**
@@ -99,7 +98,7 @@ public class During extends EventCompoundImpl implements Compound {
         super.sfStart();
         terminator=new DelayedTerminator(this,time,sfLog(),null,true);
         terminator.start();
-        sfCreateNewChild(name+"_duringActionRunning", action, null);
+        sfCreateNewChild(getName() + "_duringActionRunning", action, null);
     }
 
 
@@ -143,31 +142,4 @@ public class During extends EventCompoundImpl implements Compound {
         return true;
     }
 
-/* this is the old runnable factored out to show what the logic was.
-   as of 3.10.0 it was broken to the extent that if time<= 0, the terminator
-   would not terminate the component.
-
-    private class DuringRunnable implements Runnable {
-
-        public void run() {
-            if (sfLog().isDebugEnabled()) {
-                sfLog().debug("Timer set:" + time + ". Going to sleep " + name);
-            }
-            if (time > 0) {
-                try {
-                    Thread.sleep(time);
-                } catch (InterruptedException e) {
-                    if (abortTimer) {
-                        return;
-                    }
-                }
-                String terminationMessage = "Timer '" + time + "' expired. Terminating " + name;
-                if (sfLog().isDebugEnabled()) {
-                    sfLog().debug(terminationMessage);
-                }
-                sfTerminate(new TerminationRecord(TerminationRecord.NORMAL, terminationMessage, null));
-            }
-        }
-    }
-    */
 }
