@@ -42,7 +42,6 @@ public class EventSend extends EventPrimImpl implements Prim {
      * @throws RemoteException In case of RMI or network failure.
      */
     public EventSend() throws RemoteException {
-        super();
     }
 
     /**
