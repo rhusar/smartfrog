@@ -37,6 +37,7 @@ Terminator extends EventPrim {
         selftype extends String;
         description extends String;
         detachFirst extends Boolean;
+        //component to terminate
         kill extends OptionalCD;
     }
 
