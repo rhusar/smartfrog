@@ -94,7 +94,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
                 if (time>0) {
                     try {
                         Thread.sleep(time);
-                    } catch (Exception e) {
+                    } catch (InterruptedException ignored) {
                     }
 
                     if (!terminated) {
