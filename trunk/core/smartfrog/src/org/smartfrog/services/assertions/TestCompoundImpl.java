@@ -139,7 +139,6 @@ public class TestCompoundImpl extends ConditionCompound
         super.sfDeploy();
         //look for the action
         checkActionDefined();
-        name = sfCompleteNameSafe();
         waitForCD = sfResolve(ATTR_WAITFOR, waitForCD, false);
         tests = sfResolve(ATTR_TESTS, tests, false);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
@@ -213,7 +212,7 @@ public class TestCompoundImpl extends ConditionCompound
             sendEvent(new TestStartedEvent(this));
             skipped = true;
             updateFlags(false);
-            String message = "Skipping test run " + name;
+            String message = "Skipping test run " + getName();
             sfLog().info(message);
             //send a test started event
             //followed by a the closing results
