@@ -31,6 +31,8 @@ LocalDataNodeTest extends ExpectDeploy {
   action extends LocalDataNodeCompound {
   }
 
+  
+
 }
 
 /**
@@ -41,7 +43,10 @@ testLocalDataNode extends LocalDataNodeTest {
 
 
 
-  tests extends Sequence {
+  tests extends FileSystemLiveSequence {
+    namenode LAZY action:namenode;
+    datanode LAZY action:datanode;;
+
     namenodeLive extends CheckNameNodePort {
       cluster LAZY action:cluster;
     }
@@ -49,6 +54,7 @@ testLocalDataNode extends LocalDataNodeTest {
     datanodeLive extends CheckDataNodePort {
       cluster LAZY action:cluster;
     }
+
   }
 
 }

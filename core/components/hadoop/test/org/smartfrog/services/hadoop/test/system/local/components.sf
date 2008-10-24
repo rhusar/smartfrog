@@ -25,27 +25,31 @@ DUMP_CONF false;
 NameNodeIpcPort "8020";
 NameNodeHttpPort "8021";
 DataNodeHttpsPort "0";
+HandlerThreads 4
+ClientHandlerThreads 2;
 
 LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
-//  jobtracker.http.threads 4;
+  mapred.job.tracker.handler.count HandlerThreads;
 }
 
 LightweightTaskTracker extends TaskTracker {
   description "A task tracker with less threads than normal";
   smartfrog.dump.conf DUMP_CONF;
-  tasktracker.http.threads 4;
+  tasktracker.http.threads ClientHandlerThreads;
 }
 
 LightweightNameNode extends NameNode {
   smartfrog.dump.conf DUMP_CONF;
+  dfs.namenode.handler.count HandlerThreads;
+  testModeDeleteDirectories true;
 //  namenode.http.threads 4;
 }
 
 LightweightDataNode extends DataNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.heartbeat.interval 1;
-//  datanode.http.threads 4;
+  dfs.datanode.handler.count ClientHandlerThreads;
   localhost_any  "127.0.0.1:0";
   dfs.datanode.http.address localhost_any;
   dfs.datanode.https.address localhost_any;
@@ -58,24 +62,25 @@ LightweightDataNode extends DataNode {
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;
+  testModeDeleteDirectories true;
 }
 
 LocalHadoopCompound extends Compound {
   //ordered startup/shutdown of child components
-  sfSyncTerminate true;
+  //sfSyncTerminate true;
   fs.default.name  ("hdfs://localhost:" ++ NameNodeIpcPort ++ "/");
   nameNodeURL      ("http://localhost:" ++ NameNodeHttpPort ++ "/");
   dataNodeURL      ("http://localhost:" ++ DataNodeHttpsPort ++ "/");
 
-  logDir extends TempDirWithCleanup {
+  logDir extends TempDir {
 
   }
 
-  dataDir extends TempDirWithCleanup {
+  dataDir extends TempDir {
 
   }
 
-  nameDir extends TempDirWithCleanup {
+  nameDir extends TempDir {
 
  }
 
@@ -91,8 +96,8 @@ LocalNameNodeCompound extends LocalHadoopCompound {
     dataDir LAZY PARENT:dataDir;
     dataDirectories [dataDir];
     //dataDirectories [LAZY PARENT:dataDir];
-    nameDir LAZY PARENT:nameDir;
-    nameDirectories [nameDir];
+    nameDirectory LAZY PARENT:nameDir;
+    nameDirectories [nameDirectory];
     logDir LAZY PARENT:logDir;
     dfs.namenode.startup ACTION_FORMAT;
     dfs.http.address nameNodeURL;
@@ -104,7 +109,7 @@ LocalNameNodeCompound extends LocalHadoopCompound {
 LocalDataNodeCompound extends LocalNameNodeCompound {
   description "A data node bound to a temporary directory";
 
-  localDataDir extends TempDirWithCleanup {
+  localDataDir extends TempDir {
 
   }
 
@@ -122,7 +127,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 }
 
 TwoDataNodeCluster extends LocalDataNodeCompound {
-  localDataDir2 extends TempDirWithCleanup {
+  localDataDir2 extends TempDir {
 
   }
 
@@ -196,15 +201,16 @@ WaitForHadoopLive extends FailingWaitFor {
 
 
 WaitForFilesystemLive extends WaitForHadoopLive  {
-  jobTracker TBD;
+  service TBD;
   jobTrackerLive false;
   message "filesystem not live";
   condition extends ClusterStatusCondition {
-    mapred.job.tracker PARENT:jobTracker:mapred.job.tracker;
+    mapred.job.tracker PARENT:service:mapred.job.tracker;
   }
 }
 
 WaitForJobTrackerLive extends WaitForFilesystemLive {
+  cluster service;
   message "job tracker or filesystem not live";
   jobTrackerLive true;
 }
@@ -212,7 +218,8 @@ WaitForJobTrackerLive extends WaitForFilesystemLive {
 
 WaitForServiceLive extends WaitForHadoopLive  {
   service TBD;
-  message "hadoop service not live";
+  serviceName "";
+  message ("hadoop service " ++ serviceName ++ " not live");
   condition extends IsHadoopServiceLive {
     service LAZY PARENT:service;
   }
@@ -265,6 +272,14 @@ AssertNameNodeHttpClosed extends AssertLocalPortClosed {
   port NameNodeHttpPort;
 }
 
+WaitForNameNodeLive extends WaitForServiceLive {
+  serviceName "namenode";
+}
+
+WaitForDataNodeLive extends WaitForServiceLive {
+  serviceName "datanode";
+}
+
 
 
 /**
@@ -273,8 +288,9 @@ Test sequence that checks that when a namenode is shut down, it goes away
 NamenodeShutdownSequence extends Sequence {
   namenode TBD;
 
-  namenodeLive extends CheckNameNodePort {
-    cluster LAZY PARENT:namenode;
+  waitForNameNode extends WaitForServiceLive {
+    serviceName "namenode";
+    service LAZY PARENT:namenode;
   }
 
 
@@ -289,34 +305,35 @@ NamenodeShutdownSequence extends Sequence {
   assertHttpClosed extends AssertNameNodeHttpClosed;
 }
 
-/**
- * A sequence of operations on a cluster */
-FileSystemTestSequence extends Sequence {
+FileSystemLiveSequence extends Sequence {
 
-    //the cluster for all the tests
-    cluster namenode;
     namenode TBD;
     datanode TBD;
     datanodeCount 1;
+    //the cluster for all the tests
+    cluster namenode;
 
-    waitForNameNode extends WaitForServiceLive {
-     message "namenode not live";
-     service LAZY PARENT:namenode;
-    }
-/*
-
-    waitForDataNode extends WaitForServiceLive {
-     message "datanode not live";
-     service LAZY PARENT:datanode;
+    waitForNameNode extends WaitForNameNodeLive {
+      service LAZY PARENT:namenode;
     }
 
-*/
+    waitForDataNode extends WaitForDataNodeLive {
+      service LAZY PARENT:datanode;
+    }
+
     //now wait for the bonding
-    waitForCluster extends WaitForWorkersLive {
-     message "cluster workers not live";
-     service LAZY PARENT:namenode;
-     minCount datanodeCount;
+    waitForFilesystem extends WaitForFilesystemLive {
+      service LAZY PARENT:datanode;
+      minCount datanodeCount;
     }
+}
+
+
+/**
+ * A sequence of operations on a cluster */
+FileSystemTestSequence extends FileSystemLiveSequence {
+
+
 
     rootDirExists extends DfsPathExistsWorkflow {
       cluster LAZY PARENT:cluster;
@@ -395,9 +412,31 @@ LocalClusterStatus extends ClusterStatus {
 
 
 /**
+ * sequence that waits for the filesystem and job trackers
+ */
+
+JobTrackerSequence extends FileSystemLiveSequence {
+
+  jobTracker TBD;
+  taskTracker TBD;
+
+  waitForTaskTracker extends WaitForServiceLive {
+    serviceName "TaskTracker";
+    service LAZY PARENT:taskTracker;
+  }
+
+  waitForJobTracker extends WaitForJobTrackerLive {
+    service LAZY PARENT:jobTracker;
+  }
+
+
+
+}
+
+/**
  * this is a complete MR workflow
  */
-MapReduceTestSequence extends Sequence {
+MapReduceTestSequence extends JobTrackerSequence {
 
   testDir "/tests/mrtestsequence";
   testDirIn  (testDir ++ "/in");
@@ -405,17 +444,6 @@ MapReduceTestSequence extends Sequence {
   testDirWorking (testDir ++ "/working");
   testFile (testDirIn ++ "/test.csv");
 
-  jobTracker TBD;
-  cluster TBD;
-
-  waitForCluster extends WaitForWorkersLive {
-   service LAZY PARENT:cluster;
-   minCount 1;
-  }
-
-  waitForTracker extends WaitForJobTrackerLive {
-    jobTracker LAZY PARENT:jobTracker;
-  }
 
   files extends FileCreation {
     cluster LAZY PARENT:cluster;
@@ -456,3 +484,6 @@ MapReduceTestSequence extends Sequence {
   }
 
 }
+
+
+

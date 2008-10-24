@@ -25,6 +25,7 @@ import org.apache.hadoop.mapred.ExtTaskTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
+import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -83,10 +84,10 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
      * @return null or a list of ports
      */
     @Override
-    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+    protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
-        ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_TASK_TRACKER_HTTP_ADDRESS));
+        List<PortEntry> ports = new ArrayList<PortEntry>();
+        ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_TASK_TRACKER_HTTP_ADDRESS));
         return ports;
     }
 

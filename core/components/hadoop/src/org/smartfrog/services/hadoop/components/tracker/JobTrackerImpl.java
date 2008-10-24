@@ -24,6 +24,7 @@ import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
+import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -34,7 +35,6 @@ import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,15 +108,15 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * @return null or a list of ports
      */
     @Override
-    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+    protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
+        List<PortEntry> ports = new ArrayList<PortEntry>();
         //add the job tracker IPC port if it is not set to "local"
         String mrJobTracker = conf.get(ConfigurationAttributes.MAPRED_JOB_TRACKER);
         if(!ConfigurationAttributes.MAPRED_JOB_TRACKER_LOCAL.equals(mrJobTracker)) {
-            ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER));
+            ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER));
         }
-        ports.add(resolveAddress(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER_HTTP_ADDRESS));
+        ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER_HTTP_ADDRESS));
         return ports;
     }
 
@@ -189,10 +189,11 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * This call will not return until the work is finished
      * @throws IOException IO problems
      * @throws SmartFrogException smartfrog problems
+     * @param hadoopService
      */
     @Override
-    protected void onServiceDeploymentComplete() throws IOException, SmartFrogException {
-        super.onServiceDeploymentComplete();
+    protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
+        super.onServiceDeploymentComplete(null);
         //check that the tracker is now bound to a filesystem
         String dir = getJobTracker().getSystemDir();
         sfLog().info("System dir is " + dir);

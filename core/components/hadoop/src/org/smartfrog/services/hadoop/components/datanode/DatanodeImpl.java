@@ -24,6 +24,7 @@ import org.apache.hadoop.util.Service;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -72,10 +73,10 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      * @return null or a list of ports
      */
     @Override
-    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+    protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
-        ports.add(resolveAddress(conf, ConfigurationAttributes.DFS_DATANODE_HTTPS_ADDRESS));
+        List<PortEntry> ports = new ArrayList<PortEntry>();
+        ports.add(resolvePortEntry(conf, ConfigurationAttributes.DFS_DATANODE_HTTPS_ADDRESS));
         return ports;
     }
 
@@ -84,14 +85,15 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      * Create the specific service
      *
      * @param configuration configuration to use
-     * @return the
-     * @throws IOException
-     * @throws SmartFrogException
+     * @return the service
+     * @throws IOException problems creating the service
+     * @throws SmartFrogException smartfrog prblems
      */
     @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         //get the list of data directories
         Vector<String> dataDirs = createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
+        addDirectoriesToDelete(dataDirs);
         //convert them to a list of files
         Vector<File> dataDirFiles = FileSystem.convertToFiles(dataDirs);
         return new ExtDataNode(this, configuration, dataDirFiles);
