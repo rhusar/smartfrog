@@ -24,10 +24,14 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.filesystem.FileSystem;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is a base class for any component that is bonded to a Hadoop filesystem
@@ -39,6 +43,10 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
             ATTR_DATA_DIRECTORIES);
     public static final Reference NAME_DIRECTORIES = new Reference(
             ATTR_NAME_DIRECTORIES);
+    public static final Reference TEST_MODE_DELETE_DIRECTORIES = new Reference(ATTR_TEST_MODE_DELETE_DIRECTORIES);
+    protected boolean testModeDeleteDirectories = false;
+
+    protected List<File> directoriesToDelete = new ArrayList<File>();
 
     public FileSystemNodeImpl() throws RemoteException {
     }
@@ -65,7 +73,39 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
             throw new SmartFrogLifecycleException("Bad " + FS_DEFAULT_NAME + " value :" + filesystemName, e);
         }
 
+        testModeDeleteDirectories = sfResolve(TEST_MODE_DELETE_DIRECTORIES,false,true);
         dumpConfiguration();
+    }
+
+    /**
+     * List a directory to delete
+     * @param directory directory to delete
+     */
+    protected void addDirectoryToDelete(File directory) {
+        directoriesToDelete.add(directory);
+    }
+
+    /**
+     * Add a list of directories to delete
+     * @param dirList the directory list
+     */
+    protected void addDirectoriesToDelete(List<String> dirList) {
+        for (String dir : dirList) {
+            addDirectoryToDelete(new File(dir));
+        }
+    }
+
+
+    /**
+     * during cleanup: delete the directories if {@link #testModeDeleteDirectories} is true
+     */
+    @Override
+    protected void postTerminationCleanup() {
+        if (testModeDeleteDirectories) {
+            for (File dir:directoriesToDelete) {
+                FileSystem.recursiveDelete(dir);
+            }
+        }
     }
 
 }

@@ -26,6 +26,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
+import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -205,14 +206,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     @Override
     public String get(String name, String defaultValue) {
         try {
-            Object result = source.sfResolve(name, true);
-            if (result == null || result instanceof SFNull) {
-                return defaultValue;
-            }
-            /*           if (result instanceof Reference) {
-                result = source.sfResolve(name, true);
-            }*/
-            return result.toString();
+          return sfResolve(name, defaultValue);
         } catch (SmartFrogResolutionException ignored) {
             return defaultValue;
         } catch (RemoteException e) {
@@ -221,6 +215,26 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     }
 
     /**
+     * Resolve a configuration valaue
+     * @param name attribute to resolve
+     * @param defaultValue the default value
+     * @return the default value
+     * @throws SmartFrogResolutionException failure to resolve
+     * @throws RemoteException network problems
+     */
+    public String sfResolve(String name, String defaultValue)
+            throws SmartFrogResolutionException, RemoteException {
+        Object result = source.sfResolve(name, true);
+        if (result == null || result instanceof SFNull) {
+            return defaultValue;
+        }
+        if (result instanceof Reference) {
+            result = source.sfResolve(name, true);
+        }
+        return result.toString();
+    }
+
+  /**
      * Get the value of the <code>name</code> property, without doing <a href="#VariableExpansion">variable
      * expansion</a>.
      *
@@ -332,6 +346,11 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
                     && !(value instanceof SFNull)) {
                 map.put(key.toString(), value.toString());
             }
+            //files get special treatment
+            if(value instanceof FileIntf) {
+                FileIntf fi = (FileIntf) value;
+                map.put(key.toString(), fi.getAbsolutePath());
+            }            
         }
         //now add the required stuff if not there
         for (String required : REQUIRED_ATTRIBUTES) {

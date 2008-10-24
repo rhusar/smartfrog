@@ -17,28 +17,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.components.cluster;
+
+import java.net.InetSocketAddress;
 
 /**
- * A cluster node that is bound to a filesystem
+ * Created 22-Oct-2008 11:00:34
  */
 
+public class PortEntry {
 
-FileSystemNode extends ClusterNode {
-  //the set of operations of a node on startup
-  ACTION_FORMAT "FORMAT";
-  ACTION_REGULAR "REGULAR";
-  ACTION_UPGRADE "UPGRADE";
-  ACTION_ROLLBACK "ROLLBACK";
-  ACTION_FINALIZE "FINALIZE";
+    public String name;
+    public InetSocketAddress address;
 
-  dfs.block.size (64 * 1024 * 1024);
+    public PortEntry(String name, InetSocketAddress address) {
+        this.name = name;
+        this.address = address;
+    }
 
-  //if this is set to a number >0, it specifies the minimum disk space
-  //in megabytes that this fs node should deploy on. If it is less, no deployment
-  minDiskSpaceMB 0;
+    public PortEntry() {
+    }
 
-  //not test nodes; directories are to be retained afterwards.
-  //if true: the node may clean up its working directories on shutdown
-  testModeDeleteDirectories false;
+    /**
+     * Returns a string representation of the object.
+     * @return a string representation of the object.
+     */
+    @Override
+    public String toString() {
+        return name + " at " + address;
+    }
 }
-

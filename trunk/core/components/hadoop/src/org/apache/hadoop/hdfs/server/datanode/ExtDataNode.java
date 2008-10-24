@@ -133,11 +133,12 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
      * @param oldState existing state
      * @param newState new state.
      */
-/*    @Override
+    @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: DataNode is now " + newState);
-    }*/
+        notifier.onStateChange(oldState,newState);
+    }
 
     /**
      * Override the normal run and note that we got stopped
@@ -178,9 +179,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     /**
      * Start the worker thread
      */
-    public synchronized void startWorkerThread() {
-
-
+    private synchronized void startWorkerThread() {
         if (worker == null) {
             worker = new ExtDataNodeThread();
             worker.start();
@@ -212,7 +211,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
           try {
             ExtDataNode.this.run();
           } catch (Throwable e) {
-            LOG.error("error while in state "+getState()+": " + e.getMessage(),e);
+              LOG.error("error while in state " + getState() + ": " + e, e);
             throw e;
           }
         }

@@ -54,7 +54,6 @@ NameNode extends NameDataLogNode {
 
 
   //how many handler threads
-  dfs.namenode.handler.count 10;
   //fs.default.name
 
   dfs.namenode.decommission.interval (5 * 60);

@@ -18,12 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/sfcore/workflow/conditional/conditional.sf"
+
+
 IsHadoopServiceLive extends Prim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.IsHadoopServiceLive";
   //define a service to look for
   service TBD;
-  //or an array of services
-  //services [];
 
 }
 

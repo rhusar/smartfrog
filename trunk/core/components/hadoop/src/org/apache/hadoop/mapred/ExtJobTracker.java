@@ -78,6 +78,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
      * Get the port used for IPC communications
      * @return the port number; not valid if the service is not LIVE
      */
+    @Override
     public int getIPCPort() {
         return getTrackerPort();
     }
@@ -86,6 +87,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
      * Get the port used for HTTP communications
      * @return the port number; not valid if the service is not LIVE
      */
+    @Override
     public int getWebPort() {
         return getInfoPort();
     }
@@ -95,7 +97,7 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
      *
      * @return the worker count
      */
-
+    @Override
     public int getLiveWorkerCount() {
         return getNumResolvedTaskTrackers();
     }

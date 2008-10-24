@@ -25,6 +25,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
+import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -36,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created 06-May-2008 16:31:49
@@ -45,6 +47,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         FileSystemNode, ClusterManager {
     private static final String NAME = "NameNode";
     public static final String ERROR_NO_START = "Failed to start "+ NAME;
+    private File logDir;
 
 
     public NamenodeImpl() throws RemoteException {
@@ -78,11 +81,12 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
-        createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR);
-        createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR);
-        File logDir = FileSystem.lookupAbsoluteFile(this,
+        addDirectoriesToDelete(createDirectoryListAttribute(DATA_DIRECTORIES, DFS_DATA_DIR));
+        addDirectoriesToDelete(createDirectoryListAttribute(NAME_DIRECTORIES, DFS_NAME_DIR));
+        logDir = FileSystem.lookupAbsoluteFile(this,
                 ATTR_LOG_DIR, null, null, true, null);
         logDir.mkdirs();
+        addDirectoryToDelete(logDir);
         sfReplaceAttribute(HADOOP_LOG_DIR, logDir.getAbsolutePath());
         createAndDeployService();
     }
@@ -95,11 +99,11 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      * @return null or a list of ports
      */
     @Override
-    protected List<InetSocketAddress> buildPortList(ManagedConfiguration conf)
+    protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<InetSocketAddress> ports = new ArrayList<InetSocketAddress>();
-        ports.add(resolveAddress(conf, ConfigurationAttributes.FS_DEFAULT_NAME));
-        ports.add(resolveAddress(conf, ConfigurationAttributes.DFS_HTTP_ADDRESS));
+        List<PortEntry> ports = new ArrayList<PortEntry>();
+        ports.add(resolvePortEntry(conf, ConfigurationAttributes.FS_DEFAULT_NAME));
+        ports.add(resolvePortEntry(conf, ConfigurationAttributes.DFS_HTTP_ADDRESS));
         return ports;
     }
 
@@ -109,6 +113,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
         ExtNameNode nameNode = ExtNameNode.create(this, configuration);
         return nameNode;
     }
+
 
     /**
      * Get the count of current workers

@@ -69,7 +69,10 @@ public class HadoopComponentImpl extends PrimImpl {
      * @return the target configuration
      */
     public ManagedConfiguration createConfiguration(Prim target) {
-        return new ManagedConfiguration(target);
+        ManagedConfiguration configuration = new ManagedConfiguration(target);
+        //trigger its evaluation
+        configuration.size();
+        return configuration;
     }
 
     /**
@@ -147,9 +150,9 @@ public class HadoopComponentImpl extends PrimImpl {
 
     /**
      * Resolve an attribute that names the address attribute to use
-     * @param configuration
-     * @param addressAttr
-     * @return
+     * @param configuration configuration to work with
+     * @param addressAttr name of an attribute that identifies the underlying configuration attribute to work with
+     * @return a socket address
      * @throws SmartFrogResolutionException for resolution problems
      * @throws RemoteException network problems
      */
@@ -178,4 +181,12 @@ public class HadoopComponentImpl extends PrimImpl {
                 "stubOldAddressPortShouldNotResolve");
         return socketAddress;
     }
+
+    protected PortEntry resolvePortEntry(ManagedConfiguration configuration,String addressAttribute)
+            throws SmartFrogResolutionException, RemoteException {
+        return new PortEntry(addressAttribute,
+            resolveAddress(configuration, addressAttribute));
+    }
+
+
 }

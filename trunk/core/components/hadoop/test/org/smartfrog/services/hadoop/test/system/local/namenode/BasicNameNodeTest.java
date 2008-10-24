@@ -32,17 +32,8 @@ public class BasicNameNodeTest extends HadoopTestBase {
         super(name);
     }
 
-    /**
-     * Sets up the fixture,by extracting the hostname and classes dir
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        enableFailOnPortCheck();
-    }
-
     public void testNoNameNode() {
-        enablePortCheck();
+        enableFailOnPortCheck();
     }
     
     public void testLocalNameNodeCompoundTerminates() throws Throwable {
@@ -50,7 +41,7 @@ public class BasicNameNodeTest extends HadoopTestBase {
     }
 
     public void testLocalNameNodeCompoundIsOffline() {
-        enablePortCheck();
+        enableFailOnPortCheck();
     }
 
 }
