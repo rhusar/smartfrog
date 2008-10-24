@@ -26,8 +26,9 @@ package org.smartfrog.sfcore.utils;
 
 public class TimeoutInterval {
 
-    private long timeout;
+    private long endTime;
     private long startTime;
+    private long delay;
 
     /**
      * Create a new interval
@@ -35,19 +36,40 @@ public class TimeoutInterval {
      */
     public TimeoutInterval(long delay) {
         startTime = System.currentTimeMillis();
-        timeout = startTime + delay;
+        this.delay = delay;
+        endTime = startTime + delay;
     }
 
+    /**
+     * When did this class get created
+     * @return the time in milliseconds from which the interval is measured
+     */
     public long getStartTime() {
         return startTime;
     }
 
     /**
+     * Get the delay
+     * @return delay in milliseconds
+     */
+    public long getDelay() {
+        return delay;
+    }
+
+    /**
+     * Get the time at which the interval will be deemed to have timed out
+     * @return end time in milliseconds
+     */
+    public long getEndTime() {
+        return endTime;
+    }
+
+    /**
      * Check for the timeout interval expiring
-     * @return
+     * @return true if it is now after the end time
      */
     public boolean hasTimedOut() {
-        return System.currentTimeMillis() > timeout;
+        return System.currentTimeMillis() > endTime;
     }
 
     /**
