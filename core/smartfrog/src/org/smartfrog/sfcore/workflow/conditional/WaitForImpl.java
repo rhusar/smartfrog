@@ -132,7 +132,7 @@ public class WaitForImpl extends ConditionCompound implements WaitFor, Runnable 
             }
             if (fault != null) {
                 //trouble -fail
-                sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor", name, fault));
+                sfTerminate(TerminationRecord.abnormal("Trouble during WaitFor", getName(), fault));
             }
         } finally {
             synchronized (this) {
