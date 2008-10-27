@@ -185,7 +185,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                 events = new TaskCompletionEventLogger(runningJob, sfLog());
             } catch (IOException e) {
                 SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
-                        + ": " + e.getMessage(),
+                        + ": " + e,
                         e, SubmitterImpl.this);
                 fault.addConfiguration(jobConf);
                 throw fault;

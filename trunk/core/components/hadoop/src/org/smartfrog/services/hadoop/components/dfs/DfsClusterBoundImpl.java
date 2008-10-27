@@ -69,7 +69,7 @@ public class DfsClusterBoundImpl extends PrimImpl {
       } catch (IllegalArgumentException e) {
           throw new SmartFrogLifecycleException("Failed to create the path defined by attribute "+ attribute
                   +" with value "+pathName
-                  +" : "+ e.getMessage(), e, this);
+                  +" : "+ e, e, this);
       }
   }
 
