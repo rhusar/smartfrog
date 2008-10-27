@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.mapred.ExtTaskTracker;
+import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
@@ -30,6 +31,7 @@ import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -58,13 +60,18 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         return NAME;
     }
 
+
+    protected ExtTaskTracker getTaskTracker() {
+        return (ExtTaskTracker) getService();
+    }
+
     /**
-     * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
-     * but spawn off any main loops!
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
+    * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
+    * but spawn off any main loops!
+    *
+    * @throws SmartFrogException failure while starting
+    * @throws RemoteException    In case of network/rmi error
+    */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         createAndDeployService();
@@ -89,6 +96,31 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         List<PortEntry> ports = new ArrayList<PortEntry>();
         ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_TASK_TRACKER_HTTP_ADDRESS));
         return ports;
+    }
+
+    /**
+     * after deployment, call {@link ExtJobTracker#offerService()} to start the service.
+     * This call will not return until the work is finished
+     *
+     * @param hadoopService service that has been deployed
+     * @throws IOException        IO problems
+     * @throws SmartFrogException smartfrog problems
+     */
+    @Override
+    protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
+        super.onServiceDeploymentComplete(hadoopService);
+        try {
+            getTaskTracker().offerService();
+        } catch (InterruptedException e) {
+            //this is ok, it is time to terminate
+            sfLog().ignore("Job tracker was interrupted", e);
+        } catch (IOException e) {
+            throw e;
+        } catch (SmartFrogException e) {
+            throw e;
+        } catch(Exception e) {
+            throw new SmartFrogRuntimeException(e.getMessage(), e, this);
+        }
     }
 
 

@@ -45,7 +45,6 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
-
     /**
      * Override point - aethod called whenever there is a state change.
      *
@@ -90,5 +89,13 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     @Override
     public int getLiveWorkerCount() {
         return workerThreads;
+    }
+
+    /**
+      * Main service loop.  Will stay in this loop forever.
+     */
+    @Override
+    public State offerService() throws Exception {
+        return super.offerService();
     }
 }
