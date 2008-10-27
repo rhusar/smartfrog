@@ -120,11 +120,11 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
                         return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
                     }
                 } catch (IllegalAccessException e) {
-                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
-                    return e.getMessage();
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e, e);
+                    return e.toString();
                 } catch (InvocationTargetException e) {
-                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
-                    return e.getMessage();
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e, e);
+                    return e.toString();
 
                 }
             }
