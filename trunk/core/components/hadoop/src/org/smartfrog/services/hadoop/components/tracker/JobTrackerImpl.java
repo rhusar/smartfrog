@@ -21,12 +21,14 @@ package org.smartfrog.services.hadoop.components.tracker;
 
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.Service;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
 import org.smartfrog.services.hadoop.components.cluster.PortEntry;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -85,10 +87,51 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         if (System.getProperty(ConfigurationAttributes.HADOOP_LOG_DIR) == null) {
             System.setProperty(ConfigurationAttributes.HADOOP_LOG_DIR, ".");
         }
-
         createAndDeployService();
     }
 
+    /**
+     * Check the filesystem is OK before we try to start up, so we can fail with some more
+     * meaningful erross
+     *
+     * @param conf the configuration to validate
+     * @throws RemoteException    RMI issues
+     * @throws SmartFrogException Smartfrog problems
+     */
+    @Override
+    protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
+        //then look for the filesystem and again, bail out if it is not live
+        String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
+        if(fsName == null) {
+            throw SFHadoopException.forward(ERROR_NO_START + getName() + " -undefined attribute "
+                    +  ConfigurationAttributes.FS_DEFAULT_NAME,
+                    null,
+                    this,
+                    conf);
+        }
+    }
+
+
+    private void checkFilesystemWorking() throws SFHadoopException {
+        ManagedConfiguration conf = getConfiguration();
+        try {
+            String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
+            FileSystem fs = FileSystem.get(conf);
+            if (fs == null) {
+                throw SFHadoopException.forward(ERROR_NO_START + getName() + " -unable to bind to the filesystem "
+                        +" defined in "+ ConfigurationAttributes.FS_DEFAULT_NAME + ": "+ fsName,
+                        null,
+                        this,
+                        conf);
+            }
+            fs.close();
+        } catch (IOException e) {
+            throw SFHadoopException.forward(ERROR_NO_START + getName() + " as the filesystem is not live",
+                    e,
+                    this,
+                    conf);
+        }
+    }
 
     /** {@inheritDoc} */
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
@@ -195,11 +238,21 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
         super.onServiceDeploymentComplete(hadoopService);
         //check that the tracker is now bound to a filesystem
-        String dir = getJobTracker().getSystemDir();
-        sfLog().info("System dir is " + dir);
-        getJobTracker().getFilesystemName();
+        ExtJobTracker jt = getJobTracker();
+        sfLog().info("Filesystem URL " + jt.getConf().get(ConfigurationAttributes.FS_DEFAULT_NAME));
+        sfLog().info("Filesystem Name is "+ jt.getFilesystemName());
+        sfLog().info("Filesystem is " + jt.getFileSystem());
+        sfLog().info("System dir is " + jt.getSystemDir());
         try {
-            getJobTracker().offerService();
+            checkFilesystemWorking();
+        } catch (SFHadoopException e) {
+            //do an emergency shutdown
+            terminateService(hadoopService);
+            //then fail gracelessly
+            throw e;
+        }
+        try {
+            jt.offerService();
         } catch (InterruptedException e) {
             //this is ok, it is time to terminate
             sfLog().ignore("Job tracker was interrupted",e);

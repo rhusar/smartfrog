@@ -52,7 +52,10 @@ testLocalTaskTracker extends ExpectDeploy {
 
   tests extends MapReduceTestSequence {
     jobTracker LAZY action:jobTracker;
+    taskTracker LAZY action:taskTracker;
     cluster PARENT:action:cluster;
+    datanode LAZY PARENT:action:datanode;
+    namenode LAZY PARENT:action:namenode;
   }
 
 

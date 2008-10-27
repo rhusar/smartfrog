@@ -153,13 +153,15 @@ public class SFHadoopException extends SmartFrogException {
         }
 
         String trace = dumpToString(exceptions);
-        return new SFHadoopException(message
+        SFHadoopException hadoopException = new SFHadoopException(message
                 + maybeDumpConfiguration(conf)
                 + "\nmultiple (" + exCount + ") nested exceptions: \n"
                 + multiExcept + "\n"
                 + trace,
                 multiExcept,
                 sfObject);
+        hadoopException.addConfiguration(conf);
+        return hadoopException;
     }
 
     /**
@@ -196,13 +198,22 @@ public class SFHadoopException extends SmartFrogException {
      */
     public static SFHadoopException forward(String message, Throwable throwable, Prim sfObject,
                                             ManagedConfiguration conf) {
+        if (throwable == null) {
+            SFHadoopException hadoopException = new SFHadoopException(message
+                    + maybeDumpConfiguration(conf),
+                    throwable, sfObject);
+            hadoopException.addConfiguration(conf);
+            return hadoopException;
+        }
         if (throwable instanceof MultiException) {
             return forward(message, (MultiException) throwable, sfObject, conf);
         } else {
-            return new SFHadoopException(message + ": "
-                        + throwable
-                        + maybeDumpConfiguration(conf),
-                        throwable,sfObject);
+            SFHadoopException hadoopException = new SFHadoopException(message + ": "
+                    + throwable
+                    + maybeDumpConfiguration(conf),
+                    throwable, sfObject);
+            hadoopException.addConfiguration(conf);
+            return hadoopException;
         }
 
     }

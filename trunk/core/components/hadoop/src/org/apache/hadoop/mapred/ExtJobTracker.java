@@ -21,6 +21,7 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.core.ServiceInfo;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
@@ -100,5 +101,13 @@ public class ExtJobTracker extends JobTracker implements ServiceInfo  {
     @Override
     public int getLiveWorkerCount() {
         return getNumResolvedTaskTrackers();
+    }
+
+    /**
+     * Get the filesystem. Will be null when the service is not live
+     * @return the filesystem or null
+     */
+    public FileSystem getFileSystem() {
+        return fs;
     }
 }

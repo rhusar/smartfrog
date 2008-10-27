@@ -28,6 +28,40 @@ import org.apache.hadoop.fs.Path;
 
 public interface ConfigurationAttributes {
 
+
+
+
+    String DFS_DATA_DIR = "dfs.data.dir";
+    String DFS_NAME_DIR = "dfs.name.dir";
+    String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
+    String DFS_HTTP_ADDRESS = "dfs.http.address";
+    String DFS_DATANODE_HTTPS_ADDRESS = "dfs.datanode.https.address";
+    String FS_DEFAULT_NAME = "fs.default.name";
+    String FS_LOCAL_BLOCK_SIZE = "fs.local.block.size";
+
+    String HADOOP_LOG_DIR = "hadoop.log.dir";
+
+    String IO_FILE_BUFFER_SIZE = "io.file.buffer.size";
+    String IO_SEQFILE_COMPRESS_BLOCKSIZE = "io.seqfile.compress.blocksize";
+
+
+    String IO_SERIALIZATIONS = "io.serializations";
+
+
+    /**
+     * URL to GET when the job is finished The uri can contain 2 special parameters: $jobId and $jobStatus. Those, if
+     * present, are replaced by the job's identifier and completion-status respectively.</p>
+     */
+    String JOB_END_NOTIFICATION_URL = "job.end.notification.url";
+
+    String KEEP_FAILED_TASK_FILES = "keep.failed.task.files";
+
+    /**
+     * a regular expression for task names that should be kept. The regular expression ".*_m_000123_0" would keep the
+     * files for the first instance of map 123 that ran.
+     */
+
+    String KEEP_TASK_FILES_PATTERN = "keep.task.files.pattern";
     /**
      * Filename of JAR file to upload {@value}
      */
@@ -56,16 +90,9 @@ public interface ConfigurationAttributes {
      */
     String MAPRED_SYSTEM_DIR = "mapred.system.dir";
 
-    String USER_NAME = "user.name";
 
-    String KEEP_FAILED_TASK_FILES = "keep.failed.task.files";
 
-    /**
-     * a regular expression for task names that should be kept. The regular expression ".*_m_000123_0" would keep the
-     * files for the first instance of map 123 that ran.
-     */
 
-    String KEEP_TASK_FILES_PATTERN = "keep.task.files.pattern";
 
     /**
      * the current working directory for the default file system.
@@ -93,23 +120,6 @@ public interface ConfigurationAttributes {
 
     String MAPRED_PARTITIONER_CLASS = "mapred.partitioner.class";
 
-    String FS_DEFAULT_NAME = "fs.default.name";
-
-    String IO_FILE_BUFFER_SIZE = "io.file.buffer.size";
-
-    String IO_SEQFILE_COMPRESS_BLOCKSIZE = "io.seqfile.compress.blocksize";
-    String IO_SERIALIZATIONS = "io.serializations";
-
-
-    String FS_LOCAL_BLOCK_SIZE = "fs.local.block.size";
-
-    /**
-     * URL to GET when the job is finished
-     * The uri can contain 2 special parameters: $jobId and $jobStatus. Those, if present, are
-     * replaced by the job's identifier and completion-status respectively.</p>
-     *
-     */
-    String JOB_END_NOTIFICATION_URL = "job.end.notification.url";
 
     String MAPRED_COMBINER_CLASS = "mapred.combiner.class";
     String MAPRED_SPECULATIVE_EXECUTION = "mapred.speculative.execution";
@@ -215,10 +225,5 @@ public interface ConfigurationAttributes {
      */
     String SESSION_ID = "session.id";
 
-    String DFS_DATA_DIR = "dfs.data.dir";
-    String DFS_NAME_DIR = "dfs.name.dir";
-    String DFS_NAMENODE_STARTUP = "dfs.namenode.startup";
-    String DFS_HTTP_ADDRESS = "dfs.http.address";
-    String HADOOP_LOG_DIR = "hadoop.log.dir";
-    String DFS_DATANODE_HTTPS_ADDRESS = "dfs.datanode.https.address";
+    String USER_NAME = "user.name";
 }
