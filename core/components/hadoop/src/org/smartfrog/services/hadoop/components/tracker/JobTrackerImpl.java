@@ -187,13 +187,13 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     /**
      * after deployment, call {@link ExtJobTracker#offerService()} to start the service.
      * This call will not return until the work is finished
+     * @param hadoopService  service that has been deployed
      * @throws IOException IO problems
      * @throws SmartFrogException smartfrog problems
-     * @param hadoopService
      */
     @Override
     protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
-        super.onServiceDeploymentComplete(null);
+        super.onServiceDeploymentComplete(hadoopService);
         //check that the tracker is now bound to a filesystem
         String dir = getJobTracker().getSystemDir();
         sfLog().info("System dir is " + dir);

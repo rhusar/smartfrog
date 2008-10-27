@@ -21,6 +21,8 @@
 
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 
+//set this flag to true to dump the configuration on failures
+
 DUMP_CONF false;
 NameNodeIpcPort "8020";
 NameNodeHttpPort "8021";
@@ -43,7 +45,6 @@ LightweightNameNode extends NameNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.namenode.handler.count HandlerThreads;
   testModeDeleteDirectories true;
-//  namenode.http.threads 4;
 }
 
 LightweightDataNode extends DataNode {
@@ -219,7 +220,7 @@ WaitForJobTrackerLive extends WaitForFilesystemLive {
 WaitForServiceLive extends WaitForHadoopLive  {
   service TBD;
   serviceName "";
-  message ("hadoop service " ++ serviceName ++ " not live");
+  message ("hadoop service " ++ serviceName ++ " not live - state is " ++ LAZY condition:serviceDescription);
   condition extends IsHadoopServiceLive {
     service LAZY PARENT:service;
   }
