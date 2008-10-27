@@ -710,12 +710,12 @@ HadoopConfiguration extends Prim {
   /**
   The shared directory where MapReduce stores control files.
   */
-  mapred.system.dir  (hadoop.tmp.dir ++ "/mapred/system");
+  mapred.system.dir  ("/tmp/hadoop/mapred/system");
 
   /**
   A shared directory for temporary files.
   */
-  mapred.temp.dir  (hadoop.tmp.dir ++ "/mapred/temp");
+  mapred.temp.dir  ("/mapred/temp");
 
 
   /**
