@@ -119,7 +119,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
         } catch (SmartFrogException e) {
             throw e;
         } catch(Exception e) {
-            throw new SmartFrogRuntimeException(e.getMessage(), e, this);
+            throw new SmartFrogRuntimeException(e.toString(), e, this);
         }
     }
 

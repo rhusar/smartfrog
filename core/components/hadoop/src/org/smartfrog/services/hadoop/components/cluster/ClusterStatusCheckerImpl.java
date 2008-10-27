@@ -160,12 +160,12 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                     result.append("Filesystem: ").append(fs.getUri()).append(" ; ");
                 } catch (IOException e) {
                     throw new SFHadoopException("File system will not load "
-                            + e.getMessage(),
+                            + e,
                             e,
                             this);
                 } catch (IllegalArgumentException e) {
                     throw new SFHadoopException("Bad File system URI"
-                            + e.getMessage(),
+                            + e,
                             e,
                             this);
                 }
@@ -232,7 +232,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             description = checkClusterStatus();
             live = true;
         } catch (SFHadoopException e) {
-            description = e.getMessage();
+            description = e.toString();
             sfLog().debug(e);
             live = false;
         }
