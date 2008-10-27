@@ -25,7 +25,10 @@ IsHadoopServiceLive extends Prim {
   sfClass "org.smartfrog.services.hadoop.components.cluster.IsHadoopServiceLive";
   //define a service to look for
   service TBD;
-
+  //gets changed after evaluation to the service description
+  serviceDescription "";
+  //gets changed after evaluation to the service state
+  serviceState "";
 }
 
 /**

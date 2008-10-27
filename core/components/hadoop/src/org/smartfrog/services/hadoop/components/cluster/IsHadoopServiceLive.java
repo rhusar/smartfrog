@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
+import org.apache.hadoop.util.Service;
 
 import java.rmi.RemoteException;
 
@@ -35,6 +36,8 @@ import java.rmi.RemoteException;
 public class IsHadoopServiceLive extends PrimImpl implements Condition {
 
     public static final String ATTR_SERVICE = "service";
+    public static final String ATTR_SERVICE_STATE = "serviceState";
+    public static final String ATTR_SERVICE_DESCRIPTION = "serviceDescription";
 
     private HadoopService service;
 
@@ -60,6 +63,9 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
+        Service.ServiceState state = service.getServiceState();
+        sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());
+        sfReplaceAttribute(ATTR_SERVICE_DESCRIPTION, service.getDescription());
         return service.isServiceLive();
     }
 }

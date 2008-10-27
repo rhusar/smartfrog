@@ -54,4 +54,11 @@ public interface HadoopService extends Remote {
      */
     Service.ServiceStatus pingService() throws IOException;
 
+    /**
+     * Gets the description of a service
+     * @return a description string of the service
+     * @throws RemoteException network problems
+     */
+    String getDescription() throws RemoteException ;
+
 }
