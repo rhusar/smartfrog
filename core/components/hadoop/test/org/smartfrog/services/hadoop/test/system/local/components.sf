@@ -204,7 +204,7 @@ WaitForHadoopLive extends FailingWaitFor {
 WaitForFilesystemLive extends WaitForHadoopLive  {
   service TBD;
   jobTrackerLive false;
-  message "filesystem not live";
+  message ("WaitForFilesystemLive failed ClusterStatusCondition test " ++ LAZY condition:serviceDescription);
   condition extends ClusterStatusCondition {
     mapred.job.tracker PARENT:service:mapred.job.tracker;
   }
@@ -212,7 +212,7 @@ WaitForFilesystemLive extends WaitForHadoopLive  {
 
 WaitForJobTrackerLive extends WaitForFilesystemLive {
   cluster service;
-  message "job tracker or filesystem not live";
+  message ("WaitForFilesystem or JobTracker Live failed ClusterStatusCondition test"  ++ LAZY condition:serviceDescription);
   jobTrackerLive true;
 }
 
