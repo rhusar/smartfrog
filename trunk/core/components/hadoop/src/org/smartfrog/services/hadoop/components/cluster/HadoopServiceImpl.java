@@ -40,7 +40,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 /**
- * This is a component that deploys a hadoop service. If the
+ * This is a component that deploys a hadoop service.
  */
 
 public abstract class HadoopServiceImpl extends HadoopComponentImpl
@@ -399,6 +399,19 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         } else {
             return hadoop.ping();
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a description string of the service
+     * @throws IOException network problems
+     */
+    public String getDescription() throws RemoteException {
+        return getName()+" managing "+ service == null ?
+                            "No Service"
+                            :service.toString();
     }
 
 
