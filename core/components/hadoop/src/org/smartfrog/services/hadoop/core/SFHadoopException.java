@@ -147,8 +147,7 @@ public class SFHadoopException extends SmartFrogException {
         if (exCount == 1) {
             //special case: one child.
             Throwable e = multiExcept.getException(0);
-            return new SFHadoopException(message + "\n"
-                    + e.getMessage(),
+            return new SFHadoopException(message + "\n" + e,
                     e,
                     sfObject);
         }
@@ -157,7 +156,7 @@ public class SFHadoopException extends SmartFrogException {
         return new SFHadoopException(message
                 + maybeDumpConfiguration(conf)
                 + "\nmultiple (" + exCount + ") nested exceptions: \n"
-                + multiExcept.getMessage() + "\n"
+                + multiExcept + "\n"
                 + trace,
                 multiExcept,
                 sfObject);
@@ -201,7 +200,7 @@ public class SFHadoopException extends SmartFrogException {
             return forward(message, (MultiException) throwable, sfObject, conf);
         } else {
             return new SFHadoopException(message + ": "
-                        + throwable.getMessage()
+                        + throwable
                         + maybeDumpConfiguration(conf),
                         throwable,sfObject);
         }
