@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
+import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.common.HadoopUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
@@ -520,6 +521,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         portList = buildPortList(conf);
         //now check the known ports are closed. This will bail out early
         checkPortsAreClosed();
+        validateConfiguration(conf);
         try {
             Service createdService = createTheService(conf);
             deployService(createdService, conf);
@@ -529,6 +531,15 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                     this,
                     conf);
         }
+    }
+
+    /**
+     * Override point: any last minute validation of the configuration
+     * @param conf the configuration to validate
+     * @throws RemoteException RMI issues
+     * @throws SmartFrogException Smartfrog problems
+     */
+    protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
     }
 
     /**
