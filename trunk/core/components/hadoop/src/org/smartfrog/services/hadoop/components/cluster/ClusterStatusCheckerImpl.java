@@ -147,15 +147,17 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      *
      * @throws SFHadoopException on any problem with the checks
      */
-    private void checkClusterStatus() throws SFHadoopException {
+    private String checkClusterStatus() throws SFHadoopException {
 
         try {
             JobClient cluster = createClientOnDemand();
             ClusterStatus status = cluster.getClusterStatus();
+            StringBuilder result = new StringBuilder();
 
             if (supportedFileSystem) {
                 try {
                     FileSystem fs = cluster.getFs();
+                    result.append("Filesystem: ").append(fs.getUri()).append(" ; ");
                 } catch (IOException e) {
                     throw new SFHadoopException("File system will not load "
                             + e.getMessage(),
@@ -171,13 +173,18 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             if (jobTrackerLive) {
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
-                    throw new SFHadoopException("Job Tracker at " + jobTracker + " is not running", this);
+                    throw new SFHadoopException("Job Tracker at " + jobTracker
+                            + " is not running. It is in the state "+state, this);
                 }
+            result.append("Job tracker is in state "+status.toString());
             }
             checkRange(minActiveMapTasks, maxActiveMapTasks, status.getMapTasks(), "map task");
             checkRange(minActiveReduceTasks, maxActiveReduceTasks, status.getReduceTasks(), "reduce task");
             checkMax(maxSupportedMapTasks, status.getMaxMapTasks(), "supported max map task");
             checkMax(maxSupportedReduceTasks, status.getMaxReduceTasks(), "supported max reduce task");
+            result.append(" Map Tasks = "+ status.getMapTasks());
+            result.append(" Reduce Tasks = " + status.getReduceTasks());
+            return result.toString();
         } catch (IOException e) {
             throw new SFHadoopException("Cannot connect to" + jobTracker, e, this);
         }
@@ -219,12 +226,17 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      */
     @Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
+        boolean live;
+        String description;
         try {
-            checkClusterStatus();
-            return true;
+            description = checkClusterStatus();
+            live = true;
         } catch (SFHadoopException e) {
+            description = e.getMessage();
             sfLog().debug(e);
-            return false;
+            live = false;
         }
+        sfReplaceAttribute(IsHadoopServiceLive.ATTR_SERVICE_DESCRIPTION, description);
+        return live;
     }
 }
