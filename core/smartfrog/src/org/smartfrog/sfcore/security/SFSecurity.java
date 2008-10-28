@@ -131,16 +131,16 @@ public class SFSecurity {
                     // This is necessary for dynamic classloading to work.
                     String secPro = System.getProperty("java.security.policy");
                     if  (secPro != null) {
-                        System.setSecurityManager(new SecurityManager());
+                        System.setSecurityManager(new ExitTrappingSecurityManager());
                     }
 
                     securityOn = false;
-                    //Notification moved to SFSyten after the ini file is read.
+                    //Notification moved to SFSystem after the ini file is read.
                 }
             }
         } catch (IOException e) {
             // Problems setting up RMI.
-            throw (SFGeneralSecurityException)new SFGeneralSecurityException(e.getMessage()).initCause(e);
+            throw (SFGeneralSecurityException)new SFGeneralSecurityException(e.toString()).initCause(e);
         }
     }
 
