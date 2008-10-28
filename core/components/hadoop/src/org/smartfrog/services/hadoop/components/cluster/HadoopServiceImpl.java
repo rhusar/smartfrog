@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
-import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.common.HadoopUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
@@ -49,7 +48,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
 
     private Service service;
     private ServiceDeployerThread deployerThread;
-    private static final int SHUTDOWN_DELAY = 1000;
+    private static final int SHUTDOWN_DELAY = 5000;
     public static final String NO_FILESYSTEM = "Filesystem is not running";
     private boolean expectNodeTermination;
     private volatile boolean terminationInitiated;
@@ -89,8 +88,14 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        sfLog().info("Initiating "+getName()+" termination"
+         +" deployerThread=" + deployerThread + " service=" + service);
         terminationInitiated = true;
-        terminateDeployerThread();
+        try {
+            terminateDeployerThread();
+        } catch (Exception e) {
+            sfLog().warn("when terminating deployer thread " + e, e);
+        }
         terminateHadoopService();
         try {
             checkPortsAreClosed();
@@ -159,7 +164,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     protected void terminateDeployerThread() {
         ServiceDeployerThread deployer = getDeployerThread();
         if (deployer != null) {
+            sfLog().info("Terminating deployer thread");
             terminateDeployerThread(deployer);
+        } else {
+            sfLog().info("No deployer thread to terminate");
         }
     }
 
@@ -169,7 +177,18 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @param deployer thread to shut down
      */
     protected void terminateDeployerThread(ServiceDeployerThread deployer) {
-        deployer.requestAndWaitForThreadTermination(SHUTDOWN_DELAY);
+        sfLog().info("Requesting thread termination");
+        try {
+            deployer.requestTerminationWithInterrupt();
+        } catch (IllegalMonitorStateException e) {
+            sfLog().warn("Could not notify the thread: "+e,e);
+            deployer.interrupt();
+        }
+        sfLog().info("waiting for thread to finish");
+        if (deployer.waitForThreadTermination(SHUTDOWN_DELAY)) {
+            sfLog().warn("Deployer thread did not terminate within the specified shutdown delay; "
+                    + "service is " + getService());
+        }
     }
 
     /**
@@ -232,11 +251,11 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * {@inheritDoc}
      */
     @Override
-    public void onStateChange(Service service, Service.ServiceState oldState,
+    public void onStateChange(Service hadoopService, Service.ServiceState oldState,
                               Service.ServiceState newState) {
         if (newState == Service.ServiceState.TERMINATED && !terminationInitiated) {
             TerminationRecord tr;
-            Throwable thrown = service.getFailureCause();
+            Throwable thrown = hadoopService.getFailureCause();
             if (expectNodeTermination) {
                 tr = TerminationRecord.normal(SERVICE_HAS_HALTED, completeName, thrown);
             } else {
@@ -313,18 +332,18 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Inner service termination. Errors are logged at warn level.
      * If the parameter is in the {@link #service} field, that field is set to null
-     * @param hadoop the service to terminate.
+     * @param hadoopService the service to terminate.
      */
-    protected void terminateService(Service hadoop) {
-        if (hadoop != null) {
+    protected void terminateService(Service hadoopService) {
+        if (hadoopService != null) {
             synchronized (this) {
-                if(hadoop == getService()) {
+                if(hadoopService == getService()) {
                     setService(null);
                 }
             }
-            sfLog().info("Terminating hadoop service " + hadoop.getServiceName());
+            sfLog().info("Terminating hadoopService service " + hadoopService.getServiceName());
             try {
-                hadoop.close();
+                hadoopService.close();
             } catch (IOException e) {
                 sfLog().warn("When closing the service : "+ e, e);
             }
@@ -354,7 +373,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param service the new value
      */
-    private synchronized final void setService(Service service) {
+    protected synchronized final void setService(Service service) {
         if (service != null && this.service != null) {
             throw new IllegalStateException("Cannot set a non-null service " + service + " on top of a valid service "
                     + this.service);
@@ -585,6 +604,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             }
         }
 
+        /**
+         * Terminate if we are abnormal
+         */
         protected void terminateIFFAbnormal() {
             boolean isNormal = getThrown() == null;
             if (!isNormal) {
@@ -605,7 +627,6 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         public void execute() throws Throwable {
             innerDeploy(hadoopService, conf);
         }
-
 
     }
 }

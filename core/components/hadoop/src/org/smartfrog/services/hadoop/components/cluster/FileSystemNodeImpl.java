@@ -102,7 +102,7 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
     @Override
     protected void postTerminationCleanup() {
         if (testModeDeleteDirectories) {
-            for (File dir:directoriesToDelete) {
+            for (File dir : directoriesToDelete) {
                 FileSystem.recursiveDelete(dir);
             }
         }

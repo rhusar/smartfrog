@@ -229,7 +229,8 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
 
     /**
      * after deployment, call {@link ExtJobTracker#offerService()} to start the service.
-     * This call will not return until the work is finished
+     * This call will not return until the work is finished.
+     * The service will always be terminated when exiting
      * @param hadoopService  service that has been deployed
      * @throws IOException IO problems
      * @throws SmartFrogException smartfrog problems
@@ -237,25 +238,25 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     @Override
     protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
         super.onServiceDeploymentComplete(hadoopService);
-        //check that the tracker is now bound to a filesystem
-        ExtJobTracker jt = getJobTracker();
-        sfLog().info("Filesystem URL " + jt.getConf().get(ConfigurationAttributes.FS_DEFAULT_NAME));
-        sfLog().info("Filesystem Name is "+ jt.getFilesystemName());
-        sfLog().info("Filesystem is " + jt.getFileSystem());
-        sfLog().info("System dir is " + jt.getSystemDir());
         try {
+            //check that the tracker is now bound to a filesystem
+            ExtJobTracker jt = getJobTracker();
+            sfLog().info("Filesystem URL " + jt.getConf().get(ConfigurationAttributes.FS_DEFAULT_NAME));
+            sfLog().info("Filesystem Name is "+ jt.getFilesystemName());
+            sfLog().info("Filesystem is " + jt.getFileSystem());
+            sfLog().info("System dir is " + jt.getSystemDir());
+            //probe the file system
             checkFilesystemWorking();
-        } catch (SFHadoopException e) {
-            //do an emergency shutdown
-            terminateService(hadoopService);
-            //then fail gracelessly
-            throw e;
-        }
-        try {
-            jt.offerService();
-        } catch (InterruptedException e) {
-            //this is ok, it is time to terminate
-            sfLog().ignore("Job tracker was interrupted",e);
+            try {
+                //start work
+                jt.offerService();
+            } catch (InterruptedException e) {
+                //this is ok, it is time to terminate
+                sfLog().ignore("Job tracker was interrupted",e);
+            }
+        } finally {
+            sfLog().info("Exiting JobTracker worker thread; service is " + hadoopService);
+            //terminateService(hadoopService);
         }
     }
 
