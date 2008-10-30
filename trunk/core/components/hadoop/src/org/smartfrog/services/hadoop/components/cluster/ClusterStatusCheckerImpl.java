@@ -174,9 +174,9 @@ public class ClusterStatusCheckerImpl extends PrimImpl
                 JobTracker.State state = status.getJobTrackerState();
                 if (!state.equals(JobTracker.State.RUNNING)) {
                     throw new SFHadoopException("Job Tracker at " + jobTracker
-                            + " is not running. It is in the state "+state, this);
+                            + " is not running. It is in the state " + state, this);
                 }
-            result.append("Job tracker is in state "+status.toString());
+                result.append("Job tracker is in state " + status);
             }
             checkRange(minActiveMapTasks, maxActiveMapTasks, status.getMapTasks(), "map task");
             checkRange(minActiveReduceTasks, maxActiveReduceTasks, status.getReduceTasks(), "reduce task");

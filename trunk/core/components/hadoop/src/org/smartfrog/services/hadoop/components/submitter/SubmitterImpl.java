@@ -170,7 +170,6 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         public void execute() throws Throwable {
             String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER));
             try {
-                //TODO: move this to a separate thread
                 sfLog().info("Submitting to " + jobTracker);
                 JobClient jc = new JobClient(jobConf);
                 runningJob = jc.submitJob(jobConf);

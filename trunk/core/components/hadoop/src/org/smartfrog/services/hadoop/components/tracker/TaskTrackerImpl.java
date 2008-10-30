@@ -93,7 +93,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
     @Override
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<PortEntry> ports = new ArrayList<PortEntry>();
+        List<PortEntry> ports = super.buildPortList(conf);
         ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_TASK_TRACKER_HTTP_ADDRESS));
         return ports;
     }

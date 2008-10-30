@@ -24,7 +24,8 @@ import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.sfcore.utils.TimeoutInterval;
 
 /**
- * Created 21-Oct-2008 12:40:30
+ * This is a test case for  the hadoop components. It adds the ability to test for ports
+ * being closed at the end of the test run, so can catch a failing termination earlier.
  */
 
 public class HadoopTestBase extends DeployingTestBase {

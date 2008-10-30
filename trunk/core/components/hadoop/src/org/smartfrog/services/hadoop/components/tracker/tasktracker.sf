@@ -20,4 +20,5 @@ For more information: www.smartfrog.org
 
 TaskTracker extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.TaskTrackerImpl"
+  name "TaskTracker";
 }
