@@ -179,6 +179,9 @@
       <available classname="java.lang.Readable"/>
     </condition>
 
+    <!--this is the version used in artifact dependences inside ivy.xml files-->
+    <property name="smartfrog.artifact.version" value="latest.integration" />
+
     <tstamp>
       <format property="year" pattern="yyyy"/>
       <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
@@ -267,7 +270,6 @@ java.class.path=
 
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
-
   </target>
 
   <target name="init-common" depends="bind-to-smartfrog">
