@@ -131,6 +131,23 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
 }
 
+FilesystemWithActions extends LocalDataNodeCompound {
+
+
+  clusterActions extends WaitForServiceLive {
+    service LAZY PARENT:datanode;
+    //sfShouldTerminate false;
+
+    actions extends Compound {
+
+    }
+
+  }
+
+
+}
+
+
 TwoDataNodeCluster extends LocalDataNodeCompound {
   localDataDir2 extends TempDir {
 
@@ -145,7 +162,7 @@ TwoDataNodeCluster extends LocalDataNodeCompound {
 /**
  * A complete filesystem
  */
-LocalFileSystemCompound extends LocalDataNodeCompound {
+LocalFileSystemCompound extends FilesystemWithActions {
 
 
 }
@@ -154,10 +171,12 @@ LocalFileSystemCompound extends LocalDataNodeCompound {
 
 
 
-LocalJobTrackerCompound extends LocalHadoopCompound {
-  description "A job tracker";
+LocalJobTrackerCompound extends FilesystemWithActions {
+  description "A cluster with a job tracker";
 
-  jobTracker extends LightweightJobTracker {
+  jobTracker LAZY clusterActions:action:jobTracker;
+
+  clusterActions:action:jobTracker extends LightweightJobTracker {
     fs.default.name PARENT:fs.default.name;
     dataDir LAZY PARENT:dataDir;
     dataDirectories [dataDir];
@@ -171,11 +190,13 @@ LocalJobTrackerCompound extends LocalHadoopCompound {
 
 
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
-  description "A task tracker";
+  description "A cluster with a task tracker";
 
-  taskTracker extends LightweightTaskTracker {
+  taskTracker LAZY clusterActions:action:taskTracker;
+
+  clusterActions:action:taskTracker extends LightweightTaskTracker {
     fs.default.name PARENT:fs.default.name;
-    mapred.job.tracker jobTracker:mapred.job.tracker;
+    mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
   }
 }
 
@@ -184,18 +205,7 @@ LocalClusterCompound extends LocalDataNodeCompound {
 
   description "a full cluster";
 
-  jobTracker extends LightweightJobTracker {
-    fs.default.name PARENT:fs.default.name;
-    dataDir LAZY PARENT:dataDir;
-    dataDirectories [dataDir];
-    nameDir LAZY PARENT:nameDir;
-    nameDirectories [nameDir];
-    logDir LAZY PARENT:logDir;
-  }
 
-  taskTracker extends LightweightTaskTracker {
-    mapred.job.tracker jobTracker:mapred.job.tracker;
-  }
 }
 
 
@@ -227,7 +237,7 @@ WaitForJobTrackerLive extends WaitForFilesystemLive {
 
 WaitForServiceLive extends WaitForHadoopLive  {
   service TBD;
-  serviceName "";
+  serviceName service:name;
   message ("hadoop service " ++ serviceName ++ " not live - state is " ++ LAZY condition:serviceDescription);
   condition extends IsHadoopServiceLive {
     service LAZY PARENT:service;

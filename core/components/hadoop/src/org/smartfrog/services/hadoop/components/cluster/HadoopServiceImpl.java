@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is a component that deploys a hadoop service.
@@ -154,7 +155,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        return null;
+        return new ArrayList<PortEntry>();
     }
 
 

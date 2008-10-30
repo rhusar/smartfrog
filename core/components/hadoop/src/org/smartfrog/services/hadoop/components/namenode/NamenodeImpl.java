@@ -101,7 +101,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
     @Override
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<PortEntry> ports = new ArrayList<PortEntry>();
+        List<PortEntry> ports = super.buildPortList(conf);
         ports.add(resolvePortEntry(conf, ConfigurationAttributes.FS_DEFAULT_NAME));
         ports.add(resolvePortEntry(conf, ConfigurationAttributes.DFS_HTTP_ADDRESS));
         return ports;

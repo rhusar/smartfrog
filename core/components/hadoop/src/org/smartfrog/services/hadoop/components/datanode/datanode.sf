@@ -24,7 +24,11 @@ For more information: www.smartfrog.org
 
 
 DataNode extends FileSystemNode {
+  name "DataNode"
   sfClass "org.smartfrog.services.hadoop.components.datanode.DatanodeImpl";
+
+  //hadoop configuration values below
+  
   dfs.balance.bandwidthPerSec (1024 * 1024);
 
   dfs.blockreport.intervalMsec  (60 * 60 * 1000);

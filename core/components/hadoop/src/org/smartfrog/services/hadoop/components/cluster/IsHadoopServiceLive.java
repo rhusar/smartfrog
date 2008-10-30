@@ -22,6 +22,7 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.conditional.Condition;
 import org.apache.hadoop.util.Service;
 
@@ -44,6 +45,10 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
     public IsHadoopServiceLive() throws RemoteException {
     }
 
+    /**
+     * Get the service
+     * @return the service or null
+     */
     public HadoopService getService() {
         return service;
     }
@@ -52,6 +57,17 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         service = (HadoopService) sfResolve(ATTR_SERVICE, (Prim) null, true);
+    }
+
+    /**
+     * set the service to null
+     *
+     * @param status termination status
+     */
+    @Override
+    protected synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        service = null;
     }
 
     /**

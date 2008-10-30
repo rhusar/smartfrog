@@ -153,7 +153,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     @Override
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
-        List<PortEntry> ports = new ArrayList<PortEntry>();
+        List<PortEntry> ports = super.buildPortList(conf);
         //add the job tracker IPC port if it is not set to "local"
         String mrJobTracker = conf.get(ConfigurationAttributes.MAPRED_JOB_TRACKER);
         if(!ConfigurationAttributes.MAPRED_JOB_TRACKER_LOCAL.equals(mrJobTracker)) {
@@ -161,30 +161,6 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         }
         ports.add(resolvePortEntry(conf, ConfigurationAttributes.MAPRED_JOB_TRACKER_HTTP_ADDRESS));
         return ports;
-    }
-
-    /**
-     * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
-     * compound (if ever registered)
-     *
-     * @param status termination status
-     */
-/*
-    @Override
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
-        super.sfTerminateWith(status);
-        SmartFrogThread t = worker;
-        worker = null;
-        SmartFrogThread.requestThreadTermination(t);
-    }*/
-
-    /**
-     * Change the shutdown process to include an interrupt
-     * @param deployer
-     */
-    @Override
-    protected void terminateDeployerThread(ServiceDeployerThread deployer) {
-        deployer.requestTerminationWithInterrupt();
     }
 
     /**
@@ -210,22 +186,6 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     public int getLiveWorkerCount() throws RemoteException {
         return getJobTracker().getNumResolvedTaskTrackers();
     }
-
-    /**
-     * Liveness call in to check if this component is still alive.
-     *
-     * @param source source of call
-     * @throws SmartFrogLivenessException component is terminated
-     * @throws RemoteException            for consistency with the {@link Liveness} interface
-     */
-/*    @Override
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        super.sfPing(source);
-        if (worker == null || worker.isFinished()) {
-            throw new SmartFrogLivenessException("Worker is not running");
-        }
-    }*/
-
 
     /**
      * after deployment, call {@link ExtJobTracker#offerService()} to start the service.
@@ -260,48 +220,6 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         }
     }
 
-    /**
-     * This is a private worker thread that can be interrupted better
-     */
-    private class TrackerThread extends WorkflowThread {
-        private ExtJobTracker tracker;
 
-        /**
-         * Creates a new thread
-         * @param tracker the tracker
-         */
-        private TrackerThread(ExtJobTracker tracker) {
-            super(JobTrackerImpl.this, true);
-            this.tracker = tracker;
-        }
-
-        /**
-         * If this thread was constructed using a separate {@link Runnable} run object, then that <code>Runnable</code>
-         * object's <code>run</code> method is called; otherwise, this method does nothing and returns. <p> Subclasses
-         * of <code>Thread</code> should override this method.
-         *
-         * @throws Throwable if anything went wrong
-         */
-        @Override
-        public void execute() throws Throwable {
-            tracker.offerService();
-        }
-
-        public ExtJobTracker getTracker() {
-            return tracker;
-        }
-
-        /**
-         * Add an interrupt to the thread termination
-         */
-        @Override
-        public synchronized void requestTermination() {
-            if (!isTerminationRequested()) {
-                super.requestTermination();
-                //and interrupt
-                interrupt();
-            }
-        }
-    }
 
 }

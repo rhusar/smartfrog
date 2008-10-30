@@ -20,5 +20,5 @@ For more information: www.smartfrog.org
 
 JobTracker extends ClusterNode {
   sfClass "org.smartfrog.services.hadoop.components.tracker.JobTrackerImpl";
-
+  name "JobTracker";
 }

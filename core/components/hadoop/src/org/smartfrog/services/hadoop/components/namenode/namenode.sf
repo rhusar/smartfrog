@@ -37,7 +37,7 @@ For more information: www.smartfrog.org
 
 NameNode extends NameDataLogNode {
   sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
-
+  name "NameNode";
 
 
   //startup mode
