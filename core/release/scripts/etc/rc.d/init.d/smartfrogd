@@ -96,7 +96,7 @@ function stop() {
 	RETVAL=$$?
 	[ $$RETVAL -eq 0 ] && rm -f $$LockFile $$RunFile
 	success
-    RETVAL=0
+        RETVAL=0
 	echo
 	return $$RETVAL
 }
@@ -110,19 +110,19 @@ function status_check() {
         $$ProgDir/sfPing localhost
         RETVAL=$$?
 	fi;
-#failure of the ping
+        #failure of the ping
 	if [ $$RETVAL -eq 0 ]; then
         return 0
     elif [ -x $$RunFile ]; then
-    #program is dead and /var/run pid file exists
+        #program is dead and /var/run pid file exists
         RETVAL=1
         return 1
     elif [ -x $$LockFile ]; then
-    #program is dead and /var/lock lock file exists
+        #program is dead and /var/lock lock file exists
         RETVAL=2
         return 2
     else
-    #assume ps is not running
+        #assume ps is not running
         RETVAL=3
         return 3
     fi
