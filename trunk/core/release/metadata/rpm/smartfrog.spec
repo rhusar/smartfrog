@@ -231,7 +231,46 @@ This package does not include any JDBC drivers. The appropriate JDBC driver for 
 target system must be installed/added to the sfCodeBase attribute of the components,
 in order for JDBC connectivity to work.
 
+
 # -----------------------------------------------------------------------------
+
+%package hadoop
+Group:         ${rpm.framework}
+Summary:        Hadoop integration
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jasper
+Conflicts:      %{name}-jetty
+
+%description hadoop
+This includes all the artifacts needed for Apache Hadoop.
+DO NOT INSTALL THIS WITH smartfrog-jetty. Until Hadoop uses
+Jetty 6, this RPM includes jetty-5 JAR files which are incompatible. 
+
+# -----------------------------------------------------------------------------
+
+%package jasper
+Group:         ${rpm.framework}
+Summary:        Jasper JSP runtime
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
+
+%description jasper
+This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
+application server, such as Jetty.
+
+
+# -----------------------------------------------------------------------------
+
+%package jetty
+Group:         ${rpm.framework}
+Summary:        Jetty integration
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
+Conflicts:      %{name}-hadoop
+
+%description jetty
+This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
+SmartFrog. It is incompatble with the Hadoop RPM.
+
+# -----------------------------------------------------------------------------
+
 
 %package jmx
 Group:         ${rpm.framework}
@@ -247,6 +286,8 @@ mx4j-${mx4j.version}.jar
 mx4j-remote-${mx4j.version}.jar
 mx4j-jmx-${mx4j.version}.jar
 mx4j-tools-${mx4j.version}.jar
+
+
 
 # -----------------------------------------------------------------------------
 
@@ -282,7 +323,8 @@ oro-${oro.version}.jar
 %package quartz
 Group:         ${rpm.framework}
 Summary:        Work scheduling with Quartz
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging,
+
 #
 %description quartz
 Work scheduling. These components can be used to schedule work to a pool of machines,
@@ -685,6 +727,45 @@ fi
 %{libdir}/sf-database-${smartfrog.version}.jar
 %{linkdir}/sf-database.jar
 
+%files hadoop
+%{linkdir}/sf-hadoop.jar
+%{libdir}/sf-hadoop-${smartfrog.version}.jar
+%{libdir}/hadoop-core-${hadoop.version}.jar
+%{linkdir}/hadoop-core.jar
+
+#Jetty, tomcat and servlet artifacts which can cause trouble
+%{libdir}/jsp-api-${hadoop.tomcat.version}.jar
+%{libdir}/jasper-compiler-${hadoop.tomcat.version}.jar
+%{libdir}/jasper-runtime-${hadoop.tomcat.version}.jar
+%{linkdir}/jsp-api.jar
+%{linkdir}/jasper-compiler.jar
+%{linkdir}/jasper-runtime.jar
+%{libdir}/org.mortbay.jetty-${hadoop.jetty.version}.jar
+%{linkdir}/org.mortbay.jetty.jar
+%{libdir}/servlet-api-${hadoop.servlet-api.version}.jar
+#%{linkdir}/servlet-api.jar
+
+%{libdir}/commons-cli-${commons-cli.version}.jar
+%{linkdir}/commons-cli.jar
+%{libdir}/commons-el-${commons-el.version}.jar
+%{linkdir}/commons-el.jar
+%{libdir}/jets3t-${jets3t.version}.jar
+%{linkdir}/jets3t.jar
+%{libdir}/xmlenc-${xmlenc.version}.jar
+%{linkdir}/xmlenc.jar
+
+%files jetty
+
+%{libdir}/sf-jetty-${smartfrog.version}.jar
+%{libdir}/jetty-${jetty.version}.jar
+%{libdir}/jetty-util-${jetty.version}.jar
+%{libdir}/servlet-api-${servletapi.version}.jar
+%{linkdir}/sf-jetty.jar
+%{linkdir}/servlet-api.jar
+%{linkdir}/jetty.jar
+%{linkdir}/jetty-util.jar
+
+
 %files jmx
 
 %{libdir}/sf-jmx-${smartfrog.version}.jar
@@ -779,20 +860,13 @@ fi
 
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
-%{libdir}/sf-jetty-${smartfrog.version}.jar
-%{libdir}/jetty-${jetty.version}.jar
-%{libdir}/jetty-util-${jetty.version}.jar
-%{libdir}/servlet-api-${servletapi.version}.jar
 %{libdir}/commons-codec-${commons-codec.version}.jar
 %{libdir}/commons-httpclient-${commons-httpclient.version}.jar
 
 %{linkdir}/sf-www.jar
-%{linkdir}/sf-jetty.jar
-%{linkdir}/servlet-api.jar
-%{linkdir}/jetty.jar
-%{linkdir}/jetty-util.jar
 %{linkdir}/commons-codec.jar
 %{linkdir}/commons-httpclient.jar
+
 
 %files xml
 %{libdir}/sf-xml-${smartfrog.version}.jar

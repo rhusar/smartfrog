@@ -474,6 +474,20 @@
     <rpmpackage package="database"/>
     <ln artifact="sf-database" version="${smartfrog.version}"/>
 
+    <!-- hadoop -->
+    <rpmpackage package="hadoop"/>
+    <ln artifact="sf-hadoop" version="${smartfrog.version}"/>
+    <ln artifact="hadoop-core" version="${hadoop.version}"/>
+    <ln artifact="commons-cli" version="${commons-cli.version}"/>
+    <ln artifact="commons-el" version="${commons-el.version}"/>
+    <ln artifact="jets3t" version="${jets3t.version}"/>
+    <ln artifact="jsp-api" version="${hadoop.tomcat.version}"/>
+    <ln artifact="jasper-compiler" version="${hadoop.tomcat.version}"/>
+    <ln artifact="jasper-runtime" version="${hadoop.tomcat.version}"/>
+    <ln artifact="xmlenc" version="${xmlenc.version}"/>
+    <ln artifact="org.mortbay.jetty" version="${hadoop.jetty.version}"/>
+    <!--<ln artifact="servlet-api" version="${hadoop.servletapi.version}"/>-->    
+
     <!-- jmx -->
     <rpmpackage package="jmx"/>
     <ln artifact="sf-jmx" version="${smartfrog.version}"/>
@@ -530,12 +544,17 @@
     <!-- WWW -->
     <rpmpackage package="www"/>
     <ln artifact="sf-www" version="${smartfrog.version}"/>
+    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
+    <ln artifact="commons-codec" version="${commons-codec.version}"/>
+
+
+
+    <!--Jetty-->
+    <!--comes in after the www package-->
     <ln artifact="sf-jetty" version="${smartfrog.version}"/>
     <ln artifact="jetty" version="${jetty.version}"/>
     <ln artifact="jetty-util" version="${jetty.version}"/>
     <ln artifact="servlet-api" version="${servletapi.version}"/>
-    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
-    <ln artifact="commons-codec" version="${commons-codec.version}"/>
 
     <!--  xml-->
     <rpmpackage package="xml"/>
@@ -1089,10 +1108,14 @@
 
     <property name="rpms.core.list"
         value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
+    <property name="rpms.jetty.list"
+        value="smartfrog-jetty"/>
+    <property name="rpms.hadoop.list"
+        value="smartfrog-hadoop"/>
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
     <property name="rpms.list"
-        value="${rpms.core.list} ${rpms.private.list}"/>
+        value="${rpms.core.list} ${rpms.private.list} ${rpms.jetty.list} ${rpms.hadoop.list}"/>
 
     <!--here are all the signed RPMs that are generated-->
 
