@@ -59,7 +59,7 @@
     <dependency org="log4j"
         name="log4j"
         rev="${log4j.version}"
-        conf="test-helpers->default"
+        conf="test-helpers->master"
         />
     <!--it is essential that only the master JAR of commons logging
     is pulled in, as its dependencies are usually a mess, including things
