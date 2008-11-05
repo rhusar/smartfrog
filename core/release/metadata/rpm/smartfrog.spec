@@ -734,9 +734,9 @@ fi
 %{linkdir}/hadoop-core.jar
 
 #Jetty, tomcat and servlet artifacts which can cause trouble
-%{libdir}/jsp-api-${hadoop.tomcat.version}.jar
-%{libdir}/jasper-compiler-${hadoop.tomcat.version}.jar
-%{libdir}/jasper-runtime-${hadoop.tomcat.version}.jar
+%{libdir}/jsp-api-${hadoop.jsp-api.version}.jar
+%{libdir}/jasper-compiler-${hadoop.jasper.version}.jar
+%{libdir}/jasper-runtime-${hadoop.jasper.version}.jar
 %{linkdir}/jsp-api.jar
 %{linkdir}/jasper-compiler.jar
 %{linkdir}/jasper-runtime.jar
