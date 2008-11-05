@@ -481,9 +481,9 @@
     <ln artifact="commons-cli" version="${commons-cli.version}"/>
     <ln artifact="commons-el" version="${commons-el.version}"/>
     <ln artifact="jets3t" version="${jets3t.version}"/>
-    <ln artifact="jsp-api" version="${hadoop.tomcat.version}"/>
-    <ln artifact="jasper-compiler" version="${hadoop.tomcat.version}"/>
-    <ln artifact="jasper-runtime" version="${hadoop.tomcat.version}"/>
+    <ln artifact="jsp-api" version="${hadoop.jsp-api.version}"/>
+    <ln artifact="jasper-compiler" version="${hadoop.jasper.version}"/>
+    <ln artifact="jasper-runtime" version="${hadoop.jasper.version}"/>
     <ln artifact="xmlenc" version="${xmlenc.version}"/>
     <ln artifact="org.mortbay.jetty" version="${hadoop.jetty.version}"/>
     <!--<ln artifact="servlet-api" version="${hadoop.servletapi.version}"/>-->    

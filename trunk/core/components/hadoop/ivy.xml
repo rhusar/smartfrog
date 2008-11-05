@@ -121,25 +121,25 @@
 
     <dependency org="javax.servlet"
       name="servlet-api"
-      rev="${servletapi.version}"
+      rev="${hadoop.servlet-api.version}"
       conf="server->master"/>
 
     <!--pulls in servlet API 2.4-->
     <dependency org="jetty"
       name="org.mortbay.jetty"
-      rev="${jetty5.version}"
+      rev="${hadoop.jetty.version}"
       conf="server->master"/>
     <dependency org="tomcat"
       name="jasper-runtime"
-      rev="${jasper.version}"
+      rev="${hadoop.jasper.version}"
       conf="server->master"/>
     <dependency org="tomcat"
       name="jasper-compiler"
-      rev="${jasper.version}"
+      rev="${hadoop.jasper.version}"
       conf="server->master"/>
     <dependency org="tomcat"
       name="jsp-api"
-      rev="${jsp-api.version}"
+      rev="${hadoop.jsp-api.version}"
       conf="server->master"/>
     <dependency org="commons-el"
       name="commons-el"
