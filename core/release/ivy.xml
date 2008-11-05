@@ -177,7 +177,7 @@
         name="sf-hadoop"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-hadoop->master,redist,documentation"/>
+        conf="package-hadoop->master,redist,documentation,s3-server"/>
 
 
     <!--logging-->
