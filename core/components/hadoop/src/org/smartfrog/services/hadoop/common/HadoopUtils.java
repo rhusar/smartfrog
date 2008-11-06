@@ -46,7 +46,7 @@ public class HadoopUtils {
             socket = new Socket();
             socket.connect(address, connectTimeout);
         } catch (SecurityException e) {
-            throw new IOException("Failed to connect to " + address, e);
+            throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
         } finally {
             if (socket != null) {
                 try {

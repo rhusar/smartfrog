@@ -122,7 +122,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo{
      * Get the current number of workers
      * @return the worker count
      */
-    @Override
+    //@Override
     public int getLiveWorkerCount() {
         return namesystem.heartbeats.size();
     }
@@ -136,7 +136,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo{
      * @param oldState existing state
      * @param newState new state.
      */
-    @Override
+    //@Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: NameNode is now "+ newState);
@@ -148,7 +148,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo{
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    @Override
+    //@Override
     public int getIPCPort() {
         return getNameNodeAddress().getPort() ;
     }
@@ -158,7 +158,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo{
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    @Override
+    //@Override
     public int getWebPort() {
         return namesystem.getNameNodeInfoPort();
     }

@@ -224,7 +224,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    @Override
+    //@Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         boolean live;
         String description;

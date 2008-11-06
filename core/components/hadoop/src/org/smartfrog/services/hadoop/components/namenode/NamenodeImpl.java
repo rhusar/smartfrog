@@ -121,7 +121,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      * @return 0 if not live, or the count of active workers
      * @throws RemoteException for network problems
      */
-    @Override
+    //@Override
     public int getLiveWorkerCount() throws RemoteException {
         if (!isServiceLive()) {
             return 0;

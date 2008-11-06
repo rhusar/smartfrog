@@ -77,7 +77,7 @@ public class IsHadoopServiceLive extends PrimImpl implements Condition {
      * @throws RemoteException    for network problems
      * @throws SmartFrogException for any other problem
      */
-    @Override
+    //@Override
     public boolean evaluate() throws RemoteException, SmartFrogException {
         Service.ServiceState state = service.getServiceState();
         sfReplaceAttribute(ATTR_SERVICE_STATE, state.toString());

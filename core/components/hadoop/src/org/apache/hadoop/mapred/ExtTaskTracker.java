@@ -65,7 +65,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    @Override
+    //@Override
     public int getIPCPort() {
         return ServiceInfo.PORT_UNUSED;
     }
@@ -75,7 +75,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
      *
      * @return the port number; not valid if the service is not LIVE
      */
-    @Override
+    //@Override
     public int getWebPort() {
         return server.getPort();
     }
@@ -86,7 +86,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
      * @return the worker count
      */
 
-    @Override
+    //@Override
     public int getLiveWorkerCount() {
         return workerThreads;
     }
@@ -94,7 +94,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     /**
       * Main service loop.  Will stay in this loop forever.
      */
-    @Override
+    //@Override
     public State offerService() throws Exception {
         return super.offerService();
     }
