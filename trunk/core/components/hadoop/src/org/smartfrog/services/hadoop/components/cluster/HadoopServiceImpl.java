@@ -213,7 +213,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @return true if the service is live
      * @throws RemoteException for RMI problems
      */
-    @Override
+    //@Override
     public boolean isServiceLive() throws RemoteException {
         Service s = getService();
         return s != null && s.getServiceState() == Service.ServiceState.LIVE;
@@ -251,7 +251,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * When the namenode is terminated, and we are not shutting down ourself, then we notify
      * {@inheritDoc}
      */
-    @Override
+    //@Override
     public void onStateChange(Service hadoopService, Service.ServiceState oldState,
                               Service.ServiceState newState) {
         if (newState == Service.ServiceState.TERMINATED && !terminationInitiated) {
