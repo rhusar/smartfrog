@@ -102,7 +102,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @param src source component
      */
     private void bind(Prim src) {
-        this.source = src;
+        source = src;
         helper = new ComponentHelper(src);
     }
 
@@ -126,7 +126,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @throws SFHadoopRuntimeException on any resolution/remoting problem
      */
-    private void buildAttributeMapQuietly() {
+    private void buildAttributeMapQuietly() throws SFHadoopRuntimeException {
         if (attributeMap == null) {
             try {
                 attributeMap = getState();
@@ -476,6 +476,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @param bindAddressPort old style host port
      * @return the host/port binding
      * @throws IllegalArgumentException if the arguments are bad
+     * @throws SmartFrogResolutionException if the address does not resolve
      */
     public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort)
             throws SmartFrogResolutionException {
@@ -485,7 +486,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
                         bindAddressPort,
                         addressName);
         if(infoAddr == null) {
-            throw new SmartFrogResolutionException("Failed to resolve "+addressName);
+            throw new SmartFrogResolutionException("Failed to resolve " + addressName);
         }
         InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
         return socketAddress;
