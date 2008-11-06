@@ -168,7 +168,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @return the source component
      */
-    @Override
+    //@Override
     public Prim getSource() {
         return source;
     }
