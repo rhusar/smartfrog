@@ -566,8 +566,9 @@ public class TestCompoundImpl extends ConditionCompound
                         } else {
                             //error is good,
                             //The decision to terminate is based on the shouldTerminate flag
-                            sfLog().debug(propagateTermination?"Terminating normally":
-                                    "Not terminating as sfShouldTerminate is false");
+                            sfLog().debug(propagateTermination ?
+                                      "Terminating normally"
+                                    : "Not terminating as sfShouldTerminate is false");
                         }
 
                     }
@@ -578,7 +579,9 @@ public class TestCompoundImpl extends ConditionCompound
                     if (childStatus.isNormal()) {
                         //flip this to abnormal
                         exitRecord = TerminationRecord.abnormal(
-                                childStatus.description
+                                (childStatus.description != null
+                                        ? childStatus.description
+                                        : "Action terminated normally " + childStatus)
                                         + UNEXPECTED_TERMINATION,
                                 childStatus.id,
                                 childStatus.getCause());
@@ -631,7 +634,7 @@ public class TestCompoundImpl extends ConditionCompound
         if (exitRecord != null) {
             
             sfTerminate(exitRecord);
-            //dont forward, as we are terminating with an error
+            //don't forward, as we are terminating with an error
             propagateTermination = false;
         }
         //trigger termination.
