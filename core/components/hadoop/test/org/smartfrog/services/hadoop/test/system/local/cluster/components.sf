@@ -49,7 +49,7 @@ testLocalCluster extends ExpectDeploy {
 testLocalClusterForked extends testLocalCluster {
   action:datanode:sfProcessName "testLocalClusterForked-datanode";
   action:namenode:sfProcessName "testLocalClusterForked-namenode";
-  action:clusterActions:action:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
-  action:clusterActions:action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:clusterActions:actions:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
+  action:clusterActions:actions:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
 }
 

@@ -36,7 +36,7 @@ testLocalJobTracker extends ExpectDeploy {
 testLocalJobTrackerForked extends testLocalJobTracker {
   //action:datanode:sfProcessName "testDataNodeForkedProcess";
   //action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:clusterActions:action:sfProcessName "testLocalJobTrackerForked-jobtracker";
+  action:clusterActions:actions:sfProcessName "testLocalJobTrackerForked-jobtracker";
 }
 
 /**
@@ -68,5 +68,5 @@ testLocalTaskTracker extends ExpectDeploy {
 testLocalTaskTrackerForked extends testLocalTaskTracker {
   //action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
   //action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:taskTracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
+  action:clusterActions:actions:taskTracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
 }

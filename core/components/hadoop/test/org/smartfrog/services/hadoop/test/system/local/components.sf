@@ -24,14 +24,17 @@
 //set this flag to true to dump the configuration on failures
 
 DUMP_CONF false;
+TEST_MODE true;
+
 NameNodeIpcPort "8020";
 NameNodeHttpPort "8021";
 DataNodeHttpsPort "0";
-HandlerThreads 4
+HandlerThreads 4;
 ClientHandlerThreads 2;
-FS.DEFAULT.NAME  ("hdfs://localhost:" ++ NameNodeIpcPort ++ "/");
-NAME_NODE_URL      ("http://localhost:" ++ NameNodeHttpPort ++ "/");
-DATA_NODE_URL      ("http://localhost:" ++ DataNodeHttpsPort ++ "/");
+HOSTNAME "localhost";
+FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
+NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
+DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpsPort ++ "/");
 
 LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
@@ -48,7 +51,7 @@ LightweightTaskTracker extends TaskTracker {
 LightweightNameNode extends NameNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.namenode.handler.count HandlerThreads;
-  testModeDeleteDirectories true;
+  testModeDeleteDirectories TEST_MODE;
 }
 
 LightweightDataNode extends DataNode {
@@ -171,18 +174,18 @@ LocalFileSystemCompound extends FilesystemWithActions {
 
 
 
-LocalJobTrackerCompound extends FilesystemWithActions {
+LocalJobTrackerCompound extends LocalFileSystemCompound {
   description "A cluster with a job tracker";
 
-  jobTracker LAZY clusterActions:action:jobTracker;
+  jobTracker LAZY clusterActions:actions:jobTracker;
 
-  clusterActions:action:jobTracker extends LightweightJobTracker {
-    fs.default.name PARENT:fs.default.name;
-    dataDir LAZY PARENT:dataDir;
+  clusterActions:actions:jobTracker extends LightweightJobTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
-    nameDir LAZY PARENT:nameDir;
+    nameDir LAZY PARENT:ATTRIB nameDir;
     nameDirectories [nameDir];
-    logDir LAZY PARENT:logDir;
+    logDir LAZY PARENT:ATTRIB logDir;
   }
 }
 
@@ -192,16 +195,16 @@ LocalJobTrackerCompound extends FilesystemWithActions {
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A cluster with a task tracker";
 
-  taskTracker LAZY clusterActions:action:taskTracker;
+  taskTracker LAZY clusterActions:actions:taskTracker;
 
-  clusterActions:action:taskTracker extends LightweightTaskTracker {
-    fs.default.name PARENT:fs.default.name;
+  clusterActions:actions:taskTracker extends LightweightTaskTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
   }
 }
 
 
-LocalClusterCompound extends LocalDataNodeCompound {
+LocalClusterCompound extends LocalTaskTrackerCompound {
 
   description "a full cluster";
 
