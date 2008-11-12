@@ -33,7 +33,7 @@ import java.io.IOException;
 /**
  *
  */
-public class ExtNameNode extends NameNode implements ServiceInfo{
+public class ExtNameNode extends NameNode implements ServiceInfo {
 
     private boolean checkRunning;
     private Prim owner;
@@ -160,7 +160,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo{
      */
     //@Override
     public int getWebPort() {
-        return namesystem.getNameNodeInfoPort();
+        return getHttpAddress().getPort();
     }
 
     public void setNotifier(ServiceStateChangeNotifier notifier) {
