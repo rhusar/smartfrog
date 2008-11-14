@@ -77,4 +77,14 @@
     </fail>
   </target>
 
+  <target name="copy-hadoop" depends="ivy-retrieve"
+      description="copy the hadoop JAR where it needs to go to be kept under SCM">
+    <fail>
+      <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>
+      You need a proper hadoop.version number and not ${hadoop.version}
+    </fail>
+    <property name="hadoop.target.dir" location="../../antbuild/repository/org.apache.hadoop/hadoop-core/${hadoop.version}" />
+    <mkdir dir="${hadoop.target.dir}" />
+    <copy todir="${hadoop.target.dir}" file="build/ivy/lib/redist/hadoop-core-${hadoop.version}.jar"/>
+  </target>
 </project>

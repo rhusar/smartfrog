@@ -586,6 +586,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
                                       boolean useWorkflowTermination) {
             super(HadoopServiceImpl.this, useWorkflowTermination);
+            setName(HadoopServiceImpl.this.getName());
             this.useWorkflowTermination = useWorkflowTermination;
             this.hadoopService = hadoopService;
             this.conf = conf;

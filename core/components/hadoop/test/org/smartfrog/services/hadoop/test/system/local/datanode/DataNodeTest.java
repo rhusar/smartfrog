@@ -42,6 +42,11 @@ public class DataNodeTest extends HadoopTestBase {
 
     public void testClusterShutDownCleanly() throws Throwable {
         expectSuccessfulTestRunOrSkip(PACKAGE, "testClusterShutDownCleanly");
+        enableFailOnPortCheck();
     }
 
+    public void testOrphanDatanode() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanDatanode");
+        enableFailOnPortCheck();
+    }
 }

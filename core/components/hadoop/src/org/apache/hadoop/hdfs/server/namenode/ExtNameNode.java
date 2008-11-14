@@ -90,12 +90,28 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    /**
+     * Return an extended service name
+     *
+     * @return new service name
+     */
+    @Override
+    public String getServiceName() {
+        return "ExtNameNode";
+    }
+
+
     /**
      * Get the stopped exception
      *
      * @return true if we have stopped
      */
-    public synchronized boolean isStopped() {
+    public boolean isStopped() {
         return getServiceState() == ServiceState.TERMINATED;
     }
 

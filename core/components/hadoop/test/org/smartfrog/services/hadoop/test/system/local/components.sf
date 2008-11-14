@@ -22,8 +22,9 @@
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 
 //set this flag to true to dump the configuration on failures
-
 DUMP_CONF false;
+
+//set the flag to say : Delete directories on shutdown
 TEST_MODE true;
 
 NameNodeIpcPort "8020";
@@ -35,6 +36,7 @@ HOSTNAME "localhost";
 FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
 NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
 DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpsPort ++ "/");
+STARTUP_SLEEP_TIME 5000;
 
 LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
@@ -134,6 +136,7 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
 }
 
+
 FilesystemWithActions extends LocalDataNodeCompound {
 
 
@@ -141,14 +144,33 @@ FilesystemWithActions extends LocalDataNodeCompound {
     service LAZY PARENT:datanode;
     //sfShouldTerminate false;
 
-    actions extends Compound {
-
+    then extends Compound {
+      //sfShouldTerminate false;
     }
 
   }
 
 
 }
+
+
+
+OrphanDatanodeCompound  extends LocalHadoopCompound  {
+
+  description "A cluster with a task tracker but not job tracker";
+
+  localDataDir extends TempDir {
+
+  }
+
+  datanode extends  LightweightDataNode {
+    fs.default.name PARENT:fs.default.name;
+    dataDirectories [LAZY localDataDir];
+    logDir LAZY PARENT:logDir;
+    dfs.datanode.address dataNodeURL  ;
+  }
+}
+
 
 
 TwoDataNodeCluster extends LocalDataNodeCompound {
@@ -171,15 +193,10 @@ LocalFileSystemCompound extends FilesystemWithActions {
 }
 
 
-
-
-
-LocalJobTrackerCompound extends LocalFileSystemCompound {
+LocalJobTrackerCompound2 extends LocalFileSystemCompound {
   description "A cluster with a job tracker";
 
-  jobTracker LAZY clusterActions:actions:jobTracker;
-
-  clusterActions:actions:jobTracker extends LightweightJobTracker {
+  jobTracker extends LightweightJobTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     dataDir LAZY PARENT:ATTRIB dataDir;
     dataDirectories [dataDir];
@@ -190,14 +207,43 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 }
 
 
+LocalJobTrackerCompound extends LocalFileSystemCompound {
+  description "A cluster with a job tracker";
+
+  jobTracker LAZY clusterActions:then:jobTracker;
+
+  clusterActions:then:jobTracker extends LightweightJobTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    dataDir LAZY PARENT:ATTRIB dataDir;
+    dataDirectories [dataDir];
+    nameDir LAZY PARENT:ATTRIB nameDir;
+    nameDirectories [nameDir];
+    logDir LAZY PARENT:ATTRIB logDir;
+  }
+}
+
+
+OrphanTaskTrackerCompound extends LocalDataNodeCompound  {
+
+  description "A cluster with a task tracker but not job tracker";
+
+  mapred.job.tracker HadoopConfiguration:mapred.job.tracker;
+
+  taskTracker extends LightweightTaskTracker {
+    fs.default.name PARENT:ATTRIB fs.default.name;
+    mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
+  }
+}
+
+
 
 
 LocalTaskTrackerCompound extends LocalJobTrackerCompound {
   description "A cluster with a task tracker";
 
-  taskTracker LAZY clusterActions:actions:taskTracker;
+  taskTracker LAZY clusterActions:then:taskTracker;
 
-  clusterActions:actions:taskTracker extends LightweightTaskTracker {
+  clusterActions:then:taskTracker extends LightweightTaskTracker {
     fs.default.name PARENT:ATTRIB fs.default.name;
     mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
   }
@@ -417,6 +463,9 @@ TestJobNoFile extends TestJob {
   mapred.output.dir testDirOut;
 }
 
+  Sleep extends Delay {
+    time STARTUP_SLEEP_TIME;
+  }
 
 LocalClusterStatus extends ClusterStatus {
   jobTracker TBD;
@@ -437,6 +486,8 @@ JobTrackerSequence extends FileSystemLiveSequence {
 
   jobTracker TBD;
   taskTracker TBD;
+
+  sleep extends Sleep;
 
   waitForTaskTracker extends WaitForServiceLive {
     serviceName "TaskTracker";

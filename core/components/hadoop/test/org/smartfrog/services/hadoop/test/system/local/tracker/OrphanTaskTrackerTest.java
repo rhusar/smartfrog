@@ -17,17 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
+package org.smartfrog.services.hadoop.test.system.local.tracker;
+
+import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
 
 /**
- * A clusternode represents any kind of node in the farm
+ *
+ * Created 20-May-2008 17:35:13
+ *
  */
 
+public class OrphanTaskTrackerTest extends HadoopTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
-ClusterNode extends HadoopConfiguration {
-  name "ClusterNode";
+    public OrphanTaskTrackerTest(String name) {
+        super(name);
+    }
+
+    public void testOrphanTracker() throws Throwable {
+        enablePortCheck();
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanTracker");
+    }
+
 }
-
-ManagerNode extends ClusterNode {
-  minWorkerCount 1;
-}
-

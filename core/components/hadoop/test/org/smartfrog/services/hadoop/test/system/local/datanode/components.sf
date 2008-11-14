@@ -86,3 +86,28 @@ testFileSystemOperations extends LocalDataNodeTest {
   }
 }
 
+
+
+
+/**
+ * Test the local node
+ */
+testOrphanDatanode extends ExpectDeploy {
+  description "bring up an Orphan Datanode";
+
+
+
+  action extends OrphanDatanodeCompound {
+  }
+
+  //for our test we sleep; that's all.
+  tests extends Sequence {
+    Sleep extends Delay {
+      time STARTUP_SLEEP_TIME;
+    }
+  }
+
+
+}
+
+
