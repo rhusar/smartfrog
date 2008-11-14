@@ -37,8 +37,8 @@ testLocalCluster extends ExpectDeploy {
 
     namenode LAZY action:namenode;
     datanode LAZY action:datanode;
-    jobTracker LAZY action:jobTracker;
-    taskTracker LAZY action:taskTracker;
+    jobTracker LAZY action:clusterActions:then:jobTracker;
+    taskTracker LAZY action:clusterActions:then:taskTracker;
   }
   
 
@@ -47,9 +47,9 @@ testLocalCluster extends ExpectDeploy {
 
 
 testLocalClusterForked extends testLocalCluster {
-  action:datanode:sfProcessName "testLocalClusterForked-datanode";
   action:namenode:sfProcessName "testLocalClusterForked-namenode";
-  action:clusterActions:actions:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
-  action:clusterActions:actions:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:datanode:sfProcessName "testLocalClusterForked-datanode";
+  action:clusterActions:then:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
+  action:clusterActions:then:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
 }
 

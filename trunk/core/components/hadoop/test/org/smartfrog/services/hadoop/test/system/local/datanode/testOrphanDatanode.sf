@@ -19,11 +19,10 @@
  */
 
 
-#include "/org/smartfrog/services/hadoop/test/system/local/tracker/components.sf"
+#include "/org/smartfrog/services/hadoop/test/system/local/datanode/components.sf"
 
 
 /**
  * Test case
  */
-sfConfig extends testLocalJobTracker {
-}
+sfConfig testOrphanDatanode ;

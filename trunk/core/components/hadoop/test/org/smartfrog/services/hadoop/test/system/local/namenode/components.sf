@@ -85,17 +85,18 @@ testNameNodeForked extends testLocalNameNodeCompound {
 testNameNodeHasNoWorkers extends ExpectDeployFailure {
 
   action extends LocalNameNodeCompound {
-  }
-
-  tests extends Sequence {
 
     wait extends WaitForWorkersLive {
-      service LAZY action:namenode;
+      service LAZY namenode;
       minCount 1;
     }
 
   }
 
+  tests extends Sequence {
+
+
+  }
 
 
 }

@@ -26,7 +26,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * Created 08-Jul-2008 13:28:24
+ * Interface for probing the state of a service
  */
 
 
@@ -41,7 +41,7 @@ public interface HadoopService extends Remote {
 
     /**
      * Get the service state
-     * @return the current service state, or UNDEFINED if there is no service
+     * @return the current service state, or {@link Service.ServiceState#UNDEFINED} if there is no service
      * @throws RemoteException for RMI problems
      */
     Service.ServiceState getServiceState() throws RemoteException;

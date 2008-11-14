@@ -25,5 +25,5 @@
 /**
  * Test case
  */
-sfConfig extends testLocalJobTracker {
+sfConfig extends testOrphanTracker {
 }

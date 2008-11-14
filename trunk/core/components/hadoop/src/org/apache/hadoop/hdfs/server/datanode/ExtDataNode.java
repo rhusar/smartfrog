@@ -50,8 +50,16 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
         notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
+  /**
+   * Return an extended service name
+   * @return new service name
+   */
+  @Override
+  public String getServiceName() {
+    return "ExtDataNode";
+  }
 
-    /**
+  /**
      * Start our parent and the worker thread
      *
      * @throws IOException if necessary
@@ -197,6 +205,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
          */
         private ExtDataNodeThread() {
             super(ExtDataNode.this.owner, true);
+            setName(getServiceName());
         }
 
         /**

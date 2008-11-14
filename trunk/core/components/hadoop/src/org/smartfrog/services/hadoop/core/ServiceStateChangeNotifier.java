@@ -39,8 +39,8 @@ public class ServiceStateChangeNotifier {
     /**
      * Set the handler to be non null only if the owner implements the interface
      *
-     * @param service
-     * @param owner
+     * @param service service to work with
+     * @param owner owner Prim
      */
     public ServiceStateChangeNotifier(Service service, Prim owner) {
         this.service = service;

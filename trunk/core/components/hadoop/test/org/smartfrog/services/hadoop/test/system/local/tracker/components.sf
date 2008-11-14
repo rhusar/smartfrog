@@ -34,9 +34,10 @@ testLocalJobTracker extends ExpectDeploy {
 
 
 testLocalJobTrackerForked extends testLocalJobTracker {
-  //action:datanode:sfProcessName "testDataNodeForkedProcess";
-  //action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:clusterActions:actions:sfProcessName "testLocalJobTrackerForked-jobtracker";
+  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:datanode:sfProcessName "testDataNodeForkedProcess";
+  action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
+//  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
 }
 
 /**
@@ -53,7 +54,7 @@ testLocalTaskTracker extends ExpectDeploy {
   tests extends MapReduceTestSequence {
     jobTracker LAZY action:jobTracker;
     taskTracker LAZY action:taskTracker;
-    cluster PARENT:action:cluster;
+    cluster LAZY PARENT:action:cluster;
     datanode LAZY PARENT:action:datanode;
     namenode LAZY PARENT:action:namenode;
   }
@@ -62,11 +63,33 @@ testLocalTaskTracker extends ExpectDeploy {
 }
 
 
+/**
+ * Test the local node
+ */
+testOrphanTracker extends ExpectDeploy {
+  description "bring up a Task Tracker";
+
+
+
+  action extends OrphanTaskTrackerCompound {
+  }
+
+  //for our test we sleep; that's all.
+  tests extends Sequence {
+    Sleep extends Delay {
+      time STARTUP_SLEEP_TIME;
+    }
+  }
+
+
+}
+
 
 
 
 testLocalTaskTrackerForked extends testLocalTaskTracker {
-  //action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
-  //action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:clusterActions:actions:taskTracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
+  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:datanode:sfProcessName "testDataNodeForkedProcess";
+  action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
+  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
 }
