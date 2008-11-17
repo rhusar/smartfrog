@@ -489,7 +489,7 @@ public class TestCompoundImpl extends ConditionCompound
             //child termination
             if (actionTerminator != null && actionTerminator.isForcedShutdown() && !expectTerminate) {
                 //this is a forced shutdown, all is well
-                sfLog().info("Forced shutdown of test components (expected)");
+                sfLog().info("Forced shutdown of action component (expected)");
                 testSucceeded = true;
             } else {
                 //not a forced shutdown, so why did it die?
