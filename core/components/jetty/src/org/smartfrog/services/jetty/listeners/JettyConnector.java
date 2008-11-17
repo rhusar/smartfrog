@@ -20,10 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.jetty.listeners;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 /**
  * An interface for listeners for jetty server 
  * @author Ritu Sabharwal
@@ -31,7 +28,7 @@ import java.rmi.RemoteException;
 
 public interface JettyConnector extends Remote {
     /**
-     * attribute name: {@value}
+     * port to listen to {@value}
      */
     String LISTENER_PORT = "port";
     /**
@@ -44,4 +41,32 @@ public interface JettyConnector extends Remote {
      */
     String SERVER_NAME = "name";
 
+    /**
+     * number of threads to accept requests.
+     * {@value}
+     */
+    String ATTR_THREADS ="threads";
+
+    /**
+     * number of threads to accept requests. {@value}
+     */
+    String ATTR_MAX_THREADS = "maxThreads";
+
+    /**
+     * number of threads to accept requests. {@value}
+     */
+    String ATTR_MIN_THREADS = "minThreads";
+
+
+    /**
+     * Max time (millis) to wait for a socket
+     * <p/>
+     * {@value}
+     */
+    String ATTR_MAX_IDLE_TIME="maxIdleTime";
+    String ATTR_USE_DIRECT_BUFFERS = "useDirectBuffers";
+    String ATTR_SOCKET_LINGER_TIME = "socketLingerTime";
+    String ATTR_RESPONSE_BUFFER_SIZE = "responseBufferSize";
+    String ATTR_HEADER_BUFFER_SIZE = "headerBufferSize";
+    String ATTR_REQUEST_BUFFER_SIZE = "requestBufferSize";
 }

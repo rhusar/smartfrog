@@ -19,9 +19,10 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.jetty.listeners;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.thread.BoundedThreadPool;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
@@ -34,7 +35,6 @@ import java.rmi.RemoteException;
 public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements JettySocketConnector {
 
 
-
     public SelectChannelConnectorImpl() throws RemoteException {
     }
 
@@ -43,9 +43,19 @@ public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements
     }
 
     protected void configureConnector() throws SmartFrogException, RemoteException {
-        SelectChannelConnector selectChannelConnector = getSelectChannelConnector();
-        setMaxIdleTime(selectChannelConnector);
-        bindConnectorToPortAndHost(selectChannelConnector);
+        SelectChannelConnector channel = getSelectChannelConnector();
+
+        setMaxIdleTime(channel);
+        bindConnectorToPortAndHost(channel);
+        // set up all the threads;
+        BoundedThreadPool pool = createBoundedThreadPool();
+        channel.setThreadPool(pool);
+        channel.setUseDirectBuffers(sfResolve(ATTR_USE_DIRECT_BUFFERS,true,true));
+        channel.setSoLingerTime(sfResolve(ATTR_SOCKET_LINGER_TIME, -1, true));
+        channel.setHeaderBufferSize(sfResolve(ATTR_HEADER_BUFFER_SIZE,0,true));
+        channel.setRequestBufferSize(sfResolve(ATTR_REQUEST_BUFFER_SIZE, 0, true));
+        channel.setResponseBufferSize(sfResolve(ATTR_RESPONSE_BUFFER_SIZE, 0, true));
+
     }
 
     protected Connector createConnector() throws SmartFrogException, RemoteException {
