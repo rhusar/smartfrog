@@ -20,12 +20,11 @@
 
 package org.smartfrog.services.jetty.listeners;
 
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.Server;
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.thread.BoundedThreadPool;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.RemoteException;
 
@@ -62,15 +61,11 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
 
         Server server = jettyHelper.getServer();
         // set up all the threads;
-        int threads = sfResolve(ATTR_THREADS, 0, true);
-        BoundedThreadPool pool = new BoundedThreadPool();
-        pool.setMinThreads(threads);
-        pool.setMaxThreads(threads);
+        BoundedThreadPool pool = createBoundedThreadPool();
         SocketConnector socketConnector = getSocketConnector();
-        socketConnector.setAcceptors(threads);
-        //connector.setThreadPool(pool);
-        //bind to the main thread pool
-        socketConnector.setThreadPool(server.getThreadPool());
+        socketConnector.setAcceptors(pool.getMaxThreads());
+        //bind to the thread pool
+        socketConnector.setThreadPool(pool);
         setMaxIdleTime(connector);
         bindConnectorToPortAndHost(connector);
     }
