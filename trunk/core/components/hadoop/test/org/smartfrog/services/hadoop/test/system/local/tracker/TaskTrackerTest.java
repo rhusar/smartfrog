@@ -36,6 +36,7 @@ public class TaskTrackerTest extends HadoopTestBase {
 
     public void testLocalTaskTracker() throws Throwable {
         enablePortCheck();
+        checkTaskTracker();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTracker");
     }
 

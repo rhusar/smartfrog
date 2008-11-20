@@ -37,8 +37,8 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a component that deploys a hadoop service.
@@ -89,8 +89,8 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        sfLog().info("Initiating "+getName()+" termination"
-         +" deployerThread=" + deployerThread + " service=" + service);
+        sfLog().info("Initiating " + getName() + " termination"
+                + " deployerThread=" + deployerThread + " service=" + service);
         terminationInitiated = true;
         try {
             terminateDeployerThread();
@@ -99,14 +99,15 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         }
         terminateHadoopService();
         try {
-            checkPortsAreClosed();
+            checkPortsAreClosed("termination");
         } catch (SmartFrogException e) {
-            sfLog().warn("Ports not closed "+e, e);
+            sfLog().warn("Ports not closed " + e, e);
         }
     }
 
     /**
      * Get the configuration used to deploy this service
+     *
      * @return the configuration; will be null if nothing has been deployed yet
      */
     public ManagedConfiguration getConfiguration() {
@@ -120,15 +121,16 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Override point: check that after termination, any chosen ports are closed.
      *
+     * @param during
      * @throws SmartFrogException if one or more ports are open
      */
-    protected void checkPortsAreClosed() throws SmartFrogException {
+    protected void checkPortsAreClosed(String during) throws SmartFrogException {
         if (portList == null) {
             return;
         }
         StringBuilder ports = new StringBuilder();
-        for (PortEntry port: portList) {
-            InetSocketAddress address=port.address;
+        for (PortEntry port : portList) {
+            InetSocketAddress address = port.address;
             if (address.getPort() > 0) {
                 try {
                     HadoopUtils.checkPort(address, CONNECT_TIMEOUT);
@@ -141,17 +143,18 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             }
         }
         if (ports.length() > 0) {
-            throw new SmartFrogException(ports.toString());
+            throw new SmartFrogException("Ports found open during " + during + "\n" + ports.toString());
         }
     }
 
     /**
-     * Get a list of ports that should be closed on startup and after termination.
-     * This list is built up on startup and cached.
+     * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
+     * cached.
+     *
      * @param conf the configuration to use
      * @return null or a list of ports
      * @throws SmartFrogResolutionException failure to resolve a value
-     * @throws RemoteException network trouble
+     * @throws RemoteException              network trouble
      */
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
@@ -182,7 +185,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         try {
             deployer.requestTerminationWithInterrupt();
         } catch (IllegalMonitorStateException e) {
-            sfLog().warn("Could not notify the thread: "+e,e);
+            sfLog().warn("Could not notify the thread: " + e, e);
             deployer.interrupt();
         }
         sfLog().info("waiting for thread to finish");
@@ -248,8 +251,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * When the namenode is terminated, and we are not shutting down ourself, then we notify
-     * {@inheritDoc}
+     * When the namenode is terminated, and we are not shutting down ourself, then we notify {@inheritDoc}
      */
     //@Override
     public void onStateChange(Service hadoopService, Service.ServiceState oldState,
@@ -260,7 +262,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             if (expectNodeTermination) {
                 tr = TerminationRecord.normal(SERVICE_HAS_HALTED, completeName, thrown);
             } else {
-                tr = TerminationRecord.abnormal(SERVICE_HAS_HALTED, completeName , thrown);
+                tr = TerminationRecord.abnormal(SERVICE_HAS_HALTED, completeName, thrown);
             }
             ComponentHelper helper = new ComponentHelper(this);
             helper.targetForWorkflowTermination(
@@ -272,7 +274,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * Ping the hadoop service.
      *
      * @throws SmartFrogLivenessException on a ping failure, or a null service and non-null services are forbidden
-     * @throws RemoteException for remoting problems
+     * @throws RemoteException            for remoting problems
      */
     protected void pingHadoopService() throws SmartFrogLivenessException, RemoteException {
         try {
@@ -293,24 +295,24 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                 //now look at the service state alone
                 //as SF has stricter service state rules
                 Service.ServiceState state = serviceStatus.getState();
-                switch(state) {
-                  case STARTED:
-                  case LIVE:
-                    break;
+                switch (state) {
+                    case STARTED:
+                    case LIVE:
+                        break;
 
-                  case FAILED:
-                    throw new SmartFrogLivenessException(
-                            "Service has Failed: " + serviceStatus,
-                            service.getFailureCause(), this);
-                      
-                  case TERMINATED:
-                    throw new SmartFrogLivenessException(
-                            "Service has Terminated: " + serviceStatus,
-                            service.getFailureCause(), this);
-                  case UNDEFINED:
-                  case CREATED:
-                  default:
-                    throw new SmartFrogLivenessException("Service is not live: "+serviceStatus, this);
+                    case FAILED:
+                        throw new SmartFrogLivenessException(
+                                "Service has Failed: " + serviceStatus,
+                                service.getFailureCause(), this);
+
+                    case TERMINATED:
+                        throw new SmartFrogLivenessException(
+                                "Service has Terminated: " + serviceStatus,
+                                service.getFailureCause(), this);
+                    case UNDEFINED:
+                    case CREATED:
+                    default:
+                        throw new SmartFrogLivenessException("Service is not live: " + serviceStatus, this);
                 }
             } else if (requireNonNullServiceInPing()) {
                 throw new SmartFrogLivenessException("No running " + getName(), this);
@@ -323,22 +325,23 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * Terminate the service in the {@link #service} field, and sets it to to null.
-     * Does nothing if the service is already terminated/null value
+     * Terminate the service in the {@link #service} field, and sets it to to null. Does nothing if the service is
+     * already terminated/null value
      */
     protected final void terminateHadoopService() {
         terminateService(getService());
     }
 
     /**
-     * Inner service termination. Errors are logged at warn level.
-     * If the parameter is in the {@link #service} field, that field is set to null
+     * Inner service termination. Errors are logged at warn level. If the parameter is in the {@link #service} field,
+     * that field is set to null
+     *
      * @param hadoopService the service to terminate.
      */
     protected void terminateService(Service hadoopService) {
         if (hadoopService != null) {
             synchronized (this) {
-                if(hadoopService == getService()) {
+                if (hadoopService == getService()) {
                     setService(null);
                 }
             }
@@ -346,15 +349,14 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             try {
                 hadoopService.close();
             } catch (IOException e) {
-                sfLog().warn("When closing the service : "+ e, e);
+                sfLog().warn("When closing the service : " + e, e);
             }
         }
         postTerminationCleanup();
     }
 
     /**
-     * Do any post-termination cleanup from within
-     * {@link #terminateService(Service)}
+     * Do any post-termination cleanup from within {@link #terminateService(Service)}
      */
     protected void postTerminationCleanup() {
     }
@@ -430,9 +432,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws IOException network problems
      */
     public String getDescription() throws RemoteException {
-        return getName()+" managing "+ service == null ?
-                            "No Service"
-                            :service.toString();
+        return getName() + " managing " + service == null ?
+                "No Service"
+                : service.toString();
     }
 
 
@@ -454,7 +456,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * deploy multiple services
      *
      * @param hadoopService the service
-     * @throws SmartFrogDeploymentException if a service is already deployed 
+     * @throws SmartFrogDeploymentException if a service is already deployed
      */
     private synchronized void bindToService(Service hadoopService) throws SmartFrogDeploymentException {
         if (service != null) {
@@ -514,7 +516,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      */
     protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
         Service s = getService();
-        if(s != null && !sfIsTerminated) {
+        if (s != null && !sfIsTerminated) {
             sfLog().info(getName() + " deployment complete: service is: " + s);
         } else {
             String message = getName() + " deployment completed after component was terminated."
@@ -528,19 +530,19 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)}
-     * to create the service, then {@link #deployService(Service, ManagedConfiguration)}.
-     * This usually starts an asynchronous thread to deploy the service via
-     * {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
+     * For use in sfStart(); calls {@link #createTheService(ManagedConfiguration)} to create the service, then {@link
+     * #deployService(Service, ManagedConfiguration)}. This usually starts an asynchronous thread to deploy the service
+     * via {@link HadoopServiceImpl#innerDeploy(Service, ManagedConfiguration)}
+     *
      * @throws SmartFrogException wrapping any other exception thrown
-     * @throws RemoteException network problems
+     * @throws RemoteException    network problems
      */
     protected void createAndDeployService() throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = createConfiguration();
         configuration = conf;
         portList = buildPortList(conf);
         //now check the known ports are closed. This will bail out early
-        checkPortsAreClosed();
+        checkPortsAreClosed("startup");
         validateConfiguration(conf);
         try {
             Service createdService = createTheService(conf);
@@ -555,8 +557,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
 
     /**
      * Override point: any last minute validation of the configuration
+     *
      * @param conf the configuration to validate
-     * @throws RemoteException RMI issues
+     * @throws RemoteException    RMI issues
      * @throws SmartFrogException Smartfrog problems
      */
     protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
@@ -567,12 +570,13 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param conf configuration to use
      * @return the service that has been created. The default: null
-     * @throws IOException hadoop or RMI issues
+     * @throws IOException        hadoop or RMI issues
      * @throws SmartFrogException Smartfrog problems
      */
     protected Service createTheService(ManagedConfiguration conf) throws IOException, SmartFrogException {
         return null;
     }
+
     /**
      * This is the thread that starts the deployment
      */
@@ -584,7 +588,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         private boolean useWorkflowTermination;
 
         public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
-                                      boolean useWorkflowTermination) {
+                                     boolean useWorkflowTermination) {
             super(HadoopServiceImpl.this, useWorkflowTermination);
             setName(HadoopServiceImpl.this.getName());
             this.useWorkflowTermination = useWorkflowTermination;

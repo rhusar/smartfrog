@@ -34,6 +34,8 @@
 
     For testing on the HPLB server farm, set
      test.hplb.enabled=true
+    Make sure they are running a compatible version and we are up to date with
+    their settings!
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
@@ -41,9 +43,13 @@
 
   <!-- override point -->
   <property file="build.properties"/>
+  <!--this lets us pick up hadoop version markers from hadoop,
+    overriding anything in components/libraries.properties-->
+  <property name="hadoop.ivy.dir" location="" />
+  <property file="${hadoop.ivy.dir}/libraries.properties" />
+
+  <!--system test switch-->
   <property name="system.tests" value="false"/>
-
-
 
   <echo
       message="==================================================================="/>
