@@ -20,5 +20,45 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 
 /**
- * Components to help with the generation of .spec files
+ Components to help with the generation of .spec files
+
+ # Something to take a text file, expand any properties in it with SF properties
+ # Something to take a text resorce and expanded.
+ # OR we print the .spec out from inline text? Inelegant and complex.
+ # OR we eliminate the .spec file *entirely* and generate the .spec from SF components that represent the different
+ # bits of a spec file. That would be very slick as we could mix that with data preparation
+
+ RpmBuildWorkflow {
+   specFile LAZY specFile
+   destDir;      //abstract destination directory
+   buildDir TBD; //local build directory
+   packages LAZY [data];
+ }
+
+ SpecFile {
+    name "something";
+
+    }
+
+
+  data extends SpecPackage {
+   condition //some condition
+   file LAZY specFile;
+   libraries []
+   symlinks []
+   createAction ##
+   #;
+   deleteAction ##;
+  }
+
+
+  Ideas
+  1. The exact functionality could be driven by our needs.
+  2. the SpecPackage component would also set up the directory structure needed for the operation against
+     a temp dir
+  3. Need to include all the permissions and things
+
+
+
+
  */
