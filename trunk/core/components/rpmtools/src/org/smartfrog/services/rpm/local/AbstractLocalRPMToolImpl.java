@@ -66,9 +66,9 @@ public abstract class AbstractLocalRPMToolImpl extends PrimImpl implements Local
         return rpmUtils;
     }
 
-    protected void upgradePackage(String options) throws SmartFrogException {
+    protected void upgradePackage(String packageOptions) throws SmartFrogException {
         try {
-            getRpmUtils().UpgradePackage(getRpmPackage(), options);
+            getRpmUtils().UpgradePackage(getRpmPackage(), packageOptions);
         } catch (IOException e) {
             sfLog().error(ERROR_UNABLE_TO_UPGRADE + getRpmPackage(), e);
             throw new SmartFrogException(ERROR_UNABLE_TO_UPGRADE +
@@ -76,9 +76,9 @@ public abstract class AbstractLocalRPMToolImpl extends PrimImpl implements Local
         }
     }
 
-    protected void installPackage(String options) throws SmartFrogException {
+    protected void installPackage(String packageOptions) throws SmartFrogException {
         try {
-            getRpmUtils().InstallPackage(getRpmPackage(), options);
+            getRpmUtils().InstallPackage(getRpmPackage(), packageOptions);
         } catch (IOException e) {
             sfLog().error(ERROR_UNABLE_TO_INSTALL + getRpmPackage(), e);
             throw new SmartFrogException(ERROR_UNABLE_TO_INSTALL +
@@ -86,9 +86,9 @@ public abstract class AbstractLocalRPMToolImpl extends PrimImpl implements Local
         }
     }
 
-    protected void uninstallPackage(String options) throws SmartFrogException {
+    protected void uninstallPackage(String packageOptions) throws SmartFrogException {
         try {
-            getRpmUtils().UninstallPackage(getRpmPackage(), options);
+            getRpmUtils().UninstallPackage(getRpmPackage(), packageOptions);
         } catch (IOException e) {
             sfLog().error(ERROR_UNABLE_TO_UNINSTALL + getRpmPackage(), e);
             throw new SmartFrogException(ERROR_UNABLE_TO_UNINSTALL +
