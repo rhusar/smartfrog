@@ -485,7 +485,7 @@
     <ln artifact="jasper-compiler" version="${hadoop.jasper.version}"/>
     <ln artifact="jasper-runtime" version="${hadoop.jasper.version}"/>
     <ln artifact="xmlenc" version="${xmlenc.version}"/>
-    <ln artifact="org.mortbay.jetty" version="${hadoop.jetty.version}"/>
+<!--    <ln artifact="org.mortbay.jetty" version="${hadoop.jetty.version}"/>-->
     <!--<ln artifact="servlet-api" version="${hadoop.servletapi.version}"/>-->    
 
     <!-- jmx -->
@@ -501,6 +501,8 @@
     <ln artifact="sf-loggingservices" version="${smartfrog.version}"/>
     <ln artifact="commons-logging" version="${commons-logging.version}"/>
     <ln artifact="log4j" version="${log4j.version}"/>
+    <ln artifact="slf4j-jcl" version="${slf4j.version}"/>
+    <ln artifact="slf4j-api" version="${slf4j.version}"/>
 
     <!-- networking -->
     <rpmpackage package="networking"/>

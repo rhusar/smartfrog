@@ -237,13 +237,10 @@ in order for JDBC connectivity to work.
 %package hadoop
 Group:         ${rpm.framework}
 Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jasper
-Conflicts:      %{name}-jetty
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jasper,  %{name}-jetty
 
 %description hadoop
 This includes all the artifacts needed for Apache Hadoop.
-DO NOT INSTALL THIS WITH smartfrog-jetty. Until Hadoop uses
-Jetty 6, this RPM includes jetty-5 JAR files which are incompatible. 
 
 # -----------------------------------------------------------------------------
 
@@ -298,7 +295,10 @@ Requires:       %{name} = %{version}-%{release}
 #
 %description logging
 This package integrates SmartFrog with Apache Log4j. It includes the Apache
-commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
+commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries,
+and the slf4j-${slf4j.version} libraries to bind to commons-logging.
+SmartFrog Logging can fit in behind commons-logging, so that it can handle
+all the output. Log4J can be used as a back end for SmartFrog itself.
 
 # -----------------------------------------------------------------------------
 
@@ -391,7 +391,7 @@ Prerequisite packages: Logging.
 Group:         ${rpm.framework}
 Summary:        WWW components
 Requires:       %{name} = %{version}-%{release} , %{name}-logging
-#
+
 %description www
 This package contains components to deploy web applications on different
 Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
@@ -400,8 +400,6 @@ component that can monitor the health of a remote site.
 The bundled libraries are
 commons-httpclient-${commons-httpclient.version}.jar
 commons-codec-${commons-codec.version}.jar
-servlet-api-${servletapi.version}.jar
-jetty-${jetty.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -735,14 +733,14 @@ fi
 
 #Jetty, tomcat and servlet artifacts which can cause trouble
 %{libdir}/jsp-api-${hadoop.jsp-api.version}.jar
-%{libdir}/jasper-compiler-${hadoop.jasper.version}.jar
-%{libdir}/jasper-runtime-${hadoop.jasper.version}.jar
+#%{libdir}/jasper-compiler-${hadoop.jasper.version}.jar
+#%{libdir}/jasper-runtime-${hadoop.jasper.version}.jar
 %{linkdir}/jsp-api.jar
-%{linkdir}/jasper-compiler.jar
-%{linkdir}/jasper-runtime.jar
-%{libdir}/org.mortbay.jetty-${hadoop.jetty.version}.jar
-%{linkdir}/org.mortbay.jetty.jar
-%{libdir}/servlet-api-${hadoop.servlet-api.version}.jar
+#%{linkdir}/jasper-compiler.jar
+#%{linkdir}/jasper-runtime.jar
+#%{libdir}/org.mortbay.jetty-${hadoop.jetty.version}.jar
+#%{linkdir}/org.mortbay.jetty.jar
+#%{libdir}/servlet-api-${hadoop.servlet-api.version}.jar
 #%{linkdir}/servlet-api.jar
 
 %{libdir}/commons-cli-${commons-cli.version}.jar
@@ -785,9 +783,13 @@ fi
 %{libdir}/sf-loggingservices-${smartfrog.version}.jar
 %{libdir}/commons-logging-${commons-logging.version}.jar
 %{libdir}/log4j-${log4j.version}.jar
+%{libdir}/slf4j-api-${slf4j.version}.jar
+%{libdir}/slf4j-jcl-${slf4j.version}.jar
 %{linkdir}/sf-loggingservices.jar
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
+%{linkdir}/slf4j-api.jar
+%{linkdir}/slf4j-jcl.jar
 
 
 
@@ -895,6 +897,9 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
+* Wed Nov 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.15.001-1.el4
+- Jetty and Hadoop RPMs
+- slf4j libraries in the loggingservices RPM
 * Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4 changes to the security model so that signedLib is a symlink.
 * Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4 changes to the security model so that signedLib is a symlink.
 * Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.027-2.el4
