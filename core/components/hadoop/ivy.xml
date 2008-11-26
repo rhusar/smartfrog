@@ -15,6 +15,8 @@
   -->
   <configurations defaultconfmapping="default">
     <conf name="default" extends="master,runtime"/>
+    <conf name="documentation"
+      description="all documentation artifacts"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
     <conf name="compile" visibility="private"
@@ -113,22 +115,24 @@
     <dependency org="commons-cli"
         name="commons-cli"
         rev="${commons-cli.version}"
-        conf="redist->default"/>
+        conf="client->default"/>
 
     <dependency org="xmlenc"
         name="xmlenc"
         rev="${xmlenc.version}"
         conf="server->default"/>
 
-    <!--Jetty 6 cannot be used until Hadoop users it-->
-    <!--<dependency org="org.smartfrog"
+    <!--Jetty 6 is pulled in from sf-jetty, along with JSP support
+        and implicitly, sf-ant
+    -->
+    <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="latest.integration"
-        conf="runtime->default"/>-->
+        conf="server->default,jsp"/>
 
     <!--Jetty and Servlet dependencies -->
-    <dependency org="javax.servlet"
+<!--    <dependency org="javax.servlet"
         name="servlet-api"
         rev="${hadoop.servlet-api.version}"
         conf="server->master"/>
@@ -152,7 +156,7 @@
     <dependency org="commons-el"
         name="commons-el"
         rev="${commons-el.version}"
-        conf="server->master"/>
+        conf="server->master"/>-->
 
     <!--Configuration: s3-client -->
     <!--there are two jets3t projects in the repository; this one goes up to 0.6 and
