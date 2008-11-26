@@ -457,9 +457,12 @@ SmartFrog to deploy complex systems.
       <description>
         SmartFrog Logging services.
 
-        As well as logging components, this package contains commons-logging-${commons-logging.version}.jar
-        and log4j-${log4j.version}.jar. Packages that include third-party libraries that use either logging
-        API, have a dependency upon this package.
+        As well as logging components, this package contains
+        commons-logging-${commons-logging.version}.jar
+        log4j-${log4j.version}.jar.
+        slf4j version slf4j.version
+        Packages that include third-party libraries that use these logging
+        APIs, have a dependency upon this package.
       </description>
       <file src="ivy/lib/package-logging/sf-loggingservices-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -476,6 +479,12 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-logging/log4j-${log4j.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-logging/slf4j-jcl-${slf4j.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-logging/slf4j-api-${slf4j.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
     </pack>
 
     <pack name="Networking" required="no" preselected="no">
@@ -663,6 +672,12 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-velocity/velocity-${velocity.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-velocity/commons-collections-${commons-collections.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-velocity/commons-lang-${commons-lang.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
     </pack>
 
 
@@ -700,16 +715,16 @@ SmartFrog to deploy complex systems.
           targetdir="$INSTALL_PATH"
           unpack="true"/>-->
 
-      <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-
       <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+
+      <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
