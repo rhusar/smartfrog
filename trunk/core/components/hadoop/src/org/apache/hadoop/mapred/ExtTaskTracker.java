@@ -77,7 +77,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
      */
     //@Override
     public int getWebPort() {
-        return server.getPort();
+        return httpPort;
     }
 
     /**
@@ -94,7 +94,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     /**
       * Main service loop.  Will stay in this loop forever.
      */
-    //@Override
+    @Override
     public State offerService() throws Exception {
         LOG.info("Task Tracker Service is being offered");
         return super.offerService();
