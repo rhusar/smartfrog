@@ -466,7 +466,9 @@ For more information: www.smartfrog.org
     </typedef>
     <!--create the external dir if it is missing-->
     <mkdir dir="external" />
-    <ivy:settings file="antbuild/ivy/ivyconf.xml" override="true"/>
+    <property name="ivysettings.xml" location="antbuild/ivy/ivysettings.xml" />
+    <property name="root.dir" location="." />
+    <ivy:configure file="${ivysettings.xml}" override="true"/>
   </target>
 
   <!-- =================================================================== -->
@@ -478,7 +480,7 @@ For more information: www.smartfrog.org
   <target name="ivy-init" depends="ivy-init-antlib"
           xmlns:ivy="antlib:org.apache.ivy.ant">
     <presetdef name="ivy-projects">
-      <ivy:buildlist skipbuildwithoutivy="true">
+      <ivy:buildlist onMissingDescriptor="skip">
         <fileset file="smartfrog/build.xml" />
         <fileset file="testharness/build.xml" />
         <fileset file="antbuild/build.xml" />
