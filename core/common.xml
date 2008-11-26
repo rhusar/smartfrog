@@ -1977,7 +1977,7 @@ Exist.
     <mkdir dir="${ivy.cache.smartfrog.dir}" />
     <mkdir dir="${ivy.cache.project.dir}" />
 
-
+    <property name="ivysettings.xml" location="${core.dir}/antbuild/ivy/ivysettings.xml" />
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
@@ -2030,7 +2030,7 @@ Exist.
   <target name="maybe-ivy-init"
           depends="declare-ivy"
           if="ivy.enabled" >
-    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
+    <ivy:configure file="${ivysettings.xml}" override="false"/>
   </target>
 
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
@@ -2087,7 +2087,7 @@ Exist.
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
+    <ivy:configure file="${ivysettings.xml}" override="false"/>
   </target>
 
   <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"
