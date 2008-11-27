@@ -97,7 +97,7 @@
     <dependency org="commons-el"
       name="commons-el"
       rev="${commons-el.version}"
-      conf="jetty->master"/>
+      conf="jsp->master"/>
     <!--this is the compiler stage-->
     <dependency org="org.smartfrog"
         name="sf-ant"
