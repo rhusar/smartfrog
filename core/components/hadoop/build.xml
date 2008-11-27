@@ -83,14 +83,27 @@
     </fail>
   </target>
 
-  <target name="copy-hadoop" depends="ivy-retrieve"
+  <target name="copy-hadoop" depends="ivy-retrieve,ivy-report"
       description="copy the hadoop JAR where it needs to go to be kept under SCM">
     <fail>
       <condition><equals arg1="${hadoop.version}" arg2="latest.integration"/> </condition>
       You need a proper hadoop.version number and not ${hadoop.version}
     </fail>
-    <property name="hadoop.target.dir" location="../../antbuild/repository/org.apache.hadoop/hadoop-core/${hadoop.version}" />
+    <property name="hadoop.target.dir"
+      location="${core.dir}/antbuild/repository/org.apache.hadoop/hadoop-core/${hadoop.version}" />
     <mkdir dir="${hadoop.target.dir}" />
-    <copy todir="${hadoop.target.dir}" file="build/ivy/lib/redist/hadoop-core-${hadoop.version}.jar"/>
+    <property name="hadoop.artifact.name"
+      value="hadoop-core-${hadoop.version}.jar" />
+    <property name="hadoop.artifact"
+      location="build/ivy/lib/redist/${hadoop.artifact.name}" />
+    <fail>
+      <condition><not><available file="${hadoop.artifact}" /></not></condition>
+      Missing File: "${hadoop.artifact}"
+      This could be due to the hadoop version expected "${hadoop.version}" not
+      matching what is being built locally
+    </fail>
+    <copy todir="${hadoop.target.dir}" file="${hadoop.artifact}"/>
+    <echo>Copied ${hadoop.artifact}</echo>
   </target>
+
 </project>
