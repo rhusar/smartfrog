@@ -690,9 +690,6 @@ SmartFrog to deploy complex systems.
         The bundled libraries are
         commons-httpclient-${commons-httpclient.version}.jar
         commons-codec-${commons-codec.version}.jar
-        servlet-api-${servletapi.version}.jar
-        jetty-${jetty.version}.jar
-        jetty-util-${jetty.version}.jar
 
         Prerequisite packages: Logging.
       </description>
@@ -705,15 +702,6 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/sf-www-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-<!--      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-www/sf-tomcat-javadocs-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>
-      <file src="ivy/lib/package-www/sf-tomcat-documentation-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>-->
 
       <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -721,10 +709,20 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <depends packname="Logging"/>
+    </pack>
 
+
+    <pack name="Jetty" required="no" preselected="no">
+      <description>Jetty support.
+        This package contains components to deploy web applications onto Jetty ${jetty.version}.
+        It also contains the libraries needed to compile and run JSP pages under Jetty
+
+        Prerequisite packages: Logging, Ant, WWW
+      </description>
       <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
+          targetdir="$INSTALL_PATH/lib"
+          />
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
@@ -734,7 +732,21 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/jetty-util-${jetty.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
+      <file src="ivy/lib/package-www/jsp-api-2.1-${jetty.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/jsp-2.1-${jetty.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/commons-el-${commons-el.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />      
+      <file src="ivy/lib/package-www/core-${org.eclipse.jdt.core.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
       <depends packname="Logging"/>
+      <depends packname="Ant"/>
+      <depends packname="WWW"/>
     </pack>
 
     <pack name="XML" required="no" preselected="no">

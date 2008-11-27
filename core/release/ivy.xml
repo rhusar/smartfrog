@@ -242,16 +242,11 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation,servletapi"/>
-<!--    <dependency org="org.smartfrog"
-        name="sf-tomcat"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,documentation"/>-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist"/>
+        conf="package-www->master,redist,jsp"/>
     <!--
         <dependency org="org.smartfrog"
             name="sf-cargo"

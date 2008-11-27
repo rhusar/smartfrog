@@ -110,7 +110,7 @@
         name="hadoop-core"
         rev="${hadoop.version}"
         changing="true"
-        conf="redist->default"/>
+        conf="redist->master"/>
 
     <dependency org="commons-cli"
         name="commons-cli"
@@ -131,32 +131,6 @@
         rev="latest.integration"
         conf="server->default,jsp"/>
 
-    <!--Jetty and Servlet dependencies -->
-<!--    <dependency org="javax.servlet"
-        name="servlet-api"
-        rev="${hadoop.servlet-api.version}"
-        conf="server->master"/>
-
-    <dependency org="jetty"
-        name="org.mortbay.jetty"
-        rev="${hadoop.jetty.version}"
-        conf="server->master"/>
-    <dependency org="tomcat"
-        name="jasper-runtime"
-        rev="${hadoop.jasper.version}"
-        conf="server->master"/>
-    <dependency org="tomcat"
-        name="jasper-compiler"
-        rev="${hadoop.jasper.version}"
-        conf="server->master"/>
-    <dependency org="tomcat"
-        name="jsp-api"
-        rev="${hadoop.jsp-api.version}"
-        conf="server->master"/>
-    <dependency org="commons-el"
-        name="commons-el"
-        rev="${commons-el.version}"
-        conf="server->master"/>-->
 
     <!--Configuration: s3-client -->
     <!--there are two jets3t projects in the repository; this one goes up to 0.6 and

@@ -45,8 +45,10 @@
   <property file="build.properties"/>
   <!--this lets us pick up hadoop version markers from hadoop,
     overriding anything in components/libraries.properties-->
-  <property name="hadoop.ivy.dir" location="" />
-  <property file="${hadoop.ivy.dir}/libraries.properties" />
+
+  <property name="hadoop.dir" location="" />
+  <property file="${hadoop.dir}/build.properties" />
+  <property file="${hadoop.dir}/ivy/libraries.properties" />
 
   <!--system test switch-->
   <property name="system.tests" value="false"/>

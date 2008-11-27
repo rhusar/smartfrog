@@ -259,7 +259,7 @@ application server, such as Jetty.
 %package jetty
 Group:         ${rpm.framework}
 Summary:        Jetty integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-ant
 Conflicts:      %{name}-hadoop
 
 %description jetty
@@ -731,22 +731,8 @@ fi
 %{libdir}/hadoop-core-${hadoop.version}.jar
 %{linkdir}/hadoop-core.jar
 
-#Jetty, tomcat and servlet artifacts which can cause trouble
-%{libdir}/jsp-api-${hadoop.jsp-api.version}.jar
-#%{libdir}/jasper-compiler-${hadoop.jasper.version}.jar
-#%{libdir}/jasper-runtime-${hadoop.jasper.version}.jar
-%{linkdir}/jsp-api.jar
-#%{linkdir}/jasper-compiler.jar
-#%{linkdir}/jasper-runtime.jar
-#%{libdir}/org.mortbay.jetty-${hadoop.jetty.version}.jar
-#%{linkdir}/org.mortbay.jetty.jar
-#%{libdir}/servlet-api-${hadoop.servlet-api.version}.jar
-#%{linkdir}/servlet-api.jar
-
 %{libdir}/commons-cli-${commons-cli.version}.jar
 %{linkdir}/commons-cli.jar
-%{libdir}/commons-el-${commons-el.version}.jar
-%{linkdir}/commons-el.jar
 %{libdir}/jets3t-${jets3t.version}.jar
 %{linkdir}/jets3t.jar
 %{libdir}/xmlenc-${xmlenc.version}.jar
@@ -762,6 +748,16 @@ fi
 %{linkdir}/servlet-api.jar
 %{linkdir}/jetty.jar
 %{linkdir}/jetty-util.jar
+
+
+%{libdir}/jsp-2.1-${jetty.version}.jar
+%{linkdir}/jsp-2.1.jar
+%{libdir}/jsp-api-2.1-${jetty.version}.jar
+%{linkdir}/jsp-api-2.1.jar
+%{libdir}/commons-el-${commons-el.version}.jar
+%{linkdir}/commons-el.jar
+%{libdir}/core-${org.eclipse.jdt.core.version}.jar
+%{linkdir}/core.jar
 
 
 %files jmx
