@@ -68,9 +68,8 @@ public interface ConfigurationAttributes {
     String MAPRED_JAR = "mapred.jar";
 
     /**
-     * Set the {@link Path} of the input directory for the map-reduce job.
+     * The of the input directory for the map-reduce job. {@value}
      *
-     * @param dir the {@link Path} of the input directory for the map-reduce job.
      */
     String MAPRED_INPUT_DIR = "mapred.input.dir";
 
