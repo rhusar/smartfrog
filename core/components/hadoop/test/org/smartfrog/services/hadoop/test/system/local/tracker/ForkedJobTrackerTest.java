@@ -36,6 +36,8 @@ public class ForkedJobTrackerTest extends HadoopTestBase {
 
     public void testLocalJobTrackerForked() throws Throwable {
         enablePortCheck();
+        checkJobTracker();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalJobTrackerForked");
+        enableFailOnPortCheck();
     }
 }
