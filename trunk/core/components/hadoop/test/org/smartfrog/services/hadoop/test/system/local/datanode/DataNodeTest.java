@@ -32,7 +32,6 @@ public class DataNodeTest extends HadoopTestBase {
 
     public DataNodeTest(String name) {
         super(name);
-        enablePortCheck();
     }
 
     public void testLocalDataNode() throws Throwable {

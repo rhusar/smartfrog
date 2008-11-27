@@ -36,7 +36,9 @@ public class OrphanTaskTrackerTest extends HadoopTestBase {
 
     public void testOrphanTracker() throws Throwable {
         enablePortCheck();
+        checkTaskTracker();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testOrphanTracker");
+        enableFailOnPortCheck();
     }
 
 }

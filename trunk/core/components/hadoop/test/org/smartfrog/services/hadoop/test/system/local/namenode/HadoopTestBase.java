@@ -89,10 +89,11 @@ public class HadoopTestBase extends DeployingTestBase {
         boolean portIsOpen=true;
         while (!ti.hasTimedOut() && portIsOpen) {
             portIsOpen = false;
+            portsAtFault = new StringBuilder();
             for (PortPair pair : ports) {
                 if (pair.isOpen()) {
                     portIsOpen = true;
-                    portsAtFault.append(pair.toString());
+                    portsAtFault.append(pair);
                     portsAtFault.append('\n');
                 }
             }
