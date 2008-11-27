@@ -239,12 +239,14 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     }
 
     /**
-     * Resolve a job tracker reference
-     * @param prim
-     * @param ref
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
+     * Resolve a job tracker reference. This resolves the reference then
+     * looks for {@link #MAPRED_JOB_TRACKER} value underneath. Works with
+     * both Prim and ComponentDescription references
+     * @param prim component to work with
+     * @param ref reference to resolve
+     * @return the job tracker URL
+     * @throws SmartFrogResolutionException resolution problems
+     * @throws RemoteException network problems
      */
     public static String resolveJobTracker(Prim prim, Reference ref)
             throws SmartFrogResolutionException, RemoteException {
