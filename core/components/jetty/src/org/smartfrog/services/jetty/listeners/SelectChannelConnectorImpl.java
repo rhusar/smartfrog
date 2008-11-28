@@ -21,7 +21,7 @@ package org.smartfrog.services.jetty.listeners;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.thread.BoundedThreadPool;
+import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -48,7 +48,7 @@ public class SelectChannelConnectorImpl extends AbstractConnectorImpl implements
         setMaxIdleTime(channel);
         bindConnectorToPortAndHost(channel);
         // set up all the threads;
-        BoundedThreadPool pool = createBoundedThreadPool();
+        QueuedThreadPool pool = createBoundedThreadPool();
         channel.setThreadPool(pool);
         channel.setUseDirectBuffers(sfResolve(ATTR_USE_DIRECT_BUFFERS,true,true));
         channel.setSoLingerTime(sfResolve(ATTR_SOCKET_LINGER_TIME, -1, true));
