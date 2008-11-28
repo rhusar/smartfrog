@@ -577,8 +577,8 @@
   <!--For the RPMs, we create symbolic links instead of a separate directory-->
   <target name="symlink-signed-lib" depends="ready-to-sign-rpm-jars"
           if="has.rpm.tools"
-      >
-    <delete dir="${rpm.signed.lib.dir}" />
+        >
+  <delete dir="${rpm.signed.lib.dir}" />
     <exec executable="ln" failonerror="true">
       <arg value="-sf"/>
       <arg value="${rpm.install.dir}/lib"/>
@@ -1151,7 +1151,7 @@
 
   <target name="rpm-remote-install-core" depends="rpm-upload">
     <rootssh
-        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
+        command="cd ${rpm.full.ssh.dir}; rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
         outputProperty="rpm.result.core"/>
     <validate-rpm-result result="${rpm.result.core}"/>
   </target>
