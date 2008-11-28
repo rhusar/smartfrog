@@ -1190,7 +1190,7 @@
   </target>
 
   <target name="rpm-remote-uninstall-strict" depends="rpm-upload-init">
-    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.core.list}"/>
+    <rootssh command="rpm --erase ${rpm.verbosity} ${rpms.list}"/>
   </target>
 
   <target name="rpm-remote-uninstall" depends="rpm-upload-init"
@@ -1199,7 +1199,7 @@
         command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.private.list} ${rpms.dependent.list}"
         failonerror="false"/>
     <rootssh
-        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.core.list}"
+        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.list}"
         failonerror="false"/>
   </target>
 
