@@ -23,7 +23,7 @@ package org.smartfrog.services.jetty.listeners;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.thread.BoundedThreadPool;
+import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -61,7 +61,7 @@ public class JettySocketConnectorImpl extends AbstractConnectorImpl implements J
 
         Server server = jettyHelper.getServer();
         // set up all the threads;
-        BoundedThreadPool pool = createBoundedThreadPool();
+        QueuedThreadPool pool = createBoundedThreadPool();
         SocketConnector socketConnector = getSocketConnector();
         socketConnector.setAcceptors(pool.getMaxThreads());
         //bind to the thread pool

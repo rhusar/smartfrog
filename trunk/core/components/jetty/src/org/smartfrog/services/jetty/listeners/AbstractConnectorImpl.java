@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.jetty.listeners;
 
 import org.mortbay.jetty.Connector;
-import org.mortbay.thread.BoundedThreadPool;
+import org.mortbay.thread.QueuedThreadPool;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -139,7 +139,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * @throws SmartFrogResolutionException problems resolving things
      * @throws RemoteException network trouble
      */
-    protected BoundedThreadPool createBoundedThreadPool() throws SmartFrogResolutionException, RemoteException {
+    protected QueuedThreadPool createBoundedThreadPool() throws SmartFrogResolutionException, RemoteException {
         int threads = sfResolve(ATTR_THREADS, 0, false);
         int minT;
         int maxT;
@@ -151,7 +151,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
             maxT = sfResolve(ATTR_MAX_THREADS, 1, true);
         }
         sfLog().debug("Thread pool min=" + minT + " max=" + maxT);
-        BoundedThreadPool pool = new BoundedThreadPool();
+        QueuedThreadPool pool = new QueuedThreadPool();
         pool.setMinThreads(minT);
         pool.setMaxThreads(maxT);
         return pool;
