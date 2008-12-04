@@ -92,11 +92,22 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     }
 
     /**
-      * Main service loop.  Will stay in this loop forever.
+     * {@inheritDoc}
+     * @return the exit state
+     * @throws Exception if something went wrong
      */
     @Override
     public State offerService() throws Exception {
-        LOG.info("Task Tracker Service is being offered");
+        LOG.info("Task Tracker Service is being offered" + toString());
         return super.offerService();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return the string value
+     */
+    @Override
+    public String toString() {
+        return super.toString() + "; web port=" + getWebPort();
     }
 }

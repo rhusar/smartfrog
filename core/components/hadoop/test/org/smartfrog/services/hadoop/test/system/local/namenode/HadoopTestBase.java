@@ -119,6 +119,14 @@ public class HadoopTestBase extends DeployingTestBase {
         checkNameNode();
     }
 
+    public boolean isCheckPorts() {
+        return checkPorts;
+    }
+
+    public void setCheckPorts(boolean checkPorts) {
+        this.checkPorts = checkPorts;
+    }
+
     private void checkNameNode() {
         addPortCheck("NameNode IPC server", NAMENODE_IPC_PORT);
         addPortCheck("NameNode IPC server", NAMENODE_HTTP_PORT);
@@ -141,6 +149,22 @@ public class HadoopTestBase extends DeployingTestBase {
     protected void checkJobTracker() {
         addPortCheck("Job Tracker IPC", JOBTRACKER_IPC_PORT);
         addPortCheck("Job Tracker HTTP", JOBTRACKER_HTTP_PORT);
+    }
+
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public long getShutdownTimeout() {
+        return shutdownTimeout;
+    }
+
+    public void setShutdownTimeout(long shutdownTimeout) {
+        this.shutdownTimeout = shutdownTimeout;
     }
 
     protected class PortPair {

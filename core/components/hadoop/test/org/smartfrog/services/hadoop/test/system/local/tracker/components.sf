@@ -64,10 +64,10 @@ testLocalTaskTracker extends ExpectDeploy {
 
 
 /**
- * Test the local node
+ * Start an orphan task tracker. We expect it to be dead afterwards
  */
 testOrphanTracker extends ExpectDeploy {
-  description "bring up a Task Tracker";
+  description "bring up an orphan Task Tracker, see what happens.";
 
 
 
@@ -78,7 +78,7 @@ testOrphanTracker extends ExpectDeploy {
   //for our test we sleep; that's all.
   tests extends Sequence {
     Sleep extends Delay {
-      time STARTUP_SLEEP_TIME;
+      time ORPHAN_SLEEP_TIME;
     }
   }
 
