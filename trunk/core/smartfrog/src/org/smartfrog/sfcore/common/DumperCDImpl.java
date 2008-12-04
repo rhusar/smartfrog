@@ -334,7 +334,7 @@ public class DumperCDImpl implements Dumper {
     }
 
     /** This modifies the default set of sfKeys that are removed from every context.
-     * @todo once the visits are started this method should not allow any updates. In any case,
+     * todo once the visits are started this method should not allow any updates. In any case,
      * the updates are ignored once the visits start
      * @param keysToBeRemoved keys to pull
      */
