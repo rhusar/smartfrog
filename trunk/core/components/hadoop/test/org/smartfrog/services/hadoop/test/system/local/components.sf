@@ -39,8 +39,9 @@ DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpsPort ++ "/");
 STARTUP_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;
 //"ipc.client.connect.max.retries"
-ORPHAN_CONNECT_MAX_RETRIES 5;
-ORPHAN_CONNECT_TIMEOUT 1000;
+ORPHAN_CONNECT_MAX_RETRIES 1;
+ORPHAN_CONNECT_TIMEOUT 100;
+ORPHAN_SLEEP_TIME 15000;
 
 LightweightJobTracker extends JobTracker {
   smartfrog.dump.conf DUMP_CONF;
@@ -128,16 +129,12 @@ LocalDataNodeCompound extends LocalNameNodeCompound {
 
   }
 
-  
   datanode extends  LightweightDataNode {
     fs.default.name PARENT:fs.default.name;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;
     dfs.datanode.address dataNodeURL  ;
   }
-
-
-
 
 }
 
@@ -228,7 +225,7 @@ LocalJobTrackerCompound extends LocalFileSystemCompound {
 }
 
 
-OrphanTaskTrackerCompound extends LocalDataNodeCompound  {
+OrphanTaskTrackerCompound extends LocalHadoopCompound  {
 
   description "A cluster with a task tracker but not job tracker";
 
@@ -239,6 +236,7 @@ OrphanTaskTrackerCompound extends LocalDataNodeCompound  {
     mapred.job.tracker LAZY PARENT:ATTRIB mapred.job.tracker;
     //yes, this is milliseconds. But there is a sleep involved too
     mapred.task.tracker.connect.timeout ORPHAN_CONNECT_TIMEOUT;
+
     //"ipc.client.connect.max.retries"
     ipc.client.connect.max.retries ORPHAN_CONNECT_MAX_RETRIES;
     
