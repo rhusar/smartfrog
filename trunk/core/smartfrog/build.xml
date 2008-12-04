@@ -48,7 +48,8 @@
       <format property="year" pattern="yyyy"/>
     </tstamp>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company" value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company"
+      value="(C) Copyright 1998-${year} Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
     <echo message="  "/>
     <echo message="  "/>
@@ -58,9 +59,10 @@
     <echo message="      Java: ${java.version} ${java.vendor} "/>
     <echo message="            ${java.home} "/>
     <echo message="      OS: ${os.name} ${os.version} (${os.arch})"/>
-	<echo message="      Build dir: ${basedir} "/>
+    <echo message="      Build dir: ${basedir} "/>
     <echo message=" --------------------------------------------------------"/>
-    <echo message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
+    <echo
+      message="   Class Path= ${line.separator}|   |-- ${echo.smartfrog.class.path}"/>
     <echo message=" ======================================================="/>
     <echo message="  "/>
     <echo level="verbose">
@@ -970,7 +972,7 @@
   <target name="ivy-properties" depends="init,target-names"    >
     <property name="ivy.dir" location="${build.extra.dir}/ivy" />
     <property name="ivy.lib.dir" location="${ivy.dir}/lib" />
-    <property name="ivy.version" value="2.0.0-beta1" />
+    <property name="ivy.version" value="2.0.0-rc2" />
     <property name="ivy.resource" value="fr/jayasoft/ivy/ant/antlib.xml" />
     <property name="ivy.reports.dir" location="${ivy.dir}/reports"/>
     <property name="antbuild.dir" location="../antbuild" />
