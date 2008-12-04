@@ -269,7 +269,8 @@
       and the version that the build file is expecting, which is ${smartfrog.version}, and which
       is calculated by getting the SmartFrog version off the classpath.
 
-      ${toString:sf-core-install-artifacts}
+      sf-core-install-artifacts=${toString:sf-core-install-artifacts}
+      smartfrog.classpath=${toString:smartfrog.classpath}
     </fail>
   </target>
 
