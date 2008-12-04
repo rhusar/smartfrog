@@ -256,6 +256,8 @@
   symlinks in a <tar> file.
   -->
   <target name="check-source-artifacts" depends="prepare-executables">
+    <fileset id="sf-core-install-artifacts"
+      dir="${ivy.lib.dir}/package-core-install/" includes="*"/>
     <fail>
       <condition >
         <not>
@@ -266,6 +268,8 @@
       There is probably a mismatch between the version of SmartFrog that Ivy retrieved
       and the version that the build file is expecting, which is ${smartfrog.version}, and which
       is calculated by getting the SmartFrog version off the classpath.
+
+      ${toString:sf-core-install-artifacts}
     </fail>
   </target>
 
