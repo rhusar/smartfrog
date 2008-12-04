@@ -51,7 +51,7 @@
   <property file="${hadoop.dir}/ivy/libraries.properties" />
 
   <!--system test switch-->
-  <property name="system.tests" value="false"/>
+<!--  <property name="system.tests" value="false"/>-->
 
   <echo
       message="==================================================================="/>
