@@ -811,6 +811,7 @@
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
+        <include name="sf-hadoop/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
         <include name="sf-quartz/${smartfrog.version}/*"/>
@@ -844,7 +845,7 @@
 
 
   <target name="upload-maven-artifacts"
-      depends="init-maven-artifacts,upload-init">
+      depends="init-maven-artifacts,upload-init,ssh-test">
     <fail>
       <condition>
         <not>
@@ -926,15 +927,18 @@
     <property name="ssh.propfile"
         location="${server.dir}/${server}.properties"/>
     <loadproperties srcfile="${ssh.propfile}"/>
+    <property name="ssh.group" value="smartfrog" />
+    <property name="ssh.user.and.group" value="${ssh.user},${ssh.group}" />
     <echo>
       SCP target is ${ssh.server}
       User is ${ssh.user}
+      Group is ${ssh.group}
       trust=${ssh.trust}
       keyfile=${ssh.keyfile}
     </echo>
     <presetdef name="ssh-remote">
       <sshexec host="${ssh.server}"
-          username="${ssh.user}"
+          username="${ssh.user.and.group}"
           passphrase="${ssh.passphrase}"
           trust="${ssh.trust}"
           timeout="6000000"
@@ -967,18 +971,28 @@
     </fileset>
   </target>
 
+  <target name="ssh-create-session" depends="load-server-settings"
+    description="Create an SSH terminal session at the far end">
+    <ssh-remote command="create"/>
+  </target>
+
   <target name="ssh-test" depends="ssh-ls">
     <echo>ssh appears to be working</echo>
   </target>
-  <target name="ssh-ls" depends="load-server-settings">
+
+  <target name="ssh-ls" depends="ssh-create-session">
     <ssh-remote command="ls"/>
+  </target>
+
+
+  <target name="ssh.live" depends="ssh-test">
   </target>
 
   <target name="scp-upload" depends="upload-init" if="ssh.enabled">
 
     <ssh-remote command="mkdir -p ${ssh.dir}"/>
     <property name="ssh.path"
-        value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
+        value="${ssh.user.and.group}@${ssh.server}:${ssh.dir}"/>
     <scp remoteToDir="${ssh.path}"
         passphrase="${ssh.passphrase}"
         keyfile="${ssh.keyfile}"
