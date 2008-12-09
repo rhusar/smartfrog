@@ -27,4 +27,47 @@ import org.smartfrog.services.filesystem.FileUsingComponent;
 
 
 public interface DirLoader extends FileUsingComponent {
+
+    /**
+     * {@value }
+     */
+    String ATTR_PATTERN = "pattern";
+
+    /**
+     * {@value }
+     */
+    String ATTR_PARENT = "parent";
+
+
+    /**
+     * skip a failed deployment
+     * {@value }
+     */
+    int FAILURE_SKIP = 0;
+
+    /**
+     * on failure: rollback everything and then terminate
+     * {@value }
+     */
+    int FAILURE_ROLLBACK = 1;
+
+    /**
+     * On failure, halt following deployments but leave what was deployed live
+     * {@value }
+     */
+    int FAILURE_HALT = 2;
+
+    /**
+     * Failure actions
+     * {@value }
+     */
+    String ATTR_ONFAILURE = "onFailure";
+
+    /**
+     * What file to look for
+     * {@value }
+     */
+    String ATTR_APPLICATION = "application";
+
+    String ATTR_HOSTS = "hosts";
 }

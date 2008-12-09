@@ -53,6 +53,11 @@ DirLoader extends FileUsingComponentSchema {
   pattern "S\w*";
 
   /**
+   * name of the application file to look for
+   */
+  application "application.sf";
+
+  /**
    * Flag to set to fork every component in their own process
    */
 
@@ -62,5 +67,31 @@ DirLoader extends FileUsingComponentSchema {
    * Parent component
    */
   parent LAZY ROOT;
+
+  /**
+   * list of hosts. empty list for local host.
+   * When deploying, we will run through the list of hosts until one is found that 
+   */
+  hosts [];
+
+  /**
+   * skip a failed deployment
+   */
+  FAILURE_SKIP = 0;
+
+  /**
+   * on failure: rollback everything and then terminate
+   */
+  FAILURE_ROLLBACK = 1;
+
+  /**
+   * On failure, halt following deployments but leave what was deployed live
+   */
+  FAILURE_HALT = 2;
+
+  /**
+   * Failure ctions
+   */
+  onFailure FAILURE_SKIP;
 
 }
