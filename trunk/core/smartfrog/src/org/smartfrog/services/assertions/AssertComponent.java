@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Vector;
+import java.util.Locale;
 
 
 /**
@@ -269,7 +270,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         if (equalityIgnoresCase) {
             fact = equals1.equals(equals2);
         } else {
-            fact = equals1.equalsIgnoreCase(equals2);
+            fact = equals1.toLowerCase(Locale.ENGLISH).equals(equals2);
         }
         return fact;
     }
