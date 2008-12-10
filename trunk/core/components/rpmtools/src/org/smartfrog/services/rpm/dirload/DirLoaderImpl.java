@@ -23,6 +23,7 @@ import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.Executable;
@@ -56,6 +57,9 @@ public class DirLoaderImpl extends FileUsingCompoundImpl implements DirLoader, E
     private int onFailure;
     private String application;
     private WorkflowThread worker;
+    private int deployedCount = 0;
+    private int attemptedCount = 0;
+    private int failedCount = 0;
 
     //private HashMap<File, DeployedDir> directories = newMap();
     private Vector<String> hostList;
@@ -141,7 +145,6 @@ public class DirLoaderImpl extends FileUsingCompoundImpl implements DirLoader, E
      * Deploy one target. If the deployment succeeds, target has its application field set to the Prim
      *
      * @param target target to deploy
-     *
      * @return true if the deployment went ahead
      * @throws SmartFrogException deployment problems
      * @throws RemoteException    network
@@ -154,16 +157,55 @@ public class DirLoaderImpl extends FileUsingCompoundImpl implements DirLoader, E
         if (hosts != null) {
             desc.setHosts(hosts);
         }
-        Object result = desc.execute(null);
+        sfLog().info("Deploying " + target);
+        Object result;
+        try {
+            result = desc.execute(null);
+        } catch (SmartFrogException e) {
+            result = e;
+        } catch (RemoteException e) {
+            result = e;
+        }
         if (result instanceof Prim) {
             target.setApplication((Prim) result);
+            sfLog().info("Deployed " + target);
+            updateDeployedCount(true);
             return true;
         } else {
             //trouble. Retain the value?
+            sfLog().warn("Deploy failed, return value is " + result);
+            if(result instanceof Throwable) {
+                sfLog().warn("Failure to deploy " + target, (Throwable)result);
+            }
+            updateDeployedCount(false);
             return false;
         }
     }
 
+    /**
+     * Update any and all deployment counts
+     *
+     * @param succeeded the succeeded count
+     * @throws SmartFrogRuntimeException SF problems
+     * @throws RemoteException           network problems
+     */
+    private synchronized void updateDeployedCount(boolean succeeded) throws SmartFrogRuntimeException, RemoteException {
+        attemptedCount++;
+        sfReplaceAttribute(ATTR_DEPLOYED_COUNT, attemptedCount);
+        if (succeeded) {
+            deployedCount++;
+            sfReplaceAttribute(ATTR_DEPLOYED_COUNT, deployedCount);
+        } else {
+            failedCount++;
+            sfReplaceAttribute(ATTR_DEPLOYED_COUNT, failedCount);
+        }
+    }
+
+    /**
+     * Scan through the directory and list all files we find
+     *
+     * @return the list of things to deploy
+     */
     private List<DeployedDir> scan() {
         File[] files = getFile().listFiles(new ApplicationFilter(pattern, application));
         List<DeployedDir> targets = new ArrayList(files.length);

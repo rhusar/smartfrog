@@ -39,7 +39,8 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 
 
-DirLoader extends FileUsingComponentSchema {
+DirLoader extends FileUsingComponent {
+  sfClass "org.smartfrog.services.rpm.dirload.DirLoaderImpl";
 
   /*
    * Time to poll in milliseconds
@@ -50,7 +51,7 @@ DirLoader extends FileUsingComponentSchema {
   /**
     Regular expression to use when looking for things to deploy
     */
-  pattern "S\w*";
+  pattern "\\w+";
 
   /**
    * name of the application file to look for
@@ -66,7 +67,7 @@ DirLoader extends FileUsingComponentSchema {
   /**
    * Parent component
    */
-  parent LAZY ROOT;
+  parent LAZY THIS;
 
   /**
    * list of hosts. empty list for local host.
@@ -77,21 +78,34 @@ DirLoader extends FileUsingComponentSchema {
   /**
    * skip a failed deployment
    */
-  FAILURE_SKIP = 0;
+  FAILURE_SKIP 0;
 
   /**
    * on failure: rollback everything and then terminate
    */
-  FAILURE_ROLLBACK = 1;
+  FAILURE_ROLLBACK 1;
 
   /**
    * On failure, halt following deployments but leave what was deployed live
    */
-  FAILURE_HALT = 2;
+  FAILURE_HALT 2;
 
   /**
    * Failure ctions
    */
   onFailure FAILURE_SKIP;
 
+  /**
+   * this value goes up with every successful deployment
+   */
+  deployedCount 0;
+  /**
+   * this value goes up with every unsuccessful deployment
+   */
+  failedCount 0;
+
+  /**
+   * this value goes up with every attempted deployment
+   */
+  attemptedCount 0;
 }

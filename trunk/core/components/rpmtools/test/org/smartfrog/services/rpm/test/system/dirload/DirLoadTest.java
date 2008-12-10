@@ -17,5 +17,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/rpm/rpmbuild/components.sf"
-#include "/org/smartfrog/services/rpm/manager/components.sf"
+package org.smartfrog.services.rpm.test.system.dirload;
+
+import org.smartfrog.test.DeployingTestBase;
+
+/**
+ * Created 10-Dec-2008 15:02:13
+ */
+
+public class DirLoadTest extends DeployingTestBase {
+
+    public static final String PACKAGE = "/org/smartfrog/services/rpm/test/system/dirload";
+
+    public DirLoadTest(String name) {
+        super(name);
+    }
+
+    public void testDirLoad() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testDirLoad");
+    }
+
+    public void testDirLoadSkipping() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testDirLoadSkipping");
+    }
+    public void testDirLoadFailing() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE,"testDirLoadFailing");
+    }
+}

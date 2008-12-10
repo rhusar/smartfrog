@@ -21,3 +21,83 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/rpm/dirload/components.sf"
 
+
+
+
+  TestApp extends TextFile {
+    dir LAZY deployDir;
+    name "TestApp";
+    filename (name ++ "/application.sf");
+
+    createParentDirs true;
+
+    text "#include \"/org/smartfrog/services/filesystem/components.sf\"\nsfConfig extends Compound { value 3; }";
+
+    }
+
+  FailingApp extends TestApp {
+    name "FailingApp";
+    text "#include \"/org/smartfrog/services/filesystem/components.sf\"\nsfConfig extends Compound { sfClass \"no.class\"; }";
+
+    }
+
+DirLoaderExample extends Compound {
+
+  deployDir extends TempDirWithCleanup {
+      deleteOnExit true;
+      prefix "temp";
+      suffix ".dir";
+  }
+
+  testApp extends TestApp;
+
+  dirLoader extends DirLoader {
+    filename LAZY deployDir;
+  }
+
+}
+
+
+
+
+TestDirLoad extends ExpectDeploy {
+  action extends DirLoaderExample;
+
+  tests extends Sequence {
+    a1 extends AssertWorkflow {
+      reference LAZY action:dirLoader:TestApp;
+      attribute "value";
+      attributeEquals "3";
+    }
+  }
+}
+
+DirLoaderFailing extends DirLoaderExample {
+  testApp extends FailingApp;
+}
+
+TestDirLoadSkipping extends ExpectDeploy {
+
+  action extends DirLoaderFailing;
+
+  tests extends Sequence {
+    a1 extends AssertWorkflow {
+      reference LAZY action:dirLoader;
+      attribute "failedCount";
+      attributeEquals "1";
+    }
+
+  }
+}
+
+
+
+TestDirLoadFailing extends ExpectDeployFailure {
+
+  action extends DirLoaderFailing;
+  action:dirLoader:onFailure FAILURE_HALT;
+
+  tests extends Sequence {
+
+  }
+}
