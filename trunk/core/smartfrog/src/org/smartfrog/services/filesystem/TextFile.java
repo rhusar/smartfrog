@@ -27,11 +27,15 @@ public interface TextFile extends FileUsingComponent  {
     /**
      * any optional text
      */
-    public static final String ATTR_TEXT = "text";
+    String ATTR_TEXT = "text";
 
     /**
      * text encoding {@value}
      */
-    public static final String ATTR_TEXT_ENCODING = "encoding";
+    String ATTR_TEXT_ENCODING = "encoding";
+    /**
+     * create the parent dirs {@value}
+     */
+    String ATTR_CREATE_PARENT_DIRS = "createParentDirs";
 
 }
