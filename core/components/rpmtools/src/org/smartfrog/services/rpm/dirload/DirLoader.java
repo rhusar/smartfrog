@@ -70,4 +70,11 @@ public interface DirLoader extends FileUsingComponent {
     String ATTR_APPLICATION = "application";
 
     String ATTR_HOSTS = "hosts";
+
+    /**
+     *  count of number of deployments
+     */
+    String ATTR_DEPLOYED_COUNT = "deployedCount";
+    String ATTR_ATTEMPTED_COUNT = "attemptedCount";
+    String ATTR_FAILED_COUNT = "failedCount";
 }

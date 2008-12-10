@@ -97,6 +97,16 @@ public class DeployedDir implements Comparable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Deployed Application{" +
+                "name='" + name + '\'' +
+                ", status=" + status +
+                ", applicationFile=" + applicationFile +
+                ", application=" + application +
+                '}';
+    }
+
     /**
      * Compares this object with the specified object for order.  Returns a negative integer, zero, or a positive
      * integer as this object is less than, equal to, or greater than the specified object.
