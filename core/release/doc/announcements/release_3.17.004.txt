@@ -1,4 +1,4 @@
-SmartFrog ${smartfrog.version}
+SmartFrog 3.17.004
 ======================
 
 This is a new release of SmartFrog, the Java-based, LPGL-licensed
@@ -12,7 +12,7 @@ The release artifacts are available at
 
 http://sourceforge.net/project/showfiles.php?group_id=87384&package_id=176308
 
-This release is ${smartfrog.version}; built from revision ${svn.revision}
+This release is 3.17.004; built from revision 7234
 of the SVN repository. This release has an extended language
 with the ability to tag attributes, and includes the following items:
 
@@ -121,9 +121,9 @@ entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384
 to check out smartfrog/trunk/core from our repository.
 
-This release was built with revision ${svn.revision} of the repository, which
+This release was built with revision 7234 of the repository, which
 is available under the SVN branch
-${svn.branch.url}
+https://smartfrog.svn.sourceforge.net/svnroot/smartfrog/tags/release3.17.004
 
 We strongly encourage anyone interested in building or extending
 SmartFrog to get involved in the SmartFrog developer mailing list, which
@@ -141,58 +141,6 @@ The SmartFrog Team        http://smartfrog.org/
 
 Changes since last release
 ==========================
-
-
-Release Notes - SmartFrog - Version 3.17.004
-
-** Bug
-    * [SFOS-443] - sfStopDaemon doesnt pick up SFHOME in RPM uninstall
-    * [SFOS-991] - ClassCastException in AntProject in Hudson Tests
-    * [SFOS-992] - sourceforge have taken shell.sf.net away
-    * [SFOS-1004] - Hadoop services leak if the component is terminated while the service is starting up
-    * [SFOS-1008] - TaskTracker isn't starting/stopping right
-    * [SFOS-1012] - JobTracker is getting its URIs for the fileystem wrong
-    * [SFOS-1015] - Some of the cluster tests aren't shutting down the hdfs
-    * [SFOS-1026] - Trackers need a cluster around before they come up reliably
-    * [SFOS-1036] - jetty build warns of deprecated methods in Jetty 6.1.14
-    * [SFOS-1037] - build failing as dependencies in hadoop component are wrong
-
-
-** Improvement
-    * [SFOS-1002] - look at workflow classes and clean code up a bit
-    * [SFOS-1007] - Add ability of namenode and datanodes to delete test dirs when closing the service
-    * [SFOS-1009] - clean up some name accessors
-    * [SFOS-1011] - Have hadoop IsServiceLive condition get the string description of a service and add it as an attribute
-    * [SFOS-1014] - move from Throwable.getMessage() to Throwable.toString() in hadoop code
-    * [SFOS-1016] - Catch System.exit() calls in third party libraries through a new SecurityManager
-    * [SFOS-1017] - Move to Log4J 1.12.15
-    * [SFOS-1018] - Split smartfrog-www RPM into smartfrog-www and smartfrog-jetty
-    * [SFOS-1023] - produce better test termination message when a child terminates normally (and it was not meant to)
-    * [SFOS-1029] - Add configuration options to Jetty's SelectChannelConnector
-    * [SFOS-1034] - Move to Ivy 2.0.0rc2
-    * [SFOS-1045] - have the TextFile component attempt to create the parent directory if it does not exist
-    * [SFOS-1046] - assert component should go case insensitive in the EN_US locale always
-    * [SFOS-1047] - add rpmtools RPM
-
-** New Feature
-    * [SFOS-149] - Add a component to deploy every .sf file in a well known directory
-    * [SFOS-624] - Allow RPM-installed SmartFrog to create new RPMs containing signed/customised artifacts
-    * [SFOS-654] - Create a chmod component.
-    * [SFOS-1003] - Add a TimeoutInterval class to manage timeouts more cleanly
-    * [SFOS-1019] - Add smartfrog-hadoop RPM that contains all the artifacts needed to bring up Hadoop under SmartFrog
-
-
-** Task
-    * [SFOS-85] - Updated language documentation
-    * [SFOS-505] - Move up to jsch 0.1.38
-    * [SFOS-547] - move up to log4j 1.12.15
-    * [SFOS-827] - Upgrade IVY to 2.0 Beta 2
-    * [SFOS-1032] - Update Ant library version to Ant 1.7.1
-    * [SFOS-1033] - Move to Jetty 6.1.14
-
-** Sub-task
-    * [SFOS-474] - add SLF4J support to logging services
-    * [SFOS-789] - write component to start hadoop task tracker in-VM
 
 
 
