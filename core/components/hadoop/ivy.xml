@@ -110,7 +110,7 @@
         name="hadoop-core"
         rev="${hadoop.version}"
         changing="true"
-        conf="hadoop-core->master"/>
+        conf="hadoop-core->default"/>
 
     <dependency org="commons-cli"
         name="commons-cli"
