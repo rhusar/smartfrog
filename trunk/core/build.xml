@@ -62,8 +62,8 @@ For more information: www.smartfrog.org
     <echo message="   Java: ${java.version} ${java.vendor} "/>
     <echo message="         ${java.home} "/>
     <echo message="   OS: ${os.name} ${os.version} (${os.arch})"/>
-	<echo message="   Build dir: ${basedir}"/>
-	<echo message="   Ant: ${ant.version}"/>		
+    <echo message="   Build dir: ${basedir}"/>
+    <echo message="   Ant: ${ant.version}"/>		
     <echo message="   Proxy: http: ${http.proxyHost}:${http.proxyPort} ,https: ${https.proxyHost}:${https.proxyPort} "/>
     <echo message=" ======================================================="/>
     <echo message="  "/>
@@ -505,6 +505,9 @@ For more information: www.smartfrog.org
           <!--lacks the artifacts to compile-->
           <exclude name="constraints/build.xml" unless="constraints.enabled"/>
 
+          <!-- temporarily excluded -->
+          <exclude name="persistence/build.xml"/>
+          
           <!--Java 1.6+ code-->
           <exclude name="vmware/build.xml" unless="java1.6+"/>
           <exclude name="ec2/build.xml" unless="java1.6+"/>
