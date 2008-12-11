@@ -335,6 +335,20 @@ Contains the Quartz library version quartz-${quartz.version}.jar.
 
 # -----------------------------------------------------------------------------
 
+%package rpmtools
+Group:         ${rpm.framework}
+Summary:        Components to aid RPM generation and deployment
+Requires:       %{name} = %{version}-%{release},  %{name}-networking,
+
+#
+%description rpmtools
+This RPM contains components to work with RPMs.
+
+There are no explicit dependencies, but any remote installation services
+will require the SSH package to be installed
+
+# -----------------------------------------------------------------------------
+
 %package scripting
 Group:         ${rpm.framework}
 Summary:       Scripting support
@@ -822,6 +836,10 @@ fi
 %{linkdir}/sf-quartz.jar
 %{linkdir}/quartz.jar
 
+%files rpmtools
+
+%{libdir}/sf-rpmtools-${smartfrog.version}.jar
+%{linkdir}/sf-rpmtools.jar
 
 %files scripting
 %{libdir}/sf-scripting-${smartfrog.version}.jar
