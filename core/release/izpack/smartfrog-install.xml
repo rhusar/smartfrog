@@ -587,6 +587,26 @@ SmartFrog to deploy complex systems.
       <depends packname="Logging"/>
     </pack>
 
+
+    <pack name="Rpmtools" required="no" preselected="no">
+      <description>
+        RPM tools.
+
+        This package contains RPM support. It depends upon the Networking package.
+
+      </description>
+      <file src="ivy/lib/package-rpmtools/sf-rpmtools-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-rpmtools/sf-rpmtools-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-rpmtools/sf-rpmtools-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <depends packname="Networking"/>
+    </pack>
+
     <pack name="Scripting" required="no" preselected="no">
       <description>
         Scripting support.

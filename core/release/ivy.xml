@@ -62,6 +62,8 @@
         description="networking components"/>
     <conf name="package-quartz"
         description="scheduling components"/>
+    <conf name="package-rpmtools"
+        description="rpm components"/>
     <conf name="package-scripting"
         description="scripting components"/>
     <conf name="package-testing"
@@ -142,7 +144,16 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-    
+
+    <!--email -->
+<!--
+    <dependency org="org.smartfrog"
+        name="sf-ec2"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-networking->master,redist,documentation"/>
+-->
+
     <!--email -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
@@ -186,6 +197,19 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-logging->master,redist,documentation"/>
+    <!--scheduling-->
+    <dependency org="org.smartfrog"
+        name="sf-quartz"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-quartz->master,redist,documentation"/>
+
+    <!--rpmtools-->
+    <dependency org="org.smartfrog"
+        name="sf-rpmtools"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-rpmtools->master,redist,documentation"/>
 
     <!--scripting -->
     <dependency org="org.smartfrog"
@@ -195,13 +219,7 @@
         conf="package-scripting->master,redist,documentation"/>
 
 
-    <!--scheduling-->
-    <dependency org="org.smartfrog"
-        name="sf-quartz"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-quartz->master,redist,documentation"/>
-    <!--,documentation -->
+
 
     <!--SLP-->
     <!--

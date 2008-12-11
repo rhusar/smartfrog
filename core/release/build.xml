@@ -521,6 +521,9 @@
     <rpmpackage package="quartz"/>
     <ln artifact="sf-quartz" version="${smartfrog.version}"/>
     <ln artifact="quartz" version="${quartz.version}"/>
+    <!-- quartz -->
+    <rpmpackage package="rpmtools"/>
+    <ln artifact="sf-rpmtools" version="${smartfrog.version}"/>
 
     <!-- scripting -->
     <rpmpackage package="scripting"/>
@@ -814,8 +817,9 @@
         <include name="sf-hadoop/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
-        <include name="sf-quartz/${smartfrog.version}/*"/>
         <include name="sf-net/${smartfrog.version}/*"/>
+        <include name="sf-quartz/${smartfrog.version}/*"/>
+        <include name="sf-rpmtools/${smartfrog.version}/*"/>
         <include name="sf-scripting/${smartfrog.version}/*"/>
         <include name="sf-ssh/${smartfrog.version}/*"/>
         <include name="sf-velocity/${smartfrog.version}/*"/>
@@ -1123,16 +1127,31 @@
         value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
     <!--list of rpms-->
 
+
+    <property name="rpm.base.list"
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant  smartfrog-logging "/>
+    <property name="rpms.components.list"
+        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity"/>
+    <property name="rpms.www.list"
+        value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
+    <property name="rpms.testing.list"
+        value="smartfrog-junit "/>
+
     <property name="rpms.core.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
-    <property name="rpms.jetty.list"
-        value="smartfrog-jetty"/>
-    <property name="rpms.hadoop.list"
-        value="smartfrog-hadoop"/>
+        value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
+<!--
+    <property name="rpms.cloud.list"
+        value="smartfrog-hadoop smartfrog-ec2"/>
+-->
+
+    <property name="rpms.cloud.list"
+        value="smartfrog-hadoop smartfrog-ec2"/>
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
+    
     <property name="rpms.list"
-        value="${rpms.core.list} ${rpms.private.list} ${rpms.jetty.list} ${rpms.hadoop.list}"/>
+        value="${rpms.core.list} ${rpms.private.list}  ${rpms.cloud.list}"/>
+
 
     <!--here are all the signed RPMs that are generated-->
 
