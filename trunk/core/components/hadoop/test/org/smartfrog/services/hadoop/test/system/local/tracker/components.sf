@@ -46,12 +46,12 @@ testLocalJobTrackerForked extends testLocalJobTracker {
 testLocalTaskTracker extends ExpectDeploy {
   description "bring up a Task Tracker";
 
-
-
   action extends LocalClusterCompound {
+  
   }
 
   tests extends MapReduceTestSequence {
+    s extends Sleep;
     jobTracker LAZY action:jobTracker;
     taskTracker LAZY action:taskTracker;
     cluster LAZY PARENT:action:cluster;
