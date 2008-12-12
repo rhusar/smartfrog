@@ -265,7 +265,104 @@
 
 
 <h3>Changes since last release</h3>
-
+<h4>        Bug
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-443'>SFOS-443</a>] -         sfStopDaemon doesnt pick up SFHOME in RPM uninstall
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-991'>SFOS-991</a>] -         ClassCastException in AntProject in Hudson Tests
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-992'>SFOS-992</a>] -         sourceforge have taken shell.sf.net away
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1004'>SFOS-1004</a>] -         Hadoop services leak if the component is terminated while the service is starting up
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1008'>SFOS-1008</a>] -         TaskTracker isn't starting/stopping right
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1012'>SFOS-1012</a>] -         JobTracker is getting its URIs for the fileystem wrong
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1015'>SFOS-1015</a>] -         Some of the cluster tests aren't shutting down the hdfs
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1026'>SFOS-1026</a>] -         Trackers need a cluster around before they come up reliably
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1036'>SFOS-1036</a>] -         jetty build warns of deprecated methods in Jetty 6.1.14
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1037'>SFOS-1037</a>] -         build failing as dependencies in hadoop component are wrong
+</li>
+</ul>
+        
+<h4>        Improvement
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1002'>SFOS-1002</a>] -         look at workflow classes and clean code up a bit
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1007'>SFOS-1007</a>] -         Add ability of namenode and datanodes to delete test dirs when closing the service
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1009'>SFOS-1009</a>] -         clean up some name accessors
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1011'>SFOS-1011</a>] -         Have hadoop IsServiceLive condition get the string description of a service and add it as an attribute
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1014'>SFOS-1014</a>] -         move from Throwable.getMessage() to Throwable.toString() in hadoop code
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1016'>SFOS-1016</a>] -         Catch System.exit() calls in third party libraries through a new SecurityManager
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1017'>SFOS-1017</a>] -         Move to Log4J 1.12.15
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1018'>SFOS-1018</a>] -         Split smartfrog-www RPM into smartfrog-www and smartfrog-jetty
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1023'>SFOS-1023</a>] -         produce better test termination message when a child terminates normally (and it was not meant to)
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1029'>SFOS-1029</a>] -         Add configuration options to Jetty's SelectChannelConnector
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1034'>SFOS-1034</a>] -         Move to Ivy 2.0.0rc2
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1045'>SFOS-1045</a>] -         have the TextFile component attempt to create the parent directory if it does not exist
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1046'>SFOS-1046</a>] -         assert component should go case insensitive in the EN_US locale always
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1047'>SFOS-1047</a>] -         add rpmtools RPM
+</li>
+</ul>
+    
+<h4>        New Feature
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-149'>SFOS-149</a>] -         Add a component to deploy every .sf file in a well known directory
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-624'>SFOS-624</a>] -         Allow RPM-installed SmartFrog to create new RPMs containing signed/customised artifacts
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-654'>SFOS-654</a>] -         Create a chmod component.
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1003'>SFOS-1003</a>] -         Add a TimeoutInterval class to manage timeouts more cleanly
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1019'>SFOS-1019</a>] -         Add smartfrog-hadoop RPM that contains all the artifacts needed to bring up Hadoop under SmartFrog
+</li>
+</ul>
+        
+<h4>        Task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-85'>SFOS-85</a>] -         Updated language documentation
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-505'>SFOS-505</a>] -         Move up to jsch 0.1.38
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-547'>SFOS-547</a>] -         move up to log4j 1.12.15
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-827'>SFOS-827</a>] -         Upgrade IVY to 2.0 Beta 2
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1032'>SFOS-1032</a>] -         Update Ant library version to Ant 1.7.1
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-1033'>SFOS-1033</a>] -         Move to Jetty 6.1.14
+</li>
+</ul>
+    
+<h4>        Sub-task
+</h4>
+<ul>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-474'>SFOS-474</a>] -         add SLF4J support to logging services
+</li>
+<li>[<a href='http://jira.smartfrog.org/jira/browse/SFOS-789'>SFOS-789</a>] -         write component to start hadoop task tracker in-VM
+</li>
+</ul>
 </body>
 </html>
 
