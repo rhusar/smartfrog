@@ -77,6 +77,9 @@
     overrides (like the compiler settings) that apply across
     all projects that use this common file-->
     <property file="${core.dir}/common.properties"/>
+    
+    <!-- this is an extra set of properties you can use outside SVN trees -->
+    <property file="${user.dir}/.ant/smartfrog.properties"/>
 
     <!-- now read in environment settings -->
     <property environment="env" />
