@@ -117,7 +117,7 @@ AnubisServiceCompound extends Compound {
  */
 AnubisService extends AnubisServiceCompound {
 
-    anubisParameters TBD; // extend AnubisDefaultParameters
+    anubisParameters TBD; // extends AnubisDefaultParameters
 
     partitionManager extends AnubisPartitionManager;
 
