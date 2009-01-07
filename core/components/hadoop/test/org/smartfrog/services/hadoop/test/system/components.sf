@@ -19,5 +19,5 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
 #include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
