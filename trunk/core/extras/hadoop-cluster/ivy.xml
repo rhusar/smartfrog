@@ -57,7 +57,7 @@
         conf="runtime->server"/>
 
     <dependency org="org.smartfrog"
-        name="sf-rpm" changing="true"
+        name="sf-rpmtools" changing="true"
         rev="latest.integration"
         conf="runtime->default"/>
 
