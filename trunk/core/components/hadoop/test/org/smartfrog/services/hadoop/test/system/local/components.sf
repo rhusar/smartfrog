@@ -21,123 +21,8 @@
 
 #include "/org/smartfrog/services/hadoop/test/system/components.sf"
 
-//set this flag to true to dump the configuration on failures
-DUMP_CONF false;
 
-//set the flag to say : Delete directories on shutdown
-TEST_MODE true;
-
-NameNodeIpcPort "8020";
-NameNodeHttpPort "8021";
-DataNodeHttpsPort "0";
-HandlerThreads 4;
-ClientHandlerThreads 2;
-HOSTNAME "localhost";
-FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
-NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
-DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpsPort ++ "/");
-STARTUP_SLEEP_TIME 5000;
-IPC_CONNECT_TIMEOUT 10000;
-//"ipc.client.connect.max.retries"
-ORPHAN_CONNECT_MAX_RETRIES 1;
-ORPHAN_CONNECT_TIMEOUT 100;
-ORPHAN_SLEEP_TIME 15000;
-
-LightweightJobTracker extends JobTracker {
-  smartfrog.dump.conf DUMP_CONF;
-  fs.default.name FS.DEFAULT.NAME;
-  mapred.job.tracker.handler.count HandlerThreads;
-}
-
-LightweightTaskTracker extends TaskTracker {
-  description "A task tracker with less threads than normal";
-  smartfrog.dump.conf DUMP_CONF;
-  tasktracker.http.threads ClientHandlerThreads;
-  mapred.task.tracker.connect.timeout IPC_CONNECT_TIMEOUT;
-}
-
-LightweightNameNode extends NameNode {
-  smartfrog.dump.conf DUMP_CONF;
-  dfs.namenode.handler.count HandlerThreads;
-  testModeDeleteDirectories TEST_MODE;
-}
-
-LightweightDataNode extends DataNode {
-  smartfrog.dump.conf DUMP_CONF;
-  dfs.heartbeat.interval 1;
-  dfs.datanode.handler.count ClientHandlerThreads;
-  localhost_any  "127.0.0.1:0";
-  dfs.datanode.http.address localhost_any;
-  dfs.datanode.https.address localhost_any;
-
-  /**
-   The datanode ipc server address and port.
-   If the port is 0 then the server will start on a free port.
-  */
-  dfs.datanode.ipc.address localhost_any;
-
-  dfs.blockreport.intervalMsec 10000;
-  dfs.blockreport.initialDelay 0;
-  testModeDeleteDirectories true;
-}
-
-LocalHadoopCompound extends Compound {
-  //ordered startup/shutdown of child components
-  //sfSyncTerminate true;
-  fs.default.name  FS.DEFAULT.NAME;
-  nameNodeURL      NAME_NODE_URL;
-  dataNodeURL      DATA_NODE_URL ;
-
-  logDir extends TempDir {
-
-  }
-
-  dataDir extends TempDir {
-
-  }
-
-  nameDir extends TempDir {
-
- }
-
-}
-
-LocalNameNodeCompound extends LocalHadoopCompound {
-  description "A name node";
-
-  cluster LAZY namenode;
-
-  namenode extends LightweightNameNode {
-    fs.default.name PARENT:fs.default.name;
-    dataDir LAZY PARENT:dataDir;
-    dataDirectories [dataDir];
-    //dataDirectories [LAZY PARENT:dataDir];
-    nameDirectory LAZY PARENT:nameDir;
-    nameDirectories [nameDirectory];
-    logDir LAZY PARENT:logDir;
-    dfs.namenode.startup ACTION_FORMAT;
-    dfs.http.address nameNodeURL;
-    dfs.permissions false;
-    minWorkerCount 0;
-  }
-}
-
-LocalDataNodeCompound extends LocalNameNodeCompound {
-  description "A data node bound to a temporary directory";
-
-  localDataDir extends TempDir {
-
-  }
-
-  datanode extends  LightweightDataNode {
-    fs.default.name PARENT:fs.default.name;
-    dataDirectories [LAZY localDataDir];
-    logDir LAZY PARENT:logDir;
-    dfs.datanode.address dataNodeURL  ;
-  }
-
-}
-
+LocalDataNodeCompound extends TransientNameDataNodeCompound;
 
 FilesystemWithActions extends LocalDataNodeCompound {
 
@@ -265,10 +150,6 @@ LocalClusterCompound extends LocalTaskTrackerCompound {
 
 }
 
-
-CLUSTER_STARTUP_TIMEOUT 30000;
-CLUSTER_POLL_INTERVAL 200;
-CLUSTER_SHUTDOWN_TIMEOUT 10000;
 
 WaitForHadoopLive extends FailingWaitFor {
   interval CLUSTER_POLL_INTERVAL;
