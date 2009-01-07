@@ -18,4 +18,30 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/services/hadoop/components/components.sf"
+#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
+
+
+WORKER_THREADS 8;
+
+ClusterDataNodeCompound extends TransientDataNodeCompound {
+  threads WORKER_THREADS;
+  jobtracker:mapred.job.tracker.handler.count threads;
+}
+
+ClusterNameNodeCompound extends TransientDataNodeCompound {
+  threads WORKER_THREADS;
+  namenode:dfs.datanode.handler.count threads;
+}
+
+ClusterJobTrackerCompound extends TransientJobTrackerCompound {
+  threads WORKER_THREADS;
+  jobtracker:mapred.job.tracker.handler.count threads;
+}
+
+
+ClusterTaskTrackerCompound extends TransientJobTrackerCompound {
+  threads WORKER_THREADS;
+  tasktracker.http.threads threads;
+}
+
+
