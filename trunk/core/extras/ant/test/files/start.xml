@@ -222,12 +222,27 @@ ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib
             }
           </application>
         </sf-deploy>
-        <sf-ping application="compound" timeout="${short.timeout}"
-            port="${new.port}"
-            failonerror="true" />
         <sf-undeploy application="compound" port="${new.port}" failonerror="true"/>
       </test>
     </sf-system-test2>
   </target>
+
+  <target name="testDifferentPortDeployPing" description="test against a different port">
+    <sf-system-test2>
+      <test>
+        <sf-deploy port="${new.port}">
+          <application name="compound">
+            #include "/org/smartfrog/components.sf"
+            sfConfig extends Compound {
+            }
+          </application>
+        </sf-deploy>
+        <sf-ping application="compound" timeout="${short.timeout}"
+            port="${new.port}"
+            failonerror="true" />
+      </test>
+    </sf-system-test2>
+  </target>
+
 
 </project>

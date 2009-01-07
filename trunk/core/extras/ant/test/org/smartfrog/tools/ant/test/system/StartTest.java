@@ -117,6 +117,10 @@ public class StartTest extends TaskTestBase {
         executeTarget("testDifferentPortDeploy");
     }
 
+    public void testDifferentPortDeployPing() {
+        executeTarget("testDifferentPortDeployPing");
+    }
+
     public void testDifferentPortDeployUndeploy() {
         executeTarget("testDifferentPortDeployUndeploy");
     }
