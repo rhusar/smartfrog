@@ -17,8 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/anubis/components.sf"
 
 /**
@@ -27,16 +25,17 @@ For more information: www.smartfrog.org
  */
 
 HadoopAnubisService extends AnubisService {
+  //triggers registration on the root as ROOT:anubis.
   sfComponentName  "anubis";
   contactPort 3802;
   testPort (contactPort + 1);
+  magic 0xfad00f;
 
   anubisParameters extends AnubisDefaultParameters {
-
+    identity:magic magic;
     contactAddress:port contactPort;
     testAddress:port testPort;
   }
 
-  //use the anubis service name to register in the local process
 }
 
