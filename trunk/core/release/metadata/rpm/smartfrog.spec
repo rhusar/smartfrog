@@ -43,8 +43,6 @@
 
 
 
-# TODO: menu entries
-
 # if menu entries are created, define Summary here, and use it in the summary
 # tag, and the menu entries' descriptions
 
@@ -237,21 +235,21 @@ in order for JDBC connectivity to work.
 %package hadoop
 Group:         ${rpm.framework}
 Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jasper,  %{name}-jetty
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
 
 %description hadoop
 This includes all the artifacts needed for Apache Hadoop.
 
 # -----------------------------------------------------------------------------
 
-%package jasper
-Group:         ${rpm.framework}
-Summary:        Jasper JSP runtime
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
+#%package jasper
+#Group:         ${rpm.framework}
+#Summary:        Jasper JSP runtime
+#Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
 
-%description jasper
-This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
-application server, such as Jetty.
+#%description jasper
+#This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
+#application server, such as Jetty.
 
 
 # -----------------------------------------------------------------------------
@@ -260,7 +258,6 @@ application server, such as Jetty.
 Group:         ${rpm.framework}
 Summary:        Jetty integration
 Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-ant
-Conflicts:      %{name}-hadoop
 
 %description jetty
 This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
