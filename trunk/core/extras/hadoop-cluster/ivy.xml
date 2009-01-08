@@ -44,7 +44,21 @@
       changing="true"
       rev="latest.integration"
       conf="compile,runtime,daemon->services"/>
-
+    <dependency org="org.smartfrog"
+        name="sf-tasks"
+        changing="true"
+        rev="latest.integration"
+        conf="build->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-testharness"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
+    <dependency org="org.smartfrog"
+        name="sf-junit"
+        changing="true"
+        rev="latest.integration"
+        conf="test->default"/>
     <dependency org="org.smartfrog"
         name="sf-anubis" changing="true"
         rev="latest.integration"
