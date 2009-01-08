@@ -19,6 +19,33 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
-sfConfig extends ClusterJobTrackerCompound {
+HadoopCluster extends Compound {
 
+  /*
+  anubis extends HadoopAnubisService {
+
+  }*/
+
+  namenode extends ClusterNameNodeCompound {
+
+  }
+
+/*
+  datanode extends ClusterDataNodeCompound {
+
+  }
+  */
+
+/*
+  jobTracker extends ClusterJobTrackerCompound {
+
+  }
+*/
+
+/*
+  taskTracker extends ClusterTaskTrackerCompound {
+
+  }
+
+*/
 }

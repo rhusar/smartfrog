@@ -23,24 +23,35 @@ For more information: www.smartfrog.org
 
 WORKER_THREADS 8;
 
-ClusterDataNodeCompound extends TransientDataNodeCompound {
+namenode PROPERTY test.namenode;
+
+namenode.filesystem ("hdfs://" ++ namenode ++ ":" ++ NameNodeIpcPort ++ "/");
+namenode.url ("http://" ++ namenode ++ ":" ++ NameNodeHttpPort ++ "/");
+
+
+/**
+ * Here are common bindings
+ */
+Bindings extends {
   threads WORKER_THREADS;
+  fs.default.name namenode.filesystem;
+}
+
+
+ClusterDataNodeCompound extends TransientDataNodeCompound, Bindings {
   jobtracker:mapred.job.tracker.handler.count threads;
 }
 
-ClusterNameNodeCompound extends TransientDataNodeCompound {
-  threads WORKER_THREADS;
+ClusterNameNodeCompound extends TransientDataNodeCompound, Bindings {
   namenode:dfs.datanode.handler.count threads;
 }
 
-ClusterJobTrackerCompound extends TransientJobTrackerCompound {
-  threads WORKER_THREADS;
+ClusterJobTrackerCompound extends TransientJobTrackerCompound, Bindings {
   jobtracker:mapred.job.tracker.handler.count threads;
 }
 
 
-ClusterTaskTrackerCompound extends TransientJobTrackerCompound {
-  threads WORKER_THREADS;
+ClusterTaskTrackerCompound extends TransientJobTrackerCompound, Bindings {
   tasktracker.http.threads threads;
 }
 

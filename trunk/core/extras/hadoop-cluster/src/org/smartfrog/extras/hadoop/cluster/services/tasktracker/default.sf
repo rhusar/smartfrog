@@ -19,6 +19,6 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/extras/hadoop/cluster/components.sf"
 
-sfConfig extends ClusterDataNodeCompound {
+sfConfig extends ClusterTaskTrackerCompound {
 
 }
