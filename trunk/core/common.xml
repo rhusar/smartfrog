@@ -919,11 +919,13 @@ java.class.path=
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
     <echo level="verbose">
-      Loading tasks from ${toString:smartfrog.tasks.classpath}
+Loading tasks from
+${toString:smartfrog.tasks.classpath}
     </echo>
     <fail unless="sfTasks.present">
-      Smartfrog tasks not found in
-      ${toString:smartfrog.tasks.classpath}
+Smartfrog tasks not found in the classpath. Are the dependencies in ivy.xml right?
+smartfrog.tasks.classpath=
+"${toString:smartfrog.tasks.classpath}"
     </fail>
     <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
