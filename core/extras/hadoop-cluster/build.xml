@@ -28,6 +28,16 @@
 
     This project contains no java source, just .sf files to deploy and anything else
     needed to bring up a cluster.
+
+    To use the relevant targets, define properties for
+
+    namenode
+    datanode
+    tasktracker
+    jobtracker
+
+    and run them. All will need the property namenode set
+
   </description>
   <!--we are a component -->
   <property name="is.component" value="true"/>
@@ -39,6 +49,15 @@
   <!-- Import common stuff -->
   <import file="../../common.xml"/>
 
+
+  <property name="namenode" value="localhost" />
+  <property name="test.namenode" value="${namenode}" />
+  <property name="cluster.sf" value="org/smartfrog/extras/hadoop/cluster/cluster.sf" />
+  <property name="deploy.sf" value="${cluster.sf}" />
+  <property name="deploy.host" value="${namenode}" />
+
+  <target name="init-deploy-properties" depends="common.init-deploy-properties">
+  </target>
 
 
 </project>
