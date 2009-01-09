@@ -30,11 +30,10 @@ HadoopCluster extends Compound {
 
   }
 
-/*
   datanode extends ClusterDataNodeCompound {
 
   }
-  */
+  
 
 /*
   jobTracker extends ClusterJobTrackerCompound {
@@ -49,3 +48,5 @@ HadoopCluster extends Compound {
 
 */
 }
+
+sfConfig extends HadoopCluster;

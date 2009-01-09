@@ -19,9 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.extras.hadoop.cluster.test.system;
 
+import org.smartfrog.test.DeployingTestBase;
+
 /**
  * Created 05-Jan-2009 16:12:47
  */
 
-public class ClusterTest {
+public class ClusterTest extends DeployingTestBase {
+
+    public ClusterTest(String name) {
+        super(name);
+    }
 }

@@ -63,12 +63,15 @@
         name="sf-anubis" changing="true"
         rev="latest.integration"
         conf="runtime->default"/>
-
+    <dependency org="org.smartfrog"
+        name="sf-csvfiles" changing="true"
+        rev="latest.integration"
+        conf="runtime->default"/>
     <dependency org="org.smartfrog"
         name="sf-hadoop"
         changing="true"
         rev="latest.integration"
-        conf="runtime->server"/>
+        conf="runtime->server,default"/>
 
     <dependency org="org.smartfrog"
         name="sf-rpmtools" changing="true"
