@@ -60,53 +60,33 @@
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- deploy; requires a host -->
-  <!-- ========================================================== -->
-  <target name="ready-to-deploy" depends="common.ready-to-deploy"
-      description="deploy a namenode">
 
-
-    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
-    <presetdef name="hadoop" >
-    <sf-deploy classpathref="tests.run.classpath"
-      logStackTraces="true"
-      host="${namenode}"
-      timeout="30000"
-      >
-      <codebase url="${codebase}"/>
-      <syspropertyset>
-          <propertyref prefix="test."/>
-      </syspropertyset>
-      </sf-deploy>
-    </presetdef>
-  </target>
 
       <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
   <target name="cluster" depends="ready-to-deploy"
       description="deploy a cluster">
-    <hadoop>
+    <deploy>
       <application name="cluster"
               descriptor="/${cluster.sf}"/>
-    </hadoop>
+    </deploy>
   </target>
 
    <target name="namenode" depends="ready-to-deploy"
       description="deploy a namenode">
-    <hadoop>
+    <deploy>
       <application name="namenode"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/namenode/default.sf"/>
-    </hadoop>
+    </deploy>
   </target>
 
   <target name="datanode" depends="ready-to-deploy"
    description="deploy a namenode">
-    <hadoop>
+    <deploy>
       <application name="datanode"
           descriptor="/org/smartfrog/extras/hadoop/cluster/services/datanode/default.sf"/>
-    </hadoop>
+    </deploy>
   </target>
 
 </project>
