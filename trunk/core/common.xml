@@ -1437,8 +1437,23 @@ smartfrog.tasks.classpath=
   <!-- get the build into the state where the application is ready-->
   <!-- ========================================================== -->
 
-  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test">
+  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test,define-deploy-preset">
 
+  </target>
+
+  <target name="define-deploy-preset" depends="ready-to-test,init-codebase,init-deploy-properties">
+    <presetdef name="deploy" >
+      <sf-deploy classpathref="tests.run.classpath"
+          logStackTraces="true"
+          host="${deploy.host}"
+          timeout="30000"
+          >
+        <codebase url="${codebase}"/>
+        <syspropertyset>
+          <propertyref prefix="test."/>
+        </syspropertyset>
+      </sf-deploy>
+    </presetdef>
   </target>
 
   <target name="ready-to-undeploy" depends="init-deploy-properties,init-codebase">
@@ -1448,23 +1463,16 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
+
   <target name="deploy" depends="ready-to-deploy"
       description="deploy">
-
-    <sf-deploy classpathref="run.classpath"
-        logStackTraces="true"
-        host="${deploy.host}"
-        timeout="30000"
-        >
-      <codebase url="${codebase}"/>
-      <syspropertyset>
-        <propertyref prefix="test."/>
-      </syspropertyset>
+    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
+    <deploy>
       <application name="${application.name}">
         sfCodeBase PROPERTY org.smartfrog.codebase;
         #include "/${deploy.sf}"
       </application>
-    </sf-deploy>
+    </deploy>
   </target>
 
   <!-- ========================================================== -->
