@@ -130,7 +130,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
               throw new LivenessException("The number of worker nodes is only "
                       + workers
                       +"\n - less than the minimum of " + minWorkerCount);
-            };
+            }
         }
     }
 
