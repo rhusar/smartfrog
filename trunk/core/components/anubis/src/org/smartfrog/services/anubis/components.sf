@@ -137,7 +137,7 @@ AnubisService extends AnubisServiceCompound {
  * instance of the anubis service running in another process. The anubisAdapter
  * attribute should be set to locate the AnubisService instance. The default
  * provided will locate an instance of AnubisService running in the daemon process
- * if it has been named "anubis" (i.e. anbuisServiceName is "anubis").
+ * if it has been named "anubis" (i.e. anubisServiceName is "anubis").
  * The same naming method is used by AnubisSubProcessLocator - i.e. if you want
  * it to be found then set anubisServiceName.
  */
