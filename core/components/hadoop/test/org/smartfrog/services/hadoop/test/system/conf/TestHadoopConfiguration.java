@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/hadoop/examples/options.sf"
-#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
-#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
-#include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
+package org.smartfrog.services.hadoop.test.system.conf;
+
+import org.smartfrog.test.DeployingTestBase;
+
+/**
+ * Created 14-Jan-2009 15:49:56
+ */
+
+public class TestHadoopConfiguration extends DeployingTestBase {
+    public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/conf/";
+
+    public TestHadoopConfiguration(String name) {
+        super(name);
+    }
+
+    public void testDefaultConfValues() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testDefaultConfValues");
+    }
+
+    public void testOverride() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE,"testOverride");
+    }
+}

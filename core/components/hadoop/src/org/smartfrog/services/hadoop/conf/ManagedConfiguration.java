@@ -57,9 +57,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * This is our extended configuration, which takes a Prim component as a source of information
+ * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
+ * the default values. This makes the reload process more complex, as it re-evaluates it from a component
  */
-public class ManagedConfiguration extends JobConf implements PrimSource,
+public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes {
 
     private Prim source;
@@ -77,12 +78,40 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     };
 
     /**
-     * A new configuration.
+     * A new configuration with the same settings cloned from another.
+     *
+     * @param conf the configuration from which to clone settings.
+     */
+    public ManagedConfiguration(Configuration conf) {
+        super(conf);
+        if (conf instanceof PrimSource) {
+            PrimSource primsource = (PrimSource) conf;
+            source = primsource.getSource();
+        } else {
+            throw new SFHadoopRuntimeException(
+                    "No Prim source for the configuration");
+        }
+    }
+
+    /**
+     * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
+     * If the parameter {@code loadDefaults} is false, the new instance will not load resources from the default files.
+     *
+     * @param loadDefaults specifies whether to load from the default files
+     * @param source       source of config information
+     */
+    public ManagedConfiguration(boolean loadDefaults, Prim source) {
+        super(loadDefaults);
+        bind(source);
+    }
+
+    /**
+     * A new configuration. Default values are picked up
      *
      * @param source source of config information
      */
     public ManagedConfiguration(Prim source) {
-        bind(source);
+        this(false, source);
     }
 
     /**
@@ -139,6 +168,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     }
 
     /**
+     * Reload the configuration. This rests our cache.
      * {@inheritDoc}
      */
     @Override
@@ -147,21 +177,6 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
         attributeMap = null;
     }
 
-    /**
-     * A new configuration with the same settings cloned from another.
-     *
-     * @param conf the configuration from which to clone settings.
-     */
-    public ManagedConfiguration(Configuration conf) {
-        super(conf);
-        if (conf instanceof PrimSource) {
-            PrimSource primsource = (PrimSource) conf;
-            source = primsource.getSource();
-        } else {
-            throw new SFHadoopRuntimeException(
-                    "No Prim source for the configuration");
-        }
-    }
 
     /**
      * Return the source
@@ -206,7 +221,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
     @Override
     public String get(String name, String defaultValue) {
         try {
-          return sfResolve(name, defaultValue);
+            return sfResolve(name, defaultValue);
         } catch (SmartFrogResolutionException ignored) {
             return defaultValue;
         } catch (RemoteException e) {
@@ -216,11 +231,12 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Resolve a configuration valaue
-     * @param name attribute to resolve
+     *
+     * @param name         attribute to resolve
      * @param defaultValue the default value
      * @return the default value
      * @throws SmartFrogResolutionException failure to resolve
-     * @throws RemoteException network problems
+     * @throws RemoteException              network problems
      */
     public String sfResolve(String name, String defaultValue)
             throws SmartFrogResolutionException, RemoteException {
@@ -234,7 +250,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
         return result.toString();
     }
 
-  /**
+    /**
      * Get the value of the <code>name</code> property, without doing <a href="#VariableExpansion">variable
      * expansion</a>.
      *
@@ -347,10 +363,10 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
                 map.put(key.toString(), value.toString());
             }
             //files get special treatment
-            if(value instanceof FileIntf) {
+            if (value instanceof FileIntf) {
                 FileIntf fi = (FileIntf) value;
                 map.put(key.toString(), fi.getAbsolutePath());
-            }            
+            }
         }
         //now add the required stuff if not there
         for (String required : REQUIRED_ATTRIBUTES) {
@@ -475,7 +491,7 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
      * @param bindAddressName old style hostname
      * @param bindAddressPort old style host port
      * @return the host/port binding
-     * @throws IllegalArgumentException if the arguments are bad
+     * @throws IllegalArgumentException     if the arguments are bad
      * @throws SmartFrogResolutionException if the address does not resolve
      */
     public InetSocketAddress bindToNetwork(String addressName, String bindAddressName, String bindAddressPort)
@@ -485,10 +501,48 @@ public class ManagedConfiguration extends JobConf implements PrimSource,
                         bindAddressName,
                         bindAddressPort,
                         addressName);
-        if(infoAddr == null) {
+        if (infoAddr == null) {
             throw new SmartFrogResolutionException("Failed to resolve " + addressName);
         }
         InetSocketAddress socketAddress = NetUtils.createSocketAddr(infoAddr);
         return socketAddress;
-  }
+    }
+
+    /**
+     * Copy in the properties from a configuration, by adding them as attributes if the component does not have them
+     * already. The configuration is marked for reloading
+     *
+     * @param conf configuration
+     * @throws SmartFrogRuntimeException failure to read or write an attribute
+     * @throws RemoteException network problems
+     */
+    public void addProperties(Configuration conf) throws SmartFrogRuntimeException, RemoteException {
+        assert conf != this;
+        for (Map.Entry<String, String> entry : conf) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            try {
+                source.sfResolveHere(key);
+            } catch (SmartFrogResolutionException e) {
+                source.sfReplaceAttribute(key, value);
+            }
+        }
+        reloadConfiguration();
+    }
+
+    /**
+     * Creates and returns a copy of this object.
+     * A configuration reload is triggered, so that datastructures are not accidentally shared across instances. 
+     * @return a clone of this instance.
+     * @throws CloneNotSupportedException if the object's class does not support the <code>Cloneable</code> interface.
+     *                                    Subclasses that override the <code>clone</code> method can also throw this
+     *                                    exception to indicate that an instance cannot be cloned.
+     * @see Cloneable
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ManagedConfiguration that = (ManagedConfiguration) super.clone();
+        that.reloadConfiguration();
+        return that;
+    }
 }

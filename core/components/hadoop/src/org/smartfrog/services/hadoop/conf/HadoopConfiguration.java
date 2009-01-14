@@ -17,10 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/hadoop/components/components.sf"
-#include "/org/smartfrog/services/hadoop/examples/options.sf"
-#include "/org/smartfrog/services/hadoop/examples/lightweight.sf"
-#include "/org/smartfrog/services/hadoop/examples/hdfs.sf"
-#include "/org/smartfrog/services/filesystem/csvfiles/components.sf"
+package org.smartfrog.services.hadoop.conf;
+
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
+
+import java.rmi.Remote;
+
+/**
+ * This is the hadoop configuration. It defines the names of the many, many hadoop options we want to allow people to
+ * configure.
+ */
+
+
+public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
+
+}

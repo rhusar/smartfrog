@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.submitter;
 
 import org.apache.hadoop.mapred.JobClient;
-import org.apache.hadoop.mapred.JobID;
+import org.apache.hadoop.mapreduce.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.smartfrog.services.filesystem.FileSystem;

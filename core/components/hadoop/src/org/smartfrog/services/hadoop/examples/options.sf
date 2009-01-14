@@ -32,13 +32,13 @@ TEST_MODE true;
 
 NameNodeIpcPort "8020";
 NameNodeHttpPort "8021";
-DataNodeHttpsPort "0";
+DataNodeHttpPort "0";
 HandlerThreads 4;
 ClientHandlerThreads 2;
-HOSTNAME "localhost";
+HOSTNAME "127.0.0.1";
 FS.DEFAULT.NAME    ("hdfs://" ++ HOSTNAME ++ ":" ++ NameNodeIpcPort ++ "/");
 NAME_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ NameNodeHttpPort ++ "/");
-DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpsPort ++ "/");
+DATA_NODE_URL      ("http://" ++ HOSTNAME ++ ":" ++ DataNodeHttpPort ++ "/");
 STARTUP_SLEEP_TIME 5000;
 IPC_CONNECT_TIMEOUT 10000;
 //"ipc.client.connect.max.retries"

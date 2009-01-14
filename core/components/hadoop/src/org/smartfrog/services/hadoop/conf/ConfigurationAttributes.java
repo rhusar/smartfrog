@@ -19,7 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
-import org.apache.hadoop.fs.Path;
 
 /**
  * Created 18-Apr-2008 14:34:53
