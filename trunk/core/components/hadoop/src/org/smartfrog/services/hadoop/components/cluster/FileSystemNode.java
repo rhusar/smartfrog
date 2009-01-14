@@ -20,7 +20,7 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 
 
 /**

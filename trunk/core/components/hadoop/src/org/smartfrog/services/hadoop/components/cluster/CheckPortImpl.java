@@ -21,7 +21,7 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.hadoop.common.HadoopUtils;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;

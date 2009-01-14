@@ -52,16 +52,16 @@ LightweightDataNode extends DataNode {
   smartfrog.dump.conf DUMP_CONF;
   dfs.heartbeat.interval 1;
   dfs.datanode.handler.count ClientHandlerThreads;
-  hostaddress "127.0.0.1";
-  localhost_any  (hostaddress ++ "127.0.0.1:0");
-  dfs.datanode.http.address localhost_any;
-  dfs.datanode.https.address localhost_any;
+  hostaddress HOSTNAME;
+  any_port  (hostaddress ++ ":0");
+  dfs.datanode.http.address any_port;
+  dfs.datanode.https.address any_port;
 
   /**
    The datanode ipc server address and port.
    If the port is 0 then the server will start on a free port.
   */
-  dfs.datanode.ipc.address localhost_any;
+  dfs.datanode.ipc.address any_port;
 
   dfs.blockreport.intervalMsec 10000;
   dfs.blockreport.initialDelay 0;

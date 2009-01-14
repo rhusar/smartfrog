@@ -52,7 +52,7 @@ testLocalNameNodeCompoundTerminates extends ExpectDeploy {
 
   tests extends Sequence {
 
-    namenode LAZY PARENT:action:namenode;
+    namenode LAZY PARENT:action:cluster;
 
     namenodeLive extends CheckNameNodePort {
       cluster LAZY PARENT:namenode;

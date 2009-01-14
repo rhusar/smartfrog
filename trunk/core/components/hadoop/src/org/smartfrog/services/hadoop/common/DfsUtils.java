@@ -25,7 +25,7 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.IOUtils;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;

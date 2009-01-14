@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.submitter;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 
 
 /**

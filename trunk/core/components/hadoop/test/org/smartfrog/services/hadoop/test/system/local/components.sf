@@ -24,23 +24,6 @@
 
 LocalDataNodeCompound extends TransientNameDataNodeCompound;
 
-FilesystemWithActions extends LocalDataNodeCompound {
-
-
-  clusterActions extends WaitForServiceLive {
-    service LAZY PARENT:datanode;
-    //sfShouldTerminate false;
-
-    then extends Compound {
-      //sfShouldTerminate false;
-    }
-
-  }
-
-
-}
-
-
 
 OrphanDatanodeCompound  extends LocalHadoopCompound  {
 
@@ -67,7 +50,7 @@ TwoDataNodeCluster extends LocalDataNodeCompound {
 
   datanode2 extends datanode {
     dataDirectories [LAZY localDataDir2];
-    dfs.datanode.https.address localhost_any;
+    dfs.datanode.https.address any_port;
   }
 }
 
@@ -93,23 +76,6 @@ LocalJobTrackerCompound2 extends LocalFileSystemCompound {
   }
 }
 
-
-LocalJobTrackerCompound extends LocalFileSystemCompound {
-  description "A cluster with a job tracker";
-
-  jobTracker LAZY clusterActions:then:jobTracker;
-
-  clusterActions:then:jobTracker extends LightweightJobTracker {
-    fs.default.name PARENT:ATTRIB fs.default.name;
-    dataDir LAZY PARENT:ATTRIB dataDir;
-    dataDirectories [dataDir];
-    nameDir LAZY PARENT:ATTRIB nameDir;
-    nameDirectories [nameDir];
-    logDir LAZY PARENT:ATTRIB logDir;
-  }
-}
-
-
 OrphanTaskTrackerCompound extends LocalHadoopCompound  {
 
   description "A cluster with a task tracker but not job tracker";
@@ -128,114 +94,6 @@ OrphanTaskTrackerCompound extends LocalHadoopCompound  {
   }
 }
 
-
-
-
-LocalTaskTrackerCompound extends LocalJobTrackerCompound {
-  description "A cluster with a task tracker";
-
-  taskTracker LAZY clusterActions:then:taskTracker;
-
-  clusterActions:then:taskTracker extends LightweightTaskTracker {
-    fs.default.name PARENT:ATTRIB fs.default.name;
-    mapred.job.tracker LAZY ATTRIB jobTracker:mapred.job.tracker;
-  }
-}
-
-
-LocalClusterCompound extends LocalTaskTrackerCompound {
-
-  description "a full cluster";
-
-
-}
-
-
-WaitForHadoopLive extends FailingWaitFor {
-  interval CLUSTER_POLL_INTERVAL;
-  timeout CLUSTER_STARTUP_TIMEOUT ;
-}
-
-
-WaitForFilesystemLive extends WaitForHadoopLive  {
-  service TBD;
-  jobTrackerLive false;
-  message ("WaitForFilesystemLive failed ClusterStatusCondition test " ++ LAZY condition:serviceDescription);
-  condition extends ClusterStatusCondition {
-    mapred.job.tracker PARENT:service:mapred.job.tracker;
-  }
-}
-
-WaitForJobTrackerLive extends WaitForFilesystemLive {
-  cluster service;
-  message ("WaitForFilesystem or JobTracker Live failed ClusterStatusCondition test"  ++ LAZY condition:serviceDescription);
-  jobTrackerLive true;
-}
-
-
-WaitForServiceLive extends WaitForHadoopLive  {
-  service TBD;
-  serviceName service:name;
-  message ("hadoop service " ++ serviceName ++ " not live - state is " ++ LAZY condition:serviceDescription);
-  condition extends IsHadoopServiceLive {
-    service LAZY PARENT:service;
-  }
-  else extends Sequence {
-    ping extends PingTarget {
-      target LAZY PARENT:ATTRIB service;
-      sfShouldTerminate true;
-    }
-    exit extends Terminator {
-      description PARENT:ATTRIB message;
-      selftype Terminator:ABNORMAL;
-    }
-  }
-}
-
-WaitForWorkersLive extends WaitForHadoopLive  {
-  service TBD;
-  message ("WaitForWorkersLive not enough workers for this service " ++ LAZY condition:serviceDescription);
-  minCount 1;
-  condition extends IsWorkerCountGood {
-    service LAZY PARENT:service;
-    minCount PARENT:minCount;
-  }
-}
-
-WaitForPortFree extends FailingWaitFor {
-  interval CLUSTER_POLL_INTERVAL;
-  timeout CLUSTER_SHUTDOWN_TIMEOUT;
-  port NameNodeIpcPort;
-  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
-  condition extends Not {
-    condition extends CheckPortCondition {
-      address PARENT:PARENT:address;
-    }
-  }
-}
-
-AssertLocalPortClosed extends CheckPortCondition {
-  sfShouldTerminate true;
-  port TBD;
-  checkPortOpen false;
-  address (CheckPortCondition:LOCALHOST  ++ ":" ++ port);
-}
-
-AssertNameNodeIPCClosed extends AssertLocalPortClosed {
-  port NameNodeIpcPort;
-}
-
-AssertNameNodeHttpClosed extends AssertLocalPortClosed {
-  port NameNodeHttpPort;
-}
-
-WaitForNameNodeLive extends WaitForServiceLive {
-  serviceName "namenode";
-}
-
-WaitForDataNodeLive extends WaitForServiceLive {
-  serviceName "datanode";
-}
 
 
 

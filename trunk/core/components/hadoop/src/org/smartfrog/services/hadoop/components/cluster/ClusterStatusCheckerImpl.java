@@ -24,7 +24,7 @@ import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobTracker;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
-import org.smartfrog.services.hadoop.components.HadoopConfiguration;
+import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
 import org.smartfrog.services.hadoop.components.submitter.SubmitterImpl;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
