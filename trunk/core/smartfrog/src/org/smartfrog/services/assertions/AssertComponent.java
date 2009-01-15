@@ -110,7 +110,24 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             return ATTR_IS_FALSE + " evaluates to true";
         }
 
-        Prim prim = maybeResolveReference();
+        boolean referenceRequired = sfResolve(ATTR_REFERENCE_REQUIRED, true, true);
+        Prim prim;
+        Reference reference = new Reference();
+        try {
+            reference = sfResolve(ATTR_REFERENCE, reference, false);
+            if (reference == null && referenceRequired) {
+                //there was no reference
+                return "referenceRequired is true but there is no reference value";
+            }
+            prim = sfResolve(reference, (Prim) null, false);
+        } catch (SmartFrogResolutionException ignore) {
+            //the reason we ignore this is to handle lazy resolution
+            //by ignoring it.
+            prim = null;
+        }
+        if (referenceRequired && prim == null) {
+            return "referenceRequired is set but the reference '" + reference.toString() + "' does not resolve";
+        }
         if (prim != null) {
             if (evaluatesTrue != null) {
                 if (!evaluate(prim, evaluatesTrue)) {
@@ -171,12 +188,12 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
                                         + v.size() + " in " + v.toString();
                             }
                             Object vectorValue = v.elementAt(index);
+                            String actualVectorValue = vectorValue.toString();
                             if (attributeVectorValue != null
                                     && !equal(attributeVectorValue,
-                                    vectorValue.toString(),
+                                    actualVectorValue,
                                     equalityIgnoresCase)) {
-                                return " Expected <" + attributeEquals + "> actual <" + vectorValue
-                                        .toString() + '>';
+                                return " Expected <" + attributeVectorValue + "> actual <" + actualVectorValue + '>';
                             }
                         }
                     }
@@ -280,7 +297,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * try and resolve a reference, return null if there was some kind of
      * failure including lazy references not yet ready.
      *
-     * @return Prim
+     * @return Prim the reference or null
      *
      * @throws RemoteException In case of network/rmi error
      */

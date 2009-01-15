@@ -48,8 +48,11 @@ AssertSchema extends Schema {
     message extends OptionalString;
 
     //the name of a reference which does not have to be defined, but when it
-    //is, the evaluatesTrue and evaluatesFalse checks apply
+    //is, the evaluatesTrue and evaluatesFalse and equality checks apply
     reference extends Optional;
+    //is the reference expected to resolve. Good safety check
+    referenceRequired extends Boolean;
+
     //name of a boolean test() method that returns true when called on the reference
     evaluatesTrue extends OptionalString;
     //name of a boolean test() method that returns false when called on the reference
@@ -100,6 +103,7 @@ Assert extends WorkflowPrim {
     checkOnStartup true;
     checkOnLiveness true;
     equalityIgnoresCase false;
+    referenceRequired false;
 }
 
 /**
