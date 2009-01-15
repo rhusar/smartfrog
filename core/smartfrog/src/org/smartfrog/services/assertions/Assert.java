@@ -37,6 +37,10 @@ public interface Assert extends Remote {
     /**
      * {@value}
      */
+    public String ATTR_REFERENCE_REQUIRED = "referenceRequired";
+    /**
+     * {@value}
+     */
     public String ATTR_HAS_ATTRIBUTE = "hasAttribute";
     /**
      * {@value}

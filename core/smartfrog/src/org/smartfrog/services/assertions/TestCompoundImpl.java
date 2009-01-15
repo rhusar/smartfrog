@@ -259,8 +259,9 @@ public class TestCompoundImpl extends ConditionCompound
                 message = "";
             }
 
+            //did we expect this component to terminate normally?
             if (isNormalTerminationExpected) {
-                //if so, it didnt happen. rethrow the exception
+                //if so, it didn't happen. log and rethrow the exception
                 sfLog().info("Exception raised during startup, which was not expected");
                 noteStartupFailure(UNEXPECTED_STARTUP_EXCEPTION, thrown);
                 //then throw an exception
@@ -285,7 +286,7 @@ public class TestCompoundImpl extends ConditionCompound
                     recordText += EXPECTED_EXIT_TEXT + exitText + '\n'
                             + "But got: " + message + '\n';
                 } else {
-                    recordText += "Exit message: " + message + '\n';
+                    recordText += "Exit message: \"" + message + "\"\n";
                 }
                 noteStartupFailure(recordText, thrown);
                 //then throw an exception
@@ -593,6 +594,7 @@ public class TestCompoundImpl extends ConditionCompound
 
             }
         } else if (child == testsPrim) {
+            sfLog().debug("Tests have terminated");
             //tests are terminating.
             testsTerminationRecord = childStatus;
             //it is an error if these terminated abnormally, for any reason at all.
@@ -603,12 +605,15 @@ public class TestCompoundImpl extends ConditionCompound
                 exitRecord = childStatus;
                 testSucceeded = false;
             } else {
+                sfLog().debug("Tests termination was successful");
                 //normal termination is good
                 testSucceeded = true;
             }
         } else {
             //something odd just terminated, like the condition.
-            //whatever, it is an end of the test run.
+            //whatever, it is the end of the test run.
+            sfLog().debug("A child that was neither an action or a test failed");
+            exitRecord = childStatus;
             testSucceeded = false;
         }
 
