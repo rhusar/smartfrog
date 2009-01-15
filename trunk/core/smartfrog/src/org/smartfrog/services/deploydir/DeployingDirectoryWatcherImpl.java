@@ -104,14 +104,21 @@ public class DeployingDirectoryWatcherImpl extends DirectoryWatcherImpl implemen
             try {
                 undeploy(app);
             } catch (SmartFrogException e) {
-                sfLog().warn("When terminating " + "name" + "from " + app, e);
+                sfLog().warn("When terminating " + name + "from " + app, e);
             } catch (RemoteException e) {
-                sfLog().warn("When terminating " + "name" + "from " + app, e);
+                sfLog().warn("When terminating " + name + "from " + app, e);
             }
         }
     }
 
 
+    /**
+     * Undeploy the component
+     * @param application
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     protected boolean undeploy(File application) throws SmartFrogException, RemoteException {
         String name = name(application);
         String subprocess = subprocess(application, name);

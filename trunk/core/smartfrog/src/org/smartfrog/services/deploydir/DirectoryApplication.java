@@ -29,9 +29,7 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- *
  * Created 11-Mar-2008 17:19:15
- *
  */
 
 public class DirectoryApplication implements Serializable {
@@ -47,12 +45,12 @@ public class DirectoryApplication implements Serializable {
     public static final String APPLICATION_XML = "application.xml";
     public static final String APPLICATION_PROPERTIES = "application.properties";
 
-    public DirectoryApplication(File directory,String name) throws IOException {
+    public DirectoryApplication(File directory, String name) throws IOException {
         this.directory = directory;
-        this.name=name;
-        File file=new File(directory, APPLICATION_XML);
-        if(!file.exists()) {
-            file=new File(directory, APPLICATION_PROPERTIES);
+        this.name = name;
+        File file = new File(directory, APPLICATION_XML);
+        if (!file.exists()) {
+            file = new File(directory, APPLICATION_PROPERTIES);
         }
         load(file);
     }
@@ -93,12 +91,12 @@ public class DirectoryApplication implements Serializable {
     }
 
     public void load(File file) throws IOException {
-        InputStream in=null;
+        InputStream in = null;
         propertyFile = file;
-        Properties props=new Properties();
+        Properties props = new Properties();
         try {
-            in=new FileInputStream(file);
-            if(file.getName().endsWith(".xml")) {
+            in = new FileInputStream(file);
+            if (file.getName().endsWith(".xml")) {
                 props.loadFromXML(in);
             } else {
                 props.load(in);
@@ -109,18 +107,18 @@ public class DirectoryApplication implements Serializable {
         }
     }
 
-    public String getProperty(String key,String defVal) {
-        return propertySet.getProperty(key,defVal);
+    public String getProperty(String key, String defVal) {
+        return propertySet.getProperty(key, defVal);
     }
 
     public boolean build(Properties props) {
-        propertySet=props;
-        enabled= TRUE.equals(getProperty("application.enabled", TRUE));
+        propertySet = props;
+        enabled = TRUE.equals(getProperty("application.enabled", TRUE));
         resourceExists = false;
-        resource=getProperty("application.resource",null);
-        if(resource!=null) {
+        resource = getProperty("application.resource", null);
+        if (resource != null) {
             InputStream resStream = getClass().getClassLoader().getResourceAsStream(resource);
-            if(resStream!=null) {
+            if (resStream != null) {
                 resourceExists = true;
                 FileSystem.close(resStream);
             } else {
@@ -132,10 +130,11 @@ public class DirectoryApplication implements Serializable {
 
     /**
      * Returns a string representation of the object.
+     *
      * @return a string representation of the object.
      */
     public String toString() {
-        StringBuilder buffer=new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("Directory Application ").append(name);
         buffer.append("\n From ").append(directory);
         buffer.append("\n URL ").append(getResource());
