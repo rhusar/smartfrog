@@ -30,7 +30,8 @@ sfConfig extends Compound {
     }
 
     asserts extends Assert {
-        reference boolValue;
+        reference LAZY boolValue;
+        referenceRequired true;
         hasAttribute "value";
     }
 }

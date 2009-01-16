@@ -25,8 +25,7 @@ import org.smartfrog.test.DeployingTestBase;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
 
 /**
- * Date: 30-Apr-2004
- * Time: 22:03:23
+ * Date: 30-Apr-2004 Time: 22:03:23
  */
 public class AssertionsTest extends DeployingTestBase {
 
@@ -37,23 +36,23 @@ public class AssertionsTest extends DeployingTestBase {
     }
 
     public void testBasicAssertions() throws Throwable {
-        application=deployExpectingSuccess(FILES+"testBasicAssertions.sf","testBasicAssertions");
+        application = deployExpectingSuccess(FILES + "testBasicAssertions.sf", "testBasicAssertions");
     }
 
-    public void testTrueIsFalse() throws Throwable  {
+    public void testTrueIsFalse() throws Throwable {
         deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
     }
 
     public void testFalseIsTrue() throws Throwable {
-        Throwable t=deployExpectingAssertionFailure(FILES + "testFalseIsTrue.sf", "testFalseIsTrue");
-        SmartFrogAssertionException sfe= extractAssertionException(t);
-        assertContains(sfe.getMessage(),"truth and falsehood");
+        Throwable t = deployExpectingAssertionFailure(FILES + "testFalseIsTrue.sf", "testFalseIsTrue");
+        SmartFrogAssertionException sfe = extractAssertionException(t);
+        assertContains(sfe.getMessage(), "truth and falsehood");
     }
 
 
-
     /**
-     //Todo: turn on once we have a way of expecting liveness faults.
+     * //Todo: turn on once we have a way of expecting liveness faults.
+     *
      * @throws Throwable on failure
      */
     public void NotestFalseIsLazyTrue() throws Throwable {
@@ -62,10 +61,11 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * probably not doing what we think
+     *
      * @throws Throwable on failure
      */
     public void testEvaluatesTrue() throws Throwable {
-        application =deployExpectingSuccess(FILES + "testEvaluatesTrue.sf", "testEvaluatesTrue");
+        application = deployExpectingSuccess(FILES + "testEvaluatesTrue.sf", "testEvaluatesTrue");
     }
 
 
@@ -94,19 +94,23 @@ public class AssertionsTest extends DeployingTestBase {
      * @throws Throwable on failure
      */
     public void testEvaluatesThrowsSFException() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf", "testEvaluatesThrowsSFException");
-    }
-
-  /**
-   * test case
-   * @throws Throwable on failure
-   */
-    public void testEvaluatesThrowsRuntimeException() throws Throwable {
-        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
+        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf",
+                "testEvaluatesThrowsSFException");
     }
 
     /**
      * test case
+     *
+     * @throws Throwable on failure
+     */
+    public void testEvaluatesThrowsRuntimeException() throws Throwable {
+        application = deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf",
+                "testEvaluatesThrowsRuntimeException");
+    }
+
+    /**
+     * test case
+     *
      * @throws Throwable on failure
      */
     public void testAttributeFound() throws Throwable {
@@ -115,6 +119,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
     public void testAttributeNotFound() throws Throwable {
@@ -123,6 +128,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
     public void testAssertVectorEval() throws Throwable {
@@ -132,6 +138,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
     public void testAssertVectorSize() throws Throwable {
@@ -141,6 +148,7 @@ public class AssertionsTest extends DeployingTestBase {
 
     /**
      * test case
+     *
      * @throws Throwable on failure
      */
     public void testAssertVectorEvalFail() throws Throwable {
