@@ -1,4 +1,4 @@
-/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+/* (C) Copyright 2009 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,22 +19,16 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-
-import java.rmi.Remote;
-
 /**
- * This is the hadoop configuration. It defines the names of the many, many hadoop options we want to allow people to
- * configure.
+ * This interface declares that component is bound to a cluster. It still has the right to override those settings; the
+ * cluster is the initial template that may be dynamically built up from the core Hadoop XML files
  */
 
 
-public interface HadoopConfiguration extends Remote, ConfigurationAttributes {
+public interface ClusterBound {
 
-    String ATTR_LOAD_DEFAULTS = "conf.load.defaults";
-    String ATTR_FILES = "conf.files";
-    String ATTR_RESOURCES = "conf.resources";
-    String ATTR_READ_EARLY = "conf.read.early";
-    String ATTR_DUMP = "conf.dump";
-    String ATTR_REQUIRED = "conf.required";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_CLUSTER = "cluster";
 }

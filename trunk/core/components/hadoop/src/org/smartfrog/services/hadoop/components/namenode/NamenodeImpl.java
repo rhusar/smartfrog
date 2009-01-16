@@ -59,7 +59,7 @@ public class NamenodeImpl extends FileSystemNodeImpl implements
      * @return a name of the service for error messages
      */
     @Override
-    protected String getName() {
+    protected String getServiceName() {
         return NAME;
     }
 

@@ -89,7 +89,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        sfLog().info("Initiating " + getName() + " termination"
+        sfLog().info("Initiating " + getServiceName() + " termination"
                 + " deployerThread=" + deployerThread + " service=" + service);
         terminationInitiated = true;
         try {
@@ -110,11 +110,11 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @return the configuration; will be null if nothing has been deployed yet
      */
-    public ManagedConfiguration getConfiguration() {
+    public final ManagedConfiguration getConfiguration() {
         return configuration;
     }
 
-    protected boolean isServiceStartupInProgress() {
+    protected final boolean isServiceStartupInProgress() {
         return serviceStartupInProgress;
     }
 
@@ -227,7 +227,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @return a name of the service for error messages
      */
-    protected String getName() {
+    protected String getServiceName() {
         return "Service";
     }
 
@@ -236,7 +236,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @return
      */
-    protected ServiceDeployerThread getDeployerThread() {
+    protected final ServiceDeployerThread getDeployerThread() {
         return deployerThread;
     }
 
@@ -315,7 +315,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
                         throw new SmartFrogLivenessException("Service is not live: " + serviceStatus, this);
                 }
             } else if (requireNonNullServiceInPing()) {
-                throw new SmartFrogLivenessException("No running " + getName(), this);
+                throw new SmartFrogLivenessException("No running " + getServiceName(), this);
             }
         } catch (RemoteException e) {
             throw e;
@@ -395,7 +395,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws SFHadoopException            for Jetty exceptions and other causes of trouble
      * @throws SmartFrogDeploymentException on some wrapped IOExceptions
      */
-    protected void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
+    protected synchronized void deployService(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         deployerThread = createDeployerThread(hadoopService, conf);
         deployerThread.start();
     }
@@ -432,7 +432,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * @throws IOException network problems
      */
     public String getDescription() throws RemoteException {
-        return getName() + " managing " + service == null ?
+        return getServiceName() + " managing " + service == null ?
                 "No Service"
                 : service.toString();
     }
@@ -501,6 +501,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      * Handler for service deployment failure; called from the deployment thread
      *
      * @param hadoopService service that failed to deploy
+     * @param thrown what got thrown
      */
     protected void onServiceDeploymentFailed(Service hadoopService, Throwable thrown) {
         sfLog().warn("Unable to deploy " + hadoopService, thrown);
@@ -517,9 +518,9 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     protected void onServiceDeploymentComplete(Service hadoopService) throws IOException, SmartFrogException {
         Service s = getService();
         if (s != null && !sfIsTerminated) {
-            sfLog().info(getName() + " deployment complete: service is: " + s);
+            sfLog().info(getServiceName() + " deployment complete: service is: " + s);
         } else {
-            String message = getName() + " deployment completed after component was terminated."
+            String message = getServiceName() + " deployment completed after component was terminated."
                     + "Hadoop service is " + hadoopService;
             sfLog().warn(message);
             //do an emergency shutdown
@@ -548,7 +549,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
             Service createdService = createTheService(conf);
             deployService(createdService, conf);
         } catch (Throwable thrown) {
-            throw SFHadoopException.forward(ERROR_NO_START + getName(),
+            throw SFHadoopException.forward(ERROR_NO_START + getServiceName(),
                     thrown,
                     this,
                     conf);
@@ -590,7 +591,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
         public ServiceDeployerThread(Service hadoopService, ManagedConfiguration conf,
                                      boolean useWorkflowTermination) {
             super(HadoopServiceImpl.this, useWorkflowTermination);
-            setName(HadoopServiceImpl.this.getName());
+            setName(HadoopServiceImpl.this.getServiceName());
             this.useWorkflowTermination = useWorkflowTermination;
             this.hadoopService = hadoopService;
             this.conf = conf;

@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ListUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -55,6 +56,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
@@ -76,6 +79,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             MAPRED_OUTPUT_DIR,
             MAPRED_LOCAL_DIR
     };
+    public static final String MISSING_ATTRIBUTE = "Missing attribute";
 
     /**
      * A new configuration with the same settings cloned from another.
@@ -544,5 +548,44 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         ManagedConfiguration that = (ManagedConfiguration) super.clone();
         that.reloadConfiguration();
         return that;
+    }
+
+    /**
+     * Run through the list and check which attrs are present; throw an exception listing them all if not
+     * @param requiredAttributes list of attributes that are requires
+     * @throws SmartFrogResolutionException for any failure to resolve all the attributes
+     * @throws RemoteException network problems. These are always passed up
+     */
+    public void validate(List<String> requiredAttributes) throws SmartFrogResolutionException, RemoteException {
+        List<String> missing=new ArrayList<String>();
+        for(String attr:requiredAttributes) {
+            try {
+                sfResolve(attr, null);
+            } catch (SmartFrogResolutionException e) {
+                missing.add(attr);
+            }
+        }
+        int size = missing.size();
+        if (size >0) {
+            StringBuilder text = new StringBuilder(MISSING_ATTRIBUTE +(size>1?"s":"")+":");
+            for(String attr:missing) {
+                text.append("\"");
+                text.append(attr);
+                text.append("\" ");
+            }
+            throw new SmartFrogResolutionException(text.toString(),source);
+        }
+    }
+
+    /**
+     * This resolves the (smartfrog formatted) list of attributes to look for
+     * and checks that they are all present
+     * @param attributeRef a reference to the attributes to fetch
+     * @throws SmartFrogResolutionException for any failure to resolve all the attributes
+     * @throws RemoteException network problems. These are always passed up
+     */
+    public void validateListedAttributes(Reference attributeRef) throws SmartFrogResolutionException, RemoteException {
+        List<String> required = ListUtils.resolveStringList(source, attributeRef, true);
+        validate(required);
     }
 }

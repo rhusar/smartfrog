@@ -49,7 +49,7 @@ public class MockServiceImpl extends HadoopServiceImpl implements HadoopCluster 
      * @return the name of the Hadoop service deployed
      */
     @Override
-    protected String getName() {
+    protected String getServiceName() {
         return "MockService";
     }
 
