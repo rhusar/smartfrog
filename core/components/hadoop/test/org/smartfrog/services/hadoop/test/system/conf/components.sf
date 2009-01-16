@@ -21,7 +21,9 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/hadoop/conf/components.sf"
 
-
+HADOOP_EXAMPLE "/org/smartfrog/services/hadoop/test/system/conf/hadoop-example.xml";
+MISSING_ATTRIBUTE CONSTANT "org.smartfrog.services.hadoop.conf.ManagedConfiguration.MISSING_ATTRIBUTE";
+HDFS "org.apache.hadoop.hdfs.DistributedFileSystem";
 
 testDefaultConf extends TestCompound {
 
@@ -35,23 +37,29 @@ testDefaultConf extends TestCompound {
 }
 
 
+AssertStringTrue extends AssertWorkflow {
+      equalsString1 true;
+}
+
+AssertStringFalse extends AssertWorkflow {
+      equalsString1 false;
+}
+
 testDefaultConfValues extends testDefaultConf {
   description "test that values are read and attributes set from them";
 
+  action:conf.required ["hadoop.native.lib","fs.hdfs.impl"];
+
   tests extends Sequence {
 
-    hnl LAZY action4:hadoop.native.lib;
-
-    testHadoopNativeLib extends AssertWorkflow {
-      reference LAZY action;
-      referenceRequired true;
-      hasAttribute "hadoop.native.lib";
-      attributeEquals "true";
+    testHadoopNativeLib extends AssertStringTrue {
+      equalsString2 LAZY action:hadoop.native.lib;
     }
 
-    fs.hdfs.impl extends testHadoopNativeLib {
-      hasAttribute "fs.hdfs.impl";
-      attributeEquals "org.apache.hadoop.hdfs.DistributedFileSystem";
+    fs.hdfs.impl extends AssertWorkflow {
+      equalityIgnoresCase true;
+      equalsString1 HDFS;
+      equalsString2 LAZY action:fs.hdfs.impl;
     }
 
   }
@@ -63,5 +71,56 @@ testDefaultConfValues extends testDefaultConf {
 testOverride extends testDefaultConfValues {
   description "test that an override is picked up";
   action:hadoop.native.lib false;
-  tests:testHadoopNativeLib:attributeEquals "false4";
+
+  tests:testHadoopNativeLib extends AssertStringFalse {
+    equalsString2 LAZY action:hadoop.native.lib;
+  }
+
 }
+
+testRequiredAttributes extends testDefaultConf {
+  exitType EXIT_TYPE_ABNORMAL;
+  exitText MISSING_ATTRIBUTE;
+  description "test that an the conf.required  list is validated";
+  action:conf.required ["hadoop.native.lib","missing.attr.1","missing.attr.2","fs.hdfs.impl"];
+}
+
+
+testEmptyConf extends TestCompound {
+
+  action extends EmptyHadoopConfiguration  {
+    conf.dump true;
+  }
+
+  tests extends Sequence {
+
+  }
+}
+
+
+testEmptyConf extends TestCompound {
+
+  action extends EmptyHadoopConfiguration  {
+    conf.dump true;
+  }
+
+  tests extends Sequence {
+
+  }
+}
+
+testNoDefault extends testDefaultConf {
+  description "test that when default is set, everything is clear";
+
+  action:hadoop.native.lib false;
+
+  tests extends Sequence {
+
+    testHadoopNativeLib extends AssertStringFalse {
+      equalsString2 LAZY action:hadoop.native.lib;
+    }
+
+  }
+
+}
+
