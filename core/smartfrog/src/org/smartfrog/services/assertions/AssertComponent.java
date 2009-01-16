@@ -224,16 +224,21 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             }
         }
 
-        String equals1 = null;
-        String equals2 = null;
-        equals1 = sfResolve(Assert.ATTR_EQUALS_STRING1, equals1, false);
-        equals2 = sfResolve(Assert.ATTR_EQUALS_STRING2, equals2, false);
+        String equals1;
+        String equals2;
+        Object e1 = sfResolve(Assert.ATTR_EQUALS_STRING1, (Object) null, false);
+        equals1 = e1 == null ? null : e1.toString();
+        Object e2 = sfResolve(Assert.ATTR_EQUALS_STRING2, (Object) null, false);
+        equals2 = e2 == null ? null : e2.toString();;
         if (equals1 != null) {
             if (equals2 == null) {
                 return "Undefined attribute: " + ATTR_EQUALS_STRING2;
             }
             if (!equal(equals1, equals2, equalityIgnoresCase)) {
-                return "Expected <" + equals1 + "> actual <" + equals2 + '>';
+                return "Expected \"" + equals1 + "\""
+                        + " (class:" + e1.getClass().getName() + ")"
+                        + " actual \"" + equals2 + '\"'
+                        + " (class:" + e2.getClass().getName() + ")";
             }
         } else {
             if (equals2 != null) {
