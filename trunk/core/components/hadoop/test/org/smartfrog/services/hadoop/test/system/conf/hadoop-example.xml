@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<configuration>
+
+  <property>
+    <name>hadoop.native.lib</name>
+    <value>three</value>
+    <description>
+      This is invalid
+    </description>
+  </property>
+
+
+  <property>
+    <name>fs.hdfs.impl</name>
+    <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
+    <description>
+      This is invalid
+    </description>
+  </property>
+
+</configuration>
