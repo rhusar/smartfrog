@@ -112,23 +112,22 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
 
         boolean referenceRequired = sfResolve(ATTR_REFERENCE_REQUIRED, true, true);
         Prim prim;
-        Reference reference = new Reference();
         try {
-            reference = sfResolve(ATTR_REFERENCE, reference, false);
-            if (reference == null && referenceRequired) {
-                //there was no reference
-                return "referenceRequired is true but there is no reference value";
-            }
-            prim = sfResolve(reference, (Prim) null, false);
-        } catch (SmartFrogResolutionException ignore) {
+            prim = sfResolve(ATTR_REFERENCE, (Prim) null, false);
+        } catch (SmartFrogResolutionException e) {
             //the reason we ignore this is to handle lazy resolution
             //by ignoring it.
             prim = null;
+            if(referenceRequired) {
+                return "The reference does not resolve " + e;
+            }
         }
-        if (referenceRequired && prim == null) {
-            return "referenceRequired is set but the reference '" + reference.toString() + "' does not resolve";
-        }
-        if (prim != null) {
+        if (prim == null) {
+            if (referenceRequired) {
+                //there was no reference
+                return "referenceRequired is true but there is no reference value";
+            }
+        } else {
             if (evaluatesTrue != null) {
                 if (!evaluate(prim, evaluatesTrue)) {
                     return "Evaluated to false: " + prim.sfCompleteName() + '.' + evaluatesTrue;
