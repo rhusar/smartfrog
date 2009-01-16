@@ -98,7 +98,7 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
      */
     @Override
     public State offerService() throws Exception {
-        LOG.info("Task Tracker Service is being offered" + toString());
+        LOG.info("Task Tracker Service is being offered: " + toString());
         return super.offerService();
     }
 

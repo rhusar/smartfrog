@@ -31,14 +31,10 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,7 +54,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      * @return the name of the Hadoop service deployed
      */
     @Override
-    protected String getName() {
+    protected String getServiceName() {
         return NAME;
     }
 
@@ -103,7 +99,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
         //then look for the filesystem and again, bail out if it is not live
         String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
         if(fsName == null) {
-            throw SFHadoopException.forward(ERROR_NO_START + getName() + " -undefined attribute "
+            throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -undefined attribute "
                     +  ConfigurationAttributes.FS_DEFAULT_NAME,
                     null,
                     this,
@@ -118,7 +114,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
             FileSystem fs = FileSystem.get(conf);
             if (fs == null) {
-                throw SFHadoopException.forward(ERROR_NO_START + getName() + " -unable to bind to the filesystem "
+                throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -unable to bind to the filesystem "
                         +" defined in "+ ConfigurationAttributes.FS_DEFAULT_NAME + ": "+ fsName,
                         null,
                         this,
@@ -126,7 +122,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             }
             fs.close();
         } catch (IOException e) {
-            throw SFHadoopException.forward(ERROR_NO_START + getName() + " as the filesystem is not live",
+            throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " as the filesystem is not live",
                     e,
                     this,
                     conf);
@@ -139,7 +135,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             Service service = new ExtJobTracker(this, configuration);
             return service;
         } catch (InterruptedException e) {
-            throw new SmartFrogLifecycleException(ERROR_NO_START + getName() + ": " + e, e, this);
+            throw new SmartFrogLifecycleException(ERROR_NO_START + getServiceName() + ": " + e, e, this);
         }
     }
 
@@ -219,7 +215,6 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
             //terminateService(hadoopService);
         }
     }
-
 
 
 }

@@ -40,13 +40,9 @@ import java.util.Vector;
 
 public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfiguration {
 
-    public static final String ATTR_LOAD_DEFAULTS = "conf.load.defaults";
-    public static final String ATTR_FILES = "conf.files";
-    public static final String ATTR_RESOURCES = "conf.resources";
-    public static final String ATTR_READ_EARLY = "conf.read.early";
-    public static final String ATTR_DUMP = "conf.dump";
     private ManagedConfiguration managedConf;
     private boolean readEarly;
+    private static final Reference refRequired = new Reference(ATTR_REQUIRED);
 
     public HadoopConfigurationImpl() throws RemoteException {
     }
@@ -114,6 +110,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
                 sfLog().debug(dump);
             }
         }
+        managedConf.validateListedAttributes(refRequired);
     }
 
 

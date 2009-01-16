@@ -19,13 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
+import java.rmi.Remote;
+
 
 /**
  * Created 18-Apr-2008 14:34:53
  */
 
 
-public interface ConfigurationAttributes {
+public interface ConfigurationAttributes extends Remote {
 
 
 

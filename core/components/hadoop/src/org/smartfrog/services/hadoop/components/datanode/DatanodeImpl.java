@@ -50,7 +50,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     }
 
     @Override
-    protected String getName() {
+    protected String getServiceName() {
         return NAME;
     }
 

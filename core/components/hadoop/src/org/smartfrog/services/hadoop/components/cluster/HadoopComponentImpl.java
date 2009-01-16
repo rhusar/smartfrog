@@ -21,11 +21,14 @@ package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ClusterBound;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -37,7 +40,7 @@ import java.util.Vector;
  * Created 19-May-2008 14:29:07
  */
 
-public class HadoopComponentImpl extends PrimImpl {
+public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implements ClusterBound {
 
     public HadoopComponentImpl() throws RemoteException {
     }
@@ -101,7 +104,10 @@ public class HadoopComponentImpl extends PrimImpl {
         for (String dir : dirs) {
             File directory = new File(dir);
             if (createDirs) {
-                directory.mkdirs();
+                if(!directory.mkdirs() && !directory.exists()) {
+                    LogFactory.getLog(HadoopComponentImpl.class.getName())
+                            .warn("Failed to create directory " + directory);
+                }
             }
             if (path.length() > 0) {
                 path.append(',');

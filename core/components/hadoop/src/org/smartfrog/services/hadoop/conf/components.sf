@@ -34,6 +34,9 @@ EmptyHadoopConfiguration extends Prim {
   //load the default values
   conf.load.defaults false;
 
+  //list of attributes to look for. If not empty, this is checked.
+  conf.required [];
+
 }
 
 DefaultHadoopConfiguration extends EmptyHadoopConfiguration {

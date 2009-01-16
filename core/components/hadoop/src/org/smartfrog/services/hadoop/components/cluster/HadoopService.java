@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
+import org.smartfrog.services.hadoop.conf.ClusterBound;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -30,7 +31,7 @@ import java.rmi.RemoteException;
  */
 
 
-public interface HadoopService extends Remote {
+public interface HadoopService extends Remote, ClusterBound {
 
     /**
      * Test for the service being live
