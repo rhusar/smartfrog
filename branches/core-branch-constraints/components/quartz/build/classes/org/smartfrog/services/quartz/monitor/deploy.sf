@@ -1,2 +1,0 @@
-"HOST localhost:rootProcess:cpumonitor":DEPLOY:org/smartfrog/services/quartz/monitor/monitor.sf::localhost:
-

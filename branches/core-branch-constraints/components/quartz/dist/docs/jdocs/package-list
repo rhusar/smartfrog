@@ -1,6 +1,0 @@
-org.smartfrog.services.quartz
-org.smartfrog.services.quartz.collector
-org.smartfrog.services.quartz.monitor
-org.smartfrog.services.quartz.scheduler
-org.smartfrog.services.sfinterface
-org.smartfrog.services.sfinterface.test

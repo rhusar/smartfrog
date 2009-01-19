@@ -1,6 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>jetty</groupId>
-  <artifactId>jasper-compiler</artifactId>
-  <version>4.2.24</version>
-</project>

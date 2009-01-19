@@ -1,7 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.smartfrog</groupId>
-  <artifactId>smartfrog</artifactId>
-  <packaging>jar</packaging>
-  <version>${smartfrog.version}</version>
-</project>
