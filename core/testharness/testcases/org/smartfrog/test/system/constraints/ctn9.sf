@@ -33,11 +33,11 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends {
   baz extends Array {
-      sfArrayGenerator extends {
+      generator extends {
           bar "hello world";
       }
-      sfArrayExtent ["fred", "clive", "joe"];
-      sfArrayPrefix "foo";
+      extent ["fred", "clive", "joe"];
+      prefix "foo";
   }
 }
 
