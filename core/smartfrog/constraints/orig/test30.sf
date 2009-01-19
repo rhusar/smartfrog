@@ -1,8 +1,0 @@
-#include "/org/smartfrog/functions.sf"
-
-sfConfig extends {
-   foo extends Constraint{
-	test VAR "[1,2,3, 5..5000]";
-        [sfConstraint] -- "test = 4";
-   }
-}

@@ -1,1 +1,0 @@
-foo2 :- writeln("I am foo2"), flush(stdout).

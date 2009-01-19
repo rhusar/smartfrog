@@ -1,6 +1,0 @@
-<project>
-  <modelVersion>3.0.2</modelVersion>
-  <groupId>java</groupId>
-  <artifactId>jna</artifactId>
-  <version>3.0.2</version>
-</project>

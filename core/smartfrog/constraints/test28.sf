@@ -1,5 +1,0 @@
-#include "/org/smartfrog/functions.sf"
-
-sfConfig extends Constraint {
-  [sfConstraint] -- "source('foo.ecl'), foo, add_path('/home/andrew/'), source('foo2.ecl'), foo2";
-}

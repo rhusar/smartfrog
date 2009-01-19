@@ -1,9 +1,0 @@
-build
-dist
-build.properties
-*.jpx
-*.ipr
-*.iml
-*.iws
-.classpath
-.project

@@ -1,7 +1,0 @@
-
-
-#include "org/smartfrog/components.sf"
-
-sfConfig extends Compound {
-
-}

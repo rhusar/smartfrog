@@ -1,0 +1,67 @@
+#!/bin/sh
+#This shell script does some diagnostics by printing out various environment variables and
+#the classpath. Use when scripts dont even appear to work.
+
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+else
+    echo SFHOME is "$SFHOME"
+fi
+
+#Test the classpath, which depends upon the security settings
+
+if test "$SFSECURITY_ON"; then
+    SFLIBPATH="$SFHOME/signedLib"
+    echo SFSECURITY_ON is set: security is enabled
+else
+    SFLIBPATH="$SFHOME/lib"
+    echo SFSECURITY_ON is unset: security is disabled.
+fi
+echo Lib directory is "$SFLIBPATH"
+
+ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
+if [ ! $? -eq 0 ]; then
+     echo MISSING: "$SFLIBPATH" is empty! SmartFrog will not work!
+else
+    for i in "$SFLIBPATH"/*.jar;
+        do CLASSPATH="$i:$CLASSPATH";
+    done
+
+    echo CLASSPATH is "$CLASSPATH"
+fi
+
+#Look at the ini files
+
+iniFile="$SFHOME/bin/default.ini"
+if [ -f "$iniFile" ] ; then
+    echo iniFile=$iniFile
+else
+    echo MISSING: iniFile=$iniFile 
+fi
+
+iniSFFile="$SFHOME/bin/default.sf"
+if [ -f "$iniSFFile" ] ; then
+    echo iniSFFile="$iniSFFile"
+else
+    echo MISSING iniSFFile="$iniSFFile" 
+fi
+
+
+
+if test "$SFDEFAULTSECURITY"; then
+      echo SFDEFAULTSECURITY="$SFDEFAULTSECURITY"
+fi
+
+if test "$SFSERVERHOSTNAME"; then
+      echo SFSERVERHOSTNAME="$SFSERVERHOSTNAME"
+fi  
+
+if test "$SFDEFAULTSF"; then
+    echo SFDEFAULTSF="$SFDEFAULTSF"
+fi
+
+

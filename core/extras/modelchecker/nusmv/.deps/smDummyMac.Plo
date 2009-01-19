@@ -1,1 +1,0 @@
-smDummyMac.lo smDummyMac.o: src/sm/smDummyMac.c
