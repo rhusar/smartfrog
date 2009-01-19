@@ -1,0 +1,20 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+
+. "$SFHOME/bin/setSFProperties"
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java $SFCODEBASE org.smartfrog.services.management.SFDeployDisplay $1 $2 $3 $4 $5 $6 $7 $8
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java $SFSECURITY org.smartfrog.services.management.SFDeployDisplay $1 $2 $3 $4 $5 $6 $7 $8
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java $SFCODEBASE $SFSECURITY org.smartfrog.services.management.SFDeployDisplay $1 $2 $3 $4 $5 $6 $7 $8
+else
+        java $SFDEFAULTSECURITY org.smartfrog.services.management.SFDeployDisplay $1 $2 $3 $4 $5 $6 $7 $8
+fi

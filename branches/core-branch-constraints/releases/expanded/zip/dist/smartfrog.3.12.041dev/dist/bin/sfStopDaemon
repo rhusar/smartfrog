@@ -1,0 +1,47 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfStopDaemon"
+   echo "Usage: sfStopDaemon HostName [-p port]"
+   exit 69
+fi 
+if [ $# -eq 1 ] && [ "$1" = "-?" ];then
+   echo "Usage: sfStopDaemon HostName [-p port]"
+   exit 0
+fi
+
+. "$SFHOME/bin/setSFProperties"
+if [ "$1" = "-p" ];then
+    echo "Insufficient arguments to use sfStopDaemon"
+    echo "Usage: sfStopDaemon HostName [-p port]"
+    exit 69
+fi
+    
+if [ "$2" = "-p" ];then
+    if [ -z $3 ] ; then
+        echo "Insufficient arguments to use sfStopDaemon"
+        echo "Usage: sfStopDaemon HostName [-p port]"
+        exit 69
+    fi
+    export OPTION="$2 $3";
+fi
+echo "Stopping sfDaemon on" $1 "..."
+#java $SFCMDPARAMETERS org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" $SFCODEBASE org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: $OPTION -e
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: $OPTION -e
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" $SFCODEBASE $SFSECURITY org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: $OPTION -e
+else
+        java "$SFDEFAULTINI" $SFDEFAULTSECURITY org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: $OPTION -e
+fi
+
+#echo "Stopped sfDaemon on" $1

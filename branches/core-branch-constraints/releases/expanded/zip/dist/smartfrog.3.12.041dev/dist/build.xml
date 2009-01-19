@@ -1,0 +1,320 @@
+<?xml version="1.0"?>
+
+<!--
+/** (C) Copyright 1998-2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+<!DOCTYPE project [
+     <!ENTITY security SYSTEM "private/buildSecurity.xml">
+]>
+<!-- ===========================================================================
+
+Build targets
+=============
+These are the meaningful targets for this build file:
+ - build
+ - jdocs
+ - initCA
+ - dummyInitCA
+ - cleanCA
+ - newDaemon
+ - signJars
+-->
+
+<project  name="kernel-dist" default="help" basedir=".">
+
+
+
+  <!-- =================================================================== -->
+  <!-- Global properties                                                   -->
+  <!-- =================================================================== -->
+
+  <property file="build.properties" />
+  <property file="../build.properties" />
+  <property name="dist" location="."/>
+  <property name="bin" location="bin"/>
+  <property name="lib" location="lib"/>
+  <property name="testCA" value="testCA"/>
+  <!-- dir to export jar files -->
+  <property name="signedLib" location="signedLib"/>
+  <property name="private" location="private"/>
+  <property name="build.dir" location="build"/>
+  <property name="build.classes.dir" location="${build.dir}/classes"/>
+  <property name="src" location="src"/>
+  <property name="javadocs.dir" location="${build.dir}/javadocs"/>
+  <property name="dist.lib.dir" location="${dist}/lib"/>
+
+  <!-- Compile options for Smartfrog Release -->
+  <property name="javac.debug.mode" value="on"/>
+  <property name="javac.debug.level" value="lines,vars,source"/>
+  <property name="javac.java.version" value="1.5"/>
+  <property name="javac.compiler" value="modern"/>
+  <property name="javac.max.memory" value="192m" />
+
+  <!--use the forking compiler with tuned memory use and profiling diagnostics-->
+  <property name="rmic.compiler" value="forking"/>
+  <property name="rmic.max.memory" value="192m" />
+  <property name="rmic.forking.commandline.extras" value="" />
+  <property name="rmic.forking.commandline"
+      value="-J-Xmx${rmic.max.memory} ${rmic.forking.commandline.extras}"/>
+
+
+  <!-- Sercurity related files -->
+  <property name="manifestName" value="${private}/sealManifest.mf"/>
+
+
+
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property name="Name" value="SmartFrog"/>
+    <tstamp>
+      <format property="year" pattern="yyyy"/>
+    </tstamp>
+    <property name="name" value="(C) Copyright 1998-2008 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="DIST"/>
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name} ${version}"/>
+    <echo message="= ${name} "/>
+    <echo message="==================================================================="/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Help on usage                                                       -->
+  <!-- =================================================================== -->
+  <target name="help" depends="init">
+    <echo message=""/>
+    <echo message=""/>
+    <echo message="SmartFrog Framework ${version} Build file"/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
+    <echo message=" available targets are:"/>
+    <echo message=""/>
+    <echo message="   build           --> compiles source files into sfExamples.jar"/>
+    <echo message="   jdocs           --> creates jdocs for sources"/>
+    <echo message="   sfParseTest     --> runs sfParser for 'parsertargets' file"/>
+    <echo message="   cleanBuild      --> deletes build directories"/>
+    <echo message="   initCA          --> create a new CA using openssl "/>
+    <echo message="   dummyInitCA     --> create a dummy test CA using provided keys "/>
+    <echo message="   cleanCA         --> clean up the CA "/>
+    <echo message="   newDaemon       --> create policy and identity for daemon "/>
+    <echo message="   signJars        --> sign all the JAR files "/>
+    <echo message="   fixCRLF         --> adapts CRLF to different OS"/>
+    <echo message=""/>
+    <echo message=" See the comments inside the build.xml file for more details."/>
+    <echo message=""/>
+    <echo message=" -- ${Name}--"/>
+    <echo message=""/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
+    <echo message=""/>
+  </target>
+
+
+  <!-- ================================================================== -->
+  <!-- Import the security-related ant file -->
+  <!-- ================================================================== -->
+  <import file="private/buildSecurity.xml"/>
+
+  <!-- =================================================================== -->
+  <!--  Creates directories                                                -->
+  <!-- =================================================================== -->
+  <target name="initbuild"  depends="init">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes.dir}"/>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- clean                                                               -->
+  <!-- =================================================================== -->
+  <target name="clean" depends=""
+      description="Restores the distribution to its clean state">
+    <!-- Delete the directory trees -->
+    <!-- remove parser source files -->
+    <delete dir="${build.dir}"/>
+    <delete dir="${build.classes.dir}"/>
+    <delete dir="${javadocs.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- FixCRLF for different platforms  only inside DIST!                  -->
+  <!-- =================================================================== -->
+
+  <target name="fixCRLF" description="adapts CRLF for different OS">
+
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       includes="**/**"
+       excludes="**/*.bat,**/default*"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       tab="remove"
+       tablength="4"
+       includes="**/default*"
+     />
+     <!-- Windows/Dos format -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       eol="crlf"
+       includes="**/*.bat"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}"
+       includes="**/*.txt"
+     />
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Copy .sf  and gif files to "build" directories   -->
+  <!-- =================================================================== -->
+  <target name="copyFiles" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="src">
+        <include name="**/*.sf*" />
+        <include name="**/*.gif" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Compiles source directory                                         -->
+  <!-- =================================================================== -->
+  <target name="build" depends="copyFiles,initbuild,generateversion" description="Compiles source code">
+    <!-- Compile the java code -->
+    <javac compiler="${javac.compiler}"
+        srcdir="src"
+        includes="**/*.java"
+        destdir="${build.classes.dir}"
+        debug="${javac.debug.mode}"
+        debuglevel="${javac.debug.level}"
+        fork="true"
+        includeAntRuntime="true"
+        source="${javac.java.version}"
+        target="${javac.java.version}"
+        memoryMaximumSize="${javac.max.memory}"
+        >
+      <classpath>
+        <pathelement location="lib/smartfrog-${Version}.jar"/>
+        <pathelement location="lib/sfServices-${Version}.jar"/>
+        <pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
+    </javac>
+    
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+      <rmic stubversion="1.2"
+          base="${build.classes.dir}"
+          verify="true"
+          compiler="${rmic.compiler}"
+          includeantruntime="true"
+          includes="**/*.class">
+          <classpath>
+            <pathelement location="lib/smartfrog-${Version}.jar"/>
+            <pathelement location="lib/sfServices-${Version}.jar"/>
+            <pathelement location="lib/sfExamples-${Version}.jar"/>
+         </classpath>
+      </rmic>
+      
+   
+    <!--  sfExamples.jar                                               -->
+    <!-- Create sfExamples.jar file -->
+    <jar jarfile="${lib}/sfExamples-${Version}.jar"
+         basedir="${build.classes.dir}"
+         includes="**/examples/**"
+       manifest ="${manifestName}"/>
+  </target>
+
+  <!-- ================================================================== -->
+  <!-- running Version.java to generate version information               -->
+  <!-- ================================================================== -->
+  <target name="generateversion" depends="init">
+    <java classname="org.smartfrog.Version"
+        failonerror="true"
+        fork="true"
+        outputproperty="Version">
+      <arg value="-b"/>
+      <classpath>
+        <fileset dir="${dist.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </java>
+  </target> 
+  
+  <!-- =================================================================== -->
+  <!--   JDocs                                                                  -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init, generateversion" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------- Creating Java Docs for ${Name} examples [${javadocs.dir}]--------"/>
+    <mkdir dir="${javadocs.dir}"/>
+    <javadoc packagenames="org.smartfrog.examples.*"
+           sourcepath="${src}"
+           destdir="${javadocs.dir}"
+           author="true"
+           version="true"
+           Header="${Name.System} ${Version}"
+           Footer="${Name.System} ${version} ${Version}"
+           use="true"
+           windowtitle="${Name}"
+           doctitle="${Name}"
+           bottom="${name}"
+           source="1.5">
+      <group title="SmartFrog Examples Package" packages="org.smartfrog.examples"/>
+      <!--classpath refid="smartfrog.class.path"/-->
+      <classpath>
+      	<pathelement path="${classpath}"/>
+     	<pathelement location="lib/smartfrog-${Version}.jar"/>
+     	<pathelement location="lib/sfServices-${Version}.jar"/>
+     	<pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
+    </javadoc>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- sfParse parsertargets                                                -->
+  <!-- =================================================================== -->
+  <target name="sfParseTest" depends="generateversion">
+    <java classname="org.smartfrog.SFParse"
+	    failonerror="true" fork="true">
+      <classpath>
+      	<pathelement path="${classpath}"/>
+        <pathelement location="lib/smartfrog-${Version}.jar"/>
+        <pathelement location="lib/sfServices-${Version}.jar"/>
+        <pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
+      <arg value="-R"/>
+      <arg value="-q"/>
+      <arg value="-f"/>
+      <arg file="parsertargets"/>
+   </java>
+  </target>
+
+  <target name="all" depends="sfParseTest,build,jdocs" />
+</project>
+
+
+
+<!-- End of file -->
+
