@@ -5,14 +5,13 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.TaskContainer;
 import org.apache.tools.ant.util.DateUtils;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 
 public class SFTimer extends Task implements TaskContainer {
 
     /** Collection holding the nested tasks */
-    private Vector nestedTasks = new Vector();
+    private Vector<Task> nestedTasks = new Vector<Task>();
 
     /** Task name */
     private String name = "Timer";
@@ -20,16 +19,15 @@ public class SFTimer extends Task implements TaskContainer {
     /** Time */
     long timeElapsed = 0;
 
+    @Override
     public void execute() throws BuildException {
 
 
 		timeElapsed = System.currentTimeMillis();
+        for(Task task:nestedTasks) {
+            task.execute();
+        }
 
-		Iterator i = nestedTasks.iterator();
-
-        while (i.hasNext()) {
-			((Task) i.next()).execute();
-		}
 
 		timeElapsed = System.currentTimeMillis()- timeElapsed;
 
