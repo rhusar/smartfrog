@@ -124,3 +124,17 @@ testNoDefault extends testDefaultConf {
 
 }
 
+ManagedConfTestPrim extends Prim {
+  sfClass "org.smartfrog.services.hadoop.test.system.conf.ManagedConfTestPrimImpl";
+}
+
+/**
+ This component contains some in-class tests
+ */
+testManagedConfTest extends ExpectTerminate {
+
+  action extends ManagedConfTestPrim  {
+    prop2 "component-set-value";
+  }
+
+}

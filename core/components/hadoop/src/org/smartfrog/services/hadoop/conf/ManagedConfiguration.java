@@ -26,10 +26,12 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -86,7 +88,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @param conf the configuration from which to clone settings.
      */
-    public ManagedConfiguration(Configuration conf) {
+/*    public ManagedConfiguration(Configuration conf) {
         super(conf);
         if (conf instanceof PrimSource) {
             PrimSource primsource = (PrimSource) conf;
@@ -95,7 +97,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             throw new SFHadoopRuntimeException(
                     "No Prim source for the configuration");
         }
-    }
+    }*/
 
     /**
      * A new map/reduce configuration where the behavior of reading from the default resources can be turned off. <p/>
@@ -104,7 +106,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @param loadDefaults specifies whether to load from the default files
      * @param source       source of config information
      */
-    public ManagedConfiguration(boolean loadDefaults, Prim source) {
+    public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
+            RemoteException {
         super(loadDefaults);
         bind(source);
     }
@@ -114,36 +117,31 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @param source source of config information
      */
-    public ManagedConfiguration(Prim source) {
+    public ManagedConfiguration(Prim source) throws SmartFrogException,
+            RemoteException {
         this(false, source);
     }
 
-    /**
-     * A new configuration with the same settings cloned from another.
-     *
-     * @param source source of config information
-     * @param other  the configuration from which to clone settings.
-     */
-    public ManagedConfiguration(Configuration other, Prim source) {
-        super(other);
-        bind(source);
-    }
 
     /**
      * Bind to our owner
      *
      * @param src source component
      */
-    private void bind(Prim src) {
+    private void bind(Prim src) throws SmartFrogException, RemoteException {
+        if (src == null) {
+            throw new SFHadoopException("Cannot bind to a null source component");
+        }
         source = src;
         helper = new ComponentHelper(src);
+        copyComponentState(src, null);
     }
 
 
     /**
      * Override something to build the properties array
      */
-    @Override
+/*    @Override
     protected synchronized Properties getProps() {
         buildAttributeMapQuietly();
         Properties props = new Properties();
@@ -152,7 +150,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             props.put(key, value);
         }
         return props;
-    }
+    }*/
 
     /**
      * Build the attribute map from the current set of attributes; turn all exceptions into a runtime exception
@@ -172,8 +170,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     }
 
     /**
-     * Reload the configuration. This rests our cache.
-     * {@inheritDoc}
+     * Reload the configuration. This rests our cache. {@inheritDoc}
      */
     @Override
     public synchronized void reloadConfiguration() {
@@ -192,26 +189,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         return source;
     }
 
-    /**
-     * Set the <code>value</code> of the <code>name</code> property.
-     *
-     * @param name  property name.
-     * @param value property value.
-     */
-    @Override
-    public void set(String name, String value) {
-        super.set(name, value);
-    }
-
-    private void setInSource(String name, String value) {
-        try {
-            source.sfReplaceAttribute(name, value);
-        } catch (SmartFrogRuntimeException e) {
-            throw new SFHadoopRuntimeException(e);
-        } catch (RemoteException e) {
-            throw new SFHadoopRuntimeException(e);
-        }
-    }
 
     /**
      * Get the value of the <code>name</code> property. If no such property exists, then <code>defaultValue</code> is
@@ -222,7 +199,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @return property value, or <code>defaultValue</code> if the property doesn't exist.
      * @throws SFHadoopRuntimeException if things go wrong on SmartFrog
      */
-    @Override
+/*    @Override
     public String get(String name, String defaultValue) {
         try {
             return sfResolve(name, defaultValue);
@@ -231,7 +208,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         } catch (RemoteException e) {
             throw new SFHadoopRuntimeException(e);
         }
-    }
+    }*/
 
     /**
      * Resolve a configuration valaue
@@ -262,10 +239,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @return the value of the <code>name</code> property, or null if no such property exists.
      * @throws SFHadoopRuntimeException if things go wrong on SmartFrog
      */
-    @Override
+/*    @Override
     public String getRaw(String name) {
         return get(name, null);
-    }
+    }*/
 
     /**
      * Get the value of the <code>name</code> property, <code>null</code> if no such property exists. <p/> Values are
@@ -275,10 +252,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @return the value of the <code>name</code> property, or null if no such property exists.
      * @throws SFHadoopRuntimeException if things go wrong on SmartFrog
      */
-    @Override
+/*    @Override
     public String get(String name) {
         return get(name, null);
-    }
+    }*/
 
     /**
      * Add a configuration resource.
@@ -289,17 +266,17 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @param name resource to be added, the classpath is examined for a file with that name.
      * @throws SFHadoopRuntimeException always
      */
-    @Override
+/*    @Override
     public void addResource(String name) {
         resourcesNotSupported();
-    }
+    }*/
 
     /**
      * @throws SFHadoopRuntimeException always
      */
-    private void resourcesNotSupported() {
+/*    private void resourcesNotSupported() {
         throw new SFHadoopRuntimeException("This class does not support XML configuration resources");
-    }
+    }*/
 
     /**
      * Add a configuration resource.
@@ -308,10 +285,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *            without referring to the classpath.
      * @throws SFHadoopRuntimeException always
      */
-    @Override
+/*    @Override
     public void addResource(URL url) {
         resourcesNotSupported();
-    }
+    }*/
 
     /**
      * Add a configuration resource.
@@ -323,10 +300,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *             without referring to the classpath.
      * @throws SFHadoopRuntimeException always
      */
-    @Override
+/*    @Override
     public void addResource(Path file) {
         resourcesNotSupported();
-    }
+    }*/
 
     /**
      * Write out the non-default properties in this configuration to the give {@link OutputStream}.
@@ -334,7 +311,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @param out the output stream to write to.
      * @throws SFHadoopRuntimeException if things go wrong
      */
-    @Override
+/*    @Override
     public void writeXml(OutputStream out) throws IOException {
         try {
             Map<String, String> map = getState();
@@ -346,7 +323,47 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         } catch (ParserConfigurationException e) {
             throw new SFHadoopRuntimeException(e);
         }
+    }*/
+
+    /**
+     * This copies the component state: all attributes directly off this component.
+     *
+     * @param component the component to copy from
+     * @param requiredKeys list of keys to always pull in, can be null
+     * @throws RemoteException
+     * @throws SmartFrogResolutionException
+     */
+    private void copyComponentState(Prim component,
+                                    List<String> requiredKeys) throws RemoteException, SmartFrogResolutionException {
+
+        Iterator<Object> keys = component.sfAttributes();
+        while (keys.hasNext()) {
+            Object key = keys.next();
+            Object value = component.sfResolve(new Reference(key));
+            if (!(value instanceof Remote)
+                    && !(value instanceof ComponentDescription)
+                    && !(value instanceof SFNull)) {
+                set(key.toString(), value.toString());
+            }
+            //files get special treatment
+            if (value instanceof FileIntf) {
+                FileIntf fi = (FileIntf) value;
+                set(key.toString(), fi.getAbsolutePath());
+            }
+        }
+        if (requiredKeys != null) {
+            for (String required : requiredKeys) {
+                if (get(required) == null) {
+                    Object value = component.sfResolve(required, false);
+                    if (value != null && !(value instanceof SFNull)) {
+                        set(required, value.toString());
+                    }
+                }
+            }
+        }
+
     }
+
 
     /**
      * Enumerate our current state and generate a properties structure of it.
@@ -518,7 +535,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @param conf configuration
      * @throws SmartFrogRuntimeException failure to read or write an attribute
-     * @throws RemoteException network problems
+     * @throws RemoteException           network problems
      */
     public void addProperties(Configuration conf) throws SmartFrogRuntimeException, RemoteException {
         assert conf != this;
@@ -535,8 +552,9 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     }
 
     /**
-     * Creates and returns a copy of this object.
-     * A configuration reload is triggered, so that datastructures are not accidentally shared across instances. 
+     * Creates and returns a copy of this object. A configuration reload is triggered, so that datastructures are not
+     * accidentally shared across instances.
+     *
      * @return a clone of this instance.
      * @throws CloneNotSupportedException if the object's class does not support the <code>Cloneable</code> interface.
      *                                    Subclasses that override the <code>clone</code> method can also throw this
@@ -552,13 +570,14 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
 
     /**
      * Run through the list and check which attrs are present; throw an exception listing them all if not
+     *
      * @param requiredAttributes list of attributes that are requires
      * @throws SmartFrogResolutionException for any failure to resolve all the attributes
-     * @throws RemoteException network problems. These are always passed up
+     * @throws RemoteException              network problems. These are always passed up
      */
     public void validate(List<String> requiredAttributes) throws SmartFrogResolutionException, RemoteException {
-        List<String> missing=new ArrayList<String>();
-        for(String attr:requiredAttributes) {
+        List<String> missing = new ArrayList<String>();
+        for (String attr : requiredAttributes) {
             try {
                 sfResolve(attr, null);
             } catch (SmartFrogResolutionException e) {
@@ -566,23 +585,23 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             }
         }
         int size = missing.size();
-        if (size >0) {
-            StringBuilder text = new StringBuilder(MISSING_ATTRIBUTE +(size>1?"s":"")+":");
-            for(String attr:missing) {
+        if (size > 0) {
+            StringBuilder text = new StringBuilder(MISSING_ATTRIBUTE + (size > 1 ? "s" : "") + ":");
+            for (String attr : missing) {
                 text.append("\"");
                 text.append(attr);
                 text.append("\" ");
             }
-            throw new SmartFrogResolutionException(text.toString(),source);
+            throw new SmartFrogResolutionException(text.toString(), source);
         }
     }
 
     /**
-     * This resolves the (smartfrog formatted) list of attributes to look for
-     * and checks that they are all present
+     * This resolves the (smartfrog formatted) list of attributes to look for and checks that they are all present
+     *
      * @param attributeRef a reference to the attributes to fetch
      * @throws SmartFrogResolutionException for any failure to resolve all the attributes
-     * @throws RemoteException network problems. These are always passed up
+     * @throws RemoteException              network problems. These are always passed up
      */
     public void validateListedAttributes(Reference attributeRef) throws SmartFrogResolutionException, RemoteException {
         List<String> required = ListUtils.resolveStringList(source, attributeRef, true);

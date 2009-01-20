@@ -140,7 +140,7 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
      */
     //@Override
     public int getLiveWorkerCount() {
-        return namesystem.heartbeats.size();
+        return getNamesystem().heartbeats.size();
     }
 
 

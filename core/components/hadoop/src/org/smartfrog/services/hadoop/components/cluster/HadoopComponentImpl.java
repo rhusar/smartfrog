@@ -48,7 +48,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
     /**
      * Create and dump the configuration on startup
      */
-    protected void dumpConfiguration() {
+    protected void dumpConfiguration() throws SmartFrogException, RemoteException {
         if (sfLog().isDebugEnabled()) {
             ManagedConfiguration configuration;
             configuration = new ManagedConfiguration(this);
@@ -61,7 +61,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      *
      * @return the new configuration
      */
-    public ManagedConfiguration createConfiguration() {
+    public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
         return createConfiguration(this);
     }
 
@@ -71,7 +71,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @param target target component
      * @return the target configuration
      */
-    public ManagedConfiguration createConfiguration(Prim target) {
+    public ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
         ManagedConfiguration configuration = new ManagedConfiguration(target);
         //trigger its evaluation
         configuration.size();
@@ -87,8 +87,13 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * @throws RemoteException              network problems
      */
     public ManagedConfiguration createConfiguration(String targetAttribute)
-            throws SmartFrogResolutionException, RemoteException {
+            throws SmartFrogException, RemoteException {
         Prim target = sfResolve(targetAttribute, (Prim) null, true);
+        if (target == null) {
+            Object o = sfResolve(targetAttribute,true);
+            throw new SmartFrogResolutionException("Could not resolve attribute \""+targetAttribute+"\""
+                    +" got "+o,this);
+        }
         return new ManagedConfiguration(target);
     }
 

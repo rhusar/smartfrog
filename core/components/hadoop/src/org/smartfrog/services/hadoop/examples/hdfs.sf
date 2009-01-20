@@ -220,6 +220,7 @@ WaitForPortFree extends FailingWaitFor {
   condition extends Not {
     condition extends CheckPortCondition {
       address PARENT:PARENT:address;
+      cluster NULL;
     }
   }
 }
