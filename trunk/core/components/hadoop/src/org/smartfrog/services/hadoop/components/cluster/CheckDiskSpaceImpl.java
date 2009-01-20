@@ -62,6 +62,7 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         directories = convertToFiles(resolveFileList(this, ATTR_DIRECTORIES, null, true, null));

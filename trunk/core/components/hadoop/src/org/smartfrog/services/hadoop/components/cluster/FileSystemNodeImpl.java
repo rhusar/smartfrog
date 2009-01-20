@@ -21,17 +21,17 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.FileSystem;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a base class for any component that is bonded to a Hadoop filesystem

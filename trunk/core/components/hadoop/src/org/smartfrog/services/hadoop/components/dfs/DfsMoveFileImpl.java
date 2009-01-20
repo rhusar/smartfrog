@@ -43,6 +43,7 @@ public class DfsMoveFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         startWorkerThread();
@@ -55,6 +56,7 @@ public class DfsMoveFileImpl extends DfsOperationImpl implements DfsCopyOperatio
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
+    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path source = resolveDfsPath(ATTR_SOURCE);
         Path dest = resolveDfsPath(ATTR_DEST);

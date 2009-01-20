@@ -32,9 +32,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -60,6 +58,7 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         createAndDeployService();

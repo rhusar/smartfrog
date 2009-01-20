@@ -43,6 +43,7 @@ public class DfsFsckImpl extends DfsOperationImpl {
      *
      * @throws Exception on any failure
      */
+    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem,
                                        ManagedConfiguration conf)
             throws Exception {

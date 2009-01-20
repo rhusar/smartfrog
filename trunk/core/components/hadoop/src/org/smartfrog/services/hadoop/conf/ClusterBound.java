@@ -30,5 +30,5 @@ public interface ClusterBound {
     /**
      * {@value}
      */
-    public static final String ATTR_CLUSTER = "cluster";
+    String ATTR_CLUSTER = "cluster";
 }

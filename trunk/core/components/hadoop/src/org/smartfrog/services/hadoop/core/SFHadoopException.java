@@ -125,7 +125,7 @@ public class SFHadoopException extends SmartFrogException {
      * @param conf configuration
      */
     public void addConfiguration(ManagedConfiguration conf) {
-        add(CONFIGURATION, conf.dumpQuietly());
+        add(CONFIGURATION, conf.dump());
     }
 
 
@@ -227,7 +227,7 @@ public class SFHadoopException extends SmartFrogException {
     private static String maybeDumpConfiguration(ManagedConfiguration conf) {
         try {
             if (conf != null && conf.getBoolean(SMARTFROG_DUMP_CONF, false)) {
-                return "\n" + conf.dumpQuietly();
+                return "\n" + conf.dump();
             }
         } catch (SFHadoopRuntimeException ignored) {
             //whatever got here, it won't let us dump things

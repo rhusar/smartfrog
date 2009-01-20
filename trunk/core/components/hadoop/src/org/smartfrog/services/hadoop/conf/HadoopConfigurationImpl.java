@@ -19,14 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.utils.ListUtils;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ListUtils;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -96,7 +96,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
         //the next step is to override with any in-scope attributes.
 
         managedConf = new ManagedConfiguration(this);
-        managedConf.addProperties(baseConf);
+        managedConf.copyProperties(this, baseConf);
 
         //dump it to the log at debug level or if the dump attribute is true, in which
         //case it comes out at INFO level
@@ -110,7 +110,7 @@ public class HadoopConfigurationImpl extends PrimImpl implements HadoopConfigura
                 sfLog().debug(dump);
             }
         }
-        managedConf.validateListedAttributes(refRequired);
+        managedConf.validateListedAttributes(this,refRequired);
     }
 
 

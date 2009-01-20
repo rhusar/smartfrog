@@ -20,15 +20,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.conf.ClusterBound;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -47,12 +46,14 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
 
     /**
      * Create and dump the configuration on startup
+     * @throws SmartFrogResolutionException resolution failure
+     * @throws RemoteException              network problems
      */
     protected void dumpConfiguration() throws SmartFrogException, RemoteException {
         if (sfLog().isDebugEnabled()) {
             ManagedConfiguration configuration;
-            configuration = new ManagedConfiguration(this);
-            sfLog().debug(configuration.dumpQuietly());
+            configuration = createConfiguration();
+            sfLog().debug(configuration.dump());
         }
     }
 
@@ -60,8 +61,9 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * create a configuration against ourselves.
      *
      * @return the new configuration
-     */
-    public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
+     * @throws SmartFrogResolutionException resolution failure
+     * @throws RemoteException              network problems     */
+    protected ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
         return createConfiguration(this);
     }
 
@@ -70,24 +72,24 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      *
      * @param target target component
      * @return the target configuration
-     */
-    public ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
-        ManagedConfiguration configuration = new ManagedConfiguration(target);
-        //trigger its evaluation
-        configuration.size();
-        return configuration;
+     * @throws SmartFrogResolutionException resolution failure
+     * @throws RemoteException              network problems     */
+    protected ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
+        return ManagedConfiguration.createConfiguration(target, true, false);
     }
+
 
     /**
      * Create a managed configuration against a different component, one identified by an attribute
      *
-     * @param targetAttribute target attribute that must map to a deployed component
      * @return the target configuration
      * @throws SmartFrogResolutionException resolution failure
      * @throws RemoteException              network problems
      */
-    public ManagedConfiguration createConfiguration(String targetAttribute)
+    protected ManagedConfiguration createClusterAttrConfiguration()
             throws SmartFrogException, RemoteException {
+        return ManagedConfiguration.createConfiguration(this, true, true);
+/*
         Prim target = sfResolve(targetAttribute, (Prim) null, true);
         if (target == null) {
             Object o = sfResolve(targetAttribute,true);
@@ -95,6 +97,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
                     +" got "+o,this);
         }
         return new ManagedConfiguration(target);
+*/
     }
 
     /**
