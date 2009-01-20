@@ -50,8 +50,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
 
 
     /**
-     * If non null, takes priority over anything else
-     * {@value}
+     * If non null, takes priority over anything else {@value}
      */
     public static final String ATTR_ADDRESS = "address";
 
@@ -64,7 +63,9 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      */
     public static final String ATTR_LIVENESS_TIMEOUT = "livenessTimeout";
 
-    /** should the port be open */
+    /**
+     * should the port be open
+     */
     public static final String ATTR_CHECK_PORT_OPEN = "checkPortOpen";
 
     private InetSocketAddress address;
@@ -87,7 +88,6 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
     @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        ManagedConfiguration configuration = createConfiguration(ATTR_CLUSTER);
         connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, 0, true);
         int timeout = sfResolve(ATTR_LIVENESS_TIMEOUT, 0, true);
         if (timeout > 0) {
@@ -97,11 +97,12 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         if (addressInline.length() > 0) {
             address = NetUtils.createSocketAddr(addressInline);
         } else {
+            ManagedConfiguration configuration = createConfiguration(ATTR_CLUSTER);
             address = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
         }
-        checkPortOpen = sfResolve(ATTR_CHECK_PORT_OPEN,true,true);
+        checkPortOpen = sfResolve(ATTR_CHECK_PORT_OPEN, true, true);
         sfLog().info("Checking host:port " + address
-                + (checkPortOpen? " is open":" is closed"));
+                + (checkPortOpen ? " is open" : " is closed"));
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         if (checkOnStartup) {
@@ -162,23 +163,24 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
 
     /**
      * check that the port is reachable
-     * @throws IOException IO problems
+     *
+     * @throws IOException        IO problems
      * @throws SmartFrogException smartfrog problems
      */
     private void checkThePort() throws IOException, SmartFrogException {
         try {
             HadoopUtils.checkPort(address, connectTimeout);
         } catch (IOException e) {
-            if(checkPortOpen) {
+            if (checkPortOpen) {
                 throw e;
             } else {
                 //port is closed, log at debug level.
-                sfLog().debug("Port check failed with ",e);
+                sfLog().debug("Port check failed with ", e);
             }
         }
         //we get here and no error: the port is open
-        if(!checkPortOpen) {
-            throw new SmartFrogException("The port is open when it should be closed: "+address);
+        if (!checkPortOpen) {
+            throw new SmartFrogException("The port is open when it should be closed: " + address);
         }
     }
 

@@ -27,6 +27,7 @@ import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -87,7 +88,7 @@ public class DfsClusterBoundImpl extends PrimImpl {
    *
    * @return a new SF-managed configuration
    */
-  public ManagedConfiguration createConfiguration() {
+  public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
       return new ManagedConfiguration(cluster);
   }
 
@@ -97,7 +98,8 @@ public class DfsClusterBoundImpl extends PrimImpl {
    * @return a new file system
    * @throws SmartFrogRuntimeException for any problem creating the FS.
    */
-  protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException, SFHadoopException {
+  protected DistributedFileSystem createFileSystem()
+          throws SmartFrogException, RemoteException {
       ManagedConfiguration conf = createConfiguration();
       DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
       return fileSystem;

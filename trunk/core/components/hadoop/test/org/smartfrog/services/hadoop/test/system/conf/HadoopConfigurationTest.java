@@ -46,4 +46,8 @@ public class HadoopConfigurationTest extends DeployingTestBase {
     public void testRequiredAttributes() throws Throwable {
         expectSuccessfulTestRun(PACKAGE, "testRequiredAttributes");
     }
+
+    public void testManagedConfTest() throws Throwable {
+        expectSuccessfulTestRun(PACKAGE, "testManagedConfTest");
+    }
 }

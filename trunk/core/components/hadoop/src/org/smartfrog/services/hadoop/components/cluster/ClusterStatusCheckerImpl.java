@@ -30,6 +30,7 @@ import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -108,7 +109,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      * @throws SFHadoopException if the connection cannot be made
      */
 
-    private synchronized JobClient createClientOnDemand() throws SFHadoopException {
+    private synchronized JobClient createClientOnDemand() throws SmartFrogException, RemoteException {
         if (client != null) {
             return client;
         }
@@ -117,6 +118,8 @@ public class ClusterStatusCheckerImpl extends PrimImpl
             sfLog().info("Connecting to " + jobTracker);
             client = new JobClient(conf);
             return client;
+        } catch (RemoteException e) {
+            throw e;
         } catch (IOException e) {
             throw new SFHadoopException(ERROR_CANNOT_CONNECT + jobTracker, e, this);
         }
@@ -136,7 +139,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
         if (checkOnLiveness) {
             try {
                 checkClusterStatus();
-            } catch (SFHadoopException e) {
+            } catch (SmartFrogException e) {
                 throw (SmartFrogLivenessException) SmartFrogLivenessException.forward(e);
             }
         }
@@ -147,7 +150,7 @@ public class ClusterStatusCheckerImpl extends PrimImpl
      *
      * @throws SFHadoopException on any problem with the checks
      */
-    private String checkClusterStatus() throws SFHadoopException {
+    private String checkClusterStatus() throws SmartFrogException {
 
         try {
             JobClient cluster = createClientOnDemand();
