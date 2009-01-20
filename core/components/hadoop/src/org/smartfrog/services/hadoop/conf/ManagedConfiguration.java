@@ -22,44 +22,32 @@
 package org.smartfrog.services.hadoop.conf;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.net.NetUtils;
-import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
-import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.smartfrog.services.hadoop.core.SFHadoopRuntimeException;
 import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.utils.ListUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
@@ -69,8 +57,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         ConfigurationAttributes {
 
     private Prim source;
-    private ComponentHelper helper;
-    private SortedMap<String, String> attributeMap = null;
 
     /**
      * Some attributes that are not listed in the component (so they can be picked up from parents) but which should be
@@ -82,6 +68,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             MAPRED_LOCAL_DIR
     };
     public static final String MISSING_ATTRIBUTE = "Missing attribute";
+    private String description;
+    private static final Reference REF_CLUSTER = new Reference(ClusterBound.ATTR_CLUSTER);
 
     /**
      * A new configuration with the same settings cloned from another.
@@ -105,6 +93,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @param loadDefaults specifies whether to load from the default files
      * @param source       source of config information
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(boolean loadDefaults, Prim source) throws SmartFrogException,
             RemoteException {
@@ -116,6 +106,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * A new configuration. Default values are picked up
      *
      * @param source source of config information
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException for resolution problems
      */
     public ManagedConfiguration(Prim source) throws SmartFrogException,
             RemoteException {
@@ -127,13 +119,17 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Bind to our owner
      *
      * @param src source component
+     *
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException for resolution problems
      */
     private void bind(Prim src) throws SmartFrogException, RemoteException {
         if (src == null) {
             throw new SFHadoopException("Cannot bind to a null source component");
         }
         source = src;
-        helper = new ComponentHelper(src);
+        ComponentHelper helper = new ComponentHelper(src);
+        description = helper.completeNameSafe().toString();
         copyComponentState(src, null);
     }
 
@@ -157,7 +153,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      *
      * @throws SFHadoopRuntimeException on any resolution/remoting problem
      */
-    private void buildAttributeMapQuietly() throws SFHadoopRuntimeException {
+/*    private void buildAttributeMapQuietly() throws SFHadoopRuntimeException {
         if (attributeMap == null) {
             try {
                 attributeMap = getState();
@@ -167,7 +163,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
                 throw new SFHadoopRuntimeException(e);
             }
         }
-    }
+    }*/
 
     /**
      * Reload the configuration. This rests our cache. {@inheritDoc}
@@ -175,7 +171,6 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     @Override
     public synchronized void reloadConfiguration() {
         super.reloadConfiguration();
-        attributeMap = null;
     }
 
 
@@ -328,10 +323,10 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * This copies the component state: all attributes directly off this component.
      *
-     * @param component the component to copy from
+     * @param component    the component to copy from
      * @param requiredKeys list of keys to always pull in, can be null
-     * @throws RemoteException
-     * @throws SmartFrogResolutionException
+     * @throws RemoteException              for network problems
+     * @throws SmartFrogResolutionException for resolution problems
      */
     private void copyComponentState(Prim component,
                                     List<String> requiredKeys) throws RemoteException, SmartFrogResolutionException {
@@ -372,7 +367,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws RemoteException              for network problems
      * @throws SmartFrogResolutionException for resolution problems
      */
-    private SortedMap<String, String> getState() throws RemoteException, SmartFrogResolutionException {
+/*    private SortedMap<String, String> getState() throws RemoteException, SmartFrogResolutionException {
         SortedMap<String, String> map = new TreeMap<String, String>();
         Iterator<Object> objectIterator = source.sfAttributes();
         while (objectIterator.hasNext()) {
@@ -399,7 +394,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
             }
         }
         return map;
-    }
+    }*/
 
     /**
      * Get an {@link Iterator} to go through the list of <code>String</code> key-value pairs in the configuration.
@@ -427,7 +422,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * @throws TransformerException         XML trouble
      * @throws ParserConfigurationException XML trouble
      */
-    private void writeState(Map<String, String> state, OutputStream out)
+/*    private void writeState(Map<String, String> state, OutputStream out)
             throws TransformerException, ParserConfigurationException {
         Document doc =
                 DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -456,7 +451,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
         TransformerFactory transFactory = TransformerFactory.newInstance();
         Transformer transformer = transFactory.newTransformer();
         transformer.transform(domSource, result);
-    }
+    }*/
 
     /**
      * Print our prim reference
@@ -467,7 +462,7 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("SmartFrog Managed Configuration bound to ");
-        builder.append(helper.completeNameSafe().toString());
+        builder.append(description);
         return builder.toString();
     }
 
@@ -475,34 +470,17 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Dump our state to a string; triggers a full resolution.
      *
      * @return a complete dump of name "value"; pairs, in order
-     * @throws SmartFrogResolutionException problems resolving attributes
-     * @throws RemoteException              network trouble
      */
-    public String dump() throws SmartFrogResolutionException, RemoteException {
+    public String dump() {
         StringBuilder builder = new StringBuilder();
-        SortedMap<String, String> map = getState();
-        for (String key : map.keySet()) {
+        Properties p = getProps();
+        for (Object key : p.keySet()) {
             builder.append(key);
             builder.append(" \"");
-            builder.append(map.get(key));
+            builder.append(p.get(key));
             builder.append("\";\n");
         }
         return builder.toString();
-    }
-
-    /**
-     * dump quietly; exceptions are turned into strings
-     *
-     * @return the dump of name value pairs or an error message
-     */
-    public String dumpQuietly() {
-        try {
-            return dump();
-        } catch (SmartFrogResolutionException e) {
-            return '(' + e.toString() + ')';
-        } catch (RemoteException e) {
-            return '(' + e.toString() + ')';
-        }
     }
 
     /**
@@ -533,19 +511,22 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      * Copy in the properties from a configuration, by adding them as attributes if the component does not have them
      * already. The configuration is marked for reloading
      *
+     * @param target the prim to propagate any updates to
      * @param conf configuration
      * @throws SmartFrogRuntimeException failure to read or write an attribute
      * @throws RemoteException           network problems
      */
-    public void addProperties(Configuration conf) throws SmartFrogRuntimeException, RemoteException {
+    public void copyProperties(Prim target, Configuration conf) throws SmartFrogRuntimeException, RemoteException {
         assert conf != this;
         for (Map.Entry<String, String> entry : conf) {
             String key = entry.getKey();
             String value = entry.getValue();
+            setIfUnset(key, value);
+            value = get(key);
             try {
-                source.sfResolveHere(key);
-            } catch (SmartFrogResolutionException e) {
-                source.sfReplaceAttribute(key, value);
+                target.sfResolveHere(key);
+            } catch (SmartFrogResolutionException ignored) {
+                target.sfReplaceAttribute(key, value);
             }
         }
         reloadConfiguration();
@@ -577,10 +558,9 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
      */
     public void validate(List<String> requiredAttributes) throws SmartFrogResolutionException, RemoteException {
         List<String> missing = new ArrayList<String>();
+        Properties current = getProps();
         for (String attr : requiredAttributes) {
-            try {
-                sfResolve(attr, null);
-            } catch (SmartFrogResolutionException e) {
+            if (!current.containsKey(attr)) {
                 missing.add(attr);
             }
         }
@@ -592,19 +572,51 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
                 text.append(attr);
                 text.append("\" ");
             }
-            throw new SmartFrogResolutionException(text.toString(), source);
+            throw new SmartFrogResolutionException(text.toString());
         }
     }
 
     /**
      * This resolves the (smartfrog formatted) list of attributes to look for and checks that they are all present
      *
+     * @param src          source prim
      * @param attributeRef a reference to the attributes to fetch
      * @throws SmartFrogResolutionException for any failure to resolve all the attributes
      * @throws RemoteException              network problems. These are always passed up
      */
-    public void validateListedAttributes(Reference attributeRef) throws SmartFrogResolutionException, RemoteException {
-        List<String> required = ListUtils.resolveStringList(source, attributeRef, true);
+    public void validateListedAttributes(Prim src, Reference attributeRef)
+            throws SmartFrogResolutionException, RemoteException {
+        List<String> required = ListUtils.resolveStringList(src, attributeRef, true);
         validate(required);
     }
+
+    /**
+     * This creates a configuration from a source prim
+     *
+     * @param source                   source prim
+     * @param useClusterReferenceFirst if set, resolve {@link ClusterBound#ATTR_CLUSTER} from the source and use that
+     *                                 first.
+     * @param clusterRequired          if set, the cluster attribute must resolve.
+     * @return the new element
+     * @throws SmartFrogException for any failure to resolve all the attributes
+     * @throws RemoteException              network problems. These are always passed up
+     */
+    public static ManagedConfiguration createConfiguration(Prim source,
+                                                           boolean useClusterReferenceFirst,
+                                                           boolean clusterRequired)
+            throws SmartFrogException, RemoteException {
+        ManagedConfiguration conf = new ManagedConfiguration(source);
+        if (useClusterReferenceFirst) {
+            //pull in the cluster if requested
+            Prim clusterSource = source.sfResolve(REF_CLUSTER, (Prim) null, clusterRequired);
+            if (clusterSource != null) {
+                //if we have a cluster source, use it
+                conf.copyProperties(source, new ManagedConfiguration(clusterSource));
+                //createConfiguration(source, clusterSource);
+            }
+        }
+        return conf;
+
+    }
+
 }

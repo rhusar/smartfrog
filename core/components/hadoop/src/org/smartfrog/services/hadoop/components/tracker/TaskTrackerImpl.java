@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.hadoop.components.tracker;
 
-import org.apache.hadoop.mapred.ExtTaskTracker;
 import org.apache.hadoop.mapred.ExtJobTracker;
+import org.apache.hadoop.mapred.ExtTaskTracker;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
@@ -34,9 +34,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,12 +70,14 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
     * @throws SmartFrogException failure while starting
     * @throws RemoteException    In case of network/rmi error
     */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         createAndDeployService();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         ExtTaskTracker tracker = new ExtTaskTracker(this, configuration);
         return tracker;
@@ -113,7 +113,7 @@ public class TaskTrackerImpl extends HadoopServiceImpl implements HadoopCluster 
             getTaskTracker().offerService();
         } catch (InterruptedException e) {
             //this is ok, it is time to terminate
-            sfLog().ignore("Job tracker was interrupted", e);
+            sfLog().ignore("Task tracker was interrupted", e);
         } catch (IOException e) {
             throw e;
         } catch (SmartFrogException e) {

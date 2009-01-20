@@ -19,8 +19,6 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.conf;
 
-import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
-
 import java.rmi.Remote;
 
 /**

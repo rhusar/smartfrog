@@ -97,7 +97,7 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         if (addressInline.length() > 0) {
             address = NetUtils.createSocketAddr(addressInline);
         } else {
-            ManagedConfiguration configuration = createConfiguration(ATTR_CLUSTER);
+            ManagedConfiguration configuration = createClusterAttrConfiguration();
             address = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
         }
         checkPortOpen = sfResolve(ATTR_CHECK_PORT_OPEN, true, true);

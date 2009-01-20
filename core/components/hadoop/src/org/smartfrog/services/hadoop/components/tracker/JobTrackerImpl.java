@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.tracker;
 
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.ExtJobTracker;
 import org.apache.hadoop.util.Service;
-import org.apache.hadoop.fs.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.ClusterManager;
 import org.smartfrog.services.hadoop.components.cluster.HadoopServiceImpl;
@@ -96,22 +96,37 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      */
     @Override
     protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
-        //then look for the filesystem and again, bail out if it is not live
+        //look for the filesystem attributes
+        getFilesystemName(conf);
+    }
+
+    /**
+     * Get the filesystem name
+     * @param conf the configuration to work with
+     * @return the string name of the filesystem
+     */
+    private String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
         String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
-        if(fsName == null) {
+        if (fsName == null) {
             throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -undefined attribute "
-                    +  ConfigurationAttributes.FS_DEFAULT_NAME,
+                    + ConfigurationAttributes.FS_DEFAULT_NAME,
                     null,
                     this,
                     conf);
         }
+        return fsName;
     }
 
 
-    private void checkFilesystemWorking() throws SFHadoopException {
-        ManagedConfiguration conf = getConfiguration();
+    /**
+     * check that the filesystem attribute is defined and working
+     * @throws RemoteException    RMI issues
+     * @throws SmartFrogException Smartfrog problems
+     */
+    private void checkFilesystemWorking() throws SmartFrogException, RemoteException {
+        ManagedConfiguration conf = createConfiguration();
         try {
-            String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
+            String fsName = getFilesystemName(conf);
             FileSystem fs = FileSystem.get(conf);
             if (fs == null) {
                 throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -unable to bind to the filesystem "
@@ -130,6 +145,7 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Service createTheService(ManagedConfiguration configuration) throws IOException, SmartFrogException {
         try {
             Service service = new ExtJobTracker(this, configuration);

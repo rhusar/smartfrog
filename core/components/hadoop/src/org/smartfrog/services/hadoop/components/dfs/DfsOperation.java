@@ -20,17 +20,14 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import java.rmi.Remote;
+import org.smartfrog.services.hadoop.conf.ClusterBound;
+
 
 /**
  *
  */
-public interface DfsOperation extends Remote {
+public interface DfsOperation extends ClusterBound {
 
-    /**
-     * {@value}
-     */
-    String ATTR_CLUSTER = "cluster";
     /**
      * {@value}
      */

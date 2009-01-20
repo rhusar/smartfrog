@@ -33,11 +33,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created 06-May-2008 16:31:49

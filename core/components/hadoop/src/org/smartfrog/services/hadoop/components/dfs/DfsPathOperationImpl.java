@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.rmi.RemoteException;
 
 /**
- *
+ * abstract component for path operations
  */
 public abstract class DfsPathOperationImpl extends DfsOperationImpl implements DfsPathOperation {
 
@@ -44,6 +44,7 @@ public abstract class DfsPathOperationImpl extends DfsOperationImpl implements D
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         idempotent = sfResolve(ATTR_IDEMPOTENT, true, true);

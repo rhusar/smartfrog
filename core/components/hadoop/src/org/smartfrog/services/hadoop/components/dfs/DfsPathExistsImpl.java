@@ -60,6 +60,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         boolean checkOnStartup = sfResolve(ATTR_CHECK_ON_STARTUP, true, false);
@@ -110,6 +111,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      *
      * @param status termination status
      */
+    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         try {
@@ -150,6 +152,7 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            In case of network/rmi error
      */
+    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException,
             RemoteException {
         super.sfPing(source);
@@ -158,6 +161,10 @@ public class DfsPathExistsImpl extends DfsPathOperationImpl
         }
     }
 
+    /**
+     * check that a path exists
+     * @throws SmartFrogLivenessException if it does not, or it is the wrong type/size
+     */
     private void checkPathExists() throws SmartFrogLivenessException {
         String filename = getPathName() + " in " + dfs.toString();
         try {

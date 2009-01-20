@@ -49,6 +49,7 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
+    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         startWorkerThread();
@@ -61,6 +62,7 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * @param conf the configuration driving this operation
      * @throws Exception on any failure
      */
+    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Vector<String> files = HadoopComponentImpl
                 .createDirectoryListAttribute(this, FileSystemNodeImpl.NAME_DIRECTORIES,

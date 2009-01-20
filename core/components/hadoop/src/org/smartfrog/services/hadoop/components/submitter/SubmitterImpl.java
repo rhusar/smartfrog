@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.submitter;
 
 import org.apache.hadoop.mapred.JobClient;
-import org.apache.hadoop.mapreduce.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
+import org.apache.hadoop.mapreduce.JobID;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
@@ -261,7 +261,5 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         }
         //neither of those? resolve to a string and let the runtime handle errors
         return prim.sfResolve(ref, "", true);
-
-
     }
 }
