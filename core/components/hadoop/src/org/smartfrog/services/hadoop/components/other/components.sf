@@ -29,3 +29,11 @@ MockService extends ClusterNode {
   failOnPing false;
   failOnClose false;
 }
+
+/**
+ * This checks service values
+ */
+ServiceValueChecker extends Prim {
+  sfClass "org.smartfrog.services.hadoop.components.other.ServiceValueCheckerImpl"
+  expectedValues [];
+}
