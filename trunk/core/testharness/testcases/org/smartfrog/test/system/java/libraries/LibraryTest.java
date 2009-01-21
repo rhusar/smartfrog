@@ -78,7 +78,7 @@ public class LibraryTest extends DeployingTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_LINKRESOLUTION,
-                "artifactSchema cause: error in schema: wrong class found for attribute 'library'");
+                "artifactSchema cause: SmartFrogAssertionResolutionException:: error in schema: wrong class found for attribute 'library'");
     }
 
     public void testMavenLibrary() throws Throwable {
