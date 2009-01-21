@@ -49,6 +49,9 @@ import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.PhaseNames;
 import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
 import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver.CoreSolverFatalError;
+import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
+import org.smartfrog.sfcore.languages.sf.functions.Constraint;
 import org.smartfrog.sfcore.languages.sf.functions.Constraint.SmartFrogConstraintBacktrackError;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.ReferencePhases;
@@ -708,9 +711,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        //reset link resolution state
        resetLRSState();  
-       
+              
        //Set description in Constraint Solver logic
        CoreSolver.getInstance().setDescriptionMarkers(this);
+       
+       //Compile list of propositions for cardinality constraint checking
+       Proposition.compilePropositions(this);
        
        while (true){
     	   //Get current description being processed...
@@ -733,8 +739,16 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     	   //Get value
     	   Object value = sfcd.sfContext().getVal(currentLRSIndex);  	   
     	    	   
-    	   //System.out.println("key:"+key+", value:"+value+", cd:"+this.hashCode());
-    	   
+    	   //System.out.println("key:"+key+", value:"+value);
+    	  
+    	   //Do we need to do some additional constraints work?
+    	   try {
+    	      CoreSolver.getInstance().doConstraintsWork(key);  
+    	   } catch (SmartFrogConstraintBacktrackError sfbe){
+    		   if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
+        	   else continue; //need to try the latest again... 
+    	   }
+    	      
     	   //Is value SFComponentDescription?
            if (value instanceof SFComponentDescription) {
         	   sfcd = (SFComponentDescription) value;
@@ -748,9 +762,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          	   //Is value a Reference?
            } else if (value instanceof Reference) {
                Reference rv = (Reference)value;
-               if (!rv.getData()) {
-                   
+               if (!rv.getData() && !Constraint.leaveResolve(sfcd, key)){
             	   try {
+            		   
             		   //Resolve reference
             		   Object result = sfcd.sfResolve((Reference) value);
             		   
@@ -758,6 +772,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             		   CoreSolver.getInstance().setShouldUndo(true);
             		   
             		   //Set key to have value
+            		   //System.out.println("Putting..."+key+":"+result);
             		   sfcd.sfContext().put(key, result);
             		   
             		   //No more should we undo
@@ -769,6 +784,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                            if (res_sfcd.sfParent() == null) res_sfcd.setParent(sfcd);
                            continue; //round while to resolve it...
                        } 
+                       
 
                    } catch (SmartFrogConstraintBacktrackError sfbe){ 
                 	   if (CoreSolver.getInstance().getOriginalDescription()!=this) throw sfbe;
@@ -778,6 +794,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                    } catch (Exception resex) {
                        resState.addUnresolved(value, sfcd.sfCompleteName(), key.toString(), resex);
                    } catch (Throwable thr){
+                	  if (thr instanceof CoreSolverFatalError) throw (CoreSolverFatalError) thr;
                       throw new SmartFrogLinkResolutionException(
                     		   "Failed to resolve '"+key+" "+value+"'"+
                    	   		       (thr instanceof StackOverflowError || thr instanceof java.lang.OutOfMemoryError?
