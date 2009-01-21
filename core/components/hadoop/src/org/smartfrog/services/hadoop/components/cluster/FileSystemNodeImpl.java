@@ -22,13 +22,11 @@
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,24 +59,16 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
+        ManagedConfiguration conf = createConfiguration();
         //get the filesystem name, validate it
-        String filesystemName = sfResolve(FS_DEFAULT_NAME, "", true);
-        try {
-            URI uri = new URI(filesystemName);
-            if (uri.getPort() == -1) {
-                throw new SmartFrogLifecycleException(
-                        "Undefined port on " + FS_DEFAULT_NAME + " value :" + filesystemName);
-            }
-        } catch (URISyntaxException e) {
-            throw new SmartFrogLifecycleException("Bad " + FS_DEFAULT_NAME + " value :" + filesystemName, e);
-        }
-
-        testModeDeleteDirectories = sfResolve(TEST_MODE_DELETE_DIRECTORIES,false,true);
-        dumpConfiguration();
+        getFilesystemURI(conf);
+        debugDumpConfiguration(conf);
+        testModeDeleteDirectories = sfResolve(TEST_MODE_DELETE_DIRECTORIES, false, true);
     }
 
     /**
      * List a directory to delete
+     *
      * @param directory directory to delete
      */
     protected void addDirectoryToDelete(File directory) {
@@ -87,6 +77,7 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
 
     /**
      * Add a list of directories to delete
+     *
      * @param dirList the directory list
      */
     protected void addDirectoriesToDelete(List<String> dirList) {
@@ -101,6 +92,7 @@ public class FileSystemNodeImpl extends HadoopServiceImpl implements FileSystemN
      */
     @Override
     protected void postTerminationCleanup() {
+        super.postTerminationCleanup();
         if (testModeDeleteDirectories) {
             for (File dir : directoriesToDelete) {
                 FileSystem.recursiveDelete(dir);

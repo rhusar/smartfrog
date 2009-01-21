@@ -93,3 +93,11 @@ NameNode extends NameDataLogNode {
   expectNodeTermination false;
   sfShouldTerminate false;
 }
+
+NameNodeWithCluster extends NameDataLogNodeWithCluster {
+   name NameNode:name;
+   sfClass NameNode:sfClass;
+   checkRunning NameNode:checkRunning;
+   expectNodeTermination NameNode:expectNodeTermination ;
+   sfShouldTerminate NameNode:sfShouldTerminate;
+}

@@ -65,6 +65,19 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     }
 
     /**
+     * Override point: any last minute validation of the configuration
+     *
+     * @param conf the configuration to validate
+     * @throws RemoteException    RMI issues
+     * @throws SmartFrogException Smartfrog problems
+     */
+    @Override
+    protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
+        super.validateConfiguration(conf);
+        checkFilesystemIsHDFS(conf);
+    }
+
+    /**
      * Get a list of ports that should be closed on startup and after termination. This list is built up on startup and
      * cached.
      *

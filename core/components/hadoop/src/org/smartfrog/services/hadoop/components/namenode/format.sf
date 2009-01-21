@@ -30,3 +30,11 @@ FormatFileSystem extends  NameDirNode {
   sfShouldTerminate true;
 }
 
+ FormatFileSystemWithCluster extends  NameDirNodeWithCluster {
+
+   sfClass FormatFileSystem:sfClass;
+   //name directory: a List of directories
+   nameDirectories TBD;
+   sfShouldTerminate true;
+ }
+

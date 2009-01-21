@@ -66,6 +66,13 @@ public class ManagedConfTestPrimImpl extends HadoopComponentImpl {
         String value2 = conf.get(P2, null);
         assertTrue(P2 + " is null in\n"+dump, value2 != null);
         assertTrue(P2 + " = " + value2 + " in\n" + dump, V2.equals(value2));
+
+        //trigger a reload, and see that things are still set
+        conf.reloadConfiguration();
+        dump = conf.dump();
+        value2 = conf.get(P2, null);
+        assertTrue(P2 + " is null in\n" + dump, value2 != null);
+        assertTrue(P2 + " = " + value2 + " in\n" + dump, V2.equals(value2));
         new ComponentHelper(this).targetForTermination();
     }
 

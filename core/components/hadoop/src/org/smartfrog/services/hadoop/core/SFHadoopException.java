@@ -84,6 +84,18 @@ public class SFHadoopException extends SmartFrogException {
     }
 
     /**
+     * Constructs a SmartFrogException with specified message. Also initializes the exception context with component
+     * details.
+     *
+     * @param message  exception message
+     * @param sfObject The Component that has encountered the exception
+     */
+    public SFHadoopException(String message, Prim sfObject, ManagedConfiguration conf) {
+        super(message, sfObject);
+        addConfiguration(conf);
+    }
+
+    /**
      * Constructs a SmartFrogException with specified cause. Also initializes the exception context with component
      * details.
      *
@@ -104,6 +116,18 @@ public class SFHadoopException extends SmartFrogException {
      */
     public SFHadoopException(String message, Throwable cause, Prim sfObject) {
         super(message, cause, sfObject);
+    }
+    /**
+     * Constructs a SmartFrogException with specified message. Also initializes the exception context with component
+     * details.
+     *
+     * @param message  message
+     * @param cause    exception causing this exception
+     * @param sfObject The Component that has encountered the exception
+     */
+    public SFHadoopException(String message, Throwable cause, Prim sfObject, ManagedConfiguration conf) {
+        super(message, cause, sfObject);
+        addConfiguration(conf);
     }
 
     /**

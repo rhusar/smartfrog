@@ -19,6 +19,17 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 
+/**
+ * This file defines SF components to work with Hadoop configuration files
+ */
+
+
+
+/**
+ * This is the base template, a configuration file.
+ * We use conf. names everywhere to avoid any clash with hadoop options.
+ * If apache introduce attributes with the same prefix, these will have to be renamed
+ */
 EmptyHadoopConfiguration extends Prim {
   sfClass "org.smartfrog.services.hadoop.conf.HadoopConfigurationImpl";
   //list of resources to load
