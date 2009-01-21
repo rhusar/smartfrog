@@ -130,10 +130,6 @@ ifThenElse extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
 }
 
-
-
-
-
 next extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Next";
 }
@@ -150,8 +146,6 @@ userinput extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.UserInput";
 }
 
-
-
 ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
@@ -160,33 +154,55 @@ Ref extends Function{
     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
 
+LazyRef extends Ref {
+    lazy true;
+}
+
 Constraint extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Constraint";
 }
 
-ArrayGenerator extends {
-   sfIsGenerator true;
+Var extends {
+  IsConstraintVar;
+}
+
+AutoVar extends {
+  IsConstraintVar;
+  auto;
+}
+
+UserVar extends {
+  IsConstraintVar;
+  user;
+}
+
+DefaultVar extends {
+  IsConstraintVar;
+  default TBD;
+}
+
+LabellingPoint extends {
+  IsLabelling;
+}
+
+LazyConstraint extends Constraint {
+     sfFunctionLazy true;
 }
 
 Array extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Array";
-     sfArrayPrefix "zoo";
-     sfArrayExtent 3;
-     sfArrayGenerator extends ArrayGenerator {}
+}
+
+ArrayGenerator extends {
+     sfIsArrayGenerator;
 }
 
 Aggregator extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.Aggregator";
 }
 
-forall extends Function {
-     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
-     sfFunctionQual "forall";
-}
-
-exists extends Function {
-     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.ForAllExists";
-     sfFunctionQual "exists";
+PrettyPrint extends Function {
+     sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.PrettyPrint";
 }
 
 nsum extends Function {
@@ -199,21 +215,43 @@ nproduct extends Function {
      sfFunctionQual "product";
 }
 
-erent extends Function {
+alldifferent extends Function {
      sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.AllDifferent";
 }
 
 ResourceAllocator extends Constraint {
-   [sfAggregatedConstraintSource] -- [providers_array, providers_attr, "providers"];
-   [sfAggregatedConstraintSource] -- [providers_array, provider_caps_attr, "provider_caps"];
-   [sfAggregatedConstraintSource] -- [consumers_array, consumers_attr, "consumers"];
-   [sfAggregatedConstraintSource] -- [consumers_array, consumer_reqs_attr, "consumer_reqs"];
-   [sfAggregatedConstraintSource] -- [consumers_array, allocation_attr, "allocation"];   
+   [sfSource] providers_array;
+   [sfPrefix] providers_prefix;
+   [sfPath] providers_attr;
+   [sfUpdate] providers;
+   [sfSource] providers_caps_array;
+   [sfPrefix] providers_caps_prefix;
+   [sfPath] providers_caps_attr;
+   [sfUpdate] providers_caps;
+   [sfSource] consumers_array;
+   [sfPrefix] consumers_prefix;
+   [sfPath] consumers_attr;
+   [sfUpdate] consumers;
+   [sfSource] consumers_reqs_array;
+   [sfPrefix] consumers_reqs_prefix;
+   [sfPath] consumers_reqs_attr;
+   [sfUpdate] consumers_reqs;
+   [sfSource] allocations_array;
+   [sfPrefix] allocations_prefix;
+   [sfPath] allocations_attr;
+   [sfUpdate] allocations;
    colocations [];
    nocolocations [];
    hosted [];
-   [sfConstraint] -- "allocate(providers, provider_caps, consumers, consumer_reqs, allocation, colocations, nocolocations, hosted)";
+   [sfConstraint] -- "allocate(providers, providers_caps, consumers, consumers_reqs, allocations, colocations, nocolocations, hosted)";
 
 }
 
+PolicyEvaluation extends Function {
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+}
 
+DynamicPolicyEvaluation extends Function {
+    sfFunctionClass "org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation";
+    sfFunctionLazy true;
+}
