@@ -121,6 +121,9 @@
   <path id="smartfrog.class.path">
     <pathelement path="${classpath}"/>
 	<pathelement path="./lib/eclipse-clp-5.10.jar"/>
+        <!--The next two are just temporary hacks...-->
+	<pathelement path="./lib/com.noelios.restlet.jar"/>
+	<pathelement path="./lib/org.restlet.jar"/>
     <!-- <pathelement path="./lib/ProActive.jar"/>-->
   </path>
   <!-- to get the classpath in a printable form -->
