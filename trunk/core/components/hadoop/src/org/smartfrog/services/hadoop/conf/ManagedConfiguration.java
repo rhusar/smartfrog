@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
 
 /**
  * This is our extended configuration, which takes a Prim component as a source of information as well as (optionally)
@@ -168,10 +169,12 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     /**
      * Reload the configuration. This rests our cache. {@inheritDoc}
      */
+/*
     @Override
     public synchronized void reloadConfiguration() {
         super.reloadConfiguration();
     }
+*/
 
 
     /**
@@ -474,7 +477,8 @@ public final class ManagedConfiguration extends JobConf implements PrimSource,
     public String dump() {
         StringBuilder builder = new StringBuilder();
         Properties p = getProps();
-        for (Object key : p.keySet()) {
+        TreeSet<String> ts=new TreeSet(p.keySet());
+        for (String key : ts) {
             builder.append(key);
             builder.append(" \"");
             builder.append(p.get(key));

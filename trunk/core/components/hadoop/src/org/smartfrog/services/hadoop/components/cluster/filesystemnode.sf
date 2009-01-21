@@ -22,14 +22,17 @@ For more information: www.smartfrog.org
  * A cluster node that is bound to a filesystem
  */
 
-
-FileSystemNode extends ClusterNode {
+FSActions extends {
   //the set of operations of a node on startup
   ACTION_FORMAT "FORMAT";
   ACTION_REGULAR "REGULAR";
   ACTION_UPGRADE "UPGRADE";
   ACTION_ROLLBACK "ROLLBACK";
   ACTION_FINALIZE "FINALIZE";
+
+}
+
+FileSystemNode extends ClusterNode, FSActions {
 
   dfs.block.size (64 * 1024 * 1024);
 
@@ -42,3 +45,7 @@ FileSystemNode extends ClusterNode {
   testModeDeleteDirectories false;
 }
 
+FileSystemNodeWithCluster extends ClusterNodeWithCluster {
+  minDiskSpaceMB FileSystemNode:minDiskSpaceMB;
+  testModeDeleteDirectories FileSystemNode:testModeDeleteDirectories;
+}

@@ -22,12 +22,14 @@ package org.smartfrog.services.hadoop.components.cluster;
 import org.apache.hadoop.util.Service;
 import org.smartfrog.services.hadoop.common.HadoopUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -36,6 +38,8 @@ import org.smartfrog.sfcore.utils.WorkflowThread;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +49,7 @@ import java.util.List;
  */
 
 public abstract class HadoopServiceImpl extends HadoopComponentImpl
-        implements HadoopService, ServiceStateChangeHandler {
+        implements HadoopService, ServiceStateChangeHandler, ConfigurationAttributes {
 
     private Service service;
     private ServiceDeployerThread deployerThread;
@@ -121,7 +125,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     /**
      * Override point: check that after termination, any chosen ports are closed.
      *
-     * @param during
+     * @param during the phase/process to include in the error message (startup, shutdown, etc)
      * @throws SmartFrogException if one or more ports are open
      */
     protected void checkPortsAreClosed(String during) throws SmartFrogException {
@@ -541,10 +545,10 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     protected void createAndDeployService() throws SmartFrogException, RemoteException {
         ManagedConfiguration conf = createConfiguration();
         configuration = conf;
+        validateConfiguration(conf);
         portList = buildPortList(conf);
         //now check the known ports are closed. This will bail out early
         checkPortsAreClosed("startup");
-        validateConfiguration(conf);
         try {
             Service createdService = createTheService(conf);
             deployService(createdService, conf);
@@ -579,8 +583,65 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
     }
 
     /**
-     * This is the thread that starts the deployment
+     * Get the filesystem name
+     * @param conf the configuration to work with
+     * @return the string name of the filesystem
      */
+    protected String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
+        String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
+        if (fsName == null) {
+            throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -undefined attribute "
+                    + ConfigurationAttributes.FS_DEFAULT_NAME,
+                    null,
+                    this,
+                    conf);
+        }
+        return fsName;
+    }
+
+    /**
+     * Get the URI of the filesystem. It also verifies that an HDFS URI sets the port value
+     * @param conf configuration to use
+     * @return the URI
+     * @throws SFHadoopException
+     */
+    protected URI getFilesystemURI(ManagedConfiguration conf) throws SFHadoopException {
+        String filesystemName = getFilesystemName(conf);
+        try {
+            URI uri = new URI(filesystemName);
+            if ("hdfs".equals(uri.getScheme()) && uri.getPort() == -1) {
+                throw new SFHadoopException(
+                        "Undefined port on " + FS_DEFAULT_NAME + " value :" + filesystemName, this, conf);
+            }
+            return uri;
+        } catch (URISyntaxException e) {
+            SFHadoopException hadoopException = new SFHadoopException(
+                    "Bad " + FS_DEFAULT_NAME + " value :" + filesystemName, e, this, conf);
+            hadoopException.addConfiguration(conf);
+            throw hadoopException;
+        }
+
+    }
+
+    /**
+     * Check that the FS is HDFS, throws an exception if not
+     * @param conf configuration to work off
+     * @throws SFHadoopException if the FS is wrong
+     */
+    protected void checkFilesystemIsHDFS(ManagedConfiguration conf) throws SFHadoopException {
+        URI fsURI = getFilesystemURI(conf);
+        if (!"hdfs".equals(fsURI.getScheme())) {
+            throw new SFHadoopException("Wrong filesystem scheme for " + FS_DEFAULT_NAME
+                    + " expected \"hdfs:\" got : \"" + fsURI + "\""
+                    + "\n in \n" + conf.dump(),
+                    this,
+                    conf);
+        }
+    }
+
+    /**
+    * This is the thread that starts the deployment
+    */
     public class ServiceDeployerThread extends WorkflowThread {
 
         private Service hadoopService;

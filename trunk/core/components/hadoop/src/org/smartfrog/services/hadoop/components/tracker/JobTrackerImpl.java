@@ -96,25 +96,9 @@ public class JobTrackerImpl extends HadoopServiceImpl implements HadoopCluster, 
      */
     @Override
     protected void validateConfiguration(ManagedConfiguration conf) throws SmartFrogException, RemoteException {
+        super.validateConfiguration(conf);
         //look for the filesystem attributes
         getFilesystemName(conf);
-    }
-
-    /**
-     * Get the filesystem name
-     * @param conf the configuration to work with
-     * @return the string name of the filesystem
-     */
-    private String getFilesystemName(ManagedConfiguration conf) throws SFHadoopException {
-        String fsName = conf.get(ConfigurationAttributes.FS_DEFAULT_NAME);
-        if (fsName == null) {
-            throw SFHadoopException.forward(ERROR_NO_START + getServiceName() + " -undefined attribute "
-                    + ConfigurationAttributes.FS_DEFAULT_NAME,
-                    null,
-                    this,
-                    conf);
-        }
-        return fsName;
     }
 
 

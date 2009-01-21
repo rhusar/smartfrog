@@ -31,3 +31,11 @@ ManagerNode extends ClusterNode {
   minWorkerCount 1;
 }
 
+/**
+ * This is a cluster node where the configuration comes from
+ * referenced attribute "cluster"; there are no other defaults
+ */
+ClusterNodeWithCluster extends Prim {
+  name "ClusterNode";
+  cluster TBD;
+}

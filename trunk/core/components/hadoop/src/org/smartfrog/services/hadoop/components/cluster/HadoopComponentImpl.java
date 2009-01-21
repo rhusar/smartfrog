@@ -57,6 +57,18 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
         }
     }
 
+
+    /**
+     * Dump the configuration
+     * @param configuration to dump
+     *
+     */
+    protected void debugDumpConfiguration(ManagedConfiguration configuration) {
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug(configuration.dump());
+        }
+    }
+
     /**
      * create a configuration against ourselves.
      *
