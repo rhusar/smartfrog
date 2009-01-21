@@ -1,0 +1,13 @@
+#include "/org/smartfrog/functions.sf"
+
+sfConfig extends {
+  foo1 extends Array {
+     [sfPrefix] -- "boo";
+     [sfExtent] -- 3;
+     [sfGenerator] -- extends ArrayGenerator {
+         bar 5;
+     }
+     [sfValuePath] -- LAZY bar;
+     [sfValue] -- [[0,20]]; 
+  }  
+}
