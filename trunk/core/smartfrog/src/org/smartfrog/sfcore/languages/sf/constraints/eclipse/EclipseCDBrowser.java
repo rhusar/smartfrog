@@ -138,7 +138,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
      * Initialise browser...
      */
     void init() {
-        setTitle("sfConfig Browser");
+    	setTitle("sfConfig Browser");
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         // the root of the class tree is Object
@@ -171,6 +171,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
                     }
                 });
 
+        
         int mode = TreeSelectionModel.SINGLE_TREE_SELECTION;
         tree.getSelectionModel().setSelectionMode(mode);
 
@@ -199,6 +200,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
                 repaint();
             }
         });
+
 
         JPanel hbox = new JPanel();
         hbox.setLayout(new GridLayout(2, 3));
@@ -229,6 +231,9 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
         hbox.add(new JPanel());
         hbox.add(undoLabel);
 
+        System.out.println("init..4");
+    	
+        
         reset_display();
 
         setButton.addActionListener(new ActionListener() {
@@ -245,7 +250,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
                 entry.setText("");
             }
         });
-
+        
         undoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 eclipseStatus.undo();
@@ -257,7 +262,7 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
                 eclipseStatus.done();
             }
         });
-
+        
         tree.makeVisible(new TreePath(model.getPathToRoot(visnode)));
 
         URL url = getClass().getResource("HP_ICON.PNG");
@@ -268,10 +273,9 @@ public class EclipseCDBrowser extends JFrame implements CDBrowser {
             }
         }
 
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setVisible(true);
-
     }
 
 

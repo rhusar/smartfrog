@@ -20,11 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.constraints.eclipse;
 
-import com.parctechnologies.eclipse.Atom;
-import com.parctechnologies.eclipse.CompoundTermImpl;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+
+import com.parctechnologies.eclipse.Atom;
+import com.parctechnologies.eclipse.CompoundTermImpl;
 
 /**
  * Records information for a single attribute, used in EclipseSolver's sfConfig browser for user variables
@@ -113,6 +115,10 @@ class EclipseCDAttr {
 		while (iter.hasNext()){
 			String el = iter.next().toString();
 			if (el.equals(entry)){			
+				if (val instanceof FreeVar && ((FreeVar)val).getRange() instanceof Boolean){
+					if (entry.equals("true")) entry="1"; 
+					else entry="0";
+				}
 				solver.javaToEclipse(new CompoundTermImpl("set", new Atom(name), new Atom(entry)));
 				return true;
 			} 
@@ -134,6 +140,10 @@ class EclipseCDAttr {
      */
 	public String getAttrName(){
 		return name;
+	}
+	
+	public Object getValue(){
+		return val;
 	}
 	
 	public String toString(){
