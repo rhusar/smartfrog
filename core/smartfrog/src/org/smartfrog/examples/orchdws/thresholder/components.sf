@@ -1,0 +1,91 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/examples/orchdws/gui/graphpanel/components.sf"
+#include "/org/smartfrog/examples/orchdws/stresstest/components.sf"
+
+DisplayThresholder extends Graph {
+    sfClass "org.smartfrog.examples.orchdws.thresholder.DisplayThresholderImpl";
+    minY 0;             // the minimum value received
+    maxY 100;               // the maximum value received
+    gridStepY 10;           // the distance between horizontal lines on the grid
+    panelWidth 400;         // width of the panel
+    panelHeight 250;            // height of the panel
+    xOffset 20;
+    yOffset 20;
+
+    graphPencilWidth 2;         // in % of the panel's height
+
+    fancyBars true;
+}
+
+HTTPResponseMeasure extends Compound {
+  sfProcessHost           thresholderHost;
+  max   1500;
+  min   0;
+  
+  
+  thresholder extends Compound {
+    //logTo
+    //pollFrequency 5;                 // gap in seconds    
+
+    sfClass "org.smartfrog.examples.orchdws.thresholder.ThresholderImpl";
+
+    polling         loadbal:polling;
+    dataSource LAZY delayLoadGenerator;
+    balancer LAZY loadbal;
+    pollingEnabled LAZY loadgen:ok;
+
+    repeatMeasures        2;
+    stabilizationMeasures 5;
+    
+    upper LAZY loadbal:upper;
+    lower LAZY loadbal:lower;    
+  }
+  
+  thresholdGraph extends DisplayThresholder {
+        dataSource LAZY  delayLoadGenerator;
+        thresholder LAZY PARENT:thresholder;
+
+        pollingPeriod    loadbal:polling;
+
+        panelWidth       600;
+        panelHeight      200;
+
+        maxY             max;   
+        minY             min;   
+
+	    dataDisplayed    "measurement response time (ms)";
+        frameTitle       "thresholder";
+  }
+
+  delayLoadGenerator extends StressTester {
+    host balancerHost;
+    port 80;
+    
+    page      measurementCgi;
+    frequency 10;
+    factor    200;
+    numHits   10;
+  }
+}
+

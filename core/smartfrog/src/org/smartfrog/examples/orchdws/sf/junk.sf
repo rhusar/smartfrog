@@ -1,0 +1,178 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/examples/orchdws/thresholder/components.sf"
+#include "/org/smartfrog/examples/orchdws/sf/webTemplate.sf"
+#include "/org/smartfrog/examples/orchdws/balancer/components.sf"
+#include "/org/smartfrog/services/dependencies/statemodel/components.sf"
+#include "/org/smartfrog/services/dependencies/threadpool/components.sf"
+
+//#include "/org/smartfrog/examples/orchdws/sf/loadGeneratorTemplate.sf"
+
+/*
+ * Set the hosts for the appropriate nodes to use for the demo
+ */
+
+// the host on which the load generators will run
+stressTestHost     "localhost";
+
+// the host on which the thresholder, measuring component will run
+thresholderHost "localhost";
+
+// the host on which the load balancer will run
+balancerHost       "localhost";
+
+// a vector of all of the hosts to be used for the Apache web server
+// they must all be x86, linux
+//serverHosts ["16.25.169.108", "16.25.168.56", "16.25.168.140"];
+serverHosts ["localhost", "localhost", "localhost"];
+
+/*
+ * Tuning parameters
+ *
+ */
+
+// cgi script to use for measuring performance
+measurementCgi "/cgi-bin/u1";
+
+// cgi script to use for loading the web sevrer
+loadingCgi  "/cgi-bin/u1";
+
+// /////////////////////////////////////////////////////////////////////////////////
+// Do not change anything below this point
+// /////////////////////////////////////////////////////////////////////////////////
+
+
+//
+// Deploy the full demo, consiting of the service itself and the
+// the load generators to drive the demo.
+//
+// This can be launched using the sfStart script, or more flexibly using the
+// full -a options.
+//
+//     to deploy the full demo use
+//          smartfrog -a wsAll:DEPLOY:system.sf::localhost: -e
+//
+//     to deploy the service only use
+//          smartfrog -a ws:DEPLOY:system.sf:service:localhost: -e
+//
+//     to deply the load generators only use
+//          smartfrog -a lg:DEPLOY:system.sf:loadGenerators:localhost: -e
+//
+
+
+ServiceOrchestration extends Model {
+   //sfProcessHost           balancerHost;
+   //sfProcessComponentName "serviceOrch";
+   
+   /*-- extends Array {
+      sfExtent maxInstances;
+      sfPrefix "PARENT:servers:server";
+      sfGenerator extends ArrayGenerator, ServerInstance;
+   }
+
+   -- extends Array {
+      sfExtent maxInstances;
+      sfPrefix "PARENT:loadbal:server";	
+      sfGenerator extends ArrayGenerator, loadbalBinding;
+   }
+
+   servers extends Composite;
+   
+   loadgen extends BaseStateComponent {
+      ok LAZY up;  //From BaseStateComponent
+   }
+   
+   loadgenStartDependency extends Dependency {
+      on LAZY servers:server0;
+      by LAZY loadgen;
+      relevant (!LAZY by:ok);
+      enabled ((LAZY on:oup) && (LAZY on:dup));
+   } 
+   
+   loadgenStopDependency extends Dependency {
+      on LAZY servers:server0;
+      by LAZY loadgen;
+      relevant (LAZY by:ok);
+      enabled (!LAZY on:dup);
+   } 
+   */
+   maxInstances 3;/*extends Constraint {  BUG-FIX:SF-1022
+         servers serverHosts;
+         [sfReturn] size VAR;
+         [sfConstraint] -- "length(servers, size)";
+      }*/
+      
+   minInstances 1;
+   
+   //loadbal extends Balancer {
+   loadbal extends StateComponent {
+      sfClass "org.smartfrog.services.dependencies.statemodel.state.BasicThreadedState";   
+      upper 800;
+      lower 350;
+      /*delay 0;
+      sleep 15000;  //15 seconds...
+      timer false;  
+      up false; 
+
+      //dataSource LAZY loadGenerator;
+
+      repeatMeasures        2;
+      stabilizationMeasures 5;
+
+      handledelay extends DynamicPolicyEvaluation {
+          [sfGuard] -- (LAZY up);
+          [sfGuard] -- (!LAZY timer);
+          
+          handleupper extends DynamicPolicyEvaluation {
+		      [sfGuard] -- (LAZY delay>upper);
+		      [sfGuard] -- ((LAZY noserversUp) < maxInstances);
+			  [sfEffects] -- extends EnableComponent;
+		  }
+      
+          handlelower extends DynamicPolicyEvaluation {
+          	 [sfGuard] -- (LAZY delay<lower);
+             [sfGuard] --  ((LAZY noserversUp) > minInstances);
+             [sfEffects] -- extends DisableComponent;
+          }
+          
+          [sfEffects] -- extends {
+	             timer true;
+		  }
+      }	  
+   }*/
+ 
+    }
+
+}
+
+
+sfConfig extends Compound {
+    // Deploy an instance of the service
+    service extends ServiceOrchestration;
+
+    // Deploy a set of load generators
+    //loadGenerators extends LoadGeneratorTemplate;
+}
+
+
