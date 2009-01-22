@@ -4,7 +4,6 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.smartfrog.services.restlet.overrides.ProxyEnabledClient;
 
 public class SudokuApplicationClient extends BaseSudokuApplication {
 	
@@ -34,9 +33,9 @@ public class SudokuApplicationClient extends BaseSudokuApplication {
 		//System.out.println(url);
 		
 		// Define our Restlet HTTP client.  
-        //Client client = new Client(Protocol.HTTP);  
+        Client client = new Client(Protocol.HTTP);  
   
-		Client client = new ProxyEnabledClient(Protocol.HTTP);
+		//Client client = new ProxyEnabledClient(Protocol.HTTP);
 		
         // The URI of the resource "list of items".  
         Reference reference = new Reference(url);
