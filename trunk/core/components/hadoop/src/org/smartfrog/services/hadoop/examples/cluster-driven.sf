@@ -38,6 +38,7 @@ LightweightClusterConf extends DefaultHadoopConfiguration {
   dataNodeURL      DATA_NODE_URL ;
   hostaddress HOSTNAME;
   any_port  (hostaddress ++ ":0");
+  dfs.datanode.address any_port;
   dfs.datanode.http.address any_port;
   dfs.datanode.https.address any_port;
   /**
@@ -81,7 +82,7 @@ NameNodeClusterCompound extends ClusterCompound {
 
 
 
-  namenode extends NameNode {
+  namenode extends NameNodeWithCluster {
     //dataNodeURL      DATA_NODE_URL ;
     cluster LAZY PARENT:conf;
     dataDir LAZY PARENT:dataDir;
@@ -103,7 +104,7 @@ DataNodeClusterCompound extends NameNodeClusterCompound {
 
   }
 
-  datanode extends DataNode {
+  datanode extends DataNodeWithCluster {
     cluster LAZY PARENT:conf;
     dataDirectories [LAZY localDataDir];
     logDir LAZY PARENT:logDir;

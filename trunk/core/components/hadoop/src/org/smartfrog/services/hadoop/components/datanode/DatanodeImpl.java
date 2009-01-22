@@ -21,6 +21,7 @@ package org.smartfrog.services.hadoop.components.datanode;
 
 import org.apache.hadoop.hdfs.server.datanode.ExtDataNode;
 import org.apache.hadoop.util.Service;
+import org.apache.hadoop.net.NetUtils;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.HadoopCluster;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
@@ -35,12 +36,13 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Vector;
+import java.net.InetSocketAddress;
 
 /**
  * Created 06-May-2008 16:31:49
  */
 
-public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
+public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster, ConfigurationAttributes {
     private static final String NAME = "DataNode";
     public static final String ERROR_FAILED_TO_START_DATANODE = "Failed to create "+NAME;
 
@@ -88,7 +90,14 @@ public class DatanodeImpl extends FileSystemNodeImpl implements HadoopCluster {
     protected List<PortEntry> buildPortList(ManagedConfiguration conf)
             throws SmartFrogResolutionException, RemoteException {
         List<PortEntry> ports = super.buildPortList(conf);
-        ports.add(resolvePortEntry(conf, ConfigurationAttributes.DFS_DATANODE_HTTPS_ADDRESS));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_HTTPS_ADDRESS));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_ADDRESS,
+                DFS_DATANODE_BIND_ADDRESS,
+                DFS_DATANODE_PORT));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_HTTP_ADDRESS,
+                DFS_DATANODE_INFO_BIND_ADDRESS,
+                DFS_DATANODE_INFO_BIND_PORT));
+        ports.add(resolvePortEntry(conf, DFS_DATANODE_IPC_ADDRESS));
         return ports;
     }
 

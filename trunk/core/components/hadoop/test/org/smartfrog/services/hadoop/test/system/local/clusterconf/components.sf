@@ -46,7 +46,8 @@ testFilesystemOverrideValue extends TestCompound {
     checker extends ServiceValueChecker {
       cluster LAZY PARENT:cluster;
       expectedValues [
-        ["fs.default.name",FS.DEFAULT.NAME]
+        ["fs.default.name",FS.DEFAULT.NAME],
+        ["dfs.datanode.address",LightweightClusterConf:any_port]
       ]
     }
   }

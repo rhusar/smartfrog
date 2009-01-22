@@ -75,7 +75,7 @@ DataNode extends FileSystemNode {
 
 }
 
-ClusterDatanode extends FileSystemNodeWithCluster {
+DataNodeWithCluster extends FileSystemNodeWithCluster {
   name DataNode:name;
   sfClass DataNode:sfClass;
 }

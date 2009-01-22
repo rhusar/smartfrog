@@ -65,7 +65,7 @@ public class ServiceValueCheckerImpl extends HadoopServiceImpl implements Hadoop
                 throw new SFHadoopException("no value for " + key + " in \n" + dump, this, conf);
             }
             if (!value.equals(actual)) {
-                throw new SFHadoopException("Wring value for " + key
+                throw new SFHadoopException("Wrong value for " + key
                         + " - expected \""+value+"\" got \""+actual+"\""
                         + "in \n" + dump, this, conf);
             }
