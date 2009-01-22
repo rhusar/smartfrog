@@ -476,7 +476,7 @@ public abstract class HadoopServiceImpl extends HadoopComponentImpl
      *
      * @param hadoopService service to deploy
      * @param conf          configuration
-     * @throws SmartFrogException
+     * @throws SmartFrogException if things go wrong
      */
     private void innerDeploy(Service hadoopService, ManagedConfiguration conf) throws SmartFrogException {
         try {
