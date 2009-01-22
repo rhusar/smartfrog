@@ -4,17 +4,18 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.smartfrog.services.restlet.overrides.ProxyEnabledClient;
 
 public class SudokuApplicationClient extends BaseSudokuApplication {
 	
-	static public String hostip = "16.25.168.89:8182";
-    //static public String hostip = "www-apps.hpl.hp.com";
+    //static public String hostip = "16.25.168.89:8080";
+        static public String hostip = "www-apps.hpl.hp.com";
 	
 	public void process(){
 		//Collect together puzzle input...
 		
-		//String url="http://"+hostip+"/sudoku/solver";
-	        String url="http://"+hostip+"/solver";
+		String url="http://"+hostip+"/sudoku/solver";
+	        //String url="http://"+hostip+"/solver";
 		
 		boolean first=true;
 		
@@ -33,8 +34,10 @@ public class SudokuApplicationClient extends BaseSudokuApplication {
 		//System.out.println(url);
 		
 		// Define our Restlet HTTP client.  
-        Client client = new Client(Protocol.HTTP);  
+        //Client client = new Client(Protocol.HTTP);  
   
+		Client client = new ProxyEnabledClient(Protocol.HTTP);
+		
         // The URI of the resource "list of items".  
         Reference reference = new Reference(url);
 
