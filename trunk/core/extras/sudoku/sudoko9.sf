@@ -1,0 +1,66 @@
+#include "/org/smartfrog/functions.sf"
+
+Squares extends Constraint {
+   [sfSource] -- LAZY Board;
+   [sfPrefix] -- "square";
+   [sfPath] -- LAZY val;
+   [sfUpdate] squares;
+   [sfConstraint] cons "true";  //some assignments may be added automatically through squares...
+}
+
+
+SuDoko9 extends {
+
+   puzzle TBD;  
+
+   Board extends Array {
+      [sfPrefix] -- "square";
+      [sfExtent] -- [9,9];
+      [sfGenerator] -- extends ArrayGenerator, Constraint {
+	  val VAR "[1..9]";
+      }
+    }
+
+   PreValues extends Squares {
+      squares puzzle;
+   }
+    
+   Constraints extends Array {
+      [sfPrefix] -- "cons";
+      [sfExtent] -- 9;
+      [sfGenerator] -- extends ArrayGenerator, Constraint {
+	     [sfContext] index sfIndex;  //local sfIndex
+	     [sfSource] -- LAZY Board;
+	     [sfPrefix] -- "square";
+	     [sfPath] -- LAZY val;
+             [sfPred] -- (index == LAZY sfIndex0); 
+             [sfUpdate] ver;
+	     [sfPred] -- (index == LAZY sfIndex1);
+             [sfUpdate] hor;
+	     [sfPred] --  (index == (((LAZY sfIndex1 / 3)*3)  + (LAZY sfIndex0 / 3)));    
+             [sfUpdate] sq;
+	     [sfConstraint] -- "alldifferent(hor), alldifferent(ver), alldifferent(sq)";
+	     }
+   }  
+
+
+   Label extends Squares {
+        cons "labeling(squares)";
+   }
+
+   PrintSolution extends PrettyPrint {
+      [sfSource] -- LAZY Board;
+      [sfPrefix] -- "square";
+      [sfPath] -- LAZY val;
+      [sfUpdate] output;
+   }
+
+   WriteBack extends PolicyEvaluation {
+      [sfEffects] -- extends {
+         puzzle PrintSolution:output;
+      }
+   }
+
+}
+
+sfConfig extends SuDoko9 {}
