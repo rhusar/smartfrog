@@ -339,9 +339,7 @@ public class SmartFrogThread extends Thread implements Executable {
     public synchronized void requestTermination() {
         if (!terminationRequested) {
             terminationRequested = true;
-            synchronized (terminationRequestNotifier) {
-                terminationRequestNotifier.notifyAll();
-            }
+            terminationRequestNotifier.notifyAll();
         }
     }
 
@@ -349,7 +347,7 @@ public class SmartFrogThread extends Thread implements Executable {
      * Add an interrupt to the thread termination
      */
     public synchronized void requestTerminationWithInterrupt() {
-        if (!isTerminationRequested() && isAlive()) {
+        if (!isTerminationRequested()) {
             requestTermination();
             //and interrupt
             interrupt();

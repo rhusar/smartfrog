@@ -404,14 +404,8 @@ SmartFrog to deploy complex systems.
         during deployment, or when terminating a deployment. It has special component templates.
         to start and administer MySQL.
 
-        Includes:
-        commons-dbutils-${commons-dbutils.version}.jar
-        commons-pool-${commons-pool.version}.jar
-        commons-dbcp-${commons-dbcp.version}.jar
-
         This package does not include any JDBC drivers. The appropriate JDBC driver for the
         target system must be installed in order for JDBC connectivity to work.
-
       </description>
       <file src="ivy/lib/package-database/sf-database-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -422,61 +416,8 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-database/sf-database-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
-
-      <file src="ivy/lib/package-database/commons-dbutils-${commons-dbutils.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-database/commons-pool-${commons-pool.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-database/commons-dbcp-${commons-dbcp.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
     </pack>
 
-    <pack name="Hadoop" required="no" preselected="no">
-      <description>
-        The sf-hadoop package contains the components needed to deploy a Hadoop filesystem
-        DataNode or NameNode, a MapReduce JobTracker or TaskTracker, and a set of components
-        to manipulate the filesystem and submit Jobs. It can be used on a server to
-        provide part of a Hadoop cluster, and on the client to work with a remote cluster.
-
-        Includes:
-        hadoop-core-${hadoop.version}.jar
-        commons-cli-${commons-cli.version}.jar
-        jets3t-${jets3t.version}.jar
-        xmlenc-${xmlenc.version}.jar
-
-        Prerequisites: Jetty, Logging, WWW, Ant
-
-      </description>
-      <file src="ivy/lib/package-hadoop/sf-hadoop-${smartfrog.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-hadoop/sf-hadoop-javadocs-${smartfrog.version}.zip"
-        targetdir="$INSTALL_PATH"
-        unpack="true"/>
-      <file src="ivy/lib/package-hadoop/sf-hadoop-documentation-${smartfrog.version}.zip"
-        targetdir="$INSTALL_PATH"
-        unpack="true"/>
-
-      <file src="ivy/lib/package-hadoop/hadoop-core-${hadoop.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-hadoop/commons-cli-${commons-cli.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-hadoop/jets3t-${jets3t.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-hadoop/xmlenc-${xmlenc.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <depends packname="Jetty"/>
-      <depends packname="Logging"/>
-      <depends packname="Ant"/>
-      <depends packname="WWW"/>
-    </pack>
     <pack name="JMX" required="no" preselected="no">
       <description>
         The sf-jmx package can integrate JMX MBeans with SmartFrog, and
@@ -516,12 +457,9 @@ SmartFrog to deploy complex systems.
       <description>
         SmartFrog Logging services.
 
-        As well as logging components, this package contains
-        commons-logging-${commons-logging.version}.jar
-        log4j-${log4j.version}.jar.
-        slf4j version slf4j.version
-        Packages that include third-party libraries that use these logging
-        APIs, have a dependency upon this package.
+        As well as logging components, this package contains commons-logging-${commons-logging.version}.jar
+        and log4j-${log4j.version}.jar. Packages that include third-party libraries that use either logging
+        API, have a dependency upon this package.
       </description>
       <file src="ivy/lib/package-logging/sf-loggingservices-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -538,12 +476,6 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-logging/log4j-${log4j.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-logging/slf4j-jcl-${slf4j.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-logging/slf4j-api-${slf4j.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
     </pack>
 
     <pack name="Networking" required="no" preselected="no">
@@ -646,26 +578,6 @@ SmartFrog to deploy complex systems.
       <depends packname="Logging"/>
     </pack>
 
-
-    <pack name="Rpmtools" required="no" preselected="no">
-      <description>
-        RPM tools.
-
-        This package contains RPM support. It depends upon the Networking package.
-
-      </description>
-      <file src="ivy/lib/package-rpmtools/sf-rpmtools-${smartfrog.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-rpmtools/sf-rpmtools-javadocs-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>
-      <file src="ivy/lib/package-rpmtools/sf-rpmtools-documentation-${smartfrog.version}.zip"
-          targetdir="$INSTALL_PATH"
-          unpack="true"/>
-      <depends packname="Networking"/>
-    </pack>
-
     <pack name="Scripting" required="no" preselected="no">
       <description>
         Scripting support.
@@ -751,12 +663,6 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-velocity/velocity-${velocity.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-velocity/commons-collections-${commons-collections.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
-      <file src="ivy/lib/package-velocity/commons-lang-${commons-lang.version}.jar"
-        targetdir="$INSTALL_PATH/lib"
-        />
     </pack>
 
 
@@ -769,6 +675,9 @@ SmartFrog to deploy complex systems.
         The bundled libraries are
         commons-httpclient-${commons-httpclient.version}.jar
         commons-codec-${commons-codec.version}.jar
+        servlet-api-${servletapi.version}.jar
+        jetty-${jetty.version}.jar
+        jetty-util-${jetty.version}.jar
 
         Prerequisite packages: Logging.
       </description>
@@ -781,25 +690,24 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/sf-www-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
+<!--      <file src="ivy/lib/package-www/sf-tomcat-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
+      <file src="ivy/lib/package-www/sf-tomcat-javadocs-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>
+      <file src="ivy/lib/package-www/sf-tomcat-documentation-${smartfrog.version}.zip"
+          targetdir="$INSTALL_PATH"
+          unpack="true"/>-->
+
+      <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
+          targetdir="$INSTALL_PATH/lib"
+          />
 
       <file src="ivy/lib/package-www/commons-httpclient-${commons-httpclient.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/commons-codec-${commons-codec.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <depends packname="Logging"/>
-    </pack>
-
-
-    <pack name="Jetty" required="no" preselected="no">
-      <description>Jetty support.
-        This package contains components to deploy web applications onto Jetty ${jetty.version}.
-        It also contains the libraries needed to compile and run JSP pages under Jetty
-
-        Prerequisite packages: Logging, Ant, WWW
-      </description>
-      <file src="ivy/lib/package-www/sf-jetty-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
       <file src="ivy/lib/package-www/servlet-api-${servletapi.version}.jar"
@@ -811,21 +719,7 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-www/jetty-util-${jetty.version}.jar"
           targetdir="$INSTALL_PATH/lib"
           />
-      <file src="ivy/lib/package-www/jsp-api-2.1-${jetty.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-www/jsp-2.1-${jetty.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
-      <file src="ivy/lib/package-www/commons-el-${commons-el.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />      
-      <file src="ivy/lib/package-www/core-${org.eclipse.jdt.core.version}.jar"
-          targetdir="$INSTALL_PATH/lib"
-          />
       <depends packname="Logging"/>
-      <depends packname="Ant"/>
-      <depends packname="WWW"/>
     </pack>
 
     <pack name="XML" required="no" preselected="no">

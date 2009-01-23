@@ -19,18 +19,18 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.apache.hadoop.net.NetUtils;
-import org.smartfrog.services.hadoop.common.HadoopUtils;
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.apache.hadoop.net.NetUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.rmi.RemoteException;
 
 /**
@@ -50,7 +50,8 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
 
 
     /**
-     * If non null, takes priority over anything else {@value}
+     * If non null, takes priority over anything else
+     * {@value}
      */
     public static final String ATTR_ADDRESS = "address";
 
@@ -62,17 +63,10 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      * {@value}
      */
     public static final String ATTR_LIVENESS_TIMEOUT = "livenessTimeout";
-
-    /**
-     * should the port be open
-     */
-    public static final String ATTR_CHECK_PORT_OPEN = "checkPortOpen";
-
     private InetSocketAddress address;
     private int connectTimeout;
     private boolean checkOnLiveness;
     private boolean checkOnStartup;
-    private boolean checkPortOpen;
     private long livenessTimeout;
 
     public CheckPortImpl() throws RemoteException {
@@ -85,9 +79,9 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        ManagedConfiguration configuration = createConfiguration(ATTR_CLUSTER);
         connectTimeout = sfResolve(ATTR_CONNECT_TIMEOUT, 0, true);
         int timeout = sfResolve(ATTR_LIVENESS_TIMEOUT, 0, true);
         if (timeout > 0) {
@@ -97,12 +91,12 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         if (addressInline.length() > 0) {
             address = NetUtils.createSocketAddr(addressInline);
         } else {
-            ManagedConfiguration configuration = createClusterAttrConfiguration();
-            address = resolveAddressIndirectly(configuration, ATTR_ADDRESS_ATTRIBUTE);
+            String addressAttribute = sfResolve(ATTR_ADDRESS_ATTRIBUTE, "", true);
+            address = configuration.bindToNetwork(addressAttribute,
+                    "stubOldAddressNameShouldNotResolve",
+                    "stubOldAddressPortShouldNotResolve");
         }
-        checkPortOpen = sfResolve(ATTR_CHECK_PORT_OPEN, true, true);
-        sfLog().info("Checking host:port " + address
-                + (checkPortOpen ? " is open" : " is closed"));
+        sfLog().info("Checking host:port " + address.toString());
         checkOnLiveness = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         checkOnStartup = sfResolve(ATTR_CHECK_ON_LIVENESS, false, true);
         if (checkOnStartup) {
@@ -123,7 +117,6 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
      * @throws SmartFrogLivenessException component is terminated
      * @throws RemoteException            for consistency with the {@link Liveness} interface
      */
-    @Override
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if (checkOnLiveness) {
@@ -156,32 +149,32 @@ public class CheckPortImpl extends HadoopComponentImpl implements HadoopConfigur
         try {
             checkThePort();
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
             return false;
         }
     }
 
     /**
-     * check that the port is reachable
+     * Here is where the port gets probed
      *
-     * @throws IOException        IO problems
-     * @throws SmartFrogException smartfrog problems
+     * @throws IOException        failure to connect, including timeout
+     * @throws SmartFrogException for security exceptions
      */
     private void checkThePort() throws IOException, SmartFrogException {
+        Socket s = null;
         try {
-            HadoopUtils.checkPort(address, connectTimeout);
-        } catch (IOException e) {
-            if (checkPortOpen) {
-                throw e;
-            } else {
-                //port is closed, log at debug level.
-                sfLog().debug("Port check failed with ", e);
+            s = new Socket();
+            s.connect(address, connectTimeout);
+        } catch (SecurityException e) {
+            throw new SmartFrogException("Failed to connect to " + address.toString(), e);
+        } finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    sfLog().ignore("When closing " + s, e);
+                }
             }
         }
-        //we get here and no error: the port is open
-        if (!checkPortOpen) {
-            throw new SmartFrogException("The port is open when it should be closed: " + address);
-        }
     }
-
 }

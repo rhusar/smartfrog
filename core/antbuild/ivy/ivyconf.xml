@@ -40,7 +40,6 @@
     <filesystem name="team2">
       artifacts="true"
       usepom="true"
-      checkModified="true"
       m2compatible="true" >
       <artifact pattern="${root.dir}/antbuild/repository/${maven2.pattern.ext}"/>
     </filesystem>
@@ -70,8 +69,7 @@
     <module organisation="org.ggf" name=".*" resolver="internal"/>
     <!-- here so that Steve can build the antbook at the same time-->
     <module organisation="org.antbook" name=".*" resolver="internal"/>
-    <!--Hadoop artifacts-->
-    <module organisation="org.apache.hadoop" name=".*" resolver="internal"/>
+
     <!--artifacts that we have locally only-->
     <module organisation="berkeleydb" name=".*" resolver="internal"/>
     <module organisation="mom4j" name=".*" resolver="internal"/>

@@ -1,26 +1,16 @@
 package org.smartfrog.sfcore.reference;
 
-import java.io.Serializable;
-import java.util.Iterator;
+import org.smartfrog.sfcore.common.*;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Copying;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
-import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
-import org.smartfrog.sfcore.languages.sf.functions.Aggregator;
-import org.smartfrog.sfcore.languages.sf.functions.BaseBinaryOperator;
-import org.smartfrog.sfcore.languages.sf.functions.BaseOperator;
-import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint;
-import org.smartfrog.sfcore.languages.sf.functions.DynamicPolicyEvaluation;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.prim.Prim;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.rmi.RemoteException;
 
 /**
  * The subclass of Reference that is a function application. The structure of the classes is
@@ -42,14 +32,7 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
         this.comp = comp;
     }
 
-    /**
-     * Get the component description that forms the basis of this apply reference
-     * @return Component Description
-     */
-    public ComponentDescription getComponentDescription(){
-    	return comp;
-    }
-    
+
     /**
      * Returns a copy of the reference, by cloning itself and the function part
      *
@@ -115,9 +98,56 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      */
     public Object resolve(ReferenceResolver rr, int index)
             throws SmartFrogResolutionException {
-    	return resolveWkr(rr, index);
+        //take a new context...
+        //     iterate over the attributes of comp- ignoring any beginning with sf;
+        //     cache sfFunctionClass attribute;
+        //     resolve all non-sf attributes, if they are links
+        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     and invoke function with copy of CD, return result
+
+        Context forFunction = new ContextImpl();
+        String functionClass = null;
+        Object result;
+
+        if (getData()) return this;
+
+        if (rr instanceof ComponentDescription)
+            comp.setParent((ComponentDescription) rr);
+        else if (rr instanceof Prim)
+            comp.setPrimParent((Prim) rr);
+
+        try {
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
+        } catch (ClassCastException e) {
+            throw new SmartFrogResolutionException("function class is not a string", e);
+        }
+
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            Object name = v.next();
+            String nameS = name.toString();
+            if (!nameS.equals("sfFunctionClass")){
+                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                try {
+                    forFunction.sfAddAttribute(name, value);
+                } catch (SmartFrogContextException e) {
+                    //shouldn't happen
+                }
+            }
+        }
+        if (functionClass == null) {
+            throw new SmartFrogResolutionException("unknown function class ");
+        }
+        try {
+            Function function = (Function) (SFClassLoader.forName((String) functionClass)
+                    .newInstance());
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create function class " + functionClass, e);
+        }
+        return result;
     }
-    	
+
     /**
      * Resolves this apply reference by applying the function - unless this is data..
      *
@@ -128,113 +158,58 @@ public class ApplyReference extends Reference implements Copying, Cloneable, Ser
      */
     public Object resolve(RemoteReferenceResolver rr, int index)
             throws SmartFrogResolutionException {
-    	return resolveWkr(rr, index);
-    }
-
-    
-    Object resolveWkr(Object rr, int index) throws SmartFrogResolutionException {
         //take a new context...
         //     iterate over the attributes of comp- ignoring any beginning with sf;
         //     cache sfFunctionClass attribute;
         //     resolve all non-sf attributes, if they are links
-        //     update copy and invoke function with copy of CD, return result
-
-    	Context forFunction = new ContextImpl();
+        //     if any return s LAZY object, set self to lazy and return self, otherwise update copy
+        //     and invoke function with copy of CD, return result
+        Context forFunction = new ContextImpl();
         String functionClass = null;
-        Object result=null;
-        ComponentDescription tmp_comp = (ComponentDescription) comp.copy();
-        
-        if (getData()) return this;
-		
-    	if (rr instanceof ComponentDescription){
-             tmp_comp.setParent((ComponentDescription) rr);
-         } else if (rr instanceof Prim)
-             tmp_comp.setPrimParent((Prim) rr);
-    	
+        Object result;
+
+        if (getData()) {
+            return this;
+        }
+
+        if (rr instanceof ComponentDescription) {
+            comp.setParent((ComponentDescription) rr);
+        } else if (rr instanceof Prim) {
+            comp.setPrimParent((Prim) rr);
+        }
+
         try {
-            functionClass = (String) tmp_comp.sfResolveHere("sfFunctionClass");
+            functionClass = (String) comp.sfResolveHere("sfFunctionClass");
         } catch (ClassCastException e) {
-            throw new SmartFrogFunctionResolutionException("function class is not a string", e);
+            throw new SmartFrogResolutionException("function class is not a string", e);
         }
 
-        if (functionClass == null) {
-            throw new SmartFrogFunctionResolutionException("unknown function class ");
-        }
-        
-        Function function;
-        try {
-            function = (Function) SFClassLoader.forName(functionClass).newInstance();
-        } catch (Exception e) {
-                throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to create function class " + functionClass, e);
-        }
-        
-        if (Proposition.g_EvaluatingPropositions && !(function instanceof BaseOperator || 
-        		function instanceof BaseUnaryOperator || function instanceof BaseBinaryOperator)) return null;
-        
-        forFunction.setOriginatingDescr(tmp_comp);
-        
-        //In an Aggregator, we apply the function first, and then resolve the arguments
-        //Normally, other way around...
-        try {            
-            if (function instanceof Aggregator) {
-            	if (rr instanceof ReferenceResolver) result = function.doit(forFunction, null, (ReferenceResolver) rr);
-            	else result = function.doit(forFunction, null, (RemoteReferenceResolver) rr);
-            }          
-        } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to evaluate function class " + functionClass + " with data " + forFunction, e);
-        } 
-               
-        if (!(function instanceof DynamicPolicyEvaluation)){     
-	        for (Iterator v = tmp_comp.sfAttributes(); v.hasNext();) {
-	            Object name = v.next();
-	            String nameS = name.toString();
-	            
-	            boolean skip = nameS.equals("sfFunctionClass");
-	             
-	            if (skip) continue;
-	            
-	            skip=Constraint.leaveResolve(tmp_comp, name);
-	           
-	            Object value = null;
-	            
-	            if (skip) value = tmp_comp.sfContext().get(name);
-	            else {
-	            	Reference ref = new Reference(ReferencePart.here(name));
-	            	value=tmp_comp.sfResolve(ref);
-	            }
-	            
-	            try {
-	            	tmp_comp.sfContext().put(name, value);
-	            	forFunction.sfAddAttribute(name, value);
-	                forFunction.sfAddTags(name, tmp_comp.sfGetTags(name));     
-	            } catch (SmartFrogContextException e) {
-	                //shouldn't happen
-	            } catch (SmartFrogRuntimeException e) {
-	                //shouldn't happen
-	            }    
-	        }     
-        }
-
-        try {            
-            if (!(function instanceof Aggregator)) {
-            	Object arkey = (rr instanceof ComponentDescription ? ((ComponentDescription)rr).sfAttributeKeyFor(this) : ((Prim)rr).sfAttributeKeyFor(this));
-            	
-            	
-            	if (rr instanceof ReferenceResolver) result = function.doit(forFunction, null, (ReferenceResolver) rr,  this, arkey);
-            	else result = function.doit(forFunction, null, (RemoteReferenceResolver) rr, this, arkey);
+        for (Iterator v = comp.sfAttributes(); v.hasNext();) {
+            Object name = v.next();
+            String nameS = name.toString();
+            if (!nameS.equals("sfFunctionClass")) {
+                Object value = comp.sfResolve(new Reference(ReferencePart.here(name)));
+                try {
+                    forFunction.sfAddAttribute(name, value);
+                } catch (SmartFrogContextException e) {
+                    //shouldn't happen. but when it does...
+                    e.printStackTrace();
+                }
             }
-            
-            if (function instanceof Constraint) CoreSolver.getInstance().stopSolving();
-            
-            
-        } catch (Exception e) {
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward("failed to evaluate function class " + functionClass + " with data " + forFunction, e);
         }
-        
-        return result;   
+        if (functionClass == null) {
+            throw new SmartFrogResolutionException("unknown function class ");
+        }
+        try {
+            Function function = (Function) (SFClassLoader.forName((String) functionClass)
+                    .newInstance());
+            result = function.doit(forFunction, null, rr);
+        } catch (Exception e) {
+            throw (SmartFrogResolutionException) SmartFrogResolutionException
+                    .forward("failed to create or evaluate function class " + functionClass + " with data " + forFunction, e);
+        }
+        return result;
     }
-    
-    	    
 
     /**
      * Returns string representation of the reference.

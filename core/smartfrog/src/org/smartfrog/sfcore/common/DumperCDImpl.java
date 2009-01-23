@@ -139,7 +139,7 @@ public class DumperCDImpl implements Dumper {
 
             String name = ((HereReferencePart)(relativeRef.lastElement())).getValue().toString();
 
-            //relativeRef.removeElement(relativeRef.size()-1); // todo OLD way, comment to be removed when removeLastElement is properly tested. 
+            //relativeRef.removeElement(relativeRef.size()-1); // @todo OLD way, comment to be removed when removeLastElement is properly tested. 
             relativeRef.removeLastElement();
 
             //Place stateCopy in the right spot inside cd.
@@ -334,7 +334,7 @@ public class DumperCDImpl implements Dumper {
     }
 
     /** This modifies the default set of sfKeys that are removed from every context.
-     * todo once the visits are started this method should not allow any updates. In any case,
+     * @todo once the visits are started this method should not allow any updates. In any case,
      * the updates are ignored once the visits start
      * @param keysToBeRemoved keys to pull
      */

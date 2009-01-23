@@ -26,4 +26,6 @@
  * Test case
  */
 sfConfig extends testLocalJobTracker {
+  action:jobTracker:mapred.job.tracker  "localhost:8013";
+  action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50031";
 }

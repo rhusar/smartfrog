@@ -74,17 +74,15 @@ public class Model extends Composite implements Compound {
 
 	   public void notifyStateChange() {
 		   if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.notifyStateChange()");
-		   
-		   System.out.println("notifyStateChange..."+stateLockCount+running);
-		   notificationRequired = true;  //delay if nothing else...
-	       synchronized (notifyLock) {
-	    	  System.out.println("In here...");
+	      synchronized (notifyLock) {
 	         if (stateLockCount == 0 && running) {
 	            threadStarted();
 	            notificationRequired = false;
 	            //System.out.println("notifier launched");
 	            notifier = threadpool.addToQueue(new Notifier());
-	         } 
+	         } else { // delay the start - someone still needs to run
+	            notificationRequired = true;
+	         }
 	      }
 	      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.notifyStateChange()");
 	   }
@@ -108,8 +106,6 @@ public class Model extends Composite implements Compound {
 	   }
 
 	   public void unlock(boolean notify) {
-		  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.unlock(...)"+notify);  
-			  
 		  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.unlock(...)"+notify);  
 		  if (Thread.currentThread()!=notificationThread){
 		      synchronized (notifyLock) {
@@ -176,7 +172,7 @@ public class Model extends Composite implements Compound {
 	   protected class Notifier implements Runnable {
 	      public void run() {
 	    	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: Model.Notifier.run()");    
-	         System.out.println("notifier running");
+	         //System.out.println("notifier running");
 	         try {
 	            if (running) {
 	               if (sfLog().isDebugEnabled()) sfLog().debug("notify started");
@@ -188,14 +184,7 @@ public class Model extends Composite implements Compound {
 	                  } else {
 	                    try {
 	                    	Model.this.notificationThread = Thread.currentThread();
-	                    	notificationRequired=true;
-	                    	while (notificationRequired) {
-	                    		notificationRequired = false;
-	                    		handleStateChange();
-	                    		System.out.println("************************************************************************");
-	                    		System.out.println("Coming out"+notificationRequired);
-	                    		
-	                    	}
+	                        handleStateChange();
 	                        Model.this.notificationThread = null;
 	                        if (sfLog().isTraceEnabled()) sfLog().trace("notify notified");
 	                     } finally {
@@ -209,7 +198,7 @@ public class Model extends Composite implements Compound {
 	            }
 	         } finally {
 	            threadStopped();
-	            System.out.println("notifier finished");
+	            //System.out.println("notifier finished");
 	         }
 	         if (sfLog().isDebugEnabled())  sfLog().debug("OUT: Model.Notifier.run()");    
 	      }

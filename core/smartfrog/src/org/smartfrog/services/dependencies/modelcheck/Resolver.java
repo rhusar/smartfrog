@@ -10,8 +10,7 @@ import org.smartfrog.services.dependencies.statemodel.connector.NandConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.NorConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.OrConnector;
 import org.smartfrog.services.dependencies.statemodel.connector.XorConnector;
-import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.services.dependencies.statemodel.state.State;
 import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -58,7 +57,7 @@ public class Resolver {
 		else if (functionClass.equals(Implies.class.getName())) return " -> ";
 		else if (functionClass.equals(Xor.class.getName())) return " xor ";
 		
-		else if (functionClass.equals(StateComponent.class.getName())) return " & ";
+		else if (functionClass.equals(State.class.getName())) return " & ";
 		else if (functionClass.equals(AndConnector.class.getName())) return " & ";
 		else if (functionClass.equals(OrConnector.class.getName())) return " | ";
 		else if (functionClass.equals(NandConnector.class.getName())) return " & ";
@@ -101,15 +100,14 @@ public class Resolver {
     		String result = resolver.toMCString((SFApplyReference)arg, comp);
     		resolver.addInOtherComponents(otherComponents);
     		return result;
-    	} else if (arg instanceof SFReference){
-    		Reference ref = null;
+    	} else if (arg instanceof Reference){
+    		Reference ref = (Reference) arg;
     		
-    		try {ref = ((SFReference) arg).sfAsReference();}
-    		catch(SmartFrogCompilationException sfce){throw new SmartFrogResolutionException(sfce); }
-    		
+			SFReference.resolutionForceEager=true;
 			ReferencePart.maintainResolutionHistory=true;
 			Object result = comp.sfResolve(ref);
 			ComponentDescription ref_comp = (ComponentDescription) ReferencePart.resolutionParentDescription;
+			SFReference.resolutionForceEager=false;
 			ReferencePart.maintainResolutionHistory=false;
 			
 			//Get Component Id for component containing referred to attribute

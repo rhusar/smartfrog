@@ -26,6 +26,7 @@ import org.smartfrog.services.filesystem.TupleDataSource;
 import org.smartfrog.services.filesystem.TupleReaderThread;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.components.dfs.DfsClusterBoundImpl;
+import org.smartfrog.services.hadoop.components.dfs.DfsPathOperation;
 import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -64,7 +65,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart()
             throws SmartFrogException, RemoteException {
         super.sfStart();
@@ -110,7 +110,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @Override
         protected void onStarted() throws SmartFrogException, RemoteException {
             super.onStarted();
             try {
@@ -134,7 +133,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @Override
         protected void processOneLine(String[] line)
                 throws SmartFrogException, RemoteException {
             //upload the line
@@ -157,7 +155,6 @@ public class TuplesToHadoopImpl extends DfsClusterBoundImpl implements TuplesToH
          * @throws SmartFrogException SmartFrog problems
          * @throws RemoteException    network problems
          */
-        @Override
         protected void onFinished() throws SmartFrogException, RemoteException {
             super.onFinished();
             try {

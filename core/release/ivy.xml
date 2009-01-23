@@ -54,16 +54,12 @@
         description="database components"/>
     <conf name="package-jmx"
         description="jmx components"/>
-    <conf name="package-hadoop"
-        description="hadoop components"/>
     <conf name="package-logging"
         description="logging components"/>
     <conf name="package-networking"
         description="networking components"/>
     <conf name="package-quartz"
         description="scheduling components"/>
-    <conf name="package-rpmtools"
-        description="rpm components"/>
     <conf name="package-scripting"
         description="scripting components"/>
     <conf name="package-testing"
@@ -144,16 +140,7 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
-
-    <!--email -->
-<!--
-    <dependency org="org.smartfrog"
-        name="sf-ec2"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-networking->master,redist,documentation"/>
--->
-
+    
     <!--email -->
     <dependency org="org.smartfrog"
         name="sf-emailer"
@@ -175,41 +162,12 @@
         rev="${ivy.smartfrog.version}"
         conf="package-networking->master,redist,documentation"/>
 
-
-    <!--JMX -->
-    <dependency org="org.smartfrog"
-        name="sf-jmx"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-jmx->master,redist,documentation"/>
-
-    <!--hadoop-->
-    <dependency org="org.smartfrog"
-        name="sf-hadoop"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-hadoop->master,redist,documentation,s3-server"/>
-
-
     <!--logging-->
     <dependency org="org.smartfrog"
         name="sf-loggingservices"
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-logging->master,redist,documentation"/>
-    <!--scheduling-->
-    <dependency org="org.smartfrog"
-        name="sf-quartz"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-quartz->master,redist,documentation"/>
-
-    <!--rpmtools-->
-    <dependency org="org.smartfrog"
-        name="sf-rpmtools"
-        changing="true"
-        rev="${ivy.smartfrog.version}"
-        conf="package-rpmtools->master,redist,documentation"/>
 
     <!--scripting -->
     <dependency org="org.smartfrog"
@@ -218,8 +176,20 @@
         rev="${ivy.smartfrog.version}"
         conf="package-scripting->master,redist,documentation"/>
 
+<!--JMX -->
+    <dependency org="org.smartfrog"
+        name="sf-jmx"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-jmx->master,redist,documentation"/>
 
-
+    <!--scheduling-->
+    <dependency org="org.smartfrog"
+        name="sf-quartz"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-quartz->master,redist,documentation"/>
+    <!--,documentation -->
 
     <!--SLP-->
     <!--
@@ -260,11 +230,16 @@
         changing="true"
         rev="${ivy.smartfrog.version}"
         conf="package-www->master,redist,documentation,servletapi"/>
+<!--    <dependency org="org.smartfrog"
+        name="sf-tomcat"
+        changing="true"
+        rev="${ivy.smartfrog.version}"
+        conf="package-www->master,redist,documentation"/>-->
     <dependency org="org.smartfrog"
         name="sf-jetty"
         changing="true"
         rev="${ivy.smartfrog.version}"
-        conf="package-www->master,redist,jsp"/>
+        conf="package-www->master,redist"/>
     <!--
         <dependency org="org.smartfrog"
             name="sf-cargo"

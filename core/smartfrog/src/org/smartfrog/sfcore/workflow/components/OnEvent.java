@@ -56,6 +56,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
      * @throws RemoteException In case of RMI or network failure.
      */
     public OnEvent() throws RemoteException {
+        super();
     }
 
     /**

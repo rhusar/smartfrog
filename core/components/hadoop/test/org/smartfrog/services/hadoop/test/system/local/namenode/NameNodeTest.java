@@ -21,18 +21,31 @@
 
 package org.smartfrog.services.hadoop.test.system.local.namenode;
 
+import org.smartfrog.test.DeployingTestBase;
+
 /**
  *
  */
-public class NameNodeTest extends HadoopTestBase {
+public class NameNodeTest extends DeployingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/namenode/";
 
     public NameNodeTest(String name) {
         super(name);
     }
 
+    public void testNameNodeForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeForked");
+    }
+    public void testLocalNameNodeCompound() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalNameNodeCompound");
+    }
+
+    public void testLocalFormat() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE,"testLocalFormat");
+    }
+
+
     public void testNameNodeHasNoWorkers() throws Throwable {
-        enablePortCheck();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testNameNodeHasNoWorkers");
     }
 

@@ -120,13 +120,7 @@
 
         <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.prefix" value="sf-tasks"/>
-
-    <!--this is the version used in artifact dependences inside ivy.xml files-->
-    <!--components in the main SF build tree don't need to use this, as they should
-    always be built in sync with their own code. It exists to let you build against
-    previous versions of artifacts -->
-    <property name="smartfrog.artifact.version" value="latest.integration" />
-
+    
   </target>
   
 

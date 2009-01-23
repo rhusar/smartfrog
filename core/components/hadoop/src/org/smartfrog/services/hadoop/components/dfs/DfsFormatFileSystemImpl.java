@@ -21,8 +21,8 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.hdfs.server.namenode.ExtDfsUtils;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNodeImpl;
 import org.smartfrog.services.hadoop.components.cluster.HadoopComponentImpl;
@@ -49,7 +49,6 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         startWorkerThread();
@@ -62,7 +61,6 @@ public class DfsFormatFileSystemImpl extends DfsOperationImpl implements DfsPath
      * @param conf the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Vector<String> files = HadoopComponentImpl
                 .createDirectoryListAttribute(this, FileSystemNodeImpl.NAME_DIRECTORIES,

@@ -30,7 +30,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/services/utils/setproperty/components.sf"
+#import "/org/smartfrog/services/utils/setproperty/components.sf"
 
 
 CommonsLogFactory extends {
@@ -43,7 +43,7 @@ BindCommonsLogging extends SystemProperties {
   setOnEarlyDeploy true;
   setOnDeploy false;
   properties [
-      [CommonsLogFactory:factoryResource , CommonsLogFactory:classname]
+      [CommonsLogFactory:factoryResource ,CommonsLogFactory:classname]
     ]
 
 }

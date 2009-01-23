@@ -19,22 +19,23 @@
  */
 package org.smartfrog.test;
 
-import junit.framework.AssertionFailedError;
-import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
+import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.services.assertions.TestBlock;
 import org.smartfrog.services.assertions.events.TestCompletedEvent;
 import org.smartfrog.services.assertions.events.TestEventSink;
 import org.smartfrog.services.assertions.events.TestInterruptedEvent;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
-import org.smartfrog.sfcore.workflow.events.LifecycleEvent;
-import org.smartfrog.sfcore.workflow.events.TerminatedEvent;
+import org.smartfrog.SFSystem;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
+
+import junit.framework.AssertionFailedError;
 
 
 /**
@@ -330,7 +331,7 @@ public abstract class DeployingTestBase extends SmartFrogTestBase implements Tes
      * @param packageName name of the package
      * @param filename    test file name, excluding .sf
      * @return the test results
-     * @throws Throwable on any problem. A {@link  org.smartfrog.services.assertions.TestTimeoutException} indicates
+     * @throws Throwable on any problem. A {@link  TestTimeoutException} indicates
      *                   timeout waiting for results A {@link  AssertionFailedError} is raised if the
      *                   tests were not successful
      */

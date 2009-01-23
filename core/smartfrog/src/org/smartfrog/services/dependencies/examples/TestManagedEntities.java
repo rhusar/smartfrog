@@ -39,7 +39,7 @@ public class TestManagedEntities extends CompoundImpl implements Compound {
 	public String getOutput(){
 		String output = "";
 		try { 
-			output=(String) ((Prim)sfParent().sfResolve("test")).sfResolveHere("output");
+			output=(String) ((Prim)sfParent().sfResolve("test")).sfContext().get("output");
 		} catch (Exception e){}
 		return output;
 	}

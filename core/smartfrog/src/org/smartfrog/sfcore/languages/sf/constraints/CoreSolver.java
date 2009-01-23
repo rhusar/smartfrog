@@ -21,18 +21,14 @@
 package org.smartfrog.sfcore.languages.sf.constraints;
 
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Stack;
 import java.util.Vector;
+import java.util.Stack;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState.ConstraintContext;
-import org.smartfrog.sfcore.languages.sf.constraints.propositions.Proposition;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 /**
@@ -77,7 +73,7 @@ public class CoreSolver {
     private static final String CONSTRAINT_FUNCTION = "org.smartfrog.sfcore.languages.sf.functions.Constraint";
     private static final String ATTR_CONSTRAINT = "sfConstraint";
     private static final String ENV_SOLVERCLASS = "SOLVERCLASS";
-    private static final String ATTR_IS_GENERATOR = "sfIsArrayGenerator";
+    private static final String ATTR_IS_GENERATOR = "sfIsGenerator";
     public static final String ERROR = "ERROR: ";
     public static final String ERROR_COULD_NOT_INSTANTIATE_SOLVER = ERROR +"Could not instantiate solver ";
     public static final String ERROR_NO_CLASS = ERROR + "Class not found: ";
@@ -222,29 +218,26 @@ public class CoreSolver {
     public SFComponentDescription getOriginalDescription() {
         return orig;
     }
-    
-    public void fail() throws Exception {}
 
     /**
      * Solve constraint strings pertaining to a Constraint type...
      *
-     * @param cc       Pertaining Constraint Context
+     * @param comp       Pertaining Component Description
      * @param attrs      Attributes thereof
      * @param values     Values thereof
      * @param goal       Constraint goal to be solved
      * @param autos      Automatic variable attributes
      * @param isuservars Whether there are user variables
-     * @param assigns 
      * @throws Exception
      */
-    public void solve(ConstraintContext cc, Vector attrs, Vector values, Vector goal, Vector autos,
-                      boolean isuservars, HashMap<FreeVar,Object> assigns) throws Exception {
+    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector goal, Vector autos,
+                      boolean isuservars) throws Exception {
     }
 
     /**
      * Called to indicate no more solving to be done for current sfConfig description
      */
-    public void stopSolving() {
+    protected void stopSolving() {
     }
 
     /**
@@ -282,17 +275,12 @@ public class CoreSolver {
     public void addUndoFVTypeStr(FreeVar fv) {
     }
 
-    public void addUndoFVAutoVarEffect(FreeVar fv, Vector<Reference> autoEffects){}
-    
-    public void addUndoFVAutoVarEffect(FreeVar fv){}
-    
-    
     /**
      * On backtracking, we have backtracked to the returned context
      *
-     * @return ComponentDescription to which backtracking has unwound to, null if no backtracking
+     * @return Context to which backtracking has unwound to, null if no backtracking
      */
-    public ConstraintContext hasBacktrackedTo() {
+    public Context hasBacktrackedTo() {
         return null;
     }
 
@@ -322,10 +310,6 @@ public class CoreSolver {
         return sfcd.sfContext().get(ATTR_IS_GENERATOR) != null;
     }
 
-    public void doConstraintsWork(Object key) throws SmartFrogResolutionException {}
-       
-    public void addAutoVar(Object key, FreeVar var) throws SmartFrogResolutionException {}
-    
     /**
      * Tidy absolute root component descriptions after constraint solving.
      *
@@ -337,8 +321,6 @@ public class CoreSolver {
         if (mark != getOriginalDescription()) {
             return;
         }
-        //if (!Proposition.getResult()) throw new SmartFrogResolutionException("Unsatisified propositions in description");
-        
         try {
             //Do a visit to every cd removing constraint annotations...
             getOriginalDescription().visit(new CDVisitor() {
@@ -398,12 +380,6 @@ public class CoreSolver {
             resetDescriptionMarkers();
             stopSolving();
         }
-    }
-    
-    public class CoreSolverFatalError extends Error{
-    	public CoreSolverFatalError(Throwable t){
-    		super(t.toString());
-    	}
     }
 
 }

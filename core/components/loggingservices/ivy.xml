@@ -18,26 +18,19 @@
         description="default configuration contains artifacts and runtime dependencies"/>
     <conf name="build" visibility="private"
         description="artifacts needed to build the application"/>
-    <conf name="compile" visibility="private" extends="runtime"
+    <conf name="compile" visibility="private" 
         description="artifacts needed to compile the application"/>
     <conf name="daemon" visibility="private"
         description="the classpath needed to run smartfrog daemons"/>
     <conf name="test" extends="default,compile"
         description="the classpath needed to run tests"/>
     <conf name="master" description="contains the artifact but no dependencies"/>
-    <conf name="redist" description="redistributals excluding smartfrog artifacts"
-      extends="log4j,commons-logging,slf4j"/>
+    <conf name="redist" description="redistributals excluding smartfrog artifacts"/>
     <conf name="runtime" description="runtime but not the artifact"
         extends="redist"/>
     <conf name="documentation"
         description="all documentation artifacts"/>
-    <conf name="slf4j"
-      description="Simple Logging Framework for Java" extends="commons-logging"/>
-    <conf name="commons-logging"
-      description="Commongs Logging front end" />
-    <conf name="log4j"
-      description="Log4J" />
-</configurations>
+</configurations> 
 
   <publications>
     <!--get the artifact from our module name-->
@@ -60,16 +53,11 @@
         name="sf-testharness"
         changing="true"
         rev="latest.integration"
-        conf="test->default"/>
-
-    <!--it is essential that only the master JAR of commons logging
-    is pulled in, as its dependencies are usually a mess, including things
-    like a version of JMX that isn't in the repository
-    -->
+        conf="test->default"/>        
     <dependency org="log4j"
         name="log4j"
         rev="${log4j.version}"
-        conf="log4j->master"
+        conf="compile,redist->master"
     />
     <!--it is essential that only the master JAR of commons logging
     is pulled in, as its dependencies are usually a mess, including things
@@ -78,18 +66,6 @@
     <dependency org="commons-logging"
         name="commons-logging"
         rev="${commons-logging.version}"
-        conf="commons-logging->master"/>
-
-
-    <dependency org="org.slf4j"
-      name="slf4j-api"
-      rev="${slf4j.version}"
-      conf="slf4j->master"/>
-
-    <dependency org="org.slf4j"
-      name="slf4j-jcl"
-      rev="${slf4j.version}"
-      conf="slf4j->master"/>
-
+        conf="compile,redist->master"/>
   </dependencies>
 </ivy-module>

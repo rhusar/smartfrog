@@ -24,24 +24,26 @@ package org.apache.hadoop.hdfs.server.namenode;
 import org.smartfrog.services.hadoop.components.cluster.FileSystemNode;
 import org.smartfrog.services.hadoop.components.cluster.ManagerNode;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.ServiceInfo;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.IOException;
 
 /**
  *
  */
-public class ExtNameNode extends NameNode implements ServiceInfo {
+public class ExtNameNode extends NameNode {
 
     private boolean checkRunning;
     private Prim owner;
     private ManagedConfiguration conf;
     public static final String NAME_NODE_IS_STOPPED = "NameNode is stopped";
     public static final String NO_FILESYSTEM = "Filesystem is not running";
+    private boolean expectNodeTermination;
+    private boolean terminationInitiated;
+    private final Reference completeName;
+    private static final String NAME_NODE_HAS_HALTED = "Name node has halted";
     private int minWorkerCount;
-    private ServiceStateChangeNotifier notifier;
 
     /**
      * Create a new name node and deploy it.
@@ -86,34 +88,41 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
         this.owner = owner;
         //any other config here.
         checkRunning = conf.getBoolean(FileSystemNode.ATTR_CHECK_RUNNING, true);
+        expectNodeTermination = conf.getBoolean(FileSystemNode.ATTR_EXPECT_NODE_TERMINATION, true);
+        completeName = owner.sfCompleteName();
         minWorkerCount = conf.getInt(ManagerNode.ATTR_MIN_WORKER_COUNT,0);
-        notifier = new ServiceStateChangeNotifier(this, owner);
     }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    /**
-     * Return an extended service name
-     *
-     * @return new service name
-     */
-    @Override
-    public String getServiceName() {
-        return "ExtNameNode";
-    }
-
 
     /**
      * Get the stopped exception
      *
      * @return true if we have stopped
      */
-    public boolean isStopped() {
+    public synchronized boolean isStopped() {
         return getServiceState() == ServiceState.TERMINATED;
     }
+
+    /**
+     * If the name node is terminated, we optionally terminate the owning component
+     * @param oldState old service state
+     * @param newState new service state
+     */
+/*
+    @Override
+    protected void onStateChange(ServiceState oldState, ServiceState newState) {
+        super.onStateChange(oldState, newState);
+        if (newState == ServiceState.TERMINATED) {
+            TerminationRecord tr;
+            if (expectNodeTermination) {
+                tr = TerminationRecord.normal(NAME_NODE_HAS_HALTED, completeName);
+            } else {
+                tr = TerminationRecord.abnormal(NAME_NODE_HAS_HALTED, completeName);
+            }
+            ComponentHelper helper = new ComponentHelper(owner);
+            helper.targetForWorkflowTermination(
+                    tr);
+        }
+    }*/
 
     /**
      * Ping the node
@@ -123,24 +132,22 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
     @Override
     public synchronized void innerPing(ServiceStatus status)
             throws IOException {
-        super.innerPing(status);
         if (checkRunning) {
             int workers = getLiveWorkerCount();
             if(workers < minWorkerCount ){
               throw new LivenessException("The number of worker nodes is only "
                       + workers
                       +"\n - less than the minimum of " + minWorkerCount);
-            }
+            };
         }
     }
 
     /**
-     * Get the current number of workers
-     * @return the worker count
+     * Get the current number of datanodes
+     * @return the datanode count
      */
-    //@Override
     public int getLiveWorkerCount() {
-        return getNamesystem().heartbeats.size();
+        return namesystem.heartbeats.size();
     }
 
 
@@ -152,34 +159,9 @@ public class ExtNameNode extends NameNode implements ServiceInfo {
      * @param oldState existing state
      * @param newState new state.
      */
-    //@Override
+    @Override
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: NameNode is now "+ newState);
-        notifier.onStateChange(oldState, newState);
-    }
-
-    /**
-     * Get the port used for IPC communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    //@Override
-    public int getIPCPort() {
-        return getNameNodeAddress().getPort() ;
-    }
-
-    /**
-     * Get the port used for HTTP communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    //@Override
-    public int getWebPort() {
-        return getHttpAddress().getPort();
-    }
-
-    public void setNotifier(ServiceStateChangeNotifier notifier) {
-        this.notifier = notifier;
     }
 }

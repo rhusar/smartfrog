@@ -77,9 +77,6 @@
     overrides (like the compiler settings) that apply across
     all projects that use this common file-->
     <property file="${core.dir}/common.properties"/>
-    
-    <!-- this is an extra set of properties you can use outside SVN trees -->
-    <property file="${user.dir}/.ant/smartfrog.properties"/>
 
     <!-- now read in environment settings -->
     <property environment="env" />
@@ -182,9 +179,6 @@
       <available classname="java.lang.Readable"/>
     </condition>
 
-    <!--this is the version used in artifact dependences inside ivy.xml files-->
-    <property name="smartfrog.artifact.version" value="latest.integration" />
-
     <tstamp>
       <format property="year" pattern="yyyy"/>
       <format property="build.date" pattern="yyyy-MM-dd HH:mm" />
@@ -273,6 +267,7 @@ java.class.path=
 
     <property name="Version" value="${sf.build.version}" />
     <property name="smartfrog.version" value="${sf.build.version}" />
+
   </target>
 
   <target name="init-common" depends="bind-to-smartfrog">
@@ -919,13 +914,11 @@ java.class.path=
       classpathref="smartfrog.tasks.classpath"
       property="sfTasks.present"/>
     <echo level="verbose">
-Loading tasks from
-${toString:smartfrog.tasks.classpath}
+      Loading tasks from ${toString:smartfrog.tasks.classpath}
     </echo>
     <fail unless="sfTasks.present">
-Smartfrog tasks not found in the classpath. Are the dependencies in ivy.xml right?
-smartfrog.tasks.classpath=
-"${toString:smartfrog.tasks.classpath}"
+      Smartfrog tasks not found in
+      ${toString:smartfrog.tasks.classpath}
     </fail>
     <typedef
       resource="org/smartfrog/tools/ant/tasks.properties"
@@ -1437,23 +1430,8 @@ smartfrog.tasks.classpath=
   <!-- get the build into the state where the application is ready-->
   <!-- ========================================================== -->
 
-  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test,define-deploy-preset">
+  <target name="ready-to-deploy" depends="init-codebase,init-deploy-properties,ready-to-test">
 
-  </target>
-
-  <target name="define-deploy-preset" depends="ready-to-test,init-codebase,init-deploy-properties">
-    <presetdef name="deploy" >
-      <sf-deploy classpathref="tests.run.classpath"
-          logStackTraces="true"
-          host="${deploy.host}"
-          timeout="30000"
-          >
-        <codebase url="${codebase}"/>
-        <syspropertyset>
-          <propertyref prefix="test."/>
-        </syspropertyset>
-      </sf-deploy>
-    </presetdef>
   </target>
 
   <target name="ready-to-undeploy" depends="init-deploy-properties,init-codebase">
@@ -1463,16 +1441,23 @@ smartfrog.tasks.classpath=
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-
   <target name="deploy" depends="ready-to-deploy"
       description="deploy">
-    <echo level="verbose">tests.run.classpath=${toString:tests.run.classpath}</echo>
-    <deploy>
+
+    <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        timeout="30000"
+        >
+      <codebase url="${codebase}"/>
+      <syspropertyset>
+        <propertyref prefix="test."/>
+      </syspropertyset>
       <application name="${application.name}">
         sfCodeBase PROPERTY org.smartfrog.codebase;
         #include "/${deploy.sf}"
       </application>
-    </deploy>
+    </sf-deploy>
   </target>
 
   <!-- ========================================================== -->
@@ -1565,9 +1550,7 @@ ${test.reports.dir}/index.html
       <sf-system-test>
         <test>
           <sf-system-test-junit>
-            <batchtest todir="${test.data.dir}" if="testcase">
-              <fileset dir="${test.classes.dir}" includes="**/${testcase}.class"/>
-            </batchtest>
+            <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
             <batchtest todir="${test.data.dir}" unless="testcase">
               <fileset dir="${test.classes.dir}">
                 <include name="${sf-system-test-class-pattern}"/>
@@ -1992,7 +1975,7 @@ Exist.
     <mkdir dir="${ivy.cache.smartfrog.dir}" />
     <mkdir dir="${ivy.cache.project.dir}" />
 
-    <property name="ivysettings.xml" location="${core.dir}/antbuild/ivy/ivysettings.xml" />
+
 
     <!--first check for ivy being loaded-->
     <condition property="ivy.tasks.loaded">
@@ -2045,7 +2028,7 @@ Exist.
   <target name="maybe-ivy-init"
           depends="declare-ivy"
           if="ivy.enabled" >
-    <ivy:configure file="${ivysettings.xml}" override="false"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="maybe-ivy-resolve" depends="maybe-ivy-init"
@@ -2102,7 +2085,7 @@ Exist.
   <target name="ivy-init"
           depends="maybe-ivy-init"
       unless="ivy.enabled">
-    <ivy:configure file="${ivysettings.xml}" override="false"/>
+    <ivy:settings file="${core.dir}/antbuild/ivy/ivyconf.xml" override="false"/>
   </target>
 
   <target name="ivy-resolve" depends="maybe-ivy-resolve,ivy-init"

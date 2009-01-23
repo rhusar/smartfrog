@@ -256,8 +256,6 @@
   symlinks in a <tar> file.
   -->
   <target name="check-source-artifacts" depends="prepare-executables">
-    <fileset id="sf-core-install-artifacts"
-      dir="${ivy.lib.dir}/package-core-install/" includes="*"/>
     <fail>
       <condition >
         <not>
@@ -268,9 +266,6 @@
       There is probably a mismatch between the version of SmartFrog that Ivy retrieved
       and the version that the build file is expecting, which is ${smartfrog.version}, and which
       is calculated by getting the SmartFrog version off the classpath.
-
-      sf-core-install-artifacts=${toString:sf-core-install-artifacts}
-      smartfrog.classpath=${toString:smartfrog.classpath}
     </fail>
   </target>
 
@@ -478,17 +473,6 @@
     <!-- database -->
     <rpmpackage package="database"/>
     <ln artifact="sf-database" version="${smartfrog.version}"/>
-    <ln artifact="commons-dbcp" version="${commons-dbcp.version}"/>
-    <ln artifact="commons-pool" version="${commons-pool.version}"/>
-    <ln artifact="commons-dbutils" version="${commons-dbutils.version}"/>
-
-    <!-- hadoop -->
-    <rpmpackage package="hadoop"/>
-    <ln artifact="sf-hadoop" version="${smartfrog.version}"/>
-    <ln artifact="hadoop-core" version="${hadoop.version}"/>
-    <ln artifact="commons-cli" version="${commons-cli.version}"/>
-    <ln artifact="jets3t" version="${jets3t.version}"/>
-    <ln artifact="xmlenc" version="${xmlenc.version}"/>
 
     <!-- jmx -->
     <rpmpackage package="jmx"/>
@@ -503,8 +487,6 @@
     <ln artifact="sf-loggingservices" version="${smartfrog.version}"/>
     <ln artifact="commons-logging" version="${commons-logging.version}"/>
     <ln artifact="log4j" version="${log4j.version}"/>
-    <ln artifact="slf4j-jcl" version="${slf4j.version}"/>
-    <ln artifact="slf4j-api" version="${slf4j.version}"/>
 
     <!-- networking -->
     <rpmpackage package="networking"/>
@@ -524,9 +506,6 @@
     <rpmpackage package="quartz"/>
     <ln artifact="sf-quartz" version="${smartfrog.version}"/>
     <ln artifact="quartz" version="${quartz.version}"/>
-    <!-- quartz -->
-    <rpmpackage package="rpmtools"/>
-    <ln artifact="sf-rpmtools" version="${smartfrog.version}"/>
 
     <!-- scripting -->
     <rpmpackage package="scripting"/>
@@ -540,7 +519,7 @@
     <ln artifact="sf-junit" version="${smartfrog.version}"/>
     <ln artifact="junit" version="${junit.version}"/>
 
-    <!--velocity-->
+
     <rpmpackage package="velocity"/>
     <ln artifact="sf-velocity" version="${smartfrog.version}"/>
     <ln artifact="velocity" version="${velocity.version}"/>
@@ -551,20 +530,13 @@
     <!-- WWW -->
     <rpmpackage package="www"/>
     <ln artifact="sf-www" version="${smartfrog.version}"/>
-    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
-    <ln artifact="commons-codec" version="${commons-codec.version}"/>
-
-    <!--Jetty-->
-    <!--comes in after the www package-->
     <ln artifact="sf-jetty" version="${smartfrog.version}"/>
     <ln artifact="jetty" version="${jetty.version}"/>
     <ln artifact="jetty-util" version="${jetty.version}"/>
     <ln artifact="servlet-api" version="${servletapi.version}"/>
-    <ln artifact="commons-el" version="${commons-el.version}"/>
-    <ln artifact="jsp-api-2.1" version="${jetty.version}"/>
-    <ln artifact="jsp-2.1" version="${jetty.version}"/>
-    <ln artifact="core" version="${org.eclipse.jdt.core.version}"/>
- 
+    <ln artifact="commons-httpclient" version="${commons-httpclient.version}"/>
+    <ln artifact="commons-codec" version="${commons-codec.version}"/>
+
     <!--  xml-->
     <rpmpackage package="xml"/>
     <ln artifact="sf-xml" version="${smartfrog.version}"/>
@@ -588,8 +560,8 @@
   <!--For the RPMs, we create symbolic links instead of a separate directory-->
   <target name="symlink-signed-lib" depends="ready-to-sign-rpm-jars"
           if="has.rpm.tools"
-        >
-  <delete dir="${rpm.signed.lib.dir}" />
+      >
+    <delete dir="${rpm.signed.lib.dir}" />
     <exec executable="ln" failonerror="true">
       <arg value="-sf"/>
       <arg value="${rpm.install.dir}/lib"/>
@@ -817,12 +789,10 @@
         <include name="sf-database/${smartfrog.version}/*"/>
         <include name="sf-dns/${smartfrog.version}/*"/>
         <include name="sf-emailer/${smartfrog.version}/*"/>
-        <include name="sf-hadoop/${smartfrog.version}/*"/>
         <include name="sf-jmx/${smartfrog.version}/*"/>
         <include name="sf-loggingservices/${smartfrog.version}/*"/>
-        <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-quartz/${smartfrog.version}/*"/>
-        <include name="sf-rpmtools/${smartfrog.version}/*"/>
+        <include name="sf-net/${smartfrog.version}/*"/>
         <include name="sf-scripting/${smartfrog.version}/*"/>
         <include name="sf-ssh/${smartfrog.version}/*"/>
         <include name="sf-velocity/${smartfrog.version}/*"/>
@@ -852,7 +822,7 @@
 
 
   <target name="upload-maven-artifacts"
-      depends="init-maven-artifacts,upload-init,ssh-test">
+      depends="init-maven-artifacts,upload-init">
     <fail>
       <condition>
         <not>
@@ -934,18 +904,15 @@
     <property name="ssh.propfile"
         location="${server.dir}/${server}.properties"/>
     <loadproperties srcfile="${ssh.propfile}"/>
-    <property name="ssh.group" value="smartfrog" />
-    <property name="ssh.user.and.group" value="${ssh.user},${ssh.group}" />
     <echo>
       SCP target is ${ssh.server}
       User is ${ssh.user}
-      Group is ${ssh.group}
       trust=${ssh.trust}
       keyfile=${ssh.keyfile}
     </echo>
     <presetdef name="ssh-remote">
       <sshexec host="${ssh.server}"
-          username="${ssh.user.and.group}"
+          username="${ssh.user}"
           passphrase="${ssh.passphrase}"
           trust="${ssh.trust}"
           timeout="6000000"
@@ -978,28 +945,18 @@
     </fileset>
   </target>
 
-  <target name="ssh-create-session" depends="load-server-settings"
-    description="Create an SSH terminal session at the far end">
-    <ssh-remote command="create"/>
-  </target>
-
   <target name="ssh-test" depends="ssh-ls">
     <echo>ssh appears to be working</echo>
   </target>
-
-  <target name="ssh-ls" depends="ssh-create-session">
+  <target name="ssh-ls" depends="load-server-settings">
     <ssh-remote command="ls"/>
-  </target>
-
-
-  <target name="ssh.live" depends="ssh-test">
   </target>
 
   <target name="scp-upload" depends="upload-init" if="ssh.enabled">
 
     <ssh-remote command="mkdir -p ${ssh.dir}"/>
     <property name="ssh.path"
-        value="${ssh.user.and.group}@${ssh.server}:${ssh.dir}"/>
+        value="${ssh.user}@${ssh.server}:${ssh.dir}"/>
     <scp remoteToDir="${ssh.path}"
         passphrase="${ssh.passphrase}"
         keyfile="${ssh.keyfile}"
@@ -1130,31 +1087,12 @@
         value="/home/${rpm.ssh.user}/${rpm.ssh.dir}"/>
     <!--list of rpms-->
 
-
-    <property name="rpm.base.list"
-        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant  smartfrog-logging "/>
-    <property name="rpms.components.list"
-        value="smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-xml smartfrog-xmpp smartfrog-velocity"/>
-    <property name="rpms.www.list"
-        value="smartfrog-www smartfrog-jetty smartfrog-xunit "/>
-    <property name="rpms.testing.list"
-        value="smartfrog-junit "/>
-
     <property name="rpms.core.list"
-        value="${rpm.base.list} ${rpms.components.list} ${rpms.www.list} ${rpms.testing.list} "/>
-<!--
-    <property name="rpms.cloud.list"
-        value="smartfrog-hadoop smartfrog-ec2"/>
--->
-
-    <property name="rpms.cloud.list"
-        value="smartfrog-hadoop smartfrog-ec2"/>
+        value="smartfrog smartfrog-daemon smartfrog-demo smartfrog-javadocs smartfrog-ant smartfrog-anubis smartfrog-csvfiles smartfrog-database smartfrog-jmx smartfrog-junit smartfrog-logging smartfrog-networking smartfrog-quartz smartfrog-scripting smartfrog-www smartfrog-xml smartfrog-xmpp smartfrog-xunit smartfrog-velocity"/>
     <property name="rpms.private.list"
         value=" smartfrog-private-security-keys"/>
-    
     <property name="rpms.list"
-        value="${rpms.core.list} ${rpms.private.list}  ${rpms.cloud.list}"/>
-
+        value="${rpms.core.list} ${smartfrog-private-keys}"/>
 
     <!--here are all the signed RPMs that are generated-->
 
@@ -1192,7 +1130,7 @@
 
   <target name="rpm-remote-install-core" depends="rpm-upload">
     <rootssh
-        command="cd ${rpm.full.ssh.dir}; rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
+        command="cd ${rpm.full.ssh.dir};rpm --upgrade --force ${rpm.verbosity} ${target.rpm.shortname}"
         outputProperty="rpm.result.core"/>
     <validate-rpm-result result="${rpm.result.core}"/>
   </target>
@@ -1240,7 +1178,7 @@
         command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.private.list} ${rpms.dependent.list}"
         failonerror="false"/>
     <rootssh
-        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.list}"
+        command="rpm --erase --nodeps --allmatches ${rpm.verbosity} ${rpms.core.list}"
         failonerror="false"/>
   </target>
 

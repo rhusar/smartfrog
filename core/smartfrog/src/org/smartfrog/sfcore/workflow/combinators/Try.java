@@ -53,9 +53,10 @@ public class Try extends EventCompoundImpl implements Compound {
     /**
      * Constructs Try.
      *
-     * @throws RemoteException In case of RMI or network failure.
+     * @throws java.rmi.RemoteException In case of RMI or network failure.
      */
-    public Try() throws RemoteException {
+    public Try() throws java.rmi.RemoteException {
+        super();
     }
 
 
@@ -92,7 +93,7 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        actionPrim = deployChildCD(ATTR_ACTION, true);
+        actionPrim = deployChildCD(ATTR_ACTION,true);
     }
 
 

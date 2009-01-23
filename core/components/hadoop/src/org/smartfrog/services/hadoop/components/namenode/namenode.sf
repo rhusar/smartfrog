@@ -37,7 +37,7 @@ For more information: www.smartfrog.org
 
 NameNode extends NameDataLogNode {
   sfClass "org.smartfrog.services.hadoop.components.namenode.NamenodeImpl";
-  name "NameNode";
+
 
 
   //startup mode
@@ -54,6 +54,7 @@ NameNode extends NameDataLogNode {
 
 
   //how many handler threads
+  dfs.namenode.handler.count 10;
   //fs.default.name
 
   dfs.namenode.decommission.interval (5 * 60);
@@ -92,12 +93,4 @@ NameNode extends NameDataLogNode {
   //should we expect the node to terminate itself
   expectNodeTermination false;
   sfShouldTerminate false;
-}
-
-NameNodeWithCluster extends NameDataLogNodeWithCluster {
-   name NameNode:name;
-   sfClass NameNode:sfClass;
-   checkRunning NameNode:checkRunning;
-   expectNodeTermination NameNode:expectNodeTermination ;
-   sfShouldTerminate NameNode:sfShouldTerminate;
 }

@@ -19,57 +19,20 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.common;
 
-import java.io.IOException;
+import org.apache.hadoop.net.NetUtils;
+
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 /**
+ *
  * Created 28-May-2008 15:22:20
+ *
  */
 
 public class HadoopUtils {
 
-    private HadoopUtils() {
-    }
+  private HadoopUtils() {
+  }
 
 
-    /**
-     * Here is where the port gets probed
-     *
-     * @param address        address to check
-     * @param connectTimeout timeout
-     * @throws IOException failure to connect, including timeout
-     */
-    public static void checkPort(InetSocketAddress address, int connectTimeout) throws IOException {
-        Socket socket = null;
-        try {
-            socket = new Socket();
-            socket.connect(address, connectTimeout);
-        } catch (SecurityException e) {
-            throw (IOException) new IOException("Failed to connect to " + address).initCause(e);
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
-
-    /**
-     * Test for a local port being open
-     * @param port port number
-     * @param connectTimeout timeout for connections
-     * @return true iff the port is open
-     */
-    public static boolean isLocalPortOpen(int port, int connectTimeout) {
-        InetSocketAddress localPort = new InetSocketAddress("localhost", port);
-        try {
-            checkPort(localPort,connectTimeout);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
 }

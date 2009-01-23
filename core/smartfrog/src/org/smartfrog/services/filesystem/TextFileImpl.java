@@ -53,24 +53,7 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
         String encoding = null;
         if (text != null) {
             encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
-            File textFile = getFile();
-            File parentDir = textFile.getParentFile();
-            if (!parentDir.exists()) {
-                boolean createParentDirs = sfResolve(ATTR_CREATE_PARENT_DIRS, true, true);
-                if (createParentDirs) {
-                    parentDir.mkdirs();
-                } else {
-                    throw new SmartFrogException("No parent directory for " + textFile
-                            + " and " + ATTR_CREATE_PARENT_DIRS + "is false");
-                }
-                if (!parentDir.exists()) {
-                    throw new SmartFrogException("Unable to create the parent directory " + parentDir
-                            + "for the text file " + textFile);
-                }
-            }
-
-
-            FileSystem.writeTextFile(textFile, text, encoding);
+            FileSystem.writeTextFile(getFile(), text, encoding);
         }
         //call the superclass. this may trigger deletion.
         super.sfStart();

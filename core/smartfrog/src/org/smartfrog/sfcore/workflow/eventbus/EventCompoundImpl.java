@@ -333,7 +333,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * @param status Termination  Record
     */
     @Override
-    protected synchronized void sfTerminateWith(TerminationRecord status) {
+    public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         registrar.deregisterFromReceivingAll();
         super.sfTerminateWith(status);
@@ -368,7 +368,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Get the name; valid after {@link #sfDeploy()}
      * @return the reference to this component
      */
-    public final Reference getName() {
+    public Reference getName() {
         return name;
     }
 
@@ -376,7 +376,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Get the component descriptions of all actions
      * @return all actions
      */
-    public final Context getActions() {
+    public Context getActions() {
         return actions;
     }
 

@@ -62,7 +62,6 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         directories = convertToFiles(resolveFileList(this, ATTR_DIRECTORIES, null, true, null));
@@ -121,11 +120,11 @@ public class CheckDiskSpaceImpl extends PrimImpl implements CheckDiskSpace {
                         return ERROR_NOT_ENOUGH_SPACE + dir + " only " + spaceMB + " MB space available";
                     }
                 } catch (IllegalAccessException e) {
-                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e, e);
-                    return e.toString();
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
+                    return e.getMessage();
                 } catch (InvocationTargetException e) {
-                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e, e);
-                    return e.toString();
+                    sfLog().error(ERROR_INVOKE_GETUSABLESPACE + e.getMessage(), e);
+                    return e.getMessage();
 
                 }
             }

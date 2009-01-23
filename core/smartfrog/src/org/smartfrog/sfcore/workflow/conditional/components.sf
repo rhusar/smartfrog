@@ -113,41 +113,6 @@ LivenessTest extends EvaluateCondition {
   sfShouldTerminate false;
 }
 
-/**
- * After the action terminates successfully, the condition is evaluated
- * and the then/else operations applied as appropriate.
- * The EventCompound will only terminate after whichever of those children was deployed has terminated 
- */
-PostCondition extends  If {
-  action TBD;
-  sfClass "org.smartfrog.sfcore.workflow.conditional.PostConditionImpl";
-}
 
-/**
- * This component asserts that after the operation, the condition is met;
- * the action put the state of the system into the desired form
- */
-AssertPostConditionMet extends PostCondition {
-  message "Condition not met after action terminated";
-
-  else extends Terminator {
-    description PARENT:message;
-    selftype Terminator:ABNORMAL;
-  }
-
-}
-
-/**
- * This component asserts that after the operation, the condition is not met.
- */
-AssertPostConditionFailed extends PostCondition {
-  message "Condition should not be not met after action terminated";
-
-  then extends Terminator {
-    description PARENT:message;
-    selftype Terminator:ABNORMAL;
-  }
-
-}
 
 

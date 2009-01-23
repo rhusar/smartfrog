@@ -42,27 +42,13 @@ public class BitView implements View, Cloneable, Serializable {
         view      = v;
         timeStamp = t;
     }
-    
+
     public BitView(View v) {
         if( v == null )
             throw new NullPointerException("Attempt to construct BitView from null pointer");
         stable    = v.isStable();
         view      = v.toBitSet();
         timeStamp = v.getTimeStamp();
-    }
-    
-    public static BitView create(int id, long t) {
-        BitView bv = new BitView();
-        bv.add(id);
-        bv.stablize();
-        bv.setTimeStamp(t);
-        return bv;
-    }
-    
-    public static BitView create(Identity id, long t) {
-        if( id == null )
-            throw new NullPointerException("Attempt to create BitView from null pointer");
-        return create(id.id, t);
     }
 
     public boolean isStable()            { return stable; }

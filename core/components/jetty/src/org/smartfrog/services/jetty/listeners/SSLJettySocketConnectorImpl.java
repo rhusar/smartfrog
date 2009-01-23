@@ -19,12 +19,13 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.jetty.listeners;
 
-import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.passwords.PasswordProvider;
+import org.mortbay.jetty.Connector;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.passwords.PasswordProvider;
 
 import java.rmi.RemoteException;
 

@@ -20,18 +20,17 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.apache.hadoop.util.Service;
-import org.smartfrog.services.hadoop.conf.ClusterBound;
 
-import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
- * Interface for probing the state of a service
+ * Created 08-Jul-2008 13:28:24
  */
 
 
-public interface HadoopService extends Remote, ClusterBound {
+public interface HadoopService extends Remote {
 
     /**
      * Test for the service being live
@@ -42,7 +41,7 @@ public interface HadoopService extends Remote, ClusterBound {
 
     /**
      * Get the service state
-     * @return the current service state, or {@link Service.ServiceState#UNDEFINED} if there is no service
+     * @return the current service state, or UNDEFINED if there is no service
      * @throws RemoteException for RMI problems
      */
     Service.ServiceState getServiceState() throws RemoteException;
@@ -54,12 +53,5 @@ public interface HadoopService extends Remote, ClusterBound {
      * @throws IOException for pinging problems
      */
     Service.ServiceStatus pingService() throws IOException;
-
-    /**
-     * Gets the description of a service
-     * @return a description string of the service
-     * @throws RemoteException network problems
-     */
-    String getDescription() throws RemoteException ;
 
 }

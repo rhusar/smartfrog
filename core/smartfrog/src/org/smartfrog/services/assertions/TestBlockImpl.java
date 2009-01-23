@@ -187,7 +187,7 @@ public class TestBlockImpl extends EventCompoundImpl implements TestBlock {
     private void startupException(Exception e)
             throws SmartFrogRuntimeException, RemoteException {
         //this is called if we failed during startup
-        TerminationRecord fault = TerminationRecord.abnormal(ERROR_STARTUP_FAILURE, getName(), e);
+        TerminationRecord fault = TerminationRecord.abnormal(ERROR_STARTUP_FAILURE, name, e);
         end(fault);
     }
 

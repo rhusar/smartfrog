@@ -10,10 +10,8 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
-import org.smartfrog.services.dependencies.statemodel.state.StateComponent;
+import org.smartfrog.services.dependencies.statemodel.state.State;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
-import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -44,9 +42,9 @@ public class ModelCheck implements PhaseAction {
 		sfhome = System.getenv("SFHOME");
 		
 		if (sfhome!=null){
-			smv_file = sfhome+"/../runs/modelcheck.smv";
-			dat_file = sfhome+"/../runs/modelcheck.dat";
-			filePrefix = sfhome+"/../runs/vrun";
+			smv_file = sfhome+"/runs/modelcheck.smv";
+			dat_file = sfhome+"/runs/modelcheck.dat";
+			filePrefix = sfhome+"/runs/vrun";
 		} 
 	}
 	
@@ -62,7 +60,7 @@ public class ModelCheck implements PhaseAction {
 	
 	public void doit() throws SmartFrogResolutionException {
         if (sfhome==null) throw new SmartFrogResolutionException("SFHOME ENVIRONMENT VARIABLE MUST BE SET...");
-		 
+		
         try {
 			GregorianCalendar gc = new GregorianCalendar();
 			
@@ -112,6 +110,7 @@ public class ModelCheck implements PhaseAction {
 		
 		if (!notFailed) throw new SmartFrogResolutionException("Verification Run failure.  See foregoing output from parse for details.");
 	
+
 	}
 
 	public String formatFileStr(String fs){
@@ -166,26 +165,21 @@ public class ModelCheck implements PhaseAction {
 	}
 	
 	private String getSFClass(ComponentDescription comp){
-		if (comp.sfContext().get("sfUniqueComponentID")!=null) return StateComponent.class.getName();
+		if (comp.sfContext().get("sfUniqueComponentID")!=null) return State.class.getName();
 		else return (String) comp.sfContext().get("sfClass");
 	}
 	
 	private String[] process_external_dependency(ComponentDescription dep, ComponentDescription by) throws SmartFrogResolutionException {
-		
-		Reference on_ref = (Reference) dep.sfContext().get("on");
-		
-		if (on_ref instanceof SFReference) {
-    		try {on_ref=((SFReference)on_ref).sfAsReference();}
-    		catch (SmartFrogCompilationException sfce){throw new SmartFrogFunctionResolutionException(sfce);}
-    	}
-		
+		Reference on_ref = (Reference) ((Reference) dep.sfContext().get("on"));
+		SFReference.resolutionForceEager = true;
 		ComponentDescription on = (ComponentDescription) dep.sfResolve(on_ref); //Exc?
+		SFReference.resolutionForceEager = false;
 		String sfClass = getSFClass(on); 
 		boolean includeOn = true;
 		
 		//Get "on" enablement...
 		//Don't include State enablement, unless it is "asAndConnector"...
-		if (sfClass.equals(StateComponent.class.getName())) includeOn = ((Boolean)on.sfContext().get("asAndConnector")).booleanValue();
+		if (sfClass.equals(State.class.getName())) includeOn = ((Boolean)on.sfContext().get("asAndConnector")).booleanValue();
 			
 		HashMap<String,Vector<String>> on_dep = null; 
 		if (includeOn) on_dep = process_on_dependencies(on, sfClass);
@@ -395,10 +389,6 @@ public class ModelCheck implements PhaseAction {
 			//COMPONENT HEADER: MODULE ...
 			String key = (String) comp_iter.next();
 			ComponentDescription sf_cd = components.get(key);
-			
-			//System.out.println("*****STATE COMPONENT:"+sf_cd.sfContext().get("sfComponentPath"));
-			System.out.println("*****STATE COMPONENT:"+key);
-			
 			pw.print("MODULE component_"+key);
 			
 			String main_s = key+" : process component_"+key;
@@ -409,9 +399,6 @@ public class ModelCheck implements PhaseAction {
 				main_s+=";";
 			}
 			else {
-				
-				System.out.print("with dependencies on: ");
-				
 				pw.print("(");
 				main_s += "(";
 				boolean first=true;
@@ -421,17 +408,14 @@ public class ModelCheck implements PhaseAction {
 					else {
 						pw.print(", ");
 						main_s += ", ";
-						System.out.print(", ");
 					}
 					
 					String other = viter.next().toString(); 
 					pw.print(other);
 					main_s += other;
-					System.out.print(other);
 				}
 				pw.println(")");
 				main_s += ");";
-				System.out.println();
 			}
 			main_decs.add(main_s);
 			
@@ -496,11 +480,7 @@ public class ModelCheck implements PhaseAction {
 					if (tcd.sfContext().get("sfIsStateComponentTransition")==null) continue;
 					trans++;
 					
-					String dep_s = (String)tcd.sfContext().get("sfDepString");
-					System.out.println();
-					System.out.println("Transition:"+tname+" with dependency: "+dep_s);
-					
-					transition_deps.add(dep_s);
+					transition_deps.add((String)tcd.sfContext().get("sfDepString"));
 					ComponentDescription sfs_cd = (ComponentDescription) tcd.sfContext().get("statefunction_strs");
 					
 					//Go through each attribute adding transition...
@@ -528,8 +508,6 @@ public class ModelCheck implements PhaseAction {
 				} else continue;
 			}
 
-			System.out.println();
-			
 			attr_iter = attrs_vec.iterator();
 			while (attr_iter.hasNext()){
 				String akey = (String) attr_iter.next();
@@ -629,8 +607,9 @@ public class ModelCheck implements PhaseAction {
 		}
 	}
 	
+	private static int g_UCID=0;
 	private class ModelVisitor implements CDVisitor{
-		public void actOn(ComponentDescription cd, Stack pathStack) throws Exception {
+		public void actOn(ComponentDescription cd, Stack pathStack) throws SmartFrogResolutionException {
 			Object cpt_id_obj = cd.sfContext().get("sfUniqueComponentID");
 			if (cpt_id_obj!=null) {
 				if (cpt_id_obj instanceof Boolean && !((Boolean)cpt_id_obj).booleanValue()){
@@ -638,31 +617,20 @@ public class ModelCheck implements PhaseAction {
 					modelTerminators.add(cd);
 				} else {
 					//Actually a component....
-					String cpt_path = cd.sfCompleteName().toString().substring(14); //remove "HERE sfConfig:"
-					String cpt_id="";
-					
-					
-					int idx=cpt_path.indexOf(":");
-					while (idx>-1){
-						cpt_id+=cpt_path.substring(0,idx)+"_";
-						cpt_path=cpt_path.substring(idx+1);
-						idx=cpt_path.indexOf(":");	
-					}
-					//Residual
-					cpt_id += cpt_path;
-					
-					components.put(cpt_id, cd);
+					String name = "UCID"+g_UCID++;
+				    String suffix = (String) cd.sfParent().sfAttributeKeyFor(cd);
+				    String cpt_id = name+suffix;
+					components.put(cpt_id, (ComponentDescription) cd);
 					cd.sfContext().put("sfUniqueComponentID", cpt_id);
-					
 				}
 			} else if (cd.sfContext().get("sfIsDependency")!=null) {
 				//Register with the dependency with the "by"...
 				//Exc?
+				Reference by_ref = (Reference) cd.sfContext().get("by");				
 				
-				//Reference by_ref = ((Reference) cd.sfContext().get("by")).copyandRemoveLazy();				
-				Reference by_ref = ((SFReference) cd.sfContext().get("by")).sfAsReference();
-				
+				SFReference.resolutionForceEager=true;
 				ComponentDescription by = (ComponentDescription) cd.sfResolve(by_ref);
+				SFReference.resolutionForceEager=false;
 				
 				Object deps = by.sfContext().get("sfDependencies");
 				Vector<ComponentDescription> deps_vec = null;

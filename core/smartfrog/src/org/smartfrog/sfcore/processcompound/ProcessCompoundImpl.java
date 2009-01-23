@@ -751,7 +751,7 @@ public class ProcessCompoundImpl extends CompoundImpl
      * @return reference of attribute names to this component
      *
      * @throws RemoteException In case of network/rmi error
-     * TODO: clean cache when re-parenting
+     * @TODO: clean cache when re-parenting
      */
 
     public Reference sfCompleteName() throws RemoteException {

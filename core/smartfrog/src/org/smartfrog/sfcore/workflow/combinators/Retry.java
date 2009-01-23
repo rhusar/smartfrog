@@ -54,7 +54,7 @@ public class Retry extends EventCompoundImpl implements Compound {
 
     public static final String ATTR_RETRY = "retry";
     public static final String ATTR_COUNT = "count";
-    private static final Reference retryRef = new Reference(ATTR_RETRY);
+    private static Reference retryRef = new Reference(ATTR_RETRY);
     private int retry;
     private int currentRetries = 0;
     public static final String ERROR_NEGATIVE_COUNT = "A negative "+ATTR_RETRY+" value is not supported";
@@ -62,9 +62,10 @@ public class Retry extends EventCompoundImpl implements Compound {
     /**
      * Constructs Retry.
      *
-     * @throws RemoteException In case of RMI or network error.
+     * @throws java.rmi.RemoteException In case of RMI or network error.
      */
-    public Retry() throws RemoteException {
+    public Retry() throws java.rmi.RemoteException {
+        super();
     }
 
     /**
@@ -78,8 +79,8 @@ public class Retry extends EventCompoundImpl implements Compound {
         super.sfDeploy();
         checkActionDefined();
         retry = ((Integer) sfResolve(retryRef)).intValue();
-        if (retry < 0) {
-            throw new SmartFrogDeploymentException(ERROR_NEGATIVE_COUNT);
+        if(retry<0) {
+            throw new SmartFrogDeploymentException (ERROR_NEGATIVE_COUNT);
         }
     }
 
@@ -153,7 +154,7 @@ public class Retry extends EventCompoundImpl implements Compound {
             if (sfLog().isErrorEnabled()) {
                 sfLog().error("Error in restarting next component " + getName(), e);
             }
-            sfTerminate(TerminationRecord.abnormal("Error in restarting next component: " + e, getName(),e));
+            sfTerminate(TerminationRecord.abnormal("Error in restarting next component (" + e.toString() + ")", getName()));
             forward = false;
         }
         return forward;
@@ -176,7 +177,7 @@ public class Retry extends EventCompoundImpl implements Compound {
 
     /**
      * make the name of a new child
-     * @param retries number of retries
+     * @param retries
      * @return the name of the next child to deploy
      */
     private String makeName(int retries) {

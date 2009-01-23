@@ -18,6 +18,7 @@
 
  */
 
+//#include "org/smartfrog/components.sf";
 #include "org/smartfrog/sfcore/workflow/components.sf";
 #include "org/smartfrog/services/utils/concat/components.sf"
 #include "org/smartfrog/services/filesystem/components.sf"

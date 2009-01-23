@@ -21,17 +21,16 @@
 
 package org.smartfrog.services.hadoop.test.system.local.datanode;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
  */
-public class FileSystemOperationsTest extends HadoopTestBase {
+public class FileSystemOperationsTest extends DeployingTestBase {
     public static final String PACKAGE="/org/smartfrog/services/hadoop/test/system/local/datanode/";
 
     public FileSystemOperationsTest(String name) {
         super(name);
-        enablePortCheck();
     }
 
     public void testClusterShutDownCleanly() throws Throwable {

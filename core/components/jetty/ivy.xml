@@ -94,11 +94,6 @@
         name="jsp-api-2.1"
         rev="${jetty.version}"
         conf="jsp->master"/>
-    <dependency org="commons-el"
-      name="commons-el"
-      rev="${commons-el.version}"
-      conf="jsp->master"/>
-    <!--this is the compiler stage-->
     <dependency org="org.smartfrog"
         name="sf-ant"
         rev="latest.integration"
@@ -107,6 +102,18 @@
         name="core"
         rev="${org.eclipse.jdt.core.version}"
         conf="jsp->master"/>
+
+    <!--extra Jetty libraries-->
+
+<!--
+  //doesn't parse in Ivy 2.0.0-alpha-2; incompatible pom. 
+    <dependency org="org.slf4j"
+        name="slf4j-jcl"
+        rev="${slf4j.version}"
+        conf="redist->default"/>
+-->
+
+
 
   </dependencies>
 </ivy-module>

@@ -24,8 +24,6 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
-
 
 /**
  * FireBreak is a modified Parallel that when a sub-components terminates,
@@ -42,9 +40,10 @@ public class FireBreak extends Parallel implements Compound {
     /**
      * Constructs Container.
      *
-     * @throws RemoteException In case of network or RMI failure.
+     * @throws java.rmi.RemoteException In case of network or RMI failure.
      */
-    public FireBreak() throws RemoteException {
+    public FireBreak() throws java.rmi.RemoteException {
+        super();
     }
 
 

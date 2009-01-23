@@ -35,12 +35,10 @@ public class Composite extends CompoundImpl implements Compound, StateChangeNoti
 
    //child down to State, where it is handled
    public void handleStateChange() {
-	   System.out.println("handling state change...");
       for (Enumeration<Liveness> e = sfChildren(); e.hasMoreElements(); ) {
          Object c = e.nextElement();
-         if (c instanceof StateChangeNotification) {
-        	 ((StateChangeNotification)c).handleStateChange();
-         }
+         if (c instanceof StateChangeNotification) 
+            ((StateChangeNotification)c).handleStateChange();
       }
    }
 

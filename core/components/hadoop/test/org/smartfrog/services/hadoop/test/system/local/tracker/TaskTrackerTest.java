@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.test.system.local.tracker;
 
-import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
+import org.smartfrog.test.DeployingTestBase;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.smartfrog.services.hadoop.test.system.local.namenode.HadoopTestBase;
  *
  */
 
-public class TaskTrackerTest extends HadoopTestBase {
+public class TaskTrackerTest extends DeployingTestBase  {
     public static final String PACKAGE = "/org/smartfrog/services/hadoop/test/system/local/tracker/";
 
     public TaskTrackerTest(String name) {
@@ -35,9 +35,9 @@ public class TaskTrackerTest extends HadoopTestBase {
     }
 
     public void testLocalTaskTracker() throws Throwable {
-        enablePortCheck();
-        checkTaskTracker();
         expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTracker");
     }
-
+    public void NotestLocalTaskTrackerForked() throws Throwable {
+        expectSuccessfulTestRunOrSkip(PACKAGE, "testLocalTaskTrackerForked");
+    }
 }

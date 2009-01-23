@@ -31,8 +31,6 @@ LocalDataNodeTest extends ExpectDeploy {
   action extends LocalDataNodeCompound {
   }
 
-  
-
 }
 
 /**
@@ -43,10 +41,7 @@ testLocalDataNode extends LocalDataNodeTest {
 
 
 
-  tests extends FileSystemLiveSequence {
-    namenode LAZY action:namenode;
-    datanode LAZY action:datanode;;
-
+  tests extends Sequence {
     namenodeLive extends CheckNameNodePort {
       cluster LAZY action:cluster;
     }
@@ -54,7 +49,6 @@ testLocalDataNode extends LocalDataNodeTest {
     datanodeLive extends CheckDataNodePort {
       cluster LAZY action:cluster;
     }
-
   }
 
 }
@@ -85,29 +79,4 @@ testFileSystemOperations extends LocalDataNodeTest {
     datanode LAZY action:datanode;;
   }
 }
-
-
-
-
-/**
- * Test the local node
- */
-testOrphanDatanode extends ExpectDeploy {
-  description "bring up an Orphan Datanode";
-
-
-
-  action extends OrphanDatanodeCompound {
-  }
-
-  //for our test we sleep; that's all.
-  tests extends Sequence {
-    Sleep extends Delay {
-      time STARTUP_SLEEP_TIME;
-    }
-  }
-
-
-}
-
 

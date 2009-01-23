@@ -40,24 +40,17 @@
   <li> Anubis: a partition aware tuple-space that can be used to implement fault
     tolerant systems.
   </li>
-  <li> Database: components to issue database commands, and deploy HSLDB and MySQL
-   databases.
-  </li>
-  <li> Hadoop: a version of Apache Hadoop with SmartFrog management, and
-  support components to interact with Hadoop: filesystem operations and 
-  Job submission. This is still experimental and must be considered unstable.
+  <li> Database: components to issue database commands, and deploy HSLDB and MySQL.
   </li>
   <li> JMX: the ability to configure and manage JMX components, and to manage
     SmartFrog components over JMX.
   </li>
-  <li> Logging: integration with Apache commons-logging and Log4J, and the 
-  SLF4J framework.
+  <li> Logging: integration with Apache commons-logging and Log4J
   </li>
   <li> Networking: email, FTP, SSH, DNS support.
   </li>
   <li> Quartz: scheduled operations using Quartz libraries.
   </li>
-  <li> RpmTools: components for working with or deploying with RPMs</li>
   <li> Scripting: support for BSF-hosted scripting languages
   </li>
   <li> Testing: Distributed JUnit and component testing with SFUnit.
@@ -67,8 +60,7 @@
   </li>
   <li> WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
     is provided for all application servers that support, and a tomcat-specific
-    component can communicate with Apache Tomcat.</li>
-  <li>Jetty: The Jetty component can
+    component can communicate with Apache Tomcat. The Jetty component can
     configure and deploy individual servlets, eliminating much of the need for WAR
     files themselves.
   </li>
@@ -135,20 +127,12 @@
     <td>Database access</td>
   </tr>
   <tr>
-    <td><code>smartfrog-jetty</code></td>
-    <td>Jetty support</td>
-  </tr>
-  <tr>
     <td><code>smartfrog-jmx</code></td>
     <td>JMX integration though MX4J</td>
   </tr>
   <tr>
     <td><code>smartfrog-junit</code></td>
     <td>Junit 3.8.2 test execution</td>
-  </tr>
-  <tr>
-    <td><code>smartfrog-hadoop</code></td>
-    <td>Hadoop support</td>
   </tr>
   <tr>
     <td><code>smartfrog-logging</code></td>
@@ -161,10 +145,6 @@
   <tr>
     <td><code>smartfrog-quartz</code></td>
     <td>Scheduled operations</td>
-  </tr>
-  <tr>
-    <td><code>smartfrog-rpmtools</code></td>
-    <td>RPM support tools</td>
   </tr>
   <tr>
     <td><code>smartfrog-scripting</code></td>
@@ -224,7 +204,7 @@
 <h3>Building SmartFrog</h3>
 
 <p>
-  SmartFrog requires Java 1.5+ and Ant 1.7+ to build. 
+  SmartFrog requires Java 1.5 and Ant 1.7 to build. 
 </p>
 
 <p>

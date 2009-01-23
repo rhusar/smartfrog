@@ -50,7 +50,7 @@ public class ManagedEntity extends ThreadedState implements Prim {
 		//
 		
 		if (!created) {
-			//System.out.println(name+" setting created to true");
+			System.out.println(name+" setting created to true");
 			save.put("created", true);
 			
 			//For test
@@ -59,7 +59,7 @@ public class ManagedEntity extends ThreadedState implements Prim {
 		} 
 		
 		if (created || sink) {
-			//System.out.println(name+" setting removed to true");
+			System.out.println(name+" setting removed to true");
 			save.put("removed", true);
 			
 			//For test

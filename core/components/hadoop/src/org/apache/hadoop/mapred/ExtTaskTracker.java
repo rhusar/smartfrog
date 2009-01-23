@@ -21,9 +21,6 @@ package org.apache.hadoop.mapred;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.hadoop.core.ServiceInfo;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeHandler;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 
 import java.io.IOException;
 
@@ -31,18 +28,12 @@ import java.io.IOException;
  * Task tracker with some lifecycle support
  */
 
-public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
+public class ExtTaskTracker extends TaskTracker {
 
     private static final Log LOG = LogFactory.getLog(ExtTaskTracker.class);
-    private ServiceStateChangeNotifier notifier;
 
     public ExtTaskTracker(JobConf conf) throws IOException {
-        this(null, conf);
-    }
-
-    public ExtTaskTracker(ServiceStateChangeHandler owner, JobConf conf) throws IOException {
         super(conf, false);
-        notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
     /**
@@ -57,57 +48,5 @@ public class ExtTaskTracker extends TaskTracker implements ServiceInfo {
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: TaskTracker is now " + newState);
-        notifier.onStateChange(oldState, newState);
-    }
-
-    /**
-     * Get the port used for IPC communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    //@Override
-    public int getIPCPort() {
-        return ServiceInfo.PORT_UNUSED;
-    }
-
-    /**
-     * Get the port used for HTTP communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    //@Override
-    public int getWebPort() {
-        return httpPort;
-    }
-
-    /**
-     * Get the current number of workers
-     *
-     * @return the worker count
-     */
-
-    //@Override
-    public int getLiveWorkerCount() {
-        return workerThreads;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return the exit state
-     * @throws Exception if something went wrong
-     */
-    @Override
-    public State offerService() throws Exception {
-        LOG.info("Task Tracker Service is being offered: " + toString());
-        return super.offerService();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return the string value
-     */
-    @Override
-    public String toString() {
-        return super.toString() + "; web port=" + getWebPort();
     }
 }

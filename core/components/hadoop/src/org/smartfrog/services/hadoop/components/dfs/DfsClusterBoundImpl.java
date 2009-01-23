@@ -19,82 +19,87 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.hadoop.components.dfs;
 
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.smartfrog.services.hadoop.common.DfsUtils;
-import org.smartfrog.services.hadoop.conf.ClusterBound;
-import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.services.hadoop.common.DfsUtils;
+import org.smartfrog.services.hadoop.core.SFHadoopException;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 
 import java.rmi.RemoteException;
 
 /**
  * This is a base class for components that work with a cluster.
+ *
  */
 
 public class DfsClusterBoundImpl extends PrimImpl {
+  private Prim cluster;
 
-    public DfsClusterBoundImpl() throws RemoteException {
-    }
+  public DfsClusterBoundImpl() throws RemoteException {
+  }
 
-    /**
+  /**
      * start up, bind to the cluster
-     *
-     * @throws SmartFrogException failure while starting
-     * @throws RemoteException    In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        sfResolve(ClusterBound.ATTR_CLUSTER, (Prim) null, true);
-    }
+   *
+   * @throws SmartFrogException failure while starting
+   * @throws RemoteException    In case of network/rmi error
+   */
+  public synchronized void sfStart() throws SmartFrogException, RemoteException {
+      super.sfStart();
+      cluster = sfResolve(DfsOperation.ATTR_CLUSTER, cluster, true);
+  }
 
-    /**
+  /**
      * Resolve an attribute to a DFS path
-     *
-     * @param attribute name of the attribute
-     * @return the path
-     * @throws SmartFrogException          resolution problems
-     * @throws SmartFrogLifecycleException for a failure to create the path
-     * @throws RemoteException             network problems
-     */
-    protected Path resolveDfsPath(String attribute) throws SmartFrogException, RemoteException {
-        String pathName = sfResolve(attribute, "", true);
-        try {
-            return new Path(pathName);
-        } catch (IllegalArgumentException e) {
-            throw new SmartFrogLifecycleException("Failed to create the path defined by attribute " + attribute
-                    + " with value " + pathName
-                    + " : " + e,
-                    e,
-                    this);
-        }
-    }
+   * @param attribute name of the attribute
+   * @return the path
+   * @throws SmartFrogException resolution problems
+   * @throws SmartFrogLifecycleException for a failure to create the path
+   * @throws RemoteException network problems
+   */
+  protected Path resolveDfsPath(String attribute) throws SmartFrogException, RemoteException {
+      String pathName = sfResolve(attribute, "", true);
+      try {
+          return new Path(pathName);
+      } catch (IllegalArgumentException e) {
+          throw new SmartFrogLifecycleException("Failed to create the path defined by attribute "+ attribute
+                  +" with value "+pathName
+                  +" : "+ e.getMessage(), e, this);
+      }
+  }
 
-    /**
+  /**
+    * Get the cluster binding
+  *
+  * @return the cluster
+  */
+  public Prim getCluster() {
+      return cluster;
+  }
+
+  /**
      * Create a managed configuration
-     *
-     * @return a new SF-managed configuration
-     * @throws SmartFrogException for any problem creating the FS.
-     * @throws RemoteException    network problems
-     */
-    public ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true);
-    }
+   *
+   * @return a new SF-managed configuration
+   */
+  public ManagedConfiguration createConfiguration() {
+      return new ManagedConfiguration(cluster);
+  }
 
-    /**
+  /**
      * Create a filesystem from our configuration
-     *
-     * @return a new file system
-     * @throws SmartFrogException for any problem creating the FS.
-     * @throws RemoteException    network problems
-     */
-    protected DistributedFileSystem createFileSystem()
-            throws SmartFrogException, RemoteException {
-        ManagedConfiguration conf = createConfiguration();
-        DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
-        return fileSystem;
-    }
+   *
+   * @return a new file system
+   * @throws SmartFrogRuntimeException for any problem creating the FS.
+   */
+  protected DistributedFileSystem createFileSystem() throws SmartFrogRuntimeException, SFHadoopException {
+      ManagedConfiguration conf = createConfiguration();
+      DistributedFileSystem fileSystem = DfsUtils.createFileSystem(conf);
+      return fileSystem;
+  }
 }

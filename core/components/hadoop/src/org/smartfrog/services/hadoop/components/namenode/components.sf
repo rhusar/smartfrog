@@ -27,11 +27,6 @@ NameDirNode extends  FileSystemNode {
   nameDirectories TBD;
 }
 
-NameDirNodeWithCluster extends FileSystemNodeWithCluster {
- //name directory: a List of directories
-  nameDirectories TBD;
-}
-
 /**
  * Extend NameDirNode with dataDirectories and a log directory
  */
@@ -44,21 +39,6 @@ NameDataLogNode extends NameDirNode {
   logDir TBD;
 
 }
-
-
-/**
- * Extend NameDirNode with dataDirectories and a log directory
- */
-NameDataLogNodeWithCluster extends NameDirNodeWithCluster {
-
-  //the data directories, again a list of directories
-  dataDirectories TBD;
-
-  //log directory
-  logDir TBD;
-
-}
-
 
 #include "/org/smartfrog/services/hadoop/components/namenode/format.sf"
 #include "/org/smartfrog/services/hadoop/components/namenode/namenode.sf"

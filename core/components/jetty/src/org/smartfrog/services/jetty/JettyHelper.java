@@ -214,6 +214,7 @@ public class JettyHelper extends WebApplicationHelper {
      */
     public void addConnector(Connector connector) {
         httpServer.addConnector(connector);
+        
     }
 
     /**

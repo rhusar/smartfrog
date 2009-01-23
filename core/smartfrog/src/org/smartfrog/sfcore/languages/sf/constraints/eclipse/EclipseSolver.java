@@ -20,39 +20,6 @@
 package org.smartfrog.sfcore.languages.sf.constraints.eclipse;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
-
-import org.smartfrog.SFParse;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SFNull;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.DefaultParser;
-import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState;
-import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
-import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
-import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState.ConstraintContext;
-import org.smartfrog.sfcore.languages.sf.functions.Constraint;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
-import org.smartfrog.sfcore.reference.AttribReferencePart;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.security.SFClassLoader;
-
 import com.parctechnologies.eclipse.Atom;
 import com.parctechnologies.eclipse.CompoundTerm;
 import com.parctechnologies.eclipse.CompoundTermImpl;
@@ -64,6 +31,32 @@ import com.parctechnologies.eclipse.EmbeddedEclipse;
 import com.parctechnologies.eclipse.FromEclipseQueue;
 import com.parctechnologies.eclipse.QueueListener;
 import com.parctechnologies.eclipse.ToEclipseQueue;
+import org.smartfrog.SFParse;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.constraints.ConstraintResolutionState;
+import org.smartfrog.sfcore.languages.sf.constraints.CoreSolver;
+import org.smartfrog.sfcore.languages.sf.constraints.FreeVar;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
+import org.smartfrog.sfcore.languages.sf.sfreference.SFReference;
+import org.smartfrog.sfcore.reference.AttribReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Implementation of solver for Eclipse
@@ -116,6 +109,21 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     private FromEclipseQueue eclipseToJavaQueue;
 
     /**
+     * Lock for object, so that solve method waits until constraint goal done before exiting
+     */
+    private ReentrantLock solverLock = new ReentrantLock();
+
+    /**
+     * Condition for lock, so that solve method waits until constraint goal done before exiting
+     */
+    private Condition solverFinished = solverLock.newCondition();
+
+    /**
+     * Indicates whether the eclipse secondary thread (for main eclipse goal) has sought and lock yet
+     */
+    private boolean ecrSoughtLock = false;
+
+    /**
      * Latest constraint goal has finished?
      */
     private boolean consFinished = false;
@@ -134,12 +142,12 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     /**
      * Property prefix for theory files...
      */
-    private static final String THEORYFILE_PREFIX = "org.smartfrog.sfcore.languages.sf.constraints.theoryFile";
+    private static final String THEORYFILE_PREFIX = "opt.smartfrog.sfcore.languages.sf.constraints.theoryFile";
 
     /**
      * Property indicating where to find eclipse installation
      */
-    public static final String ECLIPSEDIR_SPECIFIER = "org.smartfrog.sfcore.languages.sf.constraints.eclipseDir";
+    public static final String ECLIPSEDIR_SPECIFIER = "opt.smartfrog.sfcore.languages.sf.constraints.eclipseDir";
     //NOTE: eclipseDir property is a temporary solution pending resolution of best way to include eclipse in release...
 
     /**
@@ -168,13 +176,11 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     private EclipseCDAttr currentCDAttr;
     private static final String DEFAULT_THEORY = "core.ecl";
 
-    private static long g_count=0x0; 
-    private Calendar g_start;
-    
+
     /**
      * Protected constructor
      */
-    public EclipseSolver() throws SmartFrogRuntimeException {
+    protected EclipseSolver() throws SmartFrogRuntimeException {
         prepareSolver();
     }
 
@@ -192,12 +198,10 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         try {
             eclipse.rpc("sfsolve");
         } catch (Exception e) {
-        	
-	        generalError = e;
+            generalError = e;
             yieldLockFromECRThread();
         }
     }
-
 
     /**
      * Constraints are possible (ie supported) if this class is loaded...
@@ -220,7 +224,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         if (eclipseDir == null) {
             eclipseDir = System.getenv("ECLIPSEDIRECTORY");
         }
-        
+
         //Throw on lack of info re eclipse directory...
         if (eclipseDir == null) {
             throw new SmartFrogResolutionException(
@@ -268,47 +272,16 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         } catch (Exception e) {
             throw new SmartFrogResolutionException(unable + " general queue exception, " + e, e);
         }
-        
-        resetResolutionState();
     }
 
-    
-    public void doConstraintsWork(Object key) throws SmartFrogResolutionException {
-    	//if (resolutionState != null){
-    	//System.out.println("In doConstraintsWork");
-    		Vector<FreeVar> vec = resolutionState.removeLabellingRecordVector(key);
-    		if (vec!=null) {
-    			Constraint constraint = new Constraint();
-                ComponentDescription comp = new SFComponentDescriptionImpl();
-    			comp.sfContext().setOriginatingDescr(comp);
-    			
-    			//Add vars...
-    			try {
-	    			for (FreeVar fv: vec){
-	    				String id="unique"+DefaultParser.nextId++;
-	    				comp.sfAddAttribute(id, fv);
-	    				comp.sfAddTag(id, "sfConstraintAutoVar");
-	    			}
-    			} catch (SmartFrogRuntimeException sfre){ throw new SmartFrogResolutionException(sfre);}
-    				
-    			constraint.doit(comp.sfContext(), null, (ReferenceResolver)null);
-    		} 
-    	//}
-    }
-    
-    public void addAutoVar(Object key, FreeVar var) throws SmartFrogResolutionException {
-    	resolutionState.addLabellingRecord(key, var);
-    }
-    
-    
     /**
      * Reset "backtracked to" Context information
      */
     @Override
     public void resetDoneBacktracking() {
-        //if (resolutionState != null) {
+        if (resolutionState != null) {
             resolutionState.resetDoneBacktracking();
-        //}
+        }
     }
 
     /**
@@ -317,10 +290,12 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      * @return Context to which backtracking has unwound to, null if no backtracking
      */
     @Override
-    public ConstraintContext hasBacktrackedTo() {
-        //if (resolutionState != null) 
-        return resolutionState.hasBacktrackedTo();
-        //else return null;
+    public Context hasBacktrackedTo() {
+        if (resolutionState != null) {
+            return resolutionState.hasBacktrackedTo();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -330,9 +305,9 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     @Override
     public void setShouldUndo(boolean undo) {
-        //if (resolutionState != null) {
+        if (resolutionState != null) {
             resolutionState.setConstraintsShouldUndo(undo);
-        //}
+        }
     }
 
     /**
@@ -344,9 +319,9 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     @Override
     public void addUndoPut(Context ctxt, Object key, Object value) {
-        //if (resolutionState != null) {
+        if (resolutionState != null) {
             resolutionState.addUndoPut(ctxt, key, value);
-        //}
+        }
     }
 
     /**
@@ -356,9 +331,9 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     @Override
     public void addUndoFVInfo(FreeVar fv) {
-        //if (resolutionState != null) {
+        if (resolutionState != null) {
             resolutionState.addUndoFVInfo(fv);
-        //}
+        }
     }
 
     /**
@@ -368,22 +343,11 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      */
     @Override
     public void addUndoFVTypeStr(FreeVar fv) {
-        //if (resolutionState != null) {
+        if (resolutionState != null) {
             resolutionState.addUndoFVTypeStr(fv);
-        //}
+        }
     }
-   
-    @Override
-    public void addUndoFVAutoVarEffect(FreeVar fv, Vector<Reference> autoEffects){
-    	resolutionState.addUndoFVAutoVarEffect(fv, autoEffects);
-    }
-    
-    @Override
-    public void addUndoFVAutoVarEffect(FreeVar fv){
-    	resolutionState.addUndoFVAutoVarEffect(fv);
-    }
-    
-    
+
     /**
      * Stop solving altogether
      */
@@ -391,62 +355,23 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
     public void stopSolving() {
         javaToEclipse("sfstop");
         goalThread = null;
-        resetResolutionState();
-        Calendar stop = new GregorianCalendar();
-        if (SFParse.isVerboseOptSet()){
-        	System.out.println("Start:"+g_start);
-        	System.out.println("Stop:"+stop);
-        	System.out.println("Label counts:"+g_count);
-        }
+        resolutionState = null;
     }
 
-    public void fail() throws Exception {
-    	//Assume that we are up...
-    	get_value = "fail";
-    	
-        //Let rip...
-        doIt();
-    }
-    
-    
-    public void doIt() {
-    	consFinished = false;
-        javaToEclipse();
-
-        //Lock me to make sure I don't complete before constraint eval does...
-        synchronized(this){
-        	while (!consFinished){
-        		try {
-        			wait();
-        		}catch (Exception e){};
-        	}
-        }
-
-        //Has Eclipse solver thread failed?
-        if (generalError != null) {
-        	Exception generalErrorold = generalError;
-        	goalThread = null;
-        	generalError = null;
-            resetResolutionState();
-            throw new CoreSolverFatalError(generalErrorold);
-        }
-    }
-    
-    void resetResolutionState(){
-    	resolutionState = new ConstraintResolutionState();
-        g_count=0;
-        g_start = new GregorianCalendar();
-    }
-    
     /**
      * Solve a Constraint goal
      */
     @Override
-    public void solve(ConstraintContext cc, Vector attrs, Vector values, Vector goal, Vector autos,
-            boolean isuservars, HashMap<FreeVar,Object> assigns) throws Exception {
+    public void solve(ComponentDescription comp, Vector attrs, Vector values, Vector goal, Vector autos,
+                      boolean isuservars) throws Exception {
+
+        //New Constraint Evaluation History, if appropriate...
+        if (resolutionState == null) {
+            resolutionState = new ConstraintResolutionState();
+        }
 
         //Set comp as current solving comp descr
-        solveCD = cc.getCD();
+        solveCD = comp;
 
         //Set is user vars?
         isUserVars = isuservars;
@@ -458,33 +383,31 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         String _autos = mapValueJE(autos);
         String verbose = (SFParse.isVerboseOptSet() ? "true" : "false");
 
-        String assign_s="[";
-        boolean first=true;
-        Iterator iter = assigns.keySet().iterator();
-        while (iter.hasNext()){
-        	FreeVar fv = (FreeVar) iter.next();
-        	Object val = assigns.get(fv);
-        	if (first) first=false;
-        	else assign_s += ", ";
-        	assign_s += "("+val+","+mapValueJE(fv)+")";
-        }
-        assign_s +="]";
-        
         get_value = "sfsolve(" + _attrs + ", " + _values + ", " +
-                resolutionState.addConstraintEval(cc) + ", " + _goal + ", " + _autos + ", " + verbose + ", "+ assign_s 
+                resolutionState.addConstraintEval(comp.sfContext()) + ", " + _goal + ", " + _autos + ", " + verbose
                 + ")";
 
-        if (SFParse.isVerboseOptSet()) System.out.println(get_value);
-        
         //Allocate new thread for goal and start it
+        consFinished = ecrSoughtLock = false;
         if (goalThread == null) {
             goalThread = new Thread(this);
             goalThread.start();
         }
-        
-        //Let rip
-        doIt();
-        
+
+        //Let rip...
+        javaToEclipse();
+
+        //Lock me to make sure I don't complete before constraint eval does...
+        solverLock.lock();
+        if (!consFinished) {
+            solverFinished.await();
+        }
+        solverLock.unlock();
+
+        //Has Eclipse solver thread failed?
+        if (generalError != null) {
+            throw generalError;
+        }
     }
 
     /**
@@ -504,7 +427,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      * @param quoted indicates whether Strings should be double quoted
      * @return eclipse string
      */
-    public String mapValueJE(Object v, boolean quoted) throws SmartFrogResolutionException {
+    private String mapValueJE(Object v, boolean quoted) throws SmartFrogResolutionException {
         if (v instanceof FreeVar) {
             FreeVar fv = (FreeVar) v;
             if (fv.getConsEvalKey() != null) {
@@ -518,8 +441,6 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
                             range_s = (String) range;
                         } else if (range instanceof Vector) {
                             range_s = mapValueJE(range);
-                        } else if (range instanceof Integer || range instanceof Boolean) {
-                        	range_s = "integer";
                         } else {
                             throw new SmartFrogResolutionException("Invalid range specifier for FreeVar: " + v);
                         }
@@ -561,8 +482,6 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         } else if (v instanceof SFNull) {
             return "sfnull";
         } else if (v instanceof SFReference) {
-        	SFReference vref = (SFReference)v;
-        	if (vref.size()==0) return null;
             ReferencePart rp = ((SFReference) v).firstElement();
             if (rp instanceof AttribReferencePart) {
                 String ret_s = ((AttribReferencePart) rp).getValue().toString();
@@ -572,9 +491,9 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
                 return null;
             }
         } else if (v instanceof ComponentDescription) {
-        	return "sfcd";
+            return "sfcd";
         } else if (v instanceof Boolean) {
-            return ((Boolean) v).booleanValue()?"1":"0";
+            return ((Boolean) v).toString();
         } else {
             return null;
         }
@@ -718,7 +637,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
      * Communicate m_get_val to Eclipse side
      */
     public void javaToEclipse() {
-    	try {
+        try {
             javaToEclipseQueue.setListener(this);
         } catch (Exception e) {
             throw new RuntimeException("Unanable to reset JtoE listener", e);
@@ -750,9 +669,8 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         }
 
         //Populate the browser
-        
         populateBrowser();
- 
+
         //User variables to be set in m_rangeAttrs, communicate these to eclipse side to get ranges...
         if (rangeAttrs.size() != 0) {
 
@@ -770,6 +688,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         } else {
             javaToEclipse(new Atom("done"));
         }
+
     }
 
     /**
@@ -786,28 +705,13 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         while (citer.hasNext()) {
             EclipseCDAttr ecda = (EclipseCDAttr) riter.next();
             Collection range = (Collection) citer.next();
-            
-            if (ecda.isSet()) continue;
-            
-            Object val = ecda.getValue();
-            boolean bool = (val instanceof FreeVar && ((FreeVar)val).getRange() instanceof Boolean);
-            
             if (range.size() > 1) {
-            	if (bool) ecda.setRange("[false, true]"); 
-            	else ecda.setRange(mapValueEJ(range));
+                ecda.setRange(mapValueEJ(range));
                 ecda.set(false);
                 all_done = false;
             } else {
                 Iterator range_iter = range.iterator();
-                Object newval = range_iter.next();
-                if (bool){            
-            		if (newval instanceof Integer) {
-                		int ival = ((Integer) newval).intValue();
-                		if (ival==0 || ival==1){
-                			ecda.setValue(ival==1?"true":"false");
-                		} else throw new RuntimeException("Trying set Boolean value for user var with key: "+ecda.getAttrName()+" when value to set is not 1 or 0");
-                	} else throw new RuntimeException("Trying set Boolean value for user var with key: "+ecda.getAttrName()+" when value to set is not 1 or 0");                	
-                } else ecda.setValue(mapValueEJ(newval));
+                ecda.setValue(mapValueEJ(range_iter.next()));
                 ecda.set(true);
             }
         }
@@ -831,13 +735,14 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         eclipseStatus.setBack(((CompoundTerm) ct.arg(4)).functor().equals("back"));
         javaToEclipse(new Atom("range"));
     }
-    
+
+
     /**
      * Called when Eclipse flushes FromEclipse queue
      */
     public void dataAvailable(Object source) {
 
-    	FromEclipseQueue m_iqueue = null;
+        FromEclipseQueue m_iqueue = null;
         EXDRInputStream m_iqueue_formatted = null;
 
         if (m_iqueue == null) {
@@ -851,12 +756,12 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
         } catch (IOException ioe) {
             throw new RuntimeException("dataAvailable: Unable to *read* from input stream. ", ioe);
         }
-        
+
         String func = ct.functor();
 
         //Handle general failure...
         if (func.equals("sffailed")) {
-        	throw new RuntimeException("Unable to solve constraints. General failure.");
+            throw new RuntimeException("Unable to solve constraints. General failure.");
         }
 
         //Handle eclipse dictating that user variables are filled in
@@ -882,18 +787,18 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
 
         //Handle done on constraint goal, yield lock so solve() may complete
         else if (func.equals("sfdonegoal")) {
-        	yieldLockFromECRThread();
+            yieldLockFromECRThread();
         }
 
         //Handle regular setting of an attributes value
         else if (func.equals("sfset")) {
-        	
-        	//Variable setting index in constraint solving...
+
+            //Variable setting index in constraint solving...
             int idx = ((Integer) ct.arg(1)).intValue();
 
             //Variable value
             Object val = mapValueEJ(ct.arg(2));
-            
+
             //Qualification for setting
             String qual = ((Atom) ct.arg(3)).functor();
 
@@ -933,8 +838,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
                     first = false;
                 }
                 try {
-                	boolean success = resolutionState.addConstraintAss(solveCD, key, val, cidx);
-                    g_count++;
+                    boolean success = resolutionState.addConstraintAss(solveCD, key, val, cidx);
                     get_value = "" + success;
                 } catch (SmartFrogResolutionException smfre) {
                     throw new RuntimeException(smfre);
@@ -948,29 +852,31 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
             Vector types = (Vector) mapValueEJ(ct.arg(2), true);  //by this stage we know its a Vector
             resolutionState.setTyping(attr, types);
         }
-        
     }
 
     /**
      * Yields lock so that solve() may finish
      */
     void yieldLockFromECRThread() {
-    	synchronized(EclipseSolver.this){
-        	consFinished = true;
-        	EclipseSolver.this.notifyAll();
-        	try {
-        	EclipseSolver.this.javaToEclipseQueue.setListener(null);
-        	} catch (Exception e){/*Shouldn't happen*/}
-        }
+        //Need to own lock in order to signal to opposition...
+        if (!ecrSoughtLock) solverLock.lock();
+
+        consFinished = true;
+        solverFinished.signalAll();
+        solverLock.unlock();
     }
 
     /**
      * Called when Eclipse demands data
      */
     public void dataRequest(Object source) {
-    	
         ToEclipseQueue oqueue = null;
         EXDROutputStream oqueue_formatted = null;
+
+        if (!ecrSoughtLock) {
+            ecrSoughtLock = true;
+            solverLock.lock();
+        }
 
         if (oqueue == null) {
             oqueue = (ToEclipseQueue) source;
@@ -983,7 +889,7 @@ public class EclipseSolver extends CoreSolver implements Runnable, QueueListener
                 javaToEclipseQueue.setListener(null);
                 get_value = null;
             } else {
-                throw new RuntimeException("dataRequest: No data available to write. "+get_value);
+                throw new RuntimeException("dataRequest: No data available to write. ");
             }
         } catch (IOException ioe) {
             throw new RuntimeException("dataRequest: Unable to *write* on output stream. ", ioe);

@@ -28,7 +28,6 @@ import java.rmi.Remote;
 
 public interface HadoopCluster extends Remote {
 
-    
     /**
      * {@value}
      */

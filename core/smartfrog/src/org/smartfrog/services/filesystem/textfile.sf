@@ -31,8 +31,6 @@ TextFileSchema extends Schema {
     text extends String;
     //encoding of the optional text. 
     encoding extends String;
-
-    createParentDirs extends Boolean;
 }
 
 
@@ -40,7 +38,6 @@ TextFile extends SelfDeletingFile {
     textFileSchema extends TextFileSchema;
     sfClass "org.smartfrog.services.filesystem.TextFileImpl";
     deleteOnExit false;
-    createParentDirs false;
     encoding "UTF-8";
 }
 

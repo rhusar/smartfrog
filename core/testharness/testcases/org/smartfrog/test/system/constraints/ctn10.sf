@@ -33,19 +33,15 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends {
   foo1 extends Array {
-     prefix "zoo";
-     extent 3;
-     generator extends ArrayGenerator, Constraint {
+     sfArrayGenerator extends ArrayGenerator, Constraint {
          bar VAR "[0,1]";
-         index sfIndex;
+         index sfArrayIndex;
          [sfConstraint] -- "(index==0 -> bar=0; bar=1)"; 
      }
   }  
 
   foo2 extends Aggregator {
-        [sfSource] -- LAZY foo1;
-	[sfPrefix] -- "zoo";
-	[sfPath] -- LAZY bar;
+        sfAggregatorPath "foo1:bar";
         foo3 extends concat;        
   }
 }

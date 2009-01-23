@@ -203,9 +203,9 @@
       <zipfileset dir="${comp}/net" prefix="${pcomp}/net"  >
         <patternset refid="project.source"/>
       </zipfileset>
-<!--      <zipfileset dir="${comp}/persistence" prefix="${pcomp}/persistence"  >
+      <zipfileset dir="${comp}/persistence" prefix="${pcomp}/persistence"  >
         <patternset refid="project.source"/>
-      </zipfileset>-->
+      </zipfileset>
       <zipfileset dir="${comp}/quartz" prefix="${pcomp}/quartz"  >
         <patternset refid="project.source"/>
       </zipfileset>

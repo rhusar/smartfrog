@@ -22,10 +22,9 @@
 package org.apache.hadoop.hdfs.server.datanode;
 
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
-import org.smartfrog.services.hadoop.core.ServiceInfo;
-import org.smartfrog.services.hadoop.core.ServiceStateChangeNotifier;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,30 +35,20 @@ import java.util.AbstractList;
  * visible in package scope. <p/> To use these classes in a secure classloader, both the hadoop-core and sf-hadoop JARs
  * will need to be signed by the same entities.
  */
-public class ExtDataNode extends DataNode implements ServiceInfo {
+public class ExtDataNode extends DataNode {
 
     private volatile boolean stopped;
     private ExtDataNodeThread worker;
     private Prim owner;
-    private ServiceStateChangeNotifier notifier;
 
     public ExtDataNode(Prim owner, ManagedConfiguration conf, AbstractList<File> dataDirs)
             throws IOException {
         super(conf, dataDirs);
         this.owner = owner;
-        notifier = new ServiceStateChangeNotifier(this, owner);
     }
 
-  /**
-   * Return an extended service name
-   * @return new service name
-   */
-  @Override
-  public String getServiceName() {
-    return "ExtDataNode";
-  }
 
-  /**
+    /**
      * Start our parent and the worker thread
      *
      * @throws IOException if necessary
@@ -67,6 +56,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     @Override
     public void innerStart() throws IOException {
         super.innerStart();
+        //verifyServiceState(ServiceState.LIVE);
         register();
         startWorkerThread();
     }
@@ -75,9 +65,9 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
      * Shut down this instance of the datanode. Returns only after shutdown is complete.
      */
     @Override
-    public synchronized void innerClose() throws IOException {
+    public synchronized void innerTerminate() throws IOException {
         LOG.info("Terminating ExtDataNode");
-        super.innerClose();
+        super.innerTerminate();
 /*
         if (!isStopped()) {
             stopped();
@@ -105,35 +95,6 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     }
 
     /**
-     * Get the port used for IPC communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    public int getIPCPort() {
-        return getSelfAddr().getPort();
-    }
-
-    /**
-     * Get the port used for HTTP communications
-     *
-     * @return the port number; not valid if the service is not LIVE
-     */
-    public int getWebPort() {
-        //return this.infoServer.getPort();
-        return ServiceInfo.PORT_UNDEFINED;
-    }
-
-    /**
-     * Get the current number of workers
-     *
-     * @return the worker count
-     */
-
-    public int getLiveWorkerCount() {
-        return 0;
-    }
-
-    /**
      * Override point - aethod called whenever there is a state change.
      *
      * The base class logs the event.
@@ -145,7 +106,6 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     protected void onStateChange(ServiceState oldState, ServiceState newState) {
         super.onStateChange(oldState, newState);
         LOG.info("State change: DataNode is now " + newState);
-        notifier.onStateChange(oldState,newState);
     }
 
     /**
@@ -187,7 +147,9 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
     /**
      * Start the worker thread
      */
-    private synchronized void startWorkerThread() {
+    public synchronized void startWorkerThread() {
+
+
         if (worker == null) {
             worker = new ExtDataNodeThread();
             worker.start();
@@ -205,7 +167,6 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
          */
         private ExtDataNodeThread() {
             super(ExtDataNode.this.owner, true);
-            setName(getServiceName());
         }
 
         /**
@@ -220,7 +181,7 @@ public class ExtDataNode extends DataNode implements ServiceInfo {
           try {
             ExtDataNode.this.run();
           } catch (Throwable e) {
-              LOG.error("error while in state " + getState() + ": " + e, e);
+            LOG.error("error while in state "+getState()+": " + e.getMessage(),e);
             throw e;
           }
         }

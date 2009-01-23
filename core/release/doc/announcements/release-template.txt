@@ -23,26 +23,18 @@ with the ability to tag attributes, and includes the following items:
 * Ant components: the ability to execute ant tasks in a deployment.
 * Anubis: a partition aware tuple-space that can be used to implement fault
   tolerant systems.
-* Database: components to issue database commands, and deploy HSLDB and 
-  MySQL databases.
-* Hadoop: a version of Apache Hadoop with SmartFrog management, and
-  support components to interact with Hadoop: filesystem operations and 
-  Job submission. This is still experimental and must be considered 
-  unstable.
+* Database: components to issue database commands, and deploy HSLDB and MySQL.
 * JMX: the ability to configure and manage JMX components, and to manage
   SmartFrog components over JMX.
-* Logging: integration with Apache commons-logging and Log4J, and the 
-  SLF4J framework.
+* Logging: integration with Apache commons-logging and Log4J
 * Networking: email, FTP, SSH, DNS support.
 * Quartz: scheduled operations using Quartz libraries.
-* RpmTools: components for working with or deploying with RPMs
 * Scripting: support for BSF-hosted scripting languages
 * Testing: Distributed JUnit and component testing with SFUnit.
 * Velocity: generation/transformation of text files during deployment
 * WWW: deployment of WAR and EAR files to application servers. deploy-by-copy
   is provided for all application servers that support it, and sample templates
-  are provided to start and stop Tomcat and JBoss. 
-* Jetty: The Jetty components can
+  are provided to start and stop Tomcat and JBoss. The Jetty component can
   configure and deploy individual servlets, eliminating much of the need for WAR
   files and application servers.
 * XML: XML support with XOM.
@@ -73,14 +65,11 @@ smartfrog-ant:    Ant task and build file execution
 smartfrog-anubis: Distributed partition-aware tuple space
 smartfrog-csvfiles: Support for reading/writing CSV Files.
 smartfrog-database: Database access
-smartfrog-jetty:   Jetty support
 smartfrog-jmx:    JMX integration though MX4J
 smartfrog-junit:  Junit 3.8.2 test execution
-smartfrog-hadoop: Hadoop support
 smartfrog-logging: Logging through Log4J and commons-logging
 smartfrog-networking: SSH, SCP, FTP and email
 smartfrog-quartz:  Scheduled operations
-smartfrog-rpmtools: RPM support tools  
 smartfrog-scripting: Scripted components
 smartfrog-velocity: Velocity template processing
 smartfrog-www:      Web support: Deployment and liveness pages
@@ -115,7 +104,7 @@ a private set of secure RPM files.
 Building SmartFrog
 ==================
 
-SmartFrog requires Java 1.5+ and Ant 1.7+ to build. The izpack and source .zip and
+SmartFrog requires Java 1.5 and Ant 1.7 to build. The izpack and source .zip and
 .tar.gz distributions include a source tree adequate to build the
 entire system. To build a later release, please follow the instructions at
   http://sourceforge.net/svn/?group_id=87384

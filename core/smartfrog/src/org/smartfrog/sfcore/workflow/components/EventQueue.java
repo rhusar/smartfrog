@@ -26,7 +26,6 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
@@ -40,13 +39,77 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * required event handling.
  */
 public class EventQueue extends EventPrimImpl implements Prim {
+    private SenderThread sender = null;
+
+    private class SenderThread extends Thread {
+	private boolean finished = false;
+
+	public void finished() {
+	    finished = true;
+	}
+
+	private void doAll() {
+        int index = messageIndex;
+        Hashtable t = (Hashtable)registrationMessages.clone(); // save the keys and order...
+
+        for (Enumeration e = t.keys(); e.hasMoreElements(); ) {
+            EventSink s = (EventSink)e.nextElement();
+            int soFar = ((Integer)t.get(s)).intValue();
+            if (soFar<index) {
+                for (int i = soFar; i<index; i++) {
+                    //send it to the sink;
+                    try {
+                        s.event(messages.get(i));
+                    } catch (Exception ex) {
+                        sfLog().error(ex);
+                    }
+                }
+                synchronized (registrationMessages) {
+                    registrationMessages.put(s, new Integer(index));
+                }
+            }
+        }
+	}
+
+	private boolean allDone() {
+    // note: synchronized with messages already
+        synchronized (registrationMessages) {
+            for (Enumeration e = registrationMessages.keys(); e.hasMoreElements(); ) {
+                EventSink s = (EventSink)e.nextElement();
+                int soFar = ((Integer)registrationMessages.get(s)).intValue();
+                if (soFar<messageIndex) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+	}
+
+        public void run() {
+            while (!finished) {
+                synchronized (messages) {
+                    if (allDone()) {
+                        try {
+                            messages.wait();
+                        } catch (InterruptedException e) {
+                            //ignored
+                        }
+                    }
+                }
+                if (!finished) {
+                    doAll();
+                }
+            }
+        }
+    }
+
+
     private Vector messages = new Vector();
     private int messageIndex = 0;
 
-    private Hashtable<EventSink, Integer> registrationMessages = new Hashtable<EventSink, Integer>();
+    private Hashtable registrationMessages = new Hashtable();
 
-
-    private SenderThread sender = null;
 
 
     /**
@@ -55,8 +118,8 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @throws RemoteException In case of RMI or network failure.
      */
     public EventQueue() throws RemoteException {
+        super();
     }
-
 
 
 
@@ -82,7 +145,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
     /**
      * Deregisters an EventSink for forwarding of events.
      *
-     * @param sink EventSink
+     * @param sink org.smartfrog.sfcore.workflow.eventbus.EventSink
      * @see org.smartfrog.sfcore.workflow.eventbus.EventRegistration
      */
     public synchronized void deregister(EventSink sink) {
@@ -98,7 +161,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * Default implementation of the EventBus event method to
      * forward an event to this component
      *
-     * @param event the event to handle
+     * @param event java.lang.Object
      */
     public synchronized void event(Object event) {
         synchronized (messages) {
@@ -132,79 +195,12 @@ public class EventQueue extends EventPrimImpl implements Prim {
      */
     public synchronized void sfTerminateWith(TerminationRecord status, Prim comp) {
         try {
-            if (sender != null) {
-                sender.finished();
-                sender.interrupt();
-                sender = null;
-            }
+            sender.finished();
+            sender.interrupt();
         } catch (Exception e) {
-            sfLog().ignore(e);
+            //ignored
         }
 
         super.sfTerminatedWith(status, comp);
     }
-
-    private class SenderThread extends Thread {
-        private boolean finished = false;
-
-        public void finished() {
-            finished = true;
-        }
-
-        private void doAll() {
-            int index = messageIndex;
-            Hashtable<EventSink, Integer> t = (Hashtable < EventSink, Integer>) registrationMessages.clone(); // save the keys and order...
-
-            for (EventSink s : t.keySet()) {
-                int soFar = t.get(s).intValue();
-                if (soFar < index) {
-                    for (int i = soFar; i < index; i++) {
-                        //send it to the sink;
-                        try {
-                            s.event(messages.get(i));
-                        } catch (Exception ex) {
-                            sfLog().error(ex);
-                        }
-                    }
-                    synchronized (registrationMessages) {
-                        registrationMessages.put(s, new Integer(index));
-                    }
-                }
-            }
-        }
-
-        private boolean allDone() {
-            // note: synchronized with messages already
-            synchronized (registrationMessages) {
-                for (EventSink s : registrationMessages.keySet()) {
-                    int soFar = registrationMessages.get(s).intValue();
-                    if (soFar < messageIndex) {
-                        return false;
-                    }
-                }
-
-            }
-            return true;
-        }
-
-        public void run() {
-            while (!finished) {
-                synchronized (messages) {
-                    if (allDone()) {
-                        try {
-                            messages.wait();
-                        } catch (InterruptedException e) {
-                            //ignored
-                        }
-                    }
-                }
-                if (!finished) {
-                    doAll();
-                }
-            }
-        }
-
-    }
-
-
 }

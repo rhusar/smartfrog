@@ -26,20 +26,19 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.smartfrog.services.management.SFDeployDisplay;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.ParseOptionSet;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.sfcore.common.ExitCodes;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.services.management.SFDeployDisplay;
 
 /**
  * SFParse provides the utility methods to parse file descriptions and generate
@@ -90,14 +89,12 @@ public class SFParse implements MessageKeys {
     /**
      * Ascertains whether a file is parseable
      * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
      * @return success or not
      */
-    public static boolean fileParses(String fileUrl, RawParseModifier rpm) { 
+    public static boolean fileParses(String fileUrl) { 
     	if (opts==null) opts = new ParseOptionSet(new String[]{"sfParse"});
     	errorReport= new Vector();
-    	parseFile(fileUrl,rpm);
+    	parseFile(fileUrl);
     	return (errorReport.size()==0);
     }
     
@@ -106,20 +103,9 @@ public class SFParse implements MessageKeys {
      * @param fileUrl the fileurl to be parsed
      * @return ComponentDescription resulting from parse, if file successfully parses, else null
      */
+
     public static ComponentDescription parseFileToDescription(String fileUrl) { 
-    	return parseFileToDescription(fileUrl, null);
-    }
-    
-    
-    /**
-     * Attempts to parse given file, returning resultant component description
-     * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
-     * @return ComponentDescription resulting from parse, if file successfully parses, else null
-     */
-    public static ComponentDescription parseFileToDescription(String fileUrl, RawParseModifier rpm) { 
-    	boolean parses = fileParses(fileUrl, rpm);
+    	boolean parses = fileParses(fileUrl);
     	if (parses) return cd;
     	else return null;
     }
@@ -130,19 +116,8 @@ public class SFParse implements MessageKeys {
      * @param fileUrl the fileurl to be parsed
      * @return the parse report
      */
+
     private static Vector parseFile(String fileUrl) {
-    	return parseFile(fileUrl, null);
-    }
-    
-    /**
-     * Parses a file.
-     *
-     * @param fileUrl the fileurl to be parsed
-     * @param rpm A RawParseModifier on which we call modify(...) passing the raw parsed ComponentDescription, 
-     * that is before any parsing phases are carried out, so we have the opportunity to modify it before the phases are carried out
-     * @return the parse report
-     */
-    private static Vector parseFile(String fileUrl, RawParseModifier rpm) {
         //To calculate how long it takes to parse a description
         Vector report = new Vector();
         report.add("File: "+fileUrl+"\n");
@@ -181,9 +156,7 @@ public class SFParse implements MessageKeys {
                     }
                 }
             }
-            
-            if (rpm!=null) rpm.modify(((ComponentDescription) top));
-            
+
             phaseList = top.sfGetPhases();
             String phase;
 
@@ -479,12 +452,7 @@ public class SFParse implements MessageKeys {
     }
     
     public static boolean isVerboseOptSet(){
-    	if (opts!=null) return opts.verbose;
-    	else return false;
-    }
-    
-    public interface RawParseModifier {
-    	public void modify(ComponentDescription cd);
+    	return opts.verbose;
     }
 
 }

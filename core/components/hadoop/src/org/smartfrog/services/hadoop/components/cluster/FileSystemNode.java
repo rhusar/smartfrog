@@ -20,7 +20,7 @@
 
 package org.smartfrog.services.hadoop.components.cluster;
 
-import org.smartfrog.services.hadoop.conf.HadoopConfiguration;
+import org.smartfrog.services.hadoop.components.HadoopConfiguration;
 
 
 /**
@@ -37,5 +37,4 @@ public interface FileSystemNode extends HadoopConfiguration {
     String ATTR_CHECK_RUNNING = "checkRunning";
     String ATTR_EXPECT_NODE_TERMINATION = "expectNodeTermination";
     String ATTR_LOG_DIR = "logDir";
-    String ATTR_TEST_MODE_DELETE_DIRECTORIES = "testModeDeleteDirectories";
 }

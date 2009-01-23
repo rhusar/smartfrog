@@ -139,6 +139,7 @@ public class TestCompoundImpl extends ConditionCompound
         super.sfDeploy();
         //look for the action
         checkActionDefined();
+        name = sfCompleteNameSafe();
         waitForCD = sfResolve(ATTR_WAITFOR, waitForCD, false);
         tests = sfResolve(ATTR_TESTS, tests, false);
         testTimeout = sfResolve(ATTR_TEST_TIMEOUT, 0L, true);
@@ -212,7 +213,7 @@ public class TestCompoundImpl extends ConditionCompound
             sendEvent(new TestStartedEvent(this));
             skipped = true;
             updateFlags(false);
-            String message = "Skipping test run " + getName();
+            String message = "Skipping test run " + name;
             sfLog().info(message);
             //send a test started event
             //followed by a the closing results
@@ -259,9 +260,8 @@ public class TestCompoundImpl extends ConditionCompound
                 message = "";
             }
 
-            //did we expect this component to terminate normally?
             if (isNormalTerminationExpected) {
-                //if so, it didn't happen. log and rethrow the exception
+                //if so, it didnt happen. rethrow the exception
                 sfLog().info("Exception raised during startup, which was not expected");
                 noteStartupFailure(UNEXPECTED_STARTUP_EXCEPTION, thrown);
                 //then throw an exception
@@ -286,7 +286,7 @@ public class TestCompoundImpl extends ConditionCompound
                     recordText += EXPECTED_EXIT_TEXT + exitText + '\n'
                             + "But got: " + message + '\n';
                 } else {
-                    recordText += "Exit message: \"" + message + "\"\n";
+                    recordText += "Exit message: " + message + '\n';
                 }
                 noteStartupFailure(recordText, thrown);
                 //then throw an exception
@@ -490,7 +490,7 @@ public class TestCompoundImpl extends ConditionCompound
             //child termination
             if (actionTerminator != null && actionTerminator.isForcedShutdown() && !expectTerminate) {
                 //this is a forced shutdown, all is well
-                sfLog().info("Forced shutdown of action component (expected)");
+                sfLog().info("Forced shutdown of test components (expected)");
                 testSucceeded = true;
             } else {
                 //not a forced shutdown, so why did it die?
@@ -567,9 +567,8 @@ public class TestCompoundImpl extends ConditionCompound
                         } else {
                             //error is good,
                             //The decision to terminate is based on the shouldTerminate flag
-                            sfLog().debug(propagateTermination ?
-                                      "Terminating normally"
-                                    : "Not terminating as sfShouldTerminate is false");
+                            sfLog().debug(propagateTermination?"Terminating normally":
+                                    "Not terminating as sfShouldTerminate is false");
                         }
 
                     }
@@ -580,9 +579,7 @@ public class TestCompoundImpl extends ConditionCompound
                     if (childStatus.isNormal()) {
                         //flip this to abnormal
                         exitRecord = TerminationRecord.abnormal(
-                                (childStatus.description != null
-                                        ? childStatus.description
-                                        : "Action terminated normally " + childStatus)
+                                childStatus.description
                                         + UNEXPECTED_TERMINATION,
                                 childStatus.id,
                                 childStatus.getCause());
@@ -594,7 +591,6 @@ public class TestCompoundImpl extends ConditionCompound
 
             }
         } else if (child == testsPrim) {
-            sfLog().debug("Tests have terminated");
             //tests are terminating.
             testsTerminationRecord = childStatus;
             //it is an error if these terminated abnormally, for any reason at all.
@@ -605,15 +601,12 @@ public class TestCompoundImpl extends ConditionCompound
                 exitRecord = childStatus;
                 testSucceeded = false;
             } else {
-                sfLog().debug("Tests termination was successful");
                 //normal termination is good
                 testSucceeded = true;
             }
         } else {
             //something odd just terminated, like the condition.
-            //whatever, it is the end of the test run.
-            sfLog().debug("A child that was neither an action or a test failed");
-            exitRecord = childStatus;
+            //whatever, it is an end of the test run.
             testSucceeded = false;
         }
 
@@ -639,7 +632,7 @@ public class TestCompoundImpl extends ConditionCompound
         if (exitRecord != null) {
             
             sfTerminate(exitRecord);
-            //don't forward, as we are terminating with an error
+            //dont forward, as we are terminating with an error
             propagateTermination = false;
         }
         //trigger termination.

@@ -62,7 +62,6 @@ public class DfsDeleteDirImpl extends DfsPathOperationImpl {
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         boolean recursive = sfResolve(ATTR_RECURSIVE, true, true);

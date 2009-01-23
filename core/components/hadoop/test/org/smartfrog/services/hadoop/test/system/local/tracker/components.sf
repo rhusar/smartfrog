@@ -34,10 +34,9 @@ testLocalJobTracker extends ExpectDeploy {
 
 
 testLocalJobTrackerForked extends testLocalJobTracker {
-  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:datanode:sfProcessName "testDataNodeForkedProcess";
-  action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
-//  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
+  //action:datanode:sfProcessName "testDataNodeForkedProcess";
+  //action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
 }
 
 /**
@@ -46,51 +45,22 @@ testLocalJobTrackerForked extends testLocalJobTracker {
 testLocalTaskTracker extends ExpectDeploy {
   description "bring up a Task Tracker";
 
+
+
   action extends LocalClusterCompound {
-  
   }
 
   tests extends MapReduceTestSequence {
-    s extends Sleep;
     jobTracker LAZY action:jobTracker;
-    taskTracker LAZY action:taskTracker;
-    cluster LAZY PARENT:action:cluster;
-    datanode LAZY PARENT:action:datanode;
-    namenode LAZY PARENT:action:namenode;
+    cluster PARENT:action:cluster;
   }
 
 
 }
-
-
-/**
- * Start an orphan task tracker. We expect it to be dead afterwards
- */
-testOrphanTracker extends ExpectDeploy {
-  description "bring up an orphan Task Tracker, see what happens.";
-
-
-
-  action extends OrphanTaskTrackerCompound {
-  
-  }
-
-  //for our test we sleep; that's all.
-  tests extends Sequence {
-    Sleep extends Delay {
-      time ORPHAN_SLEEP_TIME;
-    }
-  }
-
-
-}
-
-
 
 
 testLocalTaskTrackerForked extends testLocalTaskTracker {
-  action:namenode:sfProcessName "testDataNodeForkedProcess-namenode";
-  action:datanode:sfProcessName "testDataNodeForkedProcess";
-  action:clusterActions:then:jobTracker:sfProcessName "testLocalJobTrackerForked-jobtracker";
-  action:clusterActions:then:taskTracker:sfProcessName "testLocalJobTrackerForked-taskTracker";
+  //action:LocalDataNode:sfProcessName "testDataNodeForkedProcess";
+  //action:LocalInProcessNameNode:sfProcessName "testDataNodeForkedProcess-namenode";
+  action:taskTracker:sfProcessName "testLocalJobTrackerForked-tasktracker";
 }

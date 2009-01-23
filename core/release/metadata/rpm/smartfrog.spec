@@ -43,6 +43,8 @@
 
 
 
+# TODO: menu entries
+
 # if menu entries are created, define Summary here, and use it in the summary
 # tag, and the menu entries' descriptions
 
@@ -229,47 +231,7 @@ This package does not include any JDBC drivers. The appropriate JDBC driver for 
 target system must be installed/added to the sfCodeBase attribute of the components,
 in order for JDBC connectivity to work.
 
-Includes:
-commons-dbutils-${commons-dbutils.version}.jar
-commons-pool-${commons-pool.version}.jar
-commons-dbcp-${commons-dbcp.version}.jar
-
 # -----------------------------------------------------------------------------
-
-%package hadoop
-Group:         ${rpm.framework}
-Summary:        Hadoop integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
-
-%description hadoop
-This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
-It does not contain the Apache Hadoop shell scripts
-
-# -----------------------------------------------------------------------------
-
-#%package jasper
-#Group:         ${rpm.framework}
-#Summary:        Jasper JSP runtime
-#Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www
-
-#%description jasper
-#This includes all the artifacts needed to host JSP pages under a SmartFrog-hosted
-#application server, such as Jetty.
-
-
-# -----------------------------------------------------------------------------
-
-%package jetty
-Group:         ${rpm.framework}
-Summary:        Jetty integration
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www, %{name}-ant
-
-%description jetty
-This includes all the artifacts needed to deploy Jetty ${jetty.version} inside
-SmartFrog. It is incompatble with the Hadoop RPM.
-
-# -----------------------------------------------------------------------------
-
 
 %package jmx
 Group:         ${rpm.framework}
@@ -286,8 +248,6 @@ mx4j-remote-${mx4j.version}.jar
 mx4j-jmx-${mx4j.version}.jar
 mx4j-tools-${mx4j.version}.jar
 
-
-
 # -----------------------------------------------------------------------------
 
 %package logging
@@ -297,10 +257,7 @@ Requires:       %{name} = %{version}-%{release}
 #
 %description logging
 This package integrates SmartFrog with Apache Log4j. It includes the Apache
-commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries,
-and the slf4j-${slf4j.version} libraries to bind to commons-logging.
-SmartFrog Logging can fit in behind commons-logging, so that it can handle
-all the output. Log4J can be used as a back end for SmartFrog itself.
+commons-logging-${commons-logging.version} and log4j-${log4j.version} libraries
 
 # -----------------------------------------------------------------------------
 
@@ -325,8 +282,7 @@ oro-${oro.version}.jar
 %package quartz
 Group:         ${rpm.framework}
 Summary:        Work scheduling with Quartz
-Requires:       %{name} = %{version}-%{release} ,  %{name}-logging,
-
+Requires:       %{name} = %{version}-%{release} ,  %{name}-logging
 #
 %description quartz
 Work scheduling. These components can be used to schedule work to a pool of machines,
@@ -334,20 +290,6 @@ using Quartz to queue the jobs. A CPU monitor component provides information abo
 current system state, using the Unix/Linux vmstat command as a source of information.
 
 Contains the Quartz library version quartz-${quartz.version}.jar.
-
-# -----------------------------------------------------------------------------
-
-%package rpmtools
-Group:         ${rpm.framework}
-Summary:        Components to aid RPM generation and deployment
-Requires:       %{name} = %{version}-%{release},  %{name}-networking,
-
-#
-%description rpmtools
-This RPM contains components to work with RPMs.
-
-There are no explicit dependencies, but any remote installation services
-will require the SSH package to be installed
 
 # -----------------------------------------------------------------------------
 
@@ -407,7 +349,7 @@ Prerequisite packages: Logging.
 Group:         ${rpm.framework}
 Summary:        WWW components
 Requires:       %{name} = %{version}-%{release} , %{name}-logging
-
+#
 %description www
 This package contains components to deploy web applications on different
 Java web servers, from Jetty ${jetty.version} to JBoss. It also contains a LivenessPage
@@ -416,6 +358,8 @@ component that can monitor the health of a remote site.
 The bundled libraries are
 commons-httpclient-${commons-httpclient.version}.jar
 commons-codec-${commons-codec.version}.jar
+servlet-api-${servletapi.version}.jar
+jetty-${jetty.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -740,47 +684,6 @@ fi
 
 %{libdir}/sf-database-${smartfrog.version}.jar
 %{linkdir}/sf-database.jar
-%{libdir}/commons-dbcp-${commons-dbcp.version}.jar
-%{linkdir}/commons-dbcp.jar
-%{libdir}/commons-pool-${commons-pool.version}.jar
-%{linkdir}/commons-pool.jar
-%{libdir}/commons-dbutils-${commons-dbutils.version}.jar
-%{linkdir}/commons-dbutils.jar
-
-%files hadoop
-%{linkdir}/sf-hadoop.jar
-%{libdir}/sf-hadoop-${smartfrog.version}.jar
-%{libdir}/hadoop-core-${hadoop.version}.jar
-%{linkdir}/hadoop-core.jar
-
-%{libdir}/commons-cli-${commons-cli.version}.jar
-%{linkdir}/commons-cli.jar
-%{libdir}/jets3t-${jets3t.version}.jar
-%{linkdir}/jets3t.jar
-%{libdir}/xmlenc-${xmlenc.version}.jar
-%{linkdir}/xmlenc.jar
-
-%files jetty
-
-%{libdir}/sf-jetty-${smartfrog.version}.jar
-%{libdir}/jetty-${jetty.version}.jar
-%{libdir}/jetty-util-${jetty.version}.jar
-%{libdir}/servlet-api-${servletapi.version}.jar
-%{linkdir}/sf-jetty.jar
-%{linkdir}/servlet-api.jar
-%{linkdir}/jetty.jar
-%{linkdir}/jetty-util.jar
-
-
-%{libdir}/jsp-2.1-${jetty.version}.jar
-%{linkdir}/jsp-2.1.jar
-%{libdir}/jsp-api-2.1-${jetty.version}.jar
-%{linkdir}/jsp-api-2.1.jar
-%{libdir}/commons-el-${commons-el.version}.jar
-%{linkdir}/commons-el.jar
-%{libdir}/core-${org.eclipse.jdt.core.version}.jar
-%{linkdir}/core.jar
-
 
 %files jmx
 
@@ -801,13 +704,9 @@ fi
 %{libdir}/sf-loggingservices-${smartfrog.version}.jar
 %{libdir}/commons-logging-${commons-logging.version}.jar
 %{libdir}/log4j-${log4j.version}.jar
-%{libdir}/slf4j-api-${slf4j.version}.jar
-%{libdir}/slf4j-jcl-${slf4j.version}.jar
 %{linkdir}/sf-loggingservices.jar
 %{linkdir}/commons-logging.jar
 %{linkdir}/log4j.jar
-%{linkdir}/slf4j-api.jar
-%{linkdir}/slf4j-jcl.jar
 
 
 
@@ -844,10 +743,6 @@ fi
 %{linkdir}/sf-quartz.jar
 %{linkdir}/quartz.jar
 
-%files rpmtools
-
-%{libdir}/sf-rpmtools-${smartfrog.version}.jar
-%{linkdir}/sf-rpmtools.jar
 
 %files scripting
 %{libdir}/sf-scripting-${smartfrog.version}.jar
@@ -884,13 +779,20 @@ fi
 
 %files www
 %{libdir}/sf-www-${smartfrog.version}.jar
+%{libdir}/sf-jetty-${smartfrog.version}.jar
+%{libdir}/jetty-${jetty.version}.jar
+%{libdir}/jetty-util-${jetty.version}.jar
+%{libdir}/servlet-api-${servletapi.version}.jar
 %{libdir}/commons-codec-${commons-codec.version}.jar
 %{libdir}/commons-httpclient-${commons-httpclient.version}.jar
 
 %{linkdir}/sf-www.jar
+%{linkdir}/sf-jetty.jar
+%{linkdir}/servlet-api.jar
+%{linkdir}/jetty.jar
+%{linkdir}/jetty-util.jar
 %{linkdir}/commons-codec.jar
 %{linkdir}/commons-httpclient.jar
-
 
 %files xml
 %{libdir}/sf-xml-${smartfrog.version}.jar
@@ -919,9 +821,6 @@ fi
 
 # to get the date, run:   date +"%a %b %d %Y"
 %changelog
-* Wed Nov 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.15.001-1.el4
-- Jetty and Hadoop RPMs
-- slf4j libraries in the loggingservices RPM
 * Fri Sep 26 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.043-1.el4 changes to the security model so that signedLib is a symlink.
 * Tue Sep 16 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.042-2.el4 changes to the security model so that signedLib is a symlink.
 * Mon May 12 2008 Steve Loughran <smartfrog@hpl.hp.com> 3.12.027-2.el4

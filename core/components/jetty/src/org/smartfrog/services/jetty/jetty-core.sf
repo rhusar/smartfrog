@@ -199,21 +199,6 @@ JettySSLSocketConnector extends JettySocketConnector {
 
 JettySelectChannelConnector extends AbstractConnector {
     sfClass "org.smartfrog.services.jetty.listeners.SelectChannelConnectorImpl";
-    minThreads 2;
-    maxThreads 4;
-    /**
-     If True (the default), the connector can use NIO direct buffers.
-     Some JVMs have memory management issues (bugs) with direct buffers.
-     */
-    useDirectBuffers true;
-    /**
-     * socket linger time, -1 for disable
-     */
-    socketLingerTime -1;
-    headerBufferSize   (4  * 1024);
-    requestBufferSize  (8  * 1024);
-    responseBufferSize (24 * 1024);
-
 }
 
 
@@ -223,7 +208,6 @@ JettyHttpServer extends Compound {
   host AbstractConnector:host;
 
   connector extends JettySelectChannelConnector {
-    server LAZY PARENT:server;
     port PARENT:port;
     host PARENT:host;
   }

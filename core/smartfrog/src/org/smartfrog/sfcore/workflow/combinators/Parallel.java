@@ -98,6 +98,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * @throws RemoteException In case of network or RMI failure.
      */
     public Parallel() throws RemoteException {
+        super();
     }
 
     /**

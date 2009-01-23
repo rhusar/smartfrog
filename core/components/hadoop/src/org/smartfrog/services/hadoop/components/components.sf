@@ -27,8 +27,6 @@
 #include "/org/smartfrog/services/hadoop/components/datanode/components.sf"
 #include "/org/smartfrog/services/hadoop/components/namenode/components.sf"
 #include "/org/smartfrog/services/hadoop/components/io/components.sf"
-#include "/org/smartfrog/services/hadoop/components/other/components.sf"
-#include "/org/smartfrog/services/hadoop/conf/components.sf"
 
 
 HadoopCluster extends Prim {

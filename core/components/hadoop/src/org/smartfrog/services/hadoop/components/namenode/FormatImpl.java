@@ -59,7 +59,7 @@ public class FormatImpl extends FileSystemNodeImpl implements FileSystemNode {
      * @return a name of the service for error messages
      */
     @Override
-    protected String getServiceName() {
+    protected String getName() {
         return "formatter";
     }
 

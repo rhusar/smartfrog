@@ -8,7 +8,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
 /**
  */
-public abstract class ThreadedState extends StateComponent implements Prim {
+public abstract class ThreadedState extends State implements Prim {
 
    protected ThreadPool threadpool;
    protected StateUpdateThread currentAction = null;
@@ -28,30 +28,18 @@ public abstract class ThreadedState extends StateComponent implements Prim {
 	   return cleared;  
    }
    
-   public void setState() throws StateComponentTransitionException {
+   public void setState() {
 	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: ThreadedStateComponent.setState()");
       
-	  System.out.println("1");
-	  
 	 //Attempt to clear action from thread pool (if not started)
 	 if (clearCurrentAction()) parentLocking.threadStopped(); 
       
-	 System.out.println("2");
-	 
      if (currentAction!=null) return; //Not appropriate to allow further transition at this time...
               
-     System.out.println("3");
-     
      if (requireThread()) {
-    	 System.out.println("3b");
        	   parentLocking.threadStarted();
-       	System.out.println("3c");
            threadpool.addToQueue(currentAction=new StateUpdateThread());
-           System.out.println("3d");
      } 
-     
-     System.out.println("4");
-     
      if (sfLog().isDebugEnabled())  sfLog().debug("OUT: ThreadedStateComponent.setState()");
    }
 
@@ -64,8 +52,8 @@ public abstract class ThreadedState extends StateComponent implements Prim {
 	   super.clean();
    }
    
-   protected abstract boolean requireThread() throws StateComponentTransitionException;
-   protected abstract boolean threadBody() throws StateComponentTransitionException;
+   protected abstract boolean requireThread();
+   protected abstract boolean threadBody();
 
    /**
     * ********************************************************
@@ -76,16 +64,11 @@ public abstract class ThreadedState extends StateComponent implements Prim {
       public void run() {
     	  if (sfLog().isDebugEnabled())  sfLog().debug("IN: StateUpdateThread.run()");
     	  acquireLock();
-    	  try{
     	   if (threadBody()) {
        		   parentLocking.threadStopped();
         	   ThreadedState.this.clean();
-           } else {
-        	   ThreadedState.this.asyncResponse=true;
-        	   ThreadedState.super.clean();  //don't want to lose the current action, but release lock...
-           }
-    	  }  catch (StateComponentTransitionException stce) {/*Hardly acceptable handling*/}
-          if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateUpdateThread.run()");
+           } else ThreadedState.this.asyncResponse=true;
+           if (sfLog().isDebugEnabled())  sfLog().debug("OUT: StateUpdateThread.run()");
       }
    }
 }

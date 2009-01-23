@@ -19,15 +19,14 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.jetty.listeners;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.thread.QueuedThreadPool;
-import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.jetty.JettyHelper;
+import org.mortbay.jetty.Connector;
 
 import java.rmi.RemoteException;
 
@@ -37,10 +36,10 @@ import java.rmi.RemoteException;
  *
  */
 
-public abstract class AbstractConnectorImpl extends PrimImpl implements JettyConnector {
-    protected Reference portRef = new Reference(LISTENER_PORT);
-    protected Reference hostRef = new Reference(SERVER_HOST);
-    protected Reference serverNameRef = new Reference(SERVER_NAME);
+public abstract class AbstractConnectorImpl extends PrimImpl {
+    protected Reference portRef = new Reference(JettyConnector.LISTENER_PORT);
+    protected Reference hostRef = new Reference(JettyConnector.SERVER_HOST);
+    protected Reference serverNameRef = new Reference(JettyConnector.SERVER_NAME);
     protected Connector connector = null;
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -115,10 +114,7 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
         String host = sfResolve(hostRef, (String) null, false);
         conn.setPort(port);
         if (host != null) {
-            sfLog().info("Listening on " + host + ":" + port);
             conn.setHost(host);
-        } else {
-            sfLog().info("Listening on port " + port);
         }
     }
 
@@ -129,31 +125,6 @@ public abstract class AbstractConnectorImpl extends PrimImpl implements JettyCon
      * @throws RemoteException In case of network/rmi error
      */
     protected void setMaxIdleTime(Connector connector) throws SmartFrogResolutionException, RemoteException {
-        connector.setMaxIdleTime(sfResolve(ATTR_MAX_IDLE_TIME, 0, true));
-    }
-
-
-    /**
-     * Create a bounded thread pool from the various thread options.
-     * @return a thread pool with min/max threads set up
-     * @throws SmartFrogResolutionException problems resolving things
-     * @throws RemoteException network trouble
-     */
-    protected QueuedThreadPool createBoundedThreadPool() throws SmartFrogResolutionException, RemoteException {
-        int threads = sfResolve(ATTR_THREADS, 0, false);
-        int minT;
-        int maxT;
-        if (threads> 0) {
-            minT = threads;
-            maxT = threads;
-        } else {
-            minT = sfResolve(ATTR_MIN_THREADS, 1, true);
-            maxT = sfResolve(ATTR_MAX_THREADS, 1, true);
-        }
-        sfLog().debug("Thread pool min=" + minT + " max=" + maxT);
-        QueuedThreadPool pool = new QueuedThreadPool();
-        pool.setMinThreads(minT);
-        pool.setMaxThreads(maxT);
-        return pool;
+        connector.setMaxIdleTime(sfResolve(JettySocketConnector.ATTR_MAX_IDLE_TIME, 0, true));
     }
 }

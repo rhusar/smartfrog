@@ -50,7 +50,6 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
      * @throws SmartFrogException failure while starting
      * @throws RemoteException    In case of network/rmi error
      */
-    @Override
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         minFileCount = sfResolve(ATTR_MIN_FILE_COUNT, 0, true);
@@ -65,7 +64,6 @@ public class DfsListDirImpl extends DfsPathOperationImpl implements DfsPathOpera
      * @param conf       the configuration driving this operation
      * @throws Exception on any failure
      */
-    @Override
     protected void performDfsOperation(DistributedFileSystem fileSystem, ManagedConfiguration conf) throws Exception {
         Path path = getPath();
         try {

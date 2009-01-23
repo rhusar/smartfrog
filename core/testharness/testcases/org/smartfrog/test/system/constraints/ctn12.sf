@@ -33,19 +33,17 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 sfConfig extends {
   foo1 extends Array {
-     generator extends {
+     sfArrayGenerator extends {
         help extends {
             help2 8; 
         }
      }
-     prefix "zoo";
-     extent 3;
+     sfArrayPrefix "zoo";
+     sfArrayExtent 3;
   }
   
   foo2 extends Aggregator {
-        [sfSource] -- LAZY foo1;
-	[sfPrefix] -- "zoo";
-	[sfPath] -- LAZY help:help2;  
+        sfAggregatorPath "foo1:help:help2";
         foo3 extends nproduct;
   }
 }

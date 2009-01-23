@@ -28,7 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Vector;
-import java.util.Locale;
 
 
 /**
@@ -110,24 +109,8 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             return ATTR_IS_FALSE + " evaluates to true";
         }
 
-        boolean referenceRequired = sfResolve(ATTR_REFERENCE_REQUIRED, true, true);
-        Prim prim;
-        try {
-            prim = sfResolve(ATTR_REFERENCE, (Prim) null, false);
-        } catch (SmartFrogResolutionException e) {
-            //the reason we ignore this is to handle lazy resolution
-            //by ignoring it.
-            prim = null;
-            if(referenceRequired) {
-                return "The reference does not resolve " + e;
-            }
-        }
-        if (prim == null) {
-            if (referenceRequired) {
-                //there was no reference
-                return "referenceRequired is true but there is no reference value";
-            }
-        } else {
+        Prim prim = maybeResolveReference();
+        if (prim != null) {
             if (evaluatesTrue != null) {
                 if (!evaluate(prim, evaluatesTrue)) {
                     return "Evaluated to false: " + prim.sfCompleteName() + '.' + evaluatesTrue;
@@ -187,12 +170,12 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
                                         + v.size() + " in " + v.toString();
                             }
                             Object vectorValue = v.elementAt(index);
-                            String actualVectorValue = vectorValue.toString();
                             if (attributeVectorValue != null
                                     && !equal(attributeVectorValue,
-                                    actualVectorValue,
+                                    vectorValue.toString(),
                                     equalityIgnoresCase)) {
-                                return " Expected <" + attributeVectorValue + "> actual <" + actualVectorValue + '>';
+                                return " Expected <" + attributeEquals + "> actual <" + vectorValue
+                                        .toString() + '>';
                             }
                         }
                     }
@@ -224,21 +207,16 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
             }
         }
 
-        String equals1;
-        String equals2;
-        Object e1 = sfResolve(Assert.ATTR_EQUALS_STRING1, (Object) null, false);
-        equals1 = e1 == null ? null : e1.toString();
-        Object e2 = sfResolve(Assert.ATTR_EQUALS_STRING2, (Object) null, false);
-        equals2 = e2 == null ? null : e2.toString();;
+        String equals1 = null;
+        String equals2 = null;
+        equals1 = sfResolve(Assert.ATTR_EQUALS_STRING1, equals1, false);
+        equals2 = sfResolve(Assert.ATTR_EQUALS_STRING2, equals2, false);
         if (equals1 != null) {
             if (equals2 == null) {
                 return "Undefined attribute: " + ATTR_EQUALS_STRING2;
             }
             if (!equal(equals1, equals2, equalityIgnoresCase)) {
-                return "Expected \"" + equals1 + "\""
-                        + " (class:" + e1.getClass().getName() + ")"
-                        + " actual \"" + equals2 + '\"'
-                        + " (class:" + e2.getClass().getName() + ")";
+                return "Expected <" + equals1 + "> actual <" + equals2 + '>';
             }
         } else {
             if (equals2 != null) {
@@ -291,7 +269,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
         if (equalityIgnoresCase) {
             fact = equals1.equals(equals2);
         } else {
-            fact = equals1.toLowerCase(Locale.ENGLISH).equals(equals2);
+            fact = equals1.equalsIgnoreCase(equals2);
         }
         return fact;
     }
@@ -301,7 +279,7 @@ public class AssertComponent extends PrimImpl implements Condition, Assert {
      * try and resolve a reference, return null if there was some kind of
      * failure including lazy references not yet ready.
      *
-     * @return Prim the reference or null
+     * @return Prim
      *
      * @throws RemoteException In case of network/rmi error
      */

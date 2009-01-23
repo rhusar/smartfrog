@@ -20,17 +20,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.cluster;
 
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.hadoop.conf.ClusterBound;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -39,33 +36,19 @@ import java.util.Vector;
  * Created 19-May-2008 14:29:07
  */
 
-public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implements ClusterBound {
+public class HadoopComponentImpl extends PrimImpl {
 
     public HadoopComponentImpl() throws RemoteException {
     }
 
     /**
      * Create and dump the configuration on startup
-     * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems
      */
-    protected void dumpConfiguration() throws SmartFrogException, RemoteException {
+    protected void dumpConfiguration() {
         if (sfLog().isDebugEnabled()) {
             ManagedConfiguration configuration;
-            configuration = createConfiguration();
-            sfLog().debug(configuration.dump());
-        }
-    }
-
-
-    /**
-     * Dump the configuration
-     * @param configuration to dump
-     *
-     */
-    protected void debugDumpConfiguration(ManagedConfiguration configuration) {
-        if (sfLog().isDebugEnabled()) {
-            sfLog().debug(configuration.dump());
+            configuration = new ManagedConfiguration(this);
+            sfLog().debug(configuration.dumpQuietly());
         }
     }
 
@@ -73,10 +56,9 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      * create a configuration against ourselves.
      *
      * @return the new configuration
-     * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems     */
-    protected ManagedConfiguration createConfiguration() throws SmartFrogException, RemoteException {
-        return createConfiguration(this);
+     */
+    public ManagedConfiguration createConfiguration() {
+        return new ManagedConfiguration(this);
     }
 
     /**
@@ -84,32 +66,23 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
      *
      * @param target target component
      * @return the target configuration
-     * @throws SmartFrogResolutionException resolution failure
-     * @throws RemoteException              network problems     */
-    protected ManagedConfiguration createConfiguration(Prim target) throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(target, true, false);
+     */
+    public ManagedConfiguration createConfiguration(Prim target) {
+        return new ManagedConfiguration(target);
     }
-
 
     /**
      * Create a managed configuration against a different component, one identified by an attribute
      *
+     * @param targetAttribute target attribute that must map to a deployed component
      * @return the target configuration
      * @throws SmartFrogResolutionException resolution failure
      * @throws RemoteException              network problems
      */
-    protected ManagedConfiguration createClusterAttrConfiguration()
-            throws SmartFrogException, RemoteException {
-        return ManagedConfiguration.createConfiguration(this, true, true);
-/*
+    public ManagedConfiguration createConfiguration(String targetAttribute)
+            throws SmartFrogResolutionException, RemoteException {
         Prim target = sfResolve(targetAttribute, (Prim) null, true);
-        if (target == null) {
-            Object o = sfResolve(targetAttribute,true);
-            throw new SmartFrogResolutionException("Could not resolve attribute \""+targetAttribute+"\""
-                    +" got "+o,this);
-        }
         return new ManagedConfiguration(target);
-*/
     }
 
     /**
@@ -124,10 +97,7 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
         for (String dir : dirs) {
             File directory = new File(dir);
             if (createDirs) {
-                if(!directory.mkdirs() && !directory.exists()) {
-                    LogFactory.getLog(HadoopComponentImpl.class.getName())
-                            .warn("Failed to create directory " + directory);
-                }
+                directory.mkdirs();
             }
             if (path.length() > 0) {
                 path.append(',');
@@ -173,55 +143,4 @@ public class HadoopComponentImpl extends PrimImpl /* EventCompoundImpl */ implem
             throws RemoteException, SmartFrogException {
         return createDirectoryListAttribute(this, sourceRef, replaceAttribute);
     }
-
-    /**
-     * Resolve an attribute that names the address attribute to use
-     * @param configuration configuration to work with
-     * @param addressAttr name of an attribute that identifies the underlying configuration attribute to work with
-     * @return a socket address
-     * @throws SmartFrogResolutionException for resolution problems
-     * @throws RemoteException network problems
-     */
-    protected InetSocketAddress resolveAddressIndirectly(ManagedConfiguration configuration, String addressAttr)
-            throws SmartFrogResolutionException, RemoteException {
-        String addressAttribute = sfResolve(addressAttr, "", true);
-        if (addressAttr == null) {
-            throw new SmartFrogResolutionException("Null attribute " + addressAttr);
-        }
-
-        return resolveAddress(configuration, addressAttribute);
-    }
-
-    /**
-     * Given an a conf and an attribute, resolve it and build the address
-     * @param configuration configuration
-     * @param addressAttribute attribute to look up
-     * @return a bound address
-     * @throws SmartFrogResolutionException for resolution problems
-     * @throws RemoteException network problems
-     */
-    protected InetSocketAddress resolveAddress(ManagedConfiguration configuration, String addressAttribute)
-            throws SmartFrogResolutionException, RemoteException {
-        InetSocketAddress socketAddress = configuration.bindToNetwork(addressAttribute,
-                "stubOldAddressNameShouldNotResolve",
-                "stubOldAddressPortShouldNotResolve");
-        return socketAddress;
-    }
-
-    protected PortEntry resolvePortEntry(ManagedConfiguration configuration,String addressAttribute)
-            throws SmartFrogResolutionException, RemoteException {
-        return new PortEntry(addressAttribute,
-            resolveAddress(configuration, addressAttribute));
-    }
-
-    protected PortEntry resolvePortEntry(ManagedConfiguration configuration, String addressAttribute,
-                                         String bindAddressName, String bindAddressPort)
-            throws SmartFrogResolutionException, RemoteException {
-        InetSocketAddress socketAddress = configuration.bindToNetwork(addressAttribute,
-                bindAddressName,
-                bindAddressPort);
-        return new PortEntry(addressAttribute,socketAddress);
-    }
-
-
 }

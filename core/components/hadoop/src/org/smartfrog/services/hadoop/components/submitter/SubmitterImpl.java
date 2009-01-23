@@ -20,9 +20,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.hadoop.components.submitter;
 
 import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
-import org.apache.hadoop.mapreduce.JobID;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ConfigurationAttributes;
@@ -31,16 +31,17 @@ import org.smartfrog.services.hadoop.core.SFHadoopException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
+import org.smartfrog.sfcore.utils.Executable;
+import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -170,6 +171,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         public void execute() throws Throwable {
             String jobTracker = resolveJobTracker(jobPrim, new Reference(MAPRED_JOB_TRACKER));
             try {
+                //TODO: move this to a separate thread
                 sfLog().info("Submitting to " + jobTracker);
                 JobClient jc = new JobClient(jobConf);
                 runningJob = jc.submitJob(jobConf);
@@ -184,7 +186,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                 events = new TaskCompletionEventLogger(runningJob, sfLog());
             } catch (IOException e) {
                 SFHadoopException fault = new SFHadoopException(ERROR_FAILED_TO_START_JOB + jobTracker
-                        + ": " + e,
+                        + ": " + e.getMessage(),
                         e, SubmitterImpl.this);
                 fault.addConfiguration(jobConf);
                 throw fault;
@@ -221,8 +223,8 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
                             + " has " + (succeeded ? " succeeded" : "failed");
                     sfLog().info(message);
                     if (terminateWhenJobFinishes) {
-                        TerminationRecord record = succeeded ? TerminationRecord.normal(message, getName()) :
-                                TerminationRecord.abnormal(message, getName());
+                        TerminationRecord record = succeeded ? TerminationRecord.normal(message, name) :
+                                TerminationRecord.abnormal(message, name);
                         new ComponentHelper(this).targetForTermination(record, false, false);
                     }
                 }
@@ -239,14 +241,12 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
     }
 
     /**
-     * Resolve a job tracker reference. This resolves the reference then
-     * looks for {@link #MAPRED_JOB_TRACKER} value underneath. Works with
-     * both Prim and ComponentDescription references
-     * @param prim component to work with
-     * @param ref reference to resolve
-     * @return the job tracker URL
-     * @throws SmartFrogResolutionException resolution problems
-     * @throws RemoteException network problems
+     * Resolve a job tracker reference
+     * @param prim
+     * @param ref
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
      */
     public static String resolveJobTracker(Prim prim, Reference ref)
             throws SmartFrogResolutionException, RemoteException {
@@ -261,5 +261,7 @@ public class SubmitterImpl extends EventCompoundImpl implements Submitter {
         }
         //neither of those? resolve to a string and let the runtime handle errors
         return prim.sfResolve(ref, "", true);
+
+
     }
 }

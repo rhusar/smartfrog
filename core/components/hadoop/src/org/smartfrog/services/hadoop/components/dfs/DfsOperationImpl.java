@@ -21,9 +21,15 @@
 
 package org.smartfrog.services.hadoop.components.dfs;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.smartfrog.services.hadoop.common.DfsUtils;
 import org.smartfrog.services.hadoop.conf.ManagedConfiguration;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.SmartFrogThread;
 import org.smartfrog.sfcore.utils.WorkflowThread;
@@ -36,19 +42,18 @@ import java.rmi.RemoteException;
  */
 public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements DfsOperation {
 
-    private WorkflowThread worker;
+  private WorkflowThread worker;
 
 
-    protected DfsOperationImpl() throws RemoteException {
+  protected DfsOperationImpl() throws RemoteException {
     }
 
-    /**
+  /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
      *
      * @param status termination status
      */
-    @Override
     protected synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         //shut down any non-null worker
@@ -64,16 +69,16 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
         SmartFrogThread.requestThreadTermination(w);
     }
 
-    protected final synchronized WorkflowThread getWorker() {
+    protected synchronized WorkflowThread getWorker() {
         return worker;
     }
 
-    protected final synchronized void setWorker(WorkflowThread worker) {
+    protected synchronized void setWorker(WorkflowThread worker) {
         this.worker = worker;
     }
 
 
-    /**
+  /**
      * For subclassing: this routine will be called by the default worker thread, if that thread gets started
      *
      * @param fileSystem the filesystem; this is closed afterwards
@@ -132,7 +137,7 @@ public abstract class DfsOperationImpl extends DfsClusterBoundImpl implements Df
          *
          * @param workflowTermination is workflow termination expected?
          */
-        protected DfsWorkerThread(boolean workflowTermination) {
+        public DfsWorkerThread(boolean workflowTermination) {
             super(DfsOperationImpl.this, workflowTermination);
         }
 

@@ -20,14 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.sfreference.SFApplyReference;
 import org.smartfrog.sfcore.reference.Function;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogFunctionResolutionException;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Defines the base function for all the functions.
@@ -44,32 +43,9 @@ public abstract class BaseFunction implements Function  {
     protected Context context = null;
     protected ReferenceResolver rr = null;
     protected RemoteReferenceResolver rrr = null;
-    protected ComponentDescription comp;
-    protected Context orgContext;
+
     protected Reference name = null;
-    protected Reference ar= null;
-    protected Object arkey = null;
-    
-    private void extras(Reference ar, Object key){
-    	this.ar = ar;
-    	this.arkey = key;    	
-    }
-    
-    private Object doit(Context ctx, Reference unused) throws SmartFrogFunctionResolutionException {
-    	this.context = ctx;
-    	if (this.context!=null) this.comp = context.getOriginatingDescr();
-    	if (this.comp!=null) this.orgContext = comp.sfContext();
-    	
-    	Object result = doFunction();
-    	
-    	if (result instanceof ComponentDescription) {
-            ((ComponentDescription)result).setParent(null);
-            ((ComponentDescription)result).setPrimParent(null);
-        }
-    	return result;
-    }
-    
-    
+
     /**
      * base implementation of a function method.
      * Calls the (abstract) method doFunction.
@@ -79,23 +55,18 @@ public abstract class BaseFunction implements Function  {
      * @throws SmartFrogFunctionResolutionException if the doFunction method does.
      */
     public Object doit(Context ctx, Reference unused, ReferenceResolver resolver) throws SmartFrogFunctionResolutionException {
+        this.context = ctx;
         this.rr = resolver;
-        return doit(ctx, unused);
+
+        Object result = doFunction();
+        if (result instanceof ComponentDescription) {
+            ((ComponentDescription)result).setParent(null);
+            ((ComponentDescription)result).setPrimParent(null);
+        }
+
+        return result;
     }
-    
-    /**
-     * base implementation of a function method.
-     * Calls the (abstract) method doFunction.
-     * Note that it makes sure that the result has no parent if it is a component description - this will
-     * cause it to be patched into whereever it is returned.
-     * 
-     * @throws SmartFrogFunctionResolutionException if the doFunction method does.
-     */
-    public Object doit(Context ctx, Reference unused, ReferenceResolver resolver, Reference ar, Object key) throws SmartFrogFunctionResolutionException {
-        extras(ar,key);	
-        return doit(ctx, unused, resolver);
-    }
-    
+
     /**
      * base implementation of a function method.
      * Calls the (abstract) method doFunction.
@@ -105,22 +76,14 @@ public abstract class BaseFunction implements Function  {
      * @throws SmartFrogFunctionResolutionException if the doFunction method does.
      */
     public Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver) throws SmartFrogFunctionResolutionException {
-    	this.rrr = resolver;
-    	return doit(ctx, unused);
-    }
-    
-    /**
-     * base implementation of a function method.
-     * Calls the (abstract) method doFunction.
-     * Note that it makes sure that the result has no parent if it is a component description - this will
-     * cause it to be patched into whereever it is returned.
-     *
-     * @throws SmartFrogFunctionResolutionException if the doFunction method does.
-     */
-    public Object doit(Context ctx, Reference unused, RemoteReferenceResolver resolver, Reference ar, Object key) throws SmartFrogFunctionResolutionException {
-    	extras(ar,key);	
-        return doit(ctx, unused, resolver);
-    }
+        this.context = ctx;
+        this.rrr = resolver;
 
-    
+        Object result = doFunction();
+        if (result instanceof ComponentDescription) {
+            ((ComponentDescription)result).setParent(null);
+            ((ComponentDescription)result).setPrimParent(null);
+        }
+        return result;
+    }
 }

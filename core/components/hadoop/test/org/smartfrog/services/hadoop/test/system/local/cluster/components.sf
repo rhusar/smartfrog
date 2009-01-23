@@ -29,16 +29,17 @@ testLocalCluster extends ExpectDeploy {
 
 
   action extends LocalClusterCompound {
-
+    tracker "localhost:8014";
+    mapred.job.tracker tracker;
+    jobTracker:mapred.job.tracker tracker;
+    //jobTracker:mapred.job.tracker.http.address  "localhost:50032";
   }
 
 
-  tests extends JobTrackerSequence {
+  tests extends FileSystemTestSequence {
 
     namenode LAZY action:namenode;
-    datanode LAZY action:datanode;
-    jobTracker LAZY action:clusterActions:then:jobTracker;
-    taskTracker LAZY action:clusterActions:then:taskTracker;
+    datanode LAZY action:datanode;;
   }
   
 
@@ -47,9 +48,11 @@ testLocalCluster extends ExpectDeploy {
 
 
 testLocalClusterForked extends testLocalCluster {
-  action:namenode:sfProcessName "testLocalClusterForked-namenode";
   action:datanode:sfProcessName "testLocalClusterForked-datanode";
-  action:clusterActions:then:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
-  action:clusterActions:then:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:namenode:sfProcessName "testLocalClusterForked-namenode";
+  action:taskTracker:sfProcessName "testLocalClusterForked-tasktracker";
+  action:jobTracker:sfProcessName "testLocalClusterForked-jobtracker";
+  action:jobTracker:mapred.job.tracker  "localhost:8016";
+  //action:jobTracker:mapred.job.tracker.http.address  "0.0.0.0:50033";
 }
 
