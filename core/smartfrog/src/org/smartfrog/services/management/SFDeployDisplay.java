@@ -386,8 +386,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (str != null) {
          System.err.println(str);
       }
-
-      System.exit(exitCode);
+      ExitCodes.exitSilently(exitCode);
    }
 
 

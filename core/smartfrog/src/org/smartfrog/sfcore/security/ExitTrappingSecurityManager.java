@@ -29,10 +29,18 @@ public class ExitTrappingSecurityManager extends DummySecurityManager {
 
     private static volatile boolean systemExitPermitted = false;
 
+    /**
+     * Query to see if the security manager permits system exits
+     * @return true if the system exit is permitted
+     */
     public static boolean isSystemExitPermitted() {
         return systemExitPermitted;
     }
 
+    /**
+     * Set the system exit flag
+     * @param systemExitPermitted true if exit is to be allowed, false otherwise
+     */
     public static void setSystemExitPermitted(boolean systemExitPermitted) {
         ExitTrappingSecurityManager.systemExitPermitted = systemExitPermitted;
     }
