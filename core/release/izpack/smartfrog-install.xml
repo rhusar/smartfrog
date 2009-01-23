@@ -434,6 +434,49 @@ SmartFrog to deploy complex systems.
         />
     </pack>
 
+    <pack name="Hadoop" required="no" preselected="no">
+      <description>
+        The sf-hadoop package contains the components needed to deploy a Hadoop filesystem
+        DataNode or NameNode, a MapReduce JobTracker or TaskTracker, and a set of components
+        to manipulate the filesystem and submit Jobs. It can be used on a server to
+        provide part of a Hadoop cluster, and on the client to work with a remote cluster.
+
+        Includes:
+        hadoop-core-${hadoop.version}.jar
+        commons-cli-${commons-cli.version}.jar
+        jets3t-${jets3t.version}.jar
+        xmlenc-${xmlenc.version}.jar
+
+        Prerequisites: Jetty, Logging, WWW, Ant
+
+      </description>
+      <file src="ivy/lib/package-hadoop/sf-hadoop-${smartfrog.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-hadoop/sf-hadoop-javadocs-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
+      <file src="ivy/lib/package-hadoop/sf-hadoop-documentation-${smartfrog.version}.zip"
+        targetdir="$INSTALL_PATH"
+        unpack="true"/>
+
+      <file src="ivy/lib/package-hadoop/hadoop-core-${hadoop.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-hadoop/commons-cli-${commons-cli.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-hadoop/jets3t-${jets3t.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-hadoop/xmlenc-${xmlenc.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <depends packname="Jetty"/>
+      <depends packname="Logging"/>
+      <depends packname="Ant"/>
+      <depends packname="WWW"/>
+    </pack>
     <pack name="JMX" required="no" preselected="no">
       <description>
         The sf-jmx package can integrate JMX MBeans with SmartFrog, and
