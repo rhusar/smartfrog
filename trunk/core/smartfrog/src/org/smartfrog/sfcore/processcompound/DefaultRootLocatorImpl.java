@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.SFSystem;
 
 /**
  * Defines a default root locator for SmartFrog Processes. The root locator
@@ -364,6 +365,13 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         // Get rid of the stub if local
         if ((localCompound != null)&&(pc.equals(localCompound))) {
             return localCompound;
+        }
+        String internalState = pc.toString();
+        if (internalState.contains("liveRef: [endpoint:[127.0.0.1:")
+                && !hostAddress.isLoopbackAddress()) {
+            SFSystem.sfLog().warn("Remote Process Compound for " + hostAddress
+                    + " appears to think its IP address is \"127.0.0.1\"");
+            SFSystem.sfLog().warn("Communications with components are likely to fail with Connection refused exceptions");
         }
 
         return pc;

@@ -87,13 +87,13 @@ public class ActionPing extends ConfigurationAction implements Serializable {
             RemoteException {
         Prim targetC;
 
+        long start,finish;
+        start=System.currentTimeMillis();
         if (name == null) {
             targetC = targetP;
         } else {
             targetC = (Prim) targetP.sfResolveWithParser(name);
         }
-        long start,finish;
-        start=System.currentTimeMillis();
         targetC.sfPing(this);
         finish = System.currentTimeMillis();
         return finish-start;
