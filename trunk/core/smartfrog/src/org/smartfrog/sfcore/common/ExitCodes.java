@@ -87,12 +87,21 @@ public final class ExitCodes {
                 LogFactory.sfGetProcessLog().debug ("SmartFrog System.Exit code: "+ code
                         + ", v" + Version.versionStringforrelease()); }
         } catch (Throwable ignored) { /* ignore */ }
+        exitSilently(code);
+    }
+
+    /**
+     * Exits from the system. No log message is printed
+     *
+     * @param code integer exit code
+     */
+    public static void exitSilently(int code) {
         ExitTrappingSecurityManager.setSystemExitPermitted(true);
         System.exit(code);
     }
 
     /**
-     *
+     * the log, creating the process log if needed
      * @return LogSF
      */
     public static LogSF sfLog() {
