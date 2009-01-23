@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<project name="start" default="teardown">
+
+  <description>
+    Tests for starting the daemon. We of course have to stop the daemon afterwards
+
+    command line invocation
+
+
+ant -lib ../../dist/lib/sf-tasks-3.*.jar -lib $SFHOME/lib/smartfrog-3.*.jar -lib $SFHOME/lib/sfServices-3.*.jar -f start.xml testDifferentPortDeployUndeploy 
+    
+    ant -lib ..\..\build\dist\lib\sf-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib
+    ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f start.xml testResource
+  </description>
+
+  <import file="test-common.xml"/>
+
+
+  <!-- the setup target verifies that smartfrog is not running -->
+  <target name="setup">
+    <condition property="daemon.running">
+      <socket port="3800" server="localhost"/>
+    </condition>
+    <fail if="daemon.running">Smartfrog Daemon already running</fail>
+  </target>
+
+  <!-- at the end of every execution, we force a cleanup -->
+  <target name="teardown">
+    <sf-stopdaemon failonerror="false"/>
+  </target>
+
+  <target name="testDefaults" depends="setup">
+    <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf"
+        diagnostics="true"
+        timeout="${short.timeout}"/>
+  </target>
+
+
+  <target name="testSpawn" depends="setup">
+    <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf" spawn="true"/>
+    <sf-block/>
+    <sf-stopdaemon failonerror="true"/>
+  </target>
+
+  <target name="testIncompatibleSettings" depends="setup">
+    <sf-startdaemon iniFile="default.ini" spawn="true"
+        timeout="${short.timeout}" initialSmartfrogFile="default.sf"/>
+    <sf-block/>
+    <sf-stopdaemon failonerror="true"/>
+  </target>
+
+  <target name="testIncompatiblePort" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.sfcore.processcompound.sfRootLocatorPort" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testIncompatibleLivenessDelay" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.sfcore.processcompound.sfLivenessDelay" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testIncompatibleLivenessFactor" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.sfcore.processcompound.sfLivenessFactor" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+
+  <target name="testIncompatibleProcessAllow" depends="setup">
+    <parallel>
+      <sf-startdaemon>
+        <sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessAllow" value="12"/>
+        <application name="failToSpawn">
+          #include "/org/smartfrog/components.sf"
+          sfConfig extends Compound {
+          sfProcessName "newProcessName";
+          }
+        </application>
+      </sf-startdaemon>
+      <sequential>
+        <sf-block/>
+        <sleep milliseconds="${short.delay}"/>
+        <sf-stopdaemon failonerror="false"/>
+      </sequential>
+    </parallel>
+  </target>
+
+  <target name="testIncompatibleProcessTimeOut" depends="setup">
+    <sf-startdaemon>
+      <sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessTimeout" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testIncompatibleLogStackTraces" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.logger.logStackTrace" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+
+  <target name="testIncompatibleLoggerClass" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.sfcore.logging.LogImpl.loggerClass" value="12"/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testIncompatibleLogLevel" depends="setup">
+    <sf-startdaemon timeout="${short.timeout}">
+      <sysproperty key="org.smartfrog.sfcore.logging.LogImpl.logLevel" value="improper"/>
+    </sf-startdaemon>
+  </target>
+
+
+  <target name="testNoFailure">
+    <parallel>
+      <sf-startdaemon failonerror="false"/>
+      <sequential>
+        <sf-block/>
+        <sleep milliseconds="${short.delay}"/>
+        <sf-stopdaemon failonerror="false"/>
+      </sequential>
+    </parallel>
+  </target>
+
+  <target name="testEmptyApplication">
+    <sf-startdaemon timeout="${timeout}">
+      <application/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testAnonApplication">
+    <sf-startdaemon timeout="${timeout}">
+      <application descriptor="${resource.sf}"/>
+    </sf-startdaemon>
+  </target>
+
+  <target name="testDatalessApplication">
+    <sf-startdaemon timeout="${timeout}">
+      <application name="app"/>
+    </sf-startdaemon>
+  </target>
+
+
+  <target name="testBadFile">
+    <sf-startdaemon timeout="${timeout}">
+      <application name="app" file="missing-file.sf"/>
+    </sf-startdaemon>
+  </target>
+
+
+  <target name="testBadHost" depends="setup">
+    <sf-startdaemon host="no-such-hostname"/>
+  </target>
+
+  <!-- run smartfrog in one thread, shut it down in another -->
+  <target name="testRunFile">
+    <parallel>
+      <sf-startdaemon timeout="${long.timeout}">
+        <application name="app" file="valid.sf"/>
+      </sf-startdaemon>
+      <sequential>
+        <sf-block/>
+        <sleep milliseconds="${short.delay}"/>
+        <sf-stopdaemon/>
+      </sequential>
+    </parallel>
+  </target>
+
+
+  <target name="testResource">
+    <parallel>
+      <sf-startdaemon timeout="${long.timeout}" initialSmartfrogFile="default.sf">
+        <application name="app" descriptor="${terminator.sf}"/>
+      </sf-startdaemon>
+      <sequential>
+        <sf-block/>
+        <sleep milliseconds="${short.delay}"/>
+        <sf-stopdaemon failonerror="false"/>
+      </sequential>
+    </parallel>
+  </target>
+
+
+  <target name="testDifferentPort" description="test against a different port">
+    <sf-system-test2>
+      <test>
+        <sf-ping application="rootProcess" timeout="${medium.timeout}"
+            port="${new.port}"
+            failonerror="false" successProperty="pinged"/>
+      </test>
+    </sf-system-test2>
+  </target>
+
+
+  <target name="testDifferentPortDeploy" description="test against a different port">
+    <sf-system-test2>
+      <test>
+        <sf-ping application="rootProcess" timeout="${short.timeout}"
+            port="${new.port}"
+            failonerror="false" successProperty="pinged"/>
+        <sf-deploy port="${new.port}">
+          <application name="compound">
+            #include "/org/smartfrog/components.sf"
+            sfConfig extends Compound {
+            }
+          </application>
+        </sf-deploy>
+      </test>
+    </sf-system-test2>
+  </target>
+
+
+  <target name="testDifferentPortDeployUndeploy" description="test against a different port">
+    <sf-system-test2>
+      <test>
+        <sf-deploy port="${new.port}">
+          <application name="compound">
+            #include "/org/smartfrog/components.sf"
+            sfConfig extends Compound {
+            }
+          </application>
+        </sf-deploy>
+        <sf-ping application="compound" timeout="${short.timeout}"
+            port="${new.port}"
+            failonerror="true" />
+        <sf-undeploy application="compound" port="${new.port}" failonerror="true"/>
+      </test>
+    </sf-system-test2>
+  </target>
+
+</project>

@@ -1,0 +1,88 @@
+/**
+#################################################################
+        This file can be used to customize the
+        palette of the generated modeling tool.
+ 
+ 		A palette is composed of a number of
+ 		drawers which each contain a set of
+ 		model elements that can be dropped onto
+ 		the modeling canvas. Drawers are specified
+ 		as "palette styles" in this file.        
+        Each palette style specifies a drawer
+        and the elements within the drawer. The 
+        default palette organization contains 
+        a single drawer called "Components". 
+        Drawers are added using the 
+        following syntax:
+
+        Drawer Name {
+
+            modelid:{_your_modeling_language's_DSMLID}; 
+            ....
+        }
+
+        This will create an empty drawer called "Drawer Name" 
+        and use the specified modeling language when resolving
+        elements to create. To add some elements to the drawer, 
+        we use the following syntax:
+
+        MyElements {
+
+         **The icon to use for the palette drawer** 
+         image:MyDrawerIcon.gif; 
+
+         **The DSMLID **
+         modelid:{my_dsmlid};
+
+         **An element that should show up on the drawer with the 
+         label "MyFoo" and will create instances of Foo **
+         MyFoo:Foo;
+
+         **The tooltip description.**
+         MyFoo-desc:A basic Foo.;
+
+         **The image to use for MyFoo
+           on the palette**
+         MyFoo-image:MyFoo.gif;
+        }
+
+        Palette styles can also specify initialization parameters for 
+        model elements. For example, if you would like to create an element 
+        with a specific name, you can use initialization parameters to 
+        acheive this:
+        
+        MyElements {
+          ....
+          * This property uses the -opts attribute to initialize the name
+          * of the element. Oter options can be specified by providing
+          * a comma separated list of name=value pairs.
+          *
+          MyFoo-opts:Name=A Very Special Foo;
+        }
+######################################################################
+**/
+
+Components {
+  modelid:{http://www.smartfrog.org/sfml};
+  Component:Component;
+  Component-desc:Adds a Component to the model;
+  Component-image:resources/icons/Component_s.gif;
+  Composite:Composite;
+  Composite-desc:Adds a Composite to the model;
+  Composite-image:resources/icons/Composite_s.gif;
+  Attribute:Attribute;
+  Attribute-desc:Adds a Attribute to the model;
+  Attribute-image:resources/icons/Attribute_s.gif;
+  And:And;
+  And-desc:Adds a And to the model;
+  And-image:resources/icons/And_s.gif;
+  Or:Or;
+  Or-desc:Adds a Or to the model;
+  Or-image:resources/icons/Or_s.gif;
+  Nor:Nor;
+  Nor-desc:Adds a Nor to the model;
+  Nor-image:resources/icons/Nor_s.gif;
+  Nand:Nand;
+  Nand-desc:Adds a Nand to the model;
+  Nand-image:resources/icons/Nand_s.gif;
+}

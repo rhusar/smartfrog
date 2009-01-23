@@ -1,0 +1,59 @@
+/** (C) Copyright 1998-2007 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
+
+/**
+ Component to read in propery files
+
+ This component takes either a resource name or a file name.
+
+ When the component is started, it loads in the specified file/resource
+ and sets all the values therein as properties of itself. you can then
+ use lazy references to extract them.
+
+ We also set a vector, properties, to the complete list. This can be used as input
+ to anything that takes a list of properties.
+
+ The required flag can state whether the file/resource must exist. if it is false,
+ then an absent file is not an error.
+
+ The component is workflow-enabled; it will terminate if requested.
+ */
+
+PropertyFileSchema extends Schema {
+  //resource, which must be on the classpath of the component
+  resource extends OptionalString;
+
+  //required flag; you can set this to false for optional property loads
+  required extends Boolean;
+
+  //set at run time, to the *sorted* order of the keys. 
+  properties extends OptionalVector;
+}
+
+LoadPropertyFile extends FileAndDirWorkflowComponent {
+  sfClass "org.smartfrog.services.os.java.LoadPropertyFileImpl";
+  propertyFileSchema extends PropertyFileSchema;
+  required true;
+  properties [];
+}

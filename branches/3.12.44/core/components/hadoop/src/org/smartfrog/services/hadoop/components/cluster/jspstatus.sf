@@ -1,0 +1,36 @@
+/* (C) Copyright 2008 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/services/os/java/components.sf"
+
+/**
+ * A component to load the Jasper runtime and check that it is present.
+ * Failure to deploy implies no JSP on the classpath
+ */
+LoadJSP extends LoadClass {
+  message "You need servlet.jar, jasper-runtime.jar, jasper-compiler.jar, jsp-api.jar and commons-el.jar on the classpath";
+  jspservlet "org.apache.jasper.servlet.JspServlet";
+  classes [jspservlet,
+    "org.apache.jasper.JasperException",
+    "org.apache.commons.el.parser.ELParser",
+    "javax.servlet.jsp.SkipPageException",
+    "javax.servlet.ServletException"];
+  create false;
+  retain false;
+}

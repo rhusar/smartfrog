@@ -1,0 +1,119 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/thresholder/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
+#include "/org/smartfrog/services/anubisdeployer/dynamicwebserver/sf/webTemplate.sf";
+
+
+/*
+ * The following global values must be defined in the include location 
+ * for this file, otherwise errors will be thrown.
+ */
+
+// the cgi script to use to measure webserver performance
+measurementCgi     TBD;
+
+
+/*
+ * The template for the service itself...
+ */
+
+ServiceTemplate extends Compound {
+    polling 5;
+
+    upper 800;
+    lower 350;
+    max   1500;
+    min   0;
+
+    webThresholder extends Thresholder {
+        minInstances 1;
+        maxInstances 3;
+
+        balancer        LAZY balancerGroup:balancer;
+
+        template extends LAZY WebServerTemplate {
+        }
+
+        polling         PARENT:polling;
+        lowerThreshold  lower;
+        upperThreshold  upper;
+        dataSource LAZY loadGenerator;
+
+        repeatMeasures        2;
+        stabilizationMeasures 5;
+        isAuto                true;
+    }
+
+    thresholdGraph extends DisplayThresholder {
+        dataSource LAZY  loadGenerator;
+        thresholder LAZY webThresholder;
+
+        pollingPeriod    polling;
+
+        panelWidth       600;
+        panelHeight      200;
+
+        maxY             max;
+        minY             min;
+
+	dataDisplayed    "measurement response time (ms)";
+        frameTitle       "thresholder";
+    }
+
+    loadGenerator extends StressTester {
+        port 80;
+
+        page      measurementCgi;
+        frequency 10;
+        factor    200;
+        numHits   10;
+    }
+
+
+    balancerGroup extends Compound{
+       sfProcessComponentName "loadBalancer";
+
+       balancer extends WebBalancer {
+            hosts [];
+       }
+
+       connectionMeter extends Meter {
+            dataSource       LAZY balancer;
+            pollingPeriod    polling; 
+            maxY             300;
+            minY             0;
+            gridStepY        10;
+            positionDisplay  "NE";
+            dataDisplayed    "connections";
+	        frameTitle       "load balancer";
+       }
+    }
+
+}
+
+
