@@ -69,10 +69,17 @@
         name="hsqldb"
         rev="${hsqldb.version}"
         conf="test->default"/>
-<!--     <dependency org="commons-dbutils"
-        name="commons-dbutils"
-        rev="${commons-dbutils.version}"
-        conf="redist->master"/>        
- -->
+    <dependency org="commons-dbcp"
+      name="commons-dbcp"
+      rev="${commons-dbcp.version}"
+      conf="redist->master"/>
+    <dependency org="commons-pool"
+      name="commons-pool"
+      rev="${commons-pool.version}"
+      conf="redist->master"/>
+    <dependency org="commons-dbutils"
+      name="commons-dbutils"
+      rev="${commons-dbutils.version}"
+      conf="redist->master"/>
  </dependencies>
 </ivy-module>
