@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.ExitCodes;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
@@ -963,7 +964,7 @@ public class Display extends JFrame
                 }
             } else if (systemExit) {
                 sfLog().out("Exiting console");
-                System.exit(0);
+                ExitCodes.exit(0);
             }
 
             // Dispose consoles!
