@@ -50,19 +50,27 @@
   <import file="../../common.xml"/>
 
 
-  <property name="namenode" value="localhost" />
-  <property name="test.namenode" value="${namenode}" />
-  <property name="cluster.sf" value="org/smartfrog/extras/hadoop/cluster/cluster.sf" />
-  <property name="deploy.sf" value="${cluster.sf}" />
-  <property name="deploy.host" value="${namenode}" />
 
-  <target name="init-deploy-properties" depends="common.init-deploy-properties">
+
+
+  <target name="init" depends="common.init">
+    <property name="namenode" value="localhost" />
+    <property name="test.namenode" value="${namenode}" />
+    <property name="cluster.sf" value="org/smartfrog/extras/hadoop/cluster/cluster.sf" />
+    <property name="deploy.sf" value="${cluster.sf}" />
+    <property name="deploy.host" value="${namenode}" />
   </target>
 
 
 
+  <target name="ready-to-deploy" depends="common.ready-to-deploy,echo-deploy-settings" />
 
-      <!-- ========================================================== -->
+  <target name="echo-deploy-settings" depends="common.ready-to-deploy">
+    <echo>
+      Deploying to ${deploy.host}
+    </echo>
+  </target>
+  <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
   <target name="cluster" depends="ready-to-deploy"
