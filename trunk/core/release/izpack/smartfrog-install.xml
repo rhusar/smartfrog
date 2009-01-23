@@ -404,8 +404,14 @@ SmartFrog to deploy complex systems.
         during deployment, or when terminating a deployment. It has special component templates.
         to start and administer MySQL.
 
+        Includes:
+        commons-dbutils-${commons-dbutils.version}.jar
+        commons-pool-${commons-pool.version}.jar
+        commons-dbcp-${commons-dbcp.version}.jar
+
         This package does not include any JDBC drivers. The appropriate JDBC driver for the
         target system must be installed in order for JDBC connectivity to work.
+
       </description>
       <file src="ivy/lib/package-database/sf-database-${smartfrog.version}.jar"
           targetdir="$INSTALL_PATH/lib"
@@ -416,6 +422,16 @@ SmartFrog to deploy complex systems.
       <file src="ivy/lib/package-database/sf-database-documentation-${smartfrog.version}.zip"
           targetdir="$INSTALL_PATH"
           unpack="true"/>
+
+      <file src="ivy/lib/package-database/commons-dbutils-${commons-dbutils.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-database/commons-pool-${commons-pool.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
+      <file src="ivy/lib/package-database/commons-dbcp-${commons-dbcp.version}.jar"
+        targetdir="$INSTALL_PATH/lib"
+        />
     </pack>
 
     <pack name="JMX" required="no" preselected="no">

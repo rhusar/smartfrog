@@ -478,6 +478,9 @@
     <!-- database -->
     <rpmpackage package="database"/>
     <ln artifact="sf-database" version="${smartfrog.version}"/>
+    <ln artifact="commons-dbcp" version="${commons-dbcp.version}"/>
+    <ln artifact="commons-pool" version="${commons-pool.version}"/>
+    <ln artifact="commons-dbutils" version="${commons-dbutils.version}"/>
 
     <!-- hadoop -->
     <rpmpackage package="hadoop"/>

@@ -229,6 +229,10 @@ This package does not include any JDBC drivers. The appropriate JDBC driver for 
 target system must be installed/added to the sfCodeBase attribute of the components,
 in order for JDBC connectivity to work.
 
+Includes:
+commons-dbutils-${commons-dbutils.version}.jar
+commons-pool-${commons-pool.version}.jar
+commons-dbcp-${commons-dbcp.version}.jar
 
 # -----------------------------------------------------------------------------
 
@@ -238,7 +242,8 @@ Summary:        Hadoop integration
 Requires:       %{name} = %{version}-%{release} ,  %{name}-logging ,  %{name}-www,  %{name}-jetty
 
 %description hadoop
-This includes all the artifacts needed for Apache Hadoop.
+This includes all the artifacts needed to bring up a Apache Hadoop cluster with SmartFrog.
+It does not contain the Apache Hadoop shell scripts
 
 # -----------------------------------------------------------------------------
 
@@ -735,6 +740,12 @@ fi
 
 %{libdir}/sf-database-${smartfrog.version}.jar
 %{linkdir}/sf-database.jar
+%{libdir}/commons-dbcp-${commons-dbcp.version}.jar
+%{linkdir}/commons-dbcp.jar
+%{libdir}/commons-pool-${commons-pool.version}.jar
+%{linkdir}/commons-pool.jar
+%{libdir}/commons-dbutils-${commons-dbutils.version}.jar
+%{linkdir}/commons-dbutils.jar
 
 %files hadoop
 %{linkdir}/sf-hadoop.jar
