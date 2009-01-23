@@ -117,24 +117,28 @@ public abstract class ConfigurationAction {
             ProcessCompound pc = null;
             Throwable thr = null;
             for (String host : hosts) {
-              try {
-                pc = SFProcess.sfSelectTargetProcess(host,configuration.getSubProcess());
-                return execute(pc,configuration);
-              } catch (Throwable ex){
-                //keep trying
-                thr = ex;
-                String resultMessage = "Fail to execute "+configuration.getActionType()+ "on target host: "+ host+" , cause: "+ex.getCause();
-                if (SFSystem.sfLog().isDebugEnabled()) {SFSystem.sfLog().debug(resultMessage, ex); }
-                  try {
-                      Object resultMultiHostObj = configuration.getContextAttribute("ResultMultiHost");
-                      if (resultMultiHostObj==null) {resultMultiHostObj = "";}
-                      String resultMultiHost = resultMultiHostObj +"; "+ resultMessage;
-                      configuration.setContextAttribute("ResultMultihost", resultMultiHost);
-                  } catch ( Exception exception) {
-                      exception.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                  }
+                try {
+                    pc = SFProcess.sfSelectTargetProcess(host, configuration.getSubProcess());
+                    return execute(pc, configuration);
+                } catch (Throwable ex) {
+                    //keep trying
+                    thr = ex;
+                    String resultMessage = "Fail to execute " + configuration.getActionType() + "on target host: " + host + " , cause: " + ex.getCause();
+                    if (SFSystem.sfLog().isDebugEnabled()) {
+                        SFSystem.sfLog().debug(resultMessage, ex);
+                    }
+                    try {
+                        Object resultMultiHostObj = configuration.getContextAttribute("ResultMultiHost");
+                        if (resultMultiHostObj == null) {
+                            resultMultiHostObj = "";
+                        }
+                        String resultMultiHost = resultMultiHostObj + "; " + resultMessage;
+                        configuration.setContextAttribute("ResultMultihost", resultMultiHost);
+                    } catch (Exception exception) {
+                        SFSystem.sfLog().warn(resultMessage, ex);
+                    }
 
-              }
+                }
             }
             if ((thr!=null)) {   //Throw the last exception
                 throw SmartFrogException.forward(thr);
