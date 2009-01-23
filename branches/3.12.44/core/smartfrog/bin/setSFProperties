@@ -24,7 +24,7 @@ fi
 
 # To define the prefix to componentname with username
  # export USERNAMEPREFIX_ON=ENABLED
-
+ # export DEBUG_SCRIPT_ON=ENABLED  
 # -------------------End user properties-------------------------
 
 if test -f "$SFHOME/jvm/bin/$SFJVM"; then 
@@ -63,13 +63,19 @@ fi
 
 # SF/lib (SF core libs)
 for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+
 export CLASSPATH
 
 # SF/lib.ext (external libs used by SF core)
 # export SFLIBPATH="$SFHOME/lib.ext"
 # for i in "$SFLIBPATH"/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 # export CLASSPATH
-echo DEFAULT $CLASSPATH
+
+if test "$DEBUG_SCRIPT_ON"; then
+   echo DEFAULT $CLASSPATH
+fi
+
+
 if test "$SFUSERHOME"; then
     export SFLIBPATH="$SFUSERHOME"
     ls "$SFLIBPATH"/*.jar 2>/dev/null 1>/dev/null
@@ -123,4 +129,7 @@ fi
 if [ -f ${SHELL}.exe ]; then
   CLASSPATH=`cygpath -pw "$CLASSPATH"`
 fi
-echo AFTER $CLASSPATH
+
+if test "$DEBUG_SCRIPT_ON"; then
+	echo AFTER $CLASSPATH
+fi	
